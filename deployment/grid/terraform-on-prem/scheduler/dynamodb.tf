@@ -9,6 +9,8 @@ resource "aws_dynamodb_table" "htc_tasks_status_table" {
   
   hash_key       = "task_id"
 
+  provider = aws.aws_dynamodb
+  depends_on = [kubernetes_service.dynamodb]
 
   attribute {
     name = "session_id"
