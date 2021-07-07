@@ -36,6 +36,9 @@ resource null_resource "pull_python_env" {
   }
   provisioner "local-exec" {
     command = "docker pull ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/lambda-build:build-${var.lambda_runtime}"
+    interpreter = [
+      "bash", "-c"
+    ]
   }
   depends_on = [
     null_resource.authenticate_to_ecr_repository,
@@ -66,7 +69,10 @@ resource "null_resource" "copy_image" {
       echo "echo cannot push ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${each.value}:${split(":",each.key)[1]}"
       exit 1
     fi
-  EOT
+    EOT
+    interpreter = [
+      "bash", "-c"
+    ]
   }
   depends_on = [
     aws_ecr_repository.third_party,
