@@ -4,7 +4,7 @@
 
 output "redis_url" {
   description = "Redis URL"
-  value       = aws_elasticache_cluster.stdin-stdout-cache.cache_nodes.0.address
+  value       = "http://localhost:${var.redis_port}"
 }
 
 output "s3_bucket_name" {

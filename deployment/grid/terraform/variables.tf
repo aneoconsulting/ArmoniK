@@ -7,6 +7,16 @@ variable "region" {
   description = "AWS region"
 }
 
+variable "access_key" {
+  default = "mock_access_key"
+  description = "AWS access key"
+}
+
+variable "secret_key" {
+  default = "mock_secret_key"
+  description = "AWS secret key"
+}
+
 variable "input_role" {
   description = "Additional IAM roles to add to the aws-auth configmap."
   type = list(object({
@@ -397,4 +407,64 @@ variable "project_name" {
   description = "name of project"
   type=string
   default = ""
+}
+
+variable "dynamodb_port" {
+  description = "dynamodb port"
+  type = number
+  default = 8000
+}
+
+variable "htc_task_queue_port" {
+  description = "htc_task_queue port"
+  type = number
+  default = 8080
+}
+
+variable "htc_task_queue_dlq_port" {
+  description = "htc_task_queue_dlq port"
+  type = number
+  default = 8081
+}
+
+variable "cancel_tasks_port" {
+  description = "cancel_tasks port"
+  type = number
+  default = 9000
+}
+
+variable "submit_task_port" {
+  description = "submit_task port"
+  type = number
+  default = 9001
+}
+
+variable "get_results_port" {
+  description = "get_results port"
+  type = number
+  default = 9002
+}
+
+variable "ttl_checker_port" {
+  description = "ttl_checker port"
+  type = number
+  default = 9003
+}
+
+variable "local_services_port" {
+  description = "Port for all local services"
+  type = number
+  default = 8001
+}
+
+variable "api_gateway_port" {
+  description = "Port for API Gateway"
+  type = number
+  default = 8002
+}
+
+variable "redis_port" {
+  description = "Port for Redis instance"
+  default = 6379
+  type = number
 }

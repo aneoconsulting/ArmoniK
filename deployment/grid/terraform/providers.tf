@@ -46,10 +46,6 @@ provider "tls" {
 
 }
 
-provider "aws" {
-  region  = var.region
-}
-
 provider "archive" {
 }
 
@@ -69,4 +65,140 @@ provider "helm" {
   }
 }
 
+# AWS alias for all services
 
+provider "aws" {
+  access_key                  = var.access_key
+  region                      = var.region
+  secret_key                  = var.secret_key
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+
+  endpoints {
+    dynamodb = "http://localhost:${var.dynamodb_port}"
+    iam = "http://localhost: ${var.local_services_port}"
+    cloudwatch = "http://localhost:${var.local_services_port}"
+    cloudwatchlogs = "http://localhost:${var.local_services_port}"
+    s3 = "http://localhost:${var.local_services_port}"
+    apigateway = "http://localhost:${var.api_gateway_port}"
+  }
+}
+
+
+provider "aws" {
+  alias = "aws_htc_task_queue"
+  access_key                  = var.access_key
+  region                      = var.region
+  secret_key                  = var.secret_key
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+
+  endpoints {
+    dynamodb = "http://localhost:${var.dynamodb_port}"
+    sqs = "http://localhost:${var.htc_task_queue_port}"
+    iam = "http://localhost: ${var.local_services_port}"
+    s3 = "http://localhost:${var.local_services_port}"
+    apigateway = "http://localhost:${var.api_gateway_port}"
+  }
+}
+
+provider "aws" {
+  alias = "aws_htc_task_queue_dlq"
+  access_key                  = var.access_key
+  region                      = var.region
+  secret_key                  = var.secret_key
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+
+  endpoints {
+    dynamodb = "http://localhost:${var.dynamodb_port}"
+    sqs = "http://localhost:${var.htc_task_queue_dlq_port}"
+    iam = "http://localhost: ${var.local_services_port}"
+    s3 = "http://localhost:${var.local_services_port}"
+    apigateway = "http://localhost:${var.api_gateway_port}"
+  }
+}
+
+provider "aws" {
+  alias = "aws_cancel_tasks"
+  access_key                  = var.access_key
+  region                      = var.region
+  secret_key                  = var.secret_key
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+
+  endpoints {
+    dynamodb = "http://localhost:${var.dynamodb_port}"
+    lambda = "http://localhost:${var.cancel_tasks_port}"
+    cloudwatch = "http://localhost:${var.local_services_port}"
+    cloudwatchlogs = "http://localhost:${var.local_services_port}"
+    iam = "http://localhost: ${var.local_services_port}"
+    s3 = "http://localhost:${var.local_services_port}"
+    apigateway = "http://localhost:${var.api_gateway_port}"
+  }
+}
+
+provider "aws" {
+  alias = "aws_submit_task"
+  access_key                  = var.access_key
+  region                      = var.region
+  secret_key                  = var.secret_key
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+
+  endpoints {
+    dynamodb = "http://localhost:${var.dynamodb_port}"
+    lambda = "http://localhost:${var.submit_task_port}"
+    cloudwatch = "http://localhost:${var.local_services_port}"
+    cloudwatchlogs = "http://localhost:${var.local_services_port}"
+    iam = "http://localhost: ${var.local_services_port}"
+    s3 = "http://localhost:${var.local_services_port}"
+    apigateway = "http://localhost:${var.api_gateway_port}"
+  }
+}
+
+provider "aws" {
+  alias = "aws_get_results"
+  access_key                  = var.access_key
+  region                      = var.region
+  secret_key                  = var.secret_key
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+
+  endpoints {
+    dynamodb = "http://localhost:${var.dynamodb_port}"
+    lambda = "http://localhost:${var.get_results_port}"
+    cloudwatch = "http://localhost:${var.local_services_port}"
+    cloudwatchlogs = "http://localhost:${var.local_services_port}"
+    iam = "http://localhost: ${var.local_services_port}"
+    s3 = "http://localhost:${var.local_services_port}"
+    apigateway = "http://localhost:${var.api_gateway_port}"
+  }
+}
+
+
+provider "aws" {
+  alias = "aws_ttl_checker"
+  access_key                  = var.access_key
+  region                      = var.region
+  secret_key                  = var.secret_key
+  skip_credentials_validation = true
+  skip_metadata_api_check     = true
+  skip_requesting_account_id  = true
+
+  endpoints {
+    dynamodb = "http://localhost:${var.dynamodb_port}"
+    lambda = "http://localhost:${var.ttl_checker_port}"
+    cloudwatch = "http://localhost:${var.local_services_port}"
+    cloudwatchlogs = "http://localhost:${var.local_services_port}"
+    iam = "http://localhost: ${var.local_services_port}"
+    s3 = "http://localhost:${var.local_services_port}"
+    apigateway = "http://localhost:${var.api_gateway_port}"
+  }
+}
