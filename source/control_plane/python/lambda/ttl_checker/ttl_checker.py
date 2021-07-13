@@ -5,6 +5,7 @@
 import boto3
 import time
 import os
+from botocore import endpoint
 
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key, Attr
@@ -15,6 +16,7 @@ from utils import grid_error_logger as errlog
 from utils.dynamodb_common import state_partitions_generator, TASK_STATUS_RETRYING, TASK_STATUS_INCONSISTENT, TASK_STATUS_FAILED
 
 region = os.environ["REGION"]
+sqs_port = os.environ["SQS_PORT"]
 
 perf_tracker = performance_tracker_initializer(
     os.environ["METRICS_ARE_ENABLED"],
@@ -22,10 +24,25 @@ perf_tracker = performance_tracker_initializer(
     os.environ["METRICS_GRAFANA_PRIVATE_IP"])
 
 
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', 
+    endpoint_url=f"http://dynamodb:{os.environ['DYNAMODB_PORT']}",
+    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+    )
 table = dynamodb.Table(os.environ['TASKS_STATUS_TABLE_NAME'])
-sqs_res = boto3.resource('sqs', region_name=region, endpoint_url=f'https://sqs.{region}.amazonaws.com')
-sqs_cli = boto3.client('sqs', endpoint_url=f'https://sqs.{region}.amazonaws.com')
+sqs_res = boto3.resource(
+    'sqs',
+    region_name=region,
+    endpoint_url=f'http://local-services:{sqs_port}',
+    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+    )
+sqs_cli = boto3.client(
+    'sqs',
+    endpoint_url=f'http://local-services:{sqs_port}',
+    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+    )
 queue = sqs_res.get_queue_by_name(QueueName=os.environ['TASKS_QUEUE_NAME'])
 dlq = sqs_res.get_queue_by_name(QueueName=os.environ['TASKS_QUEUE_DLQ_NAME'])
 
