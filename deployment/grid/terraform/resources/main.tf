@@ -38,8 +38,7 @@ locals {
     }
   ])
   args_ca = [
-    for index in range(0,length(var.eks_worker_groups)):
-    "--nodes=${var.eks_worker_groups[index].asg_min_size}:${var.eks_worker_groups[index].asg_max_size}:${module.eks.workers_asg_names[index]}"
+    "placeholder"
   ]
 }
 

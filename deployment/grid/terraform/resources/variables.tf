@@ -6,11 +6,6 @@ variable "region" {
   description = "AWS region"
 }
 
-# variable "cluster_name" {
-#   default = "htc_aws"
-#   description = "Name of EKS cluster in AWS"
-# }
-
 variable "input_role" {
   description = "Additional IAM roles to add to the aws-auth configmap."
   type = list(object({
@@ -54,21 +49,6 @@ variable "cluster_name" {
   description = "Name of EKS cluster in AWS"
 }
 
-# variable "aws_asg_min_instances" {
-#   default  = "1"
-#   description = "Minimum number of instances for autoscaling group"
-# }
-
-# variable "aws_asg_max_instances" {
-#   default  = "5"
-#   description = "Max number of instances for autoscaling group"
-# }
-
-# variable "instance_type" {
-#   default = "t2.small"
-#   description = "instance type for worker nodes"
-# }
-
 variable "k8s_ca_version" {
   description = "Cluster autoscaler version"
 }
@@ -94,12 +74,6 @@ variable "dimension_name_metrics" {
 variable "htc_path_logs" {
   description = "Path to fluentD to search de logs application"
 }
-
-# variable "dimension_value_metrics" {
-#   default  = "[{DimensionName=cluster_name,DimensionValue=htc-aws}, {DimensionName=env,DimensionValue=dev}]"
-#   description = "Dimensions name/value for the CloudWatch metrics"
-# }
-
 
 variable "lambda_name_scaling_metrics" {
   description = "Lambda function name for metrics"
@@ -152,38 +126,13 @@ variable "htc_agent_target_value" {
   description = "target value for the load on the system"
 }
 
-variable "vpc_private_subnet_ids" {
-  description = "Private subnet IDs"
-}
-
 variable "graceful_termination_delay" {
   description = "graceful termination delay for scaled in action"
-}
-
-variable "vpc_public_subnet_ids" {
-  description = "Public subnet IDs"
-}
-
-variable "vpc_default_security_group_id" {
-  description = "Default SG ID"
-}
-
-variable "vpc_id" {
-  description = "Default VPC ID"
-}
-
-variable "vpc_cidr" {
-  description = "Default VPC CIDR"
 }
 
 variable "aws_xray_daemon_version" {
   description = "version for the XRay daemon"
   type = string
-}
-
-variable "enable_private_subnet" {
-  description = "enable private subnet"
-  type = bool
 }
 
 variable "grafana_configuration" {
