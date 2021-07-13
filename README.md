@@ -220,6 +220,24 @@ Some important parameters are:
 * **grid_storage_service** : the type of storage used for tasks payloads, configurable between [S3 or Redis]
 * **eks_worker** : an array describing the autoscaling  group used by EKS
 
+### Create needed credentials (on-premises)
+For the on-premises deployment, some credentials are needed to be defined by the user.
+
+1. Run the following command to create mock credentials needed for the HTC Agents.
+   ```bash
+   kubectl create secret generic htc-agent-secret-mock --from-literal='AWS_ACCESS_KEY_ID=mock_secret_key' --from-literal='AWS_SECRET_ACCESS_KEY=mock_secret_key'
+   ```
+
+2. Run 
+   ```bash
+   kubectl create secret docker-registry regcred   --docker-server=$HTCGRID_ACCOUNT_ID.dkr.ecr.$HTCGRID_REGION.amazonaws.com   --docker-username=AWS   --docker-password=$(aws ecr get-login-password)
+   ```
+
+3. Run
+   ```bash
+   kubectl create secret generic htc-agent-secret --from-literal='AWS_ACCESS_KEY_ID=<aws_access_key>' --from-literal='AWS_SECRET_ACCESS_KEY=<aws_secret_access_key>'
+   ```
+
 
 ### Deploying HTC-Grid
 
