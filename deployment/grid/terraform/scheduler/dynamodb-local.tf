@@ -33,7 +33,7 @@ resource "kubernetes_stateful_set" "dynamodb" {
 
           env {
             name = "SERVICES"
-            value = "dynamodb"
+            value = "dynamodb,kinesis"
           }
           env {
             name = "EDGE_PORT"

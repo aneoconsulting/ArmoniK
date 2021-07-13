@@ -31,7 +31,7 @@ resource "kubernetes_deployment" "local_services" {
 
           env {
             name = "SERVICES"
-            value = "iam,s3,cloudwatch,logs,ec2,events"
+            value = "iam,s3,cloudwatch,logs,ec2,events,lambda,sqs,apigateway"
           }
           env {
             name = "EDGE_PORT"

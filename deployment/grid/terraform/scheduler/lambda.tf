@@ -6,8 +6,7 @@
 
 
 resource "aws_iam_role" "role_lambda_submit_task" {
-  provider =  aws.aws_submit_task
-  depends_on = [kubernetes_service.submit_task]
+  depends_on = [kubernetes_service.local_services]
   name = "role_lambda_submit_task-${local.suffix}"
   assume_role_policy = <<EOF
 {
@@ -27,8 +26,7 @@ EOF
 }
 
 resource "aws_iam_role" "role_lambda_get_results" {
-  provider =  aws.aws_get_results
-  depends_on = [kubernetes_service.get_results]
+  depends_on = [kubernetes_service.local_services]
   name = "role_lambda_get_results-${local.suffix}"
   assume_role_policy = <<EOF
 {
@@ -48,8 +46,7 @@ EOF
 }
 
 resource "aws_iam_role" "role_lambda_cancel_tasks" {
-  provider =  aws.aws_cancel_tasks
-  depends_on = [kubernetes_service.cancel_tasks]
+  depends_on = [kubernetes_service.local_services]
   name = "role_lambda_cancel_tasks-${local.suffix}"
   assume_role_policy = <<EOF
 {
@@ -70,8 +67,7 @@ EOF
 
 
 resource "aws_iam_role" "role_lambda_ttl_checker" {
-  provider =  aws.aws_ttl_checker
-  depends_on = [kubernetes_service.ttl_checker]
+  depends_on = [kubernetes_service.local_services]
   name = "role_lambda_ttl_checker-${local.suffix}"
   assume_role_policy = <<EOF
 {
@@ -91,20 +87,17 @@ EOF
 }
 
 module "submit_task" {
-  providers = {
-    aws = aws.aws_submit_task
-  }
   depends_on = [
-    kubernetes_service.submit_task,
+    kubernetes_service.local_services,
     aws_iam_role_policy_attachment.lambda_logs_attachment,
     aws_cloudwatch_log_group.submit_task_logs
   ]
   source  = "terraform-aws-modules/lambda/aws"
   version = "v1.48.0"
   source_path = [
-    "../../../../source/control_plane/python/lambda/submit_tasks",
+    "../../../source/control_plane/python/lambda/submit_tasks",
     {
-      path = "../../../../source/client/python/api-v0.1/"
+      path = "../../../source/client/python/api-v0.1/"
       patterns = [
         "!README\\.md",
         "!setup\\.py",
@@ -112,7 +105,7 @@ module "submit_task" {
       ]
     },
     {
-      path = "../../../../source/client/python/utils/"
+      path = "../../../source/client/python/utils/"
       patterns = [
         "!README\\.md",
         "!setup\\.py",
@@ -120,10 +113,10 @@ module "submit_task" {
       ]
     },
     {
-      pip_requirements = "../../../../source/control_plane/python/lambda/submit_tasks/requirements.txt"
+      pip_requirements = "../../../source/control_plane/python/lambda/submit_tasks/requirements.txt"
     }
   ]
-  function_name = var.lambda_name_submit_task
+  function_name = var.lambda_name_submit_tasks
   build_in_docker = true
   docker_image = "${var.aws_htc_ecr}/lambda-build:build-${var.lambda_runtime}"
   handler = "submit_tasks.lambda_handler"
@@ -148,10 +141,14 @@ module "submit_task" {
     TASK_INPUT_PASSED_VIA_EXTERNAL_STORAGE = var.task_input_passed_via_external_storage,
     GRID_STORAGE_SERVICE = var.grid_storage_service,
     S3_BUCKET = aws_s3_bucket.htc-stdout-bucket.id,
-    REDIS_URL = "http://localhost:6379",
+    REDIS_URL = "redis",
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
     AWS_DEFAULT_REGION = var.region,
+    SQS_PORT = var.local_services_port,
+    DYNAMODB_PORT = var.dynamodb_port,
+    AWS_ACCESS_KEY_ID = var.access_key,
+    AWS_SECRET_ACCESS_KEY = var.secret_key,
   }
 
    tags = {
@@ -161,20 +158,17 @@ module "submit_task" {
 }
 
 module  "get_results" {
-  providers = {
-    aws = aws.aws_get_results
-  }
   depends_on = [
-    kubernetes_service.get_results,
+    kubernetes_service.local_services,
     aws_iam_role_policy_attachment.lambda_logs_attachment,
     aws_cloudwatch_log_group.get_results_logs
   ]
   source  = "terraform-aws-modules/lambda/aws"
   version = "v1.48.0"
   source_path = [
-    "../../../../source/control_plane/python/lambda/get_results",
+    "../../../source/control_plane/python/lambda/get_results",
     {
-      path = "../../../../source/client/python/api-v0.1/"
+      path = "../../../source/client/python/api-v0.1/"
       patterns = [
         "!README\\.md",
         "!setup\\.py",
@@ -182,7 +176,7 @@ module  "get_results" {
       ]
     },
     {
-      path = "../../../../source/client/python/utils/"
+      path = "../../../source/client/python/utils/"
       patterns = [
         "!README\\.md",
         "!setup\\.py",
@@ -190,7 +184,7 @@ module  "get_results" {
       ]
     },
     {
-      pip_requirements = "../../../../source/control_plane/python/lambda/get_results/requirements.txt"
+      pip_requirements = "../../../source/control_plane/python/lambda/get_results/requirements.txt"
     }
   ]
   function_name = var.lambda_name_get_results
@@ -211,7 +205,7 @@ module  "get_results" {
     TASKS_STATUS_TABLE_NAME=aws_dynamodb_table.htc_tasks_status_table.name,
     TASKS_QUEUE_NAME=aws_sqs_queue.htc_task_queue.name,
     S3_BUCKET=aws_s3_bucket.htc-stdout-bucket.id,
-    REDIS_URL="http://localhost:6379",
+    REDIS_URL = "redis",
     GRID_STORAGE_SERVICE=var.grid_storage_service,
     TASKS_QUEUE_DLQ_NAME = aws_sqs_queue.htc_task_queue_dlq.name,
     METRICS_ARE_ENABLED = var.metrics_are_enabled,
@@ -221,6 +215,10 @@ module  "get_results" {
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
     AWS_DEFAULT_REGION = var.region,
+    SQS_PORT = var.local_services_port,
+    DYNAMODB_PORT = var.dynamodb_port,
+    AWS_ACCESS_KEY_ID = var.access_key,
+    AWS_SECRET_ACCESS_KEY = var.secret_key,
   }
    tags = {
     service     = "htc-grid"
@@ -229,20 +227,17 @@ module  "get_results" {
 }
 
 module "cancel_tasks" {
-  providers = {
-    aws = aws.aws_cancel_tasks
-  }
   depends_on = [
-    kubernetes_service.cancel_tasks,
+    kubernetes_service.local_services,
     aws_iam_role_policy_attachment.lambda_logs_attachment,
     aws_cloudwatch_log_group.cancel_tasks_logs
   ]
   source  = "terraform-aws-modules/lambda/aws"
   version = "v1.48.0"
   source_path = [
-    "../../../../source/control_plane/python/lambda/cancel_tasks",
+    "../../../source/control_plane/python/lambda/cancel_tasks",
     {
-      path = "../../../../source/client/python/api-v0.1/"
+      path = "../../../source/client/python/api-v0.1/"
       patterns = [
         "!README\\.md",
         "!setup\\.py",
@@ -250,7 +245,7 @@ module "cancel_tasks" {
       ]
     },
     {
-      path = "../../../../source/client/python/utils/"
+      path = "../../../source/client/python/utils/"
       patterns = [
         "!README\\.md",
         "!setup\\.py",
@@ -258,7 +253,7 @@ module "cancel_tasks" {
       ]
     },
     {
-      pip_requirements = "../../../../source/control_plane/python/lambda/cancel_tasks/requirements.txt"
+      pip_requirements = "../../../source/control_plane/python/lambda/cancel_tasks/requirements.txt"
     }
   ]
   function_name = var.lambda_name_cancel_tasks
@@ -286,10 +281,14 @@ module "cancel_tasks" {
     TASK_INPUT_PASSED_VIA_EXTERNAL_STORAGE = var.task_input_passed_via_external_storage,
     GRID_STORAGE_SERVICE = var.grid_storage_service,
     S3_BUCKET = aws_s3_bucket.htc-stdout-bucket.id,
-    REDIS_URL = "http://localhost:6379",
-    METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
+    REDIS_URL = "redis",
+    METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb, # name of service influxd
     REGION = var.region,
     AWS_DEFAULT_REGION = var.region,
+    SQS_PORT = var.local_services_port,
+    DYNAMODB_PORT = var.dynamodb_port,
+    AWS_ACCESS_KEY_ID = var.access_key,
+    AWS_SECRET_ACCESS_KEY = var.secret_key,
   }
 
    tags = {
@@ -301,19 +300,16 @@ module "cancel_tasks" {
 
 
 module "ttl_checker" {
-  providers = {
-    aws = aws.aws_ttl_checker
-  }
   depends_on = [
     aws_cloudwatch_log_group.ttl_log,
-    kubernetes_service.ttl_checker,
+    kubernetes_service.local_services,
   ]
   source  = "terraform-aws-modules/lambda/aws"
   version = "v1.48.0"
   source_path = [
-    "../../../../source/control_plane/python/lambda/ttl_checker",
+    "../../../source/control_plane/python/lambda/ttl_checker",
     {
-      path = "../../../../source/client/python/api-v0.1/"
+      path = "../../../source/client/python/api-v0.1/"
       patterns = [
         "!README\\.md",
         "!setup\\.py",
@@ -321,7 +317,7 @@ module "ttl_checker" {
       ]
     },
     {
-      path = "../../../../source/client/python/utils/"
+      path = "../../../source/client/python/utils/"
       patterns = [
         "!README\\.md",
         "!setup\\.py",
@@ -329,7 +325,7 @@ module "ttl_checker" {
       ]
     },
     {
-      pip_requirements = "../../../../source/control_plane/python/lambda/ttl_checker/requirements.txt"
+      pip_requirements = "../../../source/control_plane/python/lambda/ttl_checker/requirements.txt"
     }
   ]
   function_name = var.lambda_name_ttl_checker
@@ -359,6 +355,10 @@ module "ttl_checker" {
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
     AWS_DEFAULT_REGION = var.region,
+    SQS_PORT = var.local_services_port,
+    DYNAMODB_PORT = var.dynamodb_port,
+    AWS_ACCESS_KEY_ID = var.access_key,
+    AWS_SECRET_ACCESS_KEY = var.secret_key,
   }
 
    tags = {
@@ -367,32 +367,32 @@ module "ttl_checker" {
 }
 
 resource "aws_cloudwatch_log_group" "submit_task_logs" {
-  depends_on = [kubernetes_service.submit_task, kubernetes_service.local_services]
-  name = "/aws/lambda/${var.lambda_name_submit_task}"
+  depends_on = [kubernetes_service.local_services]
+  name = "/aws/lambda/${var.lambda_name_submit_tasks}"
   retention_in_days = 5
 }
 
 resource "aws_cloudwatch_log_group" "get_results_logs" {
-  depends_on = [kubernetes_service.get_results, kubernetes_service.local_services]
+  depends_on = [kubernetes_service.local_services]
   name = "/aws/lambda/${var.lambda_name_get_results}"
   retention_in_days = 5
 }
 
 resource "aws_cloudwatch_log_group" "cancel_tasks_logs" {
-  depends_on = [kubernetes_service.cancel_tasks, kubernetes_service.local_services]
+  depends_on = [kubernetes_service.local_services]
   name = "/aws/lambda/${var.lambda_name_cancel_tasks}"
   retention_in_days = 5
 }
 
 
 resource "aws_cloudwatch_log_group" "ttl_log" {
-  depends_on = [kubernetes_service.ttl_checker, kubernetes_service.local_services]
+  depends_on = [kubernetes_service.local_services]
   name = "/aws/lambda/${var.lambda_name_ttl_checker}"
   retention_in_days = 5
 }
 
 resource "aws_cloudwatch_event_rule" "ttl_checker_event_rule" {
-  depends_on = [kubernetes_service.ttl_checker, kubernetes_service.local_services]
+  depends_on = [kubernetes_service.local_services]
   name                = "ttl_checker_event_rule-${local.suffix}"
   description         = "Fires event to trigger TTL Checker Lambda"
   schedule_expression = "rate(1 minute)"
@@ -400,16 +400,14 @@ resource "aws_cloudwatch_event_rule" "ttl_checker_event_rule" {
 }
 
 resource "aws_cloudwatch_event_target" "ttl_checker_event_target" {
-  provider =  aws.aws_ttl_checker
-  depends_on = [kubernetes_service.ttl_checker, kubernetes_service.local_services]
+  depends_on = [kubernetes_service.local_services]
   rule      = aws_cloudwatch_event_rule.ttl_checker_event_rule.name
   target_id = "lambda"
   arn       = module.ttl_checker.this_lambda_function_arn
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_ttl_checker_lambda" {
-  provider =  aws.aws_ttl_checker
-  depends_on = [kubernetes_service.ttl_checker, kubernetes_service.local_services]
+  depends_on = [kubernetes_service.local_services]
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
   function_name = module.ttl_checker.this_lambda_function_name

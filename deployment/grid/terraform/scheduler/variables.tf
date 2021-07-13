@@ -131,34 +131,34 @@ variable "suffix" {
   description = "suffix for generating unique name for AWS resource"
 }
 
-variable "vpc_private_subnet_ids" {
-  description = "Private subnet IDs"
-}
-
-variable "vpc_public_subnet_ids" {
-  description = "Public subnet IDs"
-}
-
-variable "vpc_default_security_group_id" {
-  description = "Default SG ID"
-}
-
-variable "vpc_id" {
-  description = "Default VPC ID"
-}
-
-variable "vpc_cidr" {
-  description = "Default VPC CIDR"
-}
+# variable "vpc_private_subnet_ids" {
+#   description = "Private subnet IDs"
+# }
+# 
+# variable "vpc_public_subnet_ids" {
+#   description = "Public subnet IDs"
+# }
+# 
+# variable "vpc_default_security_group_id" {
+#   description = "Default SG ID"
+# }
+# 
+# variable "vpc_id" {
+#   description = "Default VPC ID"
+# }
+# 
+# variable "vpc_cidr" {
+#   description = "Default VPC CIDR"
+# }
 variable "nlb_influxdb" {
   description = "network load balancer url  in front of influxdb"
   default = ""
 }
-
-variable "cognito_userpool_arn" {
-  description = "ARN of the user pool used for authentication"
-}
-
+# 
+# variable "cognito_userpool_arn" {
+#   description = "ARN of the user pool used for authentication"
+# }
+# 
 variable "cluster_name" {
   description = "ARN of the user pool used for authentication"
 }
@@ -167,4 +167,14 @@ variable "api_gateway_version" {
   description = "version deployed by API Gateway"
 }
 
+variable "dynamodb_port" {
+  description = "dynamodb port"
+}
 
+variable "local_services_port" {
+  description = "Port for all local services"
+}
+
+variable "redis_port" {
+  description = "Port for Redis instance"
+}

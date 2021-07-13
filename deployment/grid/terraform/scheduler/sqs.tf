@@ -9,8 +9,7 @@ resource "aws_sqs_queue" "htc_task_queue" {
   message_retention_seconds = 1209600 # max 14 days
   visibility_timeout_seconds = 40  # once acquired we should update visibility timeout during processing
 
-  provider = aws.aws_htc_task_queue
-  depends_on = [kubernetes_service.htc_task_queue]
+  depends_on = [kubernetes_service.local_services]
 
   tags = {
     service     = "htc-aws"
@@ -23,8 +22,7 @@ resource "aws_sqs_queue" "htc_task_queue_dlq" {
 
   message_retention_seconds = 1209600 # max 14 days
 
-  provider = aws.aws_htc_task_queue_dlq
-  depends_on = [kubernetes_service.htc_task_queue_dlq]
+  depends_on = [kubernetes_service.local_services]
 
   tags = {
     service     = "htc-aws"

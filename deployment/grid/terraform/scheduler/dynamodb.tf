@@ -98,7 +98,7 @@ resource "aws_dynamodb_table" "htc_tasks_status_table" {
   # }
 
 
-  tags = {
-    service     = "htc-aws"
-  }
+#  tags = {
+#    service     = "htc-aws"
+#  }
 }
