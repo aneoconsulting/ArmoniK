@@ -127,7 +127,7 @@ variable "lambda_alb_name" {
   description = "Name of the load balancer for Lambdas"
 }
 variable "metrics_are_enabled" {
-  default  = "1"
+  default  = "0"
   description = "If set to True(1) then metrics will be accumulated and delivered downstream for visualisation"
 }
 
@@ -415,52 +415,10 @@ variable "dynamodb_port" {
   default = 8000
 }
 
-variable "htc_task_queue_port" {
-  description = "htc_task_queue port"
-  type = number
-  default = 8080
-}
-
-variable "htc_task_queue_dlq_port" {
-  description = "htc_task_queue_dlq port"
-  type = number
-  default = 8081
-}
-
-variable "cancel_tasks_port" {
-  description = "cancel_tasks port"
-  type = number
-  default = 9000
-}
-
-variable "submit_task_port" {
-  description = "submit_task port"
-  type = number
-  default = 9001
-}
-
-variable "get_results_port" {
-  description = "get_results port"
-  type = number
-  default = 9002
-}
-
-variable "ttl_checker_port" {
-  description = "ttl_checker port"
-  type = number
-  default = 9003
-}
-
 variable "local_services_port" {
   description = "Port for all local services"
   type = number
   default = 8001
-}
-
-variable "api_gateway_port" {
-  description = "Port for API Gateway"
-  type = number
-  default = 8002
 }
 
 variable "redis_port" {

@@ -11,7 +11,11 @@ import os
 
 
 def lambda_handler(event, context):
-    dynamodb = boto3.resource('dynamodb',region_name="eu-west-1")
+    dynamodb = boto3.resource('dynamodb', 
+        endpoint_url=f"http://dynamodb:{os.environ['DYNAMODB_PORT']}",
+        aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+        aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+        )
     table = dynamodb.Table(os.environ['TASKS_STATUS_TABLE_NAME'])
     for i  in range(20):
         session_id = uuid.uuid1()
