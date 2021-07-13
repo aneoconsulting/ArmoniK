@@ -17,6 +17,16 @@ variable "secret_key" {
   description = "AWS secret key"
 }
 
+variable "k8s_config_context" {
+  default = "docker-desktop"
+  description = ""
+}
+
+variable "k8s_config_path" {
+  default = "~/.kube/config"
+  description = ""
+}
+
 variable "input_role" {
   description = "Additional IAM roles to add to the aws-auth configmap."
   type = list(object({
