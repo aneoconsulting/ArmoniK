@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-data aws_caller_identity current {}
+#data aws_caller_identity current {}
 
 resource "random_string" "random_resources" {
     length = 5
@@ -12,7 +12,7 @@ resource "random_string" "random_resources" {
 }
 
 locals {
-    aws_htc_ecr = var.aws_htc_ecr != "" ? var.aws_htc_ecr : "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
+    aws_htc_ecr = var.aws_htc_ecr
     project_name = var.project_name != "" ? var.project_name : random_string.random_resources.result
     cluster_name = "${var.cluster_name}-${local.project_name}"
     ddb_status_table = "${var.ddb_status_table}-${local.project_name}"

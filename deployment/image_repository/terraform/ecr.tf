@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
 # retrieve the account ID
-data "aws_caller_identity" "current" {}
+//data "aws_caller_identity" "current" {}
 
 # create all ECR repository
 resource "aws_ecr_repository" "third_party" {
@@ -12,14 +12,14 @@ resource "aws_ecr_repository" "third_party" {
 }
 
 # authenticate to ECR repository
-resource "null_resource" "authenticate_to_ecr_repository"{
-  triggers = {
-    always_run = timestamp()
-  }
-  provisioner "local-exec" {
-    command = " aws ecr get-login-password --region ${var.region}  | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
-  }
-}
+//resource "null_resource" "authenticate_to_ecr_repository"{
+//  triggers = {
+//    always_run = timestamp()
+//  }
+//  provisioner "local-exec" {
+//    command = "aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
+//  }
+//}
 
 # fetch the list of existing ECR repository
 //data "aws_ecr_repository" "current" {
