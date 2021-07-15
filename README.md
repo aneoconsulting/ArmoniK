@@ -252,7 +252,7 @@ The deployment time is about 30 min.
    terraform init -backend-config="bucket=$S3_TFSTATE_HTCGRID_BUCKET_NAME" \
                    -backend-config="region=$HTCGRID_REGION"
    ```
-3. if successful you can run terraform apply to create the infrastructure. HTC-Grid deploys a grafana version behind cognito. The admin password is configurable and should be passed at this stage.
+3. If successful you can run terraform apply to create the infrastructure. HTC-Grid deploys a grafana version behind cognito. The admin password is configurable and should be passed at this stage. For the on-premises deployment, you should also use the following flag: `-var="aws_htc_ecr=$HTCGRID_ACCOUNT_ID.dkr.ecr.$HTCGRID_REGION.amazonaws.com"`.
    ```bash
    terraform apply -var-file ../../../generated/grid_config.json -var="grafana_admin_password=<my_grafana_admin_password>"
    ```
