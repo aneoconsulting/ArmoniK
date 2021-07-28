@@ -25,14 +25,9 @@ spec:
         env:
           - name: INTRA_VPC
             value: "1"
+      imagePullSecrets:
+      - name: regcred
       restartPolicy: Never
-      nodeSelector:
-        grid/type: Operator
-      tolerations:
-      - effect: NoSchedule
-        key: grid/type
-        operator: Equal
-        value: Operator
       volumes:
         - name: agent-config-volume
           configMap:

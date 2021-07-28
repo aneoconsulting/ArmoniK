@@ -24,10 +24,19 @@ from api.in_out_manager import in_out_manager
 
 region = os.environ["REGION"]
 
-sqs = boto3.resource('sqs', endpoint_url=f'https://sqs.{region}.amazonaws.com')
+sqs = boto3.resource(
+    'sqs',
+    endpoint_url=f'http://local-services:{os.environ["SQS_PORT"]}',
+    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+    )
 queue = sqs.get_queue_by_name(QueueName=os.environ['TASKS_QUEUE_NAME'])
 
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', 
+    endpoint_url=f"http://dynamodb:{os.environ['DYNAMODB_PORT']}",
+    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+    )
 table = dynamodb.Table(os.environ['TASKS_STATUS_TABLE_NAME'])
 
 perf_tracker = performance_tracker_initializer(

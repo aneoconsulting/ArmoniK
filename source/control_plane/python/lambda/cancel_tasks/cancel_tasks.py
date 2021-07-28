@@ -14,7 +14,11 @@ import utils.grid_error_logger as errlog
 from utils.dynamodb_common import read_tasks_by_status, TASK_STATUS_PENDING, TASK_STATUS_PROCESSING, TASK_STATUS_RETRYING, dynamodb_update_task_status_to_cancelled
 
 client = boto3.client('dynamodb')
-dynamodb = boto3.resource('dynamodb')
+dynamodb = boto3.resource('dynamodb', 
+    endpoint_url=f"http://dynamodb:{os.environ['DYNAMODB_PORT']}",
+    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+    )
 table_name = os.environ['TASKS_STATUS_TABLE_NAME']
 table = dynamodb.Table(os.environ['TASKS_STATUS_TABLE_NAME'])
 

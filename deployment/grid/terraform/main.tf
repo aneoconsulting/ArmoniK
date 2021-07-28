@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-data aws_caller_identity current {}
+#data aws_caller_identity current {}
 
 resource "random_string" "random_resources" {
     length = 5
@@ -12,11 +12,12 @@ resource "random_string" "random_resources" {
 }
 
 locals {
-    aws_htc_ecr = var.aws_htc_ecr != "" ? var.aws_htc_ecr : "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
+    aws_htc_ecr = var.aws_htc_ecr
     project_name = var.project_name != "" ? var.project_name : random_string.random_resources.result
     cluster_name = "${var.cluster_name}-${local.project_name}"
     ddb_status_table = "${var.ddb_status_table}-${local.project_name}"
     sqs_queue = "${var.sqs_queue}-${local.project_name}"
+    tasks_queue_name = "${var.sqs_queue}-${local.project_name}__0"
     sqs_dlq = "${var.sqs_dlq}-${local.project_name}"
     lambda_name_get_results = "${var.lambda_name_get_results}-${local.project_name}"
     lambda_name_submit_tasks = "${var.lambda_name_submit_tasks}-${local.project_name}"
@@ -71,24 +72,9 @@ locals {
     }
 }
 
-module "vpc" {
-
-    source = "./vpc"
-    region = var.region
-    cluster_name = local.cluster_name
-    private_subnets = var.vpc_cidr_block_private
-    public_subnets = var.vpc_cidr_block_public
-    enable_private_subnet = var.enable_private_subnet
-
-}
 module "resources" {
     source = "./resources"
 
-    vpc_id = module.vpc.vpc_id
-    vpc_private_subnet_ids = module.vpc.private_subnet_ids
-    vpc_public_subnet_ids = module.vpc.public_subnet_ids
-    vpc_default_security_group_id = module.vpc.default_security_group_id
-    vpc_cidr = module.vpc.vpc_cidr_block
     cluster_name = local.cluster_name
     kubernetes_version = var.kubernetes_version
     k8s_ca_version = var.k8s_ca_version
@@ -102,6 +88,7 @@ module "resources" {
     lambda_runtime = var.lambda_runtime
     ddb_status_table = local.ddb_status_table
     sqs_queue = local.sqs_queue
+    tasks_queue_name = local.tasks_queue_name
     namespace_metrics = var.namespace_metrics
     dimension_name_metrics = var.dimension_name_metrics
     htc_path_logs = var.htc_path_logs
@@ -119,11 +106,6 @@ module "resources" {
     input_role = var.input_role
     graceful_termination_delay = var.graceful_termination_delay
     aws_xray_daemon_version = var.aws_xray_daemon_version
-    enable_private_subnet = var.enable_private_subnet
-    depends_on  = [
-        module.vpc
-    ]
-
     grafana_configuration = {
         downloadDashboardsImage_tag = var.grafana_configuration.downloadDashboardsImage_tag
         grafana_tag = var.grafana_configuration.grafana_tag
@@ -145,11 +127,8 @@ module "resources" {
 module "scheduler" {
     source = "./scheduler"
 
-    vpc_id = module.vpc.vpc_id
-    vpc_private_subnet_ids = module.vpc.private_subnet_ids
-    vpc_public_subnet_ids = module.vpc.public_subnet_ids
-    vpc_default_security_group_id = module.vpc.default_security_group_id
-    vpc_cidr = module.vpc.vpc_cidr_block
+    secret_key = var.secret_key
+    access_key = var.access_key
     suffix = local.project_name
     region = var.region
     lambda_runtime = var.lambda_runtime
@@ -159,6 +138,10 @@ module "scheduler" {
     sqs_dlq = local.sqs_dlq
     s3_bucket = local.s3_bucket
     grid_storage_service = var.grid_storage_service
+    grid_queue_service = var.grid_queue_service
+    grid_queue_config = var.grid_queue_config
+    tasks_status_table_service = var.tasks_status_table_service
+    tasks_status_table_config = var.tasks_status_table_config
     task_input_passed_via_external_storage = var.task_input_passed_via_external_storage
     lambda_name_ttl_checker = local.lambda_name_ttl_checker
     lambda_name_submit_tasks = local.lambda_name_submit_tasks
@@ -180,15 +163,13 @@ module "scheduler" {
     dynamodb_gsi_parent_table_write_capacity = var.dynamodb_default_write_capacity
     dynamodb_gsi_parent_table_read_capacity = var.dynamodb_default_read_capacity
     agent_use_congestion_control = var.agent_use_congestion_control
-    nlb_influxdb = module.resources.nlb_influxdb
     cluster_name = local.cluster_name
-    cognito_userpool_arn = module.resources.cognito_userpool_arn
     api_gateway_version = var.api_gateway_version
+    dynamodb_port = var.dynamodb_port
+    local_services_port = var.local_services_port
+    redis_port = var.redis_port
 
 
-    depends_on  = [
-        module.vpc
-    ]
 }
 
 
@@ -221,10 +202,10 @@ module "htc_agent" {
     lambda_configuration_location = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"location",local.default_agent_configuration.lambda.location)
     lambda_handler_file_name = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"lambda_handler_file_name",local.default_agent_configuration.lambda.lambda_handler_file_name)
     lambda_handler_function_name = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"lambda_handler_function_name",local.default_agent_configuration.lambda.lambda_handler_function_name)
+    lambda_configuration_function_name = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"function_name",local.default_agent_configuration.lambda.function_name)
     depends_on = [
         module.resources,
         module.scheduler,
-        module.vpc,
         kubernetes_config_map.htcagentconfig
     ]
 

@@ -25,7 +25,8 @@ imageTestAgent:
   pullPolicy: IfNotPresent
 
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: regcred
 nameOverride: ""
 fullnameOverride: ""
 

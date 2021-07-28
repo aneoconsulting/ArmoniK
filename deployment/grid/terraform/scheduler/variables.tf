@@ -6,6 +6,14 @@ variable "region" {
   description = "AWS region"
 }
 
+variable "access_key" {
+  description = "AWS access key"
+}
+
+variable "secret_key" {
+  description = "AWS secret key"
+}
+
 variable "aws_htc_ecr" {
   description = "URL of Amazon ECR image repostiories"
 }
@@ -32,6 +40,26 @@ variable "s3_bucket" {
 
 variable "grid_storage_service" {
   description = "Configuration string for internal results storage system"
+}
+
+variable "grid_queue_service" {
+  default = "SQS"
+  description = "Configuration string for the type of queuing service to be used"
+}
+
+variable "grid_queue_config" {
+  default = "{'sample':15}"
+  description = "dictionary queue config"
+}
+
+variable "tasks_status_table_config" {
+  default = "{'sample':15}"
+  description = "Custom configuration for status table"
+}
+
+variable "tasks_status_table_service" {
+  default = "DynamoDB"
+  description = "Status table service"
 }
 
 variable "task_input_passed_via_external_storage" {
@@ -123,34 +151,34 @@ variable "suffix" {
   description = "suffix for generating unique name for AWS resource"
 }
 
-variable "vpc_private_subnet_ids" {
-  description = "Private subnet IDs"
-}
-
-variable "vpc_public_subnet_ids" {
-  description = "Public subnet IDs"
-}
-
-variable "vpc_default_security_group_id" {
-  description = "Default SG ID"
-}
-
-variable "vpc_id" {
-  description = "Default VPC ID"
-}
-
-variable "vpc_cidr" {
-  description = "Default VPC CIDR"
-}
+# variable "vpc_private_subnet_ids" {
+#   description = "Private subnet IDs"
+# }
+# 
+# variable "vpc_public_subnet_ids" {
+#   description = "Public subnet IDs"
+# }
+# 
+# variable "vpc_default_security_group_id" {
+#   description = "Default SG ID"
+# }
+# 
+# variable "vpc_id" {
+#   description = "Default VPC ID"
+# }
+# 
+# variable "vpc_cidr" {
+#   description = "Default VPC CIDR"
+# }
 variable "nlb_influxdb" {
   description = "network load balancer url  in front of influxdb"
   default = ""
 }
-
-variable "cognito_userpool_arn" {
-  description = "ARN of the user pool used for authentication"
-}
-
+# 
+# variable "cognito_userpool_arn" {
+#   description = "ARN of the user pool used for authentication"
+# }
+# 
 variable "cluster_name" {
   description = "ARN of the user pool used for authentication"
 }
@@ -159,4 +187,14 @@ variable "api_gateway_version" {
   description = "version deployed by API Gateway"
 }
 
+variable "dynamodb_port" {
+  description = "dynamodb port"
+}
 
+variable "local_services_port" {
+  description = "Port for all local services"
+}
+
+variable "redis_port" {
+  description = "Port for Redis instance"
+}

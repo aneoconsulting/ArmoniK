@@ -15,6 +15,7 @@ import signal
 import sys
 import base64
 import asyncio
+from botocore import endpoint
 import requests
 from functools import partial
 from aws_xray_sdk.core import xray_recorder
@@ -104,7 +105,8 @@ config = Config(
         'mode': 'standard'
     }
 )
-dynamodb = boto3.resource('dynamodb', region_name=region, config=config)
+dynamodb = boto3.resource('dynamodb', region_name=region, config=config, endpoint_url=agent_config_data['dynamodb_endpoint'],
+    aws_access_key_id=agent_config_data['access_key'], aws_secret_access_key=agent_config_data['secret_key'])
 status_table = dynamodb.Table(agent_config_data['ddb_status_table'])
 
 config_cc = Config(
@@ -113,7 +115,8 @@ config_cc = Config(
         'mode': 'adaptive'
     }
 )
-dynamodb_cc = boto3.resource('dynamodb', region_name=region, config=config_cc)
+dynamodb_cc = boto3.resource('dynamodb', region_name=region, config=config_cc, endpoint_url=agent_config_data['dynamodb_endpoint'],
+    aws_access_key_id=agent_config_data['access_key'], aws_secret_access_key=agent_config_data['secret_key'])
 status_table_cc = dynamodb_cc.Table(agent_config_data['ddb_status_table'])
 
 stdout_iom = in_out_manager(

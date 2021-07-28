@@ -51,6 +51,9 @@ spec:
             value: xray-service.kube-system:2000
           - name: INTRA_VPC
             value: "1"
+          envFrom:
+            - secretRef:
+                name: htc-agent-secret-mock
           volumeMounts:
           - name: {{ .Chart.Name }}-agent-config
             mountPath: /etc/agent
@@ -72,6 +75,9 @@ spec:
             value: "1"
           - name: AWS_LAMBDA_FUNCTION_HANDLER
             value: {{ .Values.lambda.handler }}
+          envFrom:
+            - secretRef:
+                name: htc-agent-secret-mock
           livenessProbe:
             httpGet:
               path: /2018-06-01/ping
@@ -96,6 +102,9 @@ spec:
           image: "{{ .Values.imageGetLayer.repository }}:{{ .Values.imageGetLayer.version  }}"
           imagePullPolicy: {{ .Values.imageGetLayer.pullPolicy }}
           name: get-layer
+          envFrom:
+            - secretRef:
+                name: htc-agent-secret
           volumeMounts:
           - name: {{ .Chart.Name }}-lambda-task-root
             mountPath: /var/task

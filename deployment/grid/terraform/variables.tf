@@ -7,6 +7,26 @@ variable "region" {
   description = "AWS region"
 }
 
+variable "access_key" {
+  default = "mock_access_key"
+  description = "AWS access key"
+}
+
+variable "secret_key" {
+  default = "mock_secret_key"
+  description = "AWS secret key"
+}
+
+variable "k8s_config_context" {
+  default = "default"
+  description = ""
+}
+
+variable "k8s_config_path" {
+  default = "/etc/rancher/k3s/k3s.yaml"
+  description = ""
+}
+
 variable "input_role" {
   description = "Additional IAM roles to add to the aws-auth configmap."
   type = list(object({
@@ -33,7 +53,7 @@ variable "lambda_runtime" {
 }
 
 variable "kubernetes_version" {
-  default = "1.19"
+  default = "1.20"
   description = "Name of EKS cluster in AWS"
 }
 
@@ -72,6 +92,16 @@ variable "ddb_status_table" {
   description = "htc DinamoDB table name"
 }
 
+variable "tasks_status_table_config" {
+  default  = "{}"
+  description = "Custom configuration for status table"
+}
+
+variable "tasks_status_table_service" {
+  default  = "DynamoDB"
+  description = "Status table sertvice"
+}
+
 variable "sqs_queue" {
   default  = "htc_task_queue"
   description = "htc SQS queue name"
@@ -90,6 +120,16 @@ variable "s3_bucket" {
 variable "grid_storage_service" {
   default = "S3 htc-stdout-bucket-1"
   description = "Configuration string for internal results storage system"
+}
+
+variable "grid_queue_service" {
+  default = "SQS"
+  description = "Configuration string for the type of queuing service to be used"
+}
+
+variable "grid_queue_config" {
+  default = "{'sample':5}"
+  description = "dictionary queue config"
 }
 
 variable "lambda_name_ttl_checker" {
@@ -117,7 +157,7 @@ variable "lambda_alb_name" {
   description = "Name of the load balancer for Lambdas"
 }
 variable "metrics_are_enabled" {
-  default  = "1"
+  default  = "0"
   description = "If set to True(1) then metrics will be accumulated and delivered downstream for visualisation"
 }
 
@@ -397,4 +437,22 @@ variable "project_name" {
   description = "name of project"
   type=string
   default = ""
+}
+
+variable "dynamodb_port" {
+  description = "dynamodb port"
+  type = number
+  default = 8000
+}
+
+variable "local_services_port" {
+  description = "Port for all local services"
+  type = number
+  default = 8001
+}
+
+variable "redis_port" {
+  description = "Port for Redis instance"
+  default = 6379
+  type = number
 }

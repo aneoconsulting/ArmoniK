@@ -4,7 +4,7 @@
 
 output "redis_url" {
   description = "Redis URL"
-  value       = aws_elasticache_cluster.stdin-stdout-cache.cache_nodes.0.address
+  value       = "redis"
 }
 
 output "s3_bucket_name" {
@@ -12,12 +12,16 @@ output "s3_bucket_name" {
   value       = aws_s3_bucket.htc-stdout-bucket.id
 }
 
-output "public_api_gateway_url" {
-  value = aws_api_gateway_deployment.htc_grid_public_deployment.invoke_url
-}
+#output "public_api_gateway_url" {
+#  value = aws_api_gateway_deployment.htc_grid_public_deployment.invoke_url
+#}
 
 output "private_api_gateway_url" {
   value = aws_api_gateway_deployment.htc_grid_private_deployment.invoke_url
+}
+
+output "private_api_gateway_id" {
+  value = aws_api_gateway_rest_api.htc_grid_private_rest_api.id
 }
 
 

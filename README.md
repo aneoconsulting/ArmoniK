@@ -220,6 +220,24 @@ Some important parameters are:
 * **grid_storage_service** : the type of storage used for tasks payloads, configurable between [S3 or Redis]
 * **eks_worker** : an array describing the autoscaling  group used by EKS
 
+### Create needed credentials (on-premises)
+For the on-premises deployment, some credentials are needed to be defined by the user.
+
+1. Run the following command to create mock credentials needed for the HTC Agents.
+   ```bash
+   kubectl create secret generic htc-agent-secret-mock --from-literal='AWS_ACCESS_KEY_ID=mock_secret_key' --from-literal='AWS_SECRET_ACCESS_KEY=mock_secret_key'
+   ```
+
+2. Run 
+   ```bash
+   kubectl create secret docker-registry regcred   --docker-server=$HTCGRID_ACCOUNT_ID.dkr.ecr.$HTCGRID_REGION.amazonaws.com   --docker-username=AWS   --docker-password=$(aws ecr get-login-password)
+   ```
+
+3. Run
+   ```bash
+   kubectl create secret generic htc-agent-secret --from-literal='AWS_ACCESS_KEY_ID=<aws_access_key>' --from-literal='AWS_SECRET_ACCESS_KEY=<aws_secret_access_key>'
+   ```
+
 
 ### Deploying HTC-Grid
 
@@ -234,7 +252,7 @@ The deployment time is about 30 min.
    terraform init -backend-config="bucket=$S3_TFSTATE_HTCGRID_BUCKET_NAME" \
                    -backend-config="region=$HTCGRID_REGION"
    ```
-3. if successful you can run terraform apply to create the infrastructure. HTC-Grid deploys a grafana version behind cognito. The admin password is configurable and should be passed at this stage.
+3. If successful you can run terraform apply to create the infrastructure. HTC-Grid deploys a grafana version behind cognito. The admin password is configurable and should be passed at this stage. For the on-premises deployment, you should also use the following flag: `-var="aws_htc_ecr=$HTCGRID_ACCOUNT_ID.dkr.ecr.$HTCGRID_REGION.amazonaws.com"`.
    ```bash
    terraform apply -var-file ../../../generated/grid_config.json -var="grafana_admin_password=<my_grafana_admin_password>"
    ```

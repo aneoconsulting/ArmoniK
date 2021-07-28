@@ -3,7 +3,7 @@
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
 # retrieve the account ID
-data "aws_caller_identity" "current" {}
+//data "aws_caller_identity" "current" {}
 
 # create all ECR repository
 resource "aws_ecr_repository" "third_party" {
@@ -12,14 +12,14 @@ resource "aws_ecr_repository" "third_party" {
 }
 
 # authenticate to ECR repository
-resource "null_resource" "authenticate_to_ecr_repository"{
-  triggers = {
-    always_run = timestamp()
-  }
-  provisioner "local-exec" {
-    command = " aws ecr get-login-password --region ${var.region}  | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
-  }
-}
+//resource "null_resource" "authenticate_to_ecr_repository"{
+//  triggers = {
+//    always_run = timestamp()
+//  }
+//  provisioner "local-exec" {
+//    command = "aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
+//  }
+//}
 
 # fetch the list of existing ECR repository
 //data "aws_ecr_repository" "current" {
@@ -36,6 +36,9 @@ resource null_resource "pull_python_env" {
   }
   provisioner "local-exec" {
     command = "docker pull ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/lambda-build:build-${var.lambda_runtime}"
+    interpreter = [
+      "bash", "-c"
+    ]
   }
   depends_on = [
     null_resource.authenticate_to_ecr_repository,
@@ -66,7 +69,10 @@ resource "null_resource" "copy_image" {
       echo "echo cannot push ${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${each.value}:${split(":",each.key)[1]}"
       exit 1
     fi
-  EOT
+    EOT
+    interpreter = [
+      "bash", "-c"
+    ]
   }
   depends_on = [
     aws_ecr_repository.third_party,

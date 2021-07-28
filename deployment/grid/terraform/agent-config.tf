@@ -5,7 +5,8 @@ locals {
   agent_config =<<EOF
 {
   "region": "${var.region}",
-  "sqs_endpoint": "https://sqs.${var.region}.amazonaws.com",
+  "sqs_endpoint": "http://local-services:${var.local_services_port}",
+  "dynamodb_endpoint": "http://dynamodb:${var.dynamodb_port}",
   "sqs_queue": "${local.sqs_queue}",
   "sqs_dlq": "${local.sqs_dlq}",
   "redis_url": "${module.scheduler.redis_url}",
@@ -24,6 +25,11 @@ locals {
   "lambda_name_cancel_tasks": "${local.lambda_name_cancel_tasks}",
   "s3_bucket": "${module.scheduler.s3_bucket_name}",
   "grid_storage_service" : "${var.grid_storage_service}",
+  "grid_queue_service" : "${var.grid_queue_service}",
+  "grid_queue_config" : "${var.grid_queue_config}",
+  "tasks_status_table_service" : "${var.tasks_status_table_service}",
+  "tasks_status_table_config" : "${var.tasks_status_table_config}",
+  "tasks_queue_name": "${local.tasks_queue_name}",
   "htc_path_logs" : "${var.htc_path_logs}",
   "error_log_group" : "${local.error_log_group}",
   "error_logging_stream" : "${local.error_logging_stream}",
@@ -36,12 +42,14 @@ locals {
   "metrics_get_results_lambda_connection_string": "${var.metrics_get_results_lambda_connection_string}",
   "metrics_ttl_checker_lambda_connection_string": "${var.metrics_ttl_checker_lambda_connection_string}",
   "agent_use_congestion_control": "${var.agent_use_congestion_control}",
-  "user_pool_id": "${module.resources.cognito_userpool_id}",
-  "cognito_userpool_client_id": "${module.resources.cognito_userpool_client_id}",
-  "public_api_gateway_url": "${module.scheduler.public_api_gateway_url}",
-  "private_api_gateway_url": "${module.scheduler.private_api_gateway_url}",
+  "public_api_gateway_url": "http://local-services:${var.local_services_port}/restapis/${module.scheduler.private_api_gateway_id}/v1/_user_request_",
+  "private_api_gateway_url": "http://local-services:${var.local_services_port}/restapis/${module.scheduler.private_api_gateway_id}/v1/_user_request_",
   "api_gateway_key": "${module.scheduler.api_gateway_key}",
-  "enable_xray" : "${var.enable_xray}"
+  "enable_xray": "${var.enable_xray}",
+  "user_pool_id": "mock",
+  "cognito_userpool_client_id": "mock",
+  "access_key": "${var.access_key}",
+  "secret_key": "${var.secret_key}"
 }
 EOF
 }
