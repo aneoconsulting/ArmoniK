@@ -61,10 +61,38 @@ variable "sqs_queue" {
   description = "HTC SQS queue name"
 }
 
+variable "tasks_queue_name" {
+  description = "HTC queue name"
+}
+
 variable "namespace_metrics" {
   description = "NameSpace for metrics"
 }
 
+variable "grid_queue_service" {
+  default = "SQS"
+  description = "Configuration string for the type of queuing service to be used"
+}
+
+variable "grid_queue_config" {
+  default = "{'sample':5}"
+  description = "dictionary queue config"
+}
+
+variable "status_table_service" {
+  default = "DynamoDB"
+  description = ""
+}
+
+variable "tasks_status_table_config" {
+  default = "{'sample':5}"
+  description = "Custom configuration for status table"
+}
+
+variable "tasks_status_table_service" {
+  default = "DynamoDB"
+  description = "Status table service"
+}
 
 variable "dimension_name_metrics" {
   description = "Dimensions name/value for the CloudWatch metrics"

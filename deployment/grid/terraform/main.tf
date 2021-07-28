@@ -17,6 +17,7 @@ locals {
     cluster_name = "${var.cluster_name}-${local.project_name}"
     ddb_status_table = "${var.ddb_status_table}-${local.project_name}"
     sqs_queue = "${var.sqs_queue}-${local.project_name}"
+    tasks_queue_name = "${var.sqs_queue}-${local.project_name}__0"
     sqs_dlq = "${var.sqs_dlq}-${local.project_name}"
     lambda_name_get_results = "${var.lambda_name_get_results}-${local.project_name}"
     lambda_name_submit_tasks = "${var.lambda_name_submit_tasks}-${local.project_name}"
@@ -87,6 +88,7 @@ module "resources" {
     lambda_runtime = var.lambda_runtime
     ddb_status_table = local.ddb_status_table
     sqs_queue = local.sqs_queue
+    tasks_queue_name = local.tasks_queue_name
     namespace_metrics = var.namespace_metrics
     dimension_name_metrics = var.dimension_name_metrics
     htc_path_logs = var.htc_path_logs
@@ -136,6 +138,10 @@ module "scheduler" {
     sqs_dlq = local.sqs_dlq
     s3_bucket = local.s3_bucket
     grid_storage_service = var.grid_storage_service
+    grid_queue_service = var.grid_queue_service
+    grid_queue_config = var.grid_queue_config
+    tasks_status_table_service = var.tasks_status_table_service
+    tasks_status_table_config = var.tasks_status_table_config
     task_input_passed_via_external_storage = var.task_input_passed_via_external_storage
     lambda_name_ttl_checker = local.lambda_name_ttl_checker
     lambda_name_submit_tasks = local.lambda_name_submit_tasks
@@ -196,6 +202,7 @@ module "htc_agent" {
     lambda_configuration_location = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"location",local.default_agent_configuration.lambda.location)
     lambda_handler_file_name = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"lambda_handler_file_name",local.default_agent_configuration.lambda.lambda_handler_file_name)
     lambda_handler_function_name = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"lambda_handler_function_name",local.default_agent_configuration.lambda.lambda_handler_function_name)
+    lambda_configuration_function_name = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"function_name",local.default_agent_configuration.lambda.function_name)
     depends_on = [
         module.resources,
         module.scheduler,

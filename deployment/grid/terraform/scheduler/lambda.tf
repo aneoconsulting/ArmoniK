@@ -93,7 +93,7 @@ module "submit_task" {
     aws_cloudwatch_log_group.submit_task_logs
   ]
   source  = "terraform-aws-modules/lambda/aws"
-  version = "v1.48.0"
+  version = "v2.4.0"
   source_path = [
     "../../../source/control_plane/python/lambda/submit_tasks",
     {
@@ -132,6 +132,9 @@ module "submit_task" {
 
   environment_variables  = {
     TASKS_STATUS_TABLE_NAME=aws_dynamodb_table.htc_tasks_status_table.name,
+    TASKS_STATUS_TABLE_SERVICE=var.tasks_status_table_service,
+    TASKS_STATUS_TABLE_CONFIG=var.tasks_status_table_config,
+    #TASKS_QUEUE_NAME=aws_sqs_queue.htc_task_queue["__0"].name,
     TASKS_QUEUE_NAME=aws_sqs_queue.htc_task_queue.name,
     TASKS_QUEUE_DLQ_NAME=aws_sqs_queue.htc_task_queue_dlq.name,
     METRICS_ARE_ENABLED=var.metrics_are_enabled,
@@ -140,6 +143,8 @@ module "submit_task" {
     ERROR_LOGGING_STREAM=var.error_logging_stream,
     TASK_INPUT_PASSED_VIA_EXTERNAL_STORAGE = var.task_input_passed_via_external_storage,
     GRID_STORAGE_SERVICE = var.grid_storage_service,
+    GRID_QUEUE_SERVICE = var.grid_queue_service,
+    GRID_QUEUE_CONFIG = var.grid_queue_config,
     S3_BUCKET = aws_s3_bucket.htc-stdout-bucket.id,
     REDIS_URL = "redis",
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
@@ -164,7 +169,7 @@ module  "get_results" {
     aws_cloudwatch_log_group.get_results_logs
   ]
   source  = "terraform-aws-modules/lambda/aws"
-  version = "v1.48.0"
+  version = "v2.4.0"
   source_path = [
     "../../../source/control_plane/python/lambda/get_results",
     {
@@ -203,10 +208,15 @@ module  "get_results" {
 
   environment_variables = {
     TASKS_STATUS_TABLE_NAME=aws_dynamodb_table.htc_tasks_status_table.name,
+    TASKS_STATUS_TABLE_SERVICE=var.tasks_status_table_service,
+    TASKS_STATUS_TABLE_CONFIG=var.tasks_status_table_config,
+    #TASKS_QUEUE_NAME=aws_sqs_queue.htc_task_queue["__0"].name,
     TASKS_QUEUE_NAME=aws_sqs_queue.htc_task_queue.name,
     S3_BUCKET=aws_s3_bucket.htc-stdout-bucket.id,
     REDIS_URL = "redis",
     GRID_STORAGE_SERVICE=var.grid_storage_service,
+    GRID_QUEUE_SERVICE = var.grid_queue_service,
+    GRID_QUEUE_CONFIG = var.grid_queue_config,
     TASKS_QUEUE_DLQ_NAME = aws_sqs_queue.htc_task_queue_dlq.name,
     METRICS_ARE_ENABLED = var.metrics_are_enabled,
     METRICS_GET_RESULTS_LAMBDA_CONNECTION_STRING = var.metrics_get_results_lambda_connection_string,
@@ -233,7 +243,7 @@ module "cancel_tasks" {
     aws_cloudwatch_log_group.cancel_tasks_logs
   ]
   source  = "terraform-aws-modules/lambda/aws"
-  version = "v1.48.0"
+  version = "v2.4.0"
   source_path = [
     "../../../source/control_plane/python/lambda/cancel_tasks",
     {
@@ -265,13 +275,16 @@ module "cancel_tasks" {
   runtime = var.lambda_runtime
 #   create_role = false
 #   lambda_role = aws_iam_role.role_lambda_cancel_tasks.arn
-# 
+#
 #   vpc_subnet_ids = var.vpc_private_subnet_ids
 #   vpc_security_group_ids = [var.vpc_default_security_group_id]
   use_existing_cloudwatch_log_group = true
 
   environment_variables  = {
     TASKS_STATUS_TABLE_NAME=aws_dynamodb_table.htc_tasks_status_table.name,
+    TASKS_STATUS_TABLE_SERVICE=var.tasks_status_table_service,
+    TASKS_STATUS_TABLE_CONFIG=var.tasks_status_table_config,
+    #TASKS_QUEUE_NAME=aws_sqs_queue.htc_task_queue["__0"].name,
     TASKS_QUEUE_NAME=aws_sqs_queue.htc_task_queue.name,
     TASKS_QUEUE_DLQ_NAME=aws_sqs_queue.htc_task_queue_dlq.name,
     METRICS_ARE_ENABLED=var.metrics_are_enabled,
@@ -280,6 +293,8 @@ module "cancel_tasks" {
     ERROR_LOGGING_STREAM=var.error_logging_stream,
     TASK_INPUT_PASSED_VIA_EXTERNAL_STORAGE = var.task_input_passed_via_external_storage,
     GRID_STORAGE_SERVICE = var.grid_storage_service,
+    GRID_QUEUE_SERVICE = var.grid_queue_service,
+    GRID_QUEUE_CONFIG = var.grid_queue_config,
     S3_BUCKET = aws_s3_bucket.htc-stdout-bucket.id,
     REDIS_URL = "redis",
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb, # name of service influxd
@@ -305,7 +320,7 @@ module "ttl_checker" {
     kubernetes_service.local_services,
   ]
   source  = "terraform-aws-modules/lambda/aws"
-  version = "v1.48.0"
+  version = "v2.4.0"
   source_path = [
     "../../../source/control_plane/python/lambda/ttl_checker",
     {
@@ -337,7 +352,7 @@ module "ttl_checker" {
   runtime = var.lambda_runtime
 #   create_role = false
 #   lambda_role = aws_iam_role.role_lambda_ttl_checker.arn
-# 
+#
 #   vpc_subnet_ids = var.vpc_private_subnet_ids
 #   vpc_security_group_ids = [var.vpc_default_security_group_id]
 
@@ -346,6 +361,9 @@ module "ttl_checker" {
 
   environment_variables = {
     TASKS_STATUS_TABLE_NAME=aws_dynamodb_table.htc_tasks_status_table.name,
+    TASKS_STATUS_TABLE_SERVICE=var.tasks_status_table_service,
+    TASKS_STATUS_TABLE_CONFIG=var.tasks_status_table_config,
+    #TASKS_QUEUE_NAME=aws_sqs_queue.htc_task_queue["__0"].name,
     TASKS_QUEUE_NAME=aws_sqs_queue.htc_task_queue.name,
     TASKS_QUEUE_DLQ_NAME=aws_sqs_queue.htc_task_queue_dlq.name
     METRICS_ARE_ENABLED=var.metrics_are_enabled,
@@ -403,14 +421,16 @@ resource "aws_cloudwatch_event_target" "ttl_checker_event_target" {
   depends_on = [kubernetes_service.local_services]
   rule      = aws_cloudwatch_event_rule.ttl_checker_event_rule.name
   target_id = "lambda"
-  arn       = module.ttl_checker.this_lambda_function_arn
+  #arn       = module.ttl_checker.this_lambda_function_arn
+  arn       = module.ttl_checker.lambda_function_arn
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_to_call_ttl_checker_lambda" {
   depends_on = [kubernetes_service.local_services]
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  function_name = module.ttl_checker.this_lambda_function_name
+  #function_name = module.ttl_checker.this_lambda_function_name
+  function_name = module.ttl_checker.lambda_function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.ttl_checker_event_rule.arn
 }

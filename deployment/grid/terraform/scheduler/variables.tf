@@ -42,6 +42,26 @@ variable "grid_storage_service" {
   description = "Configuration string for internal results storage system"
 }
 
+variable "grid_queue_service" {
+  default = "SQS"
+  description = "Configuration string for the type of queuing service to be used"
+}
+
+variable "grid_queue_config" {
+  default = "{'sample':15}"
+  description = "dictionary queue config"
+}
+
+variable "tasks_status_table_config" {
+  default = "{'sample':15}"
+  description = "Custom configuration for status table"
+}
+
+variable "tasks_status_table_service" {
+  default = "DynamoDB"
+  description = "Status table service"
+}
+
 variable "task_input_passed_via_external_storage" {
   description = "Indicator for passing the args through stdin"
 }
