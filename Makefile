@@ -12,6 +12,7 @@ export GENERATED=$(shell pwd)/generated
 export BUCKET_NAME
 export FILE_HANDLER
 export FUNCTION_HANDLER
+export TABLE_SERVICE
 export DIST_DIR=$(shell pwd)/dist
 export GRAFANA_ADMIN_PASSWORD
 export BUILD_DIR:=(shell pwd)/.build
@@ -196,7 +197,8 @@ python-happy-path: all python-submitter  upload-python config-python k8s-jobs
 
 python-quant-lib-path: all upload-python-ql config-python-ql k8s-jobs
 
-dotnet50-path: all dotnet5.0-htcgrid-api upload-dotnet5.0 config-dotnet5.0 k8s-jobs
+#dotnet50-path: all dotnet5.0-htcgrid-api upload-dotnet5.0 config-dotnet5.0 k8s-jobs
+dotnet50-path: all dotnet5.0-htcgrid-api upload-dotnet5.0 mock-submitter mock-config-dotnet5.0 k8s-jobs
 
 #############################
 ##### C#              #######

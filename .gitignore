@@ -19,5 +19,4 @@ site/
 __init__.py/
 lambda.zip
 generated
-**/restart.sh
-**/Agent_config.json
+.build

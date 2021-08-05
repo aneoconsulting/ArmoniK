@@ -14,10 +14,30 @@
 ```
     * RedisClient dotnet add package StackExchange.Redis --version 2.2.50
 
+#### On other OS
+To install .NET Core SDK and Runtime in other OS and distributions (Windows, Linux, macOS), please follow the instructions given in this link: [Install .NET on Windows, Linux, and macOS](https://docs.microsoft.com/en-us/dotnet/core/install/)
+
+#### Amazon Lambda Function
 ```bash
 dotnet tool install -g Amazon.Lambda.Tools
 dotnet new lambda.image.EmptyFunction --output mock_subtasking --region eu-west-1
 ```
+
+#### HTC Grid in local
+##### On Linux OS
+To deploy HTC Grid in local on Linux OS, you can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/).
+- To install K3s:
+```bash
+curl -sfL https://get.k3s.io | sh -
+sudo chmod 755 /etc/rancher/k3s/k3s.yaml
+cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+```
+- To uninstall K3s
+```bash
+/usr/local/bin/k3s-uninstall.sh
+```
+
+##### On Windows
 
 ### Compiling C# libraries
 
@@ -30,8 +50,8 @@ Use Makefile in the root directory to compile all dependencies
     make build-dotnet5.0-api
     make build-htc-grid-dotnet5.0-api
     make build-dotnet5.0-simple-client
-
  ```
+
  ### New project PATHs
  - Sample C# Client `examples/client/csharp/SimpleClient.cs`
  - HTC-Grid .Net API `source/client/csharp/api-v0.1/HTCGridConnector.cs`
@@ -173,7 +193,18 @@ For further details on *virtualenv* see https://sourabhbajaj.com/mac-setup/Pytho
    - `ap-northeast-1`
    - `ap-southeast-1`
 
-
+3. Define the AWS account ID where the grid will be deployed
+   ```bash
+      export HTCGRID_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
+   ```
+   
+4. Define the type of the database service 
+   ```bash
+      export HTCGRID_TASKS_TABLE_SERVICE=<Your DB service>
+   ```
+   `<Your DB service>` can be (the list is not exhaustive)
+   - `DynamoDB`
+   - `MongoDB`
 
 ### Create the S3 Buckets
 
@@ -215,13 +246,13 @@ name unknown: The repository with name 'xxxxxxxxx' does not exist in the registr
 
 ### Build HTC artifacts
 
-HTC artifacts include: python packages, docker images, configuration files for HTC and k8s. To build and install these:
+HTC artifacts include: .NET Core packages, docker images, configuration files for HTC and k8s. To build and install these:
 
 
 2. Now build the images for the HTC agent. Return to  `<project_root>`  and run the command:
 
    ```bash
-   make happy-path TAG=$TAG REGION=$HTCGRID_REGION
+   make dotnet50-path TAG=$TAG REGION=$HTCGRID_REGION TASKS_TABLE_SERVICE=$HTCGRID_TASKS_TABLE_SERVICE
    ```
 
    * If `TAG` is omitted then `mainline` will be the chosen has a default value.
@@ -240,6 +271,24 @@ Some important parameters are:
 * **grid_storage_service** : the type of storage used for tasks payloads, configurable between [S3 or Redis]
 * **eks_worker** : an array describing the autoscaling  group used by EKS
 
+### Create needed credentials (on-premises)
+For the on-premises deployment, some credentials are needed to be defined by the user.
+
+1. Run the following command to create mock credentials needed for the HTC Agents.
+   ```bash
+   kubectl create secret generic htc-agent-secret-mock --from-literal='AWS_ACCESS_KEY_ID=mock_secret_key' --from-literal='AWS_SECRET_ACCESS_KEY=mock_secret_key'
+   ```
+
+2. Run 
+   ```bash
+   kubectl create secret docker-registry regcred   --docker-server=$HTCGRID_ACCOUNT_ID.dkr.ecr.$HTCGRID_REGION.amazonaws.com   --docker-username=AWS   --docker-password=$(aws ecr get-login-password)
+   ```
+
+3. Run
+   ```bash
+   kubectl create secret generic htc-agent-secret --from-literal='AWS_ACCESS_KEY_ID=<aws_access_key>' --from-literal='AWS_SECRET_ACCESS_KEY=<aws_secret_access_key>'
+   ```
+
 
 ### Deploying HTC-Grid
 
@@ -251,7 +300,7 @@ The deployment time is about 30 min.
    ```
 2. if successful you can run terraform apply to create the infrastructure. HTC-Grid deploys a grafana version behind cognito. The admin password is configurable and should be passed at this stage.
    ```bash
-   make apply-custom-runtime  TAG=$TAG REGION=$HTCGRID_REGION
+   make apply-dotnet-runtime  TAG=$TAG REGION=$HTCGRID_REGION
    ```
 
 
