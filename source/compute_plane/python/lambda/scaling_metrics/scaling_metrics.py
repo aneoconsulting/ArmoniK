@@ -6,6 +6,11 @@ import boto3
 import time
 import os
 
+from api.queue_manager import queue_manager
+
+# TODO - retrieve the endpoint url from Terraform
+region = os.environ["REGION"]
+
 
 def lambda_handler(event, context):
     # For every x minute
@@ -13,11 +18,13 @@ def lambda_handler(event, context):
     # put metric in CloudWatch with:
     # - namespace: given in the environment variable NAMESPACE
     # - DimensionName: given in the environment variable DIMENSION_NAME
-
-    # TODO - retrieve the endpoint url from Terraform
-    sqs = boto3.resource('sqs', endpoint_url=f'https://sqs.{os.environ["REGION"]}.amazonaws.com')
-    queue = sqs.get_queue_by_name(QueueName=os.environ["SQS_QUEUE_NAME"])
-    task_pending = int(queue.attributes.get('ApproximateNumberOfMessages'))
+    task_queue = queue_manager(
+        grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],
+        grid_queue_config=os.environ['GRID_QUEUE_CONFIG'],
+        endpoint_url=f'https://sqs.{region}.amazonaws.com',
+        queue_name=os.environ['TASKS_QUEUE_NAME'],
+        region=region)
+    task_pending = task_queue.get_queue_length()
     print("pending task in DDB = {}".format(task_pending))
     # Create CloudWatch client
     cloudwatch = boto3.client('cloudwatch')

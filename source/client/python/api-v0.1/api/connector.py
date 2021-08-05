@@ -14,7 +14,14 @@ import logging
 
 from api.in_out_manager import in_out_manager
 from utils.dynamodb_common import generate_random_logical_partition_name, TASK_STATUS_FINISHED
+from pprint import pprint
+import httpapi
+from httpapi.api import default_api
+from httpapi.model.get_response import GetResponse
+from httpapi.model.post_submit_response import PostSubmitResponse
+
 from warrant_lite import WarrantLite
+
 from apscheduler.schedulers.background import BackgroundScheduler
 
 URLOPEN_LAMBDA_INVOKE_TIMEOUT_SEC = 120  # TODO Catch timout exception
@@ -78,6 +85,9 @@ class AWSConnector:
         self.__intra_vpc = False
         self.__authorization_headers = {}
         self.__scheduler = None
+        self.__configuration = None
+        self.__api_client = None
+        self.__default_api_client = None
 
     def refresh(self):
         """This method refreshes an expired JWT. The new JWT  overrides the existing one"""
@@ -140,11 +150,17 @@ class AWSConnector:
         self.__authorization_headers = {}
         if self.__intra_vpc:
             self.__api_gateway_endpoint = self.__private_api_gateway_endpoint
+            self.__configuration = httpapi.Configuration(host=self.__api_gateway_endpoint)
+            self.__configuration.api_key['api_key'] = self.__api_key
+            self.__configuration.api_key["x-api-key"]=self.__api_key
             self.__authorization_headers = {
                 "x-api-key": self.__api_key
             }
         else:
             self.__api_gateway_endpoint = self.__public_api_gateway_endpoint
+            self.__configuration = httpapi.Configuration(host=self.__api_gateway_endpoint)
+            self.__configuration.api_key['api_key'] = self.__api_key
+            self.__configuration.api_key["x-api-key"]=self.__api_key
         self.__scheduler = BackgroundScheduler()
         logging.info("LAMBDA_ENDPOINT_URL:{}".format(self.__api_gateway_endpoint))
         logging.info("dynamodb_results_pull_interval_sec:{}".format(self.__dynamodb_results_pull_intervall))
@@ -329,29 +345,33 @@ class AWSConnector:
         logging.info("Start submit")
         # logging.warning("jobs = {}".format(jobs))
         url_base = self.__api_gateway_endpoint
-        raw_response: requests.Response
-        if self.__task_input_passed_via_external_storage == 1:
-            submission_payload_bytes = base64.urlsafe_b64encode(json.dumps(jobs).encode('utf-8'))
-            session_id = jobs['session_id']
-            if session_id is None or session_id == 'None':
-                raise Exception('Invalid configuration : session id must be set')
-            self.in_out_manager.put_payload_from_bytes(session_id, submission_payload_bytes)
-            query = {
-                "submission_content": str(session_id)
-            }
-            raw_response = requests.post(url_base + '/submit', params=query, headers=self.__authorization_headers)
+        raw_response = None
 
-        else:
-            submission_payload_string = base64.urlsafe_b64encode(json.dumps(jobs).encode('utf-8')).decode('utf-8')
-            raw_response = requests.post(url_base + '/submit', data=submission_payload_string,
-                                         headers=self.__authorization_headers)
+
+        submission_payload_bytes = base64.urlsafe_b64encode(json.dumps(jobs).encode('utf-8'))
+        session_id = jobs['session_id']
+        if session_id is None or session_id == 'None':
+            raise Exception('Invalid configuration : session id must be set')
+        self.in_out_manager.put_payload_from_bytes(session_id, submission_payload_bytes)
+        with httpapi.ApiClient(self.__configuration) as api_client:
+            # Create an instance of the API class
+            api_instance = default_api.DefaultApi(api_client)
+
+            try:
+                raw_response = api_instance.submit_post(str(session_id))
+                pprint(raw_response)
+            except httpapi.ApiException as e:
+                print("Exception when calling DefaultApi->ca_post: %s\n" % e)
+            #raw_response = requests.post(url_base + '/submit', params=query, headers=self.__authorization_headers)
+            #raw_response = self.__api_client.request('POST',url_base + '/submit',headers=self.__authorization_headers,query_params=query)
+
         # print(request)
-        if raw_response.status_code != requests.codes.ok:
-            logging.error("request {} not processed correctly {}".format(url_base, raw_response.status_code))
         # return the body content of the Lambda call
-        raw_response.raise_for_status()
+
+        #raw_response.raise_for_status()
         logging.info("Finish submit")
-        return raw_response.json()
+        #return raw_response.json()
+        return raw_response
 
     # TODO make it private
     def invoke_get_results_lambda(self, session_id):
@@ -381,16 +401,18 @@ class AWSConnector:
         query = {
             "submission_content": str(submission_payload_string)
         }
-        raw_response = requests.get(url_base + '/result', headers=self.__authorization_headers, params=query)
+        #raw_response = requests.get(url_base + '/result', headers=self.__authorization_headers, params=query)
+        with httpapi.ApiClient(self.__configuration) as api_client:
+            # Create an instance of the API class
+            api_instance = default_api.DefaultApi(api_client)
+            try:
+                raw_response = api_instance.result_get(str(submission_payload_string))
+                pprint(raw_response)
+            except httpapi.ApiException as e:
+                print("Exception when calling DefaultApi->result_get: %s\n" % e)
+                raise e
 
-        if raw_response.status_code != requests.codes.ok:
-            logging.error("request {} not processed correctly {}".format(url_base, raw_response.status_code))
-
-        raw_response.raise_for_status()
-
-        logging.info("Finish invoke_get_results_lambda")
-        # return the body content of the Lambda call
-        return raw_response.json()
+        return raw_response
 
     def cancel_sessions(self, session_ids):
         """

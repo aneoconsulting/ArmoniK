@@ -2,7 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-#data aws_caller_identity current {}
+data aws_caller_identity current {}
+
+data "aws_vpc" "peer_vpc" {
+  default = true # default VPC for the region
+}
 
 resource "random_string" "random_resources" {
     length = 5
@@ -11,9 +15,16 @@ resource "random_string" "random_resources" {
     # number = false
 }
 
+resource "random_password" "password" {
+  length           = 16
+  special          = true
+  override_special = "_%@"
+}
+
 locals {
-    aws_htc_ecr = var.aws_htc_ecr
+    aws_htc_ecr = var.aws_htc_ecr != "" ? var.aws_htc_ecr : "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
     project_name = var.project_name != "" ? var.project_name : random_string.random_resources.result
+    grafana_admin_password = var.grafana_admin_password != "" ? var.grafana_admin_password : random_password.password.result
     cluster_name = "${var.cluster_name}-${local.project_name}"
     ddb_status_table = "${var.ddb_status_table}-${local.project_name}"
     sqs_queue = "${var.sqs_queue}-${local.project_name}"
@@ -51,7 +62,7 @@ locals {
             minMemory = "4096"
             storage = "S3"
             location = "s3://mock_location"
-            function_name = "mock_computation"
+            function_name = "function"
             layer_name = "mock_computation_layer"
             lambda_handler_file_name = ""
             lambda_handler_function_name = ""
@@ -72,9 +83,28 @@ locals {
     }
 }
 
-module "resources" {
-    source = "./resources"
+module "vpc" {
 
+    source = "./vpc"
+    region = var.region
+    cluster_name = local.cluster_name
+    private_subnets = var.vpc_cidr_block_private
+    public_subnets = var.vpc_cidr_block_public
+    vpc_main_cidr_block = var.vpc_main_cidr_block
+    vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
+    enable_private_subnet = var.enable_private_subnet
+    retention_in_days = var.retention_in_days
+    kms_key_arn = var.kms_key_arn
+
+}
+module "compute_plane" {
+    source = "./compute_plane"
+
+    vpc_id = module.vpc.vpc_id
+    vpc_private_subnet_ids = module.vpc.private_subnet_ids
+    vpc_public_subnet_ids = module.vpc.public_subnet_ids
+    vpc_default_security_group_id = module.vpc.default_security_group_id
+    vpc_cidr = module.vpc.vpc_cidr_block
     cluster_name = local.cluster_name
     kubernetes_version = var.kubernetes_version
     k8s_ca_version = var.k8s_ca_version
@@ -106,12 +136,23 @@ module "resources" {
     input_role = var.input_role
     graceful_termination_delay = var.graceful_termination_delay
     aws_xray_daemon_version = var.aws_xray_daemon_version
+    enable_private_subnet = var.enable_private_subnet
+    retention_in_days = var.retention_in_days
+    kms_key_arn = var.kms_key_arn
+    error_log_group = local.error_log_group
+    error_logging_stream = local.error_logging_stream
+    grid_queue_service = var.grid_queue_service
+    grid_queue_config = var.grid_queue_config
+    depends_on  = [
+        module.vpc
+    ]
+
     grafana_configuration = {
         downloadDashboardsImage_tag = var.grafana_configuration.downloadDashboardsImage_tag
         grafana_tag = var.grafana_configuration.grafana_tag
         initChownData_tag = var.grafana_configuration.initChownData_tag
         sidecar_tag = var.grafana_configuration.sidecar_tag
-        admin_password = var.grafana_admin_password
+        admin_password = local.grafana_admin_password
 
     }
     prometheus_configuration = {
@@ -122,13 +163,17 @@ module "resources" {
         pushgateway_tag = var.prometheus_configuration.pushgateway_tag
         configmap_reload_tag = var.prometheus_configuration.configmap_reload_tag
     }
+    pods_subnet_ids = module.vpc.pods_subnet_ids
 }
 
-module "scheduler" {
-    source = "./scheduler"
+module "control_plane" {
+    source = "./control_plane"
 
-    secret_key = var.secret_key
-    access_key = var.access_key
+    vpc_id = module.vpc.vpc_id
+    vpc_private_subnet_ids = module.vpc.private_subnet_ids
+    vpc_public_subnet_ids = module.vpc.public_subnet_ids
+    vpc_default_security_group_id = module.vpc.default_security_group_id
+    vpc_cidr = module.vpc.vpc_cidr_block
     suffix = local.project_name
     region = var.region
     lambda_runtime = var.lambda_runtime
@@ -163,13 +208,18 @@ module "scheduler" {
     dynamodb_gsi_parent_table_write_capacity = var.dynamodb_default_write_capacity
     dynamodb_gsi_parent_table_read_capacity = var.dynamodb_default_read_capacity
     agent_use_congestion_control = var.agent_use_congestion_control
+    nlb_influxdb = module.compute_plane.nlb_influxdb
     cluster_name = local.cluster_name
+    cognito_userpool_arn = module.compute_plane.cognito_userpool_arn
     api_gateway_version = var.api_gateway_version
-    dynamodb_port = var.dynamodb_port
-    local_services_port = var.local_services_port
-    redis_port = var.redis_port
+    retention_in_days = var.retention_in_days
+    kms_key_arn = var.kms_key_arn
+    peer_vpc_cidr_block = data.aws_vpc.peer_vpc.cidr_block
+    vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
 
-
+    depends_on  = [
+        module.vpc
+    ]
 }
 
 
@@ -204,10 +254,18 @@ module "htc_agent" {
     lambda_handler_function_name = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"lambda_handler_function_name",local.default_agent_configuration.lambda.lambda_handler_function_name)
     lambda_configuration_function_name = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"function_name",local.default_agent_configuration.lambda.function_name)
     depends_on = [
-        module.resources,
-        module.scheduler,
+        module.compute_plane,
+        module.control_plane,
+        module.vpc,
         kubernetes_config_map.htcagentconfig
     ]
 
 }
+
+#module "vpc_peering" {
+#    source = "./vpc_peering"
+#    this_vpc_id = module.vpc.vpc_id
+#    peer_vpc_id = data.aws_vpc.peer_vpc.id
+#    region = var.region
+#}
 

@@ -4,6 +4,8 @@
 
 import boto3
 import botocore
+from botocore.config import Config
+from botocore.exceptions import ClientError
 import json
 import time
 import os
@@ -15,20 +17,21 @@ import signal
 import sys
 import base64
 import asyncio
-from botocore import endpoint
 import requests
+import psutil
+
 from functools import partial
 from aws_xray_sdk.core import xray_recorder
 from aws_xray_sdk.core import patch
 from aws_xray_sdk import global_sdk_config
 
-from botocore.exceptions import ClientError
-from botocore.config import Config
-import utils.dynamodb_common as ddb
 from api.in_out_manager import in_out_manager
+from api.queue_manager import queue_manager
+
 from utils.performance_tracker import EventsCounter, performance_tracker_initializer
-import utils.grid_error_logger as errlog
+from utils.state_table_common import *
 from utils.ttl_experation_generator import TTLExpirationGenerator
+import utils.grid_error_logger as errlog
 
 # Uncomment to get tracing on interruption
 # import faulthandler
@@ -50,7 +53,7 @@ logging.getLogger('aws_xray_sdk').setLevel(logging.DEBUG)
 # boto3.set_stream_logger('', logging.DEBUG)
 
 rand_delay = random.randint(5, 15)
-logging.info("SLEEP DELAY {}".format(rand_delay))
+logging.info("SLEEP DELAY 2 {}".format(rand_delay))
 time.sleep(rand_delay)
 
 session = boto3.session.Session()
@@ -86,9 +89,20 @@ except KeyError:
     pass
 
 # TODO - retreive the endpoint url from Terraform
-sqs = boto3.resource('sqs', endpoint_url=agent_config_data['sqs_endpoint'], region_name=region)
+# sqs = boto3.resource('sqs', endpoint_url=agent_config_data['sqs_endpoint'], region_name=region)
 # sqs = boto3.resource('sqs', region_name=region)
-tasks_queue = sqs.get_queue_by_name(QueueName=agent_config_data['sqs_queue'])
+# tasks_queue = sqs.get_queue_by_name(QueueName=agent_config_data['sqs_queue'])
+
+from api.state_table_manager import state_table_manager
+
+
+
+tasks_queue = queue_manager(
+    grid_queue_service=agent_config_data['grid_queue_service'],
+    grid_queue_config=agent_config_data['grid_queue_config'],
+    endpoint_url=f'https://sqs.{region}.amazonaws.com',
+    queue_name=agent_config_data['tasks_queue_name'],
+    region=region)
 
 
 lambda_cfg = botocore.config.Config(retries={'max_attempts': 3}, read_timeout=2000, connect_timeout=2000,
@@ -99,25 +113,36 @@ lambda_client = boto3.client('lambda', config=lambda_cfg, endpoint_url=os.enviro
 
 # TODO: We are using two retry logics for accessing DynamoDB config, and config_cc (for congestion control)
 # Revisit this code and unify the logic.
-config = Config(
-    retries={
+config = {
+    "retries": {
         'max_attempts': 5,
         'mode': 'standard'
     }
-)
-dynamodb = boto3.resource('dynamodb', region_name=region, config=config, endpoint_url=agent_config_data['dynamodb_endpoint'],
-    aws_access_key_id=agent_config_data['access_key'], aws_secret_access_key=agent_config_data['secret_key'])
-status_table = dynamodb.Table(agent_config_data['ddb_status_table'])
+}
+# dynamodb = boto3.resource('dynamodb', region_name=region, config=config)
+# status_table = dynamodb.Table(agent_config_data['ddb_status_table'])
 
-config_cc = Config(
-    retries={
+state_table = state_table_manager(
+    agent_config_data['tasks_status_table_service'],
+    str(config),
+    agent_config_data['ddb_status_table'],
+    region)
+
+config_cc ={
+    "retries" : {
         'max_attempts': 10,
         'mode': 'adaptive'
     }
-)
-dynamodb_cc = boto3.resource('dynamodb', region_name=region, config=config_cc, endpoint_url=agent_config_data['dynamodb_endpoint'],
-    aws_access_key_id=agent_config_data['access_key'], aws_secret_access_key=agent_config_data['secret_key'])
-status_table_cc = dynamodb_cc.Table(agent_config_data['ddb_status_table'])
+}
+# dynamodb_cc = boto3.resource('dynamodb', region_name=region, config=config_cc)
+# status_table_cc = dynamodb_cc.Table(agent_config_data['ddb_status_table'])
+
+state_table_cc = state_table_manager(
+    agent_config_data['tasks_status_table_service'],
+    str(config_cc),
+    agent_config_data['ddb_status_table'],
+    region)
+
 
 stdout_iom = in_out_manager(
     agent_config_data['grid_storage_service'],
@@ -158,6 +183,7 @@ class GracefulKiller:
         Returns:
             Nothing
         """
+        logging.info("AAAAAAAAAAAAAAA")
         self.kill_now = True
         return 0
 
@@ -186,11 +212,12 @@ def is_task_has_been_cancelled(task_id):
         True if task's status is cancelled in DDB.
     """
 
-    ddb_response = ddb.read_task_row(status_table, task_id)
-    logging.info("RESP:: {}".format(ddb_response))
+    task_row = state_table.get_task_by_id(task_id, consistent_read=True)
 
-    if ((ddb_response is not None) and (len(ddb_response['Items']) == 1)):
-        if ddb_response['Items'][0]['task_status'].startswith("cancelled"):
+    logging.info("RESP:: {}".format(task_row))
+
+    if task_row is not None:
+        if task_row['task_status'].startswith(TASK_STATUS_CANCELLED):
             return True
 
     return False
@@ -211,37 +238,48 @@ def try_to_acquire_a_task():
     """
     global AGENT_EXEC_TIMESTAMP_MS
     logging.info("waiting for SQS message")
-    messages = tasks_queue.receive_messages(MaxNumberOfMessages=1, WaitTimeSeconds=10)
+    message = tasks_queue.receive_message(wait_time_sec=10)
+    # messages = tasks_queue.receive_messages(MaxNumberOfMessages=1, WaitTimeSeconds=10)
 
     task_pick_up_from_sqs_ms = get_time_now_ms()
 
-    logging.info("try_to_acquire_a_task, message: {}".format(messages))
-    # print(len(messages))
+    logging.info("try_to_acquire_a_task, message: {}".format(message))
 
-    if len(messages) == 0:
+    if "body" not in message:
         event_counter_pre.increment("agent_no_messages_in_tasks_queue")
         return None, None
 
-    message = messages[0]
+
     AGENT_EXEC_TIMESTAMP_MS = get_time_now_ms()
 
-    task = json.loads(message.body)
+    task = json.loads(message["body"])
     logging.info("try_to_acquire_a_task, task: {}".format(task))
 
     # Since we read this message from the queue, now we need to associate an
     # sqs handler with this message, to be able to delete it later
-    task["sqs_handle_id"] = message.receipt_handle
+    task["sqs_handle_id"] = message["properties"]["message_handle_id"]
     try:
-        result, response, error = ddb.claim_task_to_yourself(
-            status_table, task, SELF_ID, ttl_gen.generate_next_ttl().get_next_expiration_timestamp())
-        logging.info("DDB claim_task_to_yourself result: {} {}".format(result, response))
 
-        if not result:
+        claim_result = state_table.claim_task_for_agent(
+            task_id=task["task_id"],
+            queue_handle_id=task["sqs_handle_id"],
+            agent_id=SELF_ID,
+            expiration_timestamp=ttl_gen.generate_next_ttl().get_next_expiration_timestamp()
+            )
+
+        logging.info("State Table claim_task_for_agent result: {}".format(claim_result))
+
+
+    except StateTableException as e:
+
+        if e.caused_by_condition or e.caused_by_throtling:
+
             event_counter_pre.increment("agent_failed_to_claim_ddb_task")
 
             if is_task_has_been_cancelled(task["task_id"]):
                 logging.info("Task [{}] has been already cancelled, skipping".format(task['task_id']))
-                message.delete()
+
+                tasks_queue.delete_message(message_handle_id=message["properties"]["message_handle_id"])
                 return None, None
 
             else:
@@ -249,13 +287,17 @@ def try_to_acquire_a_task():
                 time.sleep(random.randint(1, 3))
                 return None, None
 
-    except Exception as error_acquiring:
-        errlog.log("Releasing msg after failed try_to_acquire_a_task {} [{}]".format(
-            error_acquiring, traceback.format_exc()))
-        raise error_acquiring
+    except Exception as e:
+        errlog.log("Unexpected error in claim_task_for_agent {} [{}]".format(
+            e, traceback.format_exc()))
+        raise e
+
+
+
         # if e.response['Error']['Code'] == 'ResourceNotFoundException':
     # If we have succesfully ackquired a message we should change its visibility timeout
-    message.change_visibility(VisibilityTimeout=agent_sqs_visibility_timeout_sec)
+    # message.change_visibility(VisibilityTimeout=agent_sqs_visibility_timeout_sec)
+    tasks_queue.change_visibility(message["properties"]["message_handle_id"], visibility_timeout_sec=agent_sqs_visibility_timeout_sec)
     task["stats"]["stage3_agent_01_task_acquired_sqs_tstmp"]["tstmp"] = task_pick_up_from_sqs_ms
 
     task["stats"]["stage3_agent_02_task_acquired_ddb_tstmp"]["tstmp"] = get_time_now_ms()
@@ -298,32 +340,58 @@ def process_subprocess_completion(perf_tracker, task, sqs_msg, fname_stdout, std
     task["stats"]["stage4_agent_02_S3_stdout_delivered_tstmp"]["tstmp"] = get_time_now_ms()
 
     count = 0
+    is_update_succesfull = False
     while True:
         count += 1
         time_start_ms = get_time_now_ms()
-        ddb_res, response, error = ddb.dynamodb_update_task_status_to_finished(status_table_cc, task, SELF_ID)
-        time_end_ms = get_time_now_ms()
 
-        if not ddb_res and error.response['Error']['Code'] in ["ThrottlingException",
-                                                               "ProvisionedThroughputExceededException"]:
-            errlog.log("Agent FINISHED@DDB #{} Throttling for {} ms".format(count, time_end_ms - time_start_ms))
-            continue
-        else:
+        try:
+            is_update_succesfull = state_table_cc.update_task_status_to_finished(
+                task_id=task["task_id"],
+                agent_id=SELF_ID
+                )
+
+            logging.info(f"Task status has been set to Finished: {task['task_id']}")
+
             break
 
-    if not ddb_res:
+        except StateTableException as e:
+
+            if e.caused_by_throtling:
+
+                time_end_ms = get_time_now_ms()
+
+                errlog.log(f"Agent FINISHED@StateTable #{count} Throttling for {time_end_ms - time_start_ms} ms")
+
+                continue # i.e., retry again
+
+            elif e.caused_by_condition:
+
+                errlog.log(f"Agent FINISHED@StateTable exception caused_by_condition")
+
+                is_update_succesfull = False
+
+                break
+
+        except Exception as e:
+            errlog.log(f"Unexpected Exception while setting tasks state to finished {e} [{traceback.format_exc()}]")
+            raise e
+
+
+    if not is_update_succesfull:
         # We can get here if task has been taken over by the watchdog lambda
         # in this case we ignore results and proceed to the next task.
         event_counter_post.increment("ddb_set_task_finished_failed")
-        logging.info("Could not set completion time to Finish")
+        logging.warning(f"Could not set completion state for a task {task['task_id']} to Finish")
 
     else:
         event_counter_post.increment("ddb_set_task_finished_succeeded")
         logging.info(
             "We have succesfully marked task as completed in dynamodb."
-            " Deleting message from the SQS... for task [{}] {}".format(
-                task["task_id"], response))
-        sqs_msg.delete()
+            " Deleting message from the SQS... for task [{}]".format(
+                task["task_id"]))
+        # sqs_msg.delete()
+        tasks_queue.delete_message(sqs_msg["properties"]["message_handle_id"])
 
     logging.info("Exec time1: {} {}".format(get_time_now_ms() - AGENT_EXEC_TIMESTAMP_MS, AGENT_EXEC_TIMESTAMP_MS))
     event_counter_post.increment("agent_total_time_ms", get_time_now_ms() - AGENT_EXEC_TIMESTAMP_MS)
@@ -396,8 +464,8 @@ async def do_task_local_lambda_execution_thread(perf_tracker, task, sqs_msg, tas
         )
     )
     logging.info("TASK FINISHED!!!\nRESPONSE: [{}]".format(response))
-    logs = base64.b64decode(response['LogResult']).decode('utf-8')
-    logging.info("logs : {}".format(logs))
+    #logs = base64.b64decode(response['LogResult']).decode('utf-8')
+    #logging.info("logs : {}".format(logs))
 
     ret_value = response['Payload'].read().decode('utf-8')
     logging.info("retValue : {}".format(ret_value))
@@ -416,7 +484,7 @@ async def do_task_local_lambda_execution_thread(perf_tracker, task, sqs_msg, tas
 
 
 def update_ttl_if_required(task):
-    ddb_res = True
+    is_refresh_successful = True
 
     # If this is the first time we are resetting ttl value or
     # If the next time we will come to this point ttl ticket will expire
@@ -430,22 +498,38 @@ def update_ttl_if_required(task):
             count += 1
             t1 = get_time_now_ms()
 
-            # Note, if we will timeout on DDB update operation and we have to repeat this loop iteration,
-            # we will regenerate a new TTL ofset, which is what we want.
-            ddb_res, response, error = ddb.update_own_tasks_ttl(
-                status_table_cc, task, SELF_ID, ttl_gen.generate_next_ttl().get_next_expiration_timestamp()
-            )
+            try:
 
-            t2 = get_time_now_ms()
+                # Note, if we will timeout on DDB update operation and we have to repeat this loop iteration,
+                # we will regenerate a new TTL ofset, which is what we want.
+                is_refresh_successful = state_table_cc.refresh_ttl_for_ongoing_task(
+                    task_id=task["task_id"],
+                    agent_id=SELF_ID,
+                    new_expirtaion_timestamp=ttl_gen.generate_next_ttl().get_next_expiration_timestamp()
+                )
 
-            if not ddb_res and error.response['Error']['Code'] in ["ThrottlingException",
-                                                                   "ProvisionedThroughputExceededException"]:
-                errlog.log("Agent TTL@DDB Throttling #{} for {} ms".format(count, t2 - t1))
-                continue
-            else:
-                break
+            except StateTableException as e:
 
-    return ddb_res
+                if e.caused_by_throtling:
+
+                    t2 = get_time_now_ms()
+
+                    errlog.log(f"Agent TTL@StateTable Throttling for #{count} times for {t2-t1} ms")
+
+                    continue
+                else:
+                    # Unexpected error -> Fail
+                    errlog.log(f"Unexpected StateTableException while refreshing TTL {e} [{traceback.format_exc()}]")
+                    raise Exception(e)
+            except Exception as e:
+                errlog.log(f"Unexpected Exception while refreshing TTL {e} [{traceback.format_exc()}]")
+                raise e
+
+            return is_refresh_successful
+
+    else:
+        # Even if we didn't have to perform an update, return success.
+        return True
 
 
 async def do_ttl_updates_thread(task):
@@ -530,15 +614,13 @@ def event_loop():
                          format(timeout)
                          )
             time.sleep(timeout)
-
-    url = "{}/2018-06-01/stop".format(os.environ['LAMBDA_ENDPOINT_URL'])
-    r = requests.post(url)
-    logging.info("stopped status {}".format(r))
-    if r.status_code != 200:
-        logging.info("failed stopping the lambda : {}".format(r.json()))
-    else:
-        # TODO: at some point we need to pass any information that requests body/json throws
-        logging.info("lambda successfully stopped")
+    for proc in psutil.process_iter():
+        logging.info("running process : {}".format(proc.name()))
+        # check whether the process name matches
+        if proc.name() == 'aws-lambda-rie':
+            logging.info("stop lambda emulated environment after the last request")
+            proc.terminate()
+    logging.info("agent and lambda gracefully stopped")
 
 
 if __name__ == "__main__":

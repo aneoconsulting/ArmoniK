@@ -18,16 +18,21 @@ spec:
             requests:
               cpu: 100m
               memory: 128Mi
-        command: ["python3","./client.py", "-n", "1",  "--worker_arguments", "1000 1 1","--job_size","1","--job_batch_size","1","--log","warning"]
+        command: ["python3","./simple_client.py"]
         volumeMounts:
           - name: agent-config-volume
             mountPath: /etc/agent
         env:
           - name: INTRA_VPC
             value: "1"
-      imagePullSecrets:
-      - name: regcred
       restartPolicy: Never
+      nodeSelector:
+        grid/type: Operator
+      tolerations:
+      - effect: NoSchedule
+        key: grid/type
+        operator: Equal
+        value: Operator
       volumes:
         - name: agent-config-volume
           configMap:

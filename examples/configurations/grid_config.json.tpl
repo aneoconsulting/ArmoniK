@@ -2,6 +2,8 @@
   "region": "{{region}}",
   "project_name": "{{image_tag}}",
   "grid_storage_service" : "REDIS",
+  "grid_queue_service" : "SQS",
+  "tasks_status_table_service": "DynamoDB",
   "max_htc_agents": 100,
   "min_htc_agents": 1,
   "dynamodb_default_read_capacity" : 10,
@@ -24,7 +26,6 @@
         "asg_max_size"            : 3,
         "asg_desired_capacity"    : 0,
         "on_demand_base_capacity" : 0
-
       }
   ],
   "agent_configuration": {

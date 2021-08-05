@@ -7,26 +7,6 @@ variable "region" {
   description = "AWS region"
 }
 
-variable "access_key" {
-  default = "mock_access_key"
-  description = "AWS access key"
-}
-
-variable "secret_key" {
-  default = "mock_secret_key"
-  description = "AWS secret key"
-}
-
-variable "k8s_config_context" {
-  default = "default"
-  description = ""
-}
-
-variable "k8s_config_path" {
-  default = "/etc/rancher/k3s/k3s.yaml"
-  description = ""
-}
-
 variable "input_role" {
   description = "Additional IAM roles to add to the aws-auth configmap."
   type = list(object({
@@ -58,7 +38,7 @@ variable "kubernetes_version" {
 }
 
 variable "k8s_ca_version" {
-  default  = "v1.19.1"
+  default  = "v1.20.0"
   description = "Cluster autoscaler version"
 }
 
@@ -157,7 +137,7 @@ variable "lambda_alb_name" {
   description = "Name of the load balancer for Lambdas"
 }
 variable "metrics_are_enabled" {
-  default  = "0"
+  default  = "1"
   description = "If set to True(1) then metrics will be accumulated and delivered downstream for visualisation"
 }
 
@@ -427,11 +407,24 @@ variable "vpc_cidr_block_public" {
   default = []
 }
 
+variable "vpc_main_cidr_block" {
+  description = "Main CIDR block associated to the VPC"
+  type = string
+  default = ""
+}
+
 variable "vpc_cidr_block_private" {
   description = "list of CIDR block associated with the private subnet"
   type = list(string)
   default = []
 }
+
+variable "vpc_pod_cidr_block_private" {
+  description = "cidr block associated with pod"
+  type = list(string)
+  default = []
+}
+
 
 variable "project_name" {
   description = "name of project"
@@ -439,20 +432,13 @@ variable "project_name" {
   default = ""
 }
 
-variable "dynamodb_port" {
-  description = "dynamodb port"
-  type = number
-  default = 8000
+variable "retention_in_days" {
+  description = "Retention in days for cloudwatch logs"
+  type =  number
+  default = 3
 }
 
-variable "local_services_port" {
-  description = "Port for all local services"
-  type = number
-  default = 8001
-}
-
-variable "redis_port" {
-  description = "Port for Redis instance"
-  default = 6379
-  type = number
+variable "kms_key_arn" {
+  description = "KMS key ARN for S3 bucket"
+  type =  string
 }

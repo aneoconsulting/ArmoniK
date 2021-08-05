@@ -5,11 +5,10 @@ locals {
   agent_config =<<EOF
 {
   "region": "${var.region}",
-  "sqs_endpoint": "http://local-services:${var.local_services_port}",
-  "dynamodb_endpoint": "http://dynamodb:${var.dynamodb_port}",
+  "sqs_endpoint": "https://sqs.${var.region}.amazonaws.com",
   "sqs_queue": "${local.sqs_queue}",
   "sqs_dlq": "${local.sqs_dlq}",
-  "redis_url": "${module.scheduler.redis_url}",
+  "redis_url": "${module.control_plane.redis_url}",
   "cluster_name": "${local.cluster_name}",
   "ddb_status_table" : "${local.ddb_status_table}",
   "empty_task_queue_backoff_timeout_sec" : ${var.empty_task_queue_backoff_timeout_sec},
@@ -23,7 +22,7 @@ locals {
   "lambda_name_submit_tasks": "${local.lambda_name_submit_tasks}",
   "lambda_name_get_results": "${local.lambda_name_get_results}",
   "lambda_name_cancel_tasks": "${local.lambda_name_cancel_tasks}",
-  "s3_bucket": "${module.scheduler.s3_bucket_name}",
+  "s3_bucket": "${module.control_plane.s3_bucket_name}",
   "grid_storage_service" : "${var.grid_storage_service}",
   "grid_queue_service" : "${var.grid_queue_service}",
   "grid_queue_config" : "${var.grid_queue_config}",
@@ -42,14 +41,12 @@ locals {
   "metrics_get_results_lambda_connection_string": "${var.metrics_get_results_lambda_connection_string}",
   "metrics_ttl_checker_lambda_connection_string": "${var.metrics_ttl_checker_lambda_connection_string}",
   "agent_use_congestion_control": "${var.agent_use_congestion_control}",
-  "public_api_gateway_url": "http://local-services:${var.local_services_port}/restapis/${module.scheduler.private_api_gateway_id}/v1/_user_request_",
-  "private_api_gateway_url": "http://local-services:${var.local_services_port}/restapis/${module.scheduler.private_api_gateway_id}/v1/_user_request_",
-  "api_gateway_key": "${module.scheduler.api_gateway_key}",
-  "enable_xray": "${var.enable_xray}",
-  "user_pool_id": "mock",
-  "cognito_userpool_client_id": "mock",
-  "access_key": "${var.access_key}",
-  "secret_key": "${var.secret_key}"
+  "user_pool_id": "${module.compute_plane.cognito_userpool_id}",
+  "cognito_userpool_client_id": "${module.compute_plane.cognito_userpool_client_id}",
+  "public_api_gateway_url": "${module.control_plane.public_api_gateway_url}",
+  "private_api_gateway_url": "${module.control_plane.private_api_gateway_url}",
+  "api_gateway_key": "${module.control_plane.api_gateway_key}",
+  "enable_xray" : "${var.enable_xray}"
 }
 EOF
 }
@@ -63,11 +60,11 @@ resource "kubernetes_config_map" "htcagentconfig" {
   }
 
   data = {
-     "Agent_config.tfvars.json" = local.agent_config
+    "Agent_config.tfvars.json" = local.agent_config
   }
   depends_on = [
-    module.resources,
-    module.scheduler
+    module.compute_plane,
+    module.control_plane
   ]
 }
 
@@ -79,7 +76,7 @@ resource "kubernetes_config_map" "htcagentconfig" {
   }
 
   data = {
-     "Agent_config.tfvars.json" = local.agent_config
+    "Agent_config.tfvars.json" = local.agent_config
   }
   depends_on = [
     module.resources,

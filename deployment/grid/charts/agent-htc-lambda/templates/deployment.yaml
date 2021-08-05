@@ -22,6 +22,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      shareProcessNamespace: true
       serviceAccountName: {{ include "agent-htc-lambda.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
@@ -51,15 +52,13 @@ spec:
             value: xray-service.kube-system:2000
           - name: INTRA_VPC
             value: "1"
-          envFrom:
-            - secretRef:
-                name: htc-agent-secret-mock
           volumeMounts:
           - name: {{ .Chart.Name }}-agent-config
             mountPath: /etc/agent
         - name: lambda
           image: "{{ .Values.imageLambdaServer.repository }}:{{ .Values.imageLambdaServer.runtime  }}"
           imagePullPolicy: {{ .Values.imageLambdaServer.pullPolicy }}
+          args: [ {{ .Values.lambda.handler }} ]
           ports:
           - containerPort: {{.Values.lambda.port}}
           resources:
@@ -75,15 +74,6 @@ spec:
             value: "1"
           - name: AWS_LAMBDA_FUNCTION_HANDLER
             value: {{ .Values.lambda.handler }}
-          envFrom:
-            - secretRef:
-                name: htc-agent-secret-mock
-          livenessProbe:
-            httpGet:
-              path: /2018-06-01/ping
-              port: {{.Values.lambda.port}}
-            initialDelaySeconds: 3
-            periodSeconds: 3
           volumeMounts:
           - name: {{ .Chart.Name }}-agent-config
             mountPath: /etc/agent
@@ -102,9 +92,6 @@ spec:
           image: "{{ .Values.imageGetLayer.repository }}:{{ .Values.imageGetLayer.version  }}"
           imagePullPolicy: {{ .Values.imageGetLayer.pullPolicy }}
           name: get-layer
-          envFrom:
-            - secretRef:
-                name: htc-agent-secret
           volumeMounts:
           - name: {{ .Chart.Name }}-lambda-task-root
             mountPath: /var/task

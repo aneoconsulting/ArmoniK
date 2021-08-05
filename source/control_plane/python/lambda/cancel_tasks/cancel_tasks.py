@@ -14,13 +14,13 @@ import utils.grid_error_logger as errlog
 from utils.dynamodb_common import read_tasks_by_status, TASK_STATUS_PENDING, TASK_STATUS_PROCESSING, TASK_STATUS_RETRYING, dynamodb_update_task_status_to_cancelled
 
 client = boto3.client('dynamodb')
-dynamodb = boto3.resource('dynamodb', 
-    endpoint_url=f"http://dynamodb:{os.environ['DYNAMODB_PORT']}",
-    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
-    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
-    )
-table_name = os.environ['TASKS_STATUS_TABLE_NAME']
-table = dynamodb.Table(os.environ['TASKS_STATUS_TABLE_NAME'])
+dynamodb = boto3.resource('dynamodb')
+
+from api.state_table_manager import state_table_manager
+state_table = state_table_manager(
+    os.environ['TASKS_STATUS_TABLE_SERVICE'],
+    os.environ['TASKS_STATUS_TABLE_CONFIG'],
+    os.environ['TASKS_STATUS_TABLE_NAME'])
 
 task_states_to_cancel = [TASK_STATUS_RETRYING, TASK_STATUS_PENDING, TASK_STATUS_PROCESSING]
 
@@ -38,12 +38,13 @@ def cancel_tasks_by_status(session_id, task_state):
 
     """
 
-    response = read_tasks_by_status(table, session_id, task_state)
+    response = state_table.get_tasks_by_status(session_id, task_state)
     print(response)
 
     for row in response['Items']:
 
-        res = dynamodb_update_task_status_to_cancelled(table, session_id, row['task_id'])
+        res = state_table.update_task_status_to_cancelled(session_id, row['task_id'])
+
         print(res)
         if not res:
             raise Exception("Failed to set task status to Cancelled.")

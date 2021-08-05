@@ -18,7 +18,7 @@ with open(client_config_file, 'r') as file:
 
 
 if __name__ == "__main__":
-
+    logging.getLogger().setLevel(logging.INFO)
     logging.info("Simple Client")
     gridConnector = AWSConnector()
     
@@ -32,19 +32,28 @@ if __name__ == "__main__":
         password = ""
 
     gridConnector.init(client_config_file, username=username, password=password)    
-    gridConnector.authenticate()
+    #gridConnector.authenticate()
 
     task_1_definition = {
         "worker_arguments": ["1000", "1", "1"]
     }
+    
+    #task_1_definition = {
+    #    "firstName": "Graham",
+    #    "surname": "Beer",
+    #    "sleepTimeMs":100000
+    #    
+    #}
 
-    task_2_definition = {
-        "worker_arguments": ["2000", "1", "1"]
-    }
 
-    submission_resp = gridConnector.send([task_1_definition, task_2_definition])
+#    task_2_definition =     {
+#        "firstName": "John",
+#        "surname": "Doe"
+#    }
+
+    submission_resp = gridConnector.send([task_1_definition])
     logging.info(submission_resp)
 
 
-    results = gridConnector.get_results(submission_resp, timeout_sec=100)
+    results = gridConnector.get_results(submission_resp, timeout_sec=200)
     logging.info(results)

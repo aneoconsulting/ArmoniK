@@ -4,6 +4,7 @@
 
 import json
 import base64
+import logging
 import boto3
 import time
 import os
@@ -18,26 +19,28 @@ from utils.performance_tracker import EventsCounter, performance_tracker_initial
 from boto3.dynamodb.conditions import Key
 
 import utils.grid_error_logger as errlog
-from utils.dynamodb_common import make_partition_key_4_state
+from utils.state_table_common import TASK_STATUS_PENDING
 
 from api.in_out_manager import in_out_manager
+from api.queue_manager import queue_manager
+from api.state_table_manager import state_table_manager
 
 region = os.environ["REGION"]
 
-sqs = boto3.resource(
-    'sqs',
-    endpoint_url=f'http://local-services:{os.environ["SQS_PORT"]}',
-    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
-    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
-    )
-queue = sqs.get_queue_by_name(QueueName=os.environ['TASKS_QUEUE_NAME'])
 
-dynamodb = boto3.resource('dynamodb', 
-    endpoint_url=f"http://dynamodb:{os.environ['DYNAMODB_PORT']}",
-    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
-    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
-    )
-table = dynamodb.Table(os.environ['TASKS_STATUS_TABLE_NAME'])
+tasks_queue = queue_manager(
+    grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],
+    grid_queue_config=os.environ['GRID_QUEUE_CONFIG'],
+    endpoint_url=f'https://sqs.{region}.amazonaws.com',
+    queue_name=os.environ['TASKS_QUEUE_NAME'],
+    region=region)
+
+# dynamodb = boto3.resource('dynamodb')
+# table = dynamodb.Table(os.environ['TASKS_STATUS_TABLE_NAME'])
+state_table = state_table_manager(
+    os.environ['TASKS_STATUS_TABLE_SERVICE'],
+    os.environ['TASKS_STATUS_TABLE_CONFIG'],
+    os.environ['TASKS_STATUS_TABLE_NAME'])
 
 perf_tracker = performance_tracker_initializer(
     os.environ["METRICS_ARE_ENABLED"],
@@ -68,7 +71,7 @@ def write_to_dynamodb(task_json, batch):
     return response
 
 
-def write_to_sqs(sqs_batch_entries):
+def write_to_sqs(sqs_batch_entries, session_priority=0):
     """
 
     Args:
@@ -78,8 +81,11 @@ def write_to_sqs(sqs_batch_entries):
 
     """
     try:
-        response = queue.send_messages(
-            Entries=sqs_batch_entries
+        response = tasks_queue.send_messages(
+            message_bodies=sqs_batch_entries,
+            message_attributes={
+                "priority": session_priority
+            }
         )
         if response.get('Failed') is not None:
             # Should also send to DLQ
@@ -143,16 +149,19 @@ def lambda_handler(event, context):
     if event.get('queryStringParameters') is not None:
         all_params = event.get('queryStringParameters')
         if task_input_passed_via_external_storage == '1':
-            session_id = all_params.get('submission_content')
-            encoded_json_tasks = stdin_iom.get_payload_to_utf8_string(session_id)
+            submission_id = all_params.get('submission_content')
+            print("submission_id: {}".format(submission_id))
+            encoded_json_tasks = stdin_iom.get_payload_to_utf8_string(submission_id)
         else:
             encoded_json_tasks = all_params.get('submission_content')
         if encoded_json_tasks is None:
             raise Exception('Invalid submission format, expect submission_content parameter')
         decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks).decode('utf-8')
+        print("DATA1: {}".format(decoded_json_tasks))
         event = json.loads(decoded_json_tasks)
     else:
         encoded_json_tasks = event['body']
+        print("DATA2: {}".format(encoded_json_tasks))
         decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks).decode('utf-8')
         event = json.loads(decoded_json_tasks)
 
@@ -168,7 +177,12 @@ def lambda_handler(event, context):
             session_id = get_safe_session_id()
         else:
             session_id = event["session_id"]
-            verify_passed_sessionid_is_unique(session_id)
+            # NOTE: Since more tasks can be sent within a session this function is no longer necessary.
+            # verify_passed_sessionid_is_unique(session_id)
+
+        session_priority = 0
+        if "context"  in event:
+            session_priority = event["context"]["tasks_priority"]
 
         parent_session_id = event["session_id"]
 
@@ -181,53 +195,52 @@ def lambda_handler(event, context):
         last_submitted_task_ref = None
 
         tasks_list = event['tasks_list']['tasks']
-        ddb_batch_size = 500
+        # ddb_batch_size = 500
         ddb_batch_write_times = []
         backoff_count = 0
 
-        tasks_batches = [tasks_list[x:x + ddb_batch_size] for x in range(0, len(tasks_list), ddb_batch_size)]
 
-        for bid, ddb_batch in enumerate(tasks_batches):
-            # <1.> Batch write to dynamoDB
-            with table.batch_writer() as batch:  # batch_writer is flushed when exiting this block
+        state_table_entries = []
+        for task_id in tasks_list:
+            time_now_ms = get_time_now_ms()
+            task_definition = "none"
 
-                for i, task_definition in enumerate(ddb_batch):
-                    # tdef = json.loads(task_definition["stdin"])
-                    # print(tdef["parent_session_id"])
-                    task_id = session_id + "_" + str(bid * ddb_batch_size + i)
-                    time_now_ms = get_time_now_ms()
+            task_json = {
+                'session_id': session_id,
+                'task_id': task_id,
+                'parent_session_id': parent_session_id,
+                'submission_timestamp': time_now_ms,
+                'task_completion_timestamp': 0,
+                'task_status': state_table.make_task_state_from_session_id(TASK_STATUS_PENDING, session_id),
+                'task_owner': "None",
+                'retries': 0,
+                'task_definition': task_definition,
+                'sqs_handler_id': "None",
+                'heartbeat_expiration_timestamp': 0,
+                "task_priority": session_priority
+            }
 
-                    task_json = {
-                        'session_id': session_id,
-                        'task_id': task_id,
-                        'parent_session_id': parent_session_id,
-                        'submission_timestamp': time_now_ms,
-                        'task_completion_timestamp': 0,
-                        'task_status': make_partition_key_4_state("pending", session_id),
-                        'task_owner': "None",
-                        'retries': 0,
-                        'task_definition': task_definition,
-                        'sqs_handler_id': "None",
-                        'heartbeat_expiration_timestamp': 0
-                    }
+            # write_to_dynamodb(task_json, batch)  # TODO: res not in use
+            state_table_entries.append(task_json)
 
-                    write_to_dynamodb(task_json, batch)  # TODO: res not in use
+            task_json_4_sqs: dict = copy.deepcopy(task_json)
 
-                    task_json_4_sqs: dict = copy.deepcopy(task_json)
+            task_json_4_sqs["stats"] = event["stats"]
+            task_json_4_sqs["stats"]["stage2_sbmtlmba_01_invocation_tstmp"]["tstmp"] = invocation_tstmp
+            task_json_4_sqs["stats"]["stage2_sbmtlmba_02_before_batch_write_tstmp"]["tstmp"] = get_time_now_ms()
 
-                    task_json_4_sqs["stats"] = event["stats"]
-                    task_json_4_sqs["stats"]["stage2_sbmtlmba_01_invocation_tstmp"]["tstmp"] = invocation_tstmp
-                    task_json_4_sqs["stats"]["stage2_sbmtlmba_02_before_batch_write_tstmp"]["tstmp"] = get_time_now_ms()
+            # task_json["scheduler_data"] = event["scheduler_data"]
 
-                    # task_json["scheduler_data"] = event["scheduler_data"]
+            sqs_batch_entries.append({
+                'Id': task_id,  # use to return send result for this message
+                'MessageBody': json.dumps(task_json_4_sqs)
+                }
+            )
 
-                    sqs_batch_entries.append({
-                        'Id': task_id,  # use to return send result for this message
-                        'MessageBody': json.dumps(task_json_4_sqs)
-                    }
-                    )
+            last_submitted_task_ref = task_json_4_sqs
 
-                    last_submitted_task_ref = task_json_4_sqs
+        state_table.batch_write(state_table_entries)
+
 
         # <2.> Batch submit tasks to SQS
         # Performance critical code
@@ -235,7 +248,7 @@ def lambda_handler(event, context):
         sqs_batch_chunks = [sqs_batch_entries[x:x + sqs_max_batch_size] for x in
                             range(0, len(sqs_batch_entries), sqs_max_batch_size)]
         for chunk in sqs_batch_chunks:
-            write_to_sqs(chunk)
+            write_to_sqs(chunk, session_priority)
 
         # <3.> Non performance critical code, statistics and book-keeping.
         event_counter = EventsCounter(["count_submitted_tasks", "count_ddb_batch_backoffs", "count_ddb_batch_write_max",

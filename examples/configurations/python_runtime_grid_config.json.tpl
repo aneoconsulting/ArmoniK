@@ -2,6 +2,7 @@
   "region": "{{region}}",
   "project_name": "{{image_tag}}",
   "grid_storage_service" : "REDIS",
+  "grid_queue_service" : "SQS",
   "max_htc_agents": 100,
   "min_htc_agents": 1,
   "dynamodb_default_read_capacity" : 10,

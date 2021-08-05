@@ -46,43 +46,27 @@ provider "tls" {
 
 }
 
+provider "aws" {
+  region  = var.region
+}
+
 provider "archive" {
 }
 
 provider "kubernetes" {
-  config_path    = var.k8s_config_path
-  config_context = var.k8s_config_context
+  host                   = module.compute_plane.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.compute_plane.certificate_authority.0.data)
+  token                  = module.compute_plane.token
 }
 
 # package manager for kubernetes
 provider "helm" {
   helm_driver = "configmap"
   kubernetes {
-    config_path    = var.k8s_config_path
-    config_context = var.k8s_config_context
-}
-}
-
-# AWS alias for all services
-
-provider "aws" {
-  access_key                  = var.access_key
-  region                      = var.region
-  secret_key                  = var.secret_key
-  skip_credentials_validation = true
-  skip_metadata_api_check     = true
-  skip_requesting_account_id  = true
-  s3_force_path_style = true
-
-  endpoints {
-    dynamodb = "http://localhost:${var.dynamodb_port}"
-    lambda = "http://localhost:${var.local_services_port}"
-    iam = "http://localhost:${var.local_services_port}"
-    cloudwatch = "http://localhost:${var.local_services_port}"
-    cloudwatchlogs = "http://localhost:${var.local_services_port}"
-    cloudwatchevents = "http://localhost:${var.local_services_port}"
-    s3 = "http://localhost:${var.local_services_port}"
-    apigateway = "http://localhost:${var.local_services_port}"
-    sqs = "http://localhost:${var.local_services_port}"
+    host                   = module.compute_plane.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.compute_plane.certificate_authority.0.data)
+    token                  = module.compute_plane.token
   }
 }
+
+
