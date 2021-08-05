@@ -31,7 +31,7 @@ region = os.environ["REGION"]
 tasks_queue = queue_manager(
     grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],
     grid_queue_config=os.environ['GRID_QUEUE_CONFIG'],
-    endpoint_url=f'https://sqs.{region}.amazonaws.com',
+    endpoint_url=os.environ["SQS_ENDPOINT_URL"],
     queue_name=os.environ['TASKS_QUEUE_NAME'],
     region=region)
 
@@ -40,7 +40,8 @@ tasks_queue = queue_manager(
 state_table = state_table_manager(
     os.environ['TASKS_STATUS_TABLE_SERVICE'],
     os.environ['TASKS_STATUS_TABLE_CONFIG'],
-    os.environ['TASKS_STATUS_TABLE_NAME'])
+    os.environ['TASKS_STATUS_TABLE_NAME'],
+    os.environ['DYNAMODB_ENDPOINT_URL'])
 
 perf_tracker = performance_tracker_initializer(
     os.environ["METRICS_ARE_ENABLED"],

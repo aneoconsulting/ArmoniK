@@ -22,7 +22,8 @@ import utils.grid_error_logger as errlog
 state_table = state_table_manager(
     os.environ['TASKS_STATUS_TABLE_SERVICE'],
     os.environ['TASKS_STATUS_TABLE_CONFIG'],
-    os.environ['TASKS_STATUS_TABLE_NAME'])
+    os.environ['TASKS_STATUS_TABLE_NAME'],
+    os.environ["DYNAMODB_ENDPOINT_URL"])
 
 event_counter = EventsCounter(["invocations", "retrieved_rows"])
 

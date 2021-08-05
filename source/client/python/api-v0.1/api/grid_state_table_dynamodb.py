@@ -44,7 +44,7 @@ logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcN
 class StateTableDDB:
 
 
-    def __init__(self, grid_state_table_config, tasks_state_table_name, region=None):
+    def __init__(self, grid_state_table_config, tasks_state_table_name, endpoint_url, region=None):
 
 
         self.config = json.loads(grid_state_table_config)
@@ -54,11 +54,11 @@ class StateTableDDB:
 
             ddb_config = Config(retries=self.config["retries"])
 
-            self.dynamodb_resource = boto3.resource('dynamodb', region_name=region, config=ddb_config)
+            self.dynamodb_resource = boto3.resource('dynamodb', endpoint_url=endpoint_url, region_name=region, config=ddb_config)
 
         else:
 
-            self.dynamodb_resource = boto3.resource('dynamodb')
+            self.dynamodb_resource = boto3.resource('dynamodb', endpoint_url=endpoint_url)
 
 
 

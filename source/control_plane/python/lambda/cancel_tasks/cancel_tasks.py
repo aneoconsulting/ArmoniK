@@ -13,14 +13,15 @@ import utils.grid_error_logger as errlog
 
 from utils.dynamodb_common import read_tasks_by_status, TASK_STATUS_PENDING, TASK_STATUS_PROCESSING, TASK_STATUS_RETRYING, dynamodb_update_task_status_to_cancelled
 
-client = boto3.client('dynamodb')
-dynamodb = boto3.resource('dynamodb')
+client = boto3.client('dynamodb', endpoint_url=os.environ["DYNAMODB_ENDPOINT_URL"])
+dynamodb = boto3.resource('dynamodb', endpoint_url=os.environ['DYNAMODB_ENDPOINT_URL'])
 
 from api.state_table_manager import state_table_manager
 state_table = state_table_manager(
     os.environ['TASKS_STATUS_TABLE_SERVICE'],
     os.environ['TASKS_STATUS_TABLE_CONFIG'],
-    os.environ['TASKS_STATUS_TABLE_NAME'])
+    os.environ['TASKS_STATUS_TABLE_NAME'],
+    os.environ['DYNAMODB_ENDPOINT_URL'])
 
 task_states_to_cancel = [TASK_STATUS_RETRYING, TASK_STATUS_PENDING, TASK_STATUS_PROCESSING]
 

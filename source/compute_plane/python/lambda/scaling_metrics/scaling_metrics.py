@@ -11,7 +11,6 @@ from api.queue_manager import queue_manager
 # TODO - retrieve the endpoint url from Terraform
 region = os.environ["REGION"]
 
-
 def lambda_handler(event, context):
     # For every x minute
     # count all items with "task_status" PENDING in the dynamoDB table "tasks_status_table"
@@ -21,7 +20,7 @@ def lambda_handler(event, context):
     task_queue = queue_manager(
         grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],
         grid_queue_config=os.environ['GRID_QUEUE_CONFIG'],
-        endpoint_url=f'https://sqs.{region}.amazonaws.com',
+        endpoint_url=os.environ["SQS_ENDPOINT_URL"],
         queue_name=os.environ['TASKS_QUEUE_NAME'],
         region=region)
     task_pending = task_queue.get_queue_length()

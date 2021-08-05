@@ -100,7 +100,7 @@ from api.state_table_manager import state_table_manager
 tasks_queue = queue_manager(
     grid_queue_service=agent_config_data['grid_queue_service'],
     grid_queue_config=agent_config_data['grid_queue_config'],
-    endpoint_url=f'https://sqs.{region}.amazonaws.com',
+    endpoint_url=agent_config_data["sqs_endpoint"],
     queue_name=agent_config_data['tasks_queue_name'],
     region=region)
 
@@ -126,6 +126,7 @@ state_table = state_table_manager(
     agent_config_data['tasks_status_table_service'],
     str(config),
     agent_config_data['ddb_status_table'],
+    agent_config_data['dynamodb_endpoint'],
     region)
 
 config_cc ={
@@ -141,6 +142,7 @@ state_table_cc = state_table_manager(
     agent_config_data['tasks_status_table_service'],
     str(config_cc),
     agent_config_data['ddb_status_table'],
+    agent_config_data['dynamodb_endpoint'],
     region)
 
 

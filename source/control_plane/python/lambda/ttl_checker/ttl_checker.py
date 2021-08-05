@@ -28,23 +28,24 @@ from api.state_table_manager import state_table_manager
 state_table = state_table_manager(
     os.environ['TASKS_STATUS_TABLE_SERVICE'],
     os.environ['TASKS_STATUS_TABLE_CONFIG'],
-    os.environ['TASKS_STATUS_TABLE_NAME'])
-# sqs_res = boto3.resource('sqs', region_name=region, endpoint_url=f'https://sqs.{region}.amazonaws.com')
-# sqs_cli = boto3.client('sqs', endpoint_url=f'https://sqs.{region}.amazonaws.com')
+    os.environ['TASKS_STATUS_TABLE_NAME'],
+    os.environ['DYNAMODB_ENDPOINT_URL'])
+# sqs_res = boto3.resource('sqs', region_name=region, endpoint_url=os.environ['SQS_PORT'])
+# sqs_cli = boto3.client('sqs', endpoint_url=os.environ['SQS_PORT'])
 # queue = sqs_res.get_queue_by_name(QueueName=os.environ['TASKS_QUEUE_NAME'])
 # dlq = sqs_res.get_queue_by_name(QueueName=os.environ['TASKS_QUEUE_DLQ_NAME'])
 
 queue = queue_manager(
     grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],
     grid_queue_config=os.environ['GRID_QUEUE_CONFIG'],
-    endpoint_url=f'https://sqs.{region}.amazonaws.com',
+    endpoint_url=os.environ["SQS_ENDPOINT_URL"],
     queue_name=os.environ['TASKS_QUEUE_NAME'],
     region=region)
 
 dlq = queue_manager(
     grid_queue_service="SQS", # TODO extend parameters to configure this queue.
     grid_queue_config=os.environ['GRID_QUEUE_CONFIG'],
-    endpoint_url=f'https://sqs.{region}.amazonaws.com',
+    endpoint_url=os.environ["SQS_ENDPOINT_URL"],
     queue_name=os.environ['TASKS_QUEUE_DLQ_NAME'],
     region=region)
 
