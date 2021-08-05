@@ -1,0 +1,147 @@
+openapi: "3.0.1"
+info:
+  title: "htc-cr-update-private"
+  description: "Private API Gateway for HTC Grid"
+  version: "2021-06-21T05:51:50Z"
+servers:
+  - url: "https://rv1n4bmm0k.execute-api.eu-west-1.amazonaws.com/{basePath}"
+    variables:
+      basePath:
+        default: "/v1"
+paths:
+  /submit:
+    post:
+      parameters:
+        - name: submission_content
+          in: query
+          description: Job submission to the grid
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ssful operationsuccessful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/PostSubmitResponse'
+        542:
+          description: Invalid status value
+          content: { }
+      security:
+        - api_key: []
+  /cancel:
+    post:
+      parameters:
+        - name: submission_content
+          in: query
+          description: Job submission to the grid
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ssful operationsuccessful operation
+          content:
+            application/json:
+              schema:
+                type: string
+        542:
+          description: Invalid status value
+          content: { }
+      security:
+        - api_key: []
+  /result:
+    get:
+      parameters:
+        - name: submission_content
+          in: query
+          description: Job submission to the grid
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ssful operationsuccessful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/GetResponse'
+        542:
+          description: Invalid status value
+          content: { }
+      security:
+        - api_key: []
+components:
+  securitySchemes:
+    api_key:
+      type: "apiKey"
+      name: "x-api-key"
+      in: "header"
+  schemas:
+    GetMetadataResponse:
+      type: object
+      properties:
+        tasks_in_response:
+          type: integer
+          format: int64
+    GetResponse:
+      type: object
+      properties:
+        finished:
+          type: array
+          items:
+            type: string
+        finished_output:
+          type: array
+          items:
+            type: string
+        cancelled:
+          type: array
+          items:
+            type: string
+        cancelled_output:
+          type: array
+          items:
+            type: string
+        failed:
+          type: array
+          items:
+            type: string
+        failed_output:
+          type: array
+          items:
+            type: string
+        message:
+          type: string
+        metadata:
+          $ref: '#/components/schemas/GetMetadataResponse'
+    PostSubmitResponse:
+      type: object
+      properties:
+        task_ids:
+          type: array
+          items:
+            type: string
+        session_id:
+          type: string
+x-amazon-apigateway-policy:
+  Version: "2012-10-17"
+  Statement:
+    - Sid: ""
+      Effect: "Allow"
+      Principal:
+        AWS: "*"
+      Action: "execute-api:Invoke"
+      Resource: "arn:aws:execute-api:eu-west-1:154274247776:rv1n4bmm0k/*"
+    - Sid: ""
+      Effect: "Deny"
+      Principal:
+        AWS: "*"
+      Action: "execute-api:Invoke"
+      Resource: "arn:aws:execute-api:eu-west-1:154274247776:rv1n4bmm0k/*"
+      Condition:
+        StringNotEquals:
+          aws:SourceVpc: "vpc-054bc1fb41b4af24e"

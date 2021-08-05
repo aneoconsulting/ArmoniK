@@ -1,0 +1,37 @@
+fullnameOverride: htc-agent
+imageAgent:
+  pullPolicy: IfNotPresent
+  repository: 125796369274.dkr.ecr.eu-west-1.amazonaws.com/awshpc-lambda
+  version: dotnet-support
+imageGetLayer:
+  pullPolicy: IfNotPresent
+  repository: 125796369274.dkr.ecr.eu-west-1.amazonaws.com/lambda-init
+  version: dotnet-support
+imageLambdaServer:
+  pullPolicy: IfNotPresent
+  repository: 125796369274.dkr.ecr.eu-west-1.amazonaws.com/lambda
+  runtime: "5.0"
+imageTestAgent:
+  pullPolicy: IfNotPresent
+  repository: 125796369274.dkr.ecr.eu-west-1.amazonaws.com/submitter
+  version: dotnet-support
+lambda:
+  functionName: function
+  handler: mock_computation_image::mock_computation_image.Function::FunctionHandler
+  s3Location: s3://dotnet-support-lambda-unit-htc-grid-8393268f5de7/lambda.zip
+resourcesAgent:
+  limits:
+    cpu: 50m
+    memory: 100Mi
+  requests:
+    cpu: 10m
+    memory: 50Mi
+resourcesLambdaServer:
+  limits:
+    cpu: 900m
+    memory: 1900Mi
+  requests:
+    cpu: 800m
+    memory: 1200Mi
+storage: S3
+terminationGracePeriodSeconds: 30

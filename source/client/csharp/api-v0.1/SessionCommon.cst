@@ -1,0 +1,56 @@
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+
+namespace HTCGrid
+{
+    public class SessionCommon
+    {
+       // private readonly ILogger<SessionCommon> _logger;
+       // public SessionCommon(ILogger<SessionCommon> logger)
+       //{
+       //    _logger = logger;
+       //}
+
+        public int N_LOGICAL_PARTITIONS_4_STATE = 32;
+
+        public string generate_random_logical_partition_name()
+        {
+            return generate_logical_partition_name(null);
+        }
+
+        public string generate_logical_partition_name(int? index = null)
+        {
+            Random rand = new Random();
+            if (index != null)
+            {
+                return "part".Insert(3, index.ToString());
+            }
+            else
+            {
+                return generate_logical_partition_name(rand.Next(0, N_LOGICAL_PARTITIONS_4_STATE - 1));
+            }
+        }
+
+        public IEnumerable<string> state_partitions_generator()
+        {
+            var count = 0;
+            Random rand = new Random();
+            var starting_state_id = rand.Next(0, N_LOGICAL_PARTITIONS_4_STATE - 1);
+            while (count < N_LOGICAL_PARTITIONS_4_STATE)
+            {
+                yield return generate_logical_partition_name(starting_state_id % N_LOGICAL_PARTITIONS_4_STATE);
+                count += 1;
+                starting_state_id += 1;
+            }
+        }
+
+        public string make_partition_key_4_state(string task_state, string session_id)
+        {
+            string res = task_state + "-" + session_id.Substring(session_id.Length - 7);
+        //_logger.LogInformation("PARTITION: " + res);
+
+            return res;
+        }
+    }
+}
