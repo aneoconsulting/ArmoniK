@@ -2,7 +2,7 @@
 
 ### New Additional Software Prerequisites
 
-#### On Amazon Linux OS 
+#### On Amazon Linux OS
 
 * dotnet 5.0+
 ```bash
