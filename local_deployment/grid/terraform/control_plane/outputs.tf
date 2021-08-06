@@ -4,7 +4,7 @@
 
 output "redis_url" {
   description = "Redis URL"
-  value       = "redis"
+  value       = var.redis_endpoint_url
 }
 
 output "s3_bucket_name" {

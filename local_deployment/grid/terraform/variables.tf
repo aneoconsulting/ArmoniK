@@ -492,3 +492,7 @@ variable "sqs_endpoint_url" {
 variable "local_service_endpoint_url" {
   description = "local service endpoint url"
 }
+
+variable "redis_endpoint_url" {
+  description = "redis endpoint url"
+}

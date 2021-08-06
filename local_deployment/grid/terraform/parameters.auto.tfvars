@@ -8,5 +8,6 @@ local_services_port = 8001
 redis_port = 6379
 dynamodb_endpoint_url = "http://dynamodb"
 sqs_endpoint_url = "http://local-services"
+redis_endpoint_url = "redis"
 local_service_endpoint_url = "http://local-services"
 aws_htc_ecr = "125796369274.dkr.ecr.eu-west-1.amazonaws.com"

@@ -222,6 +222,7 @@ module "control_plane" {
     dynamodb_endpoint_url = var.dynamodb_endpoint_url
     sqs_endpoint_url = var.sqs_endpoint_url
     local_service_endpoint_url = var.local_service_endpoint_url
+    redis_endpoint_url = var.redis_endpoint_url
     /*peer_vpc_cidr_block = data.aws_vpc.peer_vpc.cidr_block
     vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
 
