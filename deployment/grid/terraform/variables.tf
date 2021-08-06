@@ -7,6 +7,26 @@ variable "region" {
   description = "AWS region"
 }
 
+variable "access_key" {
+  default = "mock_access_key"
+  description = "AWS access key"
+}
+
+variable "secret_key" {
+  default = "mock_secret_key"
+  description = "AWS secret key"
+}
+
+variable "k8s_config_context" {
+  default = "default"
+  description = ""
+}
+
+variable "k8s_config_path" {
+  default = "/etc/rancher/k3s/k3s.yaml"
+  description = ""
+}
+
 variable "input_role" {
   description = "Additional IAM roles to add to the aws-auth configmap."
   type = list(object({
@@ -432,6 +452,36 @@ variable "project_name" {
   default = ""
 }
 
+variable "dynamodb_port" {
+  description = "dynamodb port"
+  type = number
+  default = 8000
+}
+
+variable "local_services_port" {
+  description = "Port for all local services"
+  type = number
+  default = 8001
+}
+
+variable "redis_port" {
+  description = "Port for Redis instance"
+  default = 6379
+  type = number
+}
+
+variable "dynamodb_endpoint_url" {
+  description = "dynamodb endpoint url"
+}
+
+variable "sqs_endpoint_url" {
+  description = "sqs endpoint url"
+}
+
+variable "local_service_endpoint_url" {
+  description = "local service endpoint url"
+}
+
 variable "retention_in_days" {
   description = "Retention in days for cloudwatch logs"
   type =  number
@@ -442,3 +492,4 @@ variable "kms_key_arn" {
   description = "KMS key ARN for S3 bucket"
   type =  string
 }
+

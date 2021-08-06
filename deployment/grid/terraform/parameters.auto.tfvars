@@ -8,3 +8,4 @@ local_services_port = 8001
 redis_port = 6379
 dynamodb_endpoint_url = "http://dynamodb"
 sqs_endpoint_url = "http://local-services"
+local_service_endpoint_url = "http://local-services"

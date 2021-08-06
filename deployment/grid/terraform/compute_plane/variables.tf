@@ -249,3 +249,33 @@ variable "error_log_group" {
 variable "error_logging_stream" {
   description = "Log stream for errors"
 }
+
+variable "dynamodb_port" {
+  description = "dynamodb port"
+  type = number
+  default = 8000
+}
+
+variable "local_services_port" {
+  description = "Port for all local services"
+  type = number
+  default = 8001
+}
+
+variable "redis_port" {
+  description = "Port for Redis instance"
+  default = 6379
+  type = number
+}
+
+variable "dynamodb_endpoint_url" {
+  description = "dynamodb endpoint url"
+}
+
+variable "sqs_endpoint_url" {
+  description = "sqs endpoint url"
+}
+
+variable "local_service_endpoint_url" {
+  description = "local service endpoint url"
+}

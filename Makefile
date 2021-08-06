@@ -81,6 +81,27 @@ destroy-custom-runtime:
 
 show-password:
 	@$(MAKE) -C ./deployment/grid/terraform get-grafana-password
+
+init-grid-local-deployment:
+	@$(MAKE) -C ./local_deployment/grid/terraform init
+
+reset-grid-local-deployment:
+	@$(MAKE) -C ./local_deployment/grid/terraform reset
+
+apply-dotnet-local-runtime:
+	@$(MAKE) -C ./local_deployment/grid/terraform apply GRID_CONFIG=$(GENERATED)/dotnet5.0_runtime_grid_config.json
+
+destroy-dotnet-local-runtime:
+	@$(MAKE) -C ./local_deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/dotnet5.0_runtime_grid_config.json
+
+apply-custom-local-runtime:
+	@$(MAKE) -C ./local_deployment/grid/terraform apply GRID_CONFIG=$(GENERATED)/grid_config.json
+
+destroy-custom-local-runtime:
+	@$(MAKE) -C ./local_deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/grid_config.json
+
+show-local-password:
+	@$(MAKE) -C ./local_deployment/grid/terraform get-grafana-password
 #############################
 ##### building source #######
 #############################

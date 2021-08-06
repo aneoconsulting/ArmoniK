@@ -6,6 +6,14 @@ variable "region" {
   description = "AWS region"
 }
 
+variable "access_key" {
+  description = "AWS access key"
+}
+
+variable "secret_key" {
+  description = "AWS secret key"
+}
+
 variable "aws_htc_ecr" {
   description = "URL of Amazon ECR image repostiories"
 }
@@ -184,6 +192,35 @@ variable "retention_in_days" {
   type =  number
 }
 
+variable "dynamodb_port" {
+  description = "dynamodb port"
+  type = number
+  default = 8000
+}
+
+variable "local_services_port" {
+  description = "Port for all local services"
+  type = number
+  default = 8001
+}
+
+variable "redis_port" {
+  description = "Port for Redis instance"
+  default = 6379
+  type = number
+}
+
+variable "dynamodb_endpoint_url" {
+  description = "dynamodb endpoint url"
+}
+
+variable "sqs_endpoint_url" {
+  description = "sqs endpoint url"
+}
+
+variable "local_service_endpoint_url" {
+  description = "local service endpoint url"
+}
 variable "kms_key_arn" {
   description = "KMS key ARN for S3 bucket"
   type =  string

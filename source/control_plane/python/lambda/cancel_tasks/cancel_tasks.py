@@ -11,7 +11,7 @@ import traceback
 
 import utils.grid_error_logger as errlog
 
-from utils.dynamodb_common import read_tasks_by_status, TASK_STATUS_PENDING, TASK_STATUS_PROCESSING, TASK_STATUS_RETRYING, dynamodb_update_task_status_to_cancelled
+from utils.state_table_common import TASK_STATUS_PENDING, TASK_STATUS_PROCESSING, TASK_STATUS_RETRYING
 
 client = boto3.client('dynamodb', endpoint_url=os.environ["DYNAMODB_ENDPOINT_URL"])
 dynamodb = boto3.resource('dynamodb', endpoint_url=os.environ['DYNAMODB_ENDPOINT_URL'])

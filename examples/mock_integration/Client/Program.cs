@@ -53,11 +53,11 @@ namespace HtcClient
 
             var client = new Client(htcGridclient, dataClient);
 
-           /* RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 3, 0),
+           RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 3, 0),
                                                  10,
                                                  1,
                                                  3,
-                                                 1);*/
+                                                 1);
                                                  
             /*RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 30, 0),
                                                  100,
@@ -65,11 +65,11 @@ namespace HtcClient
                                                  3,
                                                  1);*/
             
-            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(10, 0, 0),
+            /*RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(10, 0, 0),
                                                  1000000,
                                                  1,
                                                  3,
-                                                 4);
+                                                 4);*/
                                                  
                                                  
                                                  

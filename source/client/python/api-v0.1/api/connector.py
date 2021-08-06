@@ -13,7 +13,7 @@ import requests
 import logging
 
 from api.in_out_manager import in_out_manager
-from utils.dynamodb_common import generate_random_logical_partition_name, TASK_STATUS_FINISHED
+from utils.state_table_common import generate_random_logical_partition_name, TASK_STATUS_FINISHED
 from pprint import pprint
 import httpapi
 from httpapi.api import default_api

@@ -350,7 +350,7 @@ We will use a kubernetes Jobs to submit  one execution of 1 second of this C++ p
 2. Change directory to `<project_root>`
 3. Run the test:
    ```bash
-   kubectl apply -f ./generated/single-task-test.yaml
+   kubectl apply -f ./generated/single-task-dotnet5.0.yaml
    ```
 3. look at the log of the submission:
    ```bash
