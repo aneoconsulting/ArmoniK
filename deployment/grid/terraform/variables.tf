@@ -478,10 +478,6 @@ variable "sqs_endpoint_url" {
   description = "sqs endpoint url"
 }
 
-variable "local_service_endpoint_url" {
-  description = "local service endpoint url"
-}
-
 variable "retention_in_days" {
   description = "Retention in days for cloudwatch logs"
   type =  number

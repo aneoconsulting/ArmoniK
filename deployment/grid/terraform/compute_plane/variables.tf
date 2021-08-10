@@ -275,7 +275,3 @@ variable "dynamodb_endpoint_url" {
 variable "sqs_endpoint_url" {
   description = "sqs endpoint url"
 }
-
-variable "local_service_endpoint_url" {
-  description = "local service endpoint url"
-}
