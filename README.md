@@ -61,7 +61,6 @@ You can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/
 ```bash
 curl -sfL https://get.k3s.io | sh -
 sudo chmod 755 /etc/rancher/k3s/k3s.yaml
-mkdir -p ~/.kube/config
 cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 ```
 To uninstall K3s
