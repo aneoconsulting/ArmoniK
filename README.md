@@ -40,7 +40,7 @@ The following resources should be installed upon you local machine :
 
 * docker version > 1.19
 
-* kubectl version > 1.19 (usually installed alongside Docker)
+* kubectl version > 1.19
 
 * python 3.7
 
@@ -48,33 +48,20 @@ The following resources should be installed upon you local machine :
 
 * [aws CLI version 2](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
 
-* [terraform v1.0.0](https://releases.hashicorp.com/terraform/1.0.0/) or [terraform v0.14.9](https://releases.hashicorp.com/terraform/0.14.9/) or
+* [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
-* [helm](https://helm.sh/docs/helm/helm_install/) version > 3
+* [helm](https://helm.sh/docs/intro/install/) version > 3
 
 * [JQ](https://stedolan.github.io/jq/)
 
-* dotnet 5.0+
-```bash
-      wget https://dot.net/v1/dotnet-install.sh
-      bash ./dotnet-install.sh -c Current
-      # Add dotnet to your path, e.g.,
-      vi ~/.bashrc
-      export PATH=/home/ec2-user/.dotnet:$PATH
-```
-
-To install .NET Core SDK and Runtime in other OS and distributions (Windows, Linux, macOS), please follow the instructions given in this link: [Install .NET on Windows, Linux, and macOS](https://docs.microsoft.com/en-us/dotnet/core/install/)
-
-* RedisClient 
-```bash
-dotnet add package StackExchange.Redis --version 2.2.50
-```
+* [dotnet 5.0+](https://docs.microsoft.com/en-us/dotnet/core/install/)
 
 * Kubernetes on local machine (for local deployment of HTC Grid): 
 You can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/) on Linux OS:
 ```bash
 curl -sfL https://get.k3s.io | sh -
 sudo chmod 755 /etc/rancher/k3s/k3s.yaml
+mkdir -p ~/.kube/config
 cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 ```
 To uninstall K3s
@@ -107,11 +94,14 @@ $ aws sts get-caller-identity
 ```
 
 ### Python
-The current release of HTC requires python3.7, and the documentation assumes the use of *virtualenv*. Set this up as follows:
+The current release of HTC requires python3.7 in the PATH of your system, and the documentation assumes the use of *virtualenv*. Set this up as follows:
 
 ```bash
-$ cd <project_root>/
-$ virtualenv --python=$PATH/python3.7 venv
+$ virtualenv --python=python3.7 venv
+```
+
+When successful :
+```bash
 created virtual environment CPython3.7.10.final.0-64 in 1329ms
   creator CPython3Posix(dest=<project_roor>/venv, clear=False, no_vcs_ignore=False, global=False)
   seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=/Users/user/Library/Application Support/virtualenv)
@@ -124,7 +114,6 @@ Check you have the correct version of python (`3.7.x`), with a path rooted on `<
 
 ```
 $  source ./venv/bin/activate
-(venv) 8c8590cffb8f:htc-grid-0.0.1 $
 ```
 
 Check the python version as follows:
@@ -135,8 +124,12 @@ $ which python
 $ python -V
 Python 3.7.10
 ```
+### dotnet (RedisClient)
+The current release of HTC requires RedisClient that can be set up in the project directory as follows:
 
-For further details on *virtualenv* see https://sourabhbajaj.com/mac-setup/Python/virtualenv.html
+```bash
+dotnet add package StackExchange.Redis --version 2.2.50
+```
 
 ### Define variables for deploying the infrastructure
 1. To simplify this installation it is suggested that a unique <TAG> name (to be used later) is also used to prefix the different required bucket. TAG needs to follow [S3 naming rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
