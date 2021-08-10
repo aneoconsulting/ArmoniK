@@ -5,8 +5,8 @@ locals {
   agent_config =<<EOF
 {
   "region": "${var.region}",
-  "sqs_endpoint": "${var.sqs_endpoint_url}:${var.local_services_port}",
-  "dynamodb_endpoint": "${var.dynamodb_endpoint_url}:${var.dynamodb_port}",
+  "sqs_endpoint": "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
+  "dynamodb_endpoint": "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com",
   "sqs_queue": "${local.sqs_queue}",
   "sqs_dlq": "${local.sqs_dlq}",
   "redis_url": "${module.control_plane.redis_url}",
@@ -42,14 +42,12 @@ locals {
   "metrics_get_results_lambda_connection_string": "${var.metrics_get_results_lambda_connection_string}",
   "metrics_ttl_checker_lambda_connection_string": "${var.metrics_ttl_checker_lambda_connection_string}",
   "agent_use_congestion_control": "${var.agent_use_congestion_control}",
+  "user_pool_id": "${module.compute_plane.cognito_userpool_id}",
+  "cognito_userpool_client_id": "${module.compute_plane.cognito_userpool_client_id}",
   "public_api_gateway_url": "${module.control_plane.public_api_gateway_url}",
   "private_api_gateway_url": "${module.control_plane.private_api_gateway_url}",
   "api_gateway_key": "${module.control_plane.api_gateway_key}",
-  "enable_xray" : "${var.enable_xray}",
-  "user_pool_id": "mock",
-  "cognito_userpool_client_id": "mock",
-  "access_key": "${var.access_key}",
-  "secret_key": "${var.secret_key}"
+  "enable_xray" : "${var.enable_xray}"
 }
 EOF
 }
