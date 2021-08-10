@@ -78,8 +78,8 @@ module "scaling_metrics" {
     GRID_QUEUE_CONFIG = var.grid_queue_config,
     ERROR_LOG_GROUP=var.error_log_group,
     ERROR_LOGGING_STREAM=var.error_logging_stream,
-    SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}:${var.local_services_port}",
-    DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}:${var.dynamodb_port}"
+    SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
+    DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com"
   }
    tags = {
     service     = "htc-grid"

@@ -8,7 +8,7 @@ all: build-mock
 
 
 build-mock:
-	cd HtcCommon && dotnet restore && dotnet add package -s $(DIST_DIR)/dotnet5.0/  HttpApi && dotnet add package -s $(DIST_DIR)/dotnet5.0/  HTCGridAPI 
+	cd HtcCommon && dotnet add package -s $(DIST_DIR)/dotnet5.0/  HttpApi && dotnet add package -s $(DIST_DIR)/dotnet5.0/  HTCGridAPI
 	cd Client && dotnet add package -s $(DIST_DIR)/dotnet5.0/  HttpApi && dotnet add package -s $(DIST_DIR)/dotnet5.0/  HTCGridAPI 
 	dotnet build --configuration $(BUILD_TYPE) .
 	mkdir -p ./lib

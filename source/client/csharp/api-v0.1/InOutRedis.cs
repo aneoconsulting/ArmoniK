@@ -10,8 +10,8 @@ namespace HTCGrid
         public InOutRedis(string redis_url) {
             Console.WriteLine("Redis Connecting to URL");
             Console.WriteLine(redis_url);
-            
-            ConnectionMultiplexer connection = 
+
+            ConnectionMultiplexer connection =
                 ConnectionMultiplexer.Connect(redis_url+":6379,ssl=true,connectTimeout=300000");
             
             this.db = connection.GetDatabase();

@@ -1,89 +1,22 @@
-# HTC-Grid-C# Prototype Changes
-
-### New Additional Software Prerequisites
-
-#### On Amazon Linux OS
-
-* dotnet 5.0+
-```bash
-      wget https://dot.net/v1/dotnet-install.sh
-      bash ./dotnet-install.sh -c Current
-      # Add dotnet to your path, e.g.,
-      vi ~/.bashrc
-      export PATH=/home/ec2-user/.dotnet:$PATH
-```
-    * RedisClient dotnet add package StackExchange.Redis --version 2.2.50
-
-#### On other OS
-To install .NET Core SDK and Runtime in other OS and distributions (Windows, Linux, macOS), please follow the instructions given in this link: [Install .NET on Windows, Linux, and macOS](https://docs.microsoft.com/en-us/dotnet/core/install/)
-
-#### Amazon Lambda Function
-```bash
-dotnet tool install -g Amazon.Lambda.Tools
-dotnet new lambda.image.EmptyFunction --output mock_subtasking --region eu-west-1
-```
-
-#### HTC Grid in local
-##### On Linux OS
-To deploy HTC Grid in local on Linux OS, you can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/).
-- To install K3s:
-```bash
-curl -sfL https://get.k3s.io | sh -
-sudo chmod 755 /etc/rancher/k3s/k3s.yaml
-cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-```
-- To uninstall K3s
-```bash
-/usr/local/bin/k3s-uninstall.sh
-```
-
-##### On Windows
-
-### Compiling C# libraries
-
-Use Makefile in the root directory to compile all dependencies
-```bash
-    make http-apis TAG=$TAG ACCOUNT_ID=$HTCGRID_ACCOUNT_ID REGION=$HTCGRID_REGION BUCKET_NAME=$S3_LAMBDA_HTCGRID_BUCKET_NAME
-
-    make build-dotnet5.0
-    OR
-    make build-dotnet5.0-api
-    make build-htc-grid-dotnet5.0-api
-    make build-dotnet5.0-simple-client
- ```
-
- ### New project PATHs
- - Sample C# Client `examples/client/csharp/SimpleClient.cs`
- - HTC-Grid .Net API `source/client/csharp/api-v0.1/HTCGridConnector.cs`
- - OpenAPI for HTTP (generated) `generated/csharp/http_api`
-
-
-### Priority Queues:
-
-- ``grid_queue_service`` set to SQS or PrioritySQS in config json. If set to SQS then no additional configuration is required.
-- ``grid_queue_config`` is a custom config dictionary that is used to configure the corresponding type of the queueing service. At the moment for the priority queues it has only on attribute {'priorities':3}. Note at the moment it is a single quote.
-- By default the number of priorities is set to 5. To change that you need to modify the ``sqs.tf`` file where the mapping between a queue name and its priority is maintained.
-- Queue's priority is the suffix that is appended to the name of the queue e.g., ``__1``
-
-# HTC-Grid
-The high throughput compute grid project (HTC-Grid) is a container based cloud native HPC/Grid environment. The project provides a reference architecture that can be used to build and adapt a modern High throughput compute solution using underlying AWS services, allowing users to submit high volumes of short and long running tasks and scaling environments dynamically.
+# HTC-Grid 
+The high throughput compute grid project (HTC-Grid) is a container based cloud native HPC/Grid environment. 
+The project provides a reference architecture that can be used to build and adapt a modern High throughput compute solution using underlying AWS services, allowing users to submit high volumes of short and long running tasks and scaling environments dynamically.
 
 **Warning**: This project is an Open Source (Apache 2.0 License), not a supported AWS Service offering.
 
-### When should I use HTC-Grid ?
+## When should I use HTC-Grid ?
 HTC-Grid should be used when the following criteria are meet:
 1. A high task throughput is required (from 250 to 10,000+ tasks per second).
 2. The tasks are loosely coupled.
 3. Variable workloads (tasks with heterogeneous execution times) are expected and the solution needs to dynamically scale with the load.
 
-### When should I not use the HTC-Grid ?
+## When should I not use the HTC-Grid ?
 HTC-Grid might not be the best choice if :
 1. The required task throughput is below 250 tasks per second: Use [AWS Batch](https://aws.amazon.com/batch/) instead.
 2. The tasks are tightly coupled, or use MPI. Consider using either [AWS Parallel Cluster](https://aws.amazon.com/hpc/parallelcluster/) or [AWS Batch Multi-Node workloads](https://docs.aws.amazon.com/batch/latest/userguide/multi-node-parallel-jobs.html) instead
 3. The tasks uses third party licensed software.
 
-### How do I use HTC-Grid ?
-
+## How do I use HTC-Grid ?
 The following documentation describes HTC-Grid's system architecture, development guides, troubleshooting in further detail.
 
 * [Architecture](docs/architecture.md)
@@ -91,14 +24,19 @@ The following documentation describes HTC-Grid's system architecture, developmen
 * [API reference](docs/reference.md)
 * [HTC-Grid project contribution guide](docs/development.md)
 
+ ## Project PATHs
+ - Sample C# Client `examples/client/csharp/SimpleClient.cs`
+ - HTC-Grid .Net API `source/client/csharp/api-v0.1/HTCGridConnector.cs`
+ - OpenAPI for HTTP (generated) `generated/csharp/http_api`
+ 
+## Priority Queues:
+- ``grid_queue_service`` set to SQS or PrioritySQS in config json. If set to SQS then no additional configuration is required.
+- ``grid_queue_config`` is a custom config dictionary that is used to configure the corresponding type of the queueing service. At the moment for the priority queues it has only on attribute {'priorities':3}. Note at the moment it is a single quote.
+- By default the number of priorities is set to 5. To change that you need to modify the ``sqs.tf`` file where the mapping between a queue name and its priority is maintained.
+- Queue's priority is the suffix that is appended to the name of the queue e.g., ``__1``
 
-## Getting Started
-
-This section steps through the HTC-Grid's AWS infrastructure and software prerequisites. An AWS account is required along with some limited familiarity of AWS services and terraform. The execution of the [Getting Started](#getting-started) section will create AWS resources not included in the free tier and then will incur cost to your AWS Account. The complete execution of this section will cost at least 50$ per day.
-
-### Local Software Prerequisites
-
-The following resources should be installed upon you local machine (Linux and macOS only are supported).
+# Software Prerequisites
+The following resources should be installed upon you local machine :
 
 * docker version > 1.19
 
@@ -116,20 +54,47 @@ The following resources should be installed upon you local machine (Linux and ma
 
 * [JQ](https://stedolan.github.io/jq/)
 
+* dotnet 5.0+
+```bash
+      wget https://dot.net/v1/dotnet-install.sh
+      bash ./dotnet-install.sh -c Current
+      # Add dotnet to your path, e.g.,
+      vi ~/.bashrc
+      export PATH=/home/ec2-user/.dotnet:$PATH
+```
 
+To install .NET Core SDK and Runtime in other OS and distributions (Windows, Linux, macOS), please follow the instructions given in this link: [Install .NET on Windows, Linux, and macOS](https://docs.microsoft.com/en-us/dotnet/core/install/)
 
-### Installing the HTC-Grid software
+* RedisClient 
+```bash
+dotnet add package StackExchange.Redis --version 2.2.50
+```
 
+* Kubernetes on local machine (for local deployment of HTC Grid): 
+You can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/) on Linux OS:
+```bash
+curl -sfL https://get.k3s.io | sh -
+sudo chmod 755 /etc/rancher/k3s/k3s.yaml
+cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+```
+To uninstall K3s
+```bash
+/usr/local/bin/k3s-uninstall.sh
+```
+
+# Getting Started
+This section steps through the HTC-Grid's AWS infrastructure and software prerequisites. 
+An AWS account is required along with some limited familiarity of AWS services and terraform. 
+The execution of the [Getting Started](#getting-started) section will create AWS resources not included in the free tier and then will incur cost to your AWS Account. The complete execution of this section will cost at least 50$ per day.
+
+## Installing the HTC-Grid software
 Unpack the provided HTC-Grid software ZIP (i.e: `htc-grid-0.1.0.tar.gz`)  or clone the repository into a local directory of your choice; this directory referred to in this documentation as `<project_root>`. Unless stated otherwise, all paths referenced in this documentation are relative to `<project_root>`.
-
 For first time users or windows users, we do recommend the use of Cloud9 as the platform to deploy HTC-Grid. The installation process uses Terraform and also make to build up artifacts and environment. This project provides a CloudFormation Cloud9 Stack that installs all the pre-requisites listed above to deploy and develop HTC-Grid. Just follow the standard process in your account and deploy the **[Cloud9 Cloudformation Stack](/deployment/dev_environment_cloud9/cfn/cloud9-htc-grid.yaml)**. Once the CloudFormation Stack has been created, open either the **Output** section in CloudFormation or go to **Cloud9** in your AWS console and open the newly created Cloud9 environment.
 
-### Configuring Local Environment
+## Configuring Local Environment
 
-#### AWS CLI
-
+### AWS CLI
 Configure the AWS CLI to use your AWS account: see https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
-
 Check connectivity as follows:
 
 ```bash
@@ -141,8 +106,7 @@ $ aws sts get-caller-identity
 }
 ```
 
-#### Python
-
+### Python
 The current release of HTC requires python3.7, and the documentation assumes the use of *virtualenv*. Set this up as follows:
 
 ```bash
@@ -206,33 +170,35 @@ For further details on *virtualenv* see https://sourabhbajaj.com/mac-setup/Pytho
    - `DynamoDB`
    - `MongoDB`
 
-### Create the S3 Buckets
-
-1. The following step creates the S3 buckets  and an encryption key that will be needed during the installation:
-
-  ```bash
-  make init-grid-state  TAG=$TAG REGION=$HTCGRID_REGION
-  ```
-### Create and deploy HTC-Grid images
-
-The HTC-Grid project has external software dependencies that are deployed as container images. Instead of downloading each time from the public DockerHub repository, this step will pull those dependencies and upload into the your [Amazon Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/).
-
-**Important Note** HTC-Grid uses a few open source project with container images stored at [Dockerhub](https://hub.docker.com/). Dockerhub has a [download rate limit policy](https://docs.docker.com/docker-hub/download-rate-limit/). This may impact you when running this step as an anonymous user as you can get errors when running the terraform command below. To overcome those errors, you can re-run the terraform command and wait until the throttling limit is lifted, or optionally you can create an account in [hub.docker.com](https://hub.docker.com/) and then use the credentials of the account using `docker login` locally to avoid anonymous throttling limitations.
-
-
-1. As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
+## Deployment of resources
+### ECR authentication
+As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
 
    ```bash
    make ecr-login
    ```
 
-2. Now run the command
+### Create the S3 Buckets
+The following step creates the S3 buckets  and an encryption key that will be needed during the installation:
+
+  ```bash
+  make init-grid-state  TAG=$TAG REGION=$HTCGRID_REGION
+  ```
+
+### Create and deploy HTC-Grid images
+The HTC-Grid project has external software dependencies that are deployed as container images. Instead of downloading each time from the public DockerHub repository, this step will pull those dependencies and upload into the your [Amazon Elastic Container Registry (ECR)](https://aws.amazon.com/ecr/).
+
+**Important Note** HTC-Grid uses a few open source project with container images stored at [Dockerhub](https://hub.docker.com/). Dockerhub has a [download rate limit policy](https://docs.docker.com/docker-hub/download-rate-limit/). This may impact you when running this step as an anonymous user as you can get errors when running the terraform command below. To overcome those errors, you can re-run the terraform command and wait until the throttling limit is lifted, or optionally you can create an account in [hub.docker.com](https://hub.docker.com/) and then use the credentials of the account using `docker login` locally to avoid anonymous throttling limitations.
+
+Execute the following command if the images are not yet deployed:
+
+1. Now run the command
 
    ```bash
    make init-images  TAG=$TAG REGION=$HTCGRID_REGION
    ```
 
-4. If successful, you can now run *terraform apply* to create the HTC-Grid infrastructure. This can take between 10 and 15 minutes depending on the Internet connection.
+2. If successful, you can now run *terraform apply* to create the HTC-Grid infrastructure. This can take between 10 and 15 minutes depending on the Internet connection.
 
     ```bash
     make transfer-images  TAG=$TAG REGION=$HTCGRID_REGION
@@ -248,8 +214,7 @@ name unknown: The repository with name 'xxxxxxxxx' does not exist in the registr
 
 HTC artifacts include: .NET Core packages, docker images, configuration files for HTC and k8s. To build and install these:
 
-
-2. Now build the images for the HTC agent. Return to  `<project_root>`  and run the command:
+1. Now build the images for the HTC agent. Return to  `<project_root>`  and run the command:
 
    ```bash
    make dotnet50-path TAG=$TAG REGION=$HTCGRID_REGION TASKS_TABLE_SERVICE=$HTCGRID_TASKS_TABLE_SERVICE
@@ -262,7 +227,24 @@ HTC artifacts include: .NET Core packages, docker images, configuration files fo
     * `grid_config.json` a configuration file for the grid with basic setting
     * `single-task-test.yaml`  the kubernetes configuration for running a single tasks on the grid.
 
+2. Additional information 
+* Amazon Lambda Function
+```bash
+dotnet tool install -g Amazon.Lambda.Tools
+dotnet new lambda.image.EmptyFunction --output mock_subtasking --region eu-west-1
+```
+* Compiling C# libraries
 
+Use Makefile in the root directory to compile all dependencies
+```bash
+    make http-apis TAG=$TAG ACCOUNT_ID=$HTCGRID_ACCOUNT_ID REGION=$HTCGRID_REGION BUCKET_NAME=$S3_LAMBDA_HTCGRID_BUCKET_NAME
+
+    make build-dotnet5.0
+    OR
+    make build-dotnet5.0-api
+    make build-htc-grid-dotnet5.0-api
+    make build-dotnet5.0-simple-client
+ ```
 
 ### Configuring the HTC-Grid runtime
 The `grid_config.json` is ready to deploy, but you can tune it before deployment.
@@ -271,7 +253,20 @@ Some important parameters are:
 * **grid_storage_service** : the type of storage used for tasks payloads, configurable between [S3 or Redis]
 * **eks_worker** : an array describing the autoscaling  group used by EKS
 
-### Create needed credentials (on-premises)
+### Deploying HTC-Grid
+#### On AWS
+The deployment time is about 30 min.
+
+1. Run
+   ```bash
+   make init-grid-deployment  TAG=$TAG REGION=$HTCGRID_REGION
+   ```
+2. if successful you can run terraform apply to create the infrastructure. HTC-Grid deploys a grafana version behind cognito. The admin password is configurable and should be passed at this stage.
+   ```bash
+   make apply-dotnet-runtime  TAG=$TAG REGION=$HTCGRID_REGION
+   ```
+#### On local machine
+* Create needed credentials (on-premises)
 For the on-premises deployment, some credentials are needed to be defined by the user.
 
 1. Run the following command to create mock credentials needed for the HTC Agents.
@@ -289,25 +284,18 @@ For the on-premises deployment, some credentials are needed to be defined by the
    kubectl create secret generic htc-agent-secret --from-literal='AWS_ACCESS_KEY_ID=<aws_access_key>' --from-literal='AWS_SECRET_ACCESS_KEY=<aws_secret_access_key>'
    ```
 
-
-### Deploying HTC-Grid
-
-The deployment time is about 30 min.
+* The deployment time is about 30 min.
 
 1. Run
    ```bash
-   make init-grid-deployment  TAG=$TAG REGION=$HTCGRID_REGION
+   make init-grid-local-deployment  TAG=$TAG REGION=$HTCGRID_REGION
    ```
 2. if successful you can run terraform apply to create the infrastructure. HTC-Grid deploys a grafana version behind cognito. The admin password is configurable and should be passed at this stage.
    ```bash
-   make apply-dotnet-runtime  TAG=$TAG REGION=$HTCGRID_REGION
+   make apply-dotnet-local-runtime  TAG=$TAG REGION=$HTCGRID_REGION
    ```
 
-
-
 ### Testing the deployment
-
-
 1. If `make apply-custom-runtime  TAG=$TAG REGION=$HTCGRID_REGION` is successful then in the terraform folder two files are  created:
 
     * `kubeconfig_htc_$TAG`: this file give access to the EKS cluster through kubectl (example: kubeconfig_htc_aws_my_project)
@@ -349,10 +337,15 @@ We will use a kubernetes Jobs to submit  one execution of 1 second of this C++ p
 
 2. Change directory to `<project_root>`
 3. Run the test:
+* on AWS:
    ```bash
    kubectl apply -f ./generated/single-task-dotnet5.0.yaml
    ```
-3. look at the log of the submission:
+* on local machine:
+   ```bash
+   kubectl apply -f ./generated/local-single-task-dotnet5.0.yaml
+   ```
+4. look at the log of the submission:
    ```bash
    kubectl logs job/single-task -f
    ```

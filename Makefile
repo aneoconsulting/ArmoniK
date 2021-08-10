@@ -235,7 +235,7 @@ build-dotnet5.0-api:
 	cp ./generated/csharp/http_api/src/HttpApi/bin/$(BUILD_TYPE)/net5.0/HttpApi.dll ./examples/mock_integration/lib
 
 build-htc-grid-dotnet5.0-api:
-	$(MAKE) -C ./source/client/csharp/api-v0.1 BUILD_TYPE=$(BUILD_TYPE)
+	$(MAKE) -C ./source/client/csharp/api-v0.1 all BUILD_TYPE=$(BUILD_TYPE)
 	mkdir -p ./examples/client/csharp/lib/
 	cp ./source/client/csharp/api-v0.1/bin/$(BUILD_TYPE)/net5.0/HTCGridAPI.dll ./examples/client/csharp/lib/
 	cp ./source/client/csharp/api-v0.1/bin/$(BUILD_TYPE)/net5.0/HTCGridAPI.dll ./examples/mock_integration/lib/

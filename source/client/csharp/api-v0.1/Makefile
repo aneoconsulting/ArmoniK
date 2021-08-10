@@ -4,16 +4,16 @@
 
 
 GENERATED?=$(shell pwd)/generated
-DIST_DIR?=$(shell pwd)/../../../dist
+DIST_DIR?=$(shell pwd)/../../../../dist
 BUILD_TYPE?=Release
 
-.PHONY: all clean
+.PHONY: all clean build-package $(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.nupkg
 
 
 all: build-package
 
 add-apis: $(DIST_DIR)/dotnet5.0/HttpApi.1.0.0.nupkg
-	dotnet add package -s ../../../../dist/dotnet5.0/  HttpApi
+	dotnet add package -s $(DIST_DIR)/dotnet5.0  HttpApi
 
 bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll: add-apis
 	dotnet clean && dotnet build --configuration $(BUILD_TYPE)
