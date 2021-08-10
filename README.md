@@ -381,7 +381,7 @@ The destruction time is about 15 min.
 1. From the root of the project.
 2. To remove the grid resources run the following command:
    ```bash
-   make destroy-custom-runtime TAG=$TAG REGION=$HTCGRID_REGION
+   make destroy-dotnet-runtime TAG=$TAG REGION=$HTCGRID_REGION
    ```
 3. To remove the images from the ECR repository, execute
    ```bash

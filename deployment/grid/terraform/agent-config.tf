@@ -7,6 +7,7 @@ locals {
   "region": "${var.region}",
   "sqs_endpoint": "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
   "dynamodb_endpoint": "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com",
+  "redis_with_ssl": "${var.redis_with_ssl}",
   "sqs_queue": "${local.sqs_queue}",
   "sqs_dlq": "${local.sqs_dlq}",
   "redis_url": "${module.control_plane.redis_url}",

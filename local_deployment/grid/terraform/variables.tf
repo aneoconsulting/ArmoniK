@@ -496,3 +496,8 @@ variable "local_service_endpoint_url" {
 variable "redis_endpoint_url" {
   description = "redis endpoint url"
 }
+
+variable "redis_with_ssl" {
+  type = bool
+  description = "redis with ssl"
+}

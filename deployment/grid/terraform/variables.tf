@@ -479,3 +479,8 @@ variable "kms_key_arn" {
   type =  string
 }
 
+variable "redis_with_ssl" {
+  type = bool
+  description = "redis with ssl"
+}
+
