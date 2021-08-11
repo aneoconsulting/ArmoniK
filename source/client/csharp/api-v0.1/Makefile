@@ -12,10 +12,7 @@ BUILD_TYPE?=Release
 
 all: build-package
 
-add-apis: $(DIST_DIR)/dotnet5.0/HttpApi.1.0.0.nupkg
-	dotnet add package -s $(DIST_DIR)/dotnet5.0  HttpApi
-
-bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll: add-apis
+bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll:
 	dotnet clean && dotnet build --configuration $(BUILD_TYPE)
 
 $(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.nupkg: bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll

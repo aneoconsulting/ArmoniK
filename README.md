@@ -162,6 +162,12 @@ dotnet add package StackExchange.Redis --version 2.2.50
    - `DynamoDB`
    - `MongoDB`
 
+5. Define an environment variable containing the path to the local nuget repository.
+   ```bash
+      export HTCGRID_NUGET_REPOS=<project directory>/dist/dotnet5.0
+   ```
+
+
 ## Deployment of resources
 ### ECR authentication
 As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
