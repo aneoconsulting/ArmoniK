@@ -10,11 +10,16 @@ WORKDIR "/app/mock_integration/src"
 RUN mkdir -p ./dist/dotnet5.0
 #COPY ./mock_integration_image/src/mock_integration/dist/dotnet5.0/HTCGridAPI.1.0.0.nupkg ./dist/dotnet5.0
 COPY ./mock_integration_image/src/mock_integration/dist/dotnet5.0/*.nupkg ./dist/dotnet5.0/
-RUN dotnet nuget add source /app/mock_integration/src/dist/dotnet5.0
-RUN dotnet restore "mock_integration/mock_integration.csproj"
+ENV HTCGRID_NUGET_REPOS=/app/mock_integration/src/dist/dotnet5.0
+RUN echo $HTCGRID_NUGET_REPOS
+RUN ls $HTCGRID_NUGET_REPOS
+#RUN dotnet nuget add source /app/mock_integration/src/dist/dotnet5.0
 
 WORKDIR "/app/mock_integration/src/mock_integration"
+RUN dotnet restore
+RUN ls -la nuget.config
 RUN mkdir -p ./lib/
+
 
 
 

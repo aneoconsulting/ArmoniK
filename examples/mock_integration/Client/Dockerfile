@@ -10,7 +10,11 @@ COPY ./dist/dotnet5.0/HttpApi.1.0.0.nupkg ./lib/dotnet5.0
 #COPY ./examples/csharp/ClientTask.cs ./
 COPY ./examples/mock_integration ./
 RUN ls ./lib
-RUN dotnet nuget add source /app/mock_integration/lib/dotnet5.0
+RUN ls -la nuget.config
+ENV HTCGRID_NUGET_REPOS=/app/mock_integration/lib/dotnet5.0
+RUN echo $HTCGRID_NUGET_REPOS
+RUN ls $HTCGRID_NUGET_REPOS
+#RUN dotnet nuget add source /app/mock_integration/lib/dotnet5.0
 WORKDIR /app/mock_integration/Client
 RUN dotnet restore 
 RUN dotnet build "Client.csproj" --configuration Release
