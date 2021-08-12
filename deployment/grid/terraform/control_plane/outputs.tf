@@ -12,9 +12,19 @@ output "redis_url" {
   value       = aws_elasticache_replication_group.stdin-stdout-cache.primary_endpoint_address
 }
 
+output "redis_port" {
+  description = "Redis port"
+  value       = aws_elasticache_replication_group.stdin-stdout-cache.port
+}
+
+output "connection_redis_timeout" {
+  description = "Redis connection timeout"
+  value       = var.connection_redis_timeout
+}
+
 output "redis_replica_enable_cluster_mode" {
   description = "Enable cluster mode"
-  value       = aws_elasticache_replication_group.stdin-stdout-cache.cluster_enabled
+  value       = aws_elasticache_replication_group.stdin-stdout-cache.cluster_mode
 }
 
 

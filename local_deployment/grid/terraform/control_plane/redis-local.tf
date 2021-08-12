@@ -28,7 +28,7 @@ resource "kubernetes_deployment" "redis" {
         container {
           image   = "redis"
           name    = "redis"
-          command = ["redis-server"]
+          command = ["redis-server", "--tls-port ${var.redis_port}", "--port 0", "--tls-cert-file /data/redis.crt", "--tls-key-file /data/redis.key", "--tls-ca-cert-file /data/ca.crt"]
 
           port {
             container_port = var.redis_port
@@ -42,6 +42,10 @@ resource "kubernetes_deployment" "redis" {
 
         volume {
           name = "redis-vol"
+          host_path {
+            path = var.certificates_dir_path
+            type = ""
+          }
         }
       }
     }

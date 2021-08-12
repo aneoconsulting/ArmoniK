@@ -484,3 +484,7 @@ variable "redis_with_ssl" {
   description = "redis with ssl"
 }
 
+variable "connection_redis_timeout" {
+  description = "connection redis timeout"
+}
+

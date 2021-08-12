@@ -223,6 +223,9 @@ module "control_plane" {
     sqs_endpoint_url = var.sqs_endpoint_url
     local_service_endpoint_url = var.local_service_endpoint_url
     redis_endpoint_url = var.redis_endpoint_url
+    redis_with_ssl = var.redis_with_ssl
+    connection_redis_timeout = var.connection_redis_timeout
+    certificates_dir_path = var.certificates_dir_path
     /*peer_vpc_cidr_block = data.aws_vpc.peer_vpc.cidr_block
     vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
 

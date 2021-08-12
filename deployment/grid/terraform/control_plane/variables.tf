@@ -224,3 +224,13 @@ variable "vpc_pod_cidr_block_private" {
   type = list(string)
   default = []
 }
+
+variable "redis_with_ssl" {
+  type = bool
+  description = "redis with ssl"
+}
+
+variable "connection_redis_timeout" {
+  description = "connection redis timeout"
+}
+

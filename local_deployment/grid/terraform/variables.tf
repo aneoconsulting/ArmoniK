@@ -501,3 +501,11 @@ variable "redis_with_ssl" {
   type = bool
   description = "redis with ssl"
 }
+
+variable "connection_redis_timeout" {
+  description = "connection redis timeout"
+}
+
+variable "certificates_dir_path" {
+  description = "Path of the directory containing the certificates redis.crt, redis.key, ca.crt"
+}

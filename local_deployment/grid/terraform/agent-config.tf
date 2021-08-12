@@ -11,6 +11,8 @@ locals {
   "sqs_queue": "${local.sqs_queue}",
   "sqs_dlq": "${local.sqs_dlq}",
   "redis_url": "${module.control_plane.redis_url}",
+  "redis_port": "${module.control_plane.redis_port}",
+  "connection_redis_timeout": "${module.control_plane.connection_redis_timeout}",
   "cluster_name": "${local.cluster_name}",
   "ddb_status_table" : "${local.ddb_status_table}",
   "empty_task_queue_backoff_timeout_sec" : ${var.empty_task_queue_backoff_timeout_sec},

@@ -7,6 +7,16 @@ output "redis_url" {
   value       = var.redis_endpoint_url
 }
 
+output "redis_port" {
+  description = "Redis port"
+  value       = var.redis_port
+}
+
+output "connection_redis_timeout" {
+  description = "Redis connection timeout"
+  value       = var.connection_redis_timeout
+}
+
 output "s3_bucket_name" {
   description = "Name of the bucket"
   value       = aws_s3_bucket.htc-stdout-bucket.id
