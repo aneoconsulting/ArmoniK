@@ -52,7 +52,9 @@ namespace mock_subtasking
             ////////////////////////////////////////////////////////////////////
             
             Console.WriteLine("Connecting");
-            ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(gridConfig.redis_url+":6379,ssl=true");
+            //ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(gridConfig.redis_url+":6379,ssl=true");
+			string redis_endpoint_url = String.Format("{0}:{1},ssl={2},connectTimeout={3}", gridConfig.redis_url, gridConfig.redis_port, gridConfig.redis_with_ssl, gridConfig.connection_redis_timeouts);
+            ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(redis_endpoint_url);
             IDatabase db = connection.GetDatabase();
             
             int trade_data = (int)db.StringGet(inputTask.trade_data_key);

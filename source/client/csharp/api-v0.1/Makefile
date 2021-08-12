@@ -7,7 +7,7 @@ GENERATED?=$(shell pwd)/generated
 DIST_DIR?=$(shell pwd)/../../../../dist
 BUILD_TYPE?=Release
 
-.PHONY: all clean build-package $(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.nupkg
+.PHONY: all clean build-package bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll $(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.nupkg 
 
 
 all: build-package

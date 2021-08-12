@@ -8,7 +8,8 @@ all: build-mock
 
 
 build-mock:
-	dotnet restore
+	#dotnet restore --no-cache
+	dotnet nuget locals global-packages -c
 	dotnet build --configuration $(BUILD_TYPE) .
 	mkdir -p ./lib
 	cp -v Client/bin/$(BUILD_TYPE)/net5.0/HtcCommon.dll ./lib

@@ -63,34 +63,21 @@ namespace HtcClient
                                                  100,
                                                  1,
                                                  3,
-                                                 1);*/
+                                                 1);
             
-            /*RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(10, 0, 0),
+            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(10, 0, 0),
                                                  1000000,
                                                  1,
                                                  3,
-                                                 4);*/
+                                                 4);                                             
 
-
-                                                 
-                                                 
-                                                 
-                                                 
-                                                 
-                                                 
-                                                 
-                                                 
-                                                 
-                                                 
-                                                 
-/*
             RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(3.6, 0, 0),
                                                  400000,
                                                  1,
                                                  3,
-                                                 3, maxDurationMs : 30000);*/
+                                                 3, maxDurationMs : 30000);
                                                  
-            /*RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(36, 0, 0),
+            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(36, 0, 0),
                                                  4000000,
                                                  1,
                                                  3,
