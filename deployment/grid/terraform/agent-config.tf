@@ -12,6 +12,7 @@ locals {
   "sqs_dlq": "${local.sqs_dlq}",
   "redis_url": "${module.control_plane.redis_url}",
   "redis_port": "${module.control_plane.redis_port}",
+  "cluster_config": "${var.cluster_config}",
   "connection_redis_timeout": "${module.control_plane.connection_redis_timeout}",
   "cluster_name": "${local.cluster_name}",
   "ddb_status_table" : "${local.ddb_status_table}",

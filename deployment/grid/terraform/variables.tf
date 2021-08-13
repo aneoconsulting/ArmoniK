@@ -488,3 +488,7 @@ variable "connection_redis_timeout" {
   description = "connection redis timeout"
 }
 
+variable "cluster_config" {
+  description = "Configuration type of the cluster (Local, Cloud, Cluster)"
+}
+

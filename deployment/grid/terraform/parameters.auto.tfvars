@@ -10,3 +10,4 @@ dynamodb_endpoint_url = "https://dynamodb"
 sqs_endpoint_url = "https://sqs"
 redis_with_ssl = true
 connection_redis_timeout = 300000
+cluster_config = "cloud"
