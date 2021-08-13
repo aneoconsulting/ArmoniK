@@ -509,3 +509,15 @@ variable "connection_redis_timeout" {
 variable "certificates_dir_path" {
   description = "Path of the directory containing the certificates redis.crt, redis.key, ca.crt"
 }
+
+variable "redis_ca_cert" {
+  description = "path to the authority certificate file (ca.crt) of the redis server in the docker machine"
+}
+
+variable "redis_client_pfx" {
+  description = "path to the client certificate file (certificate.pfx) of the redis server in the docker machine"
+}
+
+variable "cluster_config" {
+  description = "Configuration type of the cluster (Local, Cloud, OnPremise)"
+}

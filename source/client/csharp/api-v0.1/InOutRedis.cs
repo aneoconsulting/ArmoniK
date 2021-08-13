@@ -7,14 +7,10 @@ namespace HTCGrid
     public class InOutRedis:StorageInterface
     {
         
-        public InOutRedis(string redis_url, string redis_port, string redis_with_ssl, string connection_redis_timeout) {
-            string redis_endpoint_url = String.Format("{0}:{1},ssl={2},connectTimeout={3}", redis_url, redis_port, redis_with_ssl, connection_redis_timeout);
-            Console.WriteLine($"Redis Connecting to URL: {redis_endpoint_url}");
-            ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(redis_endpoint_url);
-
-            /*ConnectionMultiplexer connection =
-                ConnectionMultiplexer.Connect(redis_url+":6379,ssl=true,connectTimeout=300000");*/
-            
+        public InOutRedis(GridConfig gridConfig) {
+            var configurationOptions = RedisConfigurationFactory.createConfiguration(gridConfig);
+            Console.WriteLine($"Redis Connecting to URL: {configurationOptions.EndPoints[0]}");
+            ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(configurationOptions);
             this.db = connection.GetDatabase();
         }
         

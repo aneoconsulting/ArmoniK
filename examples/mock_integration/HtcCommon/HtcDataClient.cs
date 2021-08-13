@@ -23,9 +23,9 @@ namespace HTCGrid
 
             public void ConnectDB()
             {
-				//connection_ = ConnectionMultiplexer.Connect(gridConfig_.redis_url+":6379,ssl=true,connectTimeout=300000");
-				string redis_endpoint_url = String.Format("{0}:{1},ssl={2},connectTimeout={3}", gridConfig_.redis_url, gridConfig_.redis_port,gridConfig_.redis_with_ssl, gridConfig_.connection_redis_timeout);
-                connection_ = ConnectionMultiplexer.Connect(redis_endpoint_url);
+                var configurationOptions = RedisConfigurationFactory.createConfiguration(gridConfig_);
+                Console.WriteLine($"Redis Connecting to URL: {configurationOptions.EndPoints[0]}");
+                connection_ = ConnectionMultiplexer.Connect(configurationOptions);
                 db_ =  connection_.GetDatabase();
             }
 

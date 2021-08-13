@@ -15,8 +15,6 @@ namespace HTCGrid
             this.storageInterface = this.iom.GetStorageConnector();
             
             // GridSession gs = new GridSession(this.iom);
-            
-            // InOutRedis ior = new InOutRedis("asdas");
         }
     
     
