@@ -12,6 +12,7 @@ locals {
   "sqs_dlq": "${local.sqs_dlq}",
   "redis_url": "${module.control_plane.redis_url}",
   "redis_port": "${var.redis_port}",
+  "redis_port_without_ssl": "${var.redis_port_without_ssl}",
   "redis_ca_cert": "${var.redis_ca_cert}",
   "redis_client_pfx": "${var.redis_client_pfx}",
   "cluster_config": "${var.cluster_config}",

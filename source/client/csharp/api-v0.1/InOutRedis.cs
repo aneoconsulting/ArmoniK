@@ -9,7 +9,7 @@ namespace HTCGrid
         
         public InOutRedis(GridConfig gridConfig) {
             var configurationOptions = RedisConfigurationFactory.createConfiguration(gridConfig);
-            Console.WriteLine($"Redis Connecting to URL: {configurationOptions.EndPoints[0]}");
+            Console.WriteLine($"(InOutRedis) Redis Connecting to URL: {configurationOptions.EndPoints[0]}");
             ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(configurationOptions);
             this.db = connection.GetDatabase();
         }

@@ -521,3 +521,9 @@ variable "redis_client_pfx" {
 variable "cluster_config" {
   description = "Configuration type of the cluster (Local, Cloud, OnPremise)"
 }
+
+variable "redis_port_without_ssl" {
+  description = "Port for Redis instance without ssl"
+  default = 7777
+  type = number
+}

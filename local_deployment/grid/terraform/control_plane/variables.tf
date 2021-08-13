@@ -250,3 +250,9 @@ variable "certificates_dir_path" {
   description = "Path of the directory containing the certificates redis.crt, redis.key, ca.crt"
 }
 
+variable "redis_port_without_ssl" {
+  description = "Port for Redis instance without ssl"
+  default = 7777
+  type = number
+}
+
