@@ -15,7 +15,7 @@ resource "kubernetes_deployment" "redis" {
         service = "redis"
       }
     }
-    
+
     template {
       metadata {
         labels = {
@@ -28,7 +28,7 @@ resource "kubernetes_deployment" "redis" {
         container {
           image   = "redis"
           name    = "redis"
-          command = ["redis-server", "--tls-port ${var.redis_port}", "--port 0", "--tls-cert-file /data/redis.crt", "--tls-key-file /data/redis.key", "--tls-ca-cert-file /data/ca.crt"]
+          command = ["redis-server", "--tls-port ${var.redis_port}", "--port 0", "--tls-cert-file /redis_certificates/redis.crt", "--tls-key-file /redis_certificates/redis.key", "--tls-ca-cert-file /redis_certificates/ca.crt"]
 
           port {
             container_port = var.redis_port
@@ -36,7 +36,7 @@ resource "kubernetes_deployment" "redis" {
 
           volume_mount {
             name       = "redis-vol"
-            mount_path = "/data"
+            mount_path = "/redis_certificates"
           }
         }
 
