@@ -25,7 +25,6 @@ namespace HTCGrid
                     configurationOptions.SslHost = "127.0.0.1";
                     break;
                 case "cloud":
-                    configurationOptions.SslHost = System.Net.Dns.GetHostName();
                     break;
                 case "cluster":
                     configurationOptions.SslHost = System.Net.Dns.GetHostName();
