@@ -12,57 +12,63 @@ namespace HTCGrid
     {
 
         public static ConfigurationOptions createConfiguration(GridConfig gridConfig) {
-            string SslHost;
-            switch (gridConfig.cluster_config.ToLower())
-            {
-                case "local":
-                    SslHost = "127.0.0.1";
-                    break;
-                default:
-                    SslHost = System.Net.Dns.GetHostName();
-                    break;
-            }
-
             var configurationOptions = new ConfigurationOptions
             {
                 EndPoints = { $"{gridConfig.redis_url}:{gridConfig.redis_port}" },
                 Ssl = bool.Parse(gridConfig.redis_with_ssl),
-                SslHost = SslHost,
-                ConnectTimeout = int.Parse(gridConfig.connection_redis_timeout) 
+                ConnectTimeout = int.Parse(gridConfig.connection_redis_timeout)
             };
 
-            // method to validate the certificate
-            // https://github.com/StackExchange/StackExchange.Redis/issues/1113
-            configurationOptions.CertificateValidation += (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => {
-                if (!File.Exists(gridConfig.redis_ca_cert)) {
-                    throw new FileNotFoundException(gridConfig.redis_ca_cert + " was not found !");
-                }
-                X509Certificate2 CertificateAuthority = new X509Certificate2(gridConfig.redis_ca_cert);
-                if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
-                {
-                    var root = chain.ChainElements[chain.ChainElements.Count - 1].Certificate;
-                    return CertificateAuthority.Equals(root);
-                }
+            switch (gridConfig.cluster_config.ToLower())
+            {
+                case "local":
+                    configurationOptions.SslHost = "127.0.0.1";
+                    break;
+                case "cloud":
+                    configurationOptions.SslHost = System.Net.Dns.GetHostName();
+                    break;
+                case "cluster":
+                    configurationOptions.SslHost = System.Net.Dns.GetHostName();
+                    break;
+                default:
+                    break;
+            }
 
-                if (sslPolicyErrors == SslPolicyErrors.None)
-                    return true;
+            if (String.Equals(gridConfig.cluster_config.ToLower(), "local")
+                || String.Equals(gridConfig.cluster_config.ToLower(), "cluster")) {
+                // method to validate the certificate
+                // https://github.com/StackExchange/StackExchange.Redis/issues/1113
+                configurationOptions.CertificateValidation += (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => {
+                    if (!File.Exists(gridConfig.redis_ca_cert)) {
+                        throw new FileNotFoundException(gridConfig.redis_ca_cert + " was not found !");
+                    }
+                    X509Certificate2 CertificateAuthority = new X509Certificate2(gridConfig.redis_ca_cert);
+                    if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
+                    {
+                        var root = chain.ChainElements[chain.ChainElements.Count - 1].Certificate;
+                        return CertificateAuthority.Equals(root);
+                    }
 
-                Console.WriteLine("");
-                Console.WriteLine("");
-                Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
-                Console.WriteLine(certificate);
-                Console.WriteLine(chain);
+                    if (sslPolicyErrors == SslPolicyErrors.None)
+                        return true;
 
-                return false;
-            };
+                    Console.WriteLine("");
+                    Console.WriteLine("");
+                    Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
+                    Console.WriteLine(certificate);
+                    Console.WriteLine(chain);
 
-            configurationOptions.CertificateSelection += delegate {
-                if (!File.Exists(gridConfig.redis_client_pfx)) {
-                    throw new FileNotFoundException(gridConfig.redis_client_pfx + " was not found !");
-                }
-                var cert = new X509Certificate2(gridConfig.redis_client_pfx);
-                return cert;
-            };
+                    return false;
+                };
+
+                configurationOptions.CertificateSelection += delegate {
+                    if (!File.Exists(gridConfig.redis_client_pfx)) {
+                        throw new FileNotFoundException(gridConfig.redis_client_pfx + " was not found !");
+                    }
+                    var cert = new X509Certificate2(gridConfig.redis_client_pfx);
+                    return cert;
+                };
+            }
 
             return configurationOptions;
         }
