@@ -33,7 +33,7 @@ namespace HTCGrid
                     break;
             }
 
-            if (String.Equals(gridConfig.cluster_config.ToLower(), "local")
+            if ((String.Equals(gridConfig.cluster_config.ToLower(), "local") && String.Equals(gridConfig.redis_with_ssl, "true"))
                 || String.Equals(gridConfig.cluster_config.ToLower(), "cluster")) {
                 // method to validate the certificate
                 // https://github.com/StackExchange/StackExchange.Redis/issues/1113
