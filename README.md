@@ -167,6 +167,11 @@ dotnet add package StackExchange.Redis --version 2.2.50
       export HTCGRID_NUGET_REPOS=<project directory>/dist/dotnet5.0
    ```
 
+6. Define an environment variable containing the path to the redis certificates.
+   ```bash
+      export HTCGRID_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
+   ```
+
 
 ## Deployment of resources
 ### ECR authentication
@@ -215,7 +220,7 @@ HTC artifacts include: .NET Core packages, docker images, configuration files fo
 1. Now build the images for the HTC agent. Return to  `<project_root>`  and run the command:
 
    ```bash
-   make dotnet50-path TAG=$TAG REGION=$HTCGRID_REGION TASKS_TABLE_SERVICE=$HTCGRID_TASKS_TABLE_SERVICE
+   make dotnet50-path TAG=$TAG REGION=$HTCGRID_REGION TASKS_TABLE_SERVICE=$HTCGRID_TASKS_TABLE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$HTCGRID_REDIS_CERTIFICATES_DIRECTORY
    ```
 
    * If `TAG` is omitted then `mainline` will be the chosen has a default value.
