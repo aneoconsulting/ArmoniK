@@ -295,7 +295,7 @@ For the on-premises deployment, some credentials are needed to be defined by the
    ```
 2. if successful you can run terraform apply to create the infrastructure. HTC-Grid deploys a grafana version behind cognito. The admin password is configurable and should be passed at this stage.
    ```bash
-   make apply-dotnet-local-runtime  TAG=$TAG REGION=$HTCGRID_REGION
+   make apply-dotnet-local-runtime  TAG=$TAG REGION=$HTCGRID_REGION REDIS_CERTIFICATES_DIRECTORY=$HTCGRID_REDIS_CERTIFICATES_DIRECTORY
    ```
 
 ### Testing the deployment
