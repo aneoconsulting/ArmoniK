@@ -35,12 +35,20 @@ namespace HTCGrid
 
             if ((String.Equals(gridConfig.cluster_config.ToLower(), "local") && String.Equals(gridConfig.redis_with_ssl, "true"))
                 || String.Equals(gridConfig.cluster_config.ToLower(), "cluster")) {
+
+                if (!File.Exists(gridConfig.redis_ca_cert)) {
+                    Console.WriteLine(gridConfig.redis_ca_cert + " was not found !");
+                    throw new FileNotFoundException(gridConfig.redis_ca_cert + " was not found !");
+                }
+
+                if (!File.Exists(gridConfig.redis_client_pfx)) {
+                    Console.WriteLine(gridConfig.redis_client_pfx + " was not found !");
+                    throw new FileNotFoundException(gridConfig.redis_client_pfx + " was not found !");
+                }
+
                 // method to validate the certificate
                 // https://github.com/StackExchange/StackExchange.Redis/issues/1113
                 configurationOptions.CertificateValidation += (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) => {
-                    if (!File.Exists(gridConfig.redis_ca_cert)) {
-                        throw new FileNotFoundException(gridConfig.redis_ca_cert + " was not found !");
-                    }
                     X509Certificate2 CertificateAuthority = new X509Certificate2(gridConfig.redis_ca_cert);
                     if (sslPolicyErrors == SslPolicyErrors.RemoteCertificateChainErrors)
                     {
@@ -61,9 +69,6 @@ namespace HTCGrid
                 };
 
                 configurationOptions.CertificateSelection += delegate {
-                    if (!File.Exists(gridConfig.redis_client_pfx)) {
-                        throw new FileNotFoundException(gridConfig.redis_client_pfx + " was not found !");
-                    }
                     var cert = new X509Certificate2(gridConfig.redis_client_pfx);
                     return cert;
                 };
