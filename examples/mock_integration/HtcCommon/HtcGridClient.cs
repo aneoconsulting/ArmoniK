@@ -56,6 +56,7 @@ namespace HTCGrid
 
                     if (sessionResponse == null)
                     {
+                        Console.WriteLine($"WARN: sessionResponse is null");
                         continue;
                     }
 
