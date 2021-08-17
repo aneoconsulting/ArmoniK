@@ -29,3 +29,14 @@ output "api_gateway_key" {
   value = aws_api_gateway_api_key.htc_grid_api_key.value
   sensitive = true
 }
+
+output "redis_pod_ip" {
+  description = "IP address of redis pod"
+  value = kubernetes_service.redis.status.0.load_balancer.0.ingress.0.ip
+}
+
+output "redis_without_ssl_pod_ip" {
+  description = "IP address of redis pod without ssl"
+  value = kubernetes_service.redis-without-ssl.status.0.load_balancer.0.ingress.0.ip
+}
+

@@ -11,6 +11,8 @@ locals {
   "sqs_queue": "${local.sqs_queue}",
   "sqs_dlq": "${local.sqs_dlq}",
   "redis_url": "${module.control_plane.redis_url}",
+  "redis_pod_ip": "${module.control_plane.redis_pod_ip}",
+  "redis_without_ssl_pod_ip": "${module.control_plane.redis_without_ssl_pod_ip}",
   "redis_port": "${var.redis_port}",
   "redis_port_without_ssl": "${var.redis_port_without_ssl}",
   "redis_ca_cert": "${var.redis_ca_cert}",

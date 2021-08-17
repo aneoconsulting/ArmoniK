@@ -55,7 +55,7 @@ namespace HTCGrid
                         var root = chain.ChainElements[chain.ChainElements.Count - 1].Certificate;
                         return CertificateAuthority.Equals(root);
                     }
-
+					
                     if (sslPolicyErrors == SslPolicyErrors.None)
                         return true;
 
@@ -73,7 +73,6 @@ namespace HTCGrid
                     return cert;
                 };
             }
-
             return configurationOptions;
         }
     }

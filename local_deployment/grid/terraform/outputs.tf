@@ -11,3 +11,12 @@ output "private_api_endpoint" {
   description = "Private API endpoint for the HTC grid"
   value = module.control_plane.private_api_gateway_url
 }
+
+output "redis_pod_ip" {
+  description = "Private API endpoint for the HTC grid"
+  value = module.control_plane.redis_pod_ip
+}
+
+output "redis_without_ssl_pod_ip" {
+  value = module.control_plane.redis_without_ssl_pod_ip
+}

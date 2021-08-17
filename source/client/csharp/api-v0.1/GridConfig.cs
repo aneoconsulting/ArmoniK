@@ -13,11 +13,11 @@ namespace HTCGrid
         public void Init(JsonDocument parsedConfiguration) {
             JsonElement root = parsedConfiguration.RootElement;
             this.grid_storage_service = root.GetProperty("grid_storage_service").GetString();
-            this.redis_url = root.GetProperty("redis_url").GetString();
             this.private_api_gateway_url = root.GetProperty("private_api_gateway_url").GetString();
             this.api_gateway_key = root.GetProperty("api_gateway_key").GetString();
             this.redis_with_ssl = root.GetProperty("redis_with_ssl").GetString().ToLower();
 			this.redis_port = String.Equals(this.redis_with_ssl, "false") ? root.GetProperty("redis_port_without_ssl").GetString() : root.GetProperty("redis_port").GetString();
+			this.redis_url = String.Equals(this.redis_with_ssl, "false") ? root.GetProperty("redis_without_ssl_pod_ip").GetString() : root.GetProperty("redis_pod_ip").GetString();
             this.cluster_config = root.GetProperty("cluster_config").GetString();
             if (String.Equals(this.cluster_config.ToLower(), "local")
                 || String.Equals(this.cluster_config.ToLower(), "cluster")) {
