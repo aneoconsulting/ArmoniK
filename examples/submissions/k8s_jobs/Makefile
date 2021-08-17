@@ -14,7 +14,7 @@ all:  generated
 
 
 generated:
-	mkdir -p $(GENERATED) && cat single-task-test.yaml.tpl | sed "s/{{account_id}}/$(ACCOUNT_ID)/;s/{{region}}/$(REGION)/;s/{{image_name}}/$(SUBMITTER_IMAGE_NAME)/;s/{{image_tag}}/$(TAG)/" > $(GENERATED)/single-task-test.yaml
+	mkdir -p $(GENERATED) && cat single-task-test.yaml.tpl | sed "s%{{redis_certificates_directory}}%$(REDIS_CERTIFICATES_DIRECTORY)%;s/{{account_id}}/$(ACCOUNT_ID)/;s/{{region}}/$(REGION)/;s/{{image_name}}/$(SUBMITTER_IMAGE_NAME)/;s/{{image_tag}}/$(TAG)/" > $(GENERATED)/single-task-test.yaml
 
 	mkdir -p $(GENERATED) && cat portfolio-pricing-single-trade.yaml.tpl | sed "s/{{account_id}}/$(ACCOUNT_ID)/;s/{{region}}/$(REGION)/;s/{{image_name}}/$(SUBMITTER_IMAGE_NAME)/;s/{{image_tag}}/$(TAG)/" > $(GENERATED)/portfolio-pricing-single-trade.yaml
 

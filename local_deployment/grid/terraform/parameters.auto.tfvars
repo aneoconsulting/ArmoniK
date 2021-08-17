@@ -16,7 +16,6 @@ k8s_config_context = "default"
 k8s_config_path = "/etc/rancher/k3s/k3s.yaml"
 redis_with_ssl = true
 connection_redis_timeout = 5000
-certificates_dir_path = "/home/sysadmin/Armonik/aws-htc-grid/redis_certificates"
 redis_ca_cert = "/redis_certificates/ca.crt"
 redis_client_pfx = "/redis_certificates/certificate.pfx"
 cluster_config = "local"

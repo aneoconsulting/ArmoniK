@@ -35,7 +35,7 @@ if __name__ == "__main__":
     #gridConnector.authenticate()
 
     task_1_definition = {
-        "worker_arguments": ["1000", "1", "1"]
+        "worker_arguments": ["10", "1", "1"]
     }
     
     #task_1_definition = {

@@ -22,6 +22,8 @@ spec:
         volumeMounts:
           - name: agent-config-volume
             mountPath: /etc/agent
+          - name: redis-certificates-volume
+            mountPath: /redis_certificates
         env:
           - name: INTRA_VPC
             value: "1"
@@ -37,4 +39,8 @@ spec:
         - name: agent-config-volume
           configMap:
             name: agent-configmap
+        - name: redis-certificates-volume
+          hostPath:
+            path: {{redis_certificates_directory}}
+            type: Directory
   backoffLimit: 0
