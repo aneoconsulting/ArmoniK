@@ -23,7 +23,7 @@ logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcN
 logging.info("Init AWS Grid Connector")
 
 
-def in_out_manager(grid_storage_service, s3_bucket, redis_url, s3_region=None, s3_custom_resource=None, redis_custom_connection=None, redis_ca_cert=None, redis_keyfile=None, redis_certfile=None, use_ssl=True):
+def in_out_manager(grid_storage_service, s3_bucket, redis_url, redis_port=6379, s3_region=None, s3_custom_resource=None, redis_custom_connection=None, redis_ca_cert=None, redis_keyfile=None, redis_certfile=None, use_ssl=True):
     """This function returns a connection to the data plane. This connection will be used for uploading and
        downloading the payload associated to the tasks
 
@@ -50,6 +50,7 @@ def in_out_manager(grid_storage_service, s3_bucket, redis_url, s3_region=None, s
         return InOutRedis(
             namespace=s3_bucket,
             cache_url=redis_url,
+            redis_port=redis_port,
             use_S3=False,
             s3_custom_resource=s3_custom_resource,
             redis_custom_connection=redis_custom_connection,
@@ -61,6 +62,7 @@ def in_out_manager(grid_storage_service, s3_bucket, redis_url, s3_region=None, s
     elif grid_storage_service == "S3+REDIS":
         return InOutRedis(namespace=s3_bucket,
                           cache_url=redis_url,
+                          redis_port=redis_port,
                           use_S3=True,
                           region=s3_region,
                           s3_custom_resource=s3_custom_resource,

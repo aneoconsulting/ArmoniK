@@ -54,6 +54,7 @@ use_ssl = (os.environ["REDIS_USE_SSL"].lower() == "true")
 stdin_iom = in_out_manager(grid_storage_service=os.environ['GRID_STORAGE_SERVICE'],
                            s3_bucket=os.environ['S3_BUCKET'],
                            redis_url=os.environ['REDIS_URL'],
+                           redis_port=int(os.environ['REDIS_PORT']),
                            redis_certfile=os.environ.get('REDIS_CERTFILE', None),
                            redis_keyfile=os.environ.get('REDIS_KEYFILE', None),
                            redis_ca_cert=os.environ.get('REDIS_CA_CERT', None),

@@ -67,7 +67,7 @@ namespace HTCGrid
             apiConfig.BasePath = gridConfig.private_api_gateway_url;
             apiConfig.ApiKey.Add("x-api-key", gridConfig.api_gateway_key);
             apiConfig.ApiKey.Add("api_key", gridConfig.api_gateway_key);
-            Console.WriteLine($"(GridSession) baseUrl:{apiConfig.BasePath}");
+            Console.WriteLine($"(GridSession) apigateway baseUrl: {apiConfig.BasePath}");
 
             this.apiInstance = new DefaultApi(apiConfig);
         }
@@ -117,7 +117,6 @@ namespace HTCGrid
 
             // <3.> Invoke submit_tasks Lambda with the reference to the submission id
             try {
-                Console.WriteLine($"(GridSession) submit_id: {submission_id}");
                 var res = apiInstance.SubmitPost(submission_id);
                 Console.WriteLine(res);
             }

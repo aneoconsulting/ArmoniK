@@ -186,7 +186,6 @@ variable "agent_use_congestion_control" {
   default = "0"
 }
 
-
 variable "error_log_group" {
   default  = "grid_errors"
   description = "Log group for errors"
@@ -444,7 +443,6 @@ variable "vpc_pod_cidr_block_private" {
   type = list(string)
   default = []
 }
-
 
 variable "project_name" {
   description = "name of project"

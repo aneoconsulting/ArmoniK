@@ -14,7 +14,7 @@ namespace HTCGrid
         public static ConfigurationOptions createConfiguration(GridConfig gridConfig) {
             var configurationOptions = new ConfigurationOptions
             {
-                EndPoints = { $"{gridConfig.redis_endpoint_url}" },
+                EndPoints = { $"{gridConfig.redis_endpoint_url}:{gridConfig.redis_port}" },
                 Ssl = bool.Parse(gridConfig.redis_with_ssl),
                 ConnectTimeout = int.Parse(gridConfig.connection_redis_timeout)
             };

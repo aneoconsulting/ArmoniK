@@ -28,6 +28,7 @@ class InOutRedis:
     def __init__(self,
                  namespace,
                  cache_url,
+                 redis_port=6379,
                  subnamespace=None,
                  use_S3=False,
                  region=None,
@@ -68,6 +69,7 @@ class InOutRedis:
             if redis_ca_cert is not None and redis_keyfile is not None and redis_certfile is not None and use_ssl:
                 self.redis_cache = redis.StrictRedis(
                     host=cache_url,
+                    port=redis_port,
                     ssl=use_ssl,
                     ssl_cert_reqs='required',
                     ssl_ca_certs=redis_ca_cert,
@@ -77,6 +79,7 @@ class InOutRedis:
             else:
                 self.redis_cache = redis.StrictRedis(
                     host=cache_url,
+                    port=redis_port,
                     ssl=use_ssl
                 )
         else:
