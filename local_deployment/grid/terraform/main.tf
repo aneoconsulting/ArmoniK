@@ -223,6 +223,9 @@ module "control_plane" {
     redis_with_ssl = var.redis_with_ssl
     connection_redis_timeout = var.connection_redis_timeout
     certificates_dir_path = var.certificates_dir_path
+    redis_cert_file = var.redis_cert_file
+    redis_key_file = var.redis_key_file
+    redis_ca_cert_file = var.redis_ca_cert_file
     /*peer_vpc_cidr_block = data.aws_vpc.peer_vpc.cidr_block
     vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
 

@@ -158,7 +158,10 @@ module "submit_task" {
     AWS_ACCESS_KEY_ID = var.access_key,
     AWS_SECRET_ACCESS_KEY = var.secret_key,
     SQS_ENDPOINT_URL = "http://${kubernetes_service.local_services.status.0.load_balancer.0.ingress.0.ip}:${var.local_services_port}",
-    DYNAMODB_ENDPOINT_URL = "http://${kubernetes_service.dynamodb.status.0.load_balancer.0.ingress.0.ip}:${var.dynamodb_port}"
+    DYNAMODB_ENDPOINT_URL = "http://${kubernetes_service.dynamodb.status.0.load_balancer.0.ingress.0.ip}:${var.dynamodb_port}",
+    REDIS_CERTFILE = var.redis_cert_file,
+    REDIS_KEYFILE = var.redis_key_file,
+    REDIS_CA_CERT = var.redis_ca_cert_file
   }
 
    tags = {
