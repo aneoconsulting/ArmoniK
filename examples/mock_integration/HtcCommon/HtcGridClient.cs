@@ -155,7 +155,7 @@ namespace HTCGrid
                     currentBatch.Add(new HtcTask(){SessionId = gridSession_.SessionId, Payload=payload});
                     if(currentBatch.Count()==500)
                     {
-                        Console.WriteLine($"Will submit a batch of {currentBatch.Count()} tasks");
+                        Console.WriteLine($"(1) Will submit a batch of {currentBatch.Count()} tasks");
                         var ids = gridSession_.SendTasks(currentBatch.ToArray());
                         result.AddRange(ids);
                         currentBatch.Clear();
@@ -164,7 +164,7 @@ namespace HTCGrid
 
                 if(currentBatch.Any())
                 {
-                    Console.WriteLine($"Will submit a batch of {currentBatch.Count()} tasks");
+                    Console.WriteLine($"(2) Will submit a batch of {currentBatch.Count()} tasks");
                     var ids = gridSession_.SendTasks(currentBatch.ToArray());
                     result.AddRange(ids);
                     currentBatch.Clear();
@@ -237,7 +237,6 @@ namespace HTCGrid
                 GridContext context = new GridContext();
                 context.tasks_priority = 0;
                 gridSession_.SetContext(context);
-
 
                 return gridSession_.SessionId;
             }

@@ -52,7 +52,7 @@ namespace HtcClient
             dataClient.ConnectDB();
 
             var client = new Client(htcGridclient, dataClient);
-
+          
            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 1, 30),
                                                  5,
                                                  1,
