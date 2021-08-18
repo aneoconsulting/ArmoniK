@@ -100,7 +100,7 @@ from api.state_table_manager import state_table_manager
 tasks_queue = queue_manager(
     grid_queue_service=agent_config_data['grid_queue_service'],
     grid_queue_config=agent_config_data['grid_queue_config'],
-    endpoint_url=agent_config_data["sqs_endpoint"],
+    endpoint_url=agent_config_data["sqs_endpoint_url"],
     queue_name=agent_config_data['tasks_queue_name'],
     region=region)
 
@@ -126,7 +126,7 @@ state_table = state_table_manager(
     agent_config_data['tasks_status_table_service'],
     str(config),
     agent_config_data['ddb_status_table'],
-    agent_config_data['dynamodb_endpoint'],
+    agent_config_data['dynamodb_endpoint_url'],
     region)
 
 config_cc ={
@@ -142,13 +142,17 @@ state_table_cc = state_table_manager(
     agent_config_data['tasks_status_table_service'],
     str(config_cc),
     agent_config_data['ddb_status_table'],
-    agent_config_data['dynamodb_endpoint'],
+    agent_config_data['dynamodb_endpoint_url'],
     region)
 
+redis_endpoint_url = agent_config_data['redis_endpoint_url']
+if agent_config_data['redis_with_ssl'].lower() == "false":
+    redis_endpoint_url = agent_config_data['redis_endpoint_url_without_ssl']
 
 stdout_iom = in_out_manager(
     agent_config_data['grid_storage_service'],
-    agent_config_data['s3_bucket'], agent_config_data['redis_url'],
+    agent_config_data['s3_bucket'],
+    redis_endpoint_url,
     s3_region=region)
 
 perf_tracker_pre = performance_tracker_initializer(agent_config_data["metrics_are_enabled"],

@@ -50,8 +50,7 @@ namespace csharp
             ////////////////////////////////////////////////////////////////////
 
             Console.WriteLine("Connecting");
-            //ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(gridConfig.redis_url+":6379,ssl=true");
-			string redis_endpoint_url = String.Format("{0}:{1},ssl={2},connectTimeout={3}", gridConfig.redis_url, gridConfig.redis_port, gridConfig.redis_with_ssl, gridConfig.connection_redis_timeout);
+			string redis_endpoint_url = String.Format("{0},ssl={1},connectTimeout={2}", gridConfig.redis_endpoint_url, gridConfig.redis_with_ssl, gridConfig.connection_redis_timeout);
             ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(redis_endpoint_url);
 			
 

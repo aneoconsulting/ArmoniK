@@ -53,10 +53,10 @@ namespace HtcClient
 
             var client = new Client(htcGridclient, dataClient);
 
-           RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 3, 0),
-                                                 10,
+           RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 1, 30),
+                                                 5,
                                                  1,
-                                                 3,
+                                                 1,
                                                  1);
                                                  
             /*RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 30, 0),

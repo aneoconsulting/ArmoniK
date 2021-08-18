@@ -120,13 +120,19 @@ class AWSConnector:
             Nothing
         """
         logging.info("AGENT:", agent_config_data)
+
+        redis_endpoint_url = agent_config_data['redis_endpoint_url']
+        if agent_config_data['redis_with_ssl'].lower() == "false":
+            redis_endpoint_url = agent_config_data['redis_endpoint_url_without_ssl']
+
         self.in_out_manager = in_out_manager(
             agent_config_data['grid_storage_service'],
             agent_config_data['s3_bucket'],
-            agent_config_data['redis_url'],
+            redis_endpoint_url,
             s3_region=agent_config_data['region'],
             s3_custom_resource=s3_custom_resource,
             redis_custom_connection=redis_custom_connection)
+
         self.__api_gateway_endpoint = ""
         self.__public_api_gateway_endpoint = agent_config_data['public_api_gateway_url']
         self.__private_api_gateway_endpoint = agent_config_data['private_api_gateway_url']
@@ -152,7 +158,7 @@ class AWSConnector:
             self.__api_gateway_endpoint = self.__private_api_gateway_endpoint
             self.__configuration = httpapi.Configuration(host=self.__api_gateway_endpoint)
             self.__configuration.api_key['api_key'] = self.__api_key
-            self.__configuration.api_key["x-api-key"]=self.__api_key
+            self.__configuration.api_key["x-api-key"] = self.__api_key
             self.__authorization_headers = {
                 "x-api-key": self.__api_key
             }
@@ -160,7 +166,7 @@ class AWSConnector:
             self.__api_gateway_endpoint = self.__public_api_gateway_endpoint
             self.__configuration = httpapi.Configuration(host=self.__api_gateway_endpoint)
             self.__configuration.api_key['api_key'] = self.__api_key
-            self.__configuration.api_key["x-api-key"]=self.__api_key
+            self.__configuration.api_key["x-api-key"] = self.__api_key
         self.__scheduler = BackgroundScheduler()
         logging.info("LAMBDA_ENDPOINT_URL:{}".format(self.__api_gateway_endpoint))
         logging.info("dynamodb_results_pull_interval_sec:{}".format(self.__dynamodb_results_pull_intervall))
@@ -347,7 +353,6 @@ class AWSConnector:
         url_base = self.__api_gateway_endpoint
         raw_response = None
 
-
         submission_payload_bytes = base64.urlsafe_b64encode(json.dumps(jobs).encode('utf-8'))
         session_id = jobs['session_id']
         if session_id is None or session_id == 'None':
@@ -362,15 +367,15 @@ class AWSConnector:
                 pprint(raw_response)
             except httpapi.ApiException as e:
                 print("Exception when calling DefaultApi->ca_post: %s\n" % e)
-            #raw_response = requests.post(url_base + '/submit', params=query, headers=self.__authorization_headers)
-            #raw_response = self.__api_client.request('POST',url_base + '/submit',headers=self.__authorization_headers,query_params=query)
+            # raw_response = requests.post(url_base + '/submit', params=query, headers=self.__authorization_headers)
+            # raw_response = self.__api_client.request('POST',url_base + '/submit',headers=self.__authorization_headers,query_params=query)
 
         # print(request)
         # return the body content of the Lambda call
 
-        #raw_response.raise_for_status()
+        # raw_response.raise_for_status()
         logging.info("Finish submit")
-        #return raw_response.json()
+        # return raw_response.json()
         return raw_response
 
     # TODO make it private
@@ -401,7 +406,7 @@ class AWSConnector:
         query = {
             "submission_content": str(submission_payload_string)
         }
-        #raw_response = requests.get(url_base + '/result', headers=self.__authorization_headers, params=query)
+        # raw_response = requests.get(url_base + '/result', headers=self.__authorization_headers, params=query)
         with httpapi.ApiClient(self.__configuration) as api_client:
             # Create an instance of the API class
             api_instance = default_api.DefaultApi(api_client)
