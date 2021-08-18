@@ -2,11 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-output "redis_url" {
-  description = "Redis URL"
-  value       = var.redis_endpoint_url
-}
-
 output "s3_bucket_name" {
   description = "Name of the bucket"
   value       = aws_s3_bucket.htc-stdout-bucket.id
@@ -38,5 +33,15 @@ output "redis_pod_ip" {
 output "redis_without_ssl_pod_ip" {
   description = "IP address of redis pod without ssl"
   value = kubernetes_service.redis-without-ssl.status.0.load_balancer.0.ingress.0.ip
+}
+
+output "dynamodb_pod_ip" {
+  description = "IP address of dynamodb pod"
+  value = kubernetes_service.dynamodb.status.0.load_balancer.0.ingress.0.ip
+}
+
+output "local_services_pod_ip" {
+  description = "IP address of local services pod"
+  value = kubernetes_service.local_services.status.0.load_balancer.0.ingress.0.ip
 }
 

@@ -200,6 +200,10 @@ variable "redis_port" {
   description = "Port for Redis instance"
 }
 
+variable "redis_port_without_ssl" {
+  description = "Port for Redis instance without ssl"
+}
+
 variable "retention_in_days" {
   description = "Retention in days for cloudwatch logs"
   type =  number
@@ -221,22 +225,6 @@ variable "vpc_pod_cidr_block_private" {
 }
 */
 
-variable "dynamodb_endpoint_url" {
-  description = "dynamodb endpoint url"
-}
-
-variable "sqs_endpoint_url" {
-  description = "sqs endpoint url"
-}
-
-variable "local_service_endpoint_url" {
-  description = "local service endpoint url"
-}
-
-variable "redis_endpoint_url" {
-  description = "redis endpoint url"
-}
-
 variable "redis_with_ssl" {
   type = bool
   description = "redis with ssl"
@@ -248,11 +236,5 @@ variable "connection_redis_timeout" {
 
 variable "certificates_dir_path" {
   description = "Path of the directory containing the certificates redis.crt, redis.key, ca.crt"
-}
-
-variable "redis_port_without_ssl" {
-  description = "Port for Redis instance without ssl"
-  default = 7777
-  type = number
 }
 

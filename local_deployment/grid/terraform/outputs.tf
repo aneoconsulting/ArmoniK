@@ -12,11 +12,18 @@ output "private_api_endpoint" {
   value = module.control_plane.private_api_gateway_url
 }
 
-output "redis_pod_ip" {
-  description = "Private API endpoint for the HTC grid"
-  value = module.control_plane.redis_pod_ip
+output "redis_url" {
+  value = "${module.control_plane.redis_pod_ip}:${var.redis_port}"
 }
 
-output "redis_without_ssl_pod_ip" {
-  value = module.control_plane.redis_without_ssl_pod_ip
+output "redis_without_ssl_url" {
+  value = "${module.control_plane.redis_without_ssl_pod_ip}:${var.redis_port_without_ssl}"
+}
+
+output "dynamodb_url" {
+  value = "http://${module.control_plane.dynamodb_pod_ip}:${var.dynamodb_port}"
+}
+
+output "local_services_url" {
+  value = "http://${module.control_plane.local_services_pod_ip}:${var.local_services_port}"
 }

@@ -470,6 +470,12 @@ variable "redis_port" {
   type = number
 }
 
+variable "redis_port_without_ssl" {
+  description = "Port for Redis instance without ssl"
+  default = 7777
+  type = number
+}
+
 variable "retention_in_days" {
   description = "Retention in days for cloudwatch logs"
   type =  number
@@ -479,22 +485,6 @@ variable "retention_in_days" {
 variable "kms_key_arn" {
   description = "KMS key ARN for S3 bucket"
   type =  string
-}
-
-variable "dynamodb_endpoint_url" {
-  description = "dynamodb endpoint url"
-}
-
-variable "sqs_endpoint_url" {
-  description = "sqs endpoint url"
-}
-
-variable "local_service_endpoint_url" {
-  description = "local service endpoint url"
-}
-
-variable "redis_endpoint_url" {
-  description = "redis endpoint url"
 }
 
 variable "redis_with_ssl" {
@@ -521,10 +511,4 @@ variable "redis_client_pfx" {
 
 variable "cluster_config" {
   description = "Configuration type of the cluster (Local, Cloud, OnPremise)"
-}
-
-variable "redis_port_without_ssl" {
-  description = "Port for Redis instance without ssl"
-  default = 7777
-  type = number
 }

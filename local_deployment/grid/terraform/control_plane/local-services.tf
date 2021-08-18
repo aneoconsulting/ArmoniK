@@ -45,10 +45,27 @@ resource "kubernetes_deployment" "local_services" {
             name = "DEBUG"
             value = "true"
           }
+          env {
+            name = "USE_SSL"
+            value = "true"
+          }
+          env {
+            name = "DATA_DIR"
+            value = "/tmp/localstack/data"
+          }
 
           port {
             container_port = var.local_services_port
           }
+
+          volume_mount {
+            name = "localstack-data"
+            mount_path = "/tmp/localstack"
+          }
+        }
+
+        volume {
+          name = "localstack-data"
         }
       }
     }

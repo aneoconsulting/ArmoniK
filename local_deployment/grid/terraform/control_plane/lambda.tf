@@ -90,7 +90,9 @@ module "submit_task" {
   depends_on = [
     kubernetes_service.local_services,
     aws_iam_role_policy_attachment.lambda_logs_attachment,
-    aws_cloudwatch_log_group.submit_task_logs
+    aws_cloudwatch_log_group.submit_task_logs,
+    kubernetes_deployment.redis,
+    kubernetes_deployment.redis-without-ssl
   ]
   source  = "terraform-aws-modules/lambda/aws"
   version = "v2.4.0"
@@ -149,16 +151,14 @@ module "submit_task" {
     GRID_QUEUE_SERVICE = var.grid_queue_service,
     GRID_QUEUE_CONFIG = var.grid_queue_config,
     S3_BUCKET = aws_s3_bucket.htc-stdout-bucket.id,
-    REDIS_URL = "redis",
+    REDIS_URL = var.redis_with_ssl ? "${kubernetes_service.redis.status.0.load_balancer.0.ingress.0.ip}:${var.redis_port}" : "${kubernetes_service.redis-without-ssl.status.0.load_balancer.0.ingress.0.ip}:${var.redis_port_without_ssl}",
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
     AWS_DEFAULT_REGION = var.region,
-    SQS_PORT = var.local_services_port,
-    DYNAMODB_PORT = var.dynamodb_port,
     AWS_ACCESS_KEY_ID = var.access_key,
     AWS_SECRET_ACCESS_KEY = var.secret_key,
-    SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}:${var.local_services_port}",
-    DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}:${var.dynamodb_port}"
+    SQS_ENDPOINT_URL = "http://${kubernetes_service.local_services.status.0.load_balancer.0.ingress.0.ip}:${var.local_services_port}",
+    DYNAMODB_ENDPOINT_URL = "http://${kubernetes_service.dynamodb.status.0.load_balancer.0.ingress.0.ip}:${var.dynamodb_port}"
   }
 
    tags = {
@@ -171,7 +171,9 @@ module  "get_results" {
   depends_on = [
     kubernetes_service.local_services,
     aws_iam_role_policy_attachment.lambda_logs_attachment,
-    aws_cloudwatch_log_group.get_results_logs
+    aws_cloudwatch_log_group.get_results_logs,
+    kubernetes_deployment.redis,
+    kubernetes_deployment.redis-without-ssl
   ]
   source  = "terraform-aws-modules/lambda/aws"
   version = "v2.4.0"
@@ -220,7 +222,7 @@ module  "get_results" {
     TASKS_STATUS_TABLE_CONFIG=var.tasks_status_table_config,
     TASKS_QUEUE_NAME=aws_sqs_queue.htc_task_queue["__0"].name,
     S3_BUCKET=aws_s3_bucket.htc-stdout-bucket.id,
-    REDIS_URL = "redis",
+    REDIS_URL = var.redis_with_ssl ? "${kubernetes_service.redis.status.0.load_balancer.0.ingress.0.ip}:${var.redis_port}" : "${kubernetes_service.redis-without-ssl.status.0.load_balancer.0.ingress.0.ip}:${var.redis_port_without_ssl}",
     GRID_STORAGE_SERVICE=var.grid_storage_service,
     GRID_QUEUE_SERVICE = var.grid_queue_service,
     GRID_QUEUE_CONFIG = var.grid_queue_config,
@@ -232,12 +234,10 @@ module  "get_results" {
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
     AWS_DEFAULT_REGION = var.region,
-    SQS_PORT = var.local_services_port,
-    DYNAMODB_PORT = var.dynamodb_port,
     AWS_ACCESS_KEY_ID = var.access_key,
     AWS_SECRET_ACCESS_KEY = var.secret_key,
-    SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}:${var.local_services_port}",
-    DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}:${var.dynamodb_port}"
+    SQS_ENDPOINT_URL = "http://${kubernetes_service.local_services.status.0.load_balancer.0.ingress.0.ip}:${var.local_services_port}",
+    DYNAMODB_ENDPOINT_URL = "http://${kubernetes_service.dynamodb.status.0.load_balancer.0.ingress.0.ip}:${var.dynamodb_port}"
   }
    tags = {
     service     = "htc-grid"
@@ -249,7 +249,9 @@ module "cancel_tasks" {
   depends_on = [
     kubernetes_service.local_services,
     aws_iam_role_policy_attachment.lambda_logs_attachment,
-    aws_cloudwatch_log_group.cancel_tasks_logs
+    aws_cloudwatch_log_group.cancel_tasks_logs,
+    kubernetes_deployment.redis,
+    kubernetes_deployment.redis-without-ssl
   ]
   source  = "terraform-aws-modules/lambda/aws"
   version = "v2.4.0"
@@ -308,16 +310,14 @@ module "cancel_tasks" {
     GRID_QUEUE_SERVICE = var.grid_queue_service,
     GRID_QUEUE_CONFIG = var.grid_queue_config,
     S3_BUCKET = aws_s3_bucket.htc-stdout-bucket.id,
-    REDIS_URL = "redis",
+    REDIS_URL = var.redis_with_ssl ? "${kubernetes_service.redis.status.0.load_balancer.0.ingress.0.ip}:${var.redis_port}" : "${kubernetes_service.redis-without-ssl.status.0.load_balancer.0.ingress.0.ip}:${var.redis_port_without_ssl}",
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
     AWS_DEFAULT_REGION = var.region,
-    SQS_PORT = var.local_services_port,
-    DYNAMODB_PORT = var.dynamodb_port,
     AWS_ACCESS_KEY_ID = var.access_key,
     AWS_SECRET_ACCESS_KEY = var.secret_key,
-    SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}:${var.local_services_port}",
-    DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}:${var.dynamodb_port}"
+    SQS_ENDPOINT_URL = "http://${kubernetes_service.local_services.status.0.load_balancer.0.ingress.0.ip}:${var.local_services_port}",
+    DYNAMODB_ENDPOINT_URL = "http://${kubernetes_service.dynamodb.status.0.load_balancer.0.ingress.0.ip}:${var.dynamodb_port}"
   }
 
    tags = {
@@ -332,6 +332,8 @@ module "ttl_checker" {
   depends_on = [
     aws_cloudwatch_log_group.ttl_log,
     kubernetes_service.local_services,
+    kubernetes_deployment.redis,
+    kubernetes_deployment.redis-without-ssl
   ]
   source  = "terraform-aws-modules/lambda/aws"
   version = "v2.4.0"
@@ -390,12 +392,10 @@ module "ttl_checker" {
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
     AWS_DEFAULT_REGION = var.region,
-    SQS_PORT = var.local_services_port,
-    DYNAMODB_PORT = var.dynamodb_port,
     AWS_ACCESS_KEY_ID = var.access_key,
     AWS_SECRET_ACCESS_KEY = var.secret_key,
-    SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}:${var.local_services_port}",
-    DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}:${var.dynamodb_port}"
+    SQS_ENDPOINT_URL = "http://${kubernetes_service.local_services.status.0.load_balancer.0.ingress.0.ip}:${var.local_services_port}",
+    DYNAMODB_ENDPOINT_URL = "http://${kubernetes_service.dynamodb.status.0.load_balancer.0.ingress.0.ip}:${var.dynamodb_port}"
   }
 
    tags = {

@@ -217,12 +217,9 @@ module "control_plane" {
     dynamodb_port = var.dynamodb_port
     local_services_port = var.local_services_port
     redis_port = var.redis_port
+    redis_port_without_ssl = var.redis_port_without_ssl
     retention_in_days = var.retention_in_days
     //kms_key_arn = var.kms_key_arn
-    dynamodb_endpoint_url = var.dynamodb_endpoint_url
-    sqs_endpoint_url = var.sqs_endpoint_url
-    local_service_endpoint_url = var.local_service_endpoint_url
-    redis_endpoint_url = var.redis_endpoint_url
     redis_with_ssl = var.redis_with_ssl
     connection_redis_timeout = var.connection_redis_timeout
     certificates_dir_path = var.certificates_dir_path
