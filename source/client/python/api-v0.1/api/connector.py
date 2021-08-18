@@ -122,19 +122,21 @@ class AWSConnector:
         logging.info("AGENT:", agent_config_data)
 
         redis_endpoint_url = agent_config_data['redis_endpoint_url']
+        use_ssl = True
         if agent_config_data['redis_with_ssl'].lower() == "false":
+            use_ssl = False
             redis_endpoint_url = agent_config_data['redis_endpoint_url_without_ssl']
 
-        self.in_out_manager = in_out_manager(
-            agent_config_data['grid_storage_service'],
-            agent_config_data['s3_bucket'],
-            redis_endpoint_url,
-            s3_region=agent_config_data['region'],
-            s3_custom_resource=s3_custom_resource,
-            redis_custom_connection=redis_custom_connection,
-            redis_certfile=agent_config_data.get('redis_certfile', None),
-            redis_keyfile=agent_config_data.get('redis_keyfile', None),
-            redis_ca_cert=agent_config_data.get('redis_ca_cert', None))
+        self.in_out_manager = in_out_manager(grid_storage_service=agent_config_data['grid_storage_service'],
+                                             s3_bucket=agent_config_data['s3_bucket'],
+                                             redis_url=redis_endpoint_url,
+                                             s3_region=agent_config_data['region'],
+                                             s3_custom_resource=s3_custom_resource,
+                                             redis_custom_connection=redis_custom_connection,
+                                             redis_certfile=agent_config_data.get('redis_certfile', None),
+                                             redis_keyfile=agent_config_data.get('redis_keyfile', None),
+                                             redis_ca_cert=agent_config_data.get('redis_ca_cert', None),
+                                             use_ssl=use_ssl)
 
         self.__api_gateway_endpoint = ""
         self.__public_api_gateway_endpoint = agent_config_data['public_api_gateway_url']

@@ -238,7 +238,7 @@ variable "certificates_dir_path" {
   description = "Path of the directory containing the certificates redis.crt, redis.key, ca.crt"
 }
 
-variable "redis_ca_cert_file" {
+variable "redis_ca_cert" {
   description = "path to the authority certificate file (ca.crt) of the redis server in the docker machine"
 }
 

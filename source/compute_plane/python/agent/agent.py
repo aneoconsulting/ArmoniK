@@ -146,17 +146,19 @@ state_table_cc = state_table_manager(
     region)
 
 redis_endpoint_url = agent_config_data['redis_endpoint_url']
+use_ssl = True
 if agent_config_data['redis_with_ssl'].lower() == "false":
+    use_ssl = False
     redis_endpoint_url = agent_config_data['redis_endpoint_url_without_ssl']
 
-stdout_iom = in_out_manager(
-    agent_config_data['grid_storage_service'],
-    agent_config_data['s3_bucket'],
-    redis_endpoint_url,
-    s3_region=region,
-    redis_certfile=agent_config_data.get('redis_certfile', None),
-    redis_keyfile=agent_config_data.get('redis_keyfile', None),
-    redis_ca_cert=agent_config_data.get('redis_ca_cert', None))
+stdout_iom = in_out_manager(grid_storage_service=agent_config_data['grid_storage_service'],
+                            s3_bucket=agent_config_data['s3_bucket'],
+                            redis_url=redis_endpoint_url,
+                            s3_region=region,
+                            redis_certfile=agent_config_data.get('redis_certfile', None),
+                            redis_keyfile=agent_config_data.get('redis_keyfile', None),
+                            redis_ca_cert=agent_config_data.get('redis_ca_cert', None),
+                            use_ssl=use_ssl)
 
 perf_tracker_pre = performance_tracker_initializer(agent_config_data["metrics_are_enabled"],
                                                    agent_config_data["metrics_pre_agent_connection_string"],

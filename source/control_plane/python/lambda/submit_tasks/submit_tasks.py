@@ -49,13 +49,15 @@ perf_tracker = performance_tracker_initializer(
     os.environ["METRICS_GRAFANA_PRIVATE_IP"])
 
 task_input_passed_via_external_storage = os.environ["TASK_INPUT_PASSED_VIA_EXTERNAL_STORAGE"]
-stdin_iom = in_out_manager(
-    os.environ['GRID_STORAGE_SERVICE'],
-    os.environ['S3_BUCKET'],
-    os.environ['REDIS_URL'],
-    redis_certfile=os.environ.get('REDIS_CERTFILE', None),
-    redis_keyfile=os.environ.get('REDIS_KEYFILE', None),
-    redis_ca_cert=os.environ.get('REDIS_CA_CERT', None))
+
+use_ssl = (os.environ["REDIS_USE_SSL"].lower() == "true")
+stdin_iom = in_out_manager(grid_storage_service=os.environ['GRID_STORAGE_SERVICE'],
+                           s3_bucket=os.environ['S3_BUCKET'],
+                           redis_url=os.environ['REDIS_URL'],
+                           redis_certfile=os.environ.get('REDIS_CERTFILE', None),
+                           redis_keyfile=os.environ.get('REDIS_KEYFILE', None),
+                           redis_ca_cert=os.environ.get('REDIS_CA_CERT', None),
+                           use_ssl=use_ssl)
 
 
 def write_to_dynamodb(task_json, batch):

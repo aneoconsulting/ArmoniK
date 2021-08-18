@@ -26,6 +26,7 @@ namespace HTCGrid
                 var configurationOptions = RedisConfigurationFactory.createConfiguration(gridConfig_);
                 Console.WriteLine($"(HtcDataClient) Redis Connecting to URL: ({configurationOptions.EndPoints[0]}, ssl={configurationOptions.Ssl}, connectTimeout={configurationOptions.ConnectTimeout})");
                 connection_ = ConnectionMultiplexer.Connect(configurationOptions);
+                Console.WriteLine("(HtcDataClient) Redis Connecting successful");
                 db_ =  connection_.GetDatabase();
             }
 
