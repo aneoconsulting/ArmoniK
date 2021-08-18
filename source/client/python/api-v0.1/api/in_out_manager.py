@@ -23,7 +23,7 @@ logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcN
 logging.info("Init AWS Grid Connector")
 
 
-def in_out_manager(grid_storage_service, s3_bucket, redis_url, s3_region=None, s3_custom_resource=None, redis_custom_connection=None):
+def in_out_manager(grid_storage_service, s3_bucket, redis_url, s3_region=None, s3_custom_resource=None, redis_custom_connection=None, redis_ca_cert=None, redis_keyfile=None, redis_certfile=None):
     """This function returns a connection to the data plane. This connection will be used for uploading and
        downloading the payload associated to the tasks
 
@@ -34,6 +34,9 @@ def in_out_manager(grid_storage_service, s3_bucket, redis_url, s3_region=None, s
         redis_url(string): the URL of the redis cluster (valid only if redis has been deployed with data plane)
         s3_custom_resource(object): override the default connection to AWS S3 service (valid only if an S3 bucket has been deployed with data plane)
         redis_custom_connection(object): override the default connection to the redis cluster (valid only if redis has been deployed with data plane)
+        redis_ca_cert(string): path to redis CA certificate
+        redis_keyfile(string): path to redis key file
+        redis_certfile(string): path to redis certificate
 
     Returns:
         object: a connection to the data plane
@@ -48,10 +51,21 @@ def in_out_manager(grid_storage_service, s3_bucket, redis_url, s3_region=None, s
             cache_url=redis_url,
             use_S3=False,
             s3_custom_resource=s3_custom_resource,
-            redis_custom_connection=redis_custom_connection)
+            redis_custom_connection=redis_custom_connection,
+            redis_certfile=redis_certfile,
+            redis_keyfile=redis_keyfile,
+            redis_ca_cert=redis_ca_cert)
 
     elif grid_storage_service == "S3+REDIS":
-        return InOutRedis(namespace=s3_bucket, cache_url=redis_url, use_S3=True, region=s3_region, s3_custom_resource=s3_custom_resource)
+        return InOutRedis(
+            namespace=s3_bucket,
+            cache_url=redis_url,
+            use_S3=True,
+            region=s3_region,
+            s3_custom_resource=s3_custom_resource,
+            redis_certfile=redis_certfile,
+            redis_keyfile=redis_keyfile,
+            redis_ca_cert=redis_ca_cert)
 
     else:
         raise Exception("InOutManager can not parse connection string: {}".format(

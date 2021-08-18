@@ -32,7 +32,10 @@ class InOutRedis:
                  use_S3=False,
                  region=None,
                  s3_custom_resource=None,
-                 redis_custom_connection=None):
+                 redis_custom_connection=None,
+                 redis_ca_cert=None,
+                 redis_keyfile=None,
+                 redis_certfile=None):
         """
         Initialize a connection with data plane backed by a Redis cluster and optionally a S3 Bucket
         Args:
@@ -43,6 +46,9 @@ class InOutRedis:
             region(string): region where the s3 bucket has been created
             s3_custom_resource(object): override default S3 resource
             redis_custom_connection(object): override default redis connection
+            redis_ca_cert(string): path to redis CA certificate
+            redis_keyfile(string): path to redis key file
+            redis_certfile(string): path to redis certificate
         """
         self.namespace = namespace
         self.cache_url = cache_url
@@ -58,10 +64,20 @@ class InOutRedis:
             self.bucket = None
 
         if redis_custom_connection is None:
-            self.redis_cache = redis.StrictRedis(
-                host = cache_url,
-                ssl=True
-            )
+            if redis_ca_cert != None and redis_keyfile != None and redis_certfile != None:
+                self.redis_cache = redis.StrictRedis(
+                    host = cache_url,
+                    ssl=True,
+                    ssl_cert_reqs='required',
+                    ssl_ca_certs=redis_ca_cert,
+                    ssl_keyfile=redis_keyfile,
+                    ssl_certfile=redis_certfile
+                )
+            else:
+                self.redis_cache = redis.StrictRedis(
+                    host = cache_url,
+                    ssl=True
+                )
         else:
             self.redis_cache = redis_custom_connection
 

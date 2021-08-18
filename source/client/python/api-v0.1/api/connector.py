@@ -131,7 +131,10 @@ class AWSConnector:
             redis_endpoint_url,
             s3_region=agent_config_data['region'],
             s3_custom_resource=s3_custom_resource,
-            redis_custom_connection=redis_custom_connection)
+            redis_custom_connection=redis_custom_connection,
+            redis_certfile=agent_config_data.get('redis_certfile', None),
+            redis_keyfile=agent_config_data.get('redis_keyfile', None),
+            redis_ca_cert=agent_config_data.get('redis_ca_cert', None))
 
         self.__api_gateway_endpoint = ""
         self.__public_api_gateway_endpoint = agent_config_data['public_api_gateway_url']
