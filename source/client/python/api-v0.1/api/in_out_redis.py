@@ -6,6 +6,7 @@ import boto3
 import sys
 import io
 import redis
+import os.path
 
 INPUT_POSTFIX = '-input'
 OUTPUT_POSTFIX = '-output'
@@ -67,6 +68,15 @@ class InOutRedis:
 
         if redis_custom_connection is None:
             if redis_ca_cert is not None and redis_keyfile is not None and redis_certfile is not None and use_ssl:
+                if not os.path.exists(redis_keyfile):
+                    print('file not found :', redis_keyfile)
+                    raise FileNotFoundError(redis_keyfile)
+                if not os.path.exists(redis_certfile):
+                    print('file not found :', redis_certfile)
+                    raise FileNotFoundError(redis_certfile)
+                if not os.path.exists(redis_ca_cert):
+                    print('file not found :', redis_ca_cert)
+                    raise FileNotFoundError(redis_ca_cert)
                 self.redis_cache = redis.StrictRedis(
                     host=cache_url,
                     port=redis_port,
@@ -76,6 +86,7 @@ class InOutRedis:
                     ssl_keyfile=redis_keyfile,
                     ssl_certfile=redis_certfile
                 )
+                self.redis_cache.ping()
             else:
                 self.redis_cache = redis.StrictRedis(
                     host=cache_url,
