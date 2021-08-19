@@ -78,7 +78,7 @@ def submit_tasks_batch(
             while True:
 
                 try:
-                    submission_resp = adapter.send(job)
+                    submission_resp = json.loads(dict(adapter.send(job))['body'])
                 except Exception as e:
                     retries += 1
                     if retries > 1:

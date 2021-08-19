@@ -28,7 +28,7 @@ resource "kubernetes_stateful_set" "dynamodb" {
 
       spec {
         container {
-          image   = "localstack/localstack:latest"
+          image   = "localstack/localstack-full:0.12.6"
           name    = "dynamodb"
 
           env {

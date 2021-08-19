@@ -6,6 +6,10 @@ variable "region" {
   description = "AWS region"
 }
 
+variable "project_name" {
+  description = "name of project"
+}
+
 variable "access_key" {
   description = "AWS access key"
 }
@@ -20,6 +24,10 @@ variable "aws_htc_ecr" {
 
 variable "lambda_runtime" {
   description = "Python version"
+}
+
+variable "lambda_timeout" {
+  description = "Lambda function timeout"
 }
 
 variable "ddb_status_table" {
@@ -248,4 +256,28 @@ variable "redis_key_file" {
 
 variable "redis_cert_file" {
   description = "path to the client certificate file (redis.crt) of the redis server in the docker machine"
+}
+
+variable "cancel_tasks_port" {
+  description = "Port for Cancel Tasks Lambda function"
+}
+
+variable "submit_task_port" {
+  description = "Port for Submit Task Lambda function"
+}
+
+variable "get_results_port" {
+  description = "Port for Get Results Lambda function"
+}
+
+variable "ttl_checker_port" {
+  description = "Port for TTL Checker Lambda function"
+}
+
+variable "nginx_port" {
+  description = "Port for nginx instance"
+}
+
+variable "nginx_endpoint_url" {
+  description = "Url for nginx instance"
 }

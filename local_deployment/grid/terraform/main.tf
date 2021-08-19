@@ -179,6 +179,7 @@ module "control_plane" {
     suffix = local.project_name
     region = var.region
     lambda_runtime = var.lambda_runtime
+    lambda_timeout = var.lambda_timeout
     aws_htc_ecr = local.aws_htc_ecr
     ddb_status_table = local.ddb_status_table
     sqs_queue = local.sqs_queue
@@ -226,6 +227,13 @@ module "control_plane" {
     redis_ca_cert = var.redis_ca_cert
     redis_key_file = var.redis_key_file
     redis_cert_file = var.redis_cert_file
+    submit_task_port = var.submit_task_port
+    cancel_tasks_port = var.cancel_tasks_port
+    get_results_port = var.get_results_port
+    ttl_checker_port = var.ttl_checker_port
+    nginx_endpoint_url = var.nginx_endpoint_url
+    nginx_port = var.nginx_port
+    project_name = var.project_name
     /*peer_vpc_cidr_block = data.aws_vpc.peer_vpc.cidr_block
     vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
 

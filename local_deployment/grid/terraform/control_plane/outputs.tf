@@ -6,10 +6,10 @@ output "s3_bucket_name" {
   description = "Name of the bucket"
   value       = aws_s3_bucket.htc-stdout-bucket.id
 }
-
-#output "public_api_gateway_url" {
-#  value = aws_api_gateway_deployment.htc_grid_public_deployment.invoke_url
-#}
+/*
+output "public_api_gateway_url" {
+  value = aws_api_gateway_deployment.htc_grid_public_deployment.invoke_url
+}
 
 output "private_api_gateway_url" {
   value = aws_api_gateway_deployment.htc_grid_private_deployment.invoke_url
@@ -24,7 +24,7 @@ output "api_gateway_key" {
   value = aws_api_gateway_api_key.htc_grid_api_key.value
   sensitive = true
 }
-
+*/
 output "redis_pod_ip" {
   description = "IP address of redis pod"
   value = kubernetes_service.redis.status.0.load_balancer.0.ingress.0.ip
@@ -44,4 +44,10 @@ output "local_services_pod_ip" {
   description = "IP address of local services pod"
   value = kubernetes_service.local_services.status.0.load_balancer.0.ingress.0.ip
 }
+
+output "dynamodb_table_id" {
+  description = "dynamodb table id"
+  value = aws_dynamodb_table.htc_tasks_status_table.id
+}
+
 

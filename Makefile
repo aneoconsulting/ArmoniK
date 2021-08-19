@@ -22,9 +22,9 @@ BUILD_TYPE?=Release
 
 PACKAGE_DIR := ./dist
 PACKAGES    := $(wildcard $(PACKAGE_DIR)/*.whl)
-.PHONY: all utils api lambda submitter  packages test test-api test-utils test-agent lambda-init config-c++
+.PHONY: all utils api lambda submitter  packages test test-api test-utils test-agent lambda-init lambda-control-plane config-c++
 
-all: utils api lambda lambda-init
+all: utils api lambda lambda-init lambda-control-plane
 
 
 ###############################################
@@ -152,6 +152,20 @@ dotnet-submitter: utils api
 	
 mock-submitter: utils api
 	$(MAKE) -C ./examples/mock_integration/Client/
+
+lambda-control-plane: utils api lambda-control-plane-submit-tasks lambda-control-plane-get-results lambda-control-plane-cancel-tasks lambda-control-plane-ttl-checker
+
+lambda-control-plane-submit-tasks: utils api
+	$(MAKE) -C ./source/control_plane/python/lambda/submit_tasks
+
+lambda-control-plane-get-results: utils api
+	$(MAKE) -C ./source/control_plane/python/lambda/get_results
+
+lambda-control-plane-cancel-tasks: utils api
+	$(MAKE) -C ./source/control_plane/python/lambda/cancel_tasks
+
+lambda-control-plane-ttl-checker: utils api
+	$(MAKE) -C ./source/control_plane/python/lambda/ttl_checker
 
 ####################################
 ##### building documentation #######

@@ -7,11 +7,6 @@ output "agent_config" {
   value       = abspath(local_file.agent_config_file.filename)
 }
 
-output "private_api_endpoint" {
-  description = "Private API endpoint for the HTC grid"
-  value = module.control_plane.private_api_gateway_url
-}
-
 output "redis_url" {
   value = "${module.control_plane.redis_pod_ip}:${var.redis_port}"
 }
@@ -26,4 +21,8 @@ output "dynamodb_url" {
 
 output "local_services_url" {
   value = "http://${module.control_plane.local_services_pod_ip}:${var.local_services_port}"
+}
+
+output "dynamodb_table_id" {
+  value = module.control_plane.dynamodb_table_id
 }

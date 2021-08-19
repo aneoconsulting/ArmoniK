@@ -26,12 +26,12 @@ resource "kubernetes_deployment" "local_services" {
 
       spec {
         container {
-          image   = "localstack/localstack:latest"
+          image   = "localstack/localstack-full:0.12.6"
           name    = "local-services"
 
           env {
             name = "SERVICES"
-            value = "iam,s3,cloudwatch,logs,ec2,events,lambda,sqs,apigateway"
+            value = "iam,s3,cloudwatch,logs,ec2,events,lambda,sqs"
           }
           env {
             name = "EDGE_PORT"

@@ -52,6 +52,11 @@ variable "lambda_runtime" {
   description = "Lambda runtine"
 }
 
+variable "lambda_timeout" {
+  default = 300
+  description = "Lambda function timeout"
+}
+
 variable "kubernetes_version" {
   default = "1.20"
   description = "Name of EKS cluster in AWS"
@@ -474,6 +479,30 @@ variable "redis_port_without_ssl" {
   type = number
 }
 
+variable "cancel_tasks_port" {
+  description = "Port for Cancel Tasks Lambda function"
+  default = 9000
+  type = number
+}
+
+variable "submit_task_port" {
+  description = "Port for Submit Task Lambda function"
+  type = number
+  default = 9001
+}
+
+variable "get_results_port" {
+  description = "Port for Get Results Lambda function"
+  type = number
+  default = 9002
+}
+
+variable "ttl_checker_port" {
+  description = "Port for TTL Checker Lambda function"
+  type = number
+  default = 9003
+}
+
 variable "retention_in_days" {
   description = "Retention in days for cloudwatch logs"
   type =  number
@@ -517,4 +546,16 @@ variable "redis_cert_file" {
 
 variable "cluster_config" {
   description = "Configuration type of the cluster (Local, Cloud, OnPremise)"
+}
+
+variable "nginx_port" {
+  description = "Port for nginx instance"
+  default = 80
+  type = number
+}
+
+variable "nginx_endpoint_url" {
+  description = "Url for nginx instance"
+  default = "http://ingress-nginx-controller.ingress-nginx"
+  type = string
 }

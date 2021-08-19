@@ -49,6 +49,10 @@
         "submitter",
         "influxdb",
         "aws-xray-daemon",
-        "lambda-build"
+        "lambda-build",
+        "submit_tasks",
+        "get_results",
+        "cancel_tasks",
+        "ttl_checker"
     ]
 }
