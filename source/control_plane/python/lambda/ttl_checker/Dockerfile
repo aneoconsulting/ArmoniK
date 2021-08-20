@@ -1,4 +1,4 @@
-FROM python:3.7.7-slim-buster
+FROM public.ecr.aws/lambda/python:3.7
 
 COPY ./source/client/python/api-v0.1/ .
 COPY ./source/client/python/utils/ .

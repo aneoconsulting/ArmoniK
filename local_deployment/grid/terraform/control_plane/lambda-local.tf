@@ -30,7 +30,7 @@ resource "kubernetes_config_map" "lambda_local" {
     REDIS_USE_SSL = var.redis_with_ssl,
     REDIS_CERTFILE = var.redis_cert_file,
     REDIS_KEYFILE = var.redis_key_file,
-    REDIS_CA_CERT = var.redis_ca_cert
+    REDIS_CA_CERT = var.redis_ca_cert,
     USERNAME = var.access_key,
     PASSWORD = var.secret_key,
     AWS_LAMBDA_FUNCTION_TIMEOUT = var.lambda_timeout,
@@ -104,7 +104,7 @@ resource "kubernetes_deployment" "cancel_tasks" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map.lambda_local.metadata.0.name
-              optional = false
+              optional = true
             }
           }
 
@@ -191,7 +191,7 @@ resource "kubernetes_deployment" "get_results" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map.lambda_local.metadata.0.name
-              optional = false
+              optional = true
             }
           }
 
@@ -269,7 +269,7 @@ resource "kubernetes_deployment" "submit_task" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map.lambda_local.metadata.0.name
-              optional = false
+              optional = true
             }
           }
 
@@ -374,7 +374,7 @@ resource "kubernetes_deployment" "ttl_checker" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map.lambda_local.metadata.0.name
-              optional = false
+              optional = true
             }
           }
 

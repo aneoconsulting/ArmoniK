@@ -31,10 +31,10 @@ init:
 	terraform init -backend-config="bucket=$(S3_GRID_TFSTATE_BUCKET_NAME)" -backend-config="region=$(REGION)"
 
 apply: $(TF_SRCS) $(GRID_CONFIG)
-	terraform apply -var-file $(GRID_CONFIG) -var kms_key_arn=$(KMS_KEY_ARN) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)" -var="grafana_admin_password=$(GRAFANA_ADMIN_PASSWORD)" -var="access_key=$(AWS_ACCESS_KEY_ID)" -var="secret_key=$(AWS_SECRET_ACCESS_KEY)"
+	terraform apply -var-file $(GRID_CONFIG) -var kms_key_arn=$(KMS_KEY_ARN) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)" -var="grafana_admin_password=$(GRAFANA_ADMIN_PASSWORD)"
 
 destroy:
-	terraform destroy -var-file $(GRID_CONFIG) -var kms_key_arn=$(KMS_KEY_ARN) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)"  -var="access_key=$(AWS_ACCESS_KEY_ID)" -var="secret_key=$(AWS_SECRET_ACCESS_KEY)"
+	terraform destroy -var-file $(GRID_CONFIG) -var kms_key_arn=$(KMS_KEY_ARN) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)"
 
 get-grafana-password:
 	@terraform output grafana_admin_password
