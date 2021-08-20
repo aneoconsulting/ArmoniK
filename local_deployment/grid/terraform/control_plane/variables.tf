@@ -6,10 +6,6 @@ variable "region" {
   description = "AWS region"
 }
 
-variable "project_name" {
-  description = "name of project"
-}
-
 variable "access_key" {
   description = "AWS access key"
 }

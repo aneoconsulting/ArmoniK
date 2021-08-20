@@ -233,7 +233,6 @@ module "control_plane" {
     ttl_checker_port = var.ttl_checker_port
     nginx_endpoint_url = var.nginx_endpoint_url
     nginx_port = var.nginx_port
-    project_name = var.project_name
     /*peer_vpc_cidr_block = data.aws_vpc.peer_vpc.cidr_block
     vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
 

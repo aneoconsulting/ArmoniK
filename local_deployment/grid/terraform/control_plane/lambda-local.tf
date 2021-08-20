@@ -92,7 +92,7 @@ resource "kubernetes_deployment" "cancel_tasks" {
         }
 
         container {
-          image   = "${var.aws_htc_ecr}/cancel_tasks:${var.project_name}"
+          image   = "${var.aws_htc_ecr}/cancel_tasks:${var.suffix}"
           name    = "cancel-tasks"
 
           resources {
@@ -104,7 +104,7 @@ resource "kubernetes_deployment" "cancel_tasks" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map.lambda_local.metadata.0.name
-              optional = true
+              optional = false
             }
           }
 
@@ -179,7 +179,7 @@ resource "kubernetes_deployment" "get_results" {
         }
 
         container {
-          image   = "${var.aws_htc_ecr}/get_results:${var.project_name}"
+          image   = "${var.aws_htc_ecr}/get_results:${var.suffix}"
           name    = "get-results"
 
           resources {
@@ -191,7 +191,7 @@ resource "kubernetes_deployment" "get_results" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map.lambda_local.metadata.0.name
-              optional = true
+              optional = false
             }
           }
 
@@ -257,7 +257,7 @@ resource "kubernetes_deployment" "submit_task" {
         }
 
         container {
-          image   = "${var.aws_htc_ecr}/submit_tasks:${var.project_name}"
+          image   = "${var.aws_htc_ecr}/submit_tasks:${var.suffix}"
           name    = "submit-task"
 
           resources {
@@ -269,7 +269,7 @@ resource "kubernetes_deployment" "submit_task" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map.lambda_local.metadata.0.name
-              optional = true
+              optional = false
             }
           }
 
@@ -362,7 +362,7 @@ resource "kubernetes_deployment" "ttl_checker" {
         }
 
         container {
-          image   = "${var.aws_htc_ecr}/ttl_checker:${var.project_name}"
+          image   = "${var.aws_htc_ecr}/ttl_checker:${var.suffix}"
           name    = "ttl-checker"
 
           resources {
@@ -374,7 +374,7 @@ resource "kubernetes_deployment" "ttl_checker" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map.lambda_local.metadata.0.name
-              optional = true
+              optional = false
             }
           }
 
@@ -395,13 +395,15 @@ resource "kubernetes_deployment" "ttl_checker" {
   ]
 }
 
-resource "kubernetes_cron_job" "ttl_checker" {
+resource "kubernetes_cron_job" "ttl_checker_corn_job" {
   depends_on = [
     kubernetes_deployment.ttl_checker,
   ]
+
   metadata {
-    name = "ttl-checker"
+    name = "ttl-checker-corn-job"
   }
+
   spec {
     concurrency_policy            = "Replace"
     failed_jobs_history_limit     = 5
