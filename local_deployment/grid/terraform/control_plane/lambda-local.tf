@@ -281,6 +281,19 @@ resource "kubernetes_deployment" "submit_task" {
           port {
             container_port = 8080
           }
+
+          volume_mount {
+            name       = "submit-tasks-volume"
+            mount_path = "/redis_certificates"
+          }
+        }
+
+        volume {
+          name = "submit-tasks-volume"
+          host_path {
+            path = var.certificates_dir_path
+            type = ""
+          }
         }
       }
     }
