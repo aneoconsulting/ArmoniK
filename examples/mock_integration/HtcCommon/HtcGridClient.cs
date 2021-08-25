@@ -52,13 +52,14 @@ namespace HTCGrid
                     System.Threading.Thread.Sleep(1000);
                     var sessionResponse = gridSession_.CheckResults();
                     bool taskFound = false ;
-                    Console.WriteLine($"sessionResponse={sessionResponse}");
 
                     if (sessionResponse == null)
                     {
-                        Console.WriteLine($"WARN: sessionResponse is null");
+                        Console.WriteLine("sessionResponse = NULL");
                         continue;
                     }
+
+                    Console.WriteLine($"sessionResponse={sessionResponse}");
 
                     if (sessionResponse.Cancelled != null && sessionResponse.Cancelled.Any())
                     {

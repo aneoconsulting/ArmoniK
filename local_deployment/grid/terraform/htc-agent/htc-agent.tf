@@ -12,7 +12,10 @@ resource "helm_release" "htc_agent" {
   namespace  = var.agent_namespace
   repository = var.agent_chart_url
 
-
+  set {
+    name = "redis_certificates_directory"
+    value = var.certificates_dir_path
+  }
 
   set {
     name = "fullnameOverride"

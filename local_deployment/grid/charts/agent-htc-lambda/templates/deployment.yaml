@@ -58,6 +58,8 @@ spec:
           volumeMounts:
           - name: {{ .Chart.Name }}-agent-config
             mountPath: /etc/agent
+          - name: redis-certificates-volume
+            mountPath: /redis_certificates
         - name: lambda
           image: "{{ .Values.imageLambdaServer.repository }}:{{ .Values.imageLambdaServer.runtime  }}"
           imagePullPolicy: {{ .Values.imageLambdaServer.pullPolicy }}
@@ -123,3 +125,7 @@ spec:
             name: {{ .Values.htcConfig }}
         - name: {{ .Chart.Name }}-lambda-task-root
           emptyDir: {}
+        - name: redis-certificates-volume
+          hostPath:
+            path: {{.Values.redis_certificates_directory}}
+            type: Directory

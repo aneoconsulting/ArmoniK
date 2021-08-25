@@ -142,6 +142,11 @@ variable "lambda_configuration_storage_type" {
   default = "S3"
 }
 
+variable "certificates_dir_path" {
+  default = ""
+  description = "Path of the directory containing the certificates redis.crt, redis.key, ca.crt"
+}
+
 variable "lambda_configuration_location" {
   type = string
   description = "The location of the S3 bucket"

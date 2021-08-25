@@ -4,6 +4,8 @@
 
 htcConfig: agent-configmap
 
+redis_certificates_directory: ""
+
 replicaCount: 1
 
 terminationGracePeriodSeconds: 1500
