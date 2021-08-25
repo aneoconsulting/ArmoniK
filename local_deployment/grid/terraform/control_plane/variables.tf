@@ -277,3 +277,7 @@ variable "nginx_port" {
 variable "nginx_endpoint_url" {
   description = "Url for nginx instance"
 }
+
+variable "kubectl_path_documents" {
+  description = "path to manifest documents"
+}

@@ -8,6 +8,11 @@ data "aws_vpc" "peer_vpc" {
   default = true # default VPC for the region
 }
 */
+
+data "kubectl_path_documents" "manifests" {
+    pattern = "./manifests/*.yaml"
+}
+
 resource "random_string" "random_resources" {
     length = 5
     special = false
@@ -233,6 +238,7 @@ module "control_plane" {
     ttl_checker_port = var.ttl_checker_port
     nginx_endpoint_url = var.nginx_endpoint_url
     nginx_port = var.nginx_port
+    kubectl_path_documents = data.kubectl_path_documents.manifests
     /*peer_vpc_cidr_block = data.aws_vpc.peer_vpc.cidr_block
     vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
 
