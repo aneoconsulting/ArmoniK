@@ -2,9 +2,9 @@ CURRENT_DIR:=$(shell pwd)
 DIST_DIR?=$(shell pwd)/../../dist
 BUILD_TYPE?=Release
 
-.PHONY: clean all build-mock
+.PHONY: clean all upload build-mock
 
-all: build-mock
+all: upload
 
 
 build-mock:

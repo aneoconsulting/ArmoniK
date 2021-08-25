@@ -58,7 +58,7 @@
       "minMemory": "1200",
       "maxMemory": "1900",
       "location" : "s3://{{workload_bucket_name}}/lambda.zip",
-      "runtime": "5.0.2",
+      "runtime": "5.0.4",
       "lambda_handler_file_name" :"{{dotnet50_file_handler}}",
       "function_name" : "function",
       "lambda_handler_function_name" : "function"
