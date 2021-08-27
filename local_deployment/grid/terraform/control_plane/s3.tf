@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "htc-stdout-bucket" {
     kubernetes_service.local_services
   ]
 
-  //bucket_prefix = var.s3_bucket
+  bucket_prefix = var.s3_bucket
   acl    = "public-read"
   force_destroy = true
 

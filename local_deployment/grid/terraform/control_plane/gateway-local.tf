@@ -1,6 +1,4 @@
 resource "kubectl_manifest" "ingress-nginx" {
-    //count     = length(data.kubectl_path_documents.manifests.documents)
-    //yaml_body = element(data.kubectl_path_documents.manifests.documents, count.index)
     count     = length(var.kubectl_path_documents.documents)
     yaml_body = element(var.kubectl_path_documents.documents, count.index)
 }
