@@ -93,6 +93,7 @@ class InOutRedis:
                     port=redis_port,
                     ssl=use_ssl
                 )
+                self.redis_cache.ping()
         else:
             self.redis_cache = redis_custom_connection
 

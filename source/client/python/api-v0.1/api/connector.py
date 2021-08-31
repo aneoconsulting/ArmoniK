@@ -136,8 +136,8 @@ class AWSConnector:
                                              s3_region=agent_config_data['region'],
                                              s3_custom_resource=s3_custom_resource,
                                              redis_custom_connection=redis_custom_connection,
-                                             redis_certfile=agent_config_data.get('redis_certfile', None),
-                                             redis_keyfile=agent_config_data.get('redis_keyfile', None),
+                                             redis_certfile=agent_config_data.get('redis_cert_file', None),
+                                             redis_keyfile=agent_config_data.get('redis_key_file', None),
                                              redis_ca_cert=agent_config_data.get('redis_ca_cert', None),
                                              use_ssl=use_ssl)
 

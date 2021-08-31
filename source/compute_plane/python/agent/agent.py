@@ -153,13 +153,17 @@ if agent_config_data['redis_with_ssl'].lower() == "false":
     redis_port = int(agent_config_data['redis_port_without_ssl'])
     redis_endpoint_url = agent_config_data['redis_endpoint_url_without_ssl']
 
+logging.info("Create redis s3 connection")
+logging.info("SSL certificate :" + agent_config_data.get('redis_cert_file', 'None'))
+logging.info("SSL certificate :" + agent_config_data.get('redis_key_file', 'None'))
+logging.info("SSL certificate :" + agent_config_data.get('redis_ca_cert', 'None'))
 stdout_iom = in_out_manager(grid_storage_service=agent_config_data['grid_storage_service'],
                             s3_bucket=agent_config_data['s3_bucket'],
                             redis_url=redis_endpoint_url,
                             redis_port=redis_port,
                             s3_region=region,
-                            redis_certfile=agent_config_data.get('redis_certfile', None),
-                            redis_keyfile=agent_config_data.get('redis_keyfile', None),
+                            redis_certfile=agent_config_data.get('redis_cert_file', None),
+                            redis_keyfile=agent_config_data.get('redis_key_file', None),
                             redis_ca_cert=agent_config_data.get('redis_ca_cert', None),
                             use_ssl=use_ssl)
 

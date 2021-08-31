@@ -20,7 +20,7 @@ Valid Configurations <service type>
 
 logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
                     datefmt='%H:%M:%S', level=logging.INFO)
-logging.info("Init AWS Grid Connector")
+logging.info("Init AWS Grid InOutManager")
 
 
 def in_out_manager(grid_storage_service, s3_bucket, redis_url, redis_port=6379, s3_region=None, s3_custom_resource=None, redis_custom_connection=None, redis_ca_cert=None, redis_keyfile=None, redis_certfile=None, use_ssl=True):
@@ -42,6 +42,7 @@ def in_out_manager(grid_storage_service, s3_bucket, redis_url, redis_port=6379, 
         object: a connection to the data plane
     """
     logging.info(" storage_type {} s3 bucket {} redis_url {}".format(grid_storage_service, s3_bucket, redis_url))
+    logging.info(f" redis_certfile : {redis_certfile}, redis_keyfile : {redis_keyfile}, redis_ca_cert : {redis_ca_cert}")
 
     if grid_storage_service == "S3":
         return InOutS3(namespace=s3_bucket, region=s3_region)
