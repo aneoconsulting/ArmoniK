@@ -30,7 +30,7 @@ namespace HTCGrid
                     configurationOptions.SslHost = System.Net.Dns.GetHostName();
                     break;
                 default:
-                    break;
+                    throw new ArgumentOutOfRangeException(nameof(gridConfig), "cluster_config has a wrong value");
             }
 
             if ((String.Equals(gridConfig.cluster_config.ToLower(), "local") && String.Equals(gridConfig.redis_with_ssl, "true"))
