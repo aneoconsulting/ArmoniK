@@ -117,7 +117,7 @@ namespace HTCGrid
 
             // <3.> Invoke submit_tasks Lambda with the reference to the submission id
             try {
-                var res = apiInstance.SubmitPost(submission_id);
+                var res = apiInstance.SubmitPost(new PostSubmitResponse(sessionId: submission_id));
                 Console.WriteLine(res);
             }
             catch (ApiException e)
@@ -162,8 +162,8 @@ namespace HTCGrid
 
                 // Console.WriteLine(this.session_id);
                 // Console.WriteLine(client_task_base64);
-                GetResponse res = apiInstance.ResultGet(client_task_base64);
-
+                GetResponse res = apiInstance.ResultPost(new GetResponse(finished: new List<string>(){client_task_base64}));
+                Console.WriteLine("res ? " + res)
                 return res;
             }
             catch (ApiException e)

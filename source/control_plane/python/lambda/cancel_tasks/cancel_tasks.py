@@ -92,6 +92,7 @@ def get_session_id_from_event(event):
     """
 
     # If lambda are called through ALB - extracting actual event
+    print(event)
     if event.get('queryStringParameters') is not None:
         all_params = event.get('queryStringParameters')
         encoded_json_tasks = all_params.get('submission_content')

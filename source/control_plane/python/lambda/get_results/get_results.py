@@ -48,7 +48,7 @@ def get_tasks_statuses_in_session(session_id):
     finished_tasks = finished_tasks_resp["Items"]
     if len(finished_tasks) > 0:
         response[TASK_STATUS_FINISHED] = [x["task_id"] for x in finished_tasks]
-        response[TASK_STATUS_FINISHED + '_OUTPUT'] = ["read_from_dataplane" for x in finished_tasks]
+        response[TASK_STATUS_FINISHED + '_output'] = ["read_from_dataplane" for x in finished_tasks]
 
     # <2.> Process cancelled Tasks
     cancelled_tasks_resp = state_table.get_tasks_by_status(session_id, TASK_STATUS_CANCELLED)
@@ -56,7 +56,7 @@ def get_tasks_statuses_in_session(session_id):
     cancelled_tasks = cancelled_tasks_resp["Items"]
     if len(cancelled_tasks) > 0:
         response[TASK_STATUS_CANCELLED] = [x["task_id"] for x in cancelled_tasks]
-        response[TASK_STATUS_CANCELLED + '_OUTPUT'] = ["read_from_dataplane" for x in cancelled_tasks]
+        response[TASK_STATUS_CANCELLED + '_output'] = ["read_from_dataplane" for x in cancelled_tasks]
 
     # <3.> Process failed Tasks
     failed_tasks_resp = state_table.get_tasks_by_status(session_id, TASK_STATUS_FAILED)
@@ -64,7 +64,7 @@ def get_tasks_statuses_in_session(session_id):
     failed_tasks = failed_tasks_resp["Items"]
     if len(failed_tasks) > 0:
         response[TASK_STATUS_FAILED] = [x["task_id"] for x in failed_tasks]
-        response[TASK_STATUS_FAILED + '_OUTPUT'] = ["read_from_dataplane" for x in failed_tasks]
+        response[TASK_STATUS_FAILED + '_output'] = ["read_from_dataplane" for x in failed_tasks]
 
     # <4.> Process metadata
     response["metadata"] = {
@@ -84,13 +84,13 @@ def get_session_id_from_event(event):
     """
 
     # If lambda are called through ALB - extracting actual event
-    if event.get('queryStringParameters') is not None:
-        all_params = event.get('queryStringParameters')
-        encoded_json_tasks = all_params.get('submission_content')
+    if event.get('finished') is not None:
+        encoded_json_tasks = event.get('finished')
         if encoded_json_tasks is None:
             raise Exception('Invalid submission format, expect submission_content parameter')
-        decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks).decode('utf-8')
+        decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks[0]).decode('utf-8')
         event = json.loads(decoded_json_tasks)
+        print(event)
 
         return event['session_id']
 
@@ -123,7 +123,7 @@ def book_keeping(response):
 def lambda_handler(event, context):
 
     session_id = None
-
+    print(event)
     try:
 
         session_id = get_session_id_from_event(event)
@@ -132,10 +132,13 @@ def lambda_handler(event, context):
 
         book_keeping(lambda_responce)
 
-        return {
+        res = {
             'statusCode': 200,
-            'body': json.dumps(lambda_responce)
+            'body': lambda_responce
         }
+
+        print(res)
+        return res
 
     except ClientError as e:
         errlog.log('Lambda get_result error: {} trace: {}'.format(

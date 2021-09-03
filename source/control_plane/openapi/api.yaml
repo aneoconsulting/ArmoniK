@@ -11,13 +11,14 @@ servers:
 paths:
   /submit:
     post:
-      parameters:
-        - name: submission_content
-          in: query
-          description: Job submission to the grid
-          required: true
-          schema:
-            type: string
+      summary: Submit tasks
+      requestBody:
+        description: Job submission to the grid
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostSubmitResponse'
       responses:
         200:
           description: ssful operationsuccessful operation
@@ -33,13 +34,14 @@ paths:
         - api_key: []
   /cancel:
     post:
-      parameters:
-        - name: submission_content
-          in: query
-          description: Job submission to the grid
-          required: true
-          schema:
-            type: string
+      summary: Cancel tasks
+      requestBody:
+        description: Job submission to the grid
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
       responses:
         200:
           description: ssful operationsuccessful operation
@@ -53,14 +55,15 @@ paths:
       security:
         - api_key: []
   /result:
-    get:
-      parameters:
-        - name: submission_content
-          in: query
-          description: Job submission to the grid
-          required: true
-          schema:
-            type: string
+    post:
+      summary: Get results
+      requestBody:
+        description: Job submission to the grid
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetResponse'
       responses:
         200:
           description: ssful operationsuccessful operation

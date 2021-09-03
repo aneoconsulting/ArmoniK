@@ -155,15 +155,15 @@ def lambda_handler(event, context):
 
 
     """
+    print(event)
     # If lambda are called through ALB - extracting actual event
-    if event.get('queryStringParameters') is not None:
-        all_params = event.get('queryStringParameters')
+    if "session_id" in event.keys():
         if task_input_passed_via_external_storage == '1':
-            submission_id = all_params.get('submission_content')
-            print("submission_id: {}".format(submission_id))
-            encoded_json_tasks = stdin_iom.get_payload_to_utf8_string(submission_id)
+            session_id = event['session_id']
+            print("submission_id: {}".format(session_id))
+            encoded_json_tasks = stdin_iom.get_payload_to_utf8_string(session_id)
         else:
-            encoded_json_tasks = all_params.get('submission_content')
+            encoded_json_tasks = event['submission_content']
         if encoded_json_tasks is None:
             raise Exception('Invalid submission format, expect submission_content parameter')
         decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks).decode('utf-8')
@@ -171,8 +171,8 @@ def lambda_handler(event, context):
         event = json.loads(decoded_json_tasks)
     else:
         encoded_json_tasks = event['body']
-        print("DATA2: {}".format(encoded_json_tasks))
         decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks).decode('utf-8')
+        print("DATA2: {}".format(decoded_json_tasks))
         event = json.loads(decoded_json_tasks)
 
     try:
@@ -291,10 +291,13 @@ def lambda_handler(event, context):
         for sqs_msg in sqs_batch_entries:
             lambda_response["task_ids"].append(sqs_msg['Id'])
 
-        return {
+        res = {
             'statusCode': 200,
-            'body': json.dumps(lambda_response)
+            'body': lambda_response
         }
+
+        print(json.dumps(res))
+        return res
     except ClientError as e:
         errlog.log("ClientError in Submit Tasks {} {}"
                    .format(e.response['Error']['Code'], traceback.format_exc()))
