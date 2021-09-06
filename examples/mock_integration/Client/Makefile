@@ -9,6 +9,7 @@ TAG=main
 ACCOUNT_ID?=$(shell aws sts get-caller-identity | jq -r '.Account')
 REGION=eu-west-1
 DOCKER_REGISTRY=$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
+BUILD_TYPE?=Release
 
 .PHONY: push push
 all: push
@@ -21,8 +22,12 @@ all: push
 all: push
 
 
-build: Dockerfile
+build: Dockerfile Dockerfile_Debug
+ifeq ($(BUILD_TYPE), Debug)
+	docker build  ../../../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile_Debug
+else
 	docker build  ../../../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
+endif
 
 push: build
 	docker push $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG)

@@ -8,6 +8,7 @@ DIST_DIR?=$(shell pwd)/../../../dist
 DOCKER_USER_ID:=$(shell id -u)
 DOCKER_GROUP_ID:=$(shell id -g)
 SRCS    := api.yaml
+BUILD_TYPE?=Release
 
 PACKAGE_NAME=httpapi
 PACKAGE_NAME_CSHARP=HttpApi
@@ -49,7 +50,13 @@ $(PACKAGE_TARGET): python-package
 	cd $(GENERATED)/python/http_api/ && python setup.py bdist_wheel -d $(DIST_DIR)
 
 $(DOTNET50_PACKAGE_TARGET): csharp-api-package
-	cd $(GENERATED)/csharp/http_api/ && dotnet pack -c Release -o $(DIST_DIR)/dotnet5.0
+ifeq ($(BUILD_TYPE), Debug)
+	cd $(GENERATED)/csharp/http_api/ && dotnet pack -c $(BUILD_TYPE) --include-source --include-symbols -o $(DIST_DIR)/dotnet5.0
+	cp $(GENERATED)/csharp/http_api/src/HttpApi/bin/Debug/net5.0/*.pdb $(DIST_DIR)/dotnet5.0
+	cp $(GENERATED)/csharp/http_api/src/HttpApi/bin/Debug/net5.0/*.dll $(DIST_DIR)/dotnet5.0
+else
+	cd $(GENERATED)/csharp/http_api/ && dotnet pack -c $(BUILD_TYPE) -o $(DIST_DIR)/dotnet5.0
+endif
 
 create-dotnet-package: $(DOTNET50_PACKAGE_TARGET)
 

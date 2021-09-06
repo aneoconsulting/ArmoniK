@@ -106,7 +106,7 @@ show-local-password:
 ##### building source #######
 #############################
 http-apis:
-	$(MAKE) -C ./source/control_plane/openapi/ all
+	$(MAKE) -C ./source/control_plane/openapi/ all BUILD_TYPE=$(BUILD_TYPE)
 
 utils:
 	$(MAKE) -C ./source/client/python/utils
@@ -121,7 +121,7 @@ api: http-apis
 	$(MAKE) -C ./source/client/python/api-v0.1
 
 dotnet5.0-htcgrid-api: http-apis
-	$(MAKE) -C ./source/client/csharp/api-v0.1
+	$(MAKE) -C ./source/client/csharp/api-v0.1 BUILD_TYPE=$(BUILD_TYPE)
 
 test-api: install-utils
 	$(MAKE) test -C ./source/client/python/api-v0.1
@@ -151,7 +151,7 @@ dotnet-submitter: utils api
 	$(MAKE) -C ./examples/client/csharp/
 	
 mock-submitter: utils api
-	$(MAKE) -C ./examples/mock_integration/Client/
+	$(MAKE) -C ./examples/mock_integration/Client/ BUILD_TYPE=$(BUILD_TYPE)
 
 lambda-control-plane: utils api lambda-control-plane-submit-tasks lambda-control-plane-get-results lambda-control-plane-cancel-tasks lambda-control-plane-ttl-checker
 
