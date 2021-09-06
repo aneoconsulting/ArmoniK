@@ -17,6 +17,7 @@ resource "kubernetes_ingress" "lambda_local" {
     annotations = {
         "kubernetes.io/ingress.class" = "nginx"
         "nginx.ingress.kubernetes.io/rewrite-target" = "/2015-03-31/functions/function/invocations$1"
+        "nginx.ingress.kubernetes.io/configuration-snippet" = "more_set_headers \"Content-Type: application/json\";"
     }
   }
 
