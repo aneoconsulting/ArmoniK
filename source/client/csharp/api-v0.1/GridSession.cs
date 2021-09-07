@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 using HttpApi.Api;
@@ -160,11 +161,9 @@ namespace HTCGrid
 
                 // storageInterface.put_input_from_utf8_string(task_id, client_task_base64);
 
-                // Console.WriteLine(this.session_id);
-                // Console.WriteLine(client_task_base64);
-                GetResponse res = apiInstance.ResultPost(new GetResponse(finished: new List<string>(){client_task_base64}));
-                Console.WriteLine("res ? " + res)
-                return res;
+                var resultPostWithHttpInfo = apiInstance.ResultPostWithHttpInfo(new GetResponse(finished: new List<string>() { client_task_base64 }));
+                var deserializedContent = JsonConvert.DeserializeObject<GetResponseDeserializer>(resultPostWithHttpInfo.RawContent);
+                return deserializedContent.Body;
             }
             catch (ApiException e)
             {
@@ -173,6 +172,19 @@ namespace HTCGrid
                 Console.WriteLine(e.StackTrace);
                 return null;
             }
+
+
+        }
+
+        [DataContract(Name = "GetResponseDeserializer")]
+        class GetResponseDeserializer {
+
+            [DataMember(Name = "body", EmitDefaultValue = false)]
+            public GetResponse Body { set; get; }
+
+            [DataMember(Name = "statusCode", EmitDefaultValue = false)]
+            public int StatusCode { set; get; }
+
         }
 
         // public void CloseSession(doCancel=False) {
