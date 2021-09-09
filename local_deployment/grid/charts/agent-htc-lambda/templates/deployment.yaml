@@ -87,6 +87,8 @@ spec:
             mountPath: /etc/agent
           - name: {{ .Chart.Name }}-lambda-task-root
             mountPath: /var/task
+          - name: redis-certificates-volume
+            mountPath: /redis_certificates
       initContainers:
         - command: ["./download-layer.sh"]
           {{- if eq .Values.storage "S3" }}
