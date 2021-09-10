@@ -6,7 +6,7 @@ htcConfig: agent-configmap
 
 redis_certificates_directory: ""
 
-replicaCount: 5
+replicaCount: 3
 
 terminationGracePeriodSeconds: 1500
 
