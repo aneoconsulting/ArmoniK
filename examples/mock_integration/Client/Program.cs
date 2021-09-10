@@ -52,14 +52,17 @@ namespace HtcClient
             dataClient.ConnectDB();
 
             var client = new Client(htcGridclient, dataClient);
+
+            // Timespan(heures, minutes, secondes)
+            RunConfiguration runConfiguration = RunConfiguration.XSmall; // result : Aggregate_1871498793_result
           
-           RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 1, 30),
+            /* RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 1, 30),
                                                  5,
                                                  1,
                                                  1,
                                                  1);
                                                  
-            /*RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 30, 0),
+            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 30, 0),
                                                  100,
                                                  1,
                                                  3,
