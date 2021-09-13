@@ -281,3 +281,7 @@ variable "nginx_endpoint_url" {
 variable "kubectl_path_documents" {
   description = "path to manifest documents"
 }
+
+variable "image_pull_policy" {
+  description = "Pull image policy"
+}

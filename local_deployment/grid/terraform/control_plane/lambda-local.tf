@@ -94,6 +94,7 @@ resource "kubernetes_deployment" "cancel_tasks" {
         container {
           image   = "${var.aws_htc_ecr}/cancel_tasks:${var.suffix}"
           name    = "cancel-tasks"
+          image_pull_policy = var.image_pull_policy != "" ? var.image_pull_policy : "IfNotPresent"
 
           resources {
             limits = {
@@ -181,6 +182,7 @@ resource "kubernetes_deployment" "get_results" {
         container {
           image   = "${var.aws_htc_ecr}/get_results:${var.suffix}"
           name    = "get-results"
+          image_pull_policy = var.image_pull_policy != "" ? var.image_pull_policy : "IfNotPresent"
 
           resources {
             limits = {
@@ -259,6 +261,7 @@ resource "kubernetes_deployment" "submit_task" {
         container {
           image   = "${var.aws_htc_ecr}/submit_tasks:${var.suffix}"
           name    = "submit-task"
+          image_pull_policy = var.image_pull_policy != "" ? var.image_pull_policy : "IfNotPresent"
 
           resources {
             limits = {
@@ -377,6 +380,7 @@ resource "kubernetes_deployment" "ttl_checker" {
         container {
           image   = "${var.aws_htc_ecr}/ttl_checker:${var.suffix}"
           name    = "ttl-checker"
+          image_pull_policy = var.image_pull_policy != "" ? var.image_pull_policy : "IfNotPresent"
 
           resources {
             limits = {

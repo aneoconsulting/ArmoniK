@@ -61,7 +61,7 @@ resource "helm_release" "htc_agent" {
 
   set {
     name = "imageAgent.pullPolicy"
-    value = var.agent_pull_policy
+    value = var.image_pull_policy == "" ? var.agent_pull_policy : var.image_pull_policy
   }
 
   set {
@@ -97,7 +97,7 @@ resource "helm_release" "htc_agent" {
 
   set {
     name = "imageTestAgent.pullPolicy"
-    value = var.test_pull_policy
+    value = var.image_pull_policy == "" ? var.test_pull_policy : var.image_pull_policy
   }
 
   #Lambda section
@@ -113,7 +113,7 @@ resource "helm_release" "htc_agent" {
 
   set {
     name = "imageLambdaServer.pullPolicy"
-    value = var.lambda_pull_policy
+    value = var.image_pull_policy == "" ? var.lambda_pull_policy : var.image_pull_policy
   }
 
   set {
@@ -149,8 +149,6 @@ resource "helm_release" "htc_agent" {
 
   set {
     name  = "imageGetLayer.pullPolicy"
-    value = var.get_layer_pull_policy
+    value = var.image_pull_policy == "" ? var.get_layer_pull_policy : var.image_pull_policy
   }
-
-
 }

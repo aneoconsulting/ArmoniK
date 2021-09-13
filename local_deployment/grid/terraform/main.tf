@@ -239,6 +239,7 @@ module "control_plane" {
     nginx_endpoint_url = var.nginx_endpoint_url
     nginx_port = var.nginx_port
     kubectl_path_documents = data.kubectl_path_documents.manifests
+    image_pull_policy = var.image_pull_policy
     /*peer_vpc_cidr_block = data.aws_vpc.peer_vpc.cidr_block
     vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
 
@@ -258,6 +259,7 @@ module "htc_agent" {
     test_agent_image_tag = lookup(lookup(var.agent_configuration,"test",local.default_agent_configuration.test),"tag",local.default_agent_configuration.test.tag)
     agent_name = var.htc_agent_name
     certificates_dir_path = var.certificates_dir_path
+    image_pull_policy = var.image_pull_policy
     agent_min_cpu = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"minCPU",local.default_agent_configuration.agent.minCPU)
     agent_max_cpu = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"maxCPU",local.default_agent_configuration.agent.maxCPU)
     lambda_max_cpu = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"maxCPU",local.default_agent_configuration.lambda.maxCPU)

@@ -559,3 +559,9 @@ variable "nginx_endpoint_url" {
   default = "http://ingress-nginx-controller.ingress-nginx"
   type = string
 }
+
+variable "image_pull_policy" {
+  description = "Pull image policy"
+  default = ""
+  type = string
+}

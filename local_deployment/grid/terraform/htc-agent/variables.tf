@@ -106,6 +106,11 @@ variable "lambda_max_memory" {
   default = 100
 }
 
+variable "image_pull_policy" {
+  description = "Pull image policy"
+  type = string
+}
+
 variable "agent_pull_policy" {
   type = string
   description = "pull policy for agent image"
