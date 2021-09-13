@@ -8,8 +8,12 @@ local_services_port = 8001
 redis_port = 6379
 redis_port_without_ssl = 7777
 aws_htc_ecr = "125796369274.dkr.ecr.eu-west-1.amazonaws.com"
+### LINUX
 k8s_config_context = "default"
 k8s_config_path = "/etc/rancher/k3s/k3s.yaml"
+### WINDOWS
+//k8s_config_context = "docker-desktop"
+//k8s_config_path = "~/.kube/config"
 redis_with_ssl = true
 connection_redis_timeout = 10000
 redis_ca_cert = "/redis_certificates/ca.crt"
