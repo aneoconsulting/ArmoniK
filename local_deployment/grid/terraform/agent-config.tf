@@ -33,7 +33,6 @@ locals {
   "lambda_name_submit_tasks": "${local.lambda_name_submit_tasks}",
   "lambda_name_get_results": "${local.lambda_name_get_results}",
   "lambda_name_cancel_tasks": "${local.lambda_name_cancel_tasks}",
-  "s3_bucket": "${module.control_plane.s3_bucket_name}",
   "grid_storage_service" : "${var.grid_storage_service}",
   "grid_queue_service" : "${var.grid_queue_service}",
   "grid_queue_config" : "${var.grid_queue_config}",

@@ -17,7 +17,6 @@ resource "kubernetes_config_map" "lambda_local" {
     GRID_STORAGE_SERVICE = var.grid_storage_service,
     GRID_QUEUE_SERVICE = var.grid_queue_service,
     GRID_QUEUE_CONFIG = var.grid_queue_config,
-    S3_BUCKET = aws_s3_bucket.htc-stdout-bucket.id,
     REDIS_URL = kubernetes_service.redis.status.0.load_balancer.0.ingress.0.ip,
     REDIS_PORT = var.redis_with_ssl ? var.redis_port : var.redis_port_without_ssl,
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,

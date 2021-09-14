@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-output "s3_bucket_name" {
-  description = "Name of the bucket"
-  value       = aws_s3_bucket.htc-stdout-bucket.id
-}
 /*
 output "public_api_gateway_url" {
   value = aws_api_gateway_deployment.htc_grid_public_deployment.invoke_url

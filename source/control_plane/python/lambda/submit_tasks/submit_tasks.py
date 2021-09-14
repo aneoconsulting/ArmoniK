@@ -52,7 +52,7 @@ task_input_passed_via_external_storage = os.environ["TASK_INPUT_PASSED_VIA_EXTER
 
 use_ssl = (os.environ["REDIS_USE_SSL"].lower() == "true")
 stdin_iom = in_out_manager(grid_storage_service=os.environ['GRID_STORAGE_SERVICE'],
-                           s3_bucket=os.environ['S3_BUCKET'],
+                           s3_bucket=os.environ.get('S3_BUCKET', None),
                            redis_url=os.environ['REDIS_URL'],
                            redis_port=int(os.environ['REDIS_PORT']),
                            redis_certfile=os.environ.get('REDIS_CERTFILE', None),

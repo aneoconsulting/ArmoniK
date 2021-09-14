@@ -11,8 +11,6 @@
 
 REGION?=eu-west-1
 
-KMS_KEY_ARN:=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[4].OutputValue' --output text)
-S3_GRID_TFSTATE_BUCKET_NAME:=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[3].OutputValue' --output text)
 HTCGRID_ACCOUNT_ID:=$(shell aws sts get-caller-identity --query 'Account' --output text)
 export GRAFANA_ADMIN_PASSWORD?=$(shell uuidgen)
 TF_SRCS:=$(wildcard *.tf)
@@ -28,13 +26,13 @@ all:
 #	mkdir -p $@
 	
 init:
-	terraform init -backend-config="bucket=$(S3_GRID_TFSTATE_BUCKET_NAME)" -backend-config="region=$(REGION)"
+	terraform init -backend-config="region=$(REGION)"
 
 apply: $(TF_SRCS) $(GRID_CONFIG)
-	terraform apply -var-file $(GRID_CONFIG) -var kms_key_arn=$(KMS_KEY_ARN) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)" -var="grafana_admin_password=$(GRAFANA_ADMIN_PASSWORD)"
+	terraform apply -var-file $(GRID_CONFIG) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)" -var="grafana_admin_password=$(GRAFANA_ADMIN_PASSWORD)"
 
 destroy:
-	terraform destroy -var-file $(GRID_CONFIG) -var kms_key_arn=$(KMS_KEY_ARN) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)"
+	terraform destroy -var-file $(GRID_CONFIG) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)"
 
 get-grafana-password:
 	@terraform output grafana_admin_password
