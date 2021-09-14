@@ -10,7 +10,7 @@ spec:
         name: generator
         securityContext:
             {}
-        image: {{account_id}}.dkr.ecr.{{region}}.amazonaws.com/{{image_name}}:{{image_tag}}
+        image: {{docker_registry}}{{image_name}}:{{image_tag}}
         imagePullPolicy: Always
         resources:
             limits:
