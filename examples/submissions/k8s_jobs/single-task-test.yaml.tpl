@@ -9,7 +9,7 @@ spec:
       - name: generator
         securityContext:
             {}
-        image: docker_registry{{image_name}}:{{image_tag}}
+        image: {{docker_registry}}{{image_name}}:{{image_tag}}
         imagePullPolicy: Always
         resources:
             limits:

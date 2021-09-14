@@ -6,8 +6,6 @@ GENERATED?=$(shell pwd)/generated/dotnet5.0/client
 DIST_DIR?=$(shell pwd)/../../../dist
 SUBMITTER_IMAGE_NAME=submitter
 TAG=main
-ACCOUNT_ID?=$(shell aws sts get-caller-identity | jq -r '.Account')
-REGION=eu-west-1
 DOCKER_REGISTRY=
 BUILD_TYPE?=Release
 

@@ -8,16 +8,22 @@ CURRENT_DIR:=$(shell pwd)
 
 BUILD_TYPE?=Release
 DIST_DIR?=$(shell pwd)/../../../dist
-DOCKER_REGISTRY=$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
+DOCKER_REGISTRY=
 
 .PHONY: clean
 
 
 build: Dockerfile import-dll
+ifneq ($(DOCKER_REGISTRY),)
 	docker build . -f ./Dockerfile -t $(DOCKER_REGISTRY)/lambda:$(TAG)
+else
+	docker build . -f ./Dockerfile -t lambda:$(TAG)
+endif
 
 upload: build
+ifneq ($(DOCKER_REGISTRY),)
 	docker push $(DOCKER_REGISTRY)/lambda:$(TAG)
+endif
 
 import-dll:
 	mkdir -p ./mock_integration_image/src/mock_integration/lib/

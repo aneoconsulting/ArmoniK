@@ -7,7 +7,6 @@ dynamodb_port = 8000
 local_services_port = 8001
 redis_port = 6379
 redis_port_without_ssl = 7777
-docker_registry = "125796369274.dkr.ecr.eu-west-1.amazonaws.com"
 ### LINUX
 k8s_config_context = "default"
 k8s_config_path = "/etc/rancher/k3s/k3s.yaml"

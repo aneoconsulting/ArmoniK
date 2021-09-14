@@ -3,8 +3,6 @@
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
 TAG?=mainline
-ACCOUNT_ID?=$(shell aws sts get-caller-identity | jq -r '.Account')
-REGION=eu-west-1
 DOCKER_REGISTRY=
 GET_RESULTS_IMAGE=get_results
 CONTEXT_DIR=../../../../..

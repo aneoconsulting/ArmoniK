@@ -4,9 +4,7 @@
 
 LAMBDA_INIT_IMAGE_NAME=lambda-init
 TAG=mainline
-ACCOUNT_ID?=$(shell aws sts get-caller-identity | jq -r '.Account')
-REGION=eu-west-1
-DOCKER_REGISTRY=$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
+DOCKER_REGISTRY=
 CONTEXT_DIR=.
 LAMBDA_INIT_IMAGE_NAME=lambda-init
 
@@ -17,8 +15,15 @@ lambda-init: build-lambda-init push-lambda-init
 
 
 build-lambda-init: Dockerfile
+ifneq ($(DOCKER_REGISTRY),)
 	docker build $(CONTEXT_DIR) -t $(DOCKER_REGISTRY)/$(LAMBDA_INIT_IMAGE_NAME):$(TAG) -f ./Dockerfile
+else
+	docker build $(CONTEXT_DIR) -t $(LAMBDA_INIT_IMAGE_NAME):$(TAG) -f ./Dockerfile
+endif
 
 push-lambda-init: build-lambda-init
+ifneq ($(DOCKER_REGISTRY),)
 	docker push $(DOCKER_REGISTRY)/$(LAMBDA_INIT_IMAGE_NAME):$(TAG)
+endif
+
 

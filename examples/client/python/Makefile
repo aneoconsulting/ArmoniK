@@ -4,8 +4,6 @@
 
 SUBMITTER_IMAGE_NAME=submitter
 TAG=mainline
-ACCOUNT_ID?=$(shell aws sts get-caller-identity | jq -r '.Account')
-REGION=eu-west-1
 DOCKER_REGISTRY=
 
 .PHONY: push push 
