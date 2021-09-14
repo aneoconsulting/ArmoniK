@@ -14,7 +14,7 @@ variable "secret_key" {
   description = "AWS secret key"
 }
 
-variable "aws_htc_ecr" {
+variable "docker_registry" {
   description = "URL of Amazon ECR image repostiories"
 }
 
@@ -122,7 +122,6 @@ variable "dynamodb_table_read_capacity" {
   description = "read capacity for the status table"
 }
 
-
 variable "dynamodb_gsi_index_table_write_capacity" {
   description = "write capacity for the status table (gsi index)"
 }
@@ -150,27 +149,7 @@ variable "dynamodb_gsi_parent_table_read_capacity" {
 variable "suffix" {
   description = "suffix for generating unique name for AWS resource"
 }
-/*
-variable "vpc_private_subnet_ids" {
-  description = "Private subnet IDs"
-}
 
-variable "vpc_public_subnet_ids" {
-  description = "Public subnet IDs"
-}
-
-variable "vpc_default_security_group_id" {
-  description = "Default SG ID"
-}
-
-variable "vpc_id" {
-  description = "Default VPC ID"
-}
-
-variable "vpc_cidr" {
-  description = "Default VPC CIDR"
-}
-*/
 variable "nlb_influxdb" {
   description = "network load balancer url  in front of influxdb"
   default = ""
@@ -208,17 +187,6 @@ variable "retention_in_days" {
   description = "Retention in days for cloudwatch logs"
   type =  number
 }
-/*
-variable "peer_vpc_cidr_block" {
-  description = "Default VPC CIDER block"
-}
-
-variable "vpc_pod_cidr_block_private" {
-  description = "cidr block associated with pod"
-  type = list(string)
-  default = []
-}
-*/
 
 variable "redis_with_ssl" {
   type = bool

@@ -2,13 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-#data aws_caller_identity current {}
-/*
-data "aws_vpc" "peer_vpc" {
-  default = true # default VPC for the region
-}
-*/
-
 data "kubectl_path_documents" "manifests" {
     pattern = "./manifests/*.yaml"
 }
@@ -27,7 +20,7 @@ resource "random_password" "password" {
 }
 
 locals {
-    aws_htc_ecr = var.aws_htc_ecr
+    docker_registry = var.docker_registry
     project_name = var.project_name != "" ? var.project_name : random_string.random_resources.result
     cluster_name = "${var.cluster_name}-${local.project_name}"
     ddb_status_table = "${var.ddb_status_table}-${local.project_name}"
@@ -47,7 +40,7 @@ locals {
     default_agent_configuration = {
         agent_chart_url  = "../charts"
         agent = {
-            image = "${local.aws_htc_ecr}/awshpc-lambda"
+            image = "${local.docker_registry}/awshpc-lambda"
             tag = local.project_name
             pullPolicy = "IfNotPresent"
             minCPU = "10"
@@ -56,7 +49,7 @@ locals {
             minMemory = "50"
         }
         lambda = {
-            image = "${local.aws_htc_ecr}/lambda"
+            image = "${local.docker_registry}/lambda"
             tag = local.project_name
             pullPolicy = "IfNotPresent"
             minCPU = "800"
@@ -69,39 +62,20 @@ locals {
             region = var.region
         }
         test = {
-            image = "${local.aws_htc_ecr}/submitter"
+            image = "${local.docker_registry}/submitter"
             tag = local.project_name
             pullPolicy = "IfNotPresent"
         }
     }
 }
-/*
-module "vpc" {
-    source = "./vpc"
-    region = var.region
-    cluster_name = local.cluster_name
-    private_subnets = var.vpc_cidr_block_private
-    public_subnets = var.vpc_cidr_block_public
-    vpc_main_cidr_block = var.vpc_main_cidr_block
-    vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
-    enable_private_subnet = var.enable_private_subnet
-    retention_in_days = var.retention_in_days
-    kms_key_arn = var.kms_key_arn
 
-}
-*/
 module "compute_plane" {
     source = "./compute_plane"
 
-/*    vpc_id = module.vpc.vpc_id
-    vpc_private_subnet_ids = module.vpc.private_subnet_ids
-    vpc_public_subnet_ids = module.vpc.public_subnet_ids
-    vpc_default_security_group_id = module.vpc.default_security_group_id
-    vpc_cidr = module.vpc.vpc_cidr_block*/
     cluster_name = local.cluster_name
     kubernetes_version = var.kubernetes_version
     k8s_ca_version = var.k8s_ca_version
-    aws_htc_ecr = local.aws_htc_ecr
+    docker_registry = local.docker_registry
     cwa_version = var.cwa_version
     aws_node_termination_handler_version = var.aws_node_termination_handler
     cw_agent_version = var.cw_agent_version
@@ -129,16 +103,12 @@ module "compute_plane" {
     input_role = var.input_role
     graceful_termination_delay = var.graceful_termination_delay
     aws_xray_daemon_version = var.aws_xray_daemon_version
-    //enable_private_subnet = var.enable_private_subnet
     retention_in_days = var.retention_in_days
     //kms_key_arn = var.kms_key_arn
     error_log_group = local.error_log_group
     error_logging_stream = local.error_logging_stream
     grid_queue_service = var.grid_queue_service
     grid_queue_config = var.grid_queue_config
-    /*depends_on  = [
-        module.vpc
-    ]*/
 
     grafana_configuration = {
         downloadDashboardsImage_tag = var.grafana_configuration.downloadDashboardsImage_tag
@@ -156,8 +126,6 @@ module "compute_plane" {
         pushgateway_tag = var.prometheus_configuration.pushgateway_tag
         configmap_reload_tag = var.prometheus_configuration.configmap_reload_tag
     }
-
-    //pods_subnet_ids = module.vpc.pods_subnet_ids
 }
 
 module "control_plane" {
@@ -165,16 +133,11 @@ module "control_plane" {
 
     secret_key = var.secret_key
     access_key = var.access_key
-    /*vpc_id = module.vpc.vpc_id
-    vpc_private_subnet_ids = module.vpc.private_subnet_ids
-    vpc_public_subnet_ids = module.vpc.public_subnet_ids
-    vpc_default_security_group_id = module.vpc.default_security_group_id
-    vpc_cidr = module.vpc.vpc_cidr_block*/
     suffix = local.project_name
     region = var.region
     lambda_runtime = var.lambda_runtime
     lambda_timeout = var.lambda_timeout
-    aws_htc_ecr = local.aws_htc_ecr
+    docker_registry = local.docker_registry
     ddb_status_table = local.ddb_status_table
     sqs_queue = local.sqs_queue
     sqs_dlq = local.sqs_dlq
@@ -228,12 +191,6 @@ module "control_plane" {
     nginx_port = var.nginx_port
     kubectl_path_documents = data.kubectl_path_documents.manifests
     image_pull_policy = var.image_pull_policy
-    /*peer_vpc_cidr_block = data.aws_vpc.peer_vpc.cidr_block
-    vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
-
-    depends_on  = [
-        module.vpc
-    ]*/
 }
 
 
@@ -267,16 +224,8 @@ module "htc_agent" {
     depends_on = [
         module.compute_plane,
         module.control_plane,
-        //module.vpc,
         kubernetes_config_map.htcagentconfig
     ]
 
 }
-
-/*module "vpc_peering" {
-    source = "./vpc_peering"
-    this_vpc_id = module.vpc.vpc_id
-    peer_vpc_id = data.aws_vpc.peer_vpc.id
-    region = var.region
-}*/
 

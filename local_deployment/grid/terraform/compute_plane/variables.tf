@@ -6,11 +6,6 @@ variable "region" {
   description = "AWS region"
 }
 
-# variable "cluster_name" {
-#   default = "htc_aws"
-#   description = "Name of EKS cluster in AWS"
-# }
-
 variable "input_role" {
   description = "Additional IAM roles to add to the aws-auth configmap."
   type = list(object({
@@ -24,7 +19,7 @@ variable "kubernetes_version" {
   description = "Name of EKS cluster in AWS"
 }
 
-variable "aws_htc_ecr" {
+variable "docker_registry" {
   description = "URL of Amazon ECR image repostiories"
 }
 
@@ -48,7 +43,6 @@ variable "cw_agent_version" {
 variable "fluentbit_version" {
   description = "Fluentbit version"
 }
-
 
 variable "cluster_name" {
   description = "Name of EKS cluster in AWS"
@@ -113,7 +107,6 @@ variable "htc_path_logs" {
 #   description = "Dimensions name/value for the CloudWatch metrics"
 # }
 
-
 variable "lambda_name_scaling_metrics" {
   description = "Lambda function name for metrics"
 }
@@ -122,7 +115,6 @@ variable "average_period" {
   default = 30
   description = "Average period in second used by the HPA to compute the current load on the system"
 }
-
 
 variable "period_metrics" {
   description = "Period for metrics in minutes"
@@ -164,41 +156,16 @@ variable "min_htc_agents" {
 variable "htc_agent_target_value" {
   description = "target value for the load on the system"
 }
-/*
-variable "vpc_private_subnet_ids" {
-  description = "Private subnet IDs"
-}
-*/
+
 variable "graceful_termination_delay" {
   description = "graceful termination delay for scaled in action"
 }
-/*
-variable "vpc_public_subnet_ids" {
-  description = "Public subnet IDs"
-}
 
-variable "vpc_default_security_group_id" {
-  description = "Default SG ID"
-}
-
-variable "vpc_id" {
-  description = "Default VPC ID"
-}
-
-variable "vpc_cidr" {
-  description = "Default VPC CIDR"
-}
-*/
 variable "aws_xray_daemon_version" {
   description = "version for the XRay daemon"
   type = string
 }
-/*
-variable "enable_private_subnet" {
-  description = "enable private subnet"
-  type = bool
-}
-*/
+
 variable "grafana_configuration" {
   description = "this variable store the configuration for the grafana helm chart"
   type = object({
@@ -207,10 +174,6 @@ variable "grafana_configuration" {
     initChownData_tag = string
     sidecar_tag = string
     admin_password = string
-
-    # busybox
-
-
   })
 }
 
@@ -231,12 +194,6 @@ variable "retention_in_days" {
   type =  number
 }
 
-/*
-variable "pods_subnet_ids" {
-  description = "ids of the private subnet created for pods"
-  type       = list(string)
-}
-*/
 variable "error_log_group" {
   description = "Log group for errors"
 }
