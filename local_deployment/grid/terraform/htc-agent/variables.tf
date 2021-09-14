@@ -44,16 +44,6 @@ variable "lambda_image_tag" {
   description = "tag associated to the lambda image"
 }
 
-variable "get_layer_image_repository" {
-  type = string
-  description = "repository of the get-layer image"
-}
-
-variable "get_layer_image_tag" {
-  type = string
-  description = "tag associated to the get-layer image"
-}
-
 variable "agent_name" {
   type = string
   description = "name of the kubernetes deployment managing the image"
@@ -123,12 +113,6 @@ variable "lambda_pull_policy" {
   default = "IfNotPresent"
 }
 
-variable "get_layer_pull_policy" {
-  type = string
-  description = "pull policy for the get_layer image"
-  default = "IfNotPresent"
-}
-
 variable "test_pull_policy" {
   type = string
   description = "pull policy for agent image"
@@ -141,38 +125,9 @@ variable "termination_grace_period" {
   default = 1500
 }
 
-variable "lambda_configuration_storage_type" {
-  type = string
-  description = "storage type for Lambda Layer either \"Layer\" or \"S3\""
-  default = "S3"
-}
-
 variable "certificates_dir_path" {
   default = ""
   description = "Path of the directory containing the certificates redis.crt, redis.key, ca.crt"
-}
-
-variable "lambda_configuration_location" {
-  type = string
-  description = "The location of the S3 bucket"
-}
-
-variable "lambda_configuration_region" {
-  type = string
-  description = "The region of the Lambda Layer"
-  default = "eu-west-1"
-}
-
-variable "lambda_configuration_layer_name" {
-  type = string
-  description = "The name of the lambda layer storing the source code"
-  default = "mock_layer"
-}
-
-variable "lambda_configuration_layer_version" {
-  type = number
-  description = "The version of the lambda layer storing the source code"
-  default = 1
 }
 
 variable "lambda_configuration_function_name" {
@@ -180,7 +135,6 @@ variable "lambda_configuration_function_name" {
   description = "The name of the lambda function to be executed"
   default = "mock_computation"
 }
-
 
 variable "lambda_handler_file_name" {
   type = string

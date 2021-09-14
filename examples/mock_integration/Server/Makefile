@@ -3,25 +3,21 @@
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
 TAG?=mainline
-BUCKET_NAME=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[0].OutputValue' --output text)
 
 CURRENT_DIR:=$(shell pwd)
 
 BUILD_TYPE?=Release
 DIST_DIR?=$(shell pwd)/../../../dist
+DOCKER_REGISTRY=$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
 
 .PHONY: clean
 
 
-
-build-env: import-dll
-	docker build . -f ./Dockerfile -t builded-env:$(TAG)
-
-build: build-env
-	docker run --rm -v  $(CURRENT_DIR):/app  builded-env:$(TAG)
+build: Dockerfile import-dll
+	docker build . -f ./Dockerfile -t $(DOCKER_REGISTRY)/lambda:$(TAG)
 
 upload: build
-	aws s3 cp lambda.zip s3://$(BUCKET_NAME)
+	docker push $(DOCKER_REGISTRY)/lambda:$(TAG)
 
 import-dll:
 	mkdir -p ./mock_integration_image/src/mock_integration/lib/

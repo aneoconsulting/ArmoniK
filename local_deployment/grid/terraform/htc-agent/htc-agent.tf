@@ -28,16 +28,6 @@ resource "helm_release" "htc_agent" {
   }
   #set lambda configuration
   set {
-    name  = "storage"
-    value = var.lambda_configuration_storage_type
-  }
-
-  set {
-    name  = "lambda.s3Location"
-    value = var.lambda_configuration_location
-  }
-
-  set {
     name  = "lambda.functionName"
     value = var.lambda_configuration_function_name
   }
@@ -107,7 +97,7 @@ resource "helm_release" "htc_agent" {
   }
 
   set {
-    name  = "imageLambdaServer.runtime"
+    name  = "imageLambdaServer.tag"
     value = var.lambda_image_tag
   }
 
@@ -134,21 +124,5 @@ resource "helm_release" "htc_agent" {
   set {
     name = "resourcesLambdaServer.requests.memory"
     value = "${var.lambda_min_memory}Mi"
-  }
-
-  #get-layer section
-  set {
-    name  = "imageGetLayer.repository"
-    value = var.get_layer_image_repository
-  }
-
-  set {
-    name  = "imageGetLayer.version"
-    value = var.get_layer_image_tag
-  }
-
-  set {
-    name  = "imageGetLayer.pullPolicy"
-    value = var.image_pull_policy == "" ? var.get_layer_pull_policy : var.image_pull_policy
   }
 }
