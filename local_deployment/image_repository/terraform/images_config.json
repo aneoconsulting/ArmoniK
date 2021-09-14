@@ -42,7 +42,6 @@
         "k8s-sidecar",
         "kube-state-metrics",
         "lambda",
-        "lambda-init",
         "node-exporter",
         "prometheus",
         "pushgateway",

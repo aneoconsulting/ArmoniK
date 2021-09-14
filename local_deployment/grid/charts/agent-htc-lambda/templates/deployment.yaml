@@ -61,7 +61,7 @@ spec:
           - name: redis-certificates-volume
             mountPath: /redis_certificates
         - name: lambda
-          image: "{{ .Values.imageLambdaServer.repository }}:{{ .Values.imageLambdaServer.runtime  }}"
+          image: "{{ .Values.imageLambdaServer.repository }}:{{ .Values.imageLambdaServer.tag }}"
           imagePullPolicy: {{ .Values.imageLambdaServer.pullPolicy }}
           args: [ {{ .Values.lambda.handler }} ]
           ports:
@@ -85,29 +85,8 @@ spec:
           volumeMounts:
           - name: {{ .Chart.Name }}-agent-config
             mountPath: /etc/agent
-          - name: {{ .Chart.Name }}-lambda-task-root
-            mountPath: /var/task
           - name: redis-certificates-volume
             mountPath: /redis_certificates
-      initContainers:
-        - command: ["./download-layer.sh"]
-          {{- if eq .Values.storage "S3" }}
-          args: ["-s" , {{ .Values.lambda.s3Location  | quote }} , "-r" , {{ .Values.lambda.region | quote }} ,"-d", {{ .Values.lambda.mountPoint | quote }},"--storage","S3"]
-          {{- else }}
-          args: ["-l", {{ .Values.lambda.layerName | quote }} ,"-v", {{ .Values.lambda.layerVersion | quote }}, "-r", {{ .Values.lambda.region | quote }},"-d", {{ .Values.lambda.mountPoint | quote }} ,"--storage","Layer"]
-          {{- end }}
-          env:
-          - name: LAYER_ROOT
-            value: /var/task
-          image: "{{ .Values.imageGetLayer.repository }}:{{ .Values.imageGetLayer.version  }}"
-          imagePullPolicy: {{ .Values.imageGetLayer.pullPolicy }}
-          name: get-layer
-          envFrom:
-            - secretRef:
-                name: htc-agent-secret
-          volumeMounts:
-          - name: {{ .Chart.Name }}-lambda-task-root
-            mountPath: /var/task
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
