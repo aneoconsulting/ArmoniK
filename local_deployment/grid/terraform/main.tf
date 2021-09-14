@@ -27,7 +27,7 @@ resource "random_password" "password" {
 }
 
 locals {
-    docker_registry = var.docker_registry
+    aws_htc_ecr = var.aws_htc_ecr
     project_name = var.project_name != "" ? var.project_name : random_string.random_resources.result
     cluster_name = "${var.cluster_name}-${local.project_name}"
     ddb_status_table = "${var.ddb_status_table}-${local.project_name}"
@@ -48,7 +48,7 @@ locals {
     default_agent_configuration = {
         agent_chart_url  = "../charts"
         agent = {
-            image = "${local.docker_registry}/awshpc-lambda"
+            image = "${local.aws_htc_ecr}/awshpc-lambda"
             tag = local.project_name
             pullPolicy = "IfNotPresent"
             minCPU = "10"
@@ -57,7 +57,7 @@ locals {
             minMemory = "50"
         }
         lambda = {
-            image = "${local.docker_registry}/lambda"
+            image = "${local.aws_htc_ecr}/lambda"
             tag = local.project_name
             pullPolicy = "IfNotPresent"
             minCPU = "800"
@@ -70,7 +70,7 @@ locals {
             region = var.region
         }
         test = {
-            image = "${local.docker_registry}/submitter"
+            image = "${local.aws_htc_ecr}/submitter"
             tag = local.project_name
             pullPolicy = "IfNotPresent"
         }
@@ -102,7 +102,7 @@ module "compute_plane" {
     cluster_name = local.cluster_name
     kubernetes_version = var.kubernetes_version
     k8s_ca_version = var.k8s_ca_version
-    docker_registry = local.docker_registry
+    aws_htc_ecr = local.aws_htc_ecr
     cwa_version = var.cwa_version
     aws_node_termination_handler_version = var.aws_node_termination_handler
     cw_agent_version = var.cw_agent_version
@@ -175,7 +175,7 @@ module "control_plane" {
     region = var.region
     lambda_runtime = var.lambda_runtime
     lambda_timeout = var.lambda_timeout
-    docker_registry = local.docker_registry
+    aws_htc_ecr = local.aws_htc_ecr
     ddb_status_table = local.ddb_status_table
     sqs_queue = local.sqs_queue
     sqs_dlq = local.sqs_dlq

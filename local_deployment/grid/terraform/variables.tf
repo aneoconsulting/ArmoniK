@@ -67,7 +67,7 @@ variable "k8s_ca_version" {
   description = "Cluster autoscaler version"
 }
 
-variable "docker_registry" {
+variable "aws_htc_ecr" {
   default = ""
   description = "URL of Amazon ECR image repostiories"
 }
