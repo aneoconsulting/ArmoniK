@@ -8,26 +8,26 @@ SUBMITTER_IMAGE_NAME=submitter
 TAG=main
 ACCOUNT_ID?=$(shell aws sts get-caller-identity | jq -r '.Account')
 REGION=eu-west-1
-DOCKER_REGISTRY=$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
+DOCKER_REGISTRY=
+DOCKER_REGISTRY_WITH_SUFFIX=$(shell if [ "$(DOCKER_REGISTRY)" != "" ]; then echo "$(DOCKER_REGISTRY)/"; else echo ""; fi)
 BUILD_TYPE?=Release
 
 .PHONY: push push
 all: push
 
-
-
-
 .PHONY: all clean
 
 all: push
 
-
 build: Dockerfile Dockerfile_Debug
 ifeq ($(BUILD_TYPE), Debug)
-	docker build  ../../../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile_Debug
+	docker build  ../../../ -t $(DOCKER_REGISTRY_WITH_SUFFIX)$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile_Debug
 else
-	docker build  ../../../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
+	docker build  ../../../ -t $(DOCKER_REGISTRY_WITH_SUFFIX)$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
 endif
 
 push: build
+ifneq ($(DOCKER_REGISTRY),)
 	docker push $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG)
+endif
+
