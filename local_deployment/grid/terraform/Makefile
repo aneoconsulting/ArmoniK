@@ -26,7 +26,7 @@ all:
 #	mkdir -p $@
 	
 init:
-	terraform init -backend-config="region=$(REGION)"
+	terraform init
 
 apply: $(TF_SRCS) $(GRID_CONFIG)
 	terraform apply -var-file $(GRID_CONFIG) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)" -var="grafana_admin_password=$(GRAFANA_ADMIN_PASSWORD)"

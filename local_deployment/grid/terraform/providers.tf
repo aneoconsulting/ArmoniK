@@ -3,6 +3,10 @@
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
 terraform {
+  backend "local" {
+    path = "./terraform.tfstate"
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
