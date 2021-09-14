@@ -14,7 +14,7 @@ variable "secret_key" {
   description = "AWS secret key"
 }
 
-variable "aws_htc_ecr" {
+variable "docker_registry" {
   description = "URL of Amazon ECR image repostiories"
 }
 

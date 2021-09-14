@@ -24,7 +24,7 @@ variable "kubernetes_version" {
   description = "Name of EKS cluster in AWS"
 }
 
-variable "aws_htc_ecr" {
+variable "docker_registry" {
   description = "URL of Amazon ECR image repostiories"
 }
 
