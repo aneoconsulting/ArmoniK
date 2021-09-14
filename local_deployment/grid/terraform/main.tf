@@ -41,7 +41,6 @@ locals {
     lambda_name_scaling_metric = "${var.lambda_name_scaling_metric}-${local.project_name}"
     metrics_name = "${var.metrics_name}-${local.project_name}"
     config_name = "${var.config_name}-${local.project_name}"
-    s3_bucket = "${var.s3_bucket}-${local.project_name}"
     error_log_group = "${var.error_log_group}-${local.project_name}"
     error_logging_stream = "${var.error_logging_stream}-${local.project_name}"
 
@@ -179,7 +178,6 @@ module "control_plane" {
     ddb_status_table = local.ddb_status_table
     sqs_queue = local.sqs_queue
     sqs_dlq = local.sqs_dlq
-    s3_bucket = local.s3_bucket
     grid_storage_service = var.grid_storage_service
     grid_queue_service = var.grid_queue_service
     grid_queue_config = var.grid_queue_config

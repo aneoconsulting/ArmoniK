@@ -10,8 +10,6 @@ replicaCount: 3
 
 terminationGracePeriodSeconds: 1500
 
-storage: S3
-
 imageAgent:
   version: latest
   pullPolicy: IfNotPresent

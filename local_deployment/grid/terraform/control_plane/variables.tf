@@ -38,10 +38,6 @@ variable "sqs_dlq" {
   description = "HTC SQS queue dlq name"
 }
 
-variable "s3_bucket" {
-  description = "S3 bucket name"
-}
-
 variable "grid_storage_service" {
   description = "Configuration string for internal results storage system"
 }
@@ -213,11 +209,6 @@ variable "retention_in_days" {
   type =  number
 }
 /*
-variable "kms_key_arn" {
-  description = "KMS key ARN for S3 bucket"
-  type =  string
-}
-
 variable "peer_vpc_cidr_block" {
   description = "Default VPC CIDER block"
 }

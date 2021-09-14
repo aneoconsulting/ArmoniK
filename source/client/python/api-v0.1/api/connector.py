@@ -130,7 +130,7 @@ class AWSConnector:
             redis_endpoint_url = agent_config_data['redis_endpoint_url_without_ssl']
 
         self.in_out_manager = in_out_manager(grid_storage_service=agent_config_data['grid_storage_service'],
-                                             s3_bucket=agent_config_data['s3_bucket'],
+                                             s3_bucket=agent_config_data.get('s3_bucket', None),
                                              redis_url=redis_endpoint_url,
                                              redis_port=redis_port,
                                              s3_region=agent_config_data['region'],

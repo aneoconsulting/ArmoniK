@@ -117,13 +117,8 @@ variable "sqs_dlq" {
   description = "htc SQS queue dlq name"
 }
 
-variable "s3_bucket" {
-  default  = "htc-stdout-bucket"
-  description = "S3 bucket name"
-}
-
 variable "grid_storage_service" {
-  default = "S3 htc-stdout-bucket-1"
+  default = "REDIS"
   description = "Configuration string for internal results storage system"
 }
 
@@ -507,11 +502,6 @@ variable "retention_in_days" {
   description = "Retention in days for cloudwatch logs"
   type =  number
   default = 3
-}
-
-variable "kms_key_arn" {
-  description = "KMS key ARN for S3 bucket"
-  type =  string
 }
 
 variable "redis_with_ssl" {

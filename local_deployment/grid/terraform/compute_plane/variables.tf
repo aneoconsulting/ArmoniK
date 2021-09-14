@@ -232,11 +232,6 @@ variable "retention_in_days" {
 }
 
 /*
-variable "kms_key_arn" {
-  description = "KMS key ARN for S3 bucket"
-  type =  string
-}
-
 variable "pods_subnet_ids" {
   description = "ids of the private subnet created for pods"
   type       = list(string)
