@@ -34,6 +34,9 @@ apply: $(TF_SRCS) $(GRID_CONFIG)
 destroy:
 	terraform destroy -var-file $(GRID_CONFIG) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)" -var="docker_registry=$(DOCKER_REGISTRY)"
 
+validate:
+	terraform validate
+
 get-grafana-password:
 	@terraform output grafana_admin_password
 
