@@ -56,22 +56,131 @@ The following resources should be installed upon you local machine :
 
 * [dotnet 5.0+](https://docs.microsoft.com/en-us/dotnet/core/install/)
 
-* Kubernetes on local machine (for local deployment of HTC Grid): 
+# Getting Started
+This section steps through the HTC-Grid's AWS infrastructure and software prerequisites. 
+An AWS account is required along with some limited familiarity of AWS services and terraform. 
+The execution of the [Getting Started](#getting-started) section will create AWS resources not included in the free tier and then will incur cost to your AWS Account. The complete execution of this section will cost at least 50$ per day.
+
+## Installing the Armonik software on-premise
+### Kubernetes on local machine (for local deployment of Armonik): 
 You can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/) on Linux OS:
 ```bash
 curl -sfL https://get.k3s.io | sh -
+```
+If you want use host's Docker rather than containerd:
+```bash
+curl -sfL https://get.k3s.io | sh -s - --docker
+```
+
+Then
+```bash
 sudo chmod 755 /etc/rancher/k3s/k3s.yaml
 cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 ```
+
 To uninstall K3s
 ```bash
 /usr/local/bin/k3s-uninstall.sh
 ```
 
-# Getting Started
-This section steps through the HTC-Grid's AWS infrastructure and software prerequisites. 
-An AWS account is required along with some limited familiarity of AWS services and terraform. 
-The execution of the [Getting Started](#getting-started) section will create AWS resources not included in the free tier and then will incur cost to your AWS Account. The complete execution of this section will cost at least 50$ per day.
+### Configure the environment
+#### Python
+Set this up as follows in `<project_root>`:
+
+```bash
+virtualenv venv
+```
+
+then
+
+```bash
+source ./venv/bin/activate
+```
+
+#### Define variables for deploying the infrastructure
+1. To simplify this installation it is suggested that a unique <TAG> name (to be used later) is also used to prefix the different required bucket. TAG needs to follow [S3 naming rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+   ```bash
+      export TAG=<Your tag>
+   ```
+
+2. Define the type of the database service 
+   ```bash
+      export HTCGRID_TASKS_TABLE_SERVICE=<Your DB service>
+   ```
+   `<Your DB service>` can be (the list is not exhaustive)
+   - `DynamoDB`
+   - `MongoDB`
+
+3. Define an environment variable containing the path to the local nuget repository.
+   ```bash
+      export HTCGRID_NUGET_REPOS=<project directory>/dist/dotnet5.0
+   ```
+
+4. Define an environment variable containing the path to the redis certificates.
+   ```bash
+      export HTCGRID_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
+   ```
+
+5. Define an environment variable containing the docker registry if it exists.
+   ```bash
+      export HTCGRID_DOCKER_REGISTRY=<docker registry>
+   ```
+
+### Build Armonik artifacts
+Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s. To build and install these in `<project_root>`:
+
+   ```bash
+   make dotnet50-path TAG=$TAG TASKS_TABLE_SERVICE=$HTCGRID_TASKS_TABLE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$HTCGRID_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$HTCGRID_DOCKER_REGISTRY
+   ```
+A folder name `generated` will be created at  `<project_root>`. 
+
+### Deploy Armonik resources
+* Create needed credentials (on-premises)
+For the on-premises deployment, some credentials are needed to be defined by the user.
+
+1. Run the following command to create mock credentials needed for the HTC Agents.
+   ```bash
+   kubectl create secret generic htc-agent-secret-mock --from-literal='AWS_ACCESS_KEY_ID=mock_secret_key' --from-literal='AWS_SECRET_ACCESS_KEY=mock_secret_key'
+   ```
+
+* The deployment time is about 30 min.
+
+1. Run
+   ```bash
+   make init-grid-local-deployment TAG=$TAG
+   ```
+2. if successful you can run terraform apply to create the infrastructure. HTC-Grid deploys a grafana version behind cognito. The admin password is configurable and should be passed at this stage.
+   ```bash
+   make apply-dotnet-local-runtime TAG=$TAG REDIS_CERTIFICATES_DIRECTORY=$HTCGRID_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$HTCGRID_DOCKER_REGISTRY
+   ```
+
+### Running the example workload
+In the folder [mock_computation](./examples/workloads/c++/mock_computation), you will find the code of the C++ program mocking computation. This program can sleep for a given duration or emulate CPU/memory consumption based on the input parameters.
+We will use a kubernetes Jobs to submit  one execution of 1 second of this C++ program. The communication between the job and the grid are implemented by a client in folder [./examples/client/python](./examples/client/python).
+
+   ```bash
+   kubectl apply -f ./generated/local-single-task-dotnet5.0.yaml
+   ```
+look at the log of the submission:
+   ```bash
+   kubectl logs job/single-task -f
+   ```
+To clean the job submission instance:
+   ```bash
+   kubectl delete -f ./generated/single-task-test.yaml
+   ```
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Installing the HTC-Grid software
 Unpack the provided HTC-Grid software ZIP (i.e: `htc-grid-0.1.0.tar.gz`)  or clone the repository into a local directory of your choice; this directory referred to in this documentation as `<project_root>`. Unless stated otherwise, all paths referenced in this documentation are relative to `<project_root>`.

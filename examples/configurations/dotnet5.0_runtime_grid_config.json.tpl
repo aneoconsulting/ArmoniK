@@ -1,5 +1,4 @@
 {
-  "region": "{{region}}",
   "project_name": "{{image_tag}}",
   "grid_storage_service" : "REDIS",
   "grid_queue_service" : "PrioritySQS",
