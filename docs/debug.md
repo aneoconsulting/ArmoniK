@@ -11,6 +11,16 @@ Delete the nginx namespace
 kubectl delete namespaces ingress-nginx
 ```
 
+## List all on-going deployments
+```bash
+kubectl get deployments --all-namespaces
+```
+
+## Delete redis deployment
+```bash
+kubectl delete deployment -n default redis
+```
+
 ## Fast image redeployment
 Only re-compile the targeted image, use image_pull_policy = Always instead of IfNotPresent and delete the po in order to pull the new image. It works well for the lambda and the applications (single task).
 
