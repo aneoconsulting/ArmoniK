@@ -130,21 +130,3 @@ components:
             type: string
         session_id:
           type: string
-x-amazon-apigateway-policy:
-  Version: "2012-10-17"
-  Statement:
-    - Sid: ""
-      Effect: "Allow"
-      Principal:
-        AWS: "*"
-      Action: "execute-api:Invoke"
-      Resource: "arn:aws:execute-api:eu-west-1:154274247776:rv1n4bmm0k/*"
-    - Sid: ""
-      Effect: "Deny"
-      Principal:
-        AWS: "*"
-      Action: "execute-api:Invoke"
-      Resource: "arn:aws:execute-api:eu-west-1:154274247776:rv1n4bmm0k/*"
-      Condition:
-        StringNotEquals:
-          aws:SourceVpc: "vpc-054bc1fb41b4af24e"

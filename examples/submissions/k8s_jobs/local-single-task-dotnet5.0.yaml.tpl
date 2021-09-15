@@ -11,7 +11,7 @@ spec:
         securityContext:
             {}
         image: {{docker_registry}}{{image_name}}:{{image_tag}}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         resources:
             limits:
               cpu: 100m

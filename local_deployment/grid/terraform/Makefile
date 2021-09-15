@@ -9,14 +9,9 @@
 # BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the
 # License for the specific language governing permissions and limitations under the License
 
-REGION?=eu-west-1
-HTCGRID_ACCOUNT_ID:=$(shell aws sts get-caller-identity --query 'Account' --output text)
-export GRAFANA_ADMIN_PASSWORD?=$(shell uuidgen)
 TF_SRCS:=$(wildcard *.tf)
 REDIS_CERTIFICATES_DIRECTORY=
 DOCKER_REGISTRY=
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
 
 all:
 
@@ -29,16 +24,13 @@ init:
 	terraform init
 
 apply: $(TF_SRCS) $(GRID_CONFIG)
-	terraform apply -var-file $(GRID_CONFIG) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)" -var="docker_registry=$(DOCKER_REGISTRY)" -var="grafana_admin_password=$(GRAFANA_ADMIN_PASSWORD)"
+	terraform apply -var-file $(GRID_CONFIG) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)" -var="docker_registry=$(DOCKER_REGISTRY)"
 
 destroy:
 	terraform destroy -var-file $(GRID_CONFIG) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)" -var="docker_registry=$(DOCKER_REGISTRY)"
 
 validate:
 	terraform validate
-
-get-grafana-password:
-	@terraform output grafana_admin_password
 
 reset:
 	rm -rf .terraform

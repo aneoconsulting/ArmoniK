@@ -3,9 +3,6 @@
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
 export TAG=mainline
-export ACCOUNT_ID=$(shell aws sts get-caller-identity | jq -r '.Account')
-export REGION=eu-west-1
-export LAMBDA_INIT_IMAGE_NAME=lambda-init
 export LAMBDA_AGENT_IMAGE_NAME=awshpc-lambda
 export SUBMITTER_IMAGE_NAME=submitter
 export GENERATED=$(shell pwd)/generated
@@ -22,17 +19,15 @@ BUILD_TYPE?=Release
 
 PACKAGE_DIR := ./dist
 PACKAGES    := $(wildcard $(PACKAGE_DIR)/*.whl)
-.PHONY: all utils api lambda submitter  packages test test-api test-utils test-agent lambda-init lambda-control-plane config-c++
+.PHONY: all utils api lambda submitter  packages test test-api test-utils test-agent lambda-control-plane config-c++
 
-all: utils api lambda lambda-init lambda-control-plane
+all: utils api lambda lambda-control-plane
 
 
 ###############################################
 #######     Manage HTC grid states     ########
 ###############################################
 
-ecr-login:
-	aws ecr get-login-password --region $(REGION) | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
 init-grid-state:
 	$(MAKE) -C ./deployment/init_grid/cloudformation init
 	$(MAKE) -C ./deployment/init_grid/cloudformation
@@ -141,9 +136,6 @@ test: test-agent test-packages
 lambda: utils api
 	$(MAKE) -C ./source/compute_plane/python/agent
 
-lambda-init: utils api
-	$(MAKE) -C ./source/compute_plane/shell/attach-layer all
-
 python-submitter: utils api
 	$(MAKE) -C ./examples/client/python
 
@@ -232,7 +224,6 @@ python-happy-path: all python-submitter  upload-python config-python k8s-jobs
 
 python-quant-lib-path: all upload-python-ql config-python-ql k8s-jobs
 
-#dotnet50-path: all dotnet5.0-htcgrid-api upload-dotnet5.0 config-dotnet5.0 k8s-jobs
 dotnet50-path: all dotnet5.0-htcgrid-api upload-dotnet5.0 mock-submitter mock-config-dotnet5.0 k8s-jobs
 
 #############################
