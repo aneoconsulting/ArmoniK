@@ -3,7 +3,8 @@
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
 TAG?=mainline
-BUCKET_NAME=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[0].OutputValue' --output text)
+BUCKET_NAME=
+#BUCKET_NAME=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[0].OutputValue' --output text)
 
 
 CURRENT_DIR:=$(shell pwd)

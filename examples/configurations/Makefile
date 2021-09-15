@@ -3,14 +3,15 @@
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
 TAG=mainline
-REGION=eu-west-1
 GENERATED?=generated
 BUCKET_NAME=
 FILE_HANDLER=
 FUNCTION_HANDLER=
 TASKS_TABLE_SERVICE=
-ACCOUNT_ID?=$(shell aws sts get-caller-identity | jq -r '.Account')
-BUCKET_NAME=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[0].OutputValue' --output text)
+REGION=
+ACCOUNT_ID=
+BUCKET_NAME=
+#BUCKET_NAME=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[0].OutputValue' --output text)
 
 generated-c++: grid_config.json.tpl
 	mkdir -p $(GENERATED) && cat grid_config.json.tpl | sed "s/{{tasks_status_table_service}}/$(TASKS_TABLE_SERVICE)/;s/{{region}}/$(REGION)/;s/{{workload_bucket_name}}/$(BUCKET_NAME)/;s/{{image_tag}}/$(TAG)/;s/{{account_id}}/${ACCOUNT_ID}/" > $(GENERATED)/grid_config.json
