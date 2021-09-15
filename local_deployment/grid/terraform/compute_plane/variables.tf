@@ -19,10 +19,6 @@ variable "kubernetes_version" {
   description = "Name of EKS cluster in AWS"
 }
 
-variable "docker_registry" {
-  description = "URL of Amazon ECR image repostiories"
-}
-
 variable "lambda_runtime" {
   description = "Python version"
   default = "python3.7"

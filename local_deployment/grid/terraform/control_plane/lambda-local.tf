@@ -91,7 +91,7 @@ resource "kubernetes_deployment" "cancel_tasks" {
         }
 
         container {
-          image   = "${var.docker_registry}/cancel_tasks:${var.suffix}"
+          image   = var.docker_registry != "" ? "${var.docker_registry}/cancel_tasks:${var.suffix}" : "cancel_tasks:${var.suffix}"
           name    = "cancel-tasks"
           image_pull_policy = var.image_pull_policy != "" ? var.image_pull_policy : "IfNotPresent"
 
@@ -179,7 +179,7 @@ resource "kubernetes_deployment" "get_results" {
         }
 
         container {
-          image   = "${var.docker_registry}/get_results:${var.suffix}"
+          image   = var.docker_registry != "" ? "${var.docker_registry}/get_results:${var.suffix}" : "get_results:${var.suffix}"
           name    = "get-results"
           image_pull_policy = var.image_pull_policy != "" ? var.image_pull_policy : "IfNotPresent"
 
@@ -258,7 +258,7 @@ resource "kubernetes_deployment" "submit_task" {
         }
 
         container {
-          image   = "${var.docker_registry}/submit_tasks:${var.suffix}"
+          image   = var.docker_registry != "" ? "${var.docker_registry}/submit_tasks:${var.suffix}" : "submit_tasks:${var.suffix}"
           name    = "submit-task"
           image_pull_policy = var.image_pull_policy != "" ? var.image_pull_policy : "IfNotPresent"
 
@@ -377,7 +377,7 @@ resource "kubernetes_deployment" "ttl_checker" {
         }
 
         container {
-          image   = "${var.docker_registry}/ttl_checker:${var.suffix}"
+          image   = var.docker_registry != "" ? "${var.docker_registry}/ttl_checker:${var.suffix}" : "ttl_checker:${var.suffix}"
           name    = "ttl-checker"
           image_pull_policy = var.image_pull_policy != "" ? var.image_pull_policy : "IfNotPresent"
 

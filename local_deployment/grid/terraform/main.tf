@@ -40,7 +40,7 @@ locals {
     default_agent_configuration = {
         agent_chart_url  = "../charts"
         agent = {
-            image = "${local.docker_registry}/awshpc-lambda"
+            image = local.docker_registry != "" ? "${local.docker_registry}/awshpc-lambda" : "awshpc-lambda"
             tag = local.project_name
             pullPolicy = "IfNotPresent"
             minCPU = "10"
@@ -49,7 +49,7 @@ locals {
             minMemory = "50"
         }
         lambda = {
-            image = "${local.docker_registry}/lambda"
+            image = local.docker_registry != "" ? "${local.docker_registry}/lambda" : "lambda"
             tag = local.project_name
             pullPolicy = "IfNotPresent"
             minCPU = "800"
@@ -62,7 +62,7 @@ locals {
             region = var.region
         }
         test = {
-            image = "${local.docker_registry}/submitter"
+            image = local.docker_registry != "" ? "${local.docker_registry}/submitter" : "submitter"
             tag = local.project_name
             pullPolicy = "IfNotPresent"
         }
@@ -71,11 +71,9 @@ locals {
 
 module "compute_plane" {
     source = "./compute_plane"
-
     cluster_name = local.cluster_name
     kubernetes_version = var.kubernetes_version
     k8s_ca_version = var.k8s_ca_version
-    docker_registry = local.docker_registry
     cwa_version = var.cwa_version
     aws_node_termination_handler_version = var.aws_node_termination_handler
     cw_agent_version = var.cw_agent_version
@@ -130,7 +128,6 @@ module "compute_plane" {
 
 module "control_plane" {
     source = "./control_plane"
-
     secret_key = var.secret_key
     access_key = var.access_key
     suffix = local.project_name
@@ -193,7 +190,6 @@ module "control_plane" {
     image_pull_policy = var.image_pull_policy
 }
 
-
 module "htc_agent" {
     source = "./htc-agent"
     agent_chart_url = lookup(var.agent_configuration,"agent_chart_url",local.default_agent_configuration.agent_chart_url)
@@ -226,6 +222,5 @@ module "htc_agent" {
         module.control_plane,
         kubernetes_config_map.htcagentconfig
     ]
-
 }
 

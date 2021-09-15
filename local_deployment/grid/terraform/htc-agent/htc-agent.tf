@@ -26,6 +26,7 @@ resource "helm_release" "htc_agent" {
     name = "terminationGracePeriodSeconds"
     value = var.termination_grace_period
   }
+
   #set lambda configuration
   set {
     name  = "lambda.functionName"
@@ -36,7 +37,6 @@ resource "helm_release" "htc_agent" {
     name  = "lambda.handler"
     value = local.handler
   }
-
 
   #Agent section
   set {
