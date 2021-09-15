@@ -55,6 +55,7 @@ spec:
           envFrom:
             - secretRef:
                 name: htc-agent-secret-mock
+                optional: true
           volumeMounts:
           - name: {{ .Chart.Name }}-agent-config
             mountPath: /etc/agent
@@ -82,6 +83,7 @@ spec:
           envFrom:
             - secretRef:
                 name: htc-agent-secret-mock
+                optional: true
           volumeMounts:
           - name: {{ .Chart.Name }}-agent-config
             mountPath: /etc/agent
