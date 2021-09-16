@@ -169,7 +169,7 @@ two files:
    ```bash
    make init-grid-local-deployment TAG=$ARMONIK_TAG
    ```
-3. **On Windows** You need to execute 'awsconfigure/bootstrap.sh' to mount redis_certificates.
+3. **On Windows** You need to execute `aws-htc-grid/configure/bootstrap.sh` to mount `/redis_certificates`.
 ```bash
 cd configure
 ./bootstrap.sh
