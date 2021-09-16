@@ -100,7 +100,7 @@ two files:
    make apply-dotnet-local-runtime TAG=$ARMONIK_TAG REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
    ```
    
-# Running an example workloa <a name="running-an-example-workload"></a>
+# Running an example workload <a name="running-an-example-workload"></a>
 In the folder [mock_computation](./examples/workloads/dotnet5.0/mock_computation), you will find the code of the
 .NET 5.0 program mocking computation. 
 
