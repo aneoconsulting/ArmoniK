@@ -85,6 +85,6 @@ Python 3.7.10
 All instructions to build, deploy and test Armonik software are described in [Armonik on-premise](./README.ON-PREMISE.md)
 
 # Armonik software on cloud <a name="armonik-software-on-cloud"></a>
-All instructions to build, deploy and test Armonik software are described in [Armonik on-premise](./README.ON-CLOUD.md)
+All instructions to build, deploy and test Armonik software are described in [Armonik on-cloud](./README.ON-CLOUD.md)
 
 ## Amazon Web Services (AWS) <a name="amazon-web-services"></a>
