@@ -47,7 +47,7 @@ The manual install steps for WSL are listed below and can be used to install Lin
 You must first enable the "Windows Subsystem for Linux" optional feature before installing any Linux distributions on Windows.
 Open PowerShell as Administrator and run:
 
-'''PowerShell
+'''bash
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
 '''
 #### Step 2 : Enable Virtual Machine feature
@@ -56,7 +56,7 @@ Before installing WSL 2, you must enable the Virtual Machine Platform optional f
 
 Open PowerShell as Administrator and run:
 
-'''PowerShell
+'''bash
 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
 '''
 Restart your machine to complete the WSL install and update to WSL 2.
@@ -79,7 +79,7 @@ Once the installation is complete, move on to the next step - setting WSL 2 as y
 
 Open PowerShell and run this command to set WSL 2 as the default version when installing a new Linux distribution:
 
-'''PowerShell
+'''bash
 wsl --set-default-version 2
 '''
 
@@ -104,11 +104,11 @@ Configure which WSL 2 distros you want to access Docker from.
 
 ### Kubernetes Configuration
 After cloning Armonika you need to change the file configuration 'aws-htc-grid/local_deployment/grid/terraform/parameters.auto.tfvars' as following :
-'''
-### LINUX
+'''bash
+## LINUX
 //k8s_config_context = "default"
 //k8s_config_path = "/etc/rancher/k3s/k3s.yaml"
-### WINDOWS
+## WINDOWS
 k8s_config_context = "docker-desktop"
 k8s_config_path = "~/.kube/config"
 '''
