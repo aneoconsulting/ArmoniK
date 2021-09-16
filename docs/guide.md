@@ -1,5 +1,5 @@
 
-# HTCGrid Guide
+# ARMONIK Guide
 
 
 * [Creating your own client](guide/creating_your_a_client.md)

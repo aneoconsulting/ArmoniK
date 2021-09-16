@@ -11,9 +11,9 @@ COPY ./dist/dotnet5.0/HttpApi.1.0.0.nupkg ./lib/dotnet5.0
 COPY ./examples/mock_integration ./
 RUN ls ./lib
 RUN ls -la nuget.config
-ENV HTCGRID_NUGET_REPOS=/app/mock_integration/lib/dotnet5.0
-RUN echo $HTCGRID_NUGET_REPOS
-RUN ls $HTCGRID_NUGET_REPOS
+ENV ARMONIK_NUGET_REPOS=/app/mock_integration/lib/dotnet5.0
+RUN echo $ARMONIK_NUGET_REPOS
+RUN ls $ARMONIK_NUGET_REPOS
 #RUN dotnet nuget add source /app/mock_integration/lib/dotnet5.0
 WORKDIR /app/mock_integration/Client
 RUN dotnet restore 

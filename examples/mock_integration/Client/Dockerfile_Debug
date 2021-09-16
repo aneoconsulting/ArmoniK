@@ -12,7 +12,7 @@ COPY ./examples/mock_integration ./
 RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
 
 
-ENV HTCGRID_NUGET_REPOS=/app/mock_integration/lib/dotnet5.0
+ENV ARMONIK_NUGET_REPOS=/app/mock_integration/lib/dotnet5.0
 
 WORKDIR /app/mock_integration/Client
 

@@ -7,7 +7,7 @@ COPY ./mock_integration_image /app/mock_integration
 WORKDIR "/app/mock_integration/src"
 RUN mkdir -p ./dist/dotnet5.0
 COPY ./mock_integration_image/src/mock_integration/dist/dotnet5.0/*.nupkg ./dist/dotnet5.0/
-ENV HTCGRID_NUGET_REPOS=/app/mock_integration/src/dist/dotnet5.0
+ENV ARMONIK_NUGET_REPOS=/app/mock_integration/src/dist/dotnet5.0
 
 WORKDIR "/app/mock_integration/src/mock_integration"
 RUN dotnet restore
