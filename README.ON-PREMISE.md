@@ -47,18 +47,18 @@ The manual install steps for WSL are listed below and can be used to install Lin
 You must first enable the "Windows Subsystem for Linux" optional feature before installing any Linux distributions on Windows.
 Open PowerShell as Administrator and run:
 
-'''bash
+```bash
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-'''
+```
 #### Step 2 : Enable Virtual Machine feature
 
 Before installing WSL 2, you must enable the Virtual Machine Platform optional feature. Your machine will require virtualization capabilities to use this feature.
 
 Open PowerShell as Administrator and run:
 
-'''bash
+```bash
 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-'''
+```
 Restart your machine to complete the WSL install and update to WSL 2.
 
 #### Step 3 : Download and Install Docker on Windows
@@ -71,7 +71,7 @@ Restart your machine to complete the WSL install and update to WSL 2.
 
 1. Download the latest package:
      * WSL2 Linux kernel update package for x64 machines
-2. Run the update package downloaded in the previous step. (Double-click to run - you will be prompted for elevated permissions, select ‘yes’ to approve this installation.)
+2. Run the update package downloaded in the previous step. (Double-click to run - you will be prompted for elevated permissions, select `yes` to approve this installation.)
 
 Once the installation is complete, move on to the next step - setting WSL 2 as your default version when installing new Linux distributions.
 
@@ -79,9 +79,9 @@ Once the installation is complete, move on to the next step - setting WSL 2 as y
 
 Open PowerShell and run this command to set WSL 2 as the default version when installing a new Linux distribution:
 
-'''bash
+```bash
 wsl --set-default-version 2
-'''
+```
 
 #### Step 6 : Install your Linux distribution of choice
 1. Open the Microsoft Store and select your favorite Linux distribution (preferably Ubuntu 20.04 LTS).
@@ -103,15 +103,15 @@ Configure which WSL 2 distros you want to access Docker from.
 2. Apply & Restart
 
 ### Kubernetes Configuration
-After cloning Armonika you need to change the file configuration 'aws-htc-grid/local_deployment/grid/terraform/parameters.auto.tfvars' as following :
-'''bash
+After cloning Armonika you need to change the file configuration `aws-htc-grid/local_deployment/grid/terraform/parameters.auto.tfvars` as following :
+```bash
 ## LINUX
 //k8s_config_context = "default"
 //k8s_config_path = "/etc/rancher/k3s/k3s.yaml"
 ## WINDOWS
 k8s_config_context = "docker-desktop"
 k8s_config_path = "~/.kube/config"
-'''
+```
 
 # Configure the environment <a name="configure-the-environment"></a>
 Define variables for deploying the infrastructure as follows:
@@ -170,10 +170,10 @@ two files:
    make init-grid-local-deployment TAG=$ARMONIK_TAG
    ```
 3. **On Windows** You need to execute 'awsconfigure/bootstrap.sh' to mount redis_certificates.
-'''bash
+```bash
 cd configure
 ./bootstrap.sh
-'''
+```
 
 4. if successful you can run terraform apply to create the infrastructure:
    ```bash
