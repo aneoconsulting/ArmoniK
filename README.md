@@ -1,10 +1,10 @@
 # Table of contents
 1. [Armonik](#armonik)
    1. [When should I use Armonik](#when-should-i-use-armonik)
-   2. [Python environment](#python-environement)
+   2. [When should I not use Armonik](#when-should-i-not-use-armonik)
 2. [Getting started](#getteing-started)
    1. [Software prerequisites](#software-prerequisites)
-   2. [Software prerequisites](#software-prerequisites)
+   2. [Python environment](#python-environment)
 3. [Armonik software on-premise](#armonik-software-on-premise)
 4. [Armonik software on cloud](#armonik-software-on-cloud)
    1. [Amazon Web Services (AWS)](#amazon-web-services)
@@ -24,7 +24,7 @@ Armonik should be used when the following criteria are meet:
 3. Variable workloads (tasks with heterogeneous execution times) are expected and the solution needs to 
    dynamically scale with the load.
 
-## When should I use Armonik <a name="when-should-i-not-use-armonik"></a>
+## When should I not use Armonik <a name="when-should-i-not-use-armonik"></a>
 Armonik might not be the best choice if :
 1. The required task throughput is below 250 tasks per second.
 2. The tasks are tightly coupled, or use MPI.
@@ -85,6 +85,5 @@ Python 3.7.10
 All instructions to build, deploy and test Armonik software are described in [Armonik on-premise](./README.ON-PREMISE.md)
 
 # Armonik software on cloud <a name="armonik-software-on-cloud"></a>
-All instructions to build, deploy and test Armonik software are described in [Armonik on-cloud](./README.ON-CLOUD.md)
-
 ## Amazon Web Services (AWS) <a name="amazon-web-services"></a>
+All instructions to build, deploy and test Armonik software are described in [Armonik on-cloud](./README.ON-CLOUD.md)
