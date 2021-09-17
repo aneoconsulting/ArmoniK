@@ -203,7 +203,7 @@ and the grid are implemented by a client in folder [./examples/client/python](./
    kubectl delete -f ./generated/single-task-test.yaml
    ```
 
-# Destroy Armonik resources <a name="destroy-armonik-resourcese"></a>
+# Destroy Armonik resources <a name="destroy-armonik-resources"></a>
 In the root forlder `<project_root>`, to destroy all Armonik resources deploy on the local machine, execute the following command:
 ```bash
 make destroy-dotnet-local-runtime TAG=$ARMONIK_TAG REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
