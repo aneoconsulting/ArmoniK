@@ -86,4 +86,4 @@ All instructions to build, deploy and test Armonik software are described in [Ar
 
 # Armonik software on cloud <a name="armonik-software-on-cloud"></a>
 ## Amazon Web Services (AWS) <a name="amazon-web-services"></a>
-All instructions to build, deploy and test Armonik software are described in [Armonik on-cloud](./README.ON-CLOUD.md)
+All instructions to build, deploy and test Armonik software are described in [Armonik on AWS cloud](./README.ON-AWS-CLOUD.md)
