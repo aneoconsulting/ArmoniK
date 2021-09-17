@@ -1,6 +1,13 @@
+resource "kubernetes_namespace" "nginx_namespace" {
+  metadata {
+    name = "ingress-nginx"
+  }
+}
+
 resource "kubectl_manifest" "ingress-nginx" {
-    count     = length(var.kubectl_path_documents.documents)
-    yaml_body = element(var.kubectl_path_documents.documents, count.index)
+  depends_on = [kubernetes_namespace.nginx_namespace]
+  count     = length(var.kubectl_path_documents.documents)
+  yaml_body = element(var.kubectl_path_documents.documents, count.index)
 }
 
 resource "kubernetes_ingress" "lambda_local" {
