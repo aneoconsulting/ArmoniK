@@ -6,6 +6,7 @@
 3. [Build Armonik artifacts](#build-armonik-artifacts)
 4. [Deploy Armonik resources](#deploy-armonik-resources)
 5. [Running an example workload](#running-an-example-workload)
+6. [Destroy Armonik resources](#destroy-armonik-resources)
 
 # Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
 Instructions to install Kubernetes on local Linux or Windows machine.
@@ -201,3 +202,9 @@ and the grid are implemented by a client in folder [./examples/client/python](./
    ```bash
    kubectl delete -f ./generated/single-task-test.yaml
    ```
+
+# Destroy Armonik resources <a name="destroy-armonik-resourcese"></a>
+In the root forlder `<project_root>`, to destroy all Armonik resources deploy on the local machine, execute the following command:
+```bash
+make destroy-dotnet-local-runtime TAG=$ARMONIK_TAG REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+```
