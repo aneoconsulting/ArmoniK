@@ -15,9 +15,17 @@ DOCKER_REGISTRY=
 
 build: Dockerfile import-dll
 ifneq ($(DOCKER_REGISTRY),)
+ifeq ($(BUILD_TYPE), Debug)
+	docker build . -f ./Dockerfile_Debug -t $(DOCKER_REGISTRY)/lambda:$(TAG)
+else
 	docker build . -f ./Dockerfile -t $(DOCKER_REGISTRY)/lambda:$(TAG)
+endif
+else
+ifeq ($(BUILD_TYPE), Debug)
+	docker build . -f ./Dockerfile_Debug -t lambda:$(TAG)
 else
 	docker build . -f ./Dockerfile -t lambda:$(TAG)
+endif
 endif
 
 upload: build
@@ -31,6 +39,10 @@ import-dll:
 	cp -v ../lib/*.dll ./mock_integration_image/src/mock_integration/lib/
 
 	cp -v $(DIST_DIR)/dotnet5.0/*.nupkg ./mock_integration_image/src/mock_integration/dist/dotnet5.0
+ifeq ($(BUILD_TYPE), Debug)
+	cp -v $(DIST_DIR)/dotnet5.0/*.pdb ./mock_integration_image/src/mock_integration/dist/dotnet5.0
+	cp -v ../lib/*.pdb ./mock_integration_image/src/mock_integration/lib/
+endif
 
 clean:
 	rm lambda.zip

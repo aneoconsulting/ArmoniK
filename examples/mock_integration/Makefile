@@ -13,6 +13,9 @@ build-mock:
 	dotnet build --configuration $(BUILD_TYPE) .
 	mkdir -p ./lib
 	cp -v Client/bin/$(BUILD_TYPE)/net5.0/HtcCommon.dll ./lib
+ifeq ($(BUILD_TYPE), Debug)
+	cp -v Client/bin/$(BUILD_TYPE)/net5.0/HtcCommon.pdb ./lib
+endif
 	dotnet pack -c $(BUILD_TYPE) -o $(DIST_DIR)/dotnet5.0
 	
 
