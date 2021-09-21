@@ -2,11 +2,12 @@
 1. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
    1. [On Linux](#on-linux)
    2. [On Windows](#on-windows)
-2. [Configure the environment](#configure-the-environment)
-3. [Build Armonik artifacts](#build-armonik-artifacts)
-4. [Deploy Armonik resources](#deploy-armonik-resources)
-5. [Running an example workload](#running-an-example-workload)
-6. [Destroy Armonik resources](#destroy-armonik-resources)
+2. [Configure the environment](#configure-the-environment) 
+3. [Kubernetes configuration](#kubernetes-configuration)  
+4. [Build Armonik artifacts](#build-armonik-artifacts)
+5. [Deploy Armonik resources](#deploy-armonik-resources)
+6. [Running an example workload](#running-an-example-workload)
+7. [Destroy Armonik resources](#destroy-armonik-resources)
 
 # Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
 Instructions to install Kubernetes on local Linux or Windows machine.
@@ -103,17 +104,6 @@ Configure which WSL 2 distros you want to access Docker from.
 1. Enable Kubernetes
 2. Apply & Restart
 
-### Kubernetes Configuration
-After cloning Armonika you need to change the file configuration `aws-htc-grid/local_deployment/grid/terraform/parameters.auto.tfvars` as following :
-```bash
-## LINUX
-//k8s_config_context = "default"
-//k8s_config_path = "/etc/rancher/k3s/k3s.yaml"
-## WINDOWS
-k8s_config_context = "docker-desktop"
-k8s_config_path = "~/.kube/config"
-```
-
 # Configure the environment <a name="configure-the-environment"></a>
 Define variables for deploying the infrastructure as follows:
 1. To simplify this installation it is suggested that a unique <TAG> name (to be used later) is also used to prefix the
@@ -144,6 +134,21 @@ Define variables for deploying the infrastructure as follows:
    ```bash
       export ARMONIK_DOCKER_REGISTRY=<docker registry>
    ```
+
+# Kubernetes configuration <a name="kubernetes-configuration"></a>
+After cloning Armonika you need to change the file configuration `armonik/local_deployment/grid/terraform/parameters.auto.tfvars` as following :
+* For Linux :
+```bash
+## LINUX
+k8s_config_context = "default"
+k8s_config_path = "/etc/rancher/k3s/k3s.yaml"
+```
+* For Windows:
+```bash
+## WINDOWS
+k8s_config_context = "docker-desktop"
+k8s_config_path = "~/.kube/config"
+```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
