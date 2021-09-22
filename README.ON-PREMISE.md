@@ -136,18 +136,11 @@ Define variables for deploying the infrastructure as follows:
    ```
 
 # Kubernetes configuration <a name="kubernetes-configuration"></a>
-After cloning Armonika you need to change the file configuration `armonik/local_deployment/grid/terraform/parameters.auto.tfvars` as following :
-* For Linux :
+**On Windows** You need to execute `Armonika/script_config_os/check_OS.sh` to configure Kubernetes.
 ```bash
-## LINUX
-k8s_config_context = "default"
-k8s_config_path = "/etc/rancher/k3s/k3s.yaml"
-```
-* For Windows:
-```bash
-## WINDOWS
-k8s_config_context = "docker-desktop"
-k8s_config_path = "~/.kube/config"
+cd scropt_config_os
+./check_OS.sh
+cd ..
 ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
@@ -175,10 +168,11 @@ two files:
    ```bash
    make init-grid-local-deployment TAG=$ARMONIK_TAG
    ```
-3. **On Windows** You need to execute `aws-htc-grid/configure/bootstrap.sh` to mount `/redis_certificates`.
+3. **On Windows** You need to execute `Armonika/configure/bootstrap.sh` to mount `/redis_certificates`.
 ```bash
 cd configure
 ./bootstrap.sh
+cd ..
 ```
 
 4. if successful you can run terraform apply to create the infrastructure:
