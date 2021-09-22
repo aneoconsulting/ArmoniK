@@ -3,11 +3,10 @@
    1. [On Linux](#on-linux)
    2. [On Windows](#on-windows)
 2. [Configure the environment](#configure-the-environment) 
-3. [Kubernetes configuration](#kubernetes-configuration)  
-4. [Build Armonik artifacts](#build-armonik-artifacts)
-5. [Deploy Armonik resources](#deploy-armonik-resources)
-6. [Running an example workload](#running-an-example-workload)
-7. [Destroy Armonik resources](#destroy-armonik-resources)
+3. [Build Armonik artifacts](#build-armonik-artifacts)
+4. [Deploy Armonik resources](#deploy-armonik-resources)
+5. [Running an example workload](#running-an-example-workload)
+6. [Destroy Armonik resources](#destroy-armonik-resources)
 
 # Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
 Instructions to install Kubernetes on local Linux or Windows machine.
@@ -139,14 +138,6 @@ Define variables for deploying the infrastructure as follows:
    ```bash
       export ARMONIK_DOCKER_REGISTRY=<docker registry>
    ```
-
-# Kubernetes configuration <a name="kubernetes-configuration"></a>
-**On Windows** You need to execute `armonik/script_config_os/check_OS.sh` to configure Kubernetes.
-```bash
-cd script_config_os
-./check_OS.sh
-cd ..
-```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
