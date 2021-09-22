@@ -78,6 +78,7 @@ show-password:
 	@$(MAKE) -C ./deployment/grid/terraform get-grafana-password
 
 init-grid-local-deployment:
+	@$(MAKE) -C ./local_deployment/grid/terraform k8s-config
 	@$(MAKE) -C ./local_deployment/grid/terraform init
 
 reset-grid-local-deployment:

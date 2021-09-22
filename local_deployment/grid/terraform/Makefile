@@ -34,6 +34,9 @@ validate:
 
 reset:
 	rm -rf .terraform
+
+k8s-config: scripts_bash/k8s_config.sh
+	bash ./scripts_bash/k8s_config.sh
 	
 clean:
 	rm -rf $(BUILD_DIR)/tag.*
