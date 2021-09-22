@@ -138,7 +138,7 @@ Define variables for deploying the infrastructure as follows:
 # Kubernetes configuration <a name="kubernetes-configuration"></a>
 **On Windows** You need to execute `armonik/script_config_os/check_OS.sh` to configure Kubernetes.
 ```bash
-cd scropt_config_os
+cd script_config_os
 ./check_OS.sh
 cd ..
 ```

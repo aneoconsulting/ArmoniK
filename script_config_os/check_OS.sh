@@ -36,5 +36,6 @@ redis_cert_file = \"/redis_certificates/redis.crt\"
 cluster_config = \"local\"
 image_pull_policy = \"IfNotPresent\"
 "  >> ../local_deployment/grid/terraform/parameters.auto.tfvars
+echo "Configurate kubernetes for Wsl2 is already SUCCESS"
 fi
 
