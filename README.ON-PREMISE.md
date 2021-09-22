@@ -136,7 +136,7 @@ Define variables for deploying the infrastructure as follows:
    ```
 
 # Kubernetes configuration <a name="kubernetes-configuration"></a>
-**On Windows** You need to execute `Armonika/script_config_os/check_OS.sh` to configure Kubernetes.
+**On Windows** You need to execute `armonik/script_config_os/check_OS.sh` to configure Kubernetes.
 ```bash
 cd scropt_config_os
 ./check_OS.sh
@@ -168,7 +168,7 @@ two files:
    ```bash
    make init-grid-local-deployment TAG=$ARMONIK_TAG
    ```
-3. **On Windows** You need to execute `Armonika/configure/bootstrap.sh` to mount `/redis_certificates`.
+3. **On Windows** You need to execute `armonik/configure/bootstrap.sh` to mount `/redis_certificates`.
 ```bash
 cd configure
 ./bootstrap.sh
