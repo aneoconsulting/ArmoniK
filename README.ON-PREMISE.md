@@ -129,8 +129,13 @@ Define variables for deploying the infrastructure as follows:
    ```bash
       export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
    ```
+ 5. **Worning : On WSL2** The environement variable containing the path to the redis certificates.  
+  ```bash
+      export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=/run/desktop/mnt/host/wsl/cert
+   ```
 
-5. Define an environment variable containing the docker registry if it exists, otherwise initialize the variable to empty.
+
+6. Define an environment variable containing the docker registry if it exists, otherwise initialize the variable to empty.
    ```bash
       export ARMONIK_DOCKER_REGISTRY=<docker registry>
    ```
