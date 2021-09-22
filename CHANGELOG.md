@@ -27,5 +27,3 @@ Changed
 Added
 -
 * C# code sources for Client and workloads
-
-[Full Changelog](https://github.com/aneoconsulting/armonik/compare/5512550c94e7e062280cb1efbea22f5368774d6e...v0.1.0)
