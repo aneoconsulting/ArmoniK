@@ -41,16 +41,9 @@ def generate_random_logical_partition_name():
 
 def generate_logical_partition_name(index=None):
     if index is not None:
-        return "{PARTITION_PREFIX}{}".format(
-            PARTITION_PREFIX,
-            str(index).zfill(
-                PARTITION_NUMERIC_SUFFIX_LENGTH
-                )
-            )
+        return "{}{}".format(PARTITION_PREFIX, str(index).zfill(PARTITION_NUMERIC_SUFFIX_LENGTH))
     else:
-        return generate_logical_partition_name(
-            random.randint(0, N_LOGICAL_PARTITIONS_4_STATE - 1)
-            )
+        return generate_logical_partition_name(random.randint(0, N_LOGICAL_PARTITIONS_4_STATE - 1))
 
 
 def state_partitions_generator():

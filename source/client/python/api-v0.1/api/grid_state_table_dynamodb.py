@@ -128,13 +128,13 @@ class StateTableDDB:
     ###############################################################################################
 
     def update_task_status_to_failed(self, task_id):
-        self.__finalize_tasks_status(task_id, TASK_STATUS_FAILED, self.__get_state_partition_from_task_id(task_id))
+        return self.__finalize_tasks_status(task_id, TASK_STATUS_FAILED, self.__get_state_partition_from_task_id(task_id))
 
     def update_task_status_to_inconsistent(self, task_id):
-        self.__finalize_tasks_status(task_id, TASK_STATUS_INCONSISTENT, self.__get_state_partition_from_task_id(task_id))
+        return self.__finalize_tasks_status(task_id, TASK_STATUS_INCONSISTENT, self.__get_state_partition_from_task_id(task_id))
 
     def update_task_status_to_cancelled(self, task_id):
-        self.__finalize_tasks_status(task_id, TASK_STATUS_CANCELLED, self.__get_state_partition_from_task_id(task_id))
+        return self.__finalize_tasks_status(task_id, TASK_STATUS_CANCELLED, self.__get_state_partition_from_task_id(task_id))
 
     def acquire_task_for_ttl_lambda(self, task_id, current_owner, current_heartbeat_timestamp):
         """
@@ -567,19 +567,15 @@ class StateTableDDB:
         return res
 
 
-    def __finalize_tasks_status(self, task_id, new_task_state):
+    def __finalize_tasks_status(self, task_id, new_task_state, partitionID = None):
         """
         This function called to move tasks into their final states.
         """
         if new_task_state not in [TASK_STATUS_FAILED, TASK_STATUS_INCONSISTENT, TASK_STATUS_CANCELLED]:
-            logging.error("__finalize_tasks_status called with incorrect input: {}".format(
-                new_task_state
-            ))
+            logging.error("__finalize_tasks_status called with incorrect input: {}".format(new_task_state))
 
         try:
-
-
-            self.state_table.update_item(
+            return self.state_table.update_item(
                 Key={
                     'task_id': task_id
                 },

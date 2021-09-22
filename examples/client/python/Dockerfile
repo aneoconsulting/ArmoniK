@@ -14,6 +14,7 @@ COPY ./examples/client/python/client.py .
 COPY ./examples/client/python/simple_client.py .
 COPY ./examples/client/python/portfolio_pricing_client.py .
 COPY ./examples/client/python/sample_portfolio.json .
+COPY ./examples/client/python/cancel_tasks.py .
 
 
 

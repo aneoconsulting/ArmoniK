@@ -295,13 +295,13 @@ class AWSConnector:
           dict: the response from the endpoint of the HTC grid
 
         """
-        logging.info("Init send {} tasks".format(len(tasks_list)))
+        logging.debug("Init send {} tasks".format(len(tasks_list)))
         user_task_json_request = self.generate_user_task_json(tasks_list)
-        logging.info("user_task_json_request: {}".format(user_task_json_request))
+        logging.debug("user_task_json_request: {}".format(user_task_json_request))
         # print(user_task_json_request)
 
         json_response = self.submit(user_task_json_request)
-        logging.info("json_response = {}".format(json_response))
+        logging.debug("json_response = {}".format(json_response))
         return json_response
 
     def get_results(self, submission_response: dict, timeout_sec=0):
@@ -318,10 +318,10 @@ class AWSConnector:
         logging.info("Init get_results")
         start_time = time.time()
 
-        session_tasks_count: int = len(submission_response['task_ids'])
+        session_tasks_count: int = len(submission_response['body']['task_ids'])
         logging.info("session_tasks_count: {}".format(session_tasks_count))
         while True:
-            session_results = self.invoke_get_results_lambda({'session_id': submission_response['session_id']})
+            session_results = self.invoke_get_results_lambda({'session_id': submission_response['body']['session_id']})
             logging.info("session_results: {}".format(session_results))
             # print("session_results: {}".format(session_results))
 
@@ -334,13 +334,15 @@ class AWSConnector:
                 break
             time.sleep(self.__dynamodb_results_pull_intervall)
 
-        for i, completed_task in enumerate(session_results[TASK_STATUS_FINISHED]):
-            stdout_bytes = self.in_out_manager.get_output_to_bytes(completed_task)
-            # print("stdout_bytes: {}".format(stdout_bytes))
+        logging.debug("session_results =" + str(session_results))
+        if TASK_STATUS_FINISHED in session_results['body']:
+            for i, completed_task in enumerate(session_results['body'][TASK_STATUS_FINISHED]):
+                stdout_bytes = self.in_out_manager.get_output_to_bytes(completed_task)
+                # print("stdout_bytes: {}".format(stdout_bytes))
 
-            output = base64.b64decode(stdout_bytes).decode('utf-8')
+                output = base64.b64decode(stdout_bytes).decode('utf-8')
 
-            session_results[TASK_STATUS_FINISHED + '_OUTPUT'][i] = output
+                session_results[TASK_STATUS_FINISHED + '_output'][i] = output
 
         logging.info("Finish get_results")
         return session_results
@@ -371,8 +373,8 @@ class AWSConnector:
             api_instance = default_api.DefaultApi(api_client)
 
             try:
-                raw_response = api_instance.submit_post(str(session_id))
-                pprint(raw_response)
+                raw_response = api_instance.submit_post(PostSubmitResponse(session_id=str(session_id)))
+                logging.debug("submit_post response = " + str(raw_response))
             except httpapi.ApiException as e:
                 print("Exception when calling DefaultApi->ca_post: %s\n" % e)
             # raw_response = requests.post(url_base + '/submit', params=query, headers=self.__authorization_headers)
@@ -414,15 +416,14 @@ class AWSConnector:
         query = {
             "submission_content": str(submission_payload_string)
         }
-        # raw_response = requests.get(url_base + '/result', headers=self.__authorization_headers, params=query)
         with httpapi.ApiClient(self.__configuration) as api_client:
             # Create an instance of the API class
             api_instance = default_api.DefaultApi(api_client)
             try:
-                raw_response = api_instance.result_get(str(submission_payload_string))
-                pprint(raw_response)
+                raw_response = api_instance.result_post(GetResponse(finished=[str(submission_payload_string)]))
+                logging.debug("result_post response = " + str(raw_response))
             except httpapi.ApiException as e:
-                print("Exception when calling DefaultApi->result_get: %s\n" % e)
+                print("Exception when calling DefaultApi->result_post: %s\n" % e)
                 raise e
 
         return raw_response
@@ -465,7 +466,9 @@ class AWSConnector:
         query = {
             "submission_content": str(submission_payload_string)
         }
-        raw_response = requests.post(url_base + '/cancel', headers=self.__authorization_headers, params=query)
+        logging.debug(json.dumps(query))
+        raw_response = requests.post(url_base + '/cancel', headers=self.__authorization_headers, data=json.dumps(query))
+        logging.debug("response cancel = " + str(raw_response.json()))
 
         if raw_response.status_code != requests.codes.ok:
             logging.error("request {} not processed correctly {}".format(url_base, raw_response.status_code))

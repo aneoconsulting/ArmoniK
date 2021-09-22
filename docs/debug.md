@@ -28,6 +28,7 @@ Re-compile one lambda
 ```bash
 make -C source/control_plane/python/lambda/get_results lambda-get-results TAG=$ARMONIK_TAG DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
 make -C source/control_plane/python/lambda/submit_tasks lambda-submit-tasks TAG=$ARMONIK_TAG DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+make -C source/control_plane/python/lambda/cancel_tasks lambda-cancel-tasks TAG=$ARMONIK_TAG DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
 ```
 
 Re-comile client only (without dependencies)

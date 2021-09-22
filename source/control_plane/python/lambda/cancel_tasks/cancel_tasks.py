@@ -44,9 +44,9 @@ def cancel_tasks_by_status(session_id, task_state):
 
     for row in response['Items']:
 
-        res = state_table.update_task_status_to_cancelled(session_id, row['task_id'])
+        res = state_table.update_task_status_to_cancelled(row['task_id'])
 
-        print(res)
+        print(f"res = {res}")
         if not res:
             raise Exception("Failed to set task status to Cancelled.")
 
@@ -92,10 +92,9 @@ def get_session_id_from_event(event):
     """
 
     # If lambda are called through ALB - extracting actual event
-    print(event)
-    if event.get('queryStringParameters') is not None:
-        all_params = event.get('queryStringParameters')
-        encoded_json_tasks = all_params.get('submission_content')
+
+    if event.get('submission_content') is not None:
+        encoded_json_tasks = event.get('submission_content')
         if encoded_json_tasks is None:
             raise Exception('Invalid submission format, expect submission_content parameter')
         decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks).decode('utf-8')
@@ -109,7 +108,7 @@ def get_session_id_from_event(event):
 
 
 def lambda_handler(event, context):
-
+    print("event : " + str(event))
     try:
 
         lambda_response = {}

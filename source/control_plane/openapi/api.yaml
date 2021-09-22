@@ -36,7 +36,7 @@ paths:
     post:
       summary: Cancel tasks
       requestBody:
-        description: Job submission to the grid
+        description: Job cancellation to the grid
         required: true
         content:
           application/json:
