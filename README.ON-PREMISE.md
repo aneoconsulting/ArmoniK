@@ -2,7 +2,7 @@
 1. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
    1. [On Linux](#on-linux)
    2. [On Windows](#on-windows)
-2. [Configure the environment](#configure-the-environment) 
+2. [Configure the environment](#configure-the-environment)  
 3. [Build Armonik artifacts](#build-armonik-artifacts)
 4. [Deploy Armonik resources](#deploy-armonik-resources)
 5. [Running an example workload](#running-an-example-workload)
@@ -124,21 +124,20 @@ Define variables for deploying the infrastructure as follows:
       export ARMONIK_NUGET_REPOS=<project directory>/dist/dotnet5.0
    ```
 
-4. Define an environment variable containing the path to the redis certificates.
+4. **On Linux :** Define an environment variable containing the path to the redis certificates.
    ```bash
       export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
    ```
- 5. **Worning : On WSL2** The environement variable containing the path to the redis certificates.  
-  ```bash
+   **On Windows WSL2 :** Define an environment variable containing the path to the redis certificates.
+   ```bash
       export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=/run/desktop/mnt/host/wsl/cert
    ```
 
-
-6. Define an environment variable containing the docker registry if it exists, otherwise initialize the variable to empty.
+5. Define an environment variable containing the docker registry if it exists, otherwise initialize the variable to empty.
    ```bash
       export ARMONIK_DOCKER_REGISTRY=<docker registry>
    ```
-
+   
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
 
