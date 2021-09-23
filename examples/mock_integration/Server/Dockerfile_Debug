@@ -29,7 +29,7 @@ RUN cp ./dist/dotnet5.0/*.pdb /app/publish
 RUN cp lambda_entry_point.sh /app/publish
 
 FROM base AS final
-RUN yum update && yum install -y tar gzip
+RUN yum update -y && yum install -y tar gzip
 RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
 
 WORKDIR /var/task
