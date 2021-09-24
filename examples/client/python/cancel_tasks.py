@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
 
     # Cancel all remaining tasks
-    cancep_resp = gridConnector.cancel_sessions([submission_resp["body"]["session_id"]])
+    cancep_resp = gridConnector.cancel_session(submission_resp["body"]["session_id"])
     print("cancel_resp = " + str(cancep_resp))
 
 

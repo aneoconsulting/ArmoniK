@@ -82,44 +82,13 @@ def cancel_session(session_id):
     return(lambda_response)
 
 
-def get_session_id_from_event(event):
-    """
-    Args:
-        lambda's invocation event
-
-    Returns:
-        str: session id encoded in the event
-    """
-
-    # If lambda are called through ALB - extracting actual event
-
-    if event.get('submission_content') is not None:
-        encoded_json_tasks = event.get('submission_content')
-        if encoded_json_tasks is None:
-            raise Exception('Invalid submission format, expect submission_content parameter')
-        decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks).decode('utf-8')
-        event = json.loads(decoded_json_tasks)
-
-        return event['session_ids_to_cancel']
-
-    else:
-        errlog.log("Uniplemented path, exiting")
-        assert(False)
-
-
 def lambda_handler(event, context):
     print("event : " + str(event))
     try:
 
         lambda_response = {}
-
-        session_ids_to_cancel = get_session_id_from_event(event)
-
-        for session2cancel in session_ids_to_cancel:
-
-            lambda_sub_response = cancel_session(session2cancel)
-
-            lambda_response[session2cancel] = lambda_sub_response
+        session2cancel = event.get("session_id")
+        lambda_response = cancel_session(session2cancel)
 
         return {
             'statusCode': 200,
@@ -127,6 +96,7 @@ def lambda_handler(event, context):
         }
 
     except Exception as e:
+        print('Lambda cancel_tasks error: {} trace: {}'.format(e, traceback.format_exc()))
         errlog.log('Lambda cancel_tasks error: {} trace: {}'.format(e, traceback.format_exc()))
         return {
             'statusCode': 542,

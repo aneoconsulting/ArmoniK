@@ -254,9 +254,10 @@ namespace HTCGrid
                 return null;
             }
 
-            public void CancelSession(string session)
+            public void CancelSession(string sessionId)
             {
-                throw new NotImplementedException("TODO : Parsing of Agent config isn't implemented");
+                if(gridSession_ != null)
+                    gridSession_.CancelSession();
             }
 
             public void CancelTask(string taskId)
