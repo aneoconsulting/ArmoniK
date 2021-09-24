@@ -4,7 +4,6 @@
 
 import json
 
-import boto3
 import base64
 import os
 import traceback
@@ -12,9 +11,6 @@ import traceback
 import utils.grid_error_logger as errlog
 
 from utils.state_table_common import TASK_STATUS_PENDING, TASK_STATUS_PROCESSING, TASK_STATUS_RETRYING
-
-client = boto3.client('dynamodb', endpoint_url=os.environ["DYNAMODB_ENDPOINT_URL"])
-dynamodb = boto3.resource('dynamodb', endpoint_url=os.environ['DYNAMODB_ENDPOINT_URL'])
 
 from api.state_table_manager import state_table_manager
 state_table = state_table_manager(

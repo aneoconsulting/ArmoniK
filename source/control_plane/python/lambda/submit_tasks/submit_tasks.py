@@ -4,19 +4,13 @@
 
 import json
 import base64
-import logging
-import boto3
 import time
 import os
 import uuid
 import traceback
 import copy
 
-from botocore.exceptions import ClientError
-
 from utils.performance_tracker import EventsCounter, performance_tracker_initializer
-
-from boto3.dynamodb.conditions import Key
 
 import utils.grid_error_logger as errlog
 from utils.state_table_common import TASK_STATUS_PENDING
@@ -35,8 +29,6 @@ tasks_queue = queue_manager(
     queue_name=os.environ['TASKS_QUEUE_NAME'],
     region=region)
 
-# dynamodb = boto3.resource('dynamodb')
-# table = dynamodb.Table(os.environ['TASKS_STATUS_TABLE_NAME'])
 state_table = state_table_manager(
     os.environ['TASKS_STATUS_TABLE_SERVICE'],
     os.environ['TASKS_STATUS_TABLE_CONFIG'],
@@ -119,29 +111,6 @@ def get_time_now_ms():
     return int(round(time.time() * 1000))
 
 
-def verify_passed_sessionid_is_unique(session_id):
-    """This function if a given session has already been used by DynamoDB
-
-    Args:
-      session_id(str): the session id to verify
-
-    Returns:
-      Nothing
-
-    Raises:
-      Exception:
-
-    """
-    response = table.query(
-        IndexName="gsi_session_index",
-        KeyConditionExpression=Key('session_id').eq(session_id)
-    )
-
-    if len(response['Items']) > 0:
-        raise Exception("Passed session id [{}] already in DDB, uuid is not unique!".format(
-            session_id))
-
-
 def lambda_handler(event, context):
     """Handler called by AWS Lambda runtime
 
@@ -187,8 +156,6 @@ def lambda_handler(event, context):
             session_id = get_safe_session_id()
         else:
             session_id = event["session_id"]
-            # NOTE: Since more tasks can be sent within a session this function is no longer necessary.
-            # verify_passed_sessionid_is_unique(session_id)
 
         session_priority = 0
         if "context"  in event:
@@ -298,14 +265,6 @@ def lambda_handler(event, context):
 
         print(json.dumps(res))
         return res
-    except ClientError as e:
-        errlog.log("ClientError in Submit Tasks {} {}"
-                   .format(e.response['Error']['Code'], traceback.format_exc()))
-
-        return {
-            'statusCode': 543,
-            'body': e.response['Error']['Message']
-        }
 
     except Exception as e:
         errlog.log("Exception in Submit Tasks {} [{}]"

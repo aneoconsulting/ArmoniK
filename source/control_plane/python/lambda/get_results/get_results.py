@@ -3,13 +3,10 @@
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
 import json
-import boto3
 import time
 import os
 import base64
 import traceback
-
-from botocore.exceptions import ClientError
 
 from utils.performance_tracker import EventsCounter, performance_tracker_initializer
 from api.state_table_manager import state_table_manager
@@ -17,8 +14,6 @@ from utils.state_table_common import TASK_STATUS_CANCELLED, TASK_STATUS_FAILED, 
 
 import utils.grid_error_logger as errlog
 
-# dynamodb = boto3.resource('dynamodb')
-# table = dynamodb.Table(os.environ['TASKS_STATUS_TABLE_NAME'])
 state_table = state_table_manager(
     os.environ['TASKS_STATUS_TABLE_SERVICE'],
     os.environ['TASKS_STATUS_TABLE_CONFIG'],
@@ -140,13 +135,6 @@ def lambda_handler(event, context):
         print(res)
         return res
 
-    except ClientError as e:
-        errlog.log('Lambda get_result error: {} trace: {}'.format(
-            e.response['Error']['Message'], traceback.format_exc()))
-        return {
-            'statusCode': 542,
-            'body': e.response['Error']['Message']
-        }
     except Exception as e:
         errlog.log('Lambda get_result error: {} trace: {}'.format(e, traceback.format_exc()))
         return {

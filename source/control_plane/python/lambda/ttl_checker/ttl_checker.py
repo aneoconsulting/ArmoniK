@@ -2,12 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-import boto3
 import time
 import os
-
-from botocore.exceptions import ClientError
-from boto3.dynamodb.conditions import Key, Attr
 
 from utils.performance_tracker import EventsCounter, performance_tracker_initializer
 from utils.state_table_common import *
@@ -22,18 +18,12 @@ perf_tracker = performance_tracker_initializer(
     os.environ["METRICS_GRAFANA_PRIVATE_IP"])
 
 
-# dynamodb = boto3.resource('dynamodb')
-# table = dynamodb.Table(os.environ['TASKS_STATUS_TABLE_NAME'])
 from api.state_table_manager import state_table_manager
 state_table = state_table_manager(
     os.environ['TASKS_STATUS_TABLE_SERVICE'],
     os.environ['TASKS_STATUS_TABLE_CONFIG'],
     os.environ['TASKS_STATUS_TABLE_NAME'],
     os.environ['DYNAMODB_ENDPOINT_URL'])
-# sqs_res = boto3.resource('sqs', region_name=region, endpoint_url=os.environ['SQS_PORT'])
-# sqs_cli = boto3.client('sqs', endpoint_url=os.environ['SQS_PORT'])
-# queue = sqs_res.get_queue_by_name(QueueName=os.environ['TASKS_QUEUE_NAME'])
-# dlq = sqs_res.get_queue_by_name(QueueName=os.environ['TASKS_QUEUE_DLQ_NAME'])
 
 queue = queue_manager(
     grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],
@@ -112,22 +102,16 @@ def lambda_handler(event, context):
                     reset_sqs_vto(sqs_handler_id, task_priority)
                     print("SUCCESS FIX for {}".format(task_id))
 
-                except ClientError:
-
+                except Exception:
                     try:
                         errlog.log('Failed to reset VTO trying to delete: {} '.format(task_id))
                         delete_message_from_queue(sqs_handler_id)
-                    except ClientError:
+                    except Exception:
                         errlog.log('Inconsistent task: {} sending do DLQ'.format(task_id))
                         event_counter.increment("counter_inconsistent_state")
                         set_task_inconsistent(task_id)
                         send_to_dlq(item)
 
-            except ClientError as e:
-                errlog.log('Lambda ttl error: {}'.format(e.response['Error']['Message']))
-                print("Cannot process task {} : {}".format(task_id, e))
-                print("Sending task {} to DLQ...".format(task_id))
-                send_to_dlq(item)
             except Exception as e:
                 print("Cannot process task {} : {}".format(task_id, e))
                 print("Sending task {} to DLQ...".format(task_id))
@@ -156,7 +140,7 @@ def fail_task(task_id, sqs_handler_id, task_priority):
       Nothing
 
     Raises:
-      ClientError: if DynamoDB table cannot be updated
+      Exception: if DynamoDB table cannot be updated
 
     """
     try:
@@ -164,7 +148,7 @@ def fail_task(task_id, sqs_handler_id, task_priority):
 
       state_table.update_task_status_to_failed(task_id)
 
-    except ClientError as e:
+    except Exception as e:
       errlog.log("Cannot fail task {} : {}".format(task_id, e))
       raise e
 
@@ -179,14 +163,14 @@ def set_task_inconsistent(task_id):
       Nothing
 
     Raises:
-      ClientError: if DynamoDB table cannot be updated
+      Exception: if DynamoDB table cannot be updated
 
     """
     try:
 
         state_table.update_task_status_to_inconsistent(task_id)
 
-    except ClientError as e:
+    except Exception as e:
         errlog.log("Cannot set task to inconsystent {} : {}".format(task_id, e))
         raise e
 
@@ -202,13 +186,13 @@ def delete_message_from_queue(sqs_handler_id, task_priority):
       Nothing
 
     Raises:
-      ClientError: if SQS queue cannot be updated
+      Exception: if SQS queue cannot be updated
 
     """
 
     try:
         queue.delete_message(sqs_handler_id, task_priority)
-    except ClientError as e:
+    except Exception as e:
         errlog.log("Cannot delete message {} : {}".format(sqs_handler_id, e))
         raise e
 
@@ -228,7 +212,7 @@ def retreive_retries_and_sqs_handler_and_priority(task_id):
       rtype: 3 variables
 
     Raises:
-      ClientError: if DynamoDB query failed
+      Exception: if DynamoDB query failed
 
     """
     try:
@@ -239,7 +223,7 @@ def retreive_retries_and_sqs_handler_and_priority(task_id):
                resp_task.get('sqs_handler_id'),\
                resp_task.get('task_priority')
 
-    except ClientError as e:
+    except Exception as e:
         errlog.log("Cannot retreive retries and handler for task {} : {}".format(task_id, e))
         raise e
 
@@ -259,7 +243,7 @@ def reset_sqs_vto(handler_id, task_priority):
         visibility_timeout_sec = 0
         queue.change_visibility(handler_id, visibility_timeout_sec, task_priority)
 
-    except ClientError as e:
+    except Exception as e:
         errlog.log("Cannot reset VTO for message {} : {}".format(handler_id, e))
         raise e
 
