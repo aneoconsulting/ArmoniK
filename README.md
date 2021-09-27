@@ -88,7 +88,7 @@ Python 3.7.10
 All instructions to build, deploy and test Armonik software on Linux are described in [Armonik on Linux](./README.ON-PREMISE-LINUX.md)
 
 ## On Windows <a name="on-windows"></a>
-All instructions to build, deploy and test Armonik software on Windows are described in [Armonik on Linux](./README.ON-PREMISE-WINDOWS.md)
+All instructions to build, deploy and test Armonik software on Windows are described in [Armonik on Windows](./README.ON-PREMISE-WINDOWS.md)
 
 # Armonik software on cloud <a name="armonik-software-on-cloud"></a>
 ## Amazon Web Services (AWS) <a name="amazon-web-services"></a>
