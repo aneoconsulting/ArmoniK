@@ -1,7 +1,7 @@
 {
   "project_name": "{{image_tag}}",
   "grid_storage_service" : "REDIS",
-  "grid_queue_service" : "PrioritySQS",
+  "grid_queue_service" : "{{grid_queue_service}}",
   "grid_queue_config" : "{'priorities':5}",
   "tasks_status_table_service": "{{tasks_status_table_service}}",
   "max_htc_agents": 100,
@@ -9,6 +9,10 @@
   "dynamodb_default_read_capacity" : 10,
   "dynamodb_default_write_capacity" : 10,
   "graceful_termination_delay":300,
+  "certificates_dir_path": "{{certificates_dir_path}}",
+  "http_proxy": "{{http_proxy}}",
+  "https_proxy": "{{https_proxy}}",
+  "no_proxy": "{{no_proxy}}",
   "eks_worker_groups" : [
       {
         "name"                    : "worker-small-spot",

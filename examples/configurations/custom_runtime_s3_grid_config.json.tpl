@@ -2,12 +2,16 @@
   "region": "{{region}}",
   "project_name": "{{image_tag}}",
   "grid_storage_service" : "S3",
-  "grid_queue_service" : "SQS",
+  "grid_queue_service" : "{{grid_queue_service}}",
   "tasks_status_table_service": "{{tasks_status_table_service}}",
   "max_htc_agents": 100,
   "min_htc_agents": 1,
   "dynamodb_default_read_capacity" : 10,
   "dynamodb_default_write_capacity" : 10,
+  "certificates_dir_path": "{{certificates_dir_path}}",
+  "http_proxy": "{{http_proxy}}",
+  "https_proxy": "{{https_proxy}}",
+  "no_proxy": "{{no_proxy}}",
   "eks_worker_groups" : [
       {
         "name"                    : "worker-small-spot",

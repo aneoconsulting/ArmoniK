@@ -10,8 +10,8 @@
 # License for the specific language governing permissions and limitations under the License
 
 TF_SRCS:=$(wildcard *.tf)
-REDIS_CERTIFICATES_DIRECTORY=
-DOCKER_REGISTRY=
+#REDIS_CERTIFICATES_DIRECTORY=
+#DOCKER_REGISTRY=
 
 all:
 
@@ -24,10 +24,10 @@ init:
 	terraform init
 
 apply: $(TF_SRCS) $(GRID_CONFIG)
-	terraform apply -var-file $(GRID_CONFIG) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)" -var="docker_registry=$(DOCKER_REGISTRY)"
+	terraform apply -var-file $(GRID_CONFIG)
 
 destroy:
-	terraform destroy -var-file $(GRID_CONFIG) -var="certificates_dir_path=$(REDIS_CERTIFICATES_DIRECTORY)" -var="docker_registry=$(DOCKER_REGISTRY)"
+	terraform destroy -var-file $(GRID_CONFIG)
 
 validate:
 	terraform validate

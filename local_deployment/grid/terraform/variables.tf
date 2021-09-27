@@ -123,7 +123,7 @@ variable "grid_storage_service" {
 }
 
 variable "grid_queue_service" {
-  default = "SQS"
+  default = "PrioritySQS"
   description = "Configuration string for the type of queuing service to be used"
 }
 
@@ -555,3 +555,22 @@ variable "image_pull_policy" {
   default = ""
   type = string
 }
+
+variable "http_proxy" {
+  description = "HTTP url for proxy server"
+  default = ""
+  type = string
+}
+
+variable "https_proxy" {
+  description = "HTTPS url for proxy server"
+  default = ""
+  type = string
+}
+
+variable "no_proxy" {
+  description = "LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON"
+  default = ""
+  type = string
+}
+

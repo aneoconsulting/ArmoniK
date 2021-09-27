@@ -244,3 +244,21 @@ variable "kubectl_path_documents" {
 variable "image_pull_policy" {
   description = "Pull image policy"
 }
+
+variable "http_proxy" {
+  description = "HTTP url for proxy server"
+  default = ""
+  type = string
+}
+
+variable "https_proxy" {
+  description = "HTTPS url for proxy server"
+  default = ""
+  type = string
+}
+
+variable "no_proxy" {
+  description = "LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON"
+  default = ""
+  type = string
+}
