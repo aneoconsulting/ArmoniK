@@ -171,6 +171,10 @@ variable "dynamodb_port" {
   description = "dynamodb port"
 }
 
+variable "mongodb_port" {
+  description = "mongodb port"
+}
+
 variable "local_services_port" {
   description = "Port for all local services"
 }

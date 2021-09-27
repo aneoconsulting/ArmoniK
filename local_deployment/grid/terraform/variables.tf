@@ -456,6 +456,12 @@ variable "dynamodb_port" {
   default = 8000
 }
 
+variable "mongodb_port" {
+  description = "mongodb port"
+  type = number
+  default = 27017
+}
+
 variable "local_services_port" {
   description = "Port for all local services"
   type = number

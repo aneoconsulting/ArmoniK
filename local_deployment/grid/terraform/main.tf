@@ -169,6 +169,7 @@ module "control_plane" {
     //cognito_userpool_arn = module.compute_plane.cognito_userpool_arn
     api_gateway_version = var.api_gateway_version
     dynamodb_port = var.dynamodb_port
+    mongodb_port = var.mongodb_port
     local_services_port = var.local_services_port
     redis_port = var.redis_port
     redis_port_without_ssl = var.redis_port_without_ssl
