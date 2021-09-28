@@ -38,7 +38,10 @@ resource "kubernetes_config_map" "lambda_local" {
     METRICS_TTL_CHECKER_LAMBDA_CONNECTION_STRING=var.metrics_ttl_checker_lambda_connection_string,
     HTTP_PROXY = var.http_proxy,
     HTTPS_PROXY = var.https_proxy,
-    NO_PROXY = var.no_proxy
+    NO_PROXY = var.no_proxy,
+    http_proxy = var.http_proxy_lower,
+    https_proxy = var.https_proxy_lower,
+    no_proxy = var.no_proxy_lower
   }
 }
 

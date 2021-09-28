@@ -28,6 +28,21 @@ resource "helm_release" "htc_agent" {
   }
 
   set {
+    name = "http_proxy_lower"
+    value = var.http_proxy_lower
+  }
+
+  set {
+    name = "https_proxy_lower"
+    value = var.https_proxy_lower
+  }
+
+  set {
+    name = "no_proxy_lower"
+    value = var.no_proxy_lower
+  }
+
+  set {
     name = "redis_certificates_directory"
     value = var.certificates_dir_path
   }

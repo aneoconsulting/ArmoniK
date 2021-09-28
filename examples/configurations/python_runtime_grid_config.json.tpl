@@ -11,6 +11,9 @@
   "http_proxy": "{{http_proxy}}",
   "https_proxy": "{{https_proxy}}",
   "no_proxy": "{{no_proxy}}",
+  "http_proxy_lower": "{{http_proxy_lower}}",
+  "https_proxy_lower": "{{https_proxy_lower}}",
+  "no_proxy_lower": "{{no_proxy_lower}}",
   "eks_worker_groups" : [
       {
         "name"                    : "worker-small-spot",

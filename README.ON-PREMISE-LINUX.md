@@ -79,6 +79,9 @@ Define variables for deploying the infrastructure as follows:
       export HTTP_PROXY=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
       export HTTPS_PROXY=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
       export NO_PROXY=<LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON>
+      export http_proxy=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
+      export https_proxy=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
+      export no_proxy=<LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON>
    ```
    
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>

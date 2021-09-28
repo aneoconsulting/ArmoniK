@@ -16,6 +16,9 @@ export BUILD_DIR:=(shell pwd)/.build
 export HTTP_PROXY
 export HTTPS_PROXY
 export NO_PROXY
+export http_proxy
+export https_proxy
+export no_proxy
 
 BUILD_TYPE?=Release
 

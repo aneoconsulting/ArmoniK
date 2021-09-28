@@ -33,6 +33,12 @@ spec:
             value: "{{https_proxy}}"
           - name: NO_PROXY
             value: "{{no_proxy}}"
+          - name: http_proxy
+            value: "{{http_proxy_lower}}"
+          - name: https_proxy
+            value: "{{https_proxy_lower}}"
+          - name: no_proxy
+            value: "{{no_proxy_lower}}"
       restartPolicy: Never
 #      nodeSelector:
 #        grid/type: Operator
