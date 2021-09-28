@@ -13,7 +13,9 @@ export TABLE_SERVICE
 export DIST_DIR=$(shell pwd)/dist
 export GRAFANA_ADMIN_PASSWORD
 export BUILD_DIR:=(shell pwd)/.build
-
+export HTTP_PROXY
+export HTTPS_PROXY
+export NO_PROXY
 
 BUILD_TYPE?=Release
 

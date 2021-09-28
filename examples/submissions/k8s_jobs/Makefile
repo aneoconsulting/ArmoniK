@@ -7,9 +7,6 @@ TAG=mainline
 GENERATED?=generated
 REDIS_CERTIFICATES_DIRECTORY=
 DOCKER_REGISTRY=
-HTTP_PROXY=
-HTTPS_PROXY=
-NO_PROXY=
 DOCKER_REGISTRY_WITH_SUFFIX=$(shell if [ "$(DOCKER_REGISTRY)" != "" ]; then echo "$(DOCKER_REGISTRY)/"; else echo ""; fi)
 
 .PHONY: clean generated

@@ -14,9 +14,6 @@ ACCOUNT_ID=
 BUCKET_NAME=
 DOCKER_REGISTRY=
 REDIS_CERTIFICATES_DIRECTORY=
-HTTP_PROXY=
-HTTPS_PROXY=
-NO_PROXY=
 #BUCKET_NAME=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[0].OutputValue' --output text)
 
 generated-c++: grid_config.json.tpl
