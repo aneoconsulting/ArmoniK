@@ -5,6 +5,7 @@ using System.Collections;
 using System.IO;
 
 using System.Threading.Tasks;
+using System.Threading;
 using StackExchange.Redis;
 using Newtonsoft.Json;
 using System.Text.Json;
@@ -73,6 +74,11 @@ namespace mock_integration
 
         public string FunctionHandler(HtcTask inputTask, ILambdaContext context)
         {
+            if (inputTask.debug)
+            {
+                Console.WriteLine("Debug: Sleep 1 minute");
+                Thread.Sleep(60000);
+            }
             ////////////////////////////////////////////////////////////////////
             //// 1. First extract payload, sessionId ///////////////////////////
             ////////////////////////////////////////////////////////////////////

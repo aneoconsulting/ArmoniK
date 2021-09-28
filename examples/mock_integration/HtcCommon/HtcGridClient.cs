@@ -127,6 +127,7 @@ namespace HTCGrid
                 sessionId = gridSession_.SessionId;
                 htcTask.SessionId = sessionId;
                 htcTask.Payload = payload;
+                htcTask.debug = gridConfig_.debug;
                 Console.WriteLine("Set Payload and Session " + sessionId);
                 List<HtcTask> tasksToProcess = new List<HtcTask>();
                 tasksToProcess.Add(htcTask);
@@ -144,16 +145,15 @@ namespace HTCGrid
                 return (task_ids != null && task_ids.Length > 0) ? task_ids[0] : "Fail to send";
             }
 
-
-            public IEnumerable<string> SubmitTasks(string session, IEnumerable<byte[]> payloads)
-            {         
+           public IEnumerable<string> SubmitTasks(string session, IEnumerable<byte[]> payloads)
+           {         
                 Console.WriteLine($"Will submit tasks for session {session}.");
                 
                 var result = new List<string>();
                 var currentBatch = new List<HtcTask>(500);
                 foreach (var payload in payloads)
                 {
-                    currentBatch.Add(new HtcTask(){SessionId = gridSession_.SessionId, Payload=payload});
+                    currentBatch.Add(new HtcTask(){SessionId = gridSession_.SessionId, Payload=payload, debug=gridConfig_.debug});
                     if(currentBatch.Count()==500)
                     {
                         Console.WriteLine($"(1) Will submit a batch of {currentBatch.Count()} tasks");

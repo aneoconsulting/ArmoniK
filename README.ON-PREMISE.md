@@ -167,7 +167,7 @@ two files:
 ```bash
 cd configure
 ./bootstrap.sh
-cd ..
+
 ```
 
 4. if successful you can run terraform apply to create the infrastructure:

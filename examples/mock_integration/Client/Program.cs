@@ -43,6 +43,7 @@ namespace HtcClient
 
             GridConfig gridConfig = new GridConfig();
             gridConfig.Init(parsedConfig);
+           // gridConfig.debug = true;
 
             // Code below is standard.
             var dataClient = new HtcDataClient(gridConfig);

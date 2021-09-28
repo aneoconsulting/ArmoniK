@@ -16,15 +16,15 @@ DOCKER_REGISTRY=
 build: Dockerfile import-dll
 ifneq ($(DOCKER_REGISTRY),)
 ifeq ($(BUILD_TYPE), Debug)
-	docker build . -f ./Dockerfile_Debug -t $(DOCKER_REGISTRY)/lambda:$(TAG)
+	docker build . -f ./Dockerfile_Debug -t $(DOCKER_REGISTRY)/lambda:$(TAG) --progress=plain
 else
-	docker build . -f ./Dockerfile -t $(DOCKER_REGISTRY)/lambda:$(TAG)
+	docker build . -f ./Dockerfile -t $(DOCKER_REGISTRY)/lambda:$(TAG) --progress=plain
 endif
 else
 ifeq ($(BUILD_TYPE), Debug)
-	docker build . -f ./Dockerfile_Debug -t lambda:$(TAG)
+	docker build . -f ./Dockerfile_Debug -t lambda:$(TAG) --progress=plain
 else
-	docker build . -f ./Dockerfile -t lambda:$(TAG)
+	docker build . -f ./Dockerfile -t lambda:$(TAG) --progress=plain
 endif
 endif
 
