@@ -31,7 +31,7 @@ To uninstall K3s, use the following command:
 
 You need to provide your AWS secret credentials.
 ```bash
-    aws configure
+   aws configure
 ```
 
 # Configure the environment <a name="configure-the-environment"></a>
@@ -79,6 +79,15 @@ Define variables for deploying the infrastructure as follows:
    - `ap-northeast-1`
    - `ap-southeast-1`
 
+7. Define an environment variable containing AWS ECR registry.
+   ```bash
+      export ARMONIK_DOCKER_REGISTRY=$(ARMONIK_ACCOUNT_ID).dkr.ecr.$(ARMONIK_REGION).amazonaws.com
+   ```
+8. ECR authentication. As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
+   ```bash
+      aws ecr get-login-password --region $ARMONIK_REGION | docker login --username AWS --password-stdin $ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
+   ```
+
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s. 
 
@@ -93,25 +102,20 @@ two files:
  * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
-1. ECR authentication. As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
+1. Create S3 buckets. The following step creates the S3 buckets and an encryption key that will be needed during the installation:
    ```bash
-    aws ecr get-login-password --region $ARMONIK_REGION | docker login --username AWS --password-stdin $ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
-   ```
-
-2. Create S3 buckets. The following step creates the S3 buckets and an encryption key that will be needed during the installation:
-   ```bash
-   make init-grid-state  TAG=$TAG REGION=$ARMONIK_REGION
+   make init-grid-state TAG=$ARMONIK_TAG REGION=$ARMONIK_REGION
 
    ```
 
-3. Run the following to initialize the Terraform environment: 
+2. Run the following to initialize the Terraform environment: 
    ```bash
-   make init-grid-local-deployment TAG=$ARMONIK_TAG
+   make init-grid-deployment TAG=$ARMONIK_TAG REGION=$ARMONIK_REGION
    ```
    
-4. If successful you can run terraform apply to create the infrastructure:
+3. If successful you can run terraform apply to create the infrastructure:
    ```bash
-   make apply-dotnet-local-runtime TAG=$ARMONIK_TAG REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+   make apply-dotnet-runtime TAG=$ARMONIK_TAG REGION=$ARMONIK_REGION REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
    ```
    
 # Running an example workload <a name="running-an-example-workload"></a>
