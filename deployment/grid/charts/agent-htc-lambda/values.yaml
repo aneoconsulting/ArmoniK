@@ -15,13 +15,6 @@ imageAgent:
   pullPolicy: IfNotPresent
 
 imageLambdaServer:
-  runtime: provided
-  pullPolicy: IfNotPresent
-
-imageGetLayer:
-  pullPolicy: IfNotPresent
-
-imageTestAgent:
   pullPolicy: IfNotPresent
 
 
@@ -57,9 +50,6 @@ lambda:
   timeout: 86400
   region: eu-west-1
   mountPoint: /var/task
-#  s3Location : s3://mylambda.zip
-#  layerName: myLambdaLayer
-#  layerVersion: myLayerVersion
   handler: bootstrap.main
 
 

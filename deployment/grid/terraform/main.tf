@@ -54,26 +54,16 @@ locals {
         }
         lambda = {
             image = "${local.aws_htc_ecr}/lambda"
-            runtime = "provided"
+            tag = local.project_name
             pullPolicy = "IfNotPresent"
             minCPU = "800"
             maxCPU = "900"
             maxMemory = "3900"
             minMemory = "4096"
-            storage = "S3"
-            location = "s3://mock_location"
             function_name = "function"
-            layer_name = "mock_computation_layer"
             lambda_handler_file_name = ""
             lambda_handler_function_name = ""
-            layer_version = 1
             region = var.region
-        }
-        get_layer = {
-            image = "${local.aws_htc_ecr}/lambda-init"
-            tag = local.project_name
-            pullPolicy = "IfNotPresent"
-            lambda_layer_type = "S3"
         }
         test = {
             image = "${local.aws_htc_ecr}/submitter"
@@ -235,8 +225,7 @@ module "htc_agent" {
     agent_chart_url = lookup(var.agent_configuration,"agent_chart_url",local.default_agent_configuration.agent_chart_url)
     termination_grace_period =  var.graceful_termination_delay
     agent_image_tag = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"tag",local.default_agent_configuration.agent.tag)
-    get_layer_image_tag = lookup(lookup(var.agent_configuration,"get_layer",local.default_agent_configuration.get_layer),"tag",local.default_agent_configuration.get_layer.tag)
-    lambda_image_tag = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"runtime",local.default_agent_configuration.lambda.runtime)
+    lambda_image_tag = local.default_agent_configuration.lambda.tag
     test_agent_image_tag = lookup(lookup(var.agent_configuration,"test",local.default_agent_configuration.test),"tag",local.default_agent_configuration.test.tag)
     agent_name = var.htc_agent_name
     agent_min_cpu = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"minCPU",local.default_agent_configuration.agent.minCPU)
@@ -249,14 +238,10 @@ module "htc_agent" {
     lambda_max_memory = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"maxMemory",local.default_agent_configuration.lambda.maxMemory)
     agent_pull_policy = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"pullPolicy",local.default_agent_configuration.agent.pullPolicy)
     lambda_pull_policy = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"pullPolicy",local.default_agent_configuration.lambda.pullPolicy)
-    get_layer_pull_policy = lookup(lookup(var.agent_configuration,"get_layer",local.default_agent_configuration.get_layer),"pullPolicy",local.default_agent_configuration.get_layer.pullPolicy)
     test_pull_policy = lookup(lookup(var.agent_configuration,"test",local.default_agent_configuration.test),"pullPolicy",local.default_agent_configuration.test.pullPolicy)
     agent_image_repository = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"image",local.default_agent_configuration.agent.image)
-    get_layer_image_repository = lookup(lookup(var.agent_configuration,"get_layer",local.default_agent_configuration.get_layer),"image",local.default_agent_configuration.get_layer.image)
     lambda_image_repository =  lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"image",local.default_agent_configuration.lambda.image)
     test_agent_image_repository = lookup(lookup(var.agent_configuration,"test",local.default_agent_configuration.test),"image",local.default_agent_configuration.test.image)
-    lambda_configuration_storage_type = lookup(lookup(var.agent_configuration,"get_layer",local.default_agent_configuration.lambda),"layer_type",local.default_agent_configuration.get_layer.lambda_layer_type)
-    lambda_configuration_location = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"location",local.default_agent_configuration.lambda.location)
     lambda_handler_file_name = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"lambda_handler_file_name",local.default_agent_configuration.lambda.lambda_handler_file_name)
     lambda_handler_function_name = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"lambda_handler_function_name",local.default_agent_configuration.lambda.lambda_handler_function_name)
     lambda_configuration_function_name = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"function_name",local.default_agent_configuration.lambda.function_name)
