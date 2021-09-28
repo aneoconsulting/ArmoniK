@@ -21,6 +21,11 @@ output "dynamodb_pod_ip" {
   value = local.dynamodb_pod_ip
 }
 
+output "mongodb_pod_ip" {
+  description = "IP address of mongodb pod"
+  value = local.mongodb_pod_ip
+}
+
 output "local_services_pod_ip" {
   description = "IP address of local services pod"
   value = local.local_services_pod_ip

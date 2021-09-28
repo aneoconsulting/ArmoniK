@@ -13,11 +13,18 @@ import utils.grid_error_logger as errlog
 from utils.state_table_common import TASK_STATUS_PENDING, TASK_STATUS_PROCESSING, TASK_STATUS_RETRYING
 
 from api.state_table_manager import state_table_manager
+
+endpoint_url = ""
+if os.environ['TASKS_STATUS_TABLE_SERVICE'] == "DynamoDB":
+    endpoint_url = os.environ["DYNAMODB_ENDPOINT_URL"]
+elif os.environ['TASKS_STATUS_TABLE_SERVICE'] == "MongoDB":
+    endpoint_url = os.environ["MONGODB_ENDPOINT_URL"]
+
 state_table = state_table_manager(
     os.environ['TASKS_STATUS_TABLE_SERVICE'],
     os.environ['TASKS_STATUS_TABLE_CONFIG'],
     os.environ['TASKS_STATUS_TABLE_NAME'],
-    os.environ['DYNAMODB_ENDPOINT_URL'])
+    endpoint_url)
 
 task_states_to_cancel = [TASK_STATUS_RETRYING, TASK_STATUS_PENDING, TASK_STATUS_PROCESSING]
 
@@ -38,7 +45,7 @@ def cancel_tasks_by_status(session_id, task_state):
     response = state_table.get_tasks_by_status(session_id, task_state)
     print(response)
 
-    for row in response['Items']:
+    for row in response:
 
         res = state_table.update_task_status_to_cancelled(row['task_id'])
 
@@ -46,7 +53,7 @@ def cancel_tasks_by_status(session_id, task_state):
         if not res:
             raise Exception("Failed to set task status to Cancelled.")
 
-    return response['Items']
+    return response
 
 
 def cancel_session(session_id):

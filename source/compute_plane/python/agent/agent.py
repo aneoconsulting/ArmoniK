@@ -119,14 +119,18 @@ config = {
         'mode': 'standard'
     }
 }
-# dynamodb = boto3.resource('dynamodb', region_name=region, config=config)
-# status_table = dynamodb.Table(agent_config_data['ddb_status_table'])
+
+endpoint_url = ""
+if agent_config_data['tasks_status_table_service'] == "DynamoDB":
+    endpoint_url = agent_config_data['dynamodb_endpoint_url']
+elif agent_config_data['tasks_status_table_service'] == "MongoDB":
+    endpoint_url = agent_config_data['mongodb_endpoint_url']
 
 state_table = state_table_manager(
     agent_config_data['tasks_status_table_service'],
     str(config),
     agent_config_data['ddb_status_table'],
-    agent_config_data['dynamodb_endpoint_url'],
+    endpoint_url,
     region)
 
 config_cc ={
@@ -135,14 +139,12 @@ config_cc ={
         'mode': 'adaptive'
     }
 }
-# dynamodb_cc = boto3.resource('dynamodb', region_name=region, config=config_cc)
-# status_table_cc = dynamodb_cc.Table(agent_config_data['ddb_status_table'])
 
 state_table_cc = state_table_manager(
     agent_config_data['tasks_status_table_service'],
     str(config_cc),
     agent_config_data['ddb_status_table'],
-    agent_config_data['dynamodb_endpoint_url'],
+    endpoint_url,
     region)
 
 redis_endpoint_url = agent_config_data['redis_endpoint_url']

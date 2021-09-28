@@ -7,6 +7,7 @@ locals {
   "region": "${var.region}",
   "sqs_endpoint_url": "http://${module.control_plane.local_services_pod_ip}:${var.local_services_port}",
   "dynamodb_endpoint_url": "http://${module.control_plane.dynamodb_pod_ip}:${var.dynamodb_port}",
+  "mongodb_endpoint_url": "mongodb://${module.control_plane.mongodb_pod_ip}:${var.mongodb_port}",
   "redis_endpoint_url": "${module.control_plane.redis_pod_ip}",
   "redis_endpoint_url_without_ssl": "${module.control_plane.redis_without_ssl_pod_ip}",
   "redis_with_ssl": "${var.redis_with_ssl}",

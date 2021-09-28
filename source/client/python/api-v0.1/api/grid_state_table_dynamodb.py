@@ -487,7 +487,7 @@ class StateTableDDB:
                 else:
                     combined_response['Items'] += response['Items']
 
-            return combined_response
+            return combined_response['Items']
 
         except ClientError as e:
 
@@ -589,7 +589,7 @@ class StateTableDDB:
                     "#var_task_status": "task_status"
                 },
                 ReturnConsumedCapacity="TOTAL"
-            )
+            )['Items']
         except ClientError as e:
             errlog.log("Cannot finalize task_id {} to a new state {} : {}".format(task_id, new_task_state, e))
             raise e

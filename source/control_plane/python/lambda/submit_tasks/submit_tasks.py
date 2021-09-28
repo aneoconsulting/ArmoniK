@@ -29,11 +29,17 @@ tasks_queue = queue_manager(
     queue_name=os.environ['TASKS_QUEUE_NAME'],
     region=region)
 
+endpoint_url = ""
+if os.environ['TASKS_STATUS_TABLE_SERVICE'] == "DynamoDB":
+    endpoint_url = os.environ["DYNAMODB_ENDPOINT_URL"]
+elif os.environ['TASKS_STATUS_TABLE_SERVICE'] == "MongoDB":
+    endpoint_url = os.environ["MONGODB_ENDPOINT_URL"]
+
 state_table = state_table_manager(
     os.environ['TASKS_STATUS_TABLE_SERVICE'],
     os.environ['TASKS_STATUS_TABLE_CONFIG'],
     os.environ['TASKS_STATUS_TABLE_NAME'],
-    os.environ['DYNAMODB_ENDPOINT_URL'])
+    endpoint_url)
 
 perf_tracker = performance_tracker_initializer(
     os.environ["METRICS_ARE_ENABLED"],

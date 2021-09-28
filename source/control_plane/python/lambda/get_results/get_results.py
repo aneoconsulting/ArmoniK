@@ -14,11 +14,17 @@ from utils.state_table_common import TASK_STATUS_CANCELLED, TASK_STATUS_FAILED, 
 
 import utils.grid_error_logger as errlog
 
+endpoint_url = ""
+if os.environ['TASKS_STATUS_TABLE_SERVICE'] == "DynamoDB":
+    endpoint_url = os.environ["DYNAMODB_ENDPOINT_URL"]
+elif os.environ['TASKS_STATUS_TABLE_SERVICE'] == "MongoDB":
+    endpoint_url = os.environ["MONGODB_ENDPOINT_URL"]
+
 state_table = state_table_manager(
     os.environ['TASKS_STATUS_TABLE_SERVICE'],
     os.environ['TASKS_STATUS_TABLE_CONFIG'],
     os.environ['TASKS_STATUS_TABLE_NAME'],
-    os.environ["DYNAMODB_ENDPOINT_URL"])
+    endpoint_url)
 
 event_counter = EventsCounter(["invocations", "retrieved_rows"])
 
@@ -38,25 +44,22 @@ def get_tasks_statuses_in_session(session_id):
     response = {}
 
     # <1.> Process finished Tasks
-    finished_tasks_resp = state_table.get_tasks_by_status(session_id, TASK_STATUS_FINISHED)
+    finished_tasks = state_table.get_tasks_by_status(session_id, TASK_STATUS_FINISHED)
 
-    finished_tasks = finished_tasks_resp["Items"]
     if len(finished_tasks) > 0:
         response[TASK_STATUS_FINISHED] = [x["task_id"] for x in finished_tasks]
         response[TASK_STATUS_FINISHED + '_output'] = ["read_from_dataplane" for x in finished_tasks]
 
     # <2.> Process cancelled Tasks
-    cancelled_tasks_resp = state_table.get_tasks_by_status(session_id, TASK_STATUS_CANCELLED)
+    cancelled_tasks = state_table.get_tasks_by_status(session_id, TASK_STATUS_CANCELLED)
 
-    cancelled_tasks = cancelled_tasks_resp["Items"]
     if len(cancelled_tasks) > 0:
         response[TASK_STATUS_CANCELLED] = [x["task_id"] for x in cancelled_tasks]
         response[TASK_STATUS_CANCELLED + '_output'] = ["read_from_dataplane" for x in cancelled_tasks]
 
     # <3.> Process failed Tasks
-    failed_tasks_resp = state_table.get_tasks_by_status(session_id, TASK_STATUS_FAILED)
+    failed_tasks = state_table.get_tasks_by_status(session_id, TASK_STATUS_FAILED)
 
-    failed_tasks = failed_tasks_resp["Items"]
     if len(failed_tasks) > 0:
         response[TASK_STATUS_FAILED] = [x["task_id"] for x in failed_tasks]
         response[TASK_STATUS_FAILED + '_output'] = ["read_from_dataplane" for x in failed_tasks]

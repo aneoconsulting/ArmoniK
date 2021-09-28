@@ -26,6 +26,7 @@ resource "kubernetes_config_map" "lambda_local" {
     AWS_SECRET_ACCESS_KEY = var.secret_key,
     SQS_ENDPOINT_URL = "http://${local.local_services_pod_ip}:${var.local_services_port}",
     DYNAMODB_ENDPOINT_URL = "http://${local.dynamodb_pod_ip}:${var.dynamodb_port}",
+    MONGODB_ENDPOINT_URL = "mongodb://${local.mongodb_pod_ip}:${var.mongodb_port}",
     REDIS_USE_SSL = var.redis_with_ssl,
     REDIS_CERTFILE = var.redis_cert_file,
     REDIS_KEYFILE = var.redis_key_file,

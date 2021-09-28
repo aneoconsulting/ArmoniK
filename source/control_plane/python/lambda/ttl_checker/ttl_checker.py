@@ -19,11 +19,17 @@ perf_tracker = performance_tracker_initializer(
 
 
 from api.state_table_manager import state_table_manager
+endpoint_url = ""
+if os.environ['TASKS_STATUS_TABLE_SERVICE'] == "DynamoDB":
+    endpoint_url = os.environ["DYNAMODB_ENDPOINT_URL"]
+elif os.environ['TASKS_STATUS_TABLE_SERVICE'] == "MongoDB":
+    endpoint_url = os.environ["MONGODB_ENDPOINT_URL"]
+
 state_table = state_table_manager(
     os.environ['TASKS_STATUS_TABLE_SERVICE'],
     os.environ['TASKS_STATUS_TABLE_CONFIG'],
     os.environ['TASKS_STATUS_TABLE_NAME'],
-    os.environ['DYNAMODB_ENDPOINT_URL'])
+    endpoint_url)
 
 queue = queue_manager(
     grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],
