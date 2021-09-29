@@ -535,7 +535,7 @@ variable "redis_cert_file" {
 }
 
 variable "cluster_config" {
-  description = "Configuration type of the cluster (Local, Cloud, OnPremise)"
+  description = "Configuration type of the cluster (local, cloud, cluster)"
 }
 
 variable "nginx_port" {
