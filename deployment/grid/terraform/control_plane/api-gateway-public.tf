@@ -53,6 +53,20 @@ resource "aws_api_gateway_method_settings" "htc_grid_public_submit_method_settin
   }
 }
 
+resource "aws_api_gateway_method_response" "htc_grid_public_submit_proxy_method_response_200" {
+  rest_api_id = aws_api_gateway_rest_api.htc_grid_public_rest_api.id
+  resource_id = aws_api_gateway_resource.htc_grid_public_submit_proxy.id
+  http_method = aws_api_gateway_method.htc_grid_public_submit_proxy_method.http_method
+  status_code = "200"
+}
+
+resource "aws_api_gateway_integration_response" "htc_grid_public_submit_proxy_method_integration_response_200" {
+  rest_api_id = aws_api_gateway_rest_api.htc_grid_public_rest_api.id
+  resource_id = aws_api_gateway_resource.htc_grid_public_submit_proxy.id
+  http_method = aws_api_gateway_method.htc_grid_public_submit_proxy_method.http_method
+  status_code = aws_api_gateway_method_response.htc_grid_public_submit_proxy_method_response_200.status_code
+}
+
 
 
 resource "aws_api_gateway_resource" "htc_grid_public_result_proxy" {
@@ -90,6 +104,19 @@ resource "aws_api_gateway_method_settings" "htc_grid_public_result_method_settin
   }
 }
 
+resource "aws_api_gateway_method_response" "htc_grid_public_result_proxy_method_response_200" {
+  rest_api_id = aws_api_gateway_rest_api.htc_grid_public_rest_api.id
+  resource_id = aws_api_gateway_resource.htc_grid_public_result_proxy.id
+  http_method = aws_api_gateway_method.htc_grid_public_result_proxy_method.http_method
+  status_code = "200"
+}
+
+resource "aws_api_gateway_integration_response" "htc_grid_public_result_proxy_method_integration_response_200" {
+  rest_api_id = aws_api_gateway_rest_api.htc_grid_public_rest_api.id
+  resource_id = aws_api_gateway_resource.htc_grid_public_result_proxy.id
+  http_method = aws_api_gateway_method.htc_grid_public_result_proxy_method.http_method
+  status_code = aws_api_gateway_method_response.htc_grid_public_result_proxy_method_response_200.status_code
+}
 
 resource "aws_api_gateway_deployment" "htc_grid_public_deployment" {
   depends_on = [aws_api_gateway_method.htc_grid_public_submit_proxy_method,aws_api_gateway_method.htc_grid_public_result_proxy_method]
@@ -148,6 +175,20 @@ resource "aws_api_gateway_method_settings" "htc_grid_public_cancel_method_settin
     metrics_enabled = true
     logging_level   = "INFO"
   }
+}
+
+resource "aws_api_gateway_method_response" "htc_grid_public_cancel_proxy_method_response_200" {
+  rest_api_id = aws_api_gateway_rest_api.htc_grid_public_rest_api.id
+  resource_id = aws_api_gateway_resource.htc_grid_public_cancel_proxy.id
+  http_method = aws_api_gateway_method.htc_grid_public_cancel_proxy_method.http_method
+  status_code = "200"
+}
+
+resource "aws_api_gateway_integration_response" "htc_grid_public_cancel_proxy_method_integration_response_200" {
+  rest_api_id = aws_api_gateway_rest_api.htc_grid_public_rest_api.id
+  resource_id = aws_api_gateway_resource.htc_grid_public_cancel_proxy.id
+  http_method = aws_api_gateway_method.htc_grid_public_cancel_proxy_method.http_method
+  status_code = aws_api_gateway_method_response.htc_grid_public_cancel_proxy_method_response_200.status_code
 }
 
 resource "aws_api_gateway_account" "htc_grid_account" {
