@@ -3,13 +3,10 @@
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
 terraform {
-  backend "s3" {
-    key    = ".terraform/terraform.tfstate"
-    region = "eu-west-1"
-    // encrypt         = true
-    // bucket          = "pipelinedeployinglambdasta-terraformstatee9552559-1bd2jx74ma36z"
-    // dynamodb_table  = "PipelineDeployingLambdaStack-terraformstatelock0C7DA880-1W6LKAH4MQDDI"
+  backend "local" {
+    path = "./terraform.tfstate"
   }
+  
   required_providers {
     aws = {
       source  = "hashicorp/aws"

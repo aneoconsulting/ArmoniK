@@ -24,7 +24,7 @@ all:
 #	mkdir -p $@
 	
 init:
-	terraform init -backend-config="bucket=$(S3_GRID_TFSTATE_BUCKET_NAME)" -backend-config="region=$(REGION)"
+	terraform init
 
 apply: $(TF_SRCS) $(GRID_CONFIG)
 	terraform apply -var-file $(GRID_CONFIG) -var kms_key_arn=$(KMS_KEY_ARN)  -var="grafana_admin_password=$(GRAFANA_ADMIN_PASSWORD)"
