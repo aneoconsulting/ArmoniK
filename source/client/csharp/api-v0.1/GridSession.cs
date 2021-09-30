@@ -162,8 +162,12 @@ namespace HTCGrid
                 // storageInterface.put_input_from_utf8_string(task_id, client_task_base64);
 
                 var resultPostWithHttpInfo = apiInstance.ResultPostWithHttpInfo(new GetResponse(finished: new List<string>() { client_task_base64 }));
-                var deserializedContent = JsonConvert.DeserializeObject<GetResponseDeserializer>(resultPostWithHttpInfo.RawContent);
-                return deserializedContent.Body;
+                if (resultPostWithHttpInfo.Data != null) {
+                    return resultPostWithHttpInfo.Data;
+                } else {
+                    var deserializedContent = JsonConvert.DeserializeObject<GetResponseDeserializer>(resultPostWithHttpInfo.RawContent);
+                    return deserializedContent.Body;
+                }
             }
             catch (ApiException e)
             {

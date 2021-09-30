@@ -116,6 +116,18 @@ def get_time_now_ms():
     """
     return int(round(time.time() * 1000))
 
+def get_submission_content(event):
+    if task_input_passed_via_external_storage == '1':
+        session_id = event['session_id']
+        print("submission_id: {}".format(session_id))
+        encoded_json_tasks = stdin_iom.get_payload_to_utf8_string(session_id)
+    else:
+        encoded_json_tasks = event['submission_content']
+    if encoded_json_tasks is None:
+        raise Exception('Invalid submission format, expect submission_content parameter')
+    decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks).decode('utf-8')
+    print("DATA1: {}".format(decoded_json_tasks))
+    return json.loads(decoded_json_tasks)
 
 def lambda_handler(event, context):
     """Handler called by AWS Lambda runtime
@@ -130,29 +142,19 @@ def lambda_handler(event, context):
 
 
     """
-    print(event)
-    # If lambda are called through ALB - extracting actual event
-    if "session_id" in event.keys():
-        if task_input_passed_via_external_storage == '1':
-            session_id = event['session_id']
-            print("submission_id: {}".format(session_id))
-            encoded_json_tasks = stdin_iom.get_payload_to_utf8_string(session_id)
-        else:
-            encoded_json_tasks = event['submission_content']
-        if encoded_json_tasks is None:
-            raise Exception('Invalid submission format, expect submission_content parameter')
-        decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks).decode('utf-8')
-        print("DATA1: {}".format(decoded_json_tasks))
-        event = json.loads(decoded_json_tasks)
-    else:
-        encoded_json_tasks = event['body']
-        decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks).decode('utf-8')
-        print("DATA2: {}".format(decoded_json_tasks))
-        event = json.loads(decoded_json_tasks)
-
+    print("input event : ", event)
     try:
-        invocation_tstmp = get_time_now_ms()
+        # If lambda are called through ALB - extracting actual event
+        if "session_id" in event.keys():
+            event = get_submission_content(event)
+        else:
+            if event['isBase64Encoded']:
+                decoded_event = base64.urlsafe_b64decode(event['body']).decode('utf-8')
+                event = get_submission_content(decoded_event)
+            else:
+                event = get_submission_content(json.loads(event['body']))
 
+        invocation_tstmp = get_time_now_ms()
         print(event)
 
         # Session ID that will be used for all tasks in this event.
@@ -266,10 +268,10 @@ def lambda_handler(event, context):
 
         res = {
             'statusCode': 200,
-            'body': lambda_response
+            'body': json.dumps(lambda_response)
         }
 
-        print(json.dumps(res))
+        print("response output : ", json.dumps(res))
         return res
 
     except Exception as e:

@@ -72,6 +72,15 @@ def get_tasks_statuses_in_session(session_id):
     return response
 
 
+def get_session_id(json_in):
+    encoded_json_tasks = json_in.get('finished')
+    if encoded_json_tasks is None:
+        raise Exception('Invalid submission format, expect submission_content parameter')
+    decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks[0]).decode('utf-8')
+    event = json.loads(decoded_json_tasks)
+    print("decoded event : ", event)
+    return event['session_id']
+
 def get_session_id_from_event(event):
     """
     Args:
@@ -83,14 +92,10 @@ def get_session_id_from_event(event):
 
     # If lambda are called through ALB - extracting actual event
     if event.get('finished') is not None:
-        encoded_json_tasks = event.get('finished')
-        if encoded_json_tasks is None:
-            raise Exception('Invalid submission format, expect submission_content parameter')
-        decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks[0]).decode('utf-8')
-        event = json.loads(decoded_json_tasks)
-        print(event)
+        return get_session_id(event)
+    elif event.get('body') is not None:
+        return get_session_id(json.loads(event['body']))
 
-        return event['session_id']
 
     else:
         errlog.log("Uniplemented path, exiting")
@@ -121,7 +126,7 @@ def book_keeping(response):
 def lambda_handler(event, context):
 
     session_id = None
-    print(event)
+    print("input event : ", event)
     try:
 
         session_id = get_session_id_from_event(event)
@@ -132,10 +137,10 @@ def lambda_handler(event, context):
 
         res = {
             'statusCode': 200,
-            'body': lambda_responce
+            'body': json.dumps(lambda_responce)
         }
 
-        print(res)
+        print("response output : ", res)
         return res
 
     except Exception as e:
