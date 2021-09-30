@@ -93,7 +93,7 @@ Armonik artifacts include: .NET Core packages, docker images, configuration file
 
 To build and install these in `<project_root>`:
 ```bash
-make dotnet50-path TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY REGION=$ARMONIK_REGION
+make dotnet50-path TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY REGION=$ARMONIK_REGION DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following 
