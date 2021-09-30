@@ -31,3 +31,7 @@ output "grafana_admin_password" {
   description = "The password for grafana."
   sensitive   = true
 }
+
+output "redis_url" {
+  value = "${module.control_plane.redis_url}:${var.redis_port}"
+}
