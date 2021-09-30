@@ -68,7 +68,7 @@ resource "aws_api_gateway_integration" "htc_grid_private_result_proxy_integratio
 resource "aws_api_gateway_method" "htc_grid_private_result_proxy_method" {
   rest_api_id                   = aws_api_gateway_rest_api.htc_grid_private_rest_api.id
   resource_id                   = aws_api_gateway_resource.htc_grid_private_result_proxy.id
-  http_method                   = "GET"
+  http_method                   = "POST"
   authorization                 = "NONE"
   api_key_required = true
 }

@@ -74,7 +74,7 @@ resource "aws_api_gateway_integration" "htc_grid_public_result_proxy_integration
 resource "aws_api_gateway_method" "htc_grid_public_result_proxy_method" {
   rest_api_id                   = aws_api_gateway_rest_api.htc_grid_public_rest_api.id
   resource_id                   = aws_api_gateway_resource.htc_grid_public_result_proxy.id
-  http_method                   = "GET"
+  http_method                   = "POST"
   authorization                 = "COGNITO_USER_POOLS"
   authorizer_id                 = aws_api_gateway_authorizer.cognito_authorizer.id
 }
