@@ -74,10 +74,10 @@ namespace mock_integration
 
         public string FunctionHandler(HtcTask inputTask, ILambdaContext context)
         {
-            if (inputTask.debug)
+            if (inputTask.debug > 0)
             {
-                Console.WriteLine("Debug: Sleep 1 minute");
-                Thread.Sleep(60000);
+                Console.WriteLine($"Debug: Sleep {inputTask.debug} seconds");
+                Thread.Sleep(inputTask.debug * 1000);
             }
             ////////////////////////////////////////////////////////////////////
             //// 1. First extract payload, sessionId ///////////////////////////
