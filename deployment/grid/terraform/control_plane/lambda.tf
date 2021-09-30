@@ -108,7 +108,7 @@ module "submit_task" {
     }
   ]
   function_name = var.lambda_name_submit_tasks
-  build_in_docker = true
+  build_in_docker = false
   docker_image = "${var.aws_htc_ecr}/lambda-build:build-${var.lambda_runtime}"
   handler = "submit_tasks.lambda_handler"
   memory_size = 1024
@@ -177,7 +177,7 @@ module  "get_results" {
     }
   ]
   function_name = var.lambda_name_get_results
-  build_in_docker = true
+  build_in_docker = false
   docker_image = "${var.aws_htc_ecr}/lambda-build:build-${var.lambda_runtime}"
   handler = "get_results.lambda_handler"
   memory_size = 1024
@@ -244,7 +244,7 @@ module "cancel_tasks" {
     }
   ]
   function_name = var.lambda_name_cancel_tasks
-  build_in_docker = true
+  build_in_docker = false
   docker_image = "${var.aws_htc_ecr}/lambda-build:build-${var.lambda_runtime}"
   handler = "cancel_tasks.lambda_handler"
   memory_size = 1024
@@ -316,7 +316,7 @@ module "ttl_checker" {
     }
   ]
   function_name = var.lambda_name_ttl_checker
-  build_in_docker = true
+  build_in_docker = false
   docker_image = "${var.aws_htc_ecr}/lambda-build:build-${var.lambda_runtime}"
   handler = "ttl_checker.lambda_handler"
   memory_size = 1024

@@ -31,7 +31,7 @@ module "lambda_drainer" {
     service     = "htc-aws"
   }
   runtime     = var.lambda_runtime
-  build_in_docker = true
+  build_in_docker = false
   docker_image = "${var.aws_htc_ecr}/lambda-build:build-${var.lambda_runtime}"
 
 }

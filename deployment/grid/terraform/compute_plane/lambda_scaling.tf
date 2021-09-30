@@ -56,7 +56,7 @@ module "scaling_metrics" {
 
   vpc_subnet_ids = var.vpc_private_subnet_ids
   vpc_security_group_ids = [var.vpc_default_security_group_id]
-  build_in_docker = true
+  build_in_docker = false
   docker_image =  "${var.aws_htc_ecr}/lambda-build:build-${var.lambda_runtime}"
   use_existing_cloudwatch_log_group = true
 
