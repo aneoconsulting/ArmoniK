@@ -137,7 +137,11 @@ Define variables for deploying the infrastructure as follows:
    ```bash
       export ARMONIK_DOCKER_REGISTRY=<docker registry>
    ```
-   
+6. Define an environment variable to select API Gateway service.
+   ```bash
+      export ARMONIK_API_GATEWAY_SERVICE=NGINX
+   ```
+
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
 

@@ -61,7 +61,13 @@ Define variables for deploying the infrastructure as follows:
    ```bash
       export ARMONIK_DOCKER_REGISTRY=$ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
    ```
-8. ECR authentication. As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
+
+8. Define an environment variable to select API Gateway service.
+   ```bash
+      export ARMONIK_API_GATEWAY_SERVICE=APIGateway
+   ```
+
+9. ECR authentication. As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
    ```bash
       aws ecr get-login-password --region $ARMONIK_REGION | docker login --username AWS --password-stdin $ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
    ```
