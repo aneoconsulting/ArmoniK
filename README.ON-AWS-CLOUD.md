@@ -1,31 +1,9 @@
 # Table of contents
-1. [Install Kubernetes on cloud machine](#install-kubernetes-on-cloud-machine)
-2. [Configure AWS Cli](#configure-aws-cli)
-3. [Configure the environment](#configure-the-environment)
-4. [Build Armonik artifacts](#build-armonik-artifacts)
-5. [Deploy Armonik resources](#deploy-armonik-resources)
-6. [Running an example workload](#running-an-example-workload)
-
-# Install Kubernetes on cloud machine <a name="install-kubernetes-on-cloud-machine"></a>
-Instructions to install Kubernetes on cloud Linux machine.
-
-You can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/) on Linux OS. 
-
-Install K3s as follows:
-```bash
-curl -sfL https://get.k3s.io | sh -
-```
-
-Then initialize the configuration file of Kubernetes:
-```bash
-sudo chmod 755 /etc/rancher/k3s/k3s.yaml
-cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-```
-
-To uninstall K3s, use the following command:
-```bash
-/usr/local/bin/k3s-uninstall.sh
-```
+1. [Configure AWS Cli](#configure-aws-cli)
+2. [Configure the environment](#configure-the-environment)
+3. [Build Armonik artifacts](#build-armonik-artifacts)
+4. [Deploy Armonik resources](#deploy-armonik-resources)
+5. [Running an example workload](#running-an-example-workload)
 
 # Configure AWS Cli <a name="configure-aws-cli"></a>
 
