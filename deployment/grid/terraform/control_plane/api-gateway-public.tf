@@ -65,6 +65,7 @@ resource "aws_api_gateway_integration_response" "htc_grid_public_submit_proxy_me
   resource_id = aws_api_gateway_resource.htc_grid_public_submit_proxy.id
   http_method = aws_api_gateway_method.htc_grid_public_submit_proxy_method.http_method
   status_code = aws_api_gateway_method_response.htc_grid_public_submit_proxy_method_response_200.status_code
+  depends_on = [aws_api_gateway_method_response.htc_grid_public_submit_proxy_method_response_200]
 }
 
 
@@ -116,6 +117,7 @@ resource "aws_api_gateway_integration_response" "htc_grid_public_result_proxy_me
   resource_id = aws_api_gateway_resource.htc_grid_public_result_proxy.id
   http_method = aws_api_gateway_method.htc_grid_public_result_proxy_method.http_method
   status_code = aws_api_gateway_method_response.htc_grid_public_result_proxy_method_response_200.status_code
+  depends_on = [aws_api_gateway_method_response.htc_grid_public_result_proxy_method_response_200]
 }
 
 resource "aws_api_gateway_deployment" "htc_grid_public_deployment" {
@@ -189,6 +191,7 @@ resource "aws_api_gateway_integration_response" "htc_grid_public_cancel_proxy_me
   resource_id = aws_api_gateway_resource.htc_grid_public_cancel_proxy.id
   http_method = aws_api_gateway_method.htc_grid_public_cancel_proxy_method.http_method
   status_code = aws_api_gateway_method_response.htc_grid_public_cancel_proxy_method_response_200.status_code
+  depends_on = [aws_api_gateway_method_response.htc_grid_public_cancel_proxy_method_response_200]
 }
 
 resource "aws_api_gateway_account" "htc_grid_account" {
