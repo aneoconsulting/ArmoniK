@@ -81,7 +81,7 @@ Define variables for deploying the infrastructure as follows:
 
 7. Define an environment variable containing AWS ECR registry.
    ```bash
-      export ARMONIK_DOCKER_REGISTRY=$(ARMONIK_ACCOUNT_ID).dkr.ecr.$(ARMONIK_REGION).amazonaws.com
+      export ARMONIK_DOCKER_REGISTRY=$ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
    ```
 8. ECR authentication. As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
    ```bash
