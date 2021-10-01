@@ -60,11 +60,7 @@ resource "aws_api_gateway_integration_response" "htc_grid_private_submit_proxy_m
   resource_id = aws_api_gateway_resource.htc_grid_private_submit_proxy.id
   http_method = aws_api_gateway_method.htc_grid_private_submit_proxy_method.http_method
   status_code = aws_api_gateway_method_response.htc_grid_private_submit_proxy_method_response_200.status_code
-  depends_on = [
-    aws_api_gateway_method_response.htc_grid_private_submit_proxy_method_response_200,
-    aws_api_gateway_rest_api.htc_grid_private_rest_api,
-    aws_api_gateway_resource.htc_grid_private_submit_proxy
-  ]
+  depends_on = [aws_api_gateway_integration.htc_grid_public_submit_proxy_integration]
 }
 
 
@@ -115,11 +111,7 @@ resource "aws_api_gateway_integration_response" "htc_grid_private_result_proxy_m
   resource_id = aws_api_gateway_resource.htc_grid_private_result_proxy.id
   http_method = aws_api_gateway_method.htc_grid_private_result_proxy_method.http_method
   status_code = aws_api_gateway_method_response.htc_grid_private_result_proxy_method_response_200.status_code
-  depends_on = [
-    aws_api_gateway_method_response.htc_grid_private_result_proxy_method_response_200,
-    aws_api_gateway_rest_api.htc_grid_private_rest_api,
-    aws_api_gateway_resource.htc_grid_private_result_proxy
-  ]
+  depends_on = [aws_api_gateway_integration.htc_grid_public_result_proxy_integration]
 }
 
 
@@ -170,11 +162,7 @@ resource "aws_api_gateway_integration_response" "htc_grid_private_cancel_proxy_m
   resource_id = aws_api_gateway_resource.htc_grid_private_cancel_proxy.id
   http_method = aws_api_gateway_method.htc_grid_private_cancel_proxy_method.http_method
   status_code = aws_api_gateway_method_response.htc_grid_private_cancel_proxy_method_response_200.status_code
-  depends_on = [
-    aws_api_gateway_method_response.htc_grid_private_cancel_proxy_method_response_200,
-    aws_api_gateway_rest_api.htc_grid_private_rest_api,
-    aws_api_gateway_resource.htc_grid_private_cancel_proxy
-  ]
+  depends_on = [aws_api_gateway_integration.htc_grid_public_cancel_proxy_integration]
 }
 
 
