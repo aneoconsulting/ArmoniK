@@ -4,6 +4,7 @@
   "grid_storage_service" : "S3",
   "grid_queue_service" : "SQS",
   "tasks_status_table_service": "{{tasks_status_table_service}}",
+  "api_gateway_service": "{{api_gateway_service}}",
   "max_htc_agents": 100,
   "min_htc_agents": 1,
   "dynamodb_default_read_capacity" : 10,

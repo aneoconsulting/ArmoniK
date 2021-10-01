@@ -34,6 +34,7 @@ resource "kubernetes_config_map" "lambda_local" {
     USERNAME = var.access_key,
     PASSWORD = var.secret_key,
     AWS_LAMBDA_FUNCTION_TIMEOUT = var.lambda_timeout,
+    API_GATEWAY_SERVICE = var.api_gateway_service,
     METRICS_GET_RESULTS_LAMBDA_CONNECTION_STRING = var.metrics_get_results_lambda_connection_string,
     METRICS_CANCEL_TASKS_LAMBDA_CONNECTION_STRING=var.metrics_cancel_tasks_lambda_connection_string,
     METRICS_TTL_CHECKER_LAMBDA_CONNECTION_STRING=var.metrics_ttl_checker_lambda_connection_string

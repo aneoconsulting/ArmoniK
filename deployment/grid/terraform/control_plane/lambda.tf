@@ -143,6 +143,7 @@ module "submit_task" {
     REDIS_USE_SSL = var.redis_with_ssl,
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
+    API_GATEWAY_SERVICE = var.api_gateway_service,
     SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
     DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com"
   }
@@ -213,6 +214,7 @@ module  "get_results" {
     ERROR_LOGGING_STREAM=var.error_logging_stream,
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
+    API_GATEWAY_SERVICE = var.api_gateway_service,
     SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
     DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com"
   }
@@ -285,6 +287,7 @@ module "cancel_tasks" {
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
     SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
+    API_GATEWAY_SERVICE = var.api_gateway_service,
     DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com"
   }
 
@@ -352,6 +355,7 @@ module "ttl_checker" {
     ERROR_LOGGING_STREAM=var.error_logging_stream,
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
+    API_GATEWAY_SERVICE = var.api_gateway_service,
     SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
     DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com"
   }

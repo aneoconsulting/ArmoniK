@@ -93,15 +93,29 @@ def lambda_handler(event, context):
         session2cancel = event.get("session_id")
         lambda_response = cancel_session(session2cancel)
 
-        return {
-            'statusCode': 200,
-            'body': json.dumps(lambda_response)
-        }
+        if os.environ['API_GATEWAY_SERVICE'] == "APIGateway":
+            res = {
+                'statusCode': 200,
+                'body': json.dumps(lambda_response)
+            }
+        elif os.environ['API_GATEWAY_SERVICE'] == "NGINX":
+            res = lambda_response
+        else:
+            raise NotImplementedError()
+
+        print("response output : ", res)
+        return res
 
     except Exception as e:
         print('Lambda cancel_tasks error: {} trace: {}'.format(e, traceback.format_exc()))
         errlog.log('Lambda cancel_tasks error: {} trace: {}'.format(e, traceback.format_exc()))
-        return {
+        if os.environ['API_GATEWAY_SERVICE'] == "APIGateway":
+            res = {
             'statusCode': 542,
             'body': "{}".format(e)
         }
+        elif os.environ['API_GATEWAY_SERVICE'] == "NGINX":
+            res = "{}".format(e)
+        else:
+            raise NotImplementedError()
+        return res

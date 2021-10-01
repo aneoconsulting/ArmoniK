@@ -78,7 +78,7 @@ namespace HTCGrid
                     if (finishedTasks == null || !finishedTasks.Any())
                     {
                         Console.WriteLine(String.Format("WARN :  Task {0} no result available", taskId));
-                        Console.WriteLine($"WARN : sessionResponse={sessionResponse}");
+                        Console.WriteLine($"WARN : finishedTask null or empty");
                         continue;
                     } else {
                         Console.WriteLine("WARN : printing element in finished state");

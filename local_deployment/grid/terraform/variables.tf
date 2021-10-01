@@ -561,3 +561,7 @@ variable "image_pull_policy" {
   default = ""
   type = string
 }
+
+variable "api_gateway_service" {
+  description = "API Gateway Service"
+}

@@ -499,3 +499,7 @@ variable "redis_client_pfx" {
 variable "cluster_config" {
   description = "Configuration type of the cluster (Local, Cloud, OnPremise)"
 }
+
+variable "api_gateway_service" {
+  description = "API Gateway Service"
+}

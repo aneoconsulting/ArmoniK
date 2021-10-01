@@ -234,3 +234,6 @@ variable "connection_redis_timeout" {
   description = "connection redis timeout"
 }
 
+variable "api_gateway_service" {
+  description = "API Gateway Service"
+}

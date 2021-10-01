@@ -266,22 +266,33 @@ def lambda_handler(event, context):
         for sqs_msg in sqs_batch_entries:
             lambda_response["task_ids"].append(sqs_msg['Id'])
 
-        res = {
-            'statusCode': 200,
-            'body': json.dumps(lambda_response)
-        }
+        if os.environ['API_GATEWAY_SERVICE'] == "APIGateway":
+            res = {
+                'statusCode': 200,
+                'body': json.dumps(lambda_response)
+            }
+        elif os.environ['API_GATEWAY_SERVICE'] == "NGINX":
+            res = lambda_response
+        else:
+            raise NotImplementedError()
 
-        print("response output : ", json.dumps(res))
+        print("response output : ", res)
         return res
 
     except Exception as e:
         errlog.log("Exception in Submit Tasks {} [{}]"
                    .format(e, traceback.format_exc()))
 
-        return {
+        if os.environ['API_GATEWAY_SERVICE'] == "APIGateway":
+            res = {
             'statusCode': 543,
             'body': "{}".format(e)
         }
+        elif os.environ['API_GATEWAY_SERVICE'] == "NGINX":
+            res = "{}".format(e)
+        else:
+            raise NotImplementedError()
+        return res
 
 
 # From 3.7, we can check if UUID is safe (i.e. unique even in case of mutliprocessing)

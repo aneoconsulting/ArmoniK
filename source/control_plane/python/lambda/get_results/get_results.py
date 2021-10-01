@@ -135,17 +135,28 @@ def lambda_handler(event, context):
 
         book_keeping(lambda_responce)
 
-        res = {
-            'statusCode': 200,
-            'body': json.dumps(lambda_responce)
-        }
+        if os.environ['API_GATEWAY_SERVICE'] == "APIGateway":
+            res = {
+                'statusCode': 200,
+                'body': json.dumps(lambda_responce)
+            }
+        elif os.environ['API_GATEWAY_SERVICE'] == "NGINX":
+            res = lambda_responce
+        else:
+            raise NotImplementedError()
 
         print("response output : ", res)
         return res
 
     except Exception as e:
         errlog.log('Lambda get_result error: {} trace: {}'.format(e, traceback.format_exc()))
-        return {
+        if os.environ['API_GATEWAY_SERVICE'] == "APIGateway":
+            res = {
             'statusCode': 542,
             'body': "{}".format(e)
         }
+        elif os.environ['API_GATEWAY_SERVICE'] == "NGINX":
+            res = "{}".format(e)
+        else:
+            raise NotImplementedError()
+        return res

@@ -189,6 +189,7 @@ module "control_plane" {
     nginx_port = var.nginx_port
     kubectl_path_documents = data.kubectl_path_documents.manifests
     image_pull_policy = var.image_pull_policy
+    api_gateway_service = var.api_gateway_service
 }
 
 module "htc_agent" {

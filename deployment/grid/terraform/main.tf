@@ -213,6 +213,7 @@ module "control_plane" {
     dynamodb_endpoint_url = var.dynamodb_endpoint_url
     redis_with_ssl = var.redis_with_ssl
     connection_redis_timeout = var.connection_redis_timeout
+    api_gateway_service = var.api_gateway_service
 
     depends_on  = [
         module.vpc

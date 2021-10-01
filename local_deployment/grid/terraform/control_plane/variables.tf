@@ -248,3 +248,7 @@ variable "kubectl_path_documents" {
 variable "image_pull_policy" {
   description = "Pull image policy"
 }
+
+variable "api_gateway_service" {
+  description = "API Gateway Service"
+}
