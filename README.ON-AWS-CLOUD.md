@@ -105,7 +105,7 @@ and the grid are implemented by a client in folder [./examples/client/python](./
 
 1. Run the following command to launch a kubernetes job:
    ```bash
-   kubectl apply -f ./generated/local-single-task-dotnet5.0.yaml
+   kubectl apply -f ./generated/single-task-dotnet5.0.yaml
    ```
    
 2. look at the log of the submission:
