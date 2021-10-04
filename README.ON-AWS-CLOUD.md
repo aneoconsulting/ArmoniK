@@ -121,5 +121,5 @@ and the grid are implemented by a client in folder [./examples/client/python](./
    
 3. To clean the job submission instance:
    ```bash
-   kubectl delete -f ./generated/single-task-test.yaml
+   kubectl delete -f ./generated/single-task-dotnet5.0.yaml
    ```
