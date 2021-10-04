@@ -146,6 +146,9 @@ dotnet-submitter: utils api
 mock-submitter: utils api
 	$(MAKE) -C ./examples/mock_integration/Client/ BUILD_TYPE=$(BUILD_TYPE)
 
+cancel-session: utils api
+	$(MAKE) -C ./examples/mock_integration/CancelSession/ BUILD_TYPE=$(BUILD_TYPE)
+
 lambda-control-plane: utils api lambda-control-plane-submit-tasks lambda-control-plane-get-results lambda-control-plane-cancel-tasks lambda-control-plane-ttl-checker
 
 lambda-control-plane-submit-tasks: utils api
@@ -225,7 +228,7 @@ python-happy-path: all python-submitter  upload-python config-python k8s-jobs
 
 python-quant-lib-path: all upload-python-ql config-python-ql k8s-jobs
 
-dotnet50-path: all dotnet5.0-htcgrid-api upload-dotnet5.0 mock-submitter mock-config-dotnet5.0 k8s-jobs
+dotnet50-path: all dotnet5.0-htcgrid-api upload-dotnet5.0 mock-submitter cancel-session mock-config-dotnet5.0 k8s-jobs
 
 #############################
 ##### C#              #######

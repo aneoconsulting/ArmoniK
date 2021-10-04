@@ -9,7 +9,6 @@ WORKDIR /app/mock_integration
 RUN mkdir -p ./lib/dotnet5.0
 COPY ./dist/dotnet5.0/HTCGridAPI.* ./lib/dotnet5.0/
 COPY ./dist/dotnet5.0/HttpApi.* ./lib/dotnet5.0/
-COPY ./dist/dotnet5.0/Htc.Mock.* ./lib/dotnet5.0/
 COPY ./examples/mock_integration ./
 
 ENV ARMONIK_NUGET_REPOS=/app/mock_integration/lib/dotnet5.0

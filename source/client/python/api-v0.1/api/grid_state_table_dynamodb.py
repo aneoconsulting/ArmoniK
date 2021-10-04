@@ -128,13 +128,13 @@ class StateTableDDB:
     ###############################################################################################
 
     def update_task_status_to_failed(self, task_id):
-        return self.__finalize_tasks_status(task_id, TASK_STATUS_FAILED, self.__get_state_partition_from_task_id(task_id))
+        self.__finalize_tasks_status(task_id, TASK_STATUS_FAILED, self.__get_state_partition_from_task_id(task_id))
 
     def update_task_status_to_inconsistent(self, task_id):
-        return self.__finalize_tasks_status(task_id, TASK_STATUS_INCONSISTENT, self.__get_state_partition_from_task_id(task_id))
+        self.__finalize_tasks_status(task_id, TASK_STATUS_INCONSISTENT, self.__get_state_partition_from_task_id(task_id))
 
     def update_task_status_to_cancelled(self, task_id):
-        return self.__finalize_tasks_status(task_id, TASK_STATUS_CANCELLED, self.__get_state_partition_from_task_id(task_id))
+        self.__finalize_tasks_status(task_id, TASK_STATUS_CANCELLED, self.__get_state_partition_from_task_id(task_id))
 
     def acquire_task_for_ttl_lambda(self, task_id, current_owner, current_heartbeat_timestamp):
         """
@@ -575,7 +575,7 @@ class StateTableDDB:
             logging.error("__finalize_tasks_status called with incorrect input: {}".format(new_task_state))
 
         try:
-            return self.state_table.update_item(
+            self.state_table.update_item(
                 Key={
                     'task_id': task_id
                 },
@@ -589,8 +589,8 @@ class StateTableDDB:
                     "#var_task_status": "task_status"
                 },
                 ReturnConsumedCapacity="TOTAL"
-            )['Items']
-        except ClientError as e:
+            )
+        except Exception as e:
             errlog.log("Cannot finalize task_id {} to a new state {} : {}".format(task_id, new_task_state, e))
             raise e
 

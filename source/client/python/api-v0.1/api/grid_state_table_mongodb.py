@@ -90,21 +90,21 @@ class MongoDBStateTableDDB:
     ##########################################################################
 
     def update_task_status_to_failed(self, task_id):
-        return self.__finalize_tasks_status(
+        self.__finalize_tasks_status(
             task_id,
             TASK_STATUS_FAILED,
             self.__get_state_partition_from_task_id(task_id),
         )
 
     def update_task_status_to_inconsistent(self, task_id):
-        return self.__finalize_tasks_status(
+        self.__finalize_tasks_status(
             task_id,
             TASK_STATUS_INCONSISTENT,
             self.__get_state_partition_from_task_id(task_id),
         )
 
     def update_task_status_to_cancelled(self, task_id):
-        return self.__finalize_tasks_status(
+        self.__finalize_tasks_status(
             task_id,
             TASK_STATUS_CANCELLED,
             self.__get_state_partition_from_task_id(task_id),
@@ -412,7 +412,7 @@ class MongoDBStateTableDDB:
             )
 
         try:
-            return self.state_table.update_one(
+            self.state_table.update_one(
                 {"task_id": task_id},
                 {
                     "$set": {

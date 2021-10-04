@@ -47,11 +47,7 @@ def cancel_tasks_by_status(session_id, task_state):
 
     for row in response:
 
-        res = state_table.update_task_status_to_cancelled(row['task_id'])
-
-        print(f"res = {res}")
-        if not res:
-            raise Exception("Failed to set task status to Cancelled.")
+        state_table.update_task_status_to_cancelled(row['task_id'])
 
     return response
 
@@ -90,7 +86,11 @@ def lambda_handler(event, context):
     try:
 
         lambda_response = {}
-        session2cancel = event.get("session_id")
+        if 'body' in event:
+            session2cancel = json.loads(event['body']).get("session_id")
+        else:
+            session2cancel = event.get("session_id")
+
         lambda_response = cancel_session(session2cancel)
 
         if os.environ['API_GATEWAY_SERVICE'] == "APIGateway":
