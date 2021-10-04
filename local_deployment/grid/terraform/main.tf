@@ -71,59 +71,6 @@ locals {
 
 module "compute_plane" {
     source = "./compute_plane"
-    cluster_name = local.cluster_name
-    kubernetes_version = var.kubernetes_version
-    k8s_ca_version = var.k8s_ca_version
-    cwa_version = var.cwa_version
-    aws_node_termination_handler_version = var.aws_node_termination_handler
-    cw_agent_version = var.cw_agent_version
-    fluentbit_version = var.fluentbit_version
-    suffix = local.project_name
-    region = var.region
-    lambda_runtime = var.lambda_runtime
-    ddb_status_table = local.ddb_status_table
-    sqs_queue = local.sqs_queue
-    tasks_queue_name = local.tasks_queue_name
-    namespace_metrics = var.namespace_metrics
-    dimension_name_metrics = var.dimension_name_metrics
-    htc_path_logs = var.htc_path_logs
-    lambda_name_scaling_metrics = local.lambda_name_scaling_metric
-    period_metrics = var.period_metrics
-    metric_name = local.metrics_name
-    average_period = var.average_period
-    metrics_event_rule_time = var.metrics_event_rule_time
-    htc_agent_name = var.htc_agent_name
-    htc_agent_namespace = var.htc_agent_namespace
-    eks_worker_groups = var.eks_worker_groups
-    max_htc_agents = var.max_htc_agents
-    min_htc_agents = var.min_htc_agents
-    htc_agent_target_value = var.htc_agent_target_value
-    input_role = var.input_role
-    graceful_termination_delay = var.graceful_termination_delay
-    aws_xray_daemon_version = var.aws_xray_daemon_version
-    retention_in_days = var.retention_in_days
-    //kms_key_arn = var.kms_key_arn
-    error_log_group = local.error_log_group
-    error_logging_stream = local.error_logging_stream
-    grid_queue_service = var.grid_queue_service
-    grid_queue_config = var.grid_queue_config
-
-    grafana_configuration = {
-        downloadDashboardsImage_tag = var.grafana_configuration.downloadDashboardsImage_tag
-        grafana_tag = var.grafana_configuration.grafana_tag
-        initChownData_tag = var.grafana_configuration.initChownData_tag
-        sidecar_tag = var.grafana_configuration.sidecar_tag
-        admin_password = var.grafana_admin_password
-    }
-
-    prometheus_configuration = {
-        node_exporter_tag = var.prometheus_configuration.node_exporter_tag
-        server_tag = var.prometheus_configuration.server_tag
-        alertmanager_tag = var.prometheus_configuration.alertmanager_tag
-        kube_state_metrics_tag = var.prometheus_configuration.kube_state_metrics_tag
-        pushgateway_tag = var.prometheus_configuration.pushgateway_tag
-        configmap_reload_tag = var.prometheus_configuration.configmap_reload_tag
-    }
 }
 
 module "control_plane" {
@@ -164,16 +111,13 @@ module "control_plane" {
     dynamodb_gsi_parent_table_write_capacity = var.dynamodb_default_write_capacity
     dynamodb_gsi_parent_table_read_capacity = var.dynamodb_default_read_capacity
     agent_use_congestion_control = var.agent_use_congestion_control
-    //nlb_influxdb = module.compute_plane.nlb_influxdb
     cluster_name = local.cluster_name
-    //cognito_userpool_arn = module.compute_plane.cognito_userpool_arn
     api_gateway_version = var.api_gateway_version
     dynamodb_port = var.dynamodb_port
     local_services_port = var.local_services_port
     redis_port = var.redis_port
     redis_port_without_ssl = var.redis_port_without_ssl
     retention_in_days = var.retention_in_days
-    //kms_key_arn = var.kms_key_arn
     redis_with_ssl = var.redis_with_ssl
     connection_redis_timeout = var.connection_redis_timeout
     certificates_dir_path = var.certificates_dir_path
