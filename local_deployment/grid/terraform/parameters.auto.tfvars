@@ -17,5 +17,6 @@ redis_cert_file = "/redis_certificates/redis.crt"
 cluster_config = "local"
 image_pull_policy = "IfNotPresent"
 
+
 k8s_config_context = "default"
 k8s_config_path = "/etc/rancher/k3s/k3s.yaml"
