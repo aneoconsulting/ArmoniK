@@ -25,7 +25,10 @@ except OSError:
                          "region": os.environ["REGION"]}
 
 
-cw = boto3.client('logs', agent_config_data["region"])
+try:
+    cw = boto3.client('logs', agent_config_data["region"])
+except:
+    cw = None
 
 
 # DEBUGGING
@@ -33,7 +36,8 @@ def log(message,
         log_group_name=agent_config_data["error_log_group"],
         log_stream_name=agent_config_data["error_logging_stream"]):
     # print("ERROR-PRINT: {}".format(message))
-
+    if cw is None:
+        return
     try:
         # retreive seq number
         response = cw.describe_log_streams(logGroupName=log_group_name)

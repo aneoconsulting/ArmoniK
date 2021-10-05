@@ -104,14 +104,14 @@ Define variables for deploying the infrastructure as follows:
 
 5. Define an environment variable containing the path to the redis certificates.
    ```bash
-      export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
+      export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=/run/desktop/mnt/host/wsl/cert
    ```
 
 6. Define an environment variable containing the docker registry if it exists, otherwise initialize the variable to empty.
    ```bash
       export ARMONIK_DOCKER_REGISTRY=<docker registry>
    ```
-   
+
 7. Define environment variables if a proxy exists.
    ```bash
       export HTTP_PROXY=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
@@ -121,7 +121,7 @@ Define variables for deploying the infrastructure as follows:
       export https_proxy=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
       export no_proxy=<LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON>
    ```
-   
+
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
 
