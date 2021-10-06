@@ -2,6 +2,17 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
+resource "null_resource" "k8s_config" {
+    triggers = {
+        always_run = "${timestamp()}"
+    }
+
+    provisioner "local-exec" {
+      command = "./scripts_bash/k8s_config.sh"
+      interpreter = ["bash"]
+  }
+}
+
 data "kubectl_path_documents" "manifests" {
     pattern = "./manifests/*.yaml"
 }
@@ -138,6 +149,9 @@ module "control_plane" {
     http_proxy_lower = var.http_proxy_lower
     https_proxy_lower = var.https_proxy_lower
     no_proxy_lower = var.no_proxy_lower
+    depends_on = [
+        null_resource.k8s_config
+    ]
 }
 
 module "htc_agent" {
@@ -176,7 +190,8 @@ module "htc_agent" {
     depends_on = [
         module.compute_plane,
         module.control_plane,
-        kubernetes_config_map.htcagentconfig
+        kubernetes_config_map.htcagentconfig,
+        null_resource.k8s_config
     ]
 }
 
