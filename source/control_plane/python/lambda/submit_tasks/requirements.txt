@@ -1,3 +1,4 @@
 redis
 influxdb
 requests
+boto3

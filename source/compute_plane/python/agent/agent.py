@@ -33,6 +33,10 @@ from utils.state_table_common import *
 from utils.ttl_experation_generator import TTLExpirationGenerator
 import utils.grid_error_logger as errlog
 
+import logging
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",datefmt='%H:%M:%S', level=logging.INFO)
+
+
 # Uncomment to get tracing on interruption
 # import faulthandler
 # faulthandler.enable(file=sys.stderr, all_threads=True)
@@ -306,6 +310,7 @@ def try_to_acquire_a_task():
                 return None, None
 
     except Exception as e:
+        logging.error("Unexpected error in claim_task_for_agent {} [{}]".format(e, traceback.format_exc()))
         errlog.log("Unexpected error in claim_task_for_agent {} [{}]".format(
             e, traceback.format_exc()))
         raise e
@@ -379,12 +384,13 @@ def process_subprocess_completion(perf_tracker, task, sqs_msg, fname_stdout, std
 
                 time_end_ms = get_time_now_ms()
 
+                logging.error(f"Agent FINISHED@StateTable #{count} Throttling for {time_end_ms - time_start_ms} ms")
                 errlog.log(f"Agent FINISHED@StateTable #{count} Throttling for {time_end_ms - time_start_ms} ms")
 
                 continue # i.e., retry again
 
             elif e.caused_by_condition:
-
+                logging.error(f"Agent FINISHED@StateTable exception caused_by_condition")
                 errlog.log(f"Agent FINISHED@StateTable exception caused_by_condition")
 
                 is_update_succesfull = False
@@ -392,6 +398,7 @@ def process_subprocess_completion(perf_tracker, task, sqs_msg, fname_stdout, std
                 break
 
         except Exception as e:
+            logging.error(f"Unexpected Exception while setting tasks state to finished {e} [{traceback.format_exc()}]")
             errlog.log(f"Unexpected Exception while setting tasks state to finished {e} [{traceback.format_exc()}]")
             raise e
 
@@ -532,14 +539,17 @@ def update_ttl_if_required(task):
 
                     t2 = get_time_now_ms()
 
+                    logging.error(f"Agent TTL@StateTable Throttling for #{count} times for {t2 - t1} ms")
                     errlog.log(f"Agent TTL@StateTable Throttling for #{count} times for {t2-t1} ms")
 
                     continue
                 else:
                     # Unexpected error -> Fail
+                    logging.error(f"Unexpected StateTableException while refreshing TTL {e} [{traceback.format_exc()}]")
                     errlog.log(f"Unexpected StateTableException while refreshing TTL {e} [{traceback.format_exc()}]")
                     raise Exception(e)
             except Exception as e:
+                logging.error(f"Unexpected Exception while refreshing TTL {e} [{traceback.format_exc()}]")
                 errlog.log(f"Unexpected Exception while refreshing TTL {e} [{traceback.format_exc()}]")
                 raise e
 
@@ -662,11 +672,13 @@ if __name__ == "__main__":
         event_loop()
 
     except ClientError as e:
+        logging.error("ClientError Agent Event Loop {} [{}] POD:{}".format(e.response['Error']['Code'], traceback.format_exc(), SELF_ID))
         errlog.log("ClientError Agent Event Loop {} [{}] POD:{}".
                    format(e.response['Error']['Code'], traceback.format_exc(), SELF_ID))
         sys.exit(1)
 
     except Exception as e:
+        logging.error("Exception Agent Event Loop {} [{}] POD:{}".format(e, traceback.format_exc(), SELF_ID))
         errlog.log("Exception Agent Event Loop {} [{}] POD:{}".
                    format(e, traceback.format_exc(), SELF_ID))
         sys.exit(1)

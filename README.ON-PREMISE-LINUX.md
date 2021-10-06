@@ -1,39 +1,10 @@
 # Table of contents
-1. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
-2. [Configure the environment](#configure-the-environment) 
-3. [Build Armonik artifacts](#build-armonik-artifacts)
+1. [Configure the environment](#configure-the-environment) 
+2. [Build Armonik artifacts](#build-armonik-artifacts)
+3. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
 4. [Deploy Armonik resources](#deploy-armonik-resources)
 5. [Running an example workload](#running-an-example-workload)
 6. [Destroy Armonik resources](#destroy-armonik-resources)
-
-# Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
-Instructions to install Kubernetes on local Linux machine.
-
-You can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/) on Linux OS.
-
-Install K3s as follows:
-```bash
-curl -sfL https://get.k3s.io | sh -
-```
-
-If you want use host's Docker rather than containerd use `--docker` option:
-```bash
-curl -sfL https://get.k3s.io | sh -s - --docker
-```
-
-Then initialize the configuration file of Kubernetes:
-```bash
-sudo chmod 755 /etc/rancher/k3s/k3s.yaml
-mkdir -p ~/.kube
-cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-```
-
-**Warning**: Hereafter we will use the installation of K3s with `--docker` option. This allows K3s access local docker images directly (without using 'docker save').
-
-To uninstall K3s, use the following command:
-```bash
-/usr/local/bin/k3s-uninstall.sh
-```
 
 # Configure the environment <a name="configure-the-environment"></a>
 Define variables for deploying the infrastructure as follows:
@@ -97,6 +68,35 @@ A folder named `generated` will be created at `<project_root>`. This folder shou
 two files:
  * `dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
  * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
+
+# Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
+Instructions to install Kubernetes on local Linux machine.
+
+You can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/) on Linux OS.
+
+Install K3s as follows:
+```bash
+curl -sfL https://get.k3s.io | sh -
+```
+
+If you want use host's Docker rather than containerd use `--docker` option:
+```bash
+curl -sfL https://get.k3s.io | sh -s - --docker
+```
+
+Then initialize the configuration file of Kubernetes:
+```bash
+sudo chmod 755 /etc/rancher/k3s/k3s.yaml
+mkdir -p ~/.kube
+cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+```
+
+**Warning**: Hereafter we will use the installation of K3s with `--docker` option. This allows K3s access local docker images directly (without using 'docker save').
+
+To uninstall K3s, use the following command:
+```bash
+/usr/local/bin/k3s-uninstall.sh
+```
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 1. Create needed credentials (on-premises): for the on-premises deployment, some credentials are needed to

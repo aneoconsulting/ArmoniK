@@ -17,6 +17,9 @@ from utils.state_table_common import TASK_STATUS_CANCELLED, TASK_STATUS_FAILED, 
 
 import utils.grid_error_logger as errlog
 
+import logging
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",datefmt='%H:%M:%S', level=logging.INFO)
+
 # dynamodb = boto3.resource('dynamodb')
 # table = dynamodb.Table(os.environ['TASKS_STATUS_TABLE_NAME'])
 state_table = state_table_manager(
@@ -95,6 +98,7 @@ def get_session_id_from_event(event):
         return event['session_id']
 
     else:
+        logging.error("Uniplemented path, exiting")
         errlog.log("Uniplemented path, exiting")
         assert(False)
 
@@ -141,6 +145,7 @@ def lambda_handler(event, context):
         return res
 
     except ClientError as e:
+        logging.error('Lambda get_result error: {} trace: {}'.format(e.response['Error']['Message'], traceback.format_exc()))
         errlog.log('Lambda get_result error: {} trace: {}'.format(
             e.response['Error']['Message'], traceback.format_exc()))
         return {
@@ -148,6 +153,7 @@ def lambda_handler(event, context):
             'body': e.response['Error']['Message']
         }
     except Exception as e:
+        logging.error('Lambda get_result error: {} trace: {}'.format(e, traceback.format_exc()))
         errlog.log('Lambda get_result error: {} trace: {}'.format(e, traceback.format_exc()))
         return {
             'statusCode': 542,
