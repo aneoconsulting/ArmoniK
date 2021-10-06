@@ -20,7 +20,7 @@ namespace HtcClient
         static void Main(string[] args)
         {
             Console.WriteLine("Hello Mock!");
-             string armonik_wait_client = Environment.GetEnvironmentVariable("ARMONIK_DEBUG_WAIT_CLIENT");
+             var armonik_wait_client = Environment.GetEnvironmentVariable("ARMONIK_DEBUG_WAIT_CLIENT");
              int arminik_debug_wait_client = int.Parse(armonik_wait_client);
              if (arminik_debug_wait_client > 0)
             {
