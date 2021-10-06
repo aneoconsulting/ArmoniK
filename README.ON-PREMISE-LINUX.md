@@ -24,6 +24,7 @@ curl -sfL https://get.k3s.io | sh -s - --docker
 Then initialize the configuration file of Kubernetes:
 ```bash
 sudo chmod 755 /etc/rancher/k3s/k3s.yaml
+mkdir -p ~/.kube
 cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 ```
 
@@ -134,7 +135,7 @@ and the grid are implemented by a client in folder [./examples/client/python](./
 
 3. To clean the job submission instance:
    ```bash
-   kubectl delete -f ./generated/single-task-test.yaml
+   kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
    ```
 
 # Destroy Armonik resources <a name="destroy-armonik-resources"></a>
