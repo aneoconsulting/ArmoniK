@@ -59,11 +59,10 @@
   ],
   "agent_configuration": {
     "lambda": {
-      "minCPU": "800",
+      "minCPU": "200",
       "maxCPU": "900",
-      "minMemory": "1200",
+      "minMemory": "400",
       "maxMemory": "1900",
-      "location" : "s3://{{workload_bucket_name}}/lambda.zip",
       "runtime": "5.0.4",
       "lambda_handler_file_name" :"{{dotnet50_file_handler}}",
       "function_name" : "function",
