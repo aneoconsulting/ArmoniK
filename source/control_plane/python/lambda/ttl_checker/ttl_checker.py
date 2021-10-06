@@ -5,6 +5,7 @@
 import boto3
 import time
 import os
+import logging
 
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key, Attr
@@ -13,6 +14,8 @@ from utils.performance_tracker import EventsCounter, performance_tracker_initial
 from utils.state_table_common import *
 from utils import grid_error_logger as errlog
 from api.queue_manager import queue_manager
+
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",datefmt='%H:%M:%S', level=logging.INFO)
 
 region = os.environ["REGION"]
 
@@ -115,15 +118,18 @@ def lambda_handler(event, context):
                 except ClientError:
 
                     try:
+                        logging.error('Failed to reset VTO trying to delete: {} '.format(task_id))
                         errlog.log('Failed to reset VTO trying to delete: {} '.format(task_id))
                         delete_message_from_queue(sqs_handler_id)
                     except ClientError:
+                        logging.error('Inconsistent task: {} sending do DLQ'.format(task_id))
                         errlog.log('Inconsistent task: {} sending do DLQ'.format(task_id))
                         event_counter.increment("counter_inconsistent_state")
                         set_task_inconsistent(task_id)
                         send_to_dlq(item)
 
             except ClientError as e:
+                logging.error('Lambda ttl error: {}'.format(e.response['Error']['Message']))
                 errlog.log('Lambda ttl error: {}'.format(e.response['Error']['Message']))
                 print("Cannot process task {} : {}".format(task_id, e))
                 print("Sending task {} to DLQ...".format(task_id))
@@ -131,6 +137,7 @@ def lambda_handler(event, context):
             except Exception as e:
                 print("Cannot process task {} : {}".format(task_id, e))
                 print("Sending task {} to DLQ...".format(task_id))
+                logging.error('Lambda ttl error: {}'.format(e))
                 errlog.log('Lambda ttl error: {}'.format(e))
                 send_to_dlq(item)
 
@@ -165,8 +172,9 @@ def fail_task(task_id, sqs_handler_id, task_priority):
       state_table.update_task_status_to_failed(task_id)
 
     except ClientError as e:
-      errlog.log("Cannot fail task {} : {}".format(task_id, e))
-      raise e
+        logging.error("Cannot fail task {} : {}".format(task_id, e))
+        errlog.log("Cannot fail task {} : {}".format(task_id, e))
+        raise e
 
 
 def set_task_inconsistent(task_id):
@@ -187,6 +195,7 @@ def set_task_inconsistent(task_id):
         state_table.update_task_status_to_inconsistent(task_id)
 
     except ClientError as e:
+        logging.error("Cannot set task to inconsystent {} : {}".format(task_id, e))
         errlog.log("Cannot set task to inconsystent {} : {}".format(task_id, e))
         raise e
 
@@ -209,6 +218,7 @@ def delete_message_from_queue(sqs_handler_id, task_priority):
     try:
         queue.delete_message(sqs_handler_id, task_priority)
     except ClientError as e:
+        logging.error("Cannot delete message {} : {}".format(sqs_handler_id, e))
         errlog.log("Cannot delete message {} : {}".format(sqs_handler_id, e))
         raise e
 
@@ -240,6 +250,7 @@ def retreive_retries_and_sqs_handler_and_priority(task_id):
                resp_task.get('task_priority')
 
     except ClientError as e:
+        logging.error("Cannot retreive retries and handler for task {} : {}".format(task_id, e))
         errlog.log("Cannot retreive retries and handler for task {} : {}".format(task_id, e))
         raise e
 
@@ -260,6 +271,7 @@ def reset_sqs_vto(handler_id, task_priority):
         queue.change_visibility(handler_id, visibility_timeout_sec, task_priority)
 
     except ClientError as e:
+        logging.error("Cannot reset VTO for message {} : {}".format(handler_id, e))
         errlog.log("Cannot reset VTO for message {} : {}".format(handler_id, e))
         raise e
 
