@@ -268,10 +268,6 @@ variable "redis_port" {
   type = number
 }
 
-variable "dynamodb_endpoint_url" {
-  description = "dynamodb endpoint url"
-}
-
 variable "sqs_endpoint_url" {
   description = "sqs endpoint url"
 }

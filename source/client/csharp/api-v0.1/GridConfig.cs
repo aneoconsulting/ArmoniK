@@ -17,8 +17,8 @@ namespace HTCGrid
 			this.private_api_gateway_url = root.GetProperty("private_api_gateway_url").GetString();
 			this.api_gateway_key = root.GetProperty("api_gateway_key").GetString();
 			this.redis_with_ssl = root.GetProperty("redis_with_ssl").GetString().ToLower();
-			this.redis_endpoint_url = String.Equals(this.redis_with_ssl, "false") ? root.GetProperty("redis_endpoint_url_without_ssl").GetString() : root.GetProperty("redis_endpoint_url").GetString();
-			this.redis_port = String.Equals(this.redis_with_ssl, "false") ? root.GetProperty("redis_port_without_ssl").GetString() : root.GetProperty("redis_port").GetString();
+			this.redis_endpoint_url = root.GetProperty("redis_endpoint_url").GetString();
+			this.redis_port = root.GetProperty("redis_port").GetString();
 			this.cluster_config = root.GetProperty("cluster_config").GetString();
 
             if ((String.Equals(this.cluster_config.ToLower(), "local") && String.Equals(this.redis_with_ssl, "true"))

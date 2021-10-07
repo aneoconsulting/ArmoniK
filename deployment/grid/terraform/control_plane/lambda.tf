@@ -145,7 +145,7 @@ module "submit_task" {
     REGION = var.region,
     API_GATEWAY_SERVICE = var.api_gateway_service,
     SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
-    DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com"
+    DB_ENDPOINT_URL = "https://dynamodb.${var.region}.amazonaws.com"
   }
 
    tags = {
@@ -216,7 +216,7 @@ module  "get_results" {
     REGION = var.region,
     API_GATEWAY_SERVICE = var.api_gateway_service,
     SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
-    DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com"
+    DB_ENDPOINT_URL = "https://dynamodb.${var.region}.amazonaws.com"
   }
    tags = {
     service     = "htc-grid"
@@ -288,7 +288,7 @@ module "cancel_tasks" {
     REGION = var.region,
     SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
     API_GATEWAY_SERVICE = var.api_gateway_service,
-    DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com"
+    DB_ENDPOINT_URL = "https://dynamodb.${var.region}.amazonaws.com"
   }
 
    tags = {
@@ -357,7 +357,7 @@ module "ttl_checker" {
     REGION = var.region,
     API_GATEWAY_SERVICE = var.api_gateway_service,
     SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
-    DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com"
+    DB_ENDPOINT_URL = "https://dynamodb.${var.region}.amazonaws.com"
   }
 
    tags = {

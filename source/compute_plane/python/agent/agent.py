@@ -33,8 +33,9 @@ from utils.state_table_common import *
 from utils.ttl_experation_generator import TTLExpirationGenerator
 
 import logging
-logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",datefmt='%H:%M:%S', level=logging.INFO)
 
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
+                    datefmt='%H:%M:%S', level=logging.INFO)
 
 # Uncomment to get tracing on interruption
 # import faulthandler
@@ -98,8 +99,6 @@ except KeyError:
 logging.info("Create sqs queue")
 from api.state_table_manager import state_table_manager
 
-
-
 tasks_queue = queue_manager(
     grid_queue_service=agent_config_data['grid_queue_service'],
     grid_queue_config=agent_config_data['grid_queue_config'],
@@ -107,12 +106,10 @@ tasks_queue = queue_manager(
     queue_name=agent_config_data['tasks_queue_name'],
     region=region)
 
-
 lambda_cfg = botocore.config.Config(retries={'max_attempts': 3}, read_timeout=2000, connect_timeout=2000,
                                     region_name=region)
 lambda_client = boto3.client('lambda', config=lambda_cfg, endpoint_url=os.environ['LAMBDA_ENDPOINT_URL'],
                              region_name=region)
-
 
 # TODO: We are using two retry logics for accessing DynamoDB config, and config_cc (for congestion control)
 # Revisit this code and unify the logic.
@@ -123,40 +120,29 @@ config = {
     }
 }
 
-endpoint_url = ""
-if agent_config_data['tasks_status_table_service'] == "DynamoDB":
-    endpoint_url = agent_config_data['dynamodb_endpoint_url']
-elif agent_config_data['tasks_status_table_service'] == "MongoDB":
-    endpoint_url = agent_config_data['mongodb_endpoint_url']
+state_table = state_table_manager(grid_state_table_service=agent_config_data.get('tasks_status_table_service', None),
+                                  grid_state_table_config=str(config),
+                                  tasks_state_table_name=agent_config_data.get('ddb_status_table', None),
+                                  endpoint_url=agent_config_data.get('tasks_status_table_service', None),
+                                  region=agent_config_data.get('region', None))
 
-state_table = state_table_manager(
-    agent_config_data['tasks_status_table_service'],
-    str(config),
-    agent_config_data['ddb_status_table'],
-    endpoint_url,
-    region)
-
-config_cc ={
-    "retries" : {
+config_cc = {
+    "retries": {
         'max_attempts': 10,
         'mode': 'adaptive'
     }
 }
 
 state_table_cc = state_table_manager(
-    agent_config_data['tasks_status_table_service'],
-    str(config_cc),
-    agent_config_data['ddb_status_table'],
-    endpoint_url,
-    region)
+    grid_state_table_service=agent_config_data.get('tasks_status_table_service', None),
+    grid_state_table_config=str(config_cc),
+    tasks_state_table_name=agent_config_data.get('ddb_status_table', None),
+    endpoint_url=agent_config_data.get('tasks_status_table_service', None),
+    region=agent_config_data.get('region', None))
 
 redis_endpoint_url = agent_config_data['redis_endpoint_url']
-use_ssl = True
+use_ssl = (agent_config_data["redis_with_ssl"].lower() == "true")
 redis_port = int(agent_config_data['redis_port'])
-if agent_config_data['redis_with_ssl'].lower() == "false":
-    use_ssl = False
-    redis_port = int(agent_config_data['redis_port_without_ssl'])
-    redis_endpoint_url = agent_config_data['redis_endpoint_url_without_ssl']
 
 logging.info("Create redis s3 connection")
 logging.info("SSL certificate :" + agent_config_data.get('redis_cert_file', 'None'))
@@ -222,6 +208,7 @@ def get_time_now_ms():
 
 ttl_gen = TTLExpirationGenerator(task_ttl_refresh_interval_sec, task_ttl_expiration_offset_sec)
 
+
 # {'Items': [{'session_size': Decimal('10'), 'submission_timestamp': Decimal('1612276891690'), 'task_id': 'bd88ea18-6564-11eb-b5fb-060372291b89-part007_9', 'task_status': 'processing-part007', 'task_definition': 'passed_via_storage_size_75_bytes', 'task_owner': 'htc-agent-6d54fd8dfd-7wgpk', 'heartbeat_expiration_timestamp': Decimal('1612277256'), 'session_id': 'bd88ea18-6564-11eb-b5fb-060372291b89-part007', 'sqs_handler_id': 'AQEB19gkPrI8MNJlqfdu+kH4Xr/QOnZWvH9E6qcMTVuHOEKZdhvCeGdW3opZ38k5uIngM94MEzaIZyciDpZYNuwNgXozpp2vpRz5x952R80GAt26FsPmuQQoJ6gdm7dJabHqblYghXw8r+92yTdmSZRnzAr7fpkF2f7C6LoP3AEPVa8DV/6MYbrkKBqjeQLWctQmmTwvcqVkIWJH4KqokjMx+WQt1tGHLBrdd8xPwFlb8kGgwq1d6qeu5hHkdTizoaUDqbLShSYhSWlfysZ7r9its9owIkiZiYDc5/SdPKEi2hga9SH7E1GTtKetk9mUgoH2p4lCFdH2jIDnpY5EVHoicyviCWA2AMOolDZrIeTBtPklWXOnw3Wkljr2qtWbCHS7s6R1Qpis82n+5pVJUjoNfA==', 'task_completion_timestamp': Decimal('0'), 'retries': Decimal('1'), 'parent_session_id': 'bd88ea18-6564-11eb-b5fb-060372291b89-part007'}]
 
 
@@ -272,7 +259,6 @@ def try_to_acquire_a_task():
         event_counter_pre.increment("agent_no_messages_in_tasks_queue")
         return None, None
 
-
     AGENT_EXEC_TIMESTAMP_MS = get_time_now_ms()
 
     task = json.loads(message["body"])
@@ -288,7 +274,7 @@ def try_to_acquire_a_task():
             queue_handle_id=task["sqs_handle_id"],
             agent_id=SELF_ID,
             expiration_timestamp=ttl_gen.generate_next_ttl().get_next_expiration_timestamp()
-            )
+        )
 
         logging.info("State Table claim_task_for_agent result: {}".format(claim_result))
 
@@ -314,12 +300,11 @@ def try_to_acquire_a_task():
         logging.error("Unexpected error in claim_task_for_agent {} [{}]".format(e, traceback.format_exc()))
         raise e
 
-
-
         # if e.response['Error']['Code'] == 'ResourceNotFoundException':
     # If we have succesfully ackquired a message we should change its visibility timeout
     # message.change_visibility(VisibilityTimeout=agent_sqs_visibility_timeout_sec)
-    tasks_queue.change_visibility(message["properties"]["message_handle_id"], visibility_timeout_sec=agent_sqs_visibility_timeout_sec)
+    tasks_queue.change_visibility(message["properties"]["message_handle_id"],
+                                  visibility_timeout_sec=agent_sqs_visibility_timeout_sec)
     task["stats"]["stage3_agent_01_task_acquired_sqs_tstmp"]["tstmp"] = task_pick_up_from_sqs_ms
 
     task["stats"]["stage3_agent_02_task_acquired_ddb_tstmp"]["tstmp"] = get_time_now_ms()
@@ -371,7 +356,7 @@ def process_subprocess_completion(perf_tracker, task, sqs_msg, fname_stdout, std
             is_update_succesfull = state_table_cc.update_task_status_to_finished(
                 task_id=task["task_id"],
                 agent_id=SELF_ID
-                )
+            )
 
             logging.info(f"Task status has been set to Finished: {task['task_id']}")
 
@@ -385,7 +370,7 @@ def process_subprocess_completion(perf_tracker, task, sqs_msg, fname_stdout, std
 
                 logging.error(f"Agent FINISHED@StateTable #{count} Throttling for {time_end_ms - time_start_ms} ms")
 
-                continue # i.e., retry again
+                continue  # i.e., retry again
 
             elif e.caused_by_condition:
                 logging.error(f"Agent FINISHED@StateTable exception caused_by_condition")
@@ -397,7 +382,6 @@ def process_subprocess_completion(perf_tracker, task, sqs_msg, fname_stdout, std
         except Exception as e:
             logging.error(f"Unexpected Exception while setting tasks state to finished {e} [{traceback.format_exc()}]")
             raise e
-
 
     if not is_update_succesfull:
         # We can get here if task has been taken over by the watchdog lambda
@@ -485,8 +469,8 @@ async def do_task_local_lambda_execution_thread(perf_tracker, task, sqs_msg, tas
         )
     )
     logging.info("TASK FINISHED!!!\nRESPONSE: [{}]".format(response))
-    #logs = base64.b64decode(response['LogResult']).decode('utf-8')
-    #logging.info("logs : {}".format(logs))
+    # logs = base64.b64decode(response['LogResult']).decode('utf-8')
+    # logging.info("logs : {}".format(logs))
 
     ret_value = response['Payload'].read().decode('utf-8')
     logging.info("retValue : {}".format(ret_value))
@@ -665,7 +649,9 @@ if __name__ == "__main__":
         event_loop()
 
     except ClientError as e:
-        logging.error("ClientError Agent Event Loop {} [{}] POD:{}".format(e.response['Error']['Code'], traceback.format_exc(), SELF_ID))
+        logging.error(
+            "ClientError Agent Event Loop {} [{}] POD:{}".format(e.response['Error']['Code'], traceback.format_exc(),
+                                                                 SELF_ID))
         sys.exit(1)
 
     except Exception as e:

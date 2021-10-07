@@ -32,9 +32,9 @@ resource "random_password" "password" {
 
 locals {
     docker_registry = var.docker_registry
+    ddb_status_table = "${var.ddb_status_table}-${local.project_name}"
     project_name = var.project_name != "" ? var.project_name : random_string.random_resources.result
     cluster_name = "${var.cluster_name}-${local.project_name}"
-    ddb_status_table = "${var.ddb_status_table}-${local.project_name}"
     sqs_queue = "${var.sqs_queue}-${local.project_name}"
     tasks_queue_name = "${var.sqs_queue}-${local.project_name}__0"
     sqs_dlq = "${var.sqs_dlq}-${local.project_name}"
@@ -90,10 +90,10 @@ module "control_plane" {
     access_key = var.access_key
     suffix = local.project_name
     region = var.region
+    ddb_status_table = local.ddb_status_table
     lambda_runtime = var.lambda_runtime
     lambda_timeout = var.lambda_timeout
     docker_registry = local.docker_registry
-    ddb_status_table = local.ddb_status_table
     sqs_queue = local.sqs_queue
     sqs_dlq = local.sqs_dlq
     grid_storage_service = var.grid_storage_service
@@ -113,22 +113,12 @@ module "control_plane" {
     metrics_ttl_checker_lambda_connection_string = var.metrics_ttl_checker_lambda_connection_string
     error_log_group = local.error_log_group
     error_logging_stream = local.error_logging_stream
-    dynamodb_table_read_capacity = var.dynamodb_default_read_capacity
-    dynamodb_table_write_capacity = var.dynamodb_default_write_capacity
-    dynamodb_gsi_index_table_write_capacity = var.dynamodb_default_write_capacity
-    dynamodb_gsi_index_table_read_capacity = var.dynamodb_default_read_capacity
-    dynamodb_gsi_ttl_table_write_capacity = var.dynamodb_default_write_capacity
-    dynamodb_gsi_ttl_table_read_capacity = var.dynamodb_default_read_capacity
-    dynamodb_gsi_parent_table_write_capacity = var.dynamodb_default_write_capacity
-    dynamodb_gsi_parent_table_read_capacity = var.dynamodb_default_read_capacity
     agent_use_congestion_control = var.agent_use_congestion_control
     cluster_name = local.cluster_name
     api_gateway_version = var.api_gateway_version
-    dynamodb_port = var.dynamodb_port
     mongodb_port = var.mongodb_port
     local_services_port = var.local_services_port
     redis_port = var.redis_port
-    redis_port_without_ssl = var.redis_port_without_ssl
     retention_in_days = var.retention_in_days
     redis_with_ssl = var.redis_with_ssl
     connection_redis_timeout = var.connection_redis_timeout

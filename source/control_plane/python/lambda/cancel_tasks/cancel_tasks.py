@@ -17,17 +17,11 @@ logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcN
 
 from api.state_table_manager import state_table_manager
 
-endpoint_url = ""
-if os.environ['TASKS_STATUS_TABLE_SERVICE'] == "DynamoDB":
-    endpoint_url = os.environ["DYNAMODB_ENDPOINT_URL"]
-elif os.environ['TASKS_STATUS_TABLE_SERVICE'] == "MongoDB":
-    endpoint_url = os.environ["MONGODB_ENDPOINT_URL"]
-
-state_table = state_table_manager(
-    os.environ['TASKS_STATUS_TABLE_SERVICE'],
-    os.environ['TASKS_STATUS_TABLE_CONFIG'],
-    os.environ['TASKS_STATUS_TABLE_NAME'],
-    endpoint_url)
+state_table = state_table_manager(grid_state_table_service=os.environ.get('TASKS_STATUS_TABLE_SERVICE', None),
+                                  grid_state_table_config=os.environ.get('TASKS_STATUS_TABLE_CONFIG', None),
+                                  tasks_state_table_name=os.environ.get('TASKS_STATUS_TABLE_NAME', None),
+                                  endpoint_url=os.environ.get('DB_ENDPOINT_URL', None),
+                                  region=os.environ.get('REGION', None))
 
 task_states_to_cancel = [TASK_STATUS_RETRYING, TASK_STATUS_PENDING, TASK_STATUS_PROCESSING]
 

@@ -79,7 +79,7 @@ module "scaling_metrics" {
     ERROR_LOG_GROUP=var.error_log_group,
     ERROR_LOGGING_STREAM=var.error_logging_stream,
     SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
-    DYNAMODB_ENDPOINT_URL = "${var.dynamodb_endpoint_url}.${var.region}.amazonaws.com"
+    DB_ENDPOINT_URL = "https://dynamodb.${var.region}.amazonaws.com"
   }
    tags = {
     service     = "htc-grid"

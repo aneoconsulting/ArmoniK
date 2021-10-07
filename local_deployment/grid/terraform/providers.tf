@@ -74,7 +74,6 @@ provider "aws" {
   skip_requesting_account_id  = true
 
   endpoints {
-    dynamodb = "http://localhost:${var.dynamodb_port}"
     lambda = "http://localhost:${var.local_services_port}"
     iam = "http://localhost:${var.local_services_port}"
     cloudwatch = "http://localhost:${var.local_services_port}"

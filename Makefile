@@ -89,10 +89,10 @@ reset-grid-local-deployment:
 	@$(MAKE) -C ./local_deployment/grid/terraform reset
 
 apply-dotnet-local-runtime:
-	@$(MAKE) -C ./local_deployment/grid/terraform apply GRID_CONFIG=$(GENERATED)/dotnet5.0_runtime_grid_config.json
+	@$(MAKE) -C ./local_deployment/grid/terraform apply GRID_CONFIG=$(GENERATED)/local_dotnet5.0_runtime_grid_config.json
 
 destroy-dotnet-local-runtime:
-	@$(MAKE) -C ./local_deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/dotnet5.0_runtime_grid_config.json
+	@$(MAKE) -C ./local_deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/local_dotnet5.0_runtime_grid_config.json
 
 clean-terraform:
 	find -name ".terraform*" -type d -exec rm -rf {} \;
@@ -196,7 +196,7 @@ upload-python: config-python
 upload-python-ql: config-python
 	$(MAKE) -C ./examples/workloads/python/quant_lib upload
 
-upload-dotnet5.0: mock-config-dotnet5.0
+upload-dotnet5.0: mock-config-dotnet5.0 mock-config-local-dotnet5.0
 	$(MAKE) -C ./examples/mock_integration upload BUILD_TYPE=$(BUILD_TYPE)
 
 
@@ -220,6 +220,13 @@ config-dotnet5.0:
 	
 mock-config-dotnet5.0:
 	@$(MAKE) -C ./examples/configurations generated-dotnet5.0 FILE_HANDLER="mock_integration::mock_integration.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
+
+config-local-dotnet5.0:
+	@$(MAKE) -C ./examples/configurations generated-local-dotnet5.0 FILE_HANDLER="mock_subtasking::mock_subtasking.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
+
+mock-config-local-dotnet5.0:
+	@$(MAKE) -C ./examples/configurations generated-local-dotnet5.0 FILE_HANDLER="mock_integration::mock_integration.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
+
 ###############################
 ##### generate k8s jobs #######
 ###############################
@@ -237,7 +244,7 @@ python-happy-path: all python-submitter  upload-python config-python k8s-jobs
 
 python-quant-lib-path: all upload-python-ql config-python-ql k8s-jobs
 
-dotnet50-path: all dotnet5.0-htcgrid-api upload-dotnet5.0 mock-submitter cancel-session mock-config-dotnet5.0 k8s-jobs
+dotnet50-path: all dotnet5.0-htcgrid-api upload-dotnet5.0 mock-submitter cancel-session mock-config-dotnet5.0 mock-config-local-dotnet5.0 k8s-jobs
 
 #############################
 ##### C#              #######

@@ -92,18 +92,18 @@ variable "fluentbit_version" {
   description = "Fluentbit version"
 }
 
-variable "ddb_status_table" {
-  default  = "htc_tasks_status_table"
-  description = "htc DinamoDB table name"
-}
-
 variable "tasks_status_table_config" {
   default  = "{}"
   description = "Custom configuration for status table"
 }
 
+variable "ddb_status_table" {
+  default  = "armonik_tasks_status_table"
+  description = "htc DinamoDB table name"
+}
+
 variable "tasks_status_table_service" {
-  default  = "DynamoDB"
+  default  = "MongoDB"
   description = "Status table sertvice"
 }
 
@@ -196,29 +196,15 @@ variable "error_logging_stream" {
   description = "Log stream for errors"
 }
 
-
-variable "dynamodb_default_read_capacity" {
-  default = 100
-  description = "default read capacity  for all tables"
-}
-
-
-variable "dynamodb_default_write_capacity" {
-  default = 100
-  description = "default write capacity for all tables"
-}
-
 variable "namespace_metrics" {
   default  = "CloudGrid/HTC/Scaling/"
   description = "NameSpace for metrics"
 }
 
-
 variable "dimension_name_metrics" {
   default  = "cluster_name"
   description = "Dimensions name/value for the CloudWatch metrics"
 }
-
 
 variable "htc_path_logs" {
   default  = "logs/"
@@ -290,7 +276,6 @@ variable "graceful_termination_delay" {
   default = 30
 }
 
-
 variable "empty_task_queue_backoff_timeout_sec" {
   description = "agent backoff timeout in second"
   default = 0.5
@@ -311,11 +296,6 @@ variable "task_ttl_refresh_interval_sec" {
   default = 5.0
 }
 
-variable "dynamodb_results_pull_interval_sec" {
-  description = "agent pulling interval for pending task in DDB"
-  default = 0.5
-}
-
 variable "agent_sqs_visibility_timeout_sec" {
   description = "default visibility timeout for SQS messages"
   default = 3600
@@ -331,7 +311,6 @@ variable "metrics_pre_agent_connection_string" {
   default = "influxdb 8086 measurementsdb agent_pre"
 }
 
-
 variable "metrics_post_agent_connection_string" {
   description = "post agent connection string for monitoring"
   default = "influxdb 8086 measurementsdb agent_post"
@@ -341,7 +320,6 @@ variable "agent_configuration_filename" {
   description = "filename were agent configuration (in json) is going to be stored"
   default = "Agent_config.json"
 }
-
 
 variable "api_gateway_version" {
   description = "version deployed by API Gateway"
@@ -378,6 +356,7 @@ variable "grafana_admin_password"{
   type = string
   default = "htcadmin"
 }
+
 variable "grafana_configuration" {
   description = "this variable store the configuration for the grafana helm chart"
   type = object({
@@ -397,6 +376,7 @@ variable "grafana_configuration" {
     admin_password = ""
   }
 }
+
 variable "prometheus_configuration" {
   description = "this variable store the configuration for the prometheus helm chart"
   type = object({
@@ -407,7 +387,6 @@ variable "prometheus_configuration" {
     kube_state_metrics_tag = string
     pushgateway_tag = string
     configmap_reload_tag = string
-
 
   })
   default = {
@@ -450,12 +429,6 @@ variable "project_name" {
   default = ""
 }
 
-variable "dynamodb_port" {
-  description = "dynamodb port"
-  type = number
-  default = 8000
-}
-
 variable "mongodb_port" {
   description = "mongodb port"
   type = number
@@ -471,12 +444,6 @@ variable "local_services_port" {
 variable "redis_port" {
   description = "Port for Redis instance"
   default = 6379
-  type = number
-}
-
-variable "redis_port_without_ssl" {
-  description = "Port for Redis instance without ssl"
-  default = 7777
   type = number
 }
 

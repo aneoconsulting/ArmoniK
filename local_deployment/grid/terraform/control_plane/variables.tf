@@ -27,7 +27,7 @@ variable "lambda_timeout" {
 }
 
 variable "ddb_status_table" {
-  description = "HTC DynamoDB table name"
+  description = "DBtable name"
 }
 
 variable "sqs_queue" {
@@ -43,7 +43,6 @@ variable "grid_storage_service" {
 }
 
 variable "grid_queue_service" {
-  default = "SQS"
   description = "Configuration string for the type of queuing service to be used"
 }
 
@@ -55,11 +54,6 @@ variable "grid_queue_config" {
 variable "tasks_status_table_config" {
   default = "{'sample':15}"
   description = "Custom configuration for status table"
-}
-
-variable "tasks_status_table_service" {
-  default = "DynamoDB"
-  description = "Status table service"
 }
 
 variable "task_input_passed_via_external_storage" {
@@ -114,38 +108,6 @@ variable "error_logging_stream" {
   description = "Log stream for errors"
 }
 
-variable "dynamodb_table_write_capacity" {
-  description = "write capacity for the status table"
-}
-
-variable "dynamodb_table_read_capacity" {
-  description = "read capacity for the status table"
-}
-
-variable "dynamodb_gsi_index_table_write_capacity" {
-  description = "write capacity for the status table (gsi index)"
-}
-
-variable "dynamodb_gsi_index_table_read_capacity" {
-  description = "read capacity for the status table (gsi index)"
-}
-
-variable "dynamodb_gsi_ttl_table_write_capacity" {
-  description = "write capacity for the status table(gsi ttl)"
-}
-
-variable "dynamodb_gsi_ttl_table_read_capacity" {
-  description = "read capacity for the status table (gsi ttl)"
-}
-
-variable "dynamodb_gsi_parent_table_write_capacity" {
-  description = "write capacity for the status table (gsi parent)"
-}
-
-variable "dynamodb_gsi_parent_table_read_capacity" {
-  description = "read capacity for the status table (gsi parent)"
-}
-
 variable "suffix" {
   description = "suffix for generating unique name for AWS resource"
 }
@@ -163,8 +125,8 @@ variable "api_gateway_version" {
   description = "version deployed by API Gateway"
 }
 
-variable "dynamodb_port" {
-  description = "dynamodb port"
+variable "tasks_status_table_service" {
+  description = "Status table sertvice"
 }
 
 variable "mongodb_port" {
@@ -177,10 +139,6 @@ variable "local_services_port" {
 
 variable "redis_port" {
   description = "Port for Redis instance"
-}
-
-variable "redis_port_without_ssl" {
-  description = "Port for Redis instance without ssl"
 }
 
 variable "retention_in_days" {

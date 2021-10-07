@@ -15,18 +15,10 @@ output "redis_url" {
   value = "${module.control_plane.redis_pod_ip}:${var.redis_port}"
 }
 
-output "redis_without_ssl_url" {
-  value = "${module.control_plane.redis_without_ssl_pod_ip}:${var.redis_port_without_ssl}"
-}
-
-output "dynamodb_url" {
-  value = "http://${module.control_plane.dynamodb_pod_ip}:${var.dynamodb_port}"
+output "mongodb_url" {
+  value = "mongodb://${module.control_plane.mongodb_pod_ip}:${var.mongodb_port}"
 }
 
 output "local_services_url" {
   value = "http://${module.control_plane.local_services_pod_ip}:${var.local_services_port}"
-}
-
-output "dynamodb_table_id" {
-  value = module.control_plane.dynamodb_table_id
 }

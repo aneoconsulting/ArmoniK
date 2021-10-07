@@ -22,11 +22,8 @@ Define variables for deploying the infrastructure as follows:
 
 2. Define the type of the database service 
    ```bash
-      export ARMONIK_TASKS_TABLE_SERVICE=<Your DB service>
+      export ARMONIK_TASKS_TABLE_SERVICE=DynamoDB
    ```
-   `<Your DB service>` can be (the list is not exhaustive)
-   - `DynamoDB`
-   - `MongoDB`
 
 3. Define an environment variable containing the path to the local nuget repository.
    ```bash

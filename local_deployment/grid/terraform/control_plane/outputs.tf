@@ -11,16 +11,6 @@ output "redis_pod_ip" {
   value = local.redis_pod_ip
 }
 
-output "redis_without_ssl_pod_ip" {
-  description = "IP address of redis pod without ssl"
-  value = local.redis_without_ssl_pod_ip
-}
-
-output "dynamodb_pod_ip" {
-  description = "IP address of dynamodb pod"
-  value = local.dynamodb_pod_ip
-}
-
 output "mongodb_pod_ip" {
   description = "IP address of mongodb pod"
   value = local.mongodb_pod_ip
@@ -30,10 +20,4 @@ output "local_services_pod_ip" {
   description = "IP address of local services pod"
   value = local.local_services_pod_ip
 }
-
-output "dynamodb_table_id" {
-  description = "dynamodb table id"
-  value = local.dynamodb_table_id
-}
-
 

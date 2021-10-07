@@ -56,7 +56,8 @@ def main():
 
 if __name__ == "__main__":
     # execute only if run as a script
-    os.environ["TASKS_STATUS_TABLE_NAME"] = "tasks_status_table"
+    if os.environ['TASKS_STATUS_TABLE_SERVICE'] == "DynamoDB":
+        os.environ["TASKS_STATUS_TABLE_NAME"] = "tasks_status_table"
     os.environ["NAMESPACE"] = "CloudGrid/HTC/Scaling/"
     os.environ["DIMENSION_NAME"] = "cluster_name"
     os.environ["DIMENSION_VALUE"] = "aws"
