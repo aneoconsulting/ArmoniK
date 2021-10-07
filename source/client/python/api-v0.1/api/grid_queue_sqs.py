@@ -35,7 +35,7 @@ class QueueSQS:
             self.sqs_client = boto3.client('sqs', region_name=region, endpoint_url=endpoint_url)
 
         except Exception as e:
-            errlog.log("QueueSQS: cannot connect to queue_name [{}], endpoint_url [{}] region [{}] : {}".format(
+            logging.error("QueueSQS: cannot connect to queue_name [{}], endpoint_url [{}] region [{}] : {}".format(
                 queue_name, endpoint_url, region, e))
             raise e
 
@@ -98,7 +98,7 @@ class QueueSQS:
             )
 
         except ClientError as e:
-            errlog.log("Cannot delete message {} : {}".format(message, e))
+            logging.error("Cannot delete message {} : {}".format(message, e))
             raise e
 
         return None
@@ -123,7 +123,7 @@ class QueueSQS:
                 VisibilityTimeout=visibility_timeout_sec
             )
         except ClientError as e:
-            errlog.log("Cannot reset VTO for message {} : {}".format(message_handle_id, e))
+            logging.error("Cannot reset VTO for message {} : {}".format(message_handle_id, e))
             raise e
 
 

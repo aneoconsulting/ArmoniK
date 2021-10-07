@@ -9,7 +9,7 @@ from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key, Attr
 
 import time
-import logging
+
 import json
 import hashlib
 import random
@@ -18,7 +18,7 @@ from utils import grid_error_logger as errlog
 from utils.state_table_common import *
 from utils.state_table_common import StateTableException
 
-
+import logging
 logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
                     datefmt='%H:%M:%S', level=logging.INFO)
 
@@ -169,7 +169,7 @@ class StateTableDDB:
                                     & Attr('heartbeat_expiration_timestamp').eq(current_heartbeat_timestamp)
             )
         except ClientError as e:
-            errlog.log("Cannot acquire task TTL Checker {} {} {} {} : {}".format(
+            logging.error("Cannot acquire task TTL Checker {} {} {} {} : {}".format(
                 task_id, current_owner, current_heartbeat_timestamp, self.__make_task_state_from_task_id(TASK_STATUS_PROCESSING, task_id), e))
             return False
         return True
@@ -203,7 +203,7 @@ class StateTableDDB:
 
             return response['Items']
         except ClientError as e:
-            errlog.log("Cannot retreive expired tasks : {}".format(e))
+            logging.error("Cannot retreive expired tasks : {}".format(e))
             raise e
 
     def retry_task(self, task_id, new_retry_count):
@@ -236,7 +236,7 @@ class StateTableDDB:
                 }
             )
         except ClientError as e:
-            errlog.log("Cannot release task {} : {}".format(task_id, e))
+            logging.error("Cannot release task {} : {}".format(task_id, e))
             raise e
 
     ###############################################################################################
@@ -591,7 +591,7 @@ class StateTableDDB:
                 ReturnConsumedCapacity="TOTAL"
             )
         except ClientError as e:
-            errlog.log("Cannot finalize task_id {} to a new state {} : {}".format(task_id, new_task_state, e))
+            logging.error("Cannot finalize task_id {} to a new state {} : {}".format(task_id, new_task_state, e))
             raise e
 
 

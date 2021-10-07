@@ -25,6 +25,10 @@ from api.in_out_manager import in_out_manager
 from api.queue_manager import queue_manager
 from api.state_table_manager import state_table_manager
 
+import logging
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
+                    datefmt='%H:%M:%S', level=logging.INFO)
+
 region = os.environ["REGION"]
 
 
@@ -299,7 +303,7 @@ def lambda_handler(event, context):
         print(json.dumps(res))
         return res
     except ClientError as e:
-        errlog.log("ClientError in Submit Tasks {} {}"
+        logging.error("ClientError in Submit Tasks {} {}"
                    .format(e.response['Error']['Code'], traceback.format_exc()))
 
         return {
@@ -308,7 +312,7 @@ def lambda_handler(event, context):
         }
 
     except Exception as e:
-        errlog.log("Exception in Submit Tasks {} [{}]"
+        logging.error("Exception in Submit Tasks {} [{}]"
                    .format(e, traceback.format_exc()))
 
         return {

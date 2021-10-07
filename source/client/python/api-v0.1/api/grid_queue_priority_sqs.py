@@ -115,7 +115,7 @@ class QueuePrioritySQS:
             return res
 
         except Exception as e:
-            errlog.log("Cannot delete message_handle_id [{}] priority [{}] : {}".format(
+            logging.error("Cannot delete message_handle_id [{}] priority [{}] : {}".format(
                 message_handle_id, task_priority, e))
             raise e
 
@@ -141,7 +141,7 @@ class QueuePrioritySQS:
             return res
 
         except Exception as e:
-            errlog.log("Cannot delete message_handle_id [{}] priority [{}] : {}".format(
+            logging.error("Cannot delete message_handle_id [{}] priority [{}] : {}".format(
                 message_handle_id, task_priority, e))
             raise e
 

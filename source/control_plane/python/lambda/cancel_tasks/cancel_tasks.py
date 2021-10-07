@@ -13,6 +13,10 @@ import utils.grid_error_logger as errlog
 
 from utils.state_table_common import TASK_STATUS_PENDING, TASK_STATUS_PROCESSING, TASK_STATUS_RETRYING
 
+import logging
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
+                    datefmt='%H:%M:%S', level=logging.INFO)
+
 client = boto3.client('dynamodb', endpoint_url=os.environ["DYNAMODB_ENDPOINT_URL"])
 dynamodb = boto3.resource('dynamodb', endpoint_url=os.environ['DYNAMODB_ENDPOINT_URL'])
 
@@ -103,7 +107,7 @@ def get_session_id_from_event(event):
         return event['session_ids_to_cancel']
 
     else:
-        errlog.log("Uniplemented path, exiting")
+        logging.error("Uniplemented path, exiting")
         assert(False)
 
 
@@ -127,7 +131,7 @@ def lambda_handler(event, context):
         }
 
     except Exception as e:
-        errlog.log('Lambda cancel_tasks error: {} trace: {}'.format(e, traceback.format_exc()))
+        logging.error('Lambda cancel_tasks error: {} trace: {}'.format(e, traceback.format_exc()))
         return {
             'statusCode': 542,
             'body': "{}".format(e)
