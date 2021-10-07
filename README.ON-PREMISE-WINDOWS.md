@@ -1,47 +1,16 @@
 # Table of contents
 1. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
-   1. [On Linux](#on-linux)
-   2. [On Windows](#on-windows)
-2. [Configure the environment](#configure-the-environment)  
+2. [Configure the environment](#configure-the-environment) 
 3. [Build Armonik artifacts](#build-armonik-artifacts)
 4. [Deploy Armonik resources](#deploy-armonik-resources)
 5. [Running an example workload](#running-an-example-workload)
 6. [Destroy Armonik resources](#destroy-armonik-resources)
 
 # Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
-Instructions to install Kubernetes on local Linux or Windows machine.
-
-## On Linux <a name="on-linux"></a>
-You can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/) on Linux OS.
-
-Install K3s as follows:
-```bash
-curl -sfL https://get.k3s.io | sh -
-```
-
-If you want use host's Docker rather than containerd use `--docker` option:
-```bash
-curl -sfL https://get.k3s.io | sh -s - --docker
-```
-
-Then initialize the configuration file of Kubernetes:
-```bash
-sudo chmod 755 /etc/rancher/k3s/k3s.yaml
-cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-```
-
-**Warning**: Hereafter we will use the installation of K3s with `--docker` option. This allows K3s access local docker images directly (without using 'docker save').
-
-To uninstall K3s, use the following command:
-```bash
-/usr/local/bin/k3s-uninstall.sh
-```
-
-## On Windows <a name="on-windows"></a>
-You can use WSL 2.
+Instructions to install Kubernetes on local Windows machine. You can use WSL 2.
 
 ### Windows Subsystem for Linux Installation Guide for Windows 10
-The manual install steps for WSL are listed below and can be used to install Linux on any version of Windows 10.
+The manual installation steps for WSL are listed below and can be used to install Linux on any version of Windows 10.
 
 #### Step 1 : Enable the Windows Subsystem for Linux
 
@@ -118,38 +87,61 @@ Define variables for deploying the infrastructure as follows:
    `<Your DB service>` can be (the list is not exhaustive)
    - `DynamoDB`
    - `MongoDB`
+   
+3. Define the type of the message queue
+   ```bash
+      export ARMONIK_QUEUE_SERVICE=<Your queue service>
+   ```
+   `<Your queue service>` can be (the list is not exhaustive)
+   - `RSMQ`
+   - `SQS`
+   - `PrioritySQS`
 
-3. Define an environment variable containing the path to the local nuget repository.
+4. Define an environment variable containing the path to the local nuget repository.
    ```bash
       export ARMONIK_NUGET_REPOS=<project directory>/dist/dotnet5.0
    ```
 
-4. **On Linux :** Define an environment variable containing the path to the redis certificates.
-   ```bash
-      export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
-   ```
-   **On Windows WSL2 :** Define an environment variable containing the path to the redis certificates.
+5. Define an environment variable containing the path to the redis certificates.
    ```bash
       export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=/run/desktop/mnt/host/wsl/cert
    ```
 
-5. Define an environment variable containing the docker registry if it exists, otherwise initialize the variable to empty.
+6. Define an environment variable containing the docker registry if it exists, otherwise initialize the variable to empty.
    ```bash
       export ARMONIK_DOCKER_REGISTRY=<docker registry>
    ```
-   
+
+7. Define environment variables if a proxy exists.
+   ```bash
+      export HTTP_PROXY=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
+      export HTTPS_PROXY=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
+      export NO_PROXY=<LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON>
+      export http_proxy=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
+      export https_proxy=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
+      export no_proxy=<LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON>
+   ```
+
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
 
 To build and install these in `<project_root>`:
 ```bash
-make dotnet50-path TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+make dotnet50-path TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following
 two files:
  * `dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
  * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
+
+## Debug mode
+To build in `debug` mode, you execute this command:
+```bash
+make dotnet50-path BUILD_TYPE=Debug TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+```
+
+For more information see [here](./docs/debug.md)
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 1. Create needed credentials (on-premises): for the on-premises deployment, some credentials are needed to
@@ -163,7 +155,8 @@ two files:
    ```bash
    make init-grid-local-deployment TAG=$ARMONIK_TAG
    ```
-3. **On Windows** You need to execute `armonik/configure/bootstrap.sh` to mount `/redis_certificates`.
+   
+3. You need to execute `armonik/configure/bootstrap.sh` to mount `/redis_certificates`.
 ```bash
 cd configure
 ./bootstrap.sh
@@ -194,7 +187,7 @@ and the grid are implemented by a client in folder [./examples/client/python](./
 
 3. To clean the job submission instance:
    ```bash
-   kubectl delete -f ./generated/single-task-test.yaml
+   kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
    ```
 
 # Destroy Armonik resources <a name="destroy-armonik-resources"></a>

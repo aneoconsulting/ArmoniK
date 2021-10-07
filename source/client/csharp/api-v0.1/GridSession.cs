@@ -176,6 +176,21 @@ namespace HTCGrid
 
         }
 
+        public PostCancelResponse CancelSession() {
+            try
+            {
+                var resp = apiInstance.CancelPost(new PostCancelResponse(session_id = session_id));
+                return resp;
+            }
+            catch (ApiException e)
+            {
+                Console.WriteLine("Exception when calling DefaultApi.CancelPost: " + e.Message);
+                Console.WriteLine("Status Code: " + e.ErrorCode);
+                Console.WriteLine(e.StackTrace);
+                return null;
+            }
+        }
+
         [DataContract(Name = "GetResponseDeserializer")]
         class GetResponseDeserializer {
 

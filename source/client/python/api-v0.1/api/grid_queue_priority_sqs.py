@@ -9,7 +9,6 @@ from api.grid_queue_sqs import QueueSQS
 
 import logging
 import json
-from utils import grid_error_logger as errlog
 
 logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
                     datefmt='%H:%M:%S', level=logging.INFO)
@@ -115,8 +114,7 @@ class QueuePrioritySQS:
             return res
 
         except Exception as e:
-            errlog.log("Cannot delete message_handle_id [{}] priority [{}] : {}".format(
-                message_handle_id, task_priority, e))
+            logging.error("Cannot delete message_handle_id [{}] priority [{}] : {}".format(message_handle_id, task_priority, e))
             raise e
 
 
@@ -141,8 +139,7 @@ class QueuePrioritySQS:
             return res
 
         except Exception as e:
-            errlog.log("Cannot delete message_handle_id [{}] priority [{}] : {}".format(
-                message_handle_id, task_priority, e))
+            logging.error("Cannot delete message_handle_id [{}] priority [{}] : {}".format(message_handle_id, task_priority, e))
             raise e
 
 

@@ -9,7 +9,6 @@ import uuid
 import sys
 import boto3
 import botocore
-import requests
 import logging
 
 from api.in_out_manager import in_out_manager
@@ -19,6 +18,7 @@ import httpapi
 from httpapi.api import default_api
 from httpapi.model.get_response import GetResponse
 from httpapi.model.post_submit_response import PostSubmitResponse
+from httpapi.model.post_cancel_response import PostCancelResponse
 
 from warrant_lite import WarrantLite
 
@@ -428,7 +428,7 @@ class AWSConnector:
 
         return raw_response
 
-    def cancel_sessions(self, session_ids):
+    def cancel_session(self, session_id):
         """
         This method invokes cancel tasks lambda through API Gateway for a list of sessions
 
@@ -450,7 +450,7 @@ class AWSConnector:
         }
 
         Args:
-            session_ids(list): a list of sessions to be cancelled.
+            session_id(string): sessionId of the session to cancel.
 
         Returns:
             dict: containing number of cancelled tasks for each session in the list
@@ -458,23 +458,16 @@ class AWSConnector:
         """
 
         logging.info("Init cancel session")
-        url_base = self.__api_gateway_endpoint
+        with httpapi.ApiClient(self.__configuration) as api_client:
+            # Create an instance of the API class
+            api_instance = default_api.DefaultApi(api_client)
 
-        cancellation_request = {"session_ids_to_cancel": session_ids}
-        submission_payload_string = base64.urlsafe_b64encode(json.dumps(cancellation_request).encode('utf-8')).decode(
-            'utf-8')
-        query = {
-            "submission_content": str(submission_payload_string)
-        }
-        logging.debug(json.dumps(query))
-        raw_response = requests.post(url_base + '/cancel', headers=self.__authorization_headers, data=json.dumps(query))
-        logging.debug("response cancel = " + str(raw_response.json()))
-
-        if raw_response.status_code != requests.codes.ok:
-            logging.error("request {} not processed correctly {}".format(url_base, raw_response.status_code))
-
-        raw_response.raise_for_status()
+            try:
+                raw_response = api_instance.cancel_post(PostCancelResponse(session_id=session_id))
+                logging.debug("cancel_post response = " + str(raw_response))
+            except httpapi.ApiException as e:
+                print("Exception when calling DefaultApi->cancel_post: %s\n" % e)
 
         logging.info("Finish cancel session")
         # return the body content of the Lambda call
-        return raw_response.json()
+        return raw_response

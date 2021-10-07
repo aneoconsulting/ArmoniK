@@ -6,7 +6,6 @@ import boto3
 from botocore.exceptions import ClientError
 
 import logging
-from utils import grid_error_logger as errlog
 
 logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
                     datefmt='%H:%M:%S', level=logging.INFO)
@@ -36,7 +35,6 @@ class QueueSQS:
 
         except Exception as e:
             logging.error("QueueSQS: cannot connect to queue_name [{}], endpoint_url [{}] region [{}] : {}".format(queue_name, endpoint_url, region, e))
-            errlog.log("QueueSQS: cannot connect to queue_name [{}], endpoint_url [{}] region [{}] : {}".format(queue_name, endpoint_url, region, e))
             raise e
 
 
@@ -99,7 +97,6 @@ class QueueSQS:
 
         except ClientError as e:
             logging.error("Cannot delete message {} : {}".format(message, e))
-            errlog.log("Cannot delete message {} : {}".format(message, e))
             raise e
 
         return None
@@ -125,7 +122,6 @@ class QueueSQS:
             )
         except ClientError as e:
             logging.error("Cannot reset VTO for message {} : {}".format(message_handle_id, e))
-            errlog.log("Cannot reset VTO for message {} : {}".format(message_handle_id, e))
             raise e
 
 

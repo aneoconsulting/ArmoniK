@@ -13,7 +13,7 @@ BUILD_TYPE?=Release
 all: build-package
 
 bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll:
-	dotnet clean && dotnet build --configuration $(BUILD_TYPE)
+	dotnet restore && dotnet clean &&  dotnet build --configuration $(BUILD_TYPE)
 
 $(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.nupkg: bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll
 ifeq ($(BUILD_TYPE), Debug)

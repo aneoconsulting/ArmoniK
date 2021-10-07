@@ -6,6 +6,8 @@
    1. [Software prerequisites](#software-prerequisites)
    2. [Python environment](#python-environment)
 3. [Armonik software on-premise](#armonik-software-on-premise)
+      1. [On Linux](#on-linux)
+      2. [On Windows](#on-windows)
 4. [Armonik software on cloud](#armonik-software-on-cloud)
    1. [Amazon Web Services (AWS)](#amazon-web-services)
 
@@ -82,7 +84,11 @@ Python 3.7.10
 ```
 
 # Armonik software on-premise <a name="armonik-software-on-premise"></a>
-All instructions to build, deploy and test Armonik software are described in [Armonik on-premise](./README.ON-PREMISE.md)
+## On Linux <a name="on-linux"></a>
+All instructions to build, deploy and test Armonik software on Linux are described in [Armonik on Linux](./README.ON-PREMISE-LINUX.md)
+
+## On Windows <a name="on-windows"></a>
+All instructions to build, deploy and test Armonik software on Windows are described in [Armonik on Windows](./README.ON-PREMISE-WINDOWS.md)
 
 # Armonik software on cloud <a name="armonik-software-on-cloud"></a>
 ## Amazon Web Services (AWS) <a name="amazon-web-services"></a>

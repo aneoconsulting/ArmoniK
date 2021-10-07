@@ -13,7 +13,12 @@ export TABLE_SERVICE
 export DIST_DIR=$(shell pwd)/dist
 export GRAFANA_ADMIN_PASSWORD
 export BUILD_DIR:=(shell pwd)/.build
-
+export HTTP_PROXY
+export HTTPS_PROXY
+export NO_PROXY
+export http_proxy
+export https_proxy
+export no_proxy
 
 BUILD_TYPE?=Release
 
@@ -78,7 +83,6 @@ show-password:
 	@$(MAKE) -C ./deployment/grid/terraform get-grafana-password
 
 init-grid-local-deployment:
-	@$(MAKE) -C ./local_deployment/grid/terraform k8s-config
 	@$(MAKE) -C ./local_deployment/grid/terraform init
 
 reset-grid-local-deployment:
@@ -89,6 +93,11 @@ apply-dotnet-local-runtime:
 
 destroy-dotnet-local-runtime:
 	@$(MAKE) -C ./local_deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/dotnet5.0_runtime_grid_config.json
+
+clean-terraform:
+	find -name ".terraform*" -type d -exec rm -rf {} \;
+	find -name ".terraform*" -type f -exec rm -f {} \;
+	find -name "*.tfstate*" -type f -exec rm -f {} \;
 
 apply-custom-local-runtime:
 	@$(MAKE) -C ./local_deployment/grid/terraform apply GRID_CONFIG=$(GENERATED)/grid_config.json
