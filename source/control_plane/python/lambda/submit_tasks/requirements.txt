@@ -2,3 +2,4 @@ redis
 influxdb
 requests
 pymongo
+boto3

@@ -1,7 +1,7 @@
 {
   "project_name": "{{image_tag}}",
   "grid_storage_service" : "REDIS",
-  "grid_queue_service" : "PrioritySQS",
+  "grid_queue_service" : "{{grid_queue_service}}",
   "grid_queue_config" : "{'priorities':5}",
   "tasks_status_table_service": "{{tasks_status_table_service}}",
   "api_gateway_service": "{{api_gateway_service}}",
@@ -10,6 +10,13 @@
   "dynamodb_default_read_capacity" : 10,
   "dynamodb_default_write_capacity" : 10,
   "graceful_termination_delay":300,
+  "certificates_dir_path": "{{certificates_dir_path}}",
+  "http_proxy": "{{http_proxy}}",
+  "https_proxy": "{{https_proxy}}",
+  "no_proxy": "{{no_proxy}}",
+  "http_proxy_lower": "{{http_proxy_lower}}",
+  "https_proxy_lower": "{{https_proxy_lower}}",
+  "no_proxy_lower": "{{no_proxy_lower}}",
   "eks_worker_groups" : [
       {
         "name"                    : "worker-small-spot",
@@ -53,11 +60,10 @@
   ],
   "agent_configuration": {
     "lambda": {
-      "minCPU": "800",
+      "minCPU": "200",
       "maxCPU": "900",
-      "minMemory": "1200",
+      "minMemory": "400",
       "maxMemory": "1900",
-      "location" : "s3://{{workload_bucket_name}}/lambda.zip",
       "runtime": "5.0.4",
       "lambda_handler_file_name" :"{{dotnet50_file_handler}}",
       "function_name" : "function",

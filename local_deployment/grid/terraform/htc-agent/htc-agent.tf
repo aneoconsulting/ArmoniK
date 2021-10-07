@@ -13,6 +13,36 @@ resource "helm_release" "htc_agent" {
   repository = var.agent_chart_url
 
   set {
+    name = "http_proxy"
+    value = var.http_proxy
+  }
+
+  set {
+    name = "https_proxy"
+    value = var.https_proxy
+  }
+
+  set {
+    name = "no_proxy"
+    value = var.no_proxy
+  }
+
+  set {
+    name = "http_proxy_lower"
+    value = var.http_proxy_lower
+  }
+
+  set {
+    name = "https_proxy_lower"
+    value = var.https_proxy_lower
+  }
+
+  set {
+    name = "no_proxy_lower"
+    value = var.no_proxy_lower
+  }
+
+  set {
     name = "redis_certificates_directory"
     value = var.certificates_dir_path
   }
@@ -125,4 +155,6 @@ resource "helm_release" "htc_agent" {
     name = "resourcesLambdaServer.requests.memory"
     value = "${var.lambda_min_memory}Mi"
   }
+
+
 }

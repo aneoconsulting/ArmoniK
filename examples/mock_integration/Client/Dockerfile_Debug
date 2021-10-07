@@ -13,6 +13,9 @@ RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
 
 
 ENV ARMONIK_NUGET_REPOS=/app/mock_integration/lib/dotnet5.0
+ENV ARMONIK_DEBUG_WAIT_TASK=90
+ENV ARMONIK_DEBUG_WAIT_CLIENT=90
+
 
 WORKDIR /app/mock_integration/Client
 

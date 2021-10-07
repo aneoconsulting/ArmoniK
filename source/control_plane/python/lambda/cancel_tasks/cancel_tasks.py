@@ -8,9 +8,12 @@ import base64
 import os
 import traceback
 
-import utils.grid_error_logger as errlog
-
 from utils.state_table_common import TASK_STATUS_PENDING, TASK_STATUS_PROCESSING, TASK_STATUS_RETRYING
+
+import logging
+
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
+                    datefmt='%H:%M:%S', level=logging.INFO)
 
 from api.state_table_manager import state_table_manager
 
@@ -46,7 +49,6 @@ def cancel_tasks_by_status(session_id, task_state):
     print(response)
 
     for row in response:
-
         state_table.update_task_status_to_cancelled(row['task_id'])
 
     return response
@@ -78,7 +80,7 @@ def cancel_session(session_id):
 
     lambda_response["tatal_cancelled_tasks"] = len(all_cancelled_tasks)
 
-    return(lambda_response)
+    return (lambda_response)
 
 
 def lambda_handler(event, context):
@@ -108,12 +110,13 @@ def lambda_handler(event, context):
 
     except Exception as e:
         print('Lambda cancel_tasks error: {} trace: {}'.format(e, traceback.format_exc()))
-        errlog.log('Lambda cancel_tasks error: {} trace: {}'.format(e, traceback.format_exc()))
+
+        logging.error('Lambda cancel_tasks error: {} trace: {}'.format(e, traceback.format_exc()))
         if os.environ['API_GATEWAY_SERVICE'] == "APIGateway":
             res = {
-            'statusCode': 542,
-            'body': "{}".format(e)
-        }
+                'statusCode': 542,
+                'body': "{}".format(e)
+            }
         elif os.environ['API_GATEWAY_SERVICE'] == "NGINX":
             res = "{}".format(e)
         else:

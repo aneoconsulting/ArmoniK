@@ -4,11 +4,14 @@
 
 import time
 import os
+import logging
 
 from utils.performance_tracker import EventsCounter, performance_tracker_initializer
 from utils.state_table_common import *
-from utils import grid_error_logger as errlog
 from api.queue_manager import queue_manager
+
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
+                    datefmt='%H:%M:%S', level=logging.INFO)
 
 region = os.environ["REGION"]
 
@@ -17,8 +20,8 @@ perf_tracker = performance_tracker_initializer(
     os.environ["METRICS_TTL_CHECKER_LAMBDA_CONNECTION_STRING"],
     os.environ["METRICS_GRAFANA_PRIVATE_IP"])
 
-
 from api.state_table_manager import state_table_manager
+
 endpoint_url = ""
 if os.environ['TASKS_STATUS_TABLE_SERVICE'] == "DynamoDB":
     endpoint_url = os.environ["DYNAMODB_ENDPOINT_URL"]
@@ -39,13 +42,11 @@ queue = queue_manager(
     region=region)
 
 dlq = queue_manager(
-    grid_queue_service="SQS", # TODO extend parameters to configure this queue.
+    grid_queue_service="SQS",  # TODO extend parameters to configure this queue.
     grid_queue_config=os.environ['GRID_QUEUE_CONFIG'],
     endpoint_url=os.environ["SQS_ENDPOINT_URL"],
     queue_name=os.environ['TASKS_QUEUE_DLQ_NAME'],
     region=region)
-
-
 
 MAX_RETRIES = 5
 RETRIEVE_EXPIRED_TASKS_LIMIT = 200
@@ -79,8 +80,7 @@ def lambda_handler(event, context):
             owner_id = item.get('task_owner')
             current_heartbeat_timestamp = item.get('heartbeat_expiration_timestamp')
             try:
-                is_acquired = state_table.acquire_task_for_ttl_lambda(
-                    task_id, owner_id, current_heartbeat_timestamp)
+                is_acquired = state_table.acquire_task_for_ttl_lambda(task_id, owner_id, current_heartbeat_timestamp)
 
                 if not is_acquired:
                     # task has been updated at the very last second...
@@ -110,10 +110,11 @@ def lambda_handler(event, context):
 
                 except Exception:
                     try:
-                        errlog.log('Failed to reset VTO trying to delete: {} '.format(task_id))
+                        logging.error('Failed to reset VTO trying to delete: {} '.format(task_id))
                         delete_message_from_queue(sqs_handler_id)
                     except Exception:
-                        errlog.log('Inconsistent task: {} sending do DLQ'.format(task_id))
+                        logging.error('Inconsistent task: {} sending do DLQ'.format(task_id))
+
                         event_counter.increment("counter_inconsistent_state")
                         set_task_inconsistent(task_id)
                         send_to_dlq(item)
@@ -121,16 +122,12 @@ def lambda_handler(event, context):
             except Exception as e:
                 print("Cannot process task {} : {}".format(task_id, e))
                 print("Sending task {} to DLQ...".format(task_id))
-                errlog.log('Lambda ttl error: {}'.format(e))
+                logging.error('Lambda ttl error: {}'.format(e))
                 send_to_dlq(item)
 
     stats_obj['02_completion_tstmp'] = {"label": "ttl_execution_time", "tstmp": int(round(time.time() * 1000))}
-    perf_tracker.add_metric_sample(
-        stats_obj,
-        event_counter=event_counter,
-        from_event="01_invocation_tstmp",
-        to_event="02_completion_tstmp"
-    )
+    perf_tracker.add_metric_sample(stats_obj, event_counter=event_counter, from_event="01_invocation_tstmp",
+                                   to_event="02_completion_tstmp")
     perf_tracker.submit_measurements()
 
 
@@ -150,13 +147,14 @@ def fail_task(task_id, sqs_handler_id, task_priority):
 
     """
     try:
-      delete_message_from_queue(sqs_handler_id, task_priority)
+        delete_message_from_queue(sqs_handler_id, task_priority)
 
-      state_table.update_task_status_to_failed(task_id)
+        state_table.update_task_status_to_failed(task_id)
+
 
     except Exception as e:
-      errlog.log("Cannot fail task {} : {}".format(task_id, e))
-      raise e
+        logging.error("Cannot fail task {} : {}".format(task_id, e))
+        raise e
 
 
 def set_task_inconsistent(task_id):
@@ -173,11 +171,10 @@ def set_task_inconsistent(task_id):
 
     """
     try:
-
         state_table.update_task_status_to_inconsistent(task_id)
 
     except Exception as e:
-        errlog.log("Cannot set task to inconsystent {} : {}".format(task_id, e))
+        logging.error("Cannot set task to inconsystent {} : {}".format(task_id, e))
         raise e
 
 
@@ -198,12 +195,10 @@ def delete_message_from_queue(sqs_handler_id, task_priority):
 
     try:
         queue.delete_message(sqs_handler_id, task_priority)
+
     except Exception as e:
-        errlog.log("Cannot delete message {} : {}".format(sqs_handler_id, e))
+        logging.error("Cannot delete message {} : {}".format(sqs_handler_id, e))
         raise e
-
-
-
 
 
 def retreive_retries_and_sqs_handler_and_priority(task_id):
@@ -225,15 +220,13 @@ def retreive_retries_and_sqs_handler_and_priority(task_id):
 
         resp_task = state_table.get_task_by_id(task_id)
         # CHeck if 1 and only 1
-        return resp_task.get('retries'),\
-               resp_task.get('sqs_handler_id'),\
+        return resp_task.get('retries'), \
+               resp_task.get('sqs_handler_id'), \
                resp_task.get('task_priority')
 
     except Exception as e:
-        errlog.log("Cannot retreive retries and handler for task {} : {}".format(task_id, e))
+        logging.error("Cannot retreive retries and handler for task {} : {}".format(task_id, e))
         raise e
-
-
 
 
 def reset_sqs_vto(handler_id, task_priority):
@@ -250,10 +243,8 @@ def reset_sqs_vto(handler_id, task_priority):
         queue.change_visibility(handler_id, visibility_timeout_sec, task_priority)
 
     except Exception as e:
-        errlog.log("Cannot reset VTO for message {} : {}".format(handler_id, e))
+        logging.error("Cannot reset VTO for message {} : {}".format(handler_id, e))
         raise e
-
-
 
 
 def send_to_dlq(task):

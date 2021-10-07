@@ -71,13 +71,18 @@ Define variables for deploying the infrastructure as follows:
    ```bash
       aws ecr get-login-password --region $ARMONIK_REGION | docker login --username AWS --password-stdin $ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
    ```
+   
+10. Define an environment variable to select API Gateway service.
+   ```bash
+      export ARMONIK_API_GATEWAY_SERVICE=APIGateway
+   ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s. 
 
 To build and install these in `<project_root>`:
 ```bash
-make dotnet50-path TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY REGION=$ARMONIK_REGION DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+make dotnet50-path TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY REGION=$ARMONIK_REGION DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following 

@@ -11,16 +11,18 @@ import traceback
 import copy
 
 from utils.performance_tracker import EventsCounter, performance_tracker_initializer
-
-import utils.grid_error_logger as errlog
 from utils.state_table_common import TASK_STATUS_PENDING
 
 from api.in_out_manager import in_out_manager
 from api.queue_manager import queue_manager
 from api.state_table_manager import state_table_manager
 
-region = os.environ["REGION"]
+import logging
 
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
+                    datefmt='%H:%M:%S', level=logging.INFO)
+
+region = os.environ["REGION"]
 
 tasks_queue = queue_manager(
     grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],
@@ -116,6 +118,7 @@ def get_time_now_ms():
     """
     return int(round(time.time() * 1000))
 
+
 def get_submission_content(event):
     if task_input_passed_via_external_storage == '1':
         session_id = event['session_id']
@@ -128,6 +131,7 @@ def get_submission_content(event):
     decoded_json_tasks = base64.urlsafe_b64decode(encoded_json_tasks).decode('utf-8')
     print("DATA1: {}".format(decoded_json_tasks))
     return json.loads(decoded_json_tasks)
+
 
 def lambda_handler(event, context):
     """Handler called by AWS Lambda runtime
@@ -166,7 +170,7 @@ def lambda_handler(event, context):
             session_id = event["session_id"]
 
         session_priority = 0
-        if "context"  in event:
+        if "context" in event:
             session_priority = event["context"]["tasks_priority"]
 
         parent_session_id = event["session_id"]
@@ -183,7 +187,6 @@ def lambda_handler(event, context):
         # ddb_batch_size = 500
         ddb_batch_write_times = []
         backoff_count = 0
-
 
         state_table_entries = []
         for task_id in tasks_list:
@@ -219,13 +222,12 @@ def lambda_handler(event, context):
             sqs_batch_entries.append({
                 'Id': task_id,  # use to return send result for this message
                 'MessageBody': json.dumps(task_json_4_sqs)
-                }
+            }
             )
 
             last_submitted_task_ref = task_json_4_sqs
 
         state_table.batch_write(state_table_entries)
-
 
         # <2.> Batch submit tasks to SQS
         # Performance critical code
@@ -280,14 +282,13 @@ def lambda_handler(event, context):
         return res
 
     except Exception as e:
-        errlog.log("Exception in Submit Tasks {} [{}]"
-                   .format(e, traceback.format_exc()))
+        logging.error("Exception in Submit Tasks {} [{}]".format(e, traceback.format_exc()))
 
         if os.environ['API_GATEWAY_SERVICE'] == "APIGateway":
             res = {
-            'statusCode': 543,
-            'body': "{}".format(e)
-        }
+                'statusCode': 543,
+                'body': "{}".format(e)
+            }
         elif os.environ['API_GATEWAY_SERVICE'] == "NGINX":
             res = "{}".format(e)
         else:

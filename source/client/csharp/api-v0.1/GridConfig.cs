@@ -8,6 +8,7 @@ namespace HTCGrid
     public class  GridConfig {
 
         public GridConfig() {
+            this.debug = 0; 
         }
 
         public void Init(JsonDocument parsedConfiguration) {
@@ -41,6 +42,7 @@ namespace HTCGrid
 		public string cluster_config;
         public string redis_ca_cert;
         public string redis_client_pfx;
-		public string connection_redis_timeout;        
+		public string connection_redis_timeout;      
+        public int debug;
     }
 }

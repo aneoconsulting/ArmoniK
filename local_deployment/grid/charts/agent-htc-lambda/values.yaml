@@ -6,6 +6,13 @@ htcConfig: agent-configmap
 
 redis_certificates_directory: ""
 
+http_proxy: ""
+https_proxy: ""
+no_proxy: ""
+http_proxy_lower: ""
+https_proxy_lower: ""
+no_proxy_lower: ""
+
 replicaCount: 3
 
 terminationGracePeriodSeconds: 1500

@@ -12,7 +12,10 @@ from utils.performance_tracker import EventsCounter, performance_tracker_initial
 from api.state_table_manager import state_table_manager
 from utils.state_table_common import TASK_STATUS_CANCELLED, TASK_STATUS_FAILED, TASK_STATUS_FINISHED
 
-import utils.grid_error_logger as errlog
+import logging
+
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
+                    datefmt='%H:%M:%S', level=logging.INFO)
 
 endpoint_url = ""
 if os.environ['TASKS_STATUS_TABLE_SERVICE'] == "DynamoDB":
@@ -39,8 +42,7 @@ def get_time_now_ms():
 
 
 def get_tasks_statuses_in_session(session_id):
-
-    assert(session_id is not None)
+    assert (session_id is not None)
     response = {}
 
     # <1.> Process finished Tasks
@@ -81,6 +83,7 @@ def get_session_id(json_in):
     print("decoded event : ", event)
     return event['session_id']
 
+
 def get_session_id_from_event(event):
     """
     Args:
@@ -98,8 +101,8 @@ def get_session_id_from_event(event):
 
 
     else:
-        errlog.log("Uniplemented path, exiting")
-        assert(False)
+        logging.error("Uniplemented path, exiting")
+        assert (False)
 
 
 def book_keeping(response):
@@ -124,7 +127,6 @@ def book_keeping(response):
 
 
 def lambda_handler(event, context):
-
     session_id = None
     print("input event : ", event)
     try:
@@ -149,12 +151,12 @@ def lambda_handler(event, context):
         return res
 
     except Exception as e:
-        errlog.log('Lambda get_result error: {} trace: {}'.format(e, traceback.format_exc()))
+        logging.error('Lambda get_result error: {} trace: {}'.format(e, traceback.format_exc()))
         if os.environ['API_GATEWAY_SERVICE'] == "APIGateway":
             res = {
-            'statusCode': 542,
-            'body': "{}".format(e)
-        }
+                'statusCode': 542,
+                'body': "{}".format(e)
+            }
         elif os.environ['API_GATEWAY_SERVICE'] == "NGINX":
             res = "{}".format(e)
         else:

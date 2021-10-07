@@ -17,6 +17,7 @@ namespace HTCGrid
             public int subtasks_count;
             public int depth;
             public int sleep_time_ms;
+            public int debug;
 
             public string sessionId_;
 

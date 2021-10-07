@@ -37,7 +37,13 @@ resource "kubernetes_config_map" "lambda_local" {
     API_GATEWAY_SERVICE = var.api_gateway_service,
     METRICS_GET_RESULTS_LAMBDA_CONNECTION_STRING = var.metrics_get_results_lambda_connection_string,
     METRICS_CANCEL_TASKS_LAMBDA_CONNECTION_STRING=var.metrics_cancel_tasks_lambda_connection_string,
-    METRICS_TTL_CHECKER_LAMBDA_CONNECTION_STRING=var.metrics_ttl_checker_lambda_connection_string
+    METRICS_TTL_CHECKER_LAMBDA_CONNECTION_STRING=var.metrics_ttl_checker_lambda_connection_string,
+    HTTP_PROXY = var.http_proxy,
+    HTTPS_PROXY = var.https_proxy,
+    NO_PROXY = var.no_proxy,
+    http_proxy = var.http_proxy_lower,
+    https_proxy = var.https_proxy_lower,
+    no_proxy = var.no_proxy_lower
   }
 }
 
