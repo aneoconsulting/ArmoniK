@@ -21,11 +21,15 @@ namespace HtcClient
         {
             Console.WriteLine("Hello Mock!");
              var armonik_wait_client = Environment.GetEnvironmentVariable("ARMONIK_DEBUG_WAIT_CLIENT");
-             int arminik_debug_wait_client = int.Parse(armonik_wait_client);
+             if(!String.IsNullOrEmpty(armonik_wait_client))
+             {
+                int arminik_debug_wait_client = int.Parse(armonik_wait_client);
+             
              if (arminik_debug_wait_client > 0)
             {
                 Console.WriteLine($"Debug: Sleep {arminik_debug_wait_client} seconds");
                 Thread.Sleep(arminik_debug_wait_client * 1000);
+            }
             }
             string agentConfigFileName = Environment.GetEnvironmentVariable("AGENT_CONFIG_FILE");
             if (agentConfigFileName == null)
@@ -52,7 +56,10 @@ namespace HtcClient
             gridConfig.Init(parsedConfig);
             //get envirnoment variable 
             var var_env = Environment.GetEnvironmentVariable("ARMONIK_DEBUG_WAIT_TASK");
-            gridConfig.debug = int.Parse(var_env);
+             if(!String.IsNullOrEmpty(var_env))
+             {
+                gridConfig.debug = int.Parse(var_env);
+             }
             
 
 
