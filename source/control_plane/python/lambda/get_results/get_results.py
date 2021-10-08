@@ -136,10 +136,7 @@ def lambda_handler(event, context):
 
         book_keeping(lambda_responce)
 
-        res = {
-            'statusCode': 200,
-            'body': lambda_responce
-        }
+        res = lambda_responce
 
         print(res)
         return res

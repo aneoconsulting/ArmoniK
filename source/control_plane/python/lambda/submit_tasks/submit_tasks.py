@@ -295,10 +295,7 @@ def lambda_handler(event, context):
         for sqs_msg in sqs_batch_entries:
             lambda_response["task_ids"].append(sqs_msg['Id'])
 
-        res = {
-            'statusCode': 200,
-            'body': lambda_response
-        }
+        res = lambda_response
 
         print(json.dumps(res))
         return res

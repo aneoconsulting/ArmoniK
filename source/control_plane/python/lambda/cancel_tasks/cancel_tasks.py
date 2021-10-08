@@ -125,10 +125,7 @@ def lambda_handler(event, context):
 
             lambda_response[session2cancel] = lambda_sub_response
 
-        return {
-            'statusCode': 200,
-            'body': json.dumps(lambda_response)
-        }
+        return lambda_response
 
     except Exception as e:
         logging.error('Lambda cancel_tasks error: {} trace: {}'.format(e, traceback.format_exc()))

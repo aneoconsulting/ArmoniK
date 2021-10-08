@@ -54,37 +54,12 @@ namespace HtcClient
             var client = new Client(htcGridclient, dataClient);
 
             // Timespan(heures, minutes, secondes)
-            RunConfiguration runConfiguration = RunConfiguration.XSmall; // result : Aggregate_1871498793_result
-          
-            /* RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 1, 30),
-                                                 5,
-                                                 1,
-                                                 1,
-                                                 1);
-                                                 
-            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 30, 0),
-                                                 100,
-                                                 1,
-                                                 3,
-                                                 1);
-            
-            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(10, 0, 0),
-                                                 1000000,
-                                                 1,
-                                                 3,
-                                                 4);                                             
+            // RunConfiguration runConfiguration = RunConfiguration.XSmall; // result : Aggregate_1871498793_result
+            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 0, 0, 0, 100), 10, 1, 1, 1);
 
-            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(3.6, 0, 0),
-                                                 400000,
-                                                 1,
-                                                 3,
-                                                 3, maxDurationMs : 30000);
-                                                 
-            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(36, 0, 0),
-                                                 4000000,
-                                                 1,
-                                                 3,
-                                                 3, maxDurationMs : 30000);*/
+            client.Start(runConfiguration);
+            client.Start(runConfiguration);
+            client.Start(runConfiguration);
             client.Start(runConfiguration);
         }
     }
