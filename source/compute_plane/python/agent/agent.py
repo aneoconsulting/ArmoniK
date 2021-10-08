@@ -123,7 +123,7 @@ config = {
 state_table = state_table_manager(grid_state_table_service=agent_config_data.get('tasks_status_table_service', None),
                                   grid_state_table_config=str(config),
                                   tasks_state_table_name=agent_config_data.get('ddb_status_table', None),
-                                  endpoint_url=agent_config_data.get('tasks_status_table_service', None),
+                                  endpoint_url=agent_config_data.get('db_endpoint_url', None),
                                   region=agent_config_data.get('region', None))
 
 config_cc = {
@@ -137,7 +137,7 @@ state_table_cc = state_table_manager(
     grid_state_table_service=agent_config_data.get('tasks_status_table_service', None),
     grid_state_table_config=str(config_cc),
     tasks_state_table_name=agent_config_data.get('ddb_status_table', None),
-    endpoint_url=agent_config_data.get('tasks_status_table_service', None),
+    endpoint_url=agent_config_data.get('db_endpoint_url', None),
     region=agent_config_data.get('region', None))
 
 redis_endpoint_url = agent_config_data['redis_endpoint_url']

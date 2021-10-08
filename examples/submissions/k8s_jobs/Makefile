@@ -20,8 +20,6 @@ export no_proxy
 all: generated
 
 generated:
-	mkdir -p $(GENERATED) && cat single-task-test.yaml.tpl | sed "s%{{http_proxy_lower}}%$(http_proxy)%;s%{{https_proxy_lower}}%$(https_proxy)%;s%{{no_proxy_lower}}%$(no_proxy)%;s%{{http_proxy}}%$(HTTP_PROXY)%;s%{{https_proxy}}%$(HTTPS_PROXY)%;s%{{no_proxy}}%$(NO_PROXY)%;s%{{redis_certificates_directory}}%$(REDIS_CERTIFICATES_DIRECTORY)%;s%{{docker_registry}}%$(DOCKER_REGISTRY_WITH_SUFFIX)%;s%{{image_name}}%$(SUBMITTER_IMAGE_NAME)%;s%{{image_tag}}%$(TAG)%" > $(GENERATED)/single-task-test.yaml
-
 	mkdir -p $(GENERATED) && cat single-task-dotnet5.0.yaml.tpl | sed "s%{{http_proxy_lower}}%$(http_proxy)%;s%{{https_proxy_lower}}%$(https_proxy)%;s%{{no_proxy_lower}}%$(no_proxy)%;s%{{http_proxy}}%$(HTTP_PROXY)%;s%{{https_proxy}}%$(HTTPS_PROXY)%;s%{{no_proxy}}%$(NO_PROXY)%;s%{{docker_registry}}%$(DOCKER_REGISTRY_WITH_SUFFIX)%;s%{{image_name}}%$(SUBMITTER_IMAGE_NAME)%;s%{{image_tag}}%$(TAG)%" > $(GENERATED)/single-task-dotnet5.0.yaml
 
 	mkdir -p $(GENERATED) && cat local-single-task-dotnet5.0.yaml.tpl | sed "s%{{http_proxy_lower}}%$(http_proxy)%;s%{{https_proxy_lower}}%$(https_proxy)%;s%{{no_proxy_lower}}%$(no_proxy)%;s%{{http_proxy}}%$(HTTP_PROXY)%;s%{{https_proxy}}%$(HTTPS_PROXY)%;s%{{no_proxy}}%$(NO_PROXY)%;s%{{redis_certificates_directory}}%$(REDIS_CERTIFICATES_DIRECTORY)%;s%{{docker_registry}}%$(DOCKER_REGISTRY_WITH_SUFFIX)%;s%{{image_name}}%$(SUBMITTER_IMAGE_NAME)%;s%{{image_tag}}%$(TAG)%" > $(GENERATED)/local-single-task-dotnet5.0.yaml
