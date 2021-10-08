@@ -68,11 +68,6 @@ Define variables for deploying the infrastructure as follows:
    ```bash
       aws ecr get-login-password --region $ARMONIK_REGION | docker login --username AWS --password-stdin $ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
    ```
-   
-10. Define an environment variable to select API Gateway service.
-   ```bash
-      export ARMONIK_API_GATEWAY_SERVICE=APIGateway
-   ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s. 
