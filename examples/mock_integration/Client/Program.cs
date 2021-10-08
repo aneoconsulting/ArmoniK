@@ -58,8 +58,17 @@ namespace HtcClient
             RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 0, 0, 0, 100), 10, 1, 1, 1);
 
             client.Start(runConfiguration);
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
             client.Start(runConfiguration);
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
             client.Start(runConfiguration);
+            Console.WriteLine("");
+            Console.WriteLine("");
+            Console.WriteLine("");
             client.Start(runConfiguration);
         }
     }
