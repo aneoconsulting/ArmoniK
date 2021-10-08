@@ -42,7 +42,7 @@ namespace HTCGrid
             public void WaitCompletion(string taskId)
             {
                 Console.WriteLine("Start WaitCompletion");
-                int timeOut = 600; // 10 min
+                int timeOut = 1800; // 10 min
                 if (submittedTasks_.AleradyFinished(taskId))
                     return;
                 Console.WriteLine("Check result WaitCompletion");
