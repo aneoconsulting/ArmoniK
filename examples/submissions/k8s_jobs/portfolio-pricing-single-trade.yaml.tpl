@@ -26,17 +26,17 @@ spec:
           - name: INTRA_VPC
             value: "1"
           - name: HTTP_PROXY
-            value: "{{http_proxy}}"
+            value: ""
           - name: HTTPS_PROXY
-            value: "{{https_proxy}}"
+            value: ""
           - name: NO_PROXY
-            value: "{{no_proxy}}"
+            value: ""
           - name: http_proxy
-            value: "{{http_proxy_lower}}"
+            value: ""
           - name: https_proxy
-            value: "{{https_proxy_lower}}"
+            value: ""
           - name: no_proxy
-            value: "{{no_proxy_lower}}"
+            value: ""
       restartPolicy: Never
       nodeSelector:
         grid/type: Operator
