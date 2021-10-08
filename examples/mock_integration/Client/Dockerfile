@@ -31,4 +31,5 @@ WORKDIR /app/publish
 RUN ls
 RUN mkdir -p ~/.nuget/NuGet
 COPY ./examples/mock_integration/Client/NuGet.Config ~/.nuget/NuGet/
+COPY ./examples/mock_integration/Client/commands.txt /app/publish
 ENTRYPOINT ["dotnet"]
