@@ -59,8 +59,6 @@ namespace HTCGrid
                         continue;
                     }
 
-                    Console.WriteLine($"sessionResponse={sessionResponse}");
-
                     if (sessionResponse.Cancelled != null && sessionResponse.Cancelled.Any())
                     {
                         Console.WriteLine(String.Format("WARN :  Task {0} cancelled ", taskId));
@@ -78,7 +76,6 @@ namespace HTCGrid
                     if (finishedTasks == null || !finishedTasks.Any())
                     {
                         Console.WriteLine(String.Format("WARN :  Task {0} no result available", taskId));
-                        Console.WriteLine($"WARN : sessionResponse={sessionResponse}");
                         continue;
                     } else {
                         Console.WriteLine("WARN : printing element in finished state");
