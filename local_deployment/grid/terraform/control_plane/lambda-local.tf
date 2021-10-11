@@ -24,7 +24,7 @@ resource "kubernetes_config_map" "lambda_local" {
     AWS_DEFAULT_REGION = var.region,
     AWS_ACCESS_KEY_ID = var.access_key,
     AWS_SECRET_ACCESS_KEY = var.secret_key,
-    SQS_ENDPOINT_URL = "http://${local.local_services_pod_ip}:${var.local_services_port}",
+    QUEUE_ENDPOINT_URL = "http://${local.local_services_pod_ip}:${var.local_services_port}",
     DB_ENDPOINT_URL = "mongodb://${local.mongodb_pod_ip}:${var.mongodb_port}",
     REDIS_USE_SSL = var.redis_with_ssl,
     REDIS_CERTFILE = var.redis_cert_file,

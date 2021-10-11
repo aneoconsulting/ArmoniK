@@ -119,6 +119,7 @@ module "control_plane" {
     mongodb_port = var.mongodb_port
     local_services_port = var.local_services_port
     redis_port = var.redis_port
+    rsmq_port = var.rsmq_port
     retention_in_days = var.retention_in_days
     redis_with_ssl = var.redis_with_ssl
     connection_redis_timeout = var.connection_redis_timeout

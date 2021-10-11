@@ -202,10 +202,6 @@ variable "redis_port" {
   type = number
 }
 
-variable "sqs_endpoint_url" {
-  description = "sqs endpoint url"
-}
-
 variable "kms_key_arn" {
   description = "KMS key ARN for S3 bucket"
   type =  string

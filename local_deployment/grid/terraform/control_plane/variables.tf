@@ -141,6 +141,10 @@ variable "redis_port" {
   description = "Port for Redis instance"
 }
 
+variable "rsmq_port" {
+  description = "Port for Redis SMQ instance"
+}
+
 variable "retention_in_days" {
   description = "Retention in days for cloudwatch logs"
   type =  number

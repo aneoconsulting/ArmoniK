@@ -5,7 +5,7 @@ locals {
   agent_config =<<EOF
 {
   "region": "${var.region}",
-  "sqs_endpoint_url": "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
+  "queue_endpoint_url": "https://sqs.${var.region}.amazonaws.com",
   "db_endpoint_url": "https://dynamodb.${var.region}.amazonaws.com",
   "redis_with_ssl": "${var.redis_with_ssl}",
   "queue_name": "${local.queue_name}",

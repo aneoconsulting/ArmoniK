@@ -27,7 +27,7 @@ region = os.environ["REGION"]
 tasks_queue = queue_manager(
     grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],
     grid_queue_config=os.environ['GRID_QUEUE_CONFIG'],
-    endpoint_url=os.environ["SQS_ENDPOINT_URL"],
+    endpoint_url=os.environ["QUEUE_ENDPOINT_URL"],
     queue_name=os.environ['TASKS_QUEUE_NAME'],
     region=region)
 

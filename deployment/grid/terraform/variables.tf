@@ -460,8 +460,8 @@ variable "redis_port" {
   type = number
 }
 
-variable "sqs_endpoint_url" {
-  description = "sqs endpoint url"
+variable "queue_endpoint_url" {
+  description = "queue endpoint url"
 }
 
 variable "retention_in_days" {

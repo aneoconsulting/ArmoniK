@@ -134,7 +134,7 @@ module "compute_plane" {
     error_logging_stream = local.error_logging_stream
     grid_queue_service = var.grid_queue_service
     grid_queue_config = var.grid_queue_config
-    sqs_endpoint_url = var.sqs_endpoint_url
+    queue_endpoint_url = var.queue_endpoint_url
 
     depends_on  = [
         module.vpc
@@ -209,7 +209,7 @@ module "control_plane" {
     kms_key_arn = var.kms_key_arn
     peer_vpc_cidr_block = data.aws_vpc.peer_vpc.cidr_block
     vpc_pod_cidr_block_private = var.vpc_pod_cidr_block_private
-    sqs_endpoint_url = var.sqs_endpoint_url
+    queue_endpoint_url = var.queue_endpoint_url
     redis_with_ssl = var.redis_with_ssl
     connection_redis_timeout = var.connection_redis_timeout
     api_gateway_service = var.api_gateway_service

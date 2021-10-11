@@ -447,6 +447,12 @@ variable "redis_port" {
   type = number
 }
 
+variable "rsmq_port" {
+  description = "Port for Redis SMQ instance"
+  default = 6380
+  type = number
+}
+
 variable "cancel_tasks_port" {
   description = "Port for Cancel Tasks Lambda function"
   default = 9000

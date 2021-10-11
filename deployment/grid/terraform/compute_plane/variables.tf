@@ -267,7 +267,3 @@ variable "redis_port" {
   default = 6379
   type = number
 }
-
-variable "sqs_endpoint_url" {
-  description = "sqs endpoint url"
-}

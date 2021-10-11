@@ -6,7 +6,7 @@ locals {
 {
   "region": "${var.region}",
   "ddb_status_table" : "${local.ddb_status_table}",
-  "sqs_endpoint_url": "http://${module.control_plane.local_services_pod_ip}:${var.local_services_port}",
+  "queue_endpoint_url": "http://${module.control_plane.local_services_pod_ip}:${var.local_services_port}",
   "db_endpoint_url": "mongodb://${module.control_plane.mongodb_pod_ip}:${var.mongodb_port}",
   "redis_endpoint_url": "${module.control_plane.redis_pod_ip}",
   "redis_with_ssl": "${var.redis_with_ssl}",
