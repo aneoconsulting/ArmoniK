@@ -62,8 +62,8 @@ variable "ddb_status_table" {
   description = "HTC DynamoDB table name"
 }
 
-variable "sqs_queue" {
-  description = "HTC SQS queue name"
+variable "queue_name" {
+  description = "Armonik queue name"
 }
 
 variable "tasks_queue_name" {

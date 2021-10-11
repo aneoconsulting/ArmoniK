@@ -27,9 +27,9 @@ locals {
     grafana_admin_password = var.grafana_admin_password != "" ? var.grafana_admin_password : random_password.password.result
     cluster_name = "${var.cluster_name}-${local.project_name}"
     ddb_status_table = "${var.ddb_status_table}-${local.project_name}"
-    sqs_queue = "${var.sqs_queue}-${local.project_name}"
-    tasks_queue_name = "${var.sqs_queue}-${local.project_name}__0"
-    sqs_dlq = "${var.sqs_dlq}-${local.project_name}"
+    queue_name = "${var.queue_name}-${local.project_name}"
+    tasks_queue_name = "${var.queue_name}-${local.project_name}__0"
+    dlq_name = "${var.dlq_name}-${local.project_name}"
     lambda_name_get_results = "${var.lambda_name_get_results}-${local.project_name}"
     lambda_name_submit_tasks = "${var.lambda_name_submit_tasks}-${local.project_name}"
     lambda_name_cancel_tasks = "${var.lambda_name_cancel_tasks}-${local.project_name}"
@@ -87,6 +87,7 @@ module "vpc" {
     kms_key_arn = var.kms_key_arn
 
 }
+
 module "compute_plane" {
     source = "./compute_plane"
 
@@ -107,7 +108,7 @@ module "compute_plane" {
     region = var.region
     lambda_runtime = var.lambda_runtime
     ddb_status_table = local.ddb_status_table
-    sqs_queue = local.sqs_queue
+    queue_name = local.queue_name
     tasks_queue_name = local.tasks_queue_name
     namespace_metrics = var.namespace_metrics
     dimension_name_metrics = var.dimension_name_metrics
@@ -171,8 +172,8 @@ module "control_plane" {
     lambda_runtime = var.lambda_runtime
     aws_htc_ecr = local.aws_htc_ecr
     ddb_status_table = local.ddb_status_table
-    sqs_queue = local.sqs_queue
-    sqs_dlq = local.sqs_dlq
+    queue_name = local.queue_name
+    dlq_name = local.dlq_name
     s3_bucket = local.s3_bucket
     grid_storage_service = var.grid_storage_service
     grid_queue_service = var.grid_queue_service

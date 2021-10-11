@@ -16,7 +16,7 @@ variable "priorities" {
 resource "aws_sqs_queue" "htc_task_queue" {
   for_each = var.priorities
 
-  name = format("%s%s",var.sqs_queue, each.key)
+  name = format("%s%s",var.queue_name, each.key)
   message_retention_seconds = 1209600 # max 14 days
   visibility_timeout_seconds = 40  # once acquired we should update visibility timeout during processing
 
@@ -32,7 +32,7 @@ resource "aws_sqs_queue" "htc_task_queue" {
 
 
 resource "aws_sqs_queue" "htc_task_queue_dlq" {
-  name = var.sqs_dlq
+  name = var.dlq_name
 
   message_retention_seconds = 1209600 # max 14 days
 

@@ -8,8 +8,8 @@ locals {
   "sqs_endpoint_url": "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
   "db_endpoint_url": "https://dynamodb.${var.region}.amazonaws.com",
   "redis_with_ssl": "${var.redis_with_ssl}",
-  "sqs_queue": "${local.sqs_queue}",
-  "sqs_dlq": "${local.sqs_dlq}",
+  "queue_name": "${local.queue_name}",
+  "dlq_name": "${local.dlq_name}",
   "redis_endpoint_url": "${module.control_plane.redis_url}",
   "redis_port": "${module.control_plane.redis_port}",
   "cluster_config": "${var.cluster_config}",
@@ -56,7 +56,6 @@ locals {
 EOF
 }
 
-
 #configmap with all the variables
 resource "kubernetes_config_map" "htcagentconfig" {
   metadata {
@@ -72,24 +71,6 @@ resource "kubernetes_config_map" "htcagentconfig" {
     module.control_plane
   ]
 }
-
-#configmap with all the variables
-/* resource "kubernetes_config_map" "htcagentconfig_client" {
-  metadata {
-    name      = "agent-configmap"
-    namespace = "client"
-  }
-
-  data = {
-    "Agent_config.tfvars.json" = local.agent_config
-  }
-  depends_on = [
-    module.resources,
-    module.scheduler
-  ]
-} */
-
-
 
 resource "local_file" "agent_config_file" {
     content     =  local.agent_config

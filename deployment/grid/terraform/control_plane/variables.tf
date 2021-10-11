@@ -18,12 +18,12 @@ variable "ddb_status_table" {
   description = "HTC DynamoDB table name"
 }
 
-variable "sqs_queue" {
-  description = "HTC SQS queue name"
+variable "queue_name" {
+  description = "Armonik queue name"
 }
 
-variable "sqs_dlq" {
-  description = "HTC SQS queue dlq name"
+variable "dlq_name" {
+  description = "Armonik queue dlq name"
 }
 
 variable "s3_bucket" {

@@ -30,12 +30,12 @@ variable "ddb_status_table" {
   description = "DBtable name"
 }
 
-variable "sqs_queue" {
-  description = "HTC SQS queue name"
+variable "queue_name" {
+  description = "Armonik queue name"
 }
 
-variable "sqs_dlq" {
-  description = "HTC SQS queue dlq name"
+variable "dlq_name" {
+  description = "Armonik queue dlq name"
 }
 
 variable "grid_storage_service" {
