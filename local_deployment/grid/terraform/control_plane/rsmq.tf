@@ -28,10 +28,11 @@ resource "kubernetes_deployment" "rsmq" {
         container {
           image   = "redis"
           name    = "rsmq"
-          command = ["redis-server", "--tls-port ${var.rsmq_port}", "--port 0", "--tls-cert-file /redis_certificates/redis.crt", "--tls-key-file /redis_certificates/redis.key", "--tls-ca-cert-file /redis_certificates/ca.crt"]
+          #command = ["redis-server", "--tls-port ${var.queue_port}", "--port 0", "--tls-cert-file /redis_certificates/redis.crt", "--tls-key-file /redis_certificates/redis.key", "--tls-ca-cert-file /redis_certificates/ca.crt"]
+          command = ["redis-server", "--port ${var.queue_port}"]
 
           port {
-            container_port = var.rsmq_port
+            container_port = var.queue_port
           }
 
           volume_mount {
@@ -66,7 +67,7 @@ resource "kubernetes_service" "rsmq" {
     type = "LoadBalancer"
     port {
       protocol = "TCP"
-      port = var.rsmq_port
+      port = var.queue_port
       name = "rsmq"
     }
   }

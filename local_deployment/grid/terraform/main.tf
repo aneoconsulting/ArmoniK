@@ -96,6 +96,7 @@ module "control_plane" {
     docker_registry = local.docker_registry
     queue_name = local.queue_name
     dlq_name = local.dlq_name
+    tasks_queue_name = local.tasks_queue_name
     grid_storage_service = var.grid_storage_service
     grid_queue_service = var.grid_queue_service
     grid_queue_config = var.grid_queue_config
@@ -119,7 +120,7 @@ module "control_plane" {
     mongodb_port = var.mongodb_port
     local_services_port = var.local_services_port
     redis_port = var.redis_port
-    rsmq_port = var.rsmq_port
+    queue_port = var.queue_port
     retention_in_days = var.retention_in_days
     redis_with_ssl = var.redis_with_ssl
     connection_redis_timeout = var.connection_redis_timeout

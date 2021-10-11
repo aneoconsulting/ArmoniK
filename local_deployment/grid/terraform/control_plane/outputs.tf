@@ -21,3 +21,9 @@ output "local_services_pod_ip" {
   value = local.local_services_pod_ip
 }
 
+output "queue_pod_ip" {
+  description = "IP address of queue pod"
+  value = local.queue_pod_ip
+}
+
+

@@ -133,6 +133,10 @@ variable "mongodb_port" {
   description = "mongodb port"
 }
 
+variable "tasks_queue_name" {
+  description = "HTC queue name"
+}
+
 variable "local_services_port" {
   description = "Port for all local services"
 }
@@ -141,8 +145,8 @@ variable "redis_port" {
   description = "Port for Redis instance"
 }
 
-variable "rsmq_port" {
-  description = "Port for Redis SMQ instance"
+variable "queue_port" {
+  description = "Port for queue instance"
 }
 
 variable "retention_in_days" {

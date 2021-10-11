@@ -447,8 +447,8 @@ variable "redis_port" {
   type = number
 }
 
-variable "rsmq_port" {
-  description = "Port for Redis SMQ instance"
+variable "queue_port" {
+  description = "Port for queue instance"
   default = 6380
   type = number
 }
