@@ -1,13 +1,13 @@
 #! /bin/bash
 # Delete existing config
-sed -i '/k8s_config_\(context\|path\)/d' parameters.auto.tfvars
+sed -i -e '/k8s_config_\(context\|path\)/d;$a\' parameters.auto.tfvars
 
 # Check the OS
 unameOut="$(uname -a)"
 case "${unameOut}" in
     *Microsoft*)     OS="WSL";; #must be first since Windows subsystem for linux will have Linux in the name too
     *microsoft*) # inside WSL2 (WARNING: My v2 uses ubuntu 20.4 at the moment slightly different name may not always work)
-        if [ "$INSIDE_GENIE" = true ]; then
+        if [ "$INSIDE_GENIE" = true -o "$(ps -q 1 -o comm=)" = systemd ]; then
             OS="Linux"
         else
             OS="WSL2"
