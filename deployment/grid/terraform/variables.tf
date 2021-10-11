@@ -460,10 +460,6 @@ variable "redis_port" {
   type = number
 }
 
-variable "queue_endpoint_url" {
-  description = "queue endpoint url"
-}
-
 variable "retention_in_days" {
   description = "Retention in days for cloudwatch logs"
   type =  number
