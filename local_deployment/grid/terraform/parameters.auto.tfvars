@@ -5,7 +5,6 @@
 
 region = "eu-west-1"
 mongodb_port = 27017
-local_services_port = 8001
 redis_port = 6379
 queue_port = 6380
 redis_with_ssl = true

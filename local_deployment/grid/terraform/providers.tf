@@ -74,13 +74,6 @@ provider "aws" {
   skip_requesting_account_id  = true
 
   endpoints {
-    lambda = "http://localhost:${var.local_services_port}"
-    iam = "http://localhost:${var.local_services_port}"
-    cloudwatch = "http://localhost:${var.local_services_port}"
-    cloudwatchlogs = "http://localhost:${var.local_services_port}"
-    cloudwatchevents = "http://localhost:${var.local_services_port}"
-    apigateway = "http://localhost:${var.local_services_port}"
-    sqs = "http://localhost:${var.local_services_port}"
   }
 }
 

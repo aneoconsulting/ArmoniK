@@ -137,10 +137,6 @@ variable "tasks_queue_name" {
   description = "HTC queue name"
 }
 
-variable "local_services_port" {
-  description = "Port for all local services"
-}
-
 variable "redis_port" {
   description = "Port for Redis instance"
 }

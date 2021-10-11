@@ -448,12 +448,6 @@ variable "dynamodb_port" {
   default = 8000
 }
 
-variable "local_services_port" {
-  description = "Port for all local services"
-  type = number
-  default = 8001
-}
-
 variable "redis_port" {
   description = "Port for Redis instance"
   default = 6379

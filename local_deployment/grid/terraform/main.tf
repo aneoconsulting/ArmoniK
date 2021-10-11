@@ -118,7 +118,6 @@ module "control_plane" {
     cluster_name = local.cluster_name
     api_gateway_version = var.api_gateway_version
     mongodb_port = var.mongodb_port
-    local_services_port = var.local_services_port
     redis_port = var.redis_port
     queue_port = var.queue_port
     retention_in_days = var.retention_in_days

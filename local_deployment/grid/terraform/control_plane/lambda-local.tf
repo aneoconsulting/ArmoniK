@@ -127,9 +127,6 @@ resource "kubernetes_deployment" "cancel_tasks" {
       }
     }
   }
-  depends_on = [
-    kubernetes_service.local_services,
-  ]
 }
 
 resource "kubernetes_service" "get_results" {
@@ -228,9 +225,6 @@ resource "kubernetes_deployment" "get_results" {
       }
     }
   }
-  depends_on = [
-    kubernetes_service.local_services,
-  ]
 }
 
 resource "kubernetes_deployment" "submit_task" {
@@ -307,9 +301,6 @@ resource "kubernetes_deployment" "submit_task" {
       }
     }
   }
-  depends_on = [
-    kubernetes_service.local_services,
-  ]
 }
 
 resource "kubernetes_service" "submit_task" {
@@ -413,9 +404,6 @@ resource "kubernetes_deployment" "ttl_checker" {
       }
     }
   }
-  depends_on = [
-    kubernetes_service.local_services,
-  ]
 }
 
 resource "kubernetes_cron_job" "ttl_checker_corn_job" {
