@@ -24,23 +24,31 @@ Define variables for deploying the infrastructure as follows:
    ```bash
       export ARMONIK_TASKS_TABLE_SERVICE=DynamoDB
    ```
+   
+3. Define the type of the message queue
+   ```bash
+      export ARMONIK_QUEUE_SERVICE=<Your queue service>
+   ```
+   `<Your queue service>` can be (the list is not exhaustive)
+   - `SQS`
+   - `PrioritySQS`
 
-3. Define an environment variable containing the path to the local nuget repository.
+4. Define an environment variable containing the path to the local nuget repository.
    ```bash
       export ARMONIK_NUGET_REPOS=<project directory>/dist/dotnet5.0
    ```
 
-4. Define an environment variable containing the path to the redis certificates.
+5. Define an environment variable containing the path to the redis certificates.
    ```bash
       export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
    ```
 
-5. Define the AWS account ID where the grid will be deployed
+6. Define the AWS account ID where the grid will be deployed
     ```bash
       export ARMONIK_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
 
     ```
-6. Define the region where the grid will be deployed
+7. Define the region where the grid will be deployed
    ```bash
       export ARMONIK_REGION=<Your region>
    ```
@@ -54,12 +62,12 @@ Define variables for deploying the infrastructure as follows:
    - `ap-northeast-1`
    - `ap-southeast-1`
 
-7. Define an environment variable containing AWS ECR registry.
+8. Define an environment variable containing AWS ECR registry.
    ```bash
       export ARMONIK_DOCKER_REGISTRY=$ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
    ```
 
-8. Define an environment variable to select API Gateway service.
+9. Define an environment variable to select API Gateway service.
    ```bash
       export ARMONIK_API_GATEWAY_SERVICE=APIGateway
    ```
