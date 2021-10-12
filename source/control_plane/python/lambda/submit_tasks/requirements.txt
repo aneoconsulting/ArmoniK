@@ -3,3 +3,4 @@ influxdb
 requests
 pymongo
 boto3
+PyRSMQ

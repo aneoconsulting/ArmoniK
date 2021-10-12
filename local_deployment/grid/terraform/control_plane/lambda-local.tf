@@ -7,8 +7,8 @@ resource "kubernetes_config_map" "lambda_local" {
     TASKS_STATUS_TABLE_NAME = var.ddb_status_table,
     TASKS_STATUS_TABLE_SERVICE = var.tasks_status_table_service,
     TASKS_STATUS_TABLE_CONFIG = var.tasks_status_table_config,
-    TASKS_QUEUE_NAME = aws_sqs_queue.htc_task_queue["__0"].name,
-    TASKS_QUEUE_DLQ_NAME = aws_sqs_queue.htc_task_queue_dlq.name,
+    TASKS_QUEUE_NAME = var.tasks_queue_name,
+    TASKS_QUEUE_DLQ_NAME = var.dlq_name,
     METRICS_ARE_ENABLED = var.metrics_are_enabled,
     METRICS_SUBMIT_TASKS_LAMBDA_CONNECTION_STRING = var.metrics_submit_tasks_lambda_connection_string,
     ERROR_LOG_GROUP = var.error_log_group,
@@ -24,7 +24,7 @@ resource "kubernetes_config_map" "lambda_local" {
     AWS_DEFAULT_REGION = var.region,
     AWS_ACCESS_KEY_ID = var.access_key,
     AWS_SECRET_ACCESS_KEY = var.secret_key,
-    SQS_ENDPOINT_URL = "http://${local.local_services_pod_ip}:${var.local_services_port}",
+    QUEUE_ENDPOINT_URL = "${local.queue_pod_ip}:${var.queue_port}",
     DB_ENDPOINT_URL = "mongodb://${local.mongodb_pod_ip}:${var.mongodb_port}",
     REDIS_USE_SSL = var.redis_with_ssl,
     REDIS_CERTFILE = var.redis_cert_file,
@@ -127,9 +127,6 @@ resource "kubernetes_deployment" "cancel_tasks" {
       }
     }
   }
-  depends_on = [
-    kubernetes_service.local_services,
-  ]
 }
 
 resource "kubernetes_service" "get_results" {
@@ -228,9 +225,6 @@ resource "kubernetes_deployment" "get_results" {
       }
     }
   }
-  depends_on = [
-    kubernetes_service.local_services,
-  ]
 }
 
 resource "kubernetes_deployment" "submit_task" {
@@ -307,9 +301,6 @@ resource "kubernetes_deployment" "submit_task" {
       }
     }
   }
-  depends_on = [
-    kubernetes_service.local_services,
-  ]
 }
 
 resource "kubernetes_service" "submit_task" {
@@ -413,9 +404,6 @@ resource "kubernetes_deployment" "ttl_checker" {
       }
     }
   }
-  depends_on = [
-    kubernetes_service.local_services,
-  ]
 }
 
 resource "kubernetes_cron_job" "ttl_checker_corn_job" {

@@ -21,12 +21,8 @@ Define variables for deploying the infrastructure as follows:
    
 3. Define the type of the message queue
    ```bash
-      export ARMONIK_QUEUE_SERVICE=<Your queue service>
+      export ARMONIK_QUEUE_SERVICE=RSMQ
    ```
-   `<Your queue service>` can be (the list is not exhaustive)
-   - `RSMQ`
-   - `SQS`
-   - `PrioritySQS`
 
 4. Define an environment variable containing the path to the local nuget repository.
    ```bash

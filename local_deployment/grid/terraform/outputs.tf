@@ -19,6 +19,6 @@ output "mongodb_url" {
   value = "mongodb://${module.control_plane.mongodb_pod_ip}:${var.mongodb_port}"
 }
 
-output "local_services_url" {
-  value = "http://${module.control_plane.local_services_pod_ip}:${var.local_services_port}"
+output "queue_url" {
+  value = "${module.control_plane.queue_pod_ip}:${var.queue_port}"
 }

@@ -6,13 +6,13 @@ locals {
 {
   "region": "${var.region}",
   "ddb_status_table" : "${local.ddb_status_table}",
-  "sqs_endpoint_url": "http://${module.control_plane.local_services_pod_ip}:${var.local_services_port}",
+  "queue_endpoint_url": "${module.control_plane.queue_pod_ip}:${var.queue_port}",
   "db_endpoint_url": "mongodb://${module.control_plane.mongodb_pod_ip}:${var.mongodb_port}",
   "redis_endpoint_url": "${module.control_plane.redis_pod_ip}",
   "redis_with_ssl": "${var.redis_with_ssl}",
   "redis_port": "${var.redis_port}",
-  "sqs_queue": "${local.sqs_queue}",
-  "sqs_dlq": "${local.sqs_dlq}",
+  "queue_name": "${local.queue_name}",
+  "dlq_name": "${local.dlq_name}",
   "redis_ca_cert": "${var.redis_ca_cert}",
   "redis_client_pfx": "${var.redis_client_pfx}",
   "redis_key_file": "${var.redis_key_file}",
@@ -60,7 +60,6 @@ locals {
 EOF
 }
 
-
 #configmap with all the variables
 resource "kubernetes_config_map" "htcagentconfig" {
   metadata {
@@ -76,24 +75,6 @@ resource "kubernetes_config_map" "htcagentconfig" {
     module.control_plane
   ]
 }
-
-#configmap with all the variables
-/* resource "kubernetes_config_map" "htcagentconfig_client" {
-  metadata {
-    name      = "agent-configmap"
-    namespace = "client"
-  }
-
-  data = {
-    "Agent_config.tfvars.json" = local.agent_config
-  }
-  depends_on = [
-    module.resources,
-    module.scheduler
-  ]
-} */
-
-
 
 resource "local_file" "agent_config_file" {
     content     =  local.agent_config

@@ -62,8 +62,8 @@ variable "ddb_status_table" {
   description = "HTC DynamoDB table name"
 }
 
-variable "sqs_queue" {
-  description = "HTC SQS queue name"
+variable "queue_name" {
+  description = "Armonik queue name"
 }
 
 variable "tasks_queue_name" {
@@ -256,18 +256,8 @@ variable "dynamodb_port" {
   default = 8000
 }
 
-variable "local_services_port" {
-  description = "Port for all local services"
-  type = number
-  default = 8001
-}
-
 variable "redis_port" {
   description = "Port for Redis instance"
   default = 6379
   type = number
-}
-
-variable "sqs_endpoint_url" {
-  description = "sqs endpoint url"
 }

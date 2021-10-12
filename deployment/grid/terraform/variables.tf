@@ -92,14 +92,14 @@ variable "tasks_status_table_service" {
   description = "Status table sertvice"
 }
 
-variable "sqs_queue" {
-  default  = "htc_task_queue"
-  description = "htc SQS queue name"
+variable "queue_name" {
+  default  = "armonik_task_queue"
+  description = "Armonik queue name"
 }
 
-variable "sqs_dlq" {
-  default  = "htc_task_queue_dlq"
-  description = "htc SQS queue dlq name"
+variable "dlq_name" {
+  default  = "armonik_task_queue_dlq"
+  description = "Armonik queue dlq name"
 }
 
 variable "s3_bucket" {
@@ -448,20 +448,10 @@ variable "dynamodb_port" {
   default = 8000
 }
 
-variable "local_services_port" {
-  description = "Port for all local services"
-  type = number
-  default = 8001
-}
-
 variable "redis_port" {
   description = "Port for Redis instance"
   default = 6379
   type = number
-}
-
-variable "sqs_endpoint_url" {
-  description = "sqs endpoint url"
 }
 
 variable "retention_in_days" {

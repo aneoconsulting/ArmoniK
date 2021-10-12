@@ -10,8 +10,8 @@ The Agent_config.json file looks like following :
 {
     "region": "$REGION",
     "sqs_endpoint": "https://sqs.$REGION.amazonaws.com",
-    "sqs_queue": "htc_task_queue-$TAG",
-    "sqs_dlq": "htc_task_queue_dlq-$TAG",
+    "queue_name": "armonik_task_queue-$TAG",
+    "dlq_name": "armonik_task_queue_dlq-$TAG",
 
     ....
 

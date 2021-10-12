@@ -35,9 +35,9 @@ locals {
     ddb_status_table = "${var.ddb_status_table}-${local.project_name}"
     project_name = var.project_name != "" ? var.project_name : random_string.random_resources.result
     cluster_name = "${var.cluster_name}-${local.project_name}"
-    sqs_queue = "${var.sqs_queue}-${local.project_name}"
-    tasks_queue_name = "${var.sqs_queue}-${local.project_name}__0"
-    sqs_dlq = "${var.sqs_dlq}-${local.project_name}"
+    queue_name = "${var.queue_name}-${local.project_name}"
+    tasks_queue_name = "${var.queue_name}-${local.project_name}__0"
+    dlq_name = "${var.dlq_name}-${local.project_name}"
     lambda_name_get_results = "${var.lambda_name_get_results}-${local.project_name}"
     lambda_name_submit_tasks = "${var.lambda_name_submit_tasks}-${local.project_name}"
     lambda_name_cancel_tasks = "${var.lambda_name_cancel_tasks}-${local.project_name}"
@@ -94,8 +94,9 @@ module "control_plane" {
     lambda_runtime = var.lambda_runtime
     lambda_timeout = var.lambda_timeout
     docker_registry = local.docker_registry
-    sqs_queue = local.sqs_queue
-    sqs_dlq = local.sqs_dlq
+    queue_name = local.queue_name
+    dlq_name = local.dlq_name
+    tasks_queue_name = local.tasks_queue_name
     grid_storage_service = var.grid_storage_service
     grid_queue_service = var.grid_queue_service
     grid_queue_config = var.grid_queue_config
@@ -117,8 +118,8 @@ module "control_plane" {
     cluster_name = local.cluster_name
     api_gateway_version = var.api_gateway_version
     mongodb_port = var.mongodb_port
-    local_services_port = var.local_services_port
     redis_port = var.redis_port
+    queue_port = var.queue_port
     retention_in_days = var.retention_in_days
     redis_with_ssl = var.redis_with_ssl
     connection_redis_timeout = var.connection_redis_timeout

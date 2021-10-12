@@ -30,12 +30,12 @@ variable "ddb_status_table" {
   description = "DBtable name"
 }
 
-variable "sqs_queue" {
-  description = "HTC SQS queue name"
+variable "queue_name" {
+  description = "Armonik queue name"
 }
 
-variable "sqs_dlq" {
-  description = "HTC SQS queue dlq name"
+variable "dlq_name" {
+  description = "Armonik queue dlq name"
 }
 
 variable "grid_storage_service" {
@@ -133,12 +133,16 @@ variable "mongodb_port" {
   description = "mongodb port"
 }
 
-variable "local_services_port" {
-  description = "Port for all local services"
+variable "tasks_queue_name" {
+  description = "HTC queue name"
 }
 
 variable "redis_port" {
   description = "Port for Redis instance"
+}
+
+variable "queue_port" {
+  description = "Port for queue instance"
 }
 
 variable "retention_in_days" {

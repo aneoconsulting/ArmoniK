@@ -107,14 +107,14 @@ variable "tasks_status_table_service" {
   description = "Status table sertvice"
 }
 
-variable "sqs_queue" {
-  default  = "htc_task_queue"
-  description = "htc SQS queue name"
+variable "queue_name" {
+  default  = "armonik_task_queue"
+  description = "Armonik queue name"
 }
 
-variable "sqs_dlq" {
-  default  = "htc_task_queue_dlq"
-  description = "htc SQS queue dlq name"
+variable "dlq_name" {
+  default  = "armonik_task_queue_dlq"
+  description = "Armonikredis_with_ssl queue dlq name"
 }
 
 variable "grid_storage_service" {
@@ -435,15 +435,15 @@ variable "mongodb_port" {
   default = 27017
 }
 
-variable "local_services_port" {
-  description = "Port for all local services"
-  type = number
-  default = 8001
-}
-
 variable "redis_port" {
   description = "Port for Redis instance"
   default = 6379
+  type = number
+}
+
+variable "queue_port" {
+  description = "Port for queue instance"
+  default = 6380
   type = number
 }
 
@@ -479,6 +479,7 @@ variable "retention_in_days" {
 
 variable "redis_with_ssl" {
   type = bool
+  default = true
   description = "redis with ssl"
 }
 

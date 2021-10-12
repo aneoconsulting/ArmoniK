@@ -102,7 +102,7 @@ from api.state_table_manager import state_table_manager
 tasks_queue = queue_manager(
     grid_queue_service=agent_config_data['grid_queue_service'],
     grid_queue_config=agent_config_data['grid_queue_config'],
-    endpoint_url=agent_config_data["sqs_endpoint_url"],
+    endpoint_url=agent_config_data["queue_endpoint_url"],
     queue_name=agent_config_data['tasks_queue_name'],
     region=region)
 

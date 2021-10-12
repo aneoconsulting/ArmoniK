@@ -144,7 +144,7 @@ module "submit_task" {
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
     API_GATEWAY_SERVICE = var.api_gateway_service,
-    SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
+    QUEUE_ENDPOINT_URL = "https://sqs.${var.region}.amazonaws.com",
     DB_ENDPOINT_URL = "https://dynamodb.${var.region}.amazonaws.com"
   }
 
@@ -215,7 +215,7 @@ module  "get_results" {
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
     API_GATEWAY_SERVICE = var.api_gateway_service,
-    SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
+    QUEUE_ENDPOINT_URL = "https://sqs.${var.region}.amazonaws.com",
     DB_ENDPOINT_URL = "https://dynamodb.${var.region}.amazonaws.com"
   }
    tags = {
@@ -286,7 +286,7 @@ module "cancel_tasks" {
     REDIS_USE_SSL = var.redis_with_ssl,
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
-    SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
+    QUEUE_ENDPOINT_URL = "https://sqs.${var.region}.amazonaws.com",
     API_GATEWAY_SERVICE = var.api_gateway_service,
     DB_ENDPOINT_URL = "https://dynamodb.${var.region}.amazonaws.com"
   }
@@ -356,7 +356,7 @@ module "ttl_checker" {
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
     REGION = var.region,
     API_GATEWAY_SERVICE = var.api_gateway_service,
-    SQS_ENDPOINT_URL = "${var.sqs_endpoint_url}.${var.region}.amazonaws.com",
+    QUEUE_ENDPOINT_URL = "https://sqs.${var.region}.amazonaws.com",
     DB_ENDPOINT_URL = "https://dynamodb.${var.region}.amazonaws.com"
   }
 
