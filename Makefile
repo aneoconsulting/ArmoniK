@@ -198,14 +198,8 @@ config-python:
 config-s3-c++:
 	@$(MAKE) -C ./examples/configurations generated-s3-c++
 
-config-dotnet5.0:
-	@$(MAKE) -C ./examples/configurations generated-dotnet5.0 FILE_HANDLER="mock_subtasking::mock_subtasking.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
-	
 mock-config-dotnet5.0:
 	@$(MAKE) -C ./examples/configurations generated-dotnet5.0 FILE_HANDLER="mock_integration::mock_integration.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
-
-config-local-dotnet5.0:
-	@$(MAKE) -C ./examples/configurations generated-local-dotnet5.0 FILE_HANDLER="mock_subtasking::mock_subtasking.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
 
 mock-config-local-dotnet5.0:
 	@$(MAKE) -C ./examples/configurations generated-local-dotnet5.0 FILE_HANDLER="mock_integration::mock_integration.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)

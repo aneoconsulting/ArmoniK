@@ -182,38 +182,6 @@ At the high level the development process involves 4 steps:
 
 
 
-
-## Developing Python3 Worker Function
-
-HTC-Grid comes with examples demonstrating how to build Python3 and C++ based Worker functions.
-The diagram below outlines the relationship between the Agent and the Worker function following Python3 example.
-
-![ComputeEnvArchitecture](./images/developmentPy.png)
-
-HTC-Grid's Worker function follows the same API as AWS Lambda function.
-Following examples supplied with HTC-Grid (``examples/workloads/python/mock_computation/mock_compute_engine.py`` and ``examples/workloads/python/quant_lib/portfolio_pricing_engine.py``) and [AWS Lambda documentation](https://docs.aws.amazon.com/lambda/latest/dg/python-handler.html) write a python module that implements a lambda_handler entry point. This is the function that will be invoked when Agent passes the task to the Worker function.
-
-Note, the entry python file and the handler function name can be re-defined in ``generated/python_runtime_grid_config.json`` (see below). To apply these changes, ``terraform apply`` needs to be re-executed under ``deployment/grid/terraform``
-
-```JSON
-"agent_configuration": {
-    "lambda": {
-       ...
-      "lambda_handler_file_name" : "portfolio_pricing_engine",
-      "lambda_handler_function_name" : "lambda_handler"
-    }
-  }
-```
-
-
-
-
-The ``lambda_handler`` has two arguments an ``event`` and a ``context``.
-- ``event`` - is the task's definition that was provided by the client application at the time of the task submission.
-- ``context`` -[To be defined]
-
-The return of the ``lambda_handler`` function will be treated as the result of the task's execution and will be stored in the Data Plane by the Agent. Subsequently, the Client application will be able to retrieve this output from the Data Plane.
-
 ### Python3 Including Dependencies
 
 HTC-Grid uses custom Lambda runtime [docker-lambda](https://hub.docker.com/r/lambci/lambda/) which closely mimics the runtime of AWS Lambda. Custom Lambda runtime (along with any additional dependencies) should be included into the docker image to execute the Worker function. See example below:
@@ -243,50 +211,6 @@ CMD cp lambda.zip /app/build
 
 The content of the produced zip file should be copied into an S3 bucket. The name of the bucket is stored in S3_LAMBDA_HTCGRID_BUCKET_NAME environmental variable which is set during the deployment stage of the HTC-Grid allowing the grid to retrieve and deploy the correct Worker function package at runtime.
 
-For the complete examples please refer to one of the Makefiles in ``examples/workloads`` directory.
-
-## Developing C++ Worker Function
-
-Writing a C++ Worker Function requires creation of an additional shell script: ``bootstrap``. The bootstrap script is a simple wrapper that takes inputs from Agent and passes it to the C++ executable, similarly it takes the response and passes it back to the Agent once task is done. See example below:
-
-![ComputeEnvArchitecture](./images/developmentCpp.png)
-
-An example of a complete ``bootstrap`` can be found here: ``examples/workloads/c++/mock_computation/bootstrap``, although, a custom version of the bootstrap script will be required for the custom Worker function.
-
-- The bootstrap script takes task's definition as a string and passes them to the executable as an argument.
-- C++ executable does not need to have a lambda_handler method implemented, instead, the execution starts at the ``main`` method.
-
-
-### C++ Including Dependencies
-
-Packaging all dependencies and uploading them to an S3 bucket is generally the same as for the Python3 runtime. However, C++ requires an additional step of compiling the source code before zipping all the dependencies. Compiling all the dependencies in the container guarantees that the executable will run in the provided runtime once deployed in HTC-Grid. Refer to a complete example here: ``examples/workloads/c++/mock_computation/Dockerfile.Build``
-
-```Dockerfile
-# Snippet example:
-...
-
-COPY mock_compute_engine.cpp .
-
-COPY Makefile .  #Compile the executable in the runtime environment.
-
-RUN make main
-...
-```
-
-## 3. Configuring HTC-Grid Deployment
-
-- There are no additional changes required to HTC-Grid to define/launch new Client applications.
-- Some changes might be required to update Worker functions, see below
-
-The root ./Makefile  has 3 options for building and uploading sample Worker functions (e.g., ``upload-c++``, ``upload-python``, and ``upload-python-ql``). These options simply automate all steps described in Section 2 "Developing a Worker Function". Follow these examples to build & upload custom worker function code. To execute each option in isolation, specify the option with the make (i.e., instead of happy-path).
-
-```bash
-make upload-c++ TAG=$TAG ACCOUNT_ID=$HTCGRID_ACCOUNT_ID REGION=$HTCGRID_REGION BUCKET_NAME=$S3_LAMBDA_HTCGRID_BUCKET_NAME
-```
-
-The above steps will upload new Worker Function zip in S3 bucket. However, only new worker pods will be able to benefit from this update. To apply the changes to the entire deployment it is necessary to remove all currently running worker pods (e.g., by executing ``kubectl delete $(kubectl get po -o name)``).
-
-Each compute environment pod starts by executing lambda-init container (defined at ``source/compute_plane/shell/attach-layer``) which pulls the Worker function zip package from the S3_LAMBDA_HTCGRID_BUCKET_NAME S3 bucket at the pod boot time.
 
 
 
