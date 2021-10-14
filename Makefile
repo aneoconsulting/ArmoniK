@@ -24,7 +24,7 @@ BUILD_TYPE?=Release
 
 PACKAGE_DIR := ./dist
 PACKAGES    := $(wildcard $(PACKAGE_DIR)/*.whl)
-.PHONY: all utils api lambda submitter  packages test test-api test-utils test-agent lambda-control-plane config-c++
+.PHONY: all utils api lambda submitter  packages test test-api test-utils test-agent lambda-control-plane
 
 all: utils api lambda lambda-control-plane
 
@@ -194,9 +194,6 @@ upload-dotnet5.0: mock-config-dotnet5.0 mock-config-local-dotnet5.0
 #############################
 config-python:
 	@$(MAKE) -C ./examples/configurations generated-python FILE_HANDLER=mock_compute_engine FUNCTION_HANDLER=lambda_handler
-
-config-s3-c++:
-	@$(MAKE) -C ./examples/configurations generated-s3-c++
 
 mock-config-dotnet5.0:
 	@$(MAKE) -C ./examples/configurations generated-dotnet5.0 FILE_HANDLER="mock_integration::mock_integration.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
