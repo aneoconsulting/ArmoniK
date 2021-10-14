@@ -145,39 +145,3 @@ variable "lambda_handler_function_name" {
   type = string
   description = "The function name of the lambda handler"
 }
-
-variable "http_proxy" {
-  description = "HTTP url for proxy server"
-  default = ""
-  type = string
-}
-
-variable "https_proxy" {
-  description = "HTTPS url for proxy server"
-  default = ""
-  type = string
-}
-
-variable "no_proxy" {
-  description = "LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON"
-  default = ""
-  type = string
-}
-
-variable "http_proxy_lower" {
-  description = "HTTP url for proxy server"
-  default = ""
-  type = string
-}
-
-variable "https_proxy_lower" {
-  description = "HTTPS url for proxy server"
-  default = ""
-  type = string
-}
-
-variable "no_proxy_lower" {
-  description = "LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON"
-  default = ""
-  type = string
-}

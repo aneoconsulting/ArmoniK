@@ -188,12 +188,6 @@ module "control_plane" {
     nginx_port = var.nginx_port
     kubectl_path_documents = data.kubectl_path_documents.manifests
     image_pull_policy = var.image_pull_policy
-    http_proxy = var.http_proxy
-    https_proxy = var.https_proxy
-    no_proxy = var.no_proxy
-    http_proxy_lower = var.http_proxy_lower
-    https_proxy_lower = var.https_proxy_lower
-    no_proxy_lower = var.no_proxy_lower
 }
 
 module "htc_agent" {
@@ -206,12 +200,6 @@ module "htc_agent" {
     agent_name = var.htc_agent_name
     certificates_dir_path = var.certificates_dir_path
     image_pull_policy = var.image_pull_policy
-    http_proxy = var.http_proxy
-    https_proxy = var.https_proxy
-    no_proxy = var.no_proxy
-    http_proxy_lower = var.http_proxy_lower
-    https_proxy_lower = var.https_proxy_lower
-    no_proxy_lower = var.no_proxy_lower
     agent_min_cpu = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"minCPU",local.default_agent_configuration.agent.minCPU)
     agent_max_cpu = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"maxCPU",local.default_agent_configuration.agent.maxCPU)
     lambda_max_cpu = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"maxCPU",local.default_agent_configuration.lambda.maxCPU)
