@@ -54,8 +54,8 @@ namespace HtcClient
             var client = new Client(htcGridclient, dataClient);
 
             // Timespan(heures, minutes, secondes)
-            // RunConfiguration runConfiguration = RunConfiguration.XSmall; // result : Aggregate_1871498793_result
-            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 0, 0, 0, 100), 10, 1, 1, 1);
+            RunConfiguration runConfiguration = RunConfiguration.XSmall; // result : Aggregate_1871498793_result
+            /*RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 0, 0, 0, 100), 10, 1, 1, 1);
 
             client.Start(runConfiguration);
             Console.WriteLine("");
@@ -68,7 +68,7 @@ namespace HtcClient
             client.Start(runConfiguration);
             Console.WriteLine("");
             Console.WriteLine("");
-            Console.WriteLine("");
+            Console.WriteLine("");*/
             client.Start(runConfiguration);
         }
     }
