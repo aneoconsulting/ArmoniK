@@ -27,18 +27,6 @@ spec:
         env:
           - name: INTRA_VPC
             value: "1"
-          - name: HTTP_PROXY
-            value: ""
-          - name: HTTPS_PROXY
-            value: ""
-          - name: NO_PROXY
-            value: ""
-          - name: http_proxy
-            value: ""
-          - name: https_proxy
-            value: ""
-          - name: no_proxy
-            value: ""
       restartPolicy: Never
 #      nodeSelector:
 #        grid/type: Operator

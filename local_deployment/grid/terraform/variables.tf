@@ -533,39 +533,3 @@ variable "image_pull_policy" {
 variable "api_gateway_service" {
   description = "API Gateway Service"
 }
-
-variable "http_proxy" {
-  description = "HTTP url for proxy server"
-  default = ""
-  type = string
-}
-
-variable "https_proxy" {
-  description = "HTTPS url for proxy server"
-  default = ""
-  type = string
-}
-
-variable "no_proxy" {
-  description = "LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON"
-  default = ""
-  type = string
-}
-
-variable "http_proxy_lower" {
-  description = "HTTP url for proxy server"
-  default = ""
-  type = string
-}
-
-variable "https_proxy_lower" {
-  description = "HTTPS url for proxy server"
-  default = ""
-  type = string
-}
-
-variable "no_proxy_lower" {
-  description = "LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON"
-  default = ""
-  type = string
-}

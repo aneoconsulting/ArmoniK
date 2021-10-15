@@ -52,18 +52,6 @@ spec:
             value: xray-service.kube-system:2000
           - name: INTRA_VPC
             value: "1"
-          - name: HTTP_PROXY
-            value: "{{ .Values.http_proxy }}"
-          - name: HTTPS_PROXY
-            value: "{{ .Values.https_proxy }}"
-          - name: NO_PROXY
-            value: "{{ .Values.no_proxy }}"
-          - name: http_proxy
-            value: "{{ .Values.http_proxy_lower }}"
-          - name: https_proxy
-            value: "{{ .Values.https_proxy_lower }}"
-          - name: no_proxy
-            value: "{{ .Values.no_proxy_lower }}"
           envFrom:
             - secretRef:
                 name: htc-agent-secret-mock
@@ -92,18 +80,6 @@ spec:
             value: "1"
           - name: AWS_LAMBDA_FUNCTION_HANDLER
             value: {{ .Values.lambda.handler }}
-          - name: HTTP_PROXY
-            value: "{{ .Values.http_proxy }}"
-          - name: HTTPS_PROXY
-            value: "{{ .Values.https_proxy }}"
-          - name: NO_PROXY
-            value: "{{ .Values.no_proxy }}"
-          - name: http_proxy
-            value: "{{ .Values.http_proxy_lower }}"
-          - name: https_proxy
-            value: "{{ .Values.https_proxy_lower }}"
-          - name: no_proxy
-            value: "{{ .Values.no_proxy_lower }}"
           envFrom:
             - secretRef:
                 name: htc-agent-secret-mock

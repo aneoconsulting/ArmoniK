@@ -192,8 +192,6 @@ upload-dotnet5.0: mock-config-dotnet5.0 mock-config-local-dotnet5.0
 #############################
 ##### generate config #######
 #############################
-config-python:
-	@$(MAKE) -C ./examples/configurations generated-python FILE_HANDLER=mock_compute_engine FUNCTION_HANDLER=lambda_handler
 
 mock-config-dotnet5.0:
 	@$(MAKE) -C ./examples/configurations generated-dotnet5.0 FILE_HANDLER="mock_integration::mock_integration.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
