@@ -1,5 +1,5 @@
 locals {
-  redis_pod_ip = kubernetes_service.redis.status.0.load_balancer.0.ingress.0.ip == "" ? lookup(tomap(data.external.external_ip.result), "external_ip", "localhost") : kubernetes_service.redis.status.0.load_balancer.0.ingress.0.ip
-  mongodb_pod_ip = kubernetes_service.mongodb.status.0.load_balancer.0.ingress.0.ip == "" ? lookup(tomap(data.external.external_ip.result), "external_ip", "localhost") : kubernetes_service.mongodb.status.0.load_balancer.0.ingress.0.ip
-  queue_pod_ip = kubernetes_service.rsmq.status.0.load_balancer.0.ingress.0.ip == "" ? lookup(tomap(data.external.external_ip.result), "external_ip", "localhost") : kubernetes_service.rsmq.status.0.load_balancer.0.ingress.0.ip
+  redis_pod_ip = kubernetes_service.redis.spec.0.cluster_ip
+  mongodb_pod_ip = kubernetes_service.mongodb.spec.0.cluster_ip
+  queue_pod_ip = kubernetes_service.rsmq.spec.0.cluster_ip
 }

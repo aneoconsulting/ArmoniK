@@ -7,10 +7,6 @@ output "agent_config" {
   value       = abspath(local_file.agent_config_file.filename)
 }
 
-output "external_ip" {
-  value = module.control_plane.external_ip
-}
-
 output "redis_url" {
   value = "${module.control_plane.redis_pod_ip}:${var.redis_port}"
 }

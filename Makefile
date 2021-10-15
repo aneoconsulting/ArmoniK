@@ -59,12 +59,6 @@ apply-dotnet-runtime:
 destroy-dotnet-runtime:
 	@$(MAKE) -C ./deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/dotnet5.0_runtime_grid_config.json
 
-apply-custom-runtime:
-	@$(MAKE) -C ./deployment/grid/terraform apply GRID_CONFIG=$(GENERATED)/grid_config.json
-
-destroy-custom-runtime:
-	@$(MAKE) -C ./deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/grid_config.json
-
 show-password:
 	@$(MAKE) -C ./deployment/grid/terraform get-grafana-password
 
