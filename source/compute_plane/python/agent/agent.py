@@ -96,7 +96,7 @@ except KeyError:
 # sqs = boto3.resource('sqs', endpoint_url=agent_config_data['sqs_endpoint'], region_name=region)
 # sqs = boto3.resource('sqs', region_name=region)
 # tasks_queue = sqs.get_queue_by_name(QueueName=agent_config_data['sqs_queue'])
-logging.info("Create sqs queue")
+logging.info("Create {} queue".format(agent_config_data['grid_queue_service']))
 from api.state_table_manager import state_table_manager
 
 tasks_queue = queue_manager(

@@ -91,11 +91,12 @@ def write_to_sqs(sqs_batch_entries, session_priority=0):
                 "priority": session_priority
             }
         )
-        if response.get('Failed') is not None:
+        print("Responses: {}".format(response))
+        if response.get('Failed'):
             # Should also send to DLQ
             raise Exception('Batch write to SQS failed - check DLQ')
     except Exception as e:
-        print("{}".format(e))
+        print("ERROR: {}".format(e))
         raise
 
     return response
