@@ -83,7 +83,7 @@ except KeyError:
     SELF_ID = "1234"
     pass
 
-logging.info("Create sqs queue")
+logging.info("Create {} queue".format(agent_config_data['grid_queue_service']))
 from api.state_table_manager import state_table_manager
 
 tasks_queue = queue_manager(

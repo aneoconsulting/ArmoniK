@@ -16,16 +16,16 @@ class QueueRSMQ:
 
         [self.host, self.port] = endpoint_url.split(":")
         self.queue_name = queue_name
-
+        logging.info("Initializing Redis Simple Message Queue: {}".format(queue_name))
         try:
             self.queue = rsmq.RedisSMQ(host=self.host, port=self.port, qname=self.queue_name)
             self.queue.createQueue(vt=40, delay=0).execute()
-            logging.info("Initializing QueueRSMQ: queue_endpoint_url={}, queue_name={}".format(endpoint_url, queue_name))
+            logging.info("QueueRSMQ: successfuly created: queue_endpoint_url={}, queue_name={}".format(endpoint_url, queue_name))
         except rsmq.cmd.exceptions.QueueAlreadyExists:
-            logging.warning("QueueSQS: is already create: queue_name [{}], endpoint_url [{}]".format(queue_name, endpoint_url))
+            logging.warning("QueueRSMQ: is already create: queue_name=[{}], endpoint_url=[{}]".format(queue_name, endpoint_url))
             pass
         except Exception as e:
-            logging.error("QueueSQS: cannot connect to queue_name [{}], endpoint_url [{}] : {}".format(queue_name, endpoint_url, e))
+            logging.error("QueueRSMQ: cannot connect to queue_name=[{}], endpoint_url=[{}] : {}".format(queue_name, endpoint_url, e))
             raise e
 
     def send_message(self, message_body):
