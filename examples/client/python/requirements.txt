@@ -1,3 +1,0 @@
-./../../../dist/api-0.1-py3-none-any.whl
-./../../../dist/utils-0.1-py3-none-any.whl
-./../../../dist/httpapi-1.0.0-py3-none-any.whl

@@ -24,7 +24,7 @@ BUILD_TYPE?=Release
 
 PACKAGE_DIR := ./dist
 PACKAGES    := $(wildcard $(PACKAGE_DIR)/*.whl)
-.PHONY: all utils api lambda submitter  packages test test-api test-utils test-agent lambda-control-plane config-c++
+.PHONY: all utils api lambda submitter  packages test test-api test-utils test-agent lambda-control-plane
 
 all: utils api lambda lambda-control-plane
 
@@ -146,9 +146,6 @@ test: test-agent test-packages
 lambda: utils api
 	$(MAKE) -C ./source/compute_plane/python/agent
 
-python-submitter: utils api
-	$(MAKE) -C ./examples/client/python
-
 dotnet-submitter: utils api
 	$(MAKE) -C ./examples/client/csharp/
 	
@@ -187,14 +184,6 @@ import: packages $(PACKAGES)
 ######################################
 ##### upload workload binaries #######
 ######################################
-upload-c++: config-c++
-	$(MAKE) -C ./examples/workloads/c++/mock_computation upload
-
-upload-python: config-python
-	$(MAKE) -C ./examples/workloads/python/mock_computation upload
-
-upload-python-ql: config-python
-	$(MAKE) -C ./examples/workloads/python/quant_lib upload
 
 upload-dotnet5.0: mock-config-dotnet5.0 mock-config-local-dotnet5.0
 	$(MAKE) -C ./examples/mock_integration upload BUILD_TYPE=$(BUILD_TYPE)
@@ -203,26 +192,11 @@ upload-dotnet5.0: mock-config-dotnet5.0 mock-config-local-dotnet5.0
 #############################
 ##### generate config #######
 #############################
-config-c++:
-	@$(MAKE) -C ./examples/configurations generated-c++
-
 config-python:
 	@$(MAKE) -C ./examples/configurations generated-python FILE_HANDLER=mock_compute_engine FUNCTION_HANDLER=lambda_handler
 
-config-python-ql:
-	@$(MAKE) -C ./examples/configurations generated-python FILE_HANDLER=portfolio_pricing_engine FUNCTION_HANDLER=lambda_handler
-
-config-s3-c++:
-	@$(MAKE) -C ./examples/configurations generated-s3-c++
-
-config-dotnet5.0:
-	@$(MAKE) -C ./examples/configurations generated-dotnet5.0 FILE_HANDLER="mock_subtasking::mock_subtasking.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
-	
 mock-config-dotnet5.0:
 	@$(MAKE) -C ./examples/configurations generated-dotnet5.0 FILE_HANDLER="mock_integration::mock_integration.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
-
-config-local-dotnet5.0:
-	@$(MAKE) -C ./examples/configurations generated-local-dotnet5.0 FILE_HANDLER="mock_subtasking::mock_subtasking.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
 
 mock-config-local-dotnet5.0:
 	@$(MAKE) -C ./examples/configurations generated-local-dotnet5.0 FILE_HANDLER="mock_integration::mock_integration.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
@@ -237,12 +211,6 @@ k8s-jobs:
 #############################
 ##### path per example ######
 #############################
-
-happy-path: all python-submitter upload-c++ config-c++ k8s-jobs
-
-python-happy-path: all python-submitter  upload-python config-python k8s-jobs
-
-python-quant-lib-path: all upload-python-ql config-python-ql k8s-jobs
 
 dotnet50-path: all dotnet5.0-htcgrid-api upload-dotnet5.0 mock-submitter cancel-session mock-config-dotnet5.0 mock-config-local-dotnet5.0 k8s-jobs
 
