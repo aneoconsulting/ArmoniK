@@ -447,6 +447,9 @@ async def do_task_local_lambda_execution_thread(perf_tracker, task, sqs_msg, tas
         "X-Amz-Log-Type": "Tail",
         "X-Amz-Client-Context" : ""
     }
+    # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/lambda.html#Lambda.Client.invoke
+    # https://docs.aws.amazon.com/lambda/latest/dg/invocation-sync.html
+    # https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html
     response = await loop.run_in_executor(
         None, partial(
             requests.post,
