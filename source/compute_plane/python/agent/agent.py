@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-import boto3
-import botocore
-from botocore.config import Config
-from botocore.exceptions import ClientError
 import json
 import time
 import os
@@ -53,14 +49,9 @@ logging.basicConfig(
 
 logging.getLogger('aws_xray_sdk').setLevel(logging.DEBUG)
 
-# Uncomment to get DEBUG logging
-# boto3.set_stream_logger('', logging.DEBUG)
-
 rand_delay = random.randint(5, 15)
 logging.info("SLEEP DELAY 2 {}".format(rand_delay))
 time.sleep(rand_delay)
-
-session = boto3.session.Session()
 
 try:
     agent_config_file = os.environ['AGENT_CONFIG_FILE']
@@ -92,10 +83,6 @@ except KeyError:
     SELF_ID = "1234"
     pass
 
-# TODO - retreive the endpoint url from Terraform
-# sqs = boto3.resource('sqs', endpoint_url=agent_config_data['sqs_endpoint'], region_name=region)
-# sqs = boto3.resource('sqs', region_name=region)
-# tasks_queue = sqs.get_queue_by_name(QueueName=agent_config_data['sqs_queue'])
 logging.info("Create sqs queue")
 from api.state_table_manager import state_table_manager
 
@@ -105,11 +92,6 @@ tasks_queue = queue_manager(
     endpoint_url=agent_config_data["queue_endpoint_url"],
     queue_name=agent_config_data['tasks_queue_name'],
     region=region)
-
-lambda_cfg = botocore.config.Config(retries={'max_attempts': 3}, read_timeout=2000, connect_timeout=2000,
-                                    region_name=region)
-lambda_client = boto3.client('lambda', config=lambda_cfg, endpoint_url=os.environ['LAMBDA_ENDPOINT_URL'],
-                             region_name=region)
 
 # TODO: We are using two retry logics for accessing DynamoDB config, and config_cc (for congestion control)
 # Revisit this code and unify the logic.
@@ -459,20 +441,25 @@ async def do_task_local_lambda_execution_thread(perf_tracker, task, sqs_msg, tas
     payload = json.dumps(task_def).encode()
     xray_recorder.begin_subsegment('lambda')
     loop = asyncio.get_event_loop()
+    url_lambda = os.environ['LAMBDA_ENDPOINT_URL'] + "/2015-03-31/functions/" + os.environ['LAMBDA_FONCTION_NAME'] + "/invocations"
+    headers_lambda = {
+        "X-Amz-Invocation-Type" : "RequestResponse",
+        "X-Amz-Log-Type": "Tail",
+        "X-Amz-Client-Context" : ""
+    }
     response = await loop.run_in_executor(
         None, partial(
-            lambda_client.invoke,
-            FunctionName=os.environ['LAMBDA_FONCTION_NAME'],
-            InvocationType='RequestResponse',
-            Payload=payload,
-            LogType='Tail'
+            requests.post,
+            url_lambda,
+            data=payload,
+            headers=headers_lambda
         )
     )
     logging.info("TASK FINISHED!!!\nRESPONSE: [{}]".format(response))
     # logs = base64.b64decode(response['LogResult']).decode('utf-8')
     # logging.info("logs : {}".format(logs))
 
-    ret_value = response['Payload'].read().decode('utf-8')
+    ret_value = response.json()
     logging.info("retValue : {}".format(ret_value))
 
     execution_is_completed_flag = 1
@@ -647,12 +634,6 @@ if __name__ == "__main__":
             global_sdk_config.set_sdk_enabled(False)
 
         event_loop()
-
-    except ClientError as e:
-        logging.error(
-            "ClientError Agent Event Loop {} [{}] POD:{}".format(e.response['Error']['Code'], traceback.format_exc(),
-                                                                 SELF_ID))
-        sys.exit(1)
 
     except Exception as e:
         logging.error("Exception Agent Event Loop {} [{}] POD:{}".format(e, traceback.format_exc(), SELF_ID))
