@@ -2,32 +2,18 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-export TAG=mainline
 export LAMBDA_AGENT_IMAGE_NAME=awshpc-lambda
 export SUBMITTER_IMAGE_NAME=submitter
 export GENERATED=$(shell pwd)/generated
-export BUCKET_NAME
-export FILE_HANDLER
-export FUNCTION_HANDLER
-export TABLE_SERVICE
 export DIST_DIR=$(shell pwd)/dist
-export GRAFANA_ADMIN_PASSWORD
-export BUILD_DIR:=(shell pwd)/.build
-export HTTP_PROXY
-export HTTPS_PROXY
-export NO_PROXY
-export http_proxy
-export https_proxy
-export no_proxy
-
+export FILE_HANDLER
 BUILD_TYPE?=Release
+PACKAGE_DIR:=./dist
+PACKAGES:= $(wildcard $(PACKAGE_DIR)/*.whl)
 
-PACKAGE_DIR := ./dist
-PACKAGES    := $(wildcard $(PACKAGE_DIR)/*.whl)
-.PHONY: all utils api lambda submitter  packages test test-api test-utils test-agent lambda-control-plane
+.PHONY: all utils api lambda submitter packages test test-api test-utils test-agent lambda-control-plane
 
 all: utils api lambda lambda-control-plane
-
 
 ###############################################
 #######     Manage HTC grid states     ########
@@ -82,6 +68,9 @@ destroy-custom-runtime:
 show-password:
 	@$(MAKE) -C ./deployment/grid/terraform get-grafana-password
 
+clean-grid-local-project: clean-grid-local-deployment
+	rm -rf $(GENERATED) $(DIST_DIR)
+
 init-grid-local-deployment:
 	@$(MAKE) -C ./local_deployment/grid/terraform init
 
@@ -94,19 +83,9 @@ apply-dotnet-local-runtime:
 destroy-dotnet-local-runtime:
 	@$(MAKE) -C ./local_deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/local_dotnet5.0_runtime_grid_config.json
 
-clean-terraform:
-	find -name ".terraform*" -type d -exec rm -rf {} \;
-	find -name ".terraform*" -type f -exec rm -f {} \;
-	find -name "*.tfstate*" -type f -exec rm -f {} \;
+clean-grid-local-deployment:
+	@$(MAKE) -C ./local_deployment/grid/terraform clean
 
-apply-custom-local-runtime:
-	@$(MAKE) -C ./local_deployment/grid/terraform apply GRID_CONFIG=$(GENERATED)/grid_config.json
-
-destroy-custom-local-runtime:
-	@$(MAKE) -C ./local_deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/grid_config.json
-
-show-local-password:
-	@$(MAKE) -C ./local_deployment/grid/terraform get-grafana-password
 #############################
 ##### building source #######
 #############################

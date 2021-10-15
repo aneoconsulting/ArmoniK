@@ -4,7 +4,7 @@
 3. [Build Armonik artifacts](#build-armonik-artifacts)
 4. [Deploy Armonik resources](#deploy-armonik-resources)
 5. [Running an example workload](#running-an-example-workload)
-6. [Destroy Armonik resources](#destroy-armonik-resources)
+6. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
 
 # Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
 Instructions to install Kubernetes on local Windows machine. You can use WSL 2.
@@ -132,26 +132,19 @@ make dotnet50-path BUILD_TYPE=Debug TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONI
 For more information see [here](./docs/debug.md)
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
-1. Create needed credentials (on-premises): for the on-premises deployment, some credentials are needed to
-   be defined by the user. Run the following command to create mock credentials needed for the Armonik agents
-   (indeed AWS Dynamodb and AWS SQS are emulated in localstack on-premises):
-   ```bash
-   kubectl create secret generic htc-agent-secret-mock --from-literal='AWS_ACCESS_KEY_ID=mock_secret_key' --from-literal='AWS_SECRET_ACCESS_KEY=mock_secret_key'
-   ```
-
-2. Run the following to initialize the Terraform environment:
+1. Run the following to initialize the Terraform environment:
    ```bash
    make init-grid-local-deployment TAG=$ARMONIK_TAG
    ```
    
-3. You need to execute `armonik/configure/bootstrap.sh` to mount `/redis_certificates`.
+2. You need to execute `armonik/configure/bootstrap.sh` to mount `/redis_certificates`.
 ```bash
 cd configure
 ./bootstrap.sh
 
 ```
 
-4. if successful you can run terraform apply to create the infrastructure:
+3. if successful you can run terraform apply to create the infrastructure:
    ```bash
    make apply-dotnet-local-runtime TAG=$ARMONIK_TAG REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
    ```
@@ -178,8 +171,25 @@ and the grid are implemented by a client in folder [./examples/client/python](./
    kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
    ```
 
-# Destroy Armonik resources <a name="destroy-armonik-resources"></a>
-In the root forlder `<project_root>`, to destroy all Armonik resources deploy on the local machine, execute the following command:
+# Clean and destroy Armonik resources <a name="clean-and-destroy-armonik-resources"></a>
+In the root forlder `<project_root>`, to destroy all Armonik resources deployed on the local machine, execute the following commands:
+
+1. Delete the launched Kubernetes job, example:
+```bash
+kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
+```
+
+2. Destroy all Armonik resources:
 ```bash
 make destroy-dotnet-local-runtime TAG=$ARMONIK_TAG REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+```
+
+3. Clean Terraform project, binaries and generated files:
+```bash
+make clean-grid-local-project
+```
+
+4. **If you want** remove all local docker images:
+```bash
+docker rmi -f $(docker images -a -q)
 ```

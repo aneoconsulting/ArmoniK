@@ -6,7 +6,7 @@
 5. [Build Armonik artifacts](#build-armonik-artifacts)
 6. [Deploy Armonik resources](#deploy-armonik-resources)
 7. [Running an example workload](#running-an-example-workload)
-8. [Destroy Armonik resources](#destroy-armonik-resources)
+8. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
 
 
 
@@ -205,15 +205,6 @@ sudo apt-get update; \
 ```
 
 # Setup the project <a name="setup-the-project"></a>
-
-## On-premise credentials
-
-Create needed credentials (on-premises): for the on-premises deployment, some credentials are needed to be defined by the user. Run the following command to create mock credentials needed for the Armonik agents (indeed AWS Dynamodb and AWS SQS are emulated in localstack on-premises):
-
-```bash
-kubectl create secret generic htc-agent-secret-mock --from-literal='AWS_ACCESS_KEY_ID=mock_secret_key' --from-literal='AWS_SECRET_ACCESS_KEY=mock_secret_key'
-```
-
 ## Virtualenv
 
 Inside the project folder.
@@ -332,8 +323,30 @@ and the grid are implemented by a client in folder [./examples/client/python](./
    kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
    ```
 
-# Destroy Armonik resources <a name="destroy-armonik-resources"></a>
-In the root forlder `<project_root>`, to destroy all Armonik resources deploy on the local machine, execute the following command:
+# Clean and destroy Armonik resources <a name="clean-and-destroy-armonik-resources"></a>
+In the root forlder `<project_root>`, to destroy all Armonik resources deployed on the local machine, execute the following commands:
+
+1. Delete the launched Kubernetes job, example:
+```bash
+kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
+```
+
+2. Destroy all Armonik resources:
 ```bash
 make destroy-dotnet-local-runtime TAG=$ARMONIK_TAG REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+```
+
+3. Clean Terraform project, binaries and generated files:
+```bash
+make clean-grid-local-project
+```
+
+4. **If you want** uninstall Kubernetes on the local machine:
+```bash
+/usr/local/bin/k3s-uninstall.sh
+```
+
+5. **If you want** remove all local docker images:
+```bash
+docker rmi -f $(docker images -a -q)
 ```
