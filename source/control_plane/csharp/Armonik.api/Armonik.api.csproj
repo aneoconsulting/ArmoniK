@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+<ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+</ItemGroup>
+
+  <ItemGroup>
+      <PackageReference Include="StackExchange.Redis" Version="2.2.50" />
+      <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.11.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+      <PackageReference Include="RestSharp" Version="106.11.7" />
+      <PackageReference Include="Polly" Version="7.2.2" />
+      <PackageReference Include="HTCGridAPI" Version="1.0.0" />
+      <PackageReference Include="HttpApi" Version="1.0.0" />
+  </ItemGroup>
+</Project>

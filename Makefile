@@ -20,6 +20,8 @@ export http_proxy
 export https_proxy
 export no_proxy
 
+APPLICATION_NAME?=ArmonikSamples
+
 BUILD_TYPE?=Release
 
 PACKAGE_DIR := ./dist
@@ -146,14 +148,8 @@ test: test-agent test-packages
 lambda: utils api
 	$(MAKE) -C ./source/compute_plane/python/agent
 
-dotnet-submitter: utils api
-	$(MAKE) -C ./examples/client/csharp/
-	
-mock-submitter: utils api
-	$(MAKE) -C ./examples/mock_integration/Client/ BUILD_TYPE=$(BUILD_TYPE)
-
-cancel-session: utils api
-	$(MAKE) -C ./examples/mock_integration/CancelSession/ BUILD_TYPE=$(BUILD_TYPE)
+$(APPLICATION_NAME)-submitter: utils api
+	$(MAKE) -C ./applications/$(APPLICATION_NAME)/Client BUILD_TYPE=$(BUILD_TYPE)
 
 lambda-control-plane: utils api lambda-control-plane-submit-tasks lambda-control-plane-get-results lambda-control-plane-cancel-tasks lambda-control-plane-ttl-checker
 
@@ -185,34 +181,39 @@ import: packages $(PACKAGES)
 ##### upload workload binaries #######
 ######################################
 
-upload-dotnet5.0: mock-config-dotnet5.0 mock-config-local-dotnet5.0
-	$(MAKE) -C ./examples/mock_integration upload BUILD_TYPE=$(BUILD_TYPE)
+upload-dotnet5.0: dotnet50-core $(APPLICATION_NAME)-config-dotnet5.0 $(APPLICATION_NAME)-config-local-dotnet5.0
+	$(MAKE) -C ./applications/$(APPLICATION_NAME) upload BUILD_TYPE=$(BUILD_TYPE)
 
 
 #############################
 ##### generate config #######
 #############################
+
+FILE_HANDLER="$(APPLICATION_NAME)::$(APPLICATION_NAME).Function::FunctionHandler"
+
 config-python:
-	@$(MAKE) -C ./examples/configurations generated-python FILE_HANDLER=mock_compute_engine FUNCTION_HANDLER=lambda_handler
+	@$(MAKE) -C ./applications/apps_core/configurations generated-python FILE_HANDLER=mock_compute_engine FUNCTION_HANDLER=lambda_handler
 
-mock-config-dotnet5.0:
-	@$(MAKE) -C ./examples/configurations generated-dotnet5.0 FILE_HANDLER="mock_integration::mock_integration.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
+$(APPLICATION_NAME)-config-dotnet5.0:
+	@$(MAKE) -C ./applications/apps_core/configurations generated-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
 
-mock-config-local-dotnet5.0:
-	@$(MAKE) -C ./examples/configurations generated-local-dotnet5.0 FILE_HANDLER="mock_integration::mock_integration.Function::FunctionHandler" BUILD_TYPE=$(BUILD_TYPE)
+$(APPLICATION_NAME)-config-local-dotnet5.0:
+	@$(MAKE) -C ./applications/apps_core/configurations generated-local-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
 
 ###############################
 ##### generate k8s jobs #######
 ###############################
 k8s-jobs:
-	@$(MAKE) -C ./examples/submissions/k8s_jobs
+	@$(MAKE) -C ./applications/apps_core/submissions/k8s_jobs
 
 
 #############################
 ##### path per example ######
 #############################
 
-dotnet50-path: all dotnet5.0-htcgrid-api upload-dotnet5.0 mock-submitter cancel-session mock-config-dotnet5.0 mock-config-local-dotnet5.0 k8s-jobs
+dotnet50-core: all dotnet5.0-htcgrid-api
+
+dotnet50-path: upload-dotnet5.0 $(APPLICATION_NAME)-submitter k8s-jobs
 
 #############################
 ##### C#              #######
@@ -223,19 +224,20 @@ build-dotnet5.0: build-dotnet5.0-api build-htc-grid-dotnet5.0-api build-dotnet5.
 
 build-dotnet5.0-api:
 	cd ./generated/csharp/http_api/ && dotnet restore src/HttpApi/ && dotnet build src/HttpApi/ --configuration $(BUILD_TYPE)
-	mkdir -p ./examples/client/csharp/lib
-	cp ./generated/csharp/http_api/src/HttpApi/bin/$(BUILD_TYPE)/net5.0/HttpApi.dll ./examples/client/csharp/lib/
-	cp ./generated/csharp/http_api/src/HttpApi/bin/$(BUILD_TYPE)/net5.0/HttpApi.dll ./examples/mock_integration/lib
 
 build-htc-grid-dotnet5.0-api:
 	$(MAKE) -C ./source/client/csharp/api-v0.1 all BUILD_TYPE=$(BUILD_TYPE)
-	mkdir -p ./examples/client/csharp/lib/
-	cp ./source/client/csharp/api-v0.1/bin/$(BUILD_TYPE)/net5.0/HTCGridAPI.dll ./examples/client/csharp/lib/
-	cp ./source/client/csharp/api-v0.1/bin/$(BUILD_TYPE)/net5.0/HTCGridAPI.dll ./examples/mock_integration/lib/
+
+build-armonik-dotnet5.0-api:
+	$(MAKE) -C ./source/control_plane/csharp/armonik.api all BUILD_TYPE=$(BUILD_TYPE)
 
 build-dotnet5.0-simple-client:
 	$(MAKE) -C ./examples/client/csharp/ BUILD_TYPE=$(BUILD_TYPE)
 
 build-dotnet5.0-mock-integration:
 	$(MAKE) -C ./examples/mock_integration/ BUILD_TYPE=$(BUILD_TYPE)
+
+build-dotnet5.0-armonik-samples:
+	$(MAKE) -C ./examples/ArmonikSamples/ BUILD_TYPE=$(BUILD_TYPE)
+
 

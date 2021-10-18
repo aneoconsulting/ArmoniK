@@ -1,0 +1,28 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim as base
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim as build
+
+
+RUN apt-get update ; apt-get install -y build-essential
+RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
+
+WORKDIR /app
+RUN mkdir -p ./lib
+COPY ./dist/HTCGridAPI.* ./lib/
+COPY ./dist/HttpApi.* ./lib/
+COPY ./dist/Armonik.api.* ./lib/
+COPY ./Client ./Client
+
+ENV ARMONIK_NUGET_REPOS=/app/lib
+
+WORKDIR /app/Client
+
+RUN dotnet publish "Client.csproj" \
+            --configuration Debug \
+            --runtime linux-x64  \
+            --self-contained false \
+            --output /app/publish \
+            -p:PublishReadyToRun=true
+RUN cp /app/Client/bin/Debug/net5.0/linux-x64/*.pdb /app/publish/
+RUN cp /app/lib/dotnet5.0/*.pdb /app/publish/
+WORKDIR /app/publish
+ENTRYPOINT ["dotnet"]

@@ -1,0 +1,36 @@
+FROM public.ecr.aws/lambda/dotnet:5.0 as base
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim as build
+
+WORKDIR "/app"
+COPY ./packages/images /app/images
+
+WORKDIR "/app/images"
+RUN mkdir -p ./dist
+COPY ./dist/*.nupkg ./dist/
+COPY ./dist/*.pdb ./dist/
+ENV ARMONIK_NUGET_REPOS=/app/images/dist
+
+WORKDIR "/app/images"
+RUN dotnet restore
+RUN mkdir -p ./lib/
+
+COPY ./dist/HtcCommon.* ./dist/
+COPY ./dist/HttpApi.* ./dist/
+
+FROM build AS publish
+RUN dotnet publish "mock_integration.csproj" \
+            --configuration Debug \
+            --runtime linux-x64  \
+            --self-contained false \
+            --output /app/publish \
+            -p:PublishReadyToRun=true
+
+RUN cp ./dist/*.pdb /app/publish
+RUN cp lambda_entry_point.sh /app/publish
+
+FROM base AS final
+RUN yum update -y && yum install -y tar gzip
+RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
+
+WORKDIR /var/task
+COPY --from=publish /app/publish .
