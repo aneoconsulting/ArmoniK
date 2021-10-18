@@ -93,10 +93,9 @@ namespace ArmonikSamples
             //// 2. Do computation /////////////////////////////////////////////
             ////////////////////////////////////////////////////////////////////
 
-            byte[] payload = inputTask.Payload;
             if (firstRun)
             {
-                gridWorker.OnSessionEnter(inputTask.SessionId, inputTask.TaskId, payload);
+                gridWorker.OnSessionEnter(inputTask.SessionId, inputTask.TaskId, inputTask.Payload);
                 firstRun = false;
             }
 
@@ -106,7 +105,7 @@ namespace ArmonikSamples
 
 
 
-            gridWorker.Execute(inputTask.SessionId, inputTask.TaskId, payload);
+            gridWorker.Execute(inputTask.SessionId, inputTask.TaskId, inputTask.Payload);
 
             // trade_data = trade_data * 10;
 

@@ -9,7 +9,7 @@ namespace Armonik.sdk
         ///
         /// </summary>
         /// <value></value>
-        HtcGridClient htcGridClient
+        public HtcGridClient htcGridClient
         {
             get;
             set;
@@ -18,7 +18,7 @@ namespace Armonik.sdk
         ///
         /// </summary>
         /// <value></value>
-        HtcDataClient htcDataClient { get; set; }
+        public HtcDataClient htcDataClient { get; set; }
 
         /// <summary>
         /// The middleware triggers the invocation of this handler just after a Service Instance is started.
@@ -100,7 +100,7 @@ namespace Armonik.sdk
         /// <param name="value">
         /// The data value to put in the database.
         /// </param>
-        public sealed byte[] getData(string key)
+        public sealed byte[] GetData(string key)
         {
             return htcDataClient.GetData(key);
         }

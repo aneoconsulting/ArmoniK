@@ -1,5 +1,8 @@
 
 using Armonik.sdk;
+using System;
+using System.IO;
+using System.Collections.Generic;
 
 namespace ArmonikSamples
 {
@@ -17,10 +20,9 @@ namespace ArmonikSamples
 
         public override void OnInvoke(SessionContext sessionContext, TaskContext taskContext)
         {
-            byte[] input = taskContext.TaskInput();
-            List<int> numbers = List<int>();
+            List<int> numbers = new List<int>();
             string inputTaskType;
-            using (MemoryStream m = new MemoryStream(data))
+            using (MemoryStream m = new MemoryStream(taskContext.TaskInput))
             {
                 using (BinaryReader reader = new BinaryReader(m))
                 {
@@ -30,10 +32,11 @@ namespace ArmonikSamples
                     {
                         byte[] nextTaskInput;
                         int n = reader.ReadInt32();
+                        List<string> taskIds = new List<string>();
                         for (int i = 0; i < n; i++)
                         {
                             int c = reader.ReadInt32();
-                            
+
                             using (MemoryStream m2 = new MemoryStream())
                             {
                                 using (BinaryWriter writer = new BinaryWriter(m2))
@@ -43,9 +46,15 @@ namespace ArmonikSamples
                                 }
                                 nextTaskInput = m2.ToArray();
                             }
-                            SubmitTask(sessionContext.SessionId, nextTaskInput);
+                            taskIds.Add(SubmitTask(sessionContext.SessionId, nextTaskInput));
                         }
-                        writeTaskOutput(taskContext.TaskId, sum);
+                        int sum = 0;
+                        foreach (var task in taskIds)
+                        {
+                            HtcGridClient.WaitCompletion(task);
+                            sum += BitConverter.ToInt32(GetData(task), 0);
+                        }
+                        writeTaskOutput(taskContext.TaskId, BitConverter.GetBytes(sum));
                     }
                     else if (inputTaskType == "Squarre")
                     {

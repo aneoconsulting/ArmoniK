@@ -31,8 +31,7 @@ namespace Armonik.sdk
 
         public byte[] GetResult(string taskId)
         {
-            Encoding.ASCII.GetBytes(submittedTasks_.Get(taskId));
-            return new byte[0];
+            return htcDataClient_.GetData(taskId);
         }
 
         //TODO change signature to get a default timeout time in seconds
