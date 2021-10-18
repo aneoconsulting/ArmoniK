@@ -1,5 +1,8 @@
 #!/bin/bash
 
+cd $(dirname $0)
+root_path=$(pwd -P)
+
 function local() {
     read -p "ARMONIK_TAG [$ARMONIK_TAG] : " TAG
     read -p "ARMONIK_NUGET_REPOS [$ARMONIK_NUGET_REPOS] : " NUGET_REPOS
@@ -21,10 +24,28 @@ function local() {
     if [ ! -z "$DOCKER_REGISTRY" ]; then
       export ARMONIK_DOCKER_REGISTRY=$DOCKER_REGISTRY
     fi
+
+    cd ..
 }
 
 function AWS() {
-  local
+    read -p "ARMONIK_TAG [$ARMONIK_TAG] : " TAG
+    read -p "ARMONIK_REGION [$ARMONIK_REGION] : " REGION
+    read -p "ARMONIK_NUGET_REPOS [$ARMONIK_NUGET_REPOS] : " NUGET_REPOS
+
+    if [ ! -z "$TAG" ]; then
+      export ARMONIK_TAG=$TAG
+    fi
+
+    if [ ! -z "$NUGET_REPOS" ]; then
+      export ARMONIK_NUGET_REPOS=$NUGET_REPOS
+    fi
+
+    if [ ! -z "$REGION" ]; then
+      export ARMONIK_REGION=$REGION
+    fi
+
+    cd ..
 }
 
 function Custum() {
@@ -44,19 +65,21 @@ function Custum() {
   if [ ! -z "$TASKS_TABLE_SERVICE" ]; then
     export ARMONIK_TASKS_TABLE_SERVICE=$TASKS_TABLE_SERVICE
   fi
+
+  cd ..
 }
 
 case $1 in
    LINUX)
-     source ./onpremise-linux-config.conf
+     source $root_path/onpremise-linux-config.conf
      local
      ;;
    WSL)
-     source ./onpremise-wsl-config.conf
+     source $root_path/onpremise-wsl-config.conf
      local
      ;;
    AWS)
-     source ./onpremise-aws-config.conf
+     source $root_path/onpremise-aws-config.conf
      AWS
      ;;
    *)

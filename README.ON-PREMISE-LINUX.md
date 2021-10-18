@@ -1,6 +1,8 @@
 # Table of contents
 1. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
 2. [Configure the environment](#configure-the-environment)
+   1. [Environment variables](#environment-variables)
+   2. [Python environment](#python-environment)
 3. [Build Armonik artifacts](#build-armonik-artifacts)
 4. [Deploy Armonik resources](#deploy-armonik-resources)
 5. [Running an example workload](#running-an-example-workload)
@@ -36,6 +38,7 @@ To uninstall K3s, use the following command:
 ```
 
 # Configure the environment <a name="configure-the-environment"></a>
+## Environment variables <a name="environment-variables"></a>
 The project needs to define and set environment variables for building the binaries and deploying the infrastructure.
 The main environment variables are:
 ```buildoutcfg
@@ -68,7 +71,38 @@ ARMONIK_DOCKER_REGISTRY=<Your Docker registry>
 
 **To set these environment variables**, execute the following command:
 ```bash
-make set-envvars ARMONIK_CONFIG_TYPE=LINUX
+./configurations/set-envvars.sh LINUX
+```
+
+## Python environment <a name="python-environment"></a>
+The current release of Armonik requires python3 in the PATH of your system, and the documentation assumes the use of *virtualenv*. 
+
+Set up this as follows (for example python3.7):
+```bash
+virtualenv --python=python3.7 venv
+```
+
+When successful :
+```bash
+created virtual environment CPython3.7.10.final.0-64 in 1329ms
+  creator CPython3Posix(dest=<project_roor>/venv, clear=False, no_vcs_ignore=False, global=False)
+  seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=/Users/user/Library/Application Support/virtualenv)
+    added seed packages: pip==21.0.1, setuptools==54.1.2, wheel==0.36.2
+  activators BashActivator,CShellActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
+```
+
+Check you have the correct version of python (`3.7.x`), with a path rooted on `<project_root>`, 
+then start the environment:
+```
+source ./venv/bin/activate
+```
+
+Check the python version as follows:
+```bash
+$ which python
+<project_root>/venv/bin/python
+$ python -V
+Python 3.7.10
 ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>

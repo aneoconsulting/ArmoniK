@@ -2,9 +2,7 @@
 1. [Armonik](#armonik)
    1. [When should I use Armonik](#when-should-i-use-armonik)
    2. [When should I not use Armonik](#when-should-i-not-use-armonik)
-2. [Getting started](#getteing-started)
-   1. [Software prerequisites](#software-prerequisites)
-   2. [Python environment](#python-environment)
+2. [Software prerequisites](#software-prerequisites)
 3. [Armonik software on-premise](#armonik-software-on-premise)
       1. [On Linux](#on-linux)
       2. [On Windows](#on-windows)
@@ -33,8 +31,7 @@ Armonik might not be the best choice if :
 2. The tasks are tightly coupled, or use MPI.
 3. The tasks uses third party licensed software.
 
-# Getting started <a name="getting-started"></a>
-## Software prerequisites <a name="software-prerequisites"></a>
+# Software prerequisites <a name="software-prerequisites"></a>
 The following resources should be installed upon you local machine :
 
 * docker version > 1.19
@@ -52,37 +49,6 @@ The following resources should be installed upon you local machine :
 * [JQ](https://stedolan.github.io/jq/)
 
 * [dotnet 5.0+](https://docs.microsoft.com/en-us/dotnet/core/install/)
-
-## Python environment <a name="python-environment"></a>
-The current release of Armonik requires python3 in the PATH of your system, and the documentation assumes the use of *virtualenv*. 
-
-Set up this as follows (for example python3.7):
-```bash
-virtualenv --python=python3.7 venv
-```
-
-When successful :
-```bash
-created virtual environment CPython3.7.10.final.0-64 in 1329ms
-  creator CPython3Posix(dest=<project_roor>/venv, clear=False, no_vcs_ignore=False, global=False)
-  seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=/Users/user/Library/Application Support/virtualenv)
-    added seed packages: pip==21.0.1, setuptools==54.1.2, wheel==0.36.2
-  activators BashActivator,CShellActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
-```
-
-Check you have the correct version of python (`3.7.x`), with a path rooted on `<project_root>`, 
-then start the environment:
-```
-source ./venv/bin/activate
-```
-
-Check the python version as follows:
-```bash
-$ which python
-<project_root>/venv/bin/python
-$ python -V
-Python 3.7.10
-```
 
 # Armonik software on-premise <a name="armonik-software-on-premise"></a>
 ## On Linux <a name="on-linux"></a>

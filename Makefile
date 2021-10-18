@@ -16,12 +16,6 @@ PACKAGES:= $(wildcard $(PACKAGE_DIR)/*.whl)
 
 all: utils api lambda lambda-control-plane
 
-###############################################
-##############     Set envvars     ############
-###############################################
-set-envvars:
-	$(MAKE) -C ./configurations set
-
 
 ###############################################
 #######     Manage HTC grid states     ########

@@ -1,76 +1,99 @@
 # Table of contents
-1. [Configure AWS Cli](#configure-aws-cli)
-2. [Configure the environment](#configure-the-environment)
-3. [Build Armonik artifacts](#build-armonik-artifacts)
-4. [Deploy Armonik resources](#deploy-armonik-resources)
-5. [Running an example workload](#running-an-example-workload)
+1. [Configure the environment](#configure-the-environment)
+   1. [Configure AWS Cli](#configure-aws-cli)
+   2. [Environment variables](#environment-variables)
+   3. [ECR authentication](#ecr-authentication)
+   4. [Python environment](#python-environment)
+2. [Build Armonik artifacts](#build-armonik-artifacts)
+3. [Deploy Armonik resources](#deploy-armonik-resources)
+4. [Running an example workload](#running-an-example-workload)
 
-# Configure AWS Cli <a name="configure-aws-cli"></a>
+# Configure the environment <a name="configure-the-environment"></a>
+## Configure AWS Cli <a name="configure-aws-cli"></a>
 
 You need to provide your AWS secret credentials.
 ```bash
    aws configure
 ```
 
-# Configure the environment <a name="configure-the-environment"></a>
-Define variables for deploying the infrastructure as follows:
-1. To simplify this installation it is suggested that a unique <ARMONIK_TAG> name (to be used later) is also used to prefix the 
-   different required resources. 
-   ```bash
-      export ARMONIK_TAG=<Your tag>
-   ```
+## Environment variables <a name="environment-variables"></a>
+The project needs to define and set environment variables for building the binaries and deploying the infrastructure.
+The main environment variables are:
+```buildoutcfg
+# To simplify the installation it is suggested that
+# a unique <ARMONIK_TAG> name is used to prefix the
+# different required resources.
+ARMONIK_TAG=<Your tag>
 
-2. Define the type of the database service 
-   ```bash
-      export ARMONIK_TASKS_TABLE_SERVICE=DynamoDB
-   ```
-   
-3. Define the type of the message queue
-   ```bash
-      export ARMONIK_QUEUE_SERVICE=<Your queue service>
-   ```
-   `<Your queue service>` can be (the list is not exhaustive)
-   - `SQS`
-   - `PrioritySQS`
+# Define the region where the grid will be deployed
+export ARMONIK_REGION=<Your AWS region>
 
-4. Define an environment variable containing the path to the local nuget repository.
-   ```bash
-      export ARMONIK_NUGET_REPOS=<project directory>/dist/dotnet5.0
-   ```
+# Define the type of the database service
+ARMONIK_TASKS_TABLE_SERVICE=<Your database type>
 
-5. Define the AWS account ID where the grid will be deployed
-    ```bash
-      export ARMONIK_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
+# Define the type of the message queue
+ARMONIK_QUEUE_SERVICE=<Your message queue type>
 
-    ```
-6. Define the region where the grid will be deployed
-   ```bash
-      export ARMONIK_REGION=<Your region>
-   ```
-   `<Your region>` region can be (the list is not exhaustive)
-   - `eu-west-1`
-   - `eu-west-2`
-   - `eu-west-3`
-   - `eu-central-1`
-   - `us-east-1`
-   - `us-west-2`
-   - `ap-northeast-1`
-   - `ap-southeast-1`
+# Define an environment variable to select API Gateway service.
+ARMONIK_API_GATEWAY_SERVICE=<Your API gateway type>
 
-7. Define an environment variable containing AWS ECR registry.
-   ```bash
-      export ARMONIK_DOCKER_REGISTRY=$ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
-   ```
+# Define the AWS account ID where the grid will be deployed
+export ARMONIK_ACCOUNT_ID=<Your AWS account ID>
 
-8. Define an environment variable to select API Gateway service.
-   ```bash
-      export ARMONIK_API_GATEWAY_SERVICE=APIGateway
-   ```
+# Define an environment variable containing the path to
+# the local nuget repository.
+ARMONIK_NUGET_REPOS=<Your NuGet repository>
 
-9. ECR authentication. As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
-   ```bash
-      aws ecr get-login-password --region $ARMONIK_REGION | docker login --username AWS --password-stdin $ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
-   ```
+# Define an environment variable containing the path to
+# the redis certificates.
+ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your path to Redis certificates>
+
+# Define an environment variable containing the docker registry
+# if it exists, otherwise initialize the variable to empty.
+ARMONIK_DOCKER_REGISTRY=<Your Docker registry>
+```
+
+**To set these environment variables**, execute the following command:
+```bash
+./configurations/set-envvars.sh AWS
+```
+
+## ECR authentication <a name="ecr-authentication"></a>
+As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
+```bash
+aws ecr get-login-password --region $ARMONIK_REGION | docker login --username AWS --password-stdin $ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
+```
+
+## Python environment <a name="python-environment"></a>
+The current release of Armonik requires python3 in the PATH of your system, and the documentation assumes the use of *virtualenv*. 
+
+Set up this as follows (for example python3.7):
+```bash
+virtualenv --python=python3.7 venv
+```
+
+When successful :
+```bash
+created virtual environment CPython3.7.10.final.0-64 in 1329ms
+  creator CPython3Posix(dest=<project_roor>/venv, clear=False, no_vcs_ignore=False, global=False)
+  seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=/Users/user/Library/Application Support/virtualenv)
+    added seed packages: pip==21.0.1, setuptools==54.1.2, wheel==0.36.2
+  activators BashActivator,CShellActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
+```
+
+Check you have the correct version of python (`3.7.x`), with a path rooted on `<project_root>`, 
+then start the environment:
+```
+source ./venv/bin/activate
+```
+
+Check the python version as follows:
+```bash
+$ which python
+<project_root>/venv/bin/python
+$ python -V
+Python 3.7.10
+```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s. 
