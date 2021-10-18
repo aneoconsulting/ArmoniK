@@ -5,7 +5,7 @@
 GENERATED?=$(shell pwd)/generated/dotnet5.0/client
 DIST_DIR?=$(shell pwd)/../../../dist
 SUBMITTER_IMAGE_NAME=submitter
-TAG=main
+export ARMONIK_TAG
 DOCKER_REGISTRY=
 
 .PHONY: push push
@@ -32,12 +32,12 @@ clean:
 
 build: Dockerfile
 ifneq ($(DOCKER_REGISTRY),)
-	docker build ../../../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
+	docker build ../../../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile
 else
-	docker build ../../../ -t $(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
+	docker build ../../../ -t $(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile
 endif
 
 push: build
 ifneq ($(DOCKER_REGISTRY),)
-	docker push $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG)
+	docker push $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG)
 endif

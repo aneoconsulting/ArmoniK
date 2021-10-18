@@ -14,7 +14,7 @@ You need to provide your AWS secret credentials.
 
 # Configure the environment <a name="configure-the-environment"></a>
 Define variables for deploying the infrastructure as follows:
-1. To simplify this installation it is suggested that a unique <TAG> name (to be used later) is also used to prefix the 
+1. To simplify this installation it is suggested that a unique <ARMONIK_TAG> name (to be used later) is also used to prefix the 
    different required resources. 
    ```bash
       export ARMONIK_TAG=<Your tag>
@@ -82,7 +82,7 @@ Armonik artifacts include: .NET Core packages, docker images, configuration file
 
 To build and install these in `<project_root>`:
 ```bash
-make dotnet50-path TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY REGION=$ARMONIK_REGION DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+make dotnet50-path TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY REGION=$ARMONIK_REGION DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following 
@@ -93,18 +93,18 @@ two files:
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 1. Create S3 buckets. The following step creates the S3 buckets and an encryption key that will be needed during the installation:
    ```bash
-   make init-grid-state TAG=$ARMONIK_TAG REGION=$ARMONIK_REGION
+   make init-grid-state REGION=$ARMONIK_REGION
 
    ```
 
 2. Run the following to initialize the Terraform environment: 
    ```bash
-   make init-grid-deployment TAG=$ARMONIK_TAG REGION=$ARMONIK_REGION
+   make init-grid-deployment REGION=$ARMONIK_REGION
    ```
    
 3. If successful you can run terraform apply to create the infrastructure:
    ```bash
-   make apply-dotnet-runtime TAG=$ARMONIK_TAG REGION=$ARMONIK_REGION REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+   make apply-dotnet-runtime REGION=$ARMONIK_REGION REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
    ```
    
 # Running an example workload <a name="running-an-example-workload"></a>

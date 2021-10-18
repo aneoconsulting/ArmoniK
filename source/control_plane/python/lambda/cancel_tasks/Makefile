@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-TAG?=mainline
-DOCKER_REGISTRY=
 CANCEL_TASKS_IMAGE=cancel_tasks
 CONTEXT_DIR=../../../../..
 SRCS=cancel_tasks.py
+export ARMONIK_TAG
+DOCKER_REGISTRY=
 
 .PHONY: all lambda-cancel-tasks build-lambda-cancel-tasks push-lambda-cancel-tasks
 
@@ -15,14 +15,14 @@ lambda-cancel-tasks: build-lambda-cancel-tasks push-lambda-cancel-tasks
 
 build-lambda-cancel-tasks: Dockerfile
 ifneq ($(DOCKER_REGISTRY),)
-	docker build $(CONTEXT_DIR) -t $(DOCKER_REGISTRY)/$(CANCEL_TASKS_IMAGE):$(TAG) -f ./Dockerfile
+	docker build $(CONTEXT_DIR) -t $(DOCKER_REGISTRY)/$(CANCEL_TASKS_IMAGE):$(ARMONIK_TAG) -f ./Dockerfile
 else
-	docker build $(CONTEXT_DIR) -t $(CANCEL_TASKS_IMAGE):$(TAG) -f ./Dockerfile
+	docker build $(CONTEXT_DIR) -t $(CANCEL_TASKS_IMAGE):$(ARMONIK_TAG) -f ./Dockerfile
 endif
 
 push-lambda-cancel-tasks: build-lambda-cancel-tasks
 ifneq ($(DOCKER_REGISTRY),)
-	docker push $(DOCKER_REGISTRY)/$(CANCEL_TASKS_IMAGE):$(TAG)
+	docker push $(DOCKER_REGISTRY)/$(CANCEL_TASKS_IMAGE):$(ARMONIK_TAG)
 endif
 
 test: $(SRCS)

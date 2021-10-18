@@ -9,7 +9,6 @@ DOCKER_USER_ID:=$(shell id -u)
 DOCKER_GROUP_ID:=$(shell id -g)
 SRCS    := api.yaml
 BUILD_TYPE?=Release
-
 PACKAGE_NAME=httpapi
 PACKAGE_NAME_CSHARP=HttpApi
 PACKAGE_TARGET=$(DIST_DIR)/$(PACKAGE_NAME)-1.0.0-py3-none-any.whl

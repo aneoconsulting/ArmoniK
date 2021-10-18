@@ -95,10 +95,10 @@ Details:
 
     ```Makefile
     SUBMITTER_IMAGE_NAME=submitter
-    TAG=<the tag specified during the HTC-Grid deployment>
+    ARMONIK_TAG=<the ARMONIK_TAG specified during the HTC-Grid deployment>
     DOCKER_REGISTRY=$(ACCOUNT_ID).dkr.ecr.$(REGION).amazonaws.com
 
-    docker push $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG)
+    docker push $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG)
     ```
 2. Create a deployment .yaml file. For example:
 

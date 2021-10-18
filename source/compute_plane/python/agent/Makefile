@@ -4,10 +4,11 @@
 
 LAMBDA_AGENT_IMAGE_NAME=awshpc-lambda
 LOCAL_AGENT_IMAGE_NAME=awshpc-local
-TAG=mainline
-DOCKER_REGISTRY=
 CONTEXT_DIR=../../../..
 SRCS=agent.py
+export ARMONIK_TAG
+DOCKER_REGISTRY=
+
 
 .PHONY: all lambda local push-lambda build-lambda build-local push-local
 
@@ -17,26 +18,26 @@ local: build-local push-local
 
 build-lambda: Dockerfile.Lambda
 ifneq ($(DOCKER_REGISTRY),)
-	docker build $(CONTEXT_DIR) -t $(DOCKER_REGISTRY)/$(LAMBDA_AGENT_IMAGE_NAME):$(TAG) -f ./Dockerfile.Lambda
+	docker build $(CONTEXT_DIR) -t $(DOCKER_REGISTRY)/$(LAMBDA_AGENT_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile.Lambda
 else
-	docker build $(CONTEXT_DIR) -t $(LAMBDA_AGENT_IMAGE_NAME):$(TAG) -f ./Dockerfile.Lambda
+	docker build $(CONTEXT_DIR) -t $(LAMBDA_AGENT_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile.Lambda
 endif
 
 push-lambda: build-lambda
 ifneq ($(DOCKER_REGISTRY),)
-	docker push $(DOCKER_REGISTRY)/$(LAMBDA_AGENT_IMAGE_NAME):$(TAG)
+	docker push $(DOCKER_REGISTRY)/$(LAMBDA_AGENT_IMAGE_NAME):$(ARMONIK_TAG)
 endif
 
 build-local: Dockerfile.Local
 ifneq ($(DOCKER_REGISTRY),)
-	docker build $(CONTEXT_DIR) -t $(DOCKER_REGISTRY)/$(LOCAL_AGENT_IMAGE_NAME):$(TAG) -f ./Dockerfile.Local
+	docker build $(CONTEXT_DIR) -t $(DOCKER_REGISTRY)/$(LOCAL_AGENT_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile.Local
 else
-	docker build $(CONTEXT_DIR) -t $(LOCAL_AGENT_IMAGE_NAME):$(TAG) -f ./Dockerfile.Local
+	docker build $(CONTEXT_DIR) -t $(LOCAL_AGENT_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile.Local
 endif
 
 push-local: build-local
 ifneq ($(DOCKER_REGISTRY),)
-	docker push $(DOCKER_REGISTRY)/$(LOCAL_AGENT_IMAGE_NAME):$(TAG)
+	docker push $(DOCKER_REGISTRY)/$(LOCAL_AGENT_IMAGE_NAME):$(ARMONIK_TAG)
 endif
 
 test: $(SRCS)

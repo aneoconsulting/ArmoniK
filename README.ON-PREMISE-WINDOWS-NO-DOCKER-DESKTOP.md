@@ -220,7 +220,7 @@ virtualenv --python=python3.8 venv
    source ./venv/bin/activate
    ```
 
-2. To simplify this installation it is suggested that a unique <TAG> name (to be used later) is also used to prefix the
+2. To simplify this installation it is suggested that a unique <ARMONIK_TAG> name (to be used later) is also used to prefix the
    different required resources.
    ```bash
    export ARMONIK_TAG=<Your tag>
@@ -273,7 +273,7 @@ Armonik artifacts include: .NET Core packages, docker images, configuration file
 
 To build and install these in `<project_root>`:
 ```bash
-make dotnet50-path TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+make dotnet50-path TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following
@@ -284,7 +284,7 @@ two files:
 ## Debug mode
 To build in `debug` mode, you execute this command:
 ```bash
-make dotnet50-path BUILD_TYPE=Debug TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+make dotnet50-path BUILD_TYPE=Debug TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
 ```
 
 For more information see [here](./docs/debug.md)
@@ -293,12 +293,12 @@ For more information see [here](./docs/debug.md)
 
 1. Run the following to initialize the Terraform environment:
    ```bash
-   make init-grid-local-deployment TAG=$ARMONIK_TAG
+   make init-grid-local-deployment
    ```
 
 2. if successful you can run terraform apply to create the infrastructure:
    ```bash
-   make apply-dotnet-local-runtime TAG=$ARMONIK_TAG REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+   make apply-dotnet-local-runtime REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
    ```
 
 # Running an example workload <a name="running-an-example-workload"></a>
@@ -333,7 +333,7 @@ kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
 
 2. Destroy all Armonik resources:
 ```bash
-make destroy-dotnet-local-runtime TAG=$ARMONIK_TAG REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+make destroy-dotnet-local-runtime REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
 ```
 
 3. Clean Terraform project, binaries and generated files:
