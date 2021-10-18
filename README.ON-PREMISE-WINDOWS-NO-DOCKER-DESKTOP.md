@@ -211,61 +211,43 @@ Inside the project folder.
 
 ```bash
 virtualenv --python=python3.8 venv
+source ./venv/bin/activate
 ```
 
 # Configure the environment <a name="configure-the-environment"></a>
+The project needs to define and set environment variables for building the binaries and deploying the infrastructure.
+The main environment variables are:
+```buildoutcfg
+# To simplify the installation it is suggested that
+# a unique <ARMONIK_TAG> name is used to prefix the
+# different required resources.
+ARMONIK_TAG=<Your tag>
 
-1. Import the virtualenv environment:
-   ```bash
-   source ./venv/bin/activate
-   ```
+# Define the type of the database service
+ARMONIK_TASKS_TABLE_SERVICE=<Your database type>
 
-2. To simplify this installation it is suggested that a unique <ARMONIK_TAG> name (to be used later) is also used to prefix the
-   different required resources.
-   ```bash
-   export ARMONIK_TAG=<Your tag>
-   ```
+# Define the type of the message queue
+ARMONIK_QUEUE_SERVICE=<Your message queue type>
 
-3. Define the type of the database service
-   ```bash
-   export ARMONIK_TASKS_TABLE_SERVICE=MongoDB
-   ```
-   
-4. Define the type of the message queue
-   ```bash
-   export ARMONIK_QUEUE_SERVICE=RSMQ
-   ```
+# Define an environment variable to select API Gateway service.
+ARMONIK_API_GATEWAY_SERVICE=<Your API gateway type>
 
-5. Define an environment variable containing the path to the local nuget repository.
-   ```bash
-   export ARMONIK_NUGET_REPOS=<project directory>/dist/dotnet5.0
-   ```
+# Define an environment variable containing the path to
+# the local nuget repository.
+ARMONIK_NUGET_REPOS=<Your NuGet repository>
 
-6. Define an environment variable containing the path to the redis certificates.
-   ```bash
-   export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
-   ```
+# Define an environment variable containing the path to
+# the redis certificates.
+ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your path to Redis certificates>
 
-7. Define an environment variable containing the docker registry if it exists, otherwise initialize the variable to empty.
-   ```bash
-   export ARMONIK_DOCKER_REGISTRY=<docker registry>
-   ```
-   
-8. Define an environment variable to select API Gateway service.
-   ```bash
-   export ARMONIK_API_GATEWAY_SERVICE=NGINX
-   ```
+# Define an environment variable containing the docker registry
+# if it exists, otherwise initialize the variable to empty.
+ARMONIK_DOCKER_REGISTRY=<Your Docker registry>
+```
 
-Complete example of environment setup script:
-
+**To set these environment variables**, execute the following command:
 ```bash
-source ./venv/bin/activate
-export ARMONIK_TAG=my_tag
-export ARMONIK_TASKS_TABLE_SERVICE=MongoDB
-export ARMONIK_QUEUE_SERVICE=RSMQ
-export ARMONIK_NUGET_REPOS="$PWD/dist/dotnet5.0"
-export ARMONIK_REDIS_CERTIFICATES_DIRECTORY="$PWD/redis_certificates"
-export ARMONIK_API_GATEWAY_SERVICE=NGINX
+make set-envvars ARMONIK_CONFIG_TYPE=LINUX
 ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>

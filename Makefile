@@ -7,6 +7,7 @@ export SUBMITTER_IMAGE_NAME=submitter
 export GENERATED=$(shell pwd)/generated
 export DIST_DIR=$(shell pwd)/dist
 export FILE_HANDLER
+export ARMONIK_CONFIG_TYPE?=CUSTOM
 BUILD_TYPE?=Release
 PACKAGE_DIR:=./dist
 PACKAGES:= $(wildcard $(PACKAGE_DIR)/*.whl)
@@ -14,6 +15,13 @@ PACKAGES:= $(wildcard $(PACKAGE_DIR)/*.whl)
 .PHONY: all utils api lambda submitter packages test test-api test-utils test-agent lambda-control-plane
 
 all: utils api lambda lambda-control-plane
+
+###############################################
+##############     Set envvars     ############
+###############################################
+set-envvars:
+	$(MAKE) -C ./configurations set
+
 
 ###############################################
 #######     Manage HTC grid states     ########

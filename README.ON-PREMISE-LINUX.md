@@ -1,48 +1,10 @@
 # Table of contents
-1. [Configure the environment](#configure-the-environment)
-2. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
+1. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
+2. [Configure the environment](#configure-the-environment)
 3. [Build Armonik artifacts](#build-armonik-artifacts)
 4. [Deploy Armonik resources](#deploy-armonik-resources)
 5. [Running an example workload](#running-an-example-workload)
 6. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
-
-# Configure the environment <a name="configure-the-environment"></a>
-Define variables for deploying the infrastructure as follows:
-1. To simplify this installation it is suggested that a unique <ARMONIK_TAG> name (to be used later) is also used to prefix the
-   different required resources.
-   ```bash
-      export ARMONIK_TAG=<Your tag>
-   ```
-
-2. Define the type of the database service
-   ```bash
-      export ARMONIK_TASKS_TABLE_SERVICE=MongoDB
-   ```
-   
-3. Define the type of the message queue
-   ```bash
-      export ARMONIK_QUEUE_SERVICE=RSMQ
-   ```
-
-4. Define an environment variable containing the path to the local nuget repository.
-   ```bash
-      export ARMONIK_NUGET_REPOS=<project directory>/dist/dotnet5.0
-   ```
-
-5. Define an environment variable containing the path to the redis certificates.
-   ```bash
-      export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
-   ```
-
-6. Define an environment variable containing the docker registry if it exists, otherwise initialize the variable to empty.
-   ```bash
-      export ARMONIK_DOCKER_REGISTRY=<docker registry>
-   ```
-   
-7. Define an environment variable to select API Gateway service.
-   ```bash
-      export ARMONIK_API_GATEWAY_SERVICE=NGINX
-   ```
 
 # Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
 Instructions to install Kubernetes on local Linux machine.
@@ -71,6 +33,42 @@ cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 To uninstall K3s, use the following command:
 ```bash
 /usr/local/bin/k3s-uninstall.sh
+```
+
+# Configure the environment <a name="configure-the-environment"></a>
+The project needs to define and set environment variables for building the binaries and deploying the infrastructure.
+The main environment variables are:
+```buildoutcfg
+# To simplify the installation it is suggested that
+# a unique <ARMONIK_TAG> name is used to prefix the
+# different required resources.
+ARMONIK_TAG=<Your tag>
+
+# Define the type of the database service
+ARMONIK_TASKS_TABLE_SERVICE=<Your database type>
+
+# Define the type of the message queue
+ARMONIK_QUEUE_SERVICE=<Your message queue type>
+
+# Define an environment variable to select API Gateway service.
+ARMONIK_API_GATEWAY_SERVICE=<Your API gateway type>
+
+# Define an environment variable containing the path to
+# the local nuget repository.
+ARMONIK_NUGET_REPOS=<Your NuGet repository>
+
+# Define an environment variable containing the path to
+# the redis certificates.
+ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your path to Redis certificates>
+
+# Define an environment variable containing the docker registry
+# if it exists, otherwise initialize the variable to empty.
+ARMONIK_DOCKER_REGISTRY=<Your Docker registry>
+```
+
+**To set these environment variables**, execute the following command:
+```bash
+make set-envvars ARMONIK_CONFIG_TYPE=LINUX
 ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
