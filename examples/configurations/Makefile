@@ -7,17 +7,17 @@ export ARMONIK_REDIS_CERTIFICATES_DIRECTORY
 export ARMONIK_TASKS_TABLE_SERVICE
 export ARMONIK_QUEUE_SERVICE
 export ARMONIK_DOCKER_REGISTRY
+export ARMONIK_API_GATEWAY_SERVICE
 GENERATED?=generated
 FILE_HANDLER=
 REGION=
 ACCOUNT_ID=
-API_GATEWAY_SERVICE=
 
 generated-dotnet5.0: dotnet5.0_runtime_grid_config.json.tpl
-	mkdir -p $(GENERATED) && cat dotnet5.0_runtime_grid_config.json.tpl | sed "s|{{docker_registry}}|$(ARMONIK_DOCKER_REGISTRY)|;s|{{certificates_dir_path}}|$(ARMONIK_REDIS_CERTIFICATES_DIRECTORY)|;s|{{grid_queue_service}}|$(ARMONIK_QUEUE_SERVICE)|;s|{{tasks_status_table_service}}|$(ARMONIK_TASKS_TABLE_SERVICE)|;s|{{dotnet50_file_handler}}|$(FILE_HANDLER)|;s|{{region}}|$(REGION)|;s|{{image_tag}}|$(ARMONIK_TAG)|;s|{{account_id}}|${ACCOUNT_ID}|;s|{{api_gateway_service}}|$(API_GATEWAY_SERVICE)|" > $(GENERATED)/dotnet5.0_runtime_grid_config.json
+	mkdir -p $(GENERATED) && cat dotnet5.0_runtime_grid_config.json.tpl | sed "s|{{docker_registry}}|$(ARMONIK_DOCKER_REGISTRY)|;s|{{certificates_dir_path}}|$(ARMONIK_REDIS_CERTIFICATES_DIRECTORY)|;s|{{grid_queue_service}}|$(ARMONIK_QUEUE_SERVICE)|;s|{{tasks_status_table_service}}|$(ARMONIK_TASKS_TABLE_SERVICE)|;s|{{dotnet50_file_handler}}|$(FILE_HANDLER)|;s|{{region}}|$(REGION)|;s|{{image_tag}}|$(ARMONIK_TAG)|;s|{{account_id}}|${ACCOUNT_ID}|;s|{{api_gateway_service}}|$(ARMONIK_API_GATEWAY_SERVICE)|" > $(GENERATED)/dotnet5.0_runtime_grid_config.json
 
 generated-local-dotnet5.0: local_dotnet5.0_runtime_grid_config.json.tpl
-	mkdir -p $(GENERATED) && cat local_dotnet5.0_runtime_grid_config.json.tpl | sed "s|{{docker_registry}}|$(ARMONIK_DOCKER_REGISTRY)|;s|{{certificates_dir_path}}|$(ARMONIK_REDIS_CERTIFICATES_DIRECTORY)|;s|{{grid_queue_service}}|$(ARMONIK_QUEUE_SERVICE)|;s|{{tasks_status_table_service}}|$(ARMONIK_TASKS_TABLE_SERVICE)|;s|{{dotnet50_file_handler}}|$(FILE_HANDLER)|;s|{{region}}|$(REGION)|;s|{{image_tag}}|$(ARMONIK_TAG)|;s|{{account_id}}|${ACCOUNT_ID}|;s|{{api_gateway_service}}|$(API_GATEWAY_SERVICE)|" > $(GENERATED)/local_dotnet5.0_runtime_grid_config.json
+	mkdir -p $(GENERATED) && cat local_dotnet5.0_runtime_grid_config.json.tpl | sed "s|{{docker_registry}}|$(ARMONIK_DOCKER_REGISTRY)|;s|{{certificates_dir_path}}|$(ARMONIK_REDIS_CERTIFICATES_DIRECTORY)|;s|{{grid_queue_service}}|$(ARMONIK_QUEUE_SERVICE)|;s|{{tasks_status_table_service}}|$(ARMONIK_TASKS_TABLE_SERVICE)|;s|{{dotnet50_file_handler}}|$(FILE_HANDLER)|;s|{{region}}|$(REGION)|;s|{{image_tag}}|$(ARMONIK_TAG)|;s|{{account_id}}|${ACCOUNT_ID}|;s|{{api_gateway_service}}|$(ARMONIK_API_GATEWAY_SERVICE)|" > $(GENERATED)/local_dotnet5.0_runtime_grid_config.json
 
 clean:
 	rm -rf $(GENERATED)
