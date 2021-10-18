@@ -1,7 +1,7 @@
 # Table of contents
-1. [Configure the environment](#configure-the-environment) 
-2. [Build Armonik artifacts](#build-armonik-artifacts)
-3. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
+1. [Configure the environment](#configure-the-environment)
+2. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
+3. [Build Armonik artifacts](#build-armonik-artifacts)
 4. [Deploy Armonik resources](#deploy-armonik-resources)
 5. [Running an example workload](#running-an-example-workload)
 6. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
@@ -44,27 +44,6 @@ Define variables for deploying the infrastructure as follows:
       export ARMONIK_API_GATEWAY_SERVICE=NGINX
    ```
 
-# Build Armonik artifacts <a name="build-armonik-artifacts"></a>
-Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
-
-To build and install these in `<project_root>`:
-```bash
-make dotnet50-path TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
-```
-
-A folder named `generated` will be created at `<project_root>`. This folder should contain the following
-two files:
- * `dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
- * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
-
-## Debug mode
-To build in `debug` mode, you execute this command:
-```bash
-make dotnet50-path BUILD_TYPE=Debug TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
-```
-
-For more information see [here](./docs/debug.md)
-
 # Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
 Instructions to install Kubernetes on local Linux machine.
 
@@ -94,6 +73,27 @@ To uninstall K3s, use the following command:
 /usr/local/bin/k3s-uninstall.sh
 ```
 
+# Build Armonik artifacts <a name="build-armonik-artifacts"></a>
+Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
+
+To build and install these in `<project_root>`:
+```bash
+make dotnet50-path TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+```
+
+A folder named `generated` will be created at `<project_root>`. This folder should contain the following
+two files:
+ * `dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
+ * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
+
+## Debug mode
+To build in `debug` mode, you execute this command:
+```bash
+make dotnet50-path BUILD_TYPE=Debug TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+```
+
+For more information see [here](./docs/debug.md)
+
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 1. Run the following to initialize the Terraform environment:
    ```bash
@@ -102,7 +102,7 @@ To uninstall K3s, use the following command:
 
 2. if successful you can run terraform apply to create the infrastructure:
    ```bash
-   make apply-dotnet-local-runtime REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+   make apply-dotnet-local-runtime DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
    ```
 
 # Running an example workload <a name="running-an-example-workload"></a>
@@ -137,7 +137,7 @@ kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
 
 2. Destroy all Armonik resources:
 ```bash
-make destroy-dotnet-local-runtime REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+make destroy-dotnet-local-runtime DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
 ```
 
 3. Clean Terraform project, binaries and generated files:

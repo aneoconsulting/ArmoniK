@@ -115,7 +115,7 @@ Armonik artifacts include: .NET Core packages, docker images, configuration file
 
 To build and install these in `<project_root>`:
 ```bash
-make dotnet50-path TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+make dotnet50-path TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following
@@ -126,7 +126,7 @@ two files:
 ## Debug mode
 To build in `debug` mode, you execute this command:
 ```bash
-make dotnet50-path BUILD_TYPE=Debug TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+make dotnet50-path BUILD_TYPE=Debug TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
 ```
 
 For more information see [here](./docs/debug.md)
@@ -146,7 +146,7 @@ cd configure
 
 3. if successful you can run terraform apply to create the infrastructure:
    ```bash
-   make apply-dotnet-local-runtime REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+   make apply-dotnet-local-runtime DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
    ```
 
 # Running an example workload <a name="running-an-example-workload"></a>
@@ -181,7 +181,7 @@ kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
 
 2. Destroy all Armonik resources:
 ```bash
-make destroy-dotnet-local-runtime REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+make destroy-dotnet-local-runtime DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
 ```
 
 3. Clean Terraform project, binaries and generated files:

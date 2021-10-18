@@ -38,17 +38,12 @@ Define variables for deploying the infrastructure as follows:
       export ARMONIK_NUGET_REPOS=<project directory>/dist/dotnet5.0
    ```
 
-5. Define an environment variable containing the path to the redis certificates.
-   ```bash
-      export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
-   ```
-
-6. Define the AWS account ID where the grid will be deployed
+5. Define the AWS account ID where the grid will be deployed
     ```bash
       export ARMONIK_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
 
     ```
-7. Define the region where the grid will be deployed
+6. Define the region where the grid will be deployed
    ```bash
       export ARMONIK_REGION=<Your region>
    ```
@@ -62,12 +57,12 @@ Define variables for deploying the infrastructure as follows:
    - `ap-northeast-1`
    - `ap-southeast-1`
 
-8. Define an environment variable containing AWS ECR registry.
+7. Define an environment variable containing AWS ECR registry.
    ```bash
       export ARMONIK_DOCKER_REGISTRY=$ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
    ```
 
-9. Define an environment variable to select API Gateway service.
+8. Define an environment variable to select API Gateway service.
    ```bash
       export ARMONIK_API_GATEWAY_SERVICE=APIGateway
    ```
@@ -82,7 +77,7 @@ Armonik artifacts include: .NET Core packages, docker images, configuration file
 
 To build and install these in `<project_root>`:
 ```bash
-make dotnet50-path TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY REGION=$ARMONIK_REGION DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+make dotnet50-path TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE REGION=$ARMONIK_REGION DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following 
@@ -104,7 +99,7 @@ two files:
    
 3. If successful you can run terraform apply to create the infrastructure:
    ```bash
-   make apply-dotnet-runtime REGION=$ARMONIK_REGION REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+   make apply-dotnet-runtime REGION=$ARMONIK_REGION DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
    ```
    
 # Running an example workload <a name="running-an-example-workload"></a>
