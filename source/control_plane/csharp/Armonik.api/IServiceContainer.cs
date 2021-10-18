@@ -27,7 +27,7 @@ namespace Armonik.sdk
         /// <param name="serviceContext">
         /// Holds all information on the state of the service at the start of the execution.
         /// </param>
-        public abstract void OnCreateService(ServiceContext serviceContext);
+        public void OnCreateService(ServiceContext serviceContext) { }
 
 
 
@@ -37,8 +37,7 @@ namespace Armonik.sdk
         /// <param name="sessionContext">
         /// Holds all information on the state of the session at the start of the execution.
         /// </param>
-        public abstract void OnSessionEnter(SessionContext sessionContext);
-
+        public void OnSessionEnter(SessionContext sessionContext) { }
 
 
 
@@ -63,7 +62,7 @@ namespace Armonik.sdk
         /// <param name="sessionContext">
         /// Holds all information on the state of the session at the start of the execution such as session ID.
         /// </param>
-        public abstract void OnSessionLeave(SessionContext sessionContext);
+        public void OnSessionLeave(SessionContext sessionContext) { }
 
 
 
@@ -74,7 +73,7 @@ namespace Armonik.sdk
         /// <param name="serviceContext">
         /// Holds all information on the state of the service at the start of the execution.
         /// </param>
-        public abstract void OnDestroyService(ServiceContext serviceContext);
+        public void OnDestroyService(ServiceContext serviceContext) { }
 
 
 
@@ -87,11 +86,42 @@ namespace Armonik.sdk
         /// <param name="value">
         /// The data value to put in the database.
         /// </param>
-        public void writeTaskOutput(string key, byte[] value)
+        public sealed void writeTaskOutput(string key, byte[] value)
         {
             htcDataClient.StoreData(key, value);
         }
 
+        /// <summary>
+        /// User call to get customer data from task (Server side)
+        /// </summary>
+        /// <param name="key">
+        /// The user key that can be retrieved later from client side.
+        /// </param>
+        /// <param name="value">
+        /// The data value to put in the database.
+        /// </param>
+        public sealed byte[] getData(string key)
+        {
+            return htcDataClient.GetData(key);
+        }
+
+        /// <summary>
+        /// User method to submit task from the service
+        /// </summary>
+        /// <param name="sessionId">
+        /// The session id to attach the new task.
+        /// </param>
+        /// <param name="payloads">
+        /// The user payload list to execute. Generaly used for subtasking.
+        /// </param>
+        public IEnumerable<string> SubmitTasks(string sessionId, IEnumerable<byte[]> payloads)
+        {
+            return htcGridClient.SubmitTasks(sessionId, payloads);
+        }
+    }
+
+    public static class ServiceContainerExt 
+    {
         /// <summary>
         /// User method to submit task from the service
         /// </summary>
@@ -101,9 +131,10 @@ namespace Armonik.sdk
         /// <param name="payload">
         /// The user payload to execute. Generaly used for subtasking.
         /// </param>
-        public void SubmitTask(string sessionId, byte[] payload)
+        public static string SubmitTask(this IServiceContainer serviceContainer, string sessionId, byte[] payload)
         {
-            htcGridClient.SubmitTask(sessionId, payload);
+            return serviceContainer.SubmitTasks(sessionId, new []{payload})
+                                   .Single();
         }
     }
 }

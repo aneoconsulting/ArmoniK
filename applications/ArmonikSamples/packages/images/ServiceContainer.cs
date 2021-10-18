@@ -17,7 +17,43 @@ namespace ArmonikSamples
 
         public override void OnInvoke(SessionContext sessionContext, TaskContext taskContext)
         {
-            //END USER PLEASE FIXME
+            byte[] input = taskContext.TaskInput();
+            List<int> numbers = List<int>();
+            string inputTaskType;
+            using (MemoryStream m = new MemoryStream(data))
+            {
+                using (BinaryReader reader = new BinaryReader(m))
+                {
+                    inputTaskType = reader.ReadString();
+
+                    if (inputTaskType == "Compute")
+                    {
+                        byte[] nextTaskInput;
+                        int n = reader.ReadInt32();
+                        for (int i = 0; i < n; i++)
+                        {
+                            int c = reader.ReadInt32();
+                            
+                            using (MemoryStream m2 = new MemoryStream())
+                            {
+                                using (BinaryWriter writer = new BinaryWriter(m2))
+                                {
+                                    writer.Write("Squarre");
+                                    writer.Write(c);
+                                }
+                                nextTaskInput = m2.ToArray();
+                            }
+                            SubmitTask(sessionContext.SessionId, nextTaskInput);
+                        }
+                        writeTaskOutput(taskContext.TaskId, sum);
+                    }
+                    else if (inputTaskType == "Squarre")
+                    {
+                        int c = reader.ReadInt32();
+                        writeTaskOutput(taskContext.TaskId, BitConverter.GetBytes(c * c));
+                    }
+                }
+            }
         }
 
         public override void OnSessionLeave(SessionContext sessionContext)
@@ -28,7 +64,7 @@ namespace ArmonikSamples
 
         public override void OnDestroyService(ServiceContext serviceContext)
         {
-
+            //END USER PLEASE FIXME
         }
     }
 }

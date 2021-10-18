@@ -58,11 +58,15 @@ namespace ArmonikSamples
             HtcGridClient htcGridClient = new HtcGridClient(gridConfig_, htcDataClient);
 
             serviceContainer = new ServiceContainer();
+            serviceContainer.htcDataClient = htcDataClient;
+            serviceContainer.htcGridClient = htcGridClient;
 
             firstRun = true;
 
             // Grid initialize gridWorker_ = new()
             gridWorker = new GridWorker(serviceContainer);
+            gridWorker.htcDataClient = htcDataClient;
+            gridWorker.htcGridClient = htcGridClient;
 
             // gridWorker_ = new(new DelegateRequestRunnerFactory((runConfiguration, sessionId)
             //                                                   =>  new DistributedRequestRunnerWithAggregation(htcDataClient,

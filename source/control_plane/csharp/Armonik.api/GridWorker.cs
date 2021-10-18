@@ -31,13 +31,16 @@ namespace Armonik
             private SessionContext sessionContext;
             private ServiceContext serviceContext;
 
+            HtcDataClient htcDataClient { get; set; }
+            HtcGridClient htcGridClient { get; set; }
+
             public GridWorker(IServiceContainer iServiceContainer)
             {
                 serviceContainer = iServiceContainer;
                 sessionContext = new SessionContext();
                 serviceContext = new ServiceContext();
-                serviceContext.ApplicationName = "ArmonikSamples";
-                serviceContext.ServiceName = "ArmonikSamples";
+                serviceContext.ApplicationName = "ArmonikApplicationSamples";
+                serviceContext.ServiceName = "ArmonikServiceSamples";
             }
 
             public void OnStart()
@@ -70,7 +73,7 @@ namespace Armonik
                 serviceContainer.OnSessionLeave(sessionContext);
             }
 
-            public void onExit()
+            public void OnExit()
             {
                 serviceContainer.OnDestroyService(serviceContext);
             }
