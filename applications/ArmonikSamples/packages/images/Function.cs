@@ -73,7 +73,7 @@ namespace ArmonikSamples
             //                                                                                   useLowMem: false,
             //                                                                                   smallOutput: false)));
 
-            gridWorker.onStart();
+            gridWorker.OnStart();
 
             // girdWoorker_.onServiceCreate(serviceContainer)
         }
@@ -92,7 +92,7 @@ namespace ArmonikSamples
             byte[] payload = inputTask.Payload;
             if (firstRun)
             {
-                gridWorker.onSessionEnter(inputTask.SessionId, inputTask.TaskId, payload);
+                gridWorker.OnSessionEnter(inputTask.SessionId, inputTask.TaskId, payload);
                 firstRun = false;
             }
 

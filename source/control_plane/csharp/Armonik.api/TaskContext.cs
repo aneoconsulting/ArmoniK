@@ -8,7 +8,7 @@ namespace Armonik.sdk
         public string TaskId { get; set; }
         public byte[] payload_;
 
-        public string SessionId { get; }
+        public string SessionId { get; set; }
 
 
         /// <summary>

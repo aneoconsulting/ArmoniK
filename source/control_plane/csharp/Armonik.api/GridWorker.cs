@@ -28,24 +28,25 @@ namespace Armonik
         public class GridWorker : IGridWorker
         {
             private IServiceContainer serviceContainer;
+            private SessionContext sessionContext;
+            private ServiceContext serviceContext;
 
             public GridWorker(IServiceContainer iServiceContainer)
             {
                 serviceContainer = iServiceContainer;
+                sessionContext = new SessionContext();
+                serviceContext = new ServiceContext();
+                serviceContext.ApplicationName = "ArmonikSamples";
+                serviceContext.ServiceName = "ArmonikSamples";
             }
 
             public void OnStart()
             {
-                ServiceContext serviceContext = new ServiceContext();
-                serviceContext.ApplicationName = "ArmonikSamples";
-                serviceContext.ServiceName = "ArmonikSamples";
-
                 serviceContainer.OnCreateService(serviceContext);
             }
 
             public void OnSessionEnter(string session, string taskId, byte[] payload)
             {
-                SessionContext sessionContext = new SessionContext();
                 sessionContext.SessionId = session;
                 sessionContext.clientLibVersion = "1.0.0";
                 serviceContainer.OnSessionEnter(sessionContext);
@@ -53,9 +54,6 @@ namespace Armonik
 
             public byte[] Execute(string session, string taskId, byte[] payload)
             {
-                SessionContext sessionContext = new SessionContext();
-                sessionContext.SessionId = session;
-                sessionContext.clientLibVersion = "1.0.0";
                 TaskContext taskContext = new TaskContext();
                 taskContext.TaskId = taskId;
                 taskContext.TaskInput = payload;
@@ -69,12 +67,12 @@ namespace Armonik
 
             public void OnSessionLeave()
             {
-                serviceContainer.OnSessionLeave();
+                serviceContainer.OnSessionLeave(sessionContext);
             }
 
             public void onExit()
             {
-                serviceContainer.OnDestroyService();
+                serviceContainer.OnDestroyService(serviceContext);
             }
         }
     }
