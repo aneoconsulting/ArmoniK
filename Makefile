@@ -229,7 +229,7 @@ build-htc-grid-dotnet5.0-api:
 	$(MAKE) -C ./source/client/csharp/api-v0.1 all BUILD_TYPE=$(BUILD_TYPE)
 
 build-armonik-dotnet5.0-api:
-	$(MAKE) -C ./source/control_plane/csharp/armonik.api all BUILD_TYPE=$(BUILD_TYPE)
+	$(MAKE) -C ./source/control_plane/csharp/Armonik.api all BUILD_TYPE=$(BUILD_TYPE)
 
 build-dotnet5.0-simple-client:
 	$(MAKE) -C ./examples/client/csharp/ BUILD_TYPE=$(BUILD_TYPE)
