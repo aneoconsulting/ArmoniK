@@ -26,14 +26,14 @@ Only re-compile the targeted image, use image_pull_policy = Always instead of If
 
 Re-compile one lambda
 ```bash
-make -C source/control_plane/python/lambda/get_results lambda-get-results DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
-make -C source/control_plane/python/lambda/submit_tasks lambda-submit-tasks DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
-make -C source/control_plane/python/lambda/cancel_tasks lambda-cancel-tasks DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+make -C source/control_plane/python/lambda/get_results lambda-get-results
+make -C source/control_plane/python/lambda/submit_tasks lambda-submit-tasks
+make -C source/control_plane/python/lambda/cancel_tasks lambda-cancel-tasks
 ```
 
 Re-comile client only (without dependencies)
 ```bash
-make -C examples/mock_integration/Client/ build DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+make -C examples/mock_integration/Client/ build
 ```
 
 ## Debug C# container with Visual Studio Code

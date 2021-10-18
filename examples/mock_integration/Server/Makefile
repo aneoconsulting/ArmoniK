@@ -6,17 +6,16 @@ CURRENT_DIR:=$(shell pwd)
 BUILD_TYPE?=Release
 DIST_DIR?=$(shell pwd)/../../../dist
 export ARMONIK_TAG
-DOCKER_REGISTRY=
+export ARMONIK_DOCKER_REGISTRY
 
 .PHONY: clean
 
-
 build: Dockerfile import-dll
-ifneq ($(DOCKER_REGISTRY),)
+ifneq ($(ARMONIK_DOCKER_REGISTRY),)
 ifeq ($(BUILD_TYPE), Debug)
-	docker build . -f ./Dockerfile_Debug -t $(DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG) --progress=plain
+	docker build . -f ./Dockerfile_Debug -t $(ARMONIK_DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG) --progress=plain
 else
-	docker build . -f ./Dockerfile -t $(DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG) --progress=plain
+	docker build . -f ./Dockerfile -t $(ARMONIK_DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG) --progress=plain
 endif
 else
 ifeq ($(BUILD_TYPE), Debug)
@@ -27,8 +26,8 @@ endif
 endif
 
 upload: build
-ifneq ($(DOCKER_REGISTRY),)
-	docker push $(DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG)
+ifneq ($(ARMONIK_DOCKER_REGISTRY),)
+	docker push $(ARMONIK_DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG)
 endif
 
 import-dll:

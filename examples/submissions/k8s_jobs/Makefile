@@ -4,11 +4,11 @@
 
 export ARMONIK_TAG
 export ARMONIK_REDIS_CERTIFICATES_DIRECTORY
-DOCKER_REGISTRY=
+export ARMONIK_DOCKER_REGISTRY
 SUBMITTER_IMAGE_NAME=submitter
 CANCEL_SESSION_IMAGE_NAME=cancel_session
 GENERATED?=generated
-DOCKER_REGISTRY_WITH_SUFFIX=$(shell if [ "$(DOCKER_REGISTRY)" != "" ]; then echo "$(DOCKER_REGISTRY)/"; else echo ""; fi)
+DOCKER_REGISTRY_WITH_SUFFIX=$(shell if [ "$(ARMONIK_DOCKER_REGISTRY)" != "" ]; then echo "$(ARMONIK_DOCKER_REGISTRY)/"; else echo ""; fi)
 
 .PHONY: clean generated
 all: generated
