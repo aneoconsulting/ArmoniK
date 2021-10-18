@@ -3,7 +3,6 @@
    1. [Configure AWS Cli](#configure-aws-cli)
    2. [Environment variables](#environment-variables)
    3. [ECR authentication](#ecr-authentication)
-   4. [Python environment](#python-environment)
 2. [Build Armonik artifacts](#build-armonik-artifacts)
 3. [Deploy Armonik resources](#deploy-armonik-resources)
 4. [Running an example workload](#running-an-example-workload)
@@ -53,46 +52,21 @@ ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your path to Redis certificates>
 ARMONIK_DOCKER_REGISTRY=<Your Docker registry>
 ```
 
-**To set these environment variables**, execute the following command:
+**Mandatory:** To set these environment variables:
+1. Copy the [template file for AWS](configure/onpremise-aws-config.conf) and modify the values of variables if needed:
 ```bash
-./configurations/set-envvars.sh AWS
+cp configure/onpremise-aws-config.conf ./envvars.conf
+```
+
+2. Source the file of configuration:
+```bash
+source ./envvars.conf
 ```
 
 ## ECR authentication <a name="ecr-authentication"></a>
 As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
 ```bash
 aws ecr get-login-password --region $ARMONIK_REGION | docker login --username AWS --password-stdin $ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
-```
-
-## Python environment <a name="python-environment"></a>
-The current release of Armonik requires python3 in the PATH of your system, and the documentation assumes the use of *virtualenv*. 
-
-Set up this as follows (for example python3.7):
-```bash
-virtualenv --python=python3.7 venv
-```
-
-When successful :
-```bash
-created virtual environment CPython3.7.10.final.0-64 in 1329ms
-  creator CPython3Posix(dest=<project_roor>/venv, clear=False, no_vcs_ignore=False, global=False)
-  seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=/Users/user/Library/Application Support/virtualenv)
-    added seed packages: pip==21.0.1, setuptools==54.1.2, wheel==0.36.2
-  activators BashActivator,CShellActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
-```
-
-Check you have the correct version of python (`3.7.x`), with a path rooted on `<project_root>`, 
-then start the environment:
-```
-source ./venv/bin/activate
-```
-
-Check the python version as follows:
-```bash
-$ which python
-<project_root>/venv/bin/python
-$ python -V
-Python 3.7.10
 ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
