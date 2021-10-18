@@ -20,10 +20,6 @@ all: push
 
 all: push
 
-external_packages:
-	mkdir -p ../dist
-	cp -u ${ARMONIK_NUGET_REPOS}/*.nupkg ../dist
-
 build: external_packages Dockerfile Dockerfile_Debug
 ifneq ($(DOCKER_REGISTRY),)
 ifeq ($(BUILD_TYPE), Debug)

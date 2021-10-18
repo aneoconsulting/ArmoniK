@@ -27,12 +27,54 @@ namespace Armonik
     {
         public class GridWorker : IGridWorker
         {
+            private IServiceContainer serviceContainer;
 
-            public GridWorker() { }
+            public GridWorker(IServiceContainer iServiceContainer)
+            {
+                serviceContainer = iServiceContainer;
+            }
+
+            public void OnStart()
+            {
+                ServiceContext serviceContext = new ServiceContext();
+                serviceContext.ApplicationName = "ArmonikSamples";
+                serviceContext.ServiceName = "ArmonikSamples";
+
+                serviceContainer.OnCreateService(serviceContext);
+            }
+
+            public void OnSessionEnter(string session, string taskId, byte[] payload)
+            {
+                SessionContext sessionContext = new SessionContext();
+                sessionContext.SessionId = session;
+                sessionContext.clientLibVersion = "1.0.0";
+                serviceContainer.OnSessionEnter(sessionContext);
+            }
 
             public byte[] Execute(string session, string taskId, byte[] payload)
             {
+                SessionContext sessionContext = new SessionContext();
+                sessionContext.SessionId = session;
+                sessionContext.clientLibVersion = "1.0.0";
+                TaskContext taskContext = new TaskContext();
+                taskContext.TaskId = taskId;
+                taskContext.TaskInput = payload;
+                taskContext.SessionId = session;
+
+                serviceContainer.OnInvoke(sessionContext, taskContext);
+
+                //TODO get result from redis or only request result ???
                 return new byte[0];
+            }
+
+            public void OnSessionLeave()
+            {
+                serviceContainer.OnSessionLeave();
+            }
+
+            public void onExit()
+            {
+                serviceContainer.OnDestroyService();
             }
         }
     }

@@ -27,6 +27,7 @@ else
 endif
 endif
 
+
 upload: build
 ifneq ($(DOCKER_REGISTRY),)
 	docker push $(DOCKER_REGISTRY)/lambda:$(TAG)
@@ -34,15 +35,12 @@ endif
 
 import-dll:
 	mkdir -p ./mock_integration_image/src/mock_integration/lib/
-	mkdir -p ./mock_integration_image/src/mock_integration/dist/dotnet5.0
-	cp -v ../lib/*.dll ./mock_integration_image/src/mock_integration/lib/
-
-	cp -v $(ARMONIK_NUGET_REPOS)/*.nupkg ./mock_integration_image/src/mock_integration/dist/dotnet5.0
+	mkdir -p ./mock_integration_image/src/mock_integration/dist/
+	cp -v $(ARMONIK_NUGET_REPOS)/*.nupkg ./mock_integration_image/src/mock_integration/dist/
 ifeq ($(BUILD_TYPE), Debug)
-	cp -v $(ARMONIK_NUGET_REPOS)/*.pdb ./mock_integration_image/src/mock_integration/dist/dotnet5.0
-	cp -v ../lib/*.pdb ./mock_integration_image/src/mock_integration/lib/
+	cp -v $(ARMONIK_NUGET_REPOS)/*.pdb ./mock_integration_image/src/mock_integration/dist/ || true
 endif
 
 clean:
-	rm lambda.zip
 	rm -rf ./mock_integration_image/src/mock_integration/lib
+	rm -rf ./mock_integration_image/src/mock_integration/dist/

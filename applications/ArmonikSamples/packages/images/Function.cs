@@ -21,6 +21,10 @@ namespace ArmonikSamples
 {
     public class Function
     {
+        private static GridWorker gridWorker;
+
+        private static bool firstRun;
+        private static IServiceContainer serviceContainer;
         private static GridConfig gridConfig_;
 
         static Function()
@@ -53,8 +57,12 @@ namespace ArmonikSamples
 
             HtcGridClient htcGridClient = new HtcGridClient(gridConfig_, htcDataClient);
 
-            // Grid initialize gridWorker_ = new()
+            serviceContainer = new ServiceContainer();
 
+            firstRun = true;
+
+            // Grid initialize gridWorker_ = new()
+            gridWorker = new GridWorker(serviceContainer);
 
             // gridWorker_ = new(new DelegateRequestRunnerFactory((runConfiguration, sessionId)
             //                                                   =>  new DistributedRequestRunnerWithAggregation(htcDataClient,
@@ -65,7 +73,7 @@ namespace ArmonikSamples
             //                                                                                   useLowMem: false,
             //                                                                                   smallOutput: false)));
 
-
+            gridWorker.onStart();
 
             // girdWoorker_.onServiceCreate(serviceContainer)
         }
@@ -82,11 +90,20 @@ namespace ArmonikSamples
             ////////////////////////////////////////////////////////////////////
 
             byte[] payload = inputTask.Payload;
+            if (firstRun)
+            {
+                gridWorker.onSessionEnter(inputTask.SessionId, inputTask.TaskId, payload);
+                firstRun = false;
+            }
+
+
 
             Console.WriteLine("New Payload : ");
 
 
-            // gridWorker_.Execute(inputTask.SessionId, inputTask.TaskId, payload);
+
+            gridWorker.Execute(inputTask.SessionId, inputTask.TaskId, payload);
+
             // trade_data = trade_data * 10;
 
             // System.Threading.Thread.Sleep(inputTask.sleep_time_ms);

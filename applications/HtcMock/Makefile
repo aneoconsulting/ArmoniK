@@ -4,21 +4,27 @@ BUILD_TYPE?=Release
 
 .PHONY: clean all upload build-mock
 
-all: upload
+all: client upload
 
+client: external_packages
+	$(MAKE) -C ./Client BUILD_TYPE=$(BUILD_TYPE)
 
-build-mock:
-	#dotnet restore --no-cache
-	dotnet nuget locals global-packages -c
-	dotnet build --configuration $(BUILD_TYPE) .
-	dotnet pack -c $(BUILD_TYPE) -o $(DIST_DIR)/dotnet5.0
-
-
-upload: build-mock
+server: external_packages
 	$(MAKE) -C ./Server upload BUILD_TYPE=$(BUILD_TYPE)
 
+external_packages:
+	mkdir -p dist lib
+	dotnet nuget locals global-packages -c
+	cp -u ${ARMONIK_NUGET_REPOS}/*.nupkg ./dist
+
+
+upload: server
+
+
+
 clean:
-	dotnet clean --configuration $(BUILD_TYPE) .
+	$(MAKE) -C ./Client clean BUILD_TYPE=$(BUILD_TYPE)
+	$(MAKE) -C ./Server clean BUILD_TYPE=$(BUILD_TYPE)
 	rm -f ./lib/*.dll
 
 

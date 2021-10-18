@@ -3,29 +3,30 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim as build
 
 
 RUN apt-get update ; apt-get install -y build-essential
-WORKDIR /app/mock_integration
-RUN mkdir -p ./lib/dotnet5.0
-COPY ./dist/dotnet5.0/HTCGridAPI.* ./lib/dotnet5.0/
-COPY ./dist/dotnet5.0/HttpApi.* ./lib/dotnet5.0/
-COPY ./examples/mock_integration ./
+WORKDIR /app
+RUN mkdir -p ./lib/
+COPY ./dist/*.nupkg ./lib
+
+COPY ./Client ./Client
 
 RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
 
 
-ENV ARMONIK_NUGET_REPOS=/app/mock_integration/lib/dotnet5.0
+ENV ARMONIK_NUGET_REPOS=/app/lib
 ENV ARMONIK_DEBUG_WAIT_TASK=90
 ENV ARMONIK_DEBUG_WAIT_CLIENT=90
 
 
-WORKDIR /app/mock_integration/Client
+WORKDIR /app/Client
 
 RUN dotnet publish "Client.csproj" \
-            --configuration Debug \ 
+            --configuration Debug \
             --runtime linux-x64  \
-            --self-contained false \ 
+            --self-contained false \
             --output /app/publish \
             -p:PublishReadyToRun=true
-RUN cp /app/mock_integration/Client/bin/Debug/net5.0/linux-x64/*.pdb /app/publish/
-RUN cp /app/mock_integration/lib/dotnet5.0/*.pdb /app/publish/
+RUN cp /app/Client/bin/Debug/net5.0/linux-x64/*.pdb /app/publish/
+RUN cp /app/lib/*.pdb /app/publish/
+
 WORKDIR /app/publish
 ENTRYPOINT ["dotnet"]

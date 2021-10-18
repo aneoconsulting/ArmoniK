@@ -149,7 +149,7 @@ lambda: utils api
 	$(MAKE) -C ./source/compute_plane/python/agent
 
 $(APPLICATION_NAME)-submitter: utils api
-	$(MAKE) -C ./applications/$(APPLICATION_NAME)/Client BUILD_TYPE=$(BUILD_TYPE)
+	$(MAKE) -C ./applications/$(APPLICATION_NAME) client BUILD_TYPE=$(BUILD_TYPE)
 
 lambda-control-plane: utils api lambda-control-plane-submit-tasks lambda-control-plane-get-results lambda-control-plane-cancel-tasks lambda-control-plane-ttl-checker
 
@@ -211,7 +211,7 @@ k8s-jobs:
 ##### path per example ######
 #############################
 
-dotnet50-core: all dotnet5.0-htcgrid-api
+dotnet50-core: all dotnet5.0-htcgrid-api build-armonik-dotnet5.0-api
 
 dotnet50-path: upload-dotnet5.0 $(APPLICATION_NAME)-submitter k8s-jobs
 

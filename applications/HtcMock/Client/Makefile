@@ -19,17 +19,18 @@ all: push
 build: Dockerfile Dockerfile_Debug
 ifneq ($(DOCKER_REGISTRY),)
 ifeq ($(BUILD_TYPE), Debug)
-	docker build ../../../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile_Debug
+	docker build ../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile_Debug
 else
-	docker build ../../../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
+	docker build ../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
 endif
 else
 ifeq ($(BUILD_TYPE), Debug)
-	docker build ../../../ -t $(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile_Debug
+	docker build ../ -t $(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile_Debug
 else
-	docker build ../../../ -t $(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
+	docker build ../ -t $(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
 endif
 endif
+
 
 push: build
 ifneq ($(DOCKER_REGISTRY),)

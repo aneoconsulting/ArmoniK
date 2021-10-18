@@ -5,17 +5,14 @@ WORKDIR "/app"
 COPY ./mock_integration_image /app/mock_integration
 
 WORKDIR "/app/mock_integration/src"
-RUN mkdir -p ./dist/dotnet5.0
-COPY ./mock_integration_image/src/mock_integration/dist/dotnet5.0/*.nupkg ./dist/dotnet5.0/
-ENV ARMONIK_NUGET_REPOS=/app/mock_integration/src/dist/dotnet5.0
+RUN mkdir -p ./dist/
+COPY ./mock_integration_image/src/mock_integration/dist/*.nupkg ./dist/
+ENV ARMONIK_NUGET_REPOS=/app/mock_integration/src/dist/
 
 WORKDIR "/app/mock_integration/src/mock_integration"
 RUN dotnet restore
 RUN mkdir -p ./lib/
 
-
-COPY ./mock_integration_image/src/mock_integration/dist/dotnet5.0/Armonik.api.1.0.0.nupkg ./dist/dotnet5.0
-COPY ./mock_integration_image/src/mock_integration/dist/dotnet5.0/HttpApi.1.0.0.nupkg ./dist/dotnet5.0
 RUN dotnet build "mock_integration.csproj" --configuration Release --output /app/build
 
 FROM build AS publish

@@ -6,14 +6,17 @@ BUILD_TYPE?=Release
 
 all: client upload
 
-client:
+client: external_packages
 	mkdir -p dist lib
-	cd client && make
+	cd Client && make BUILD_TYPE=$(BUILD_TYPE)
 
 build: client
 
+external_packages:
+	mkdir -p ./dist
+	cp -u ${ARMONIK_NUGET_REPOS}/*.nupkg ./dist
 
-upload:
+upload: external_packages
 	$(MAKE) -C ./packages upload BUILD_TYPE=$(BUILD_TYPE)
 
 clean:

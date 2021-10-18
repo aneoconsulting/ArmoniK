@@ -12,10 +12,9 @@ using System.Text.Json;
 using Amazon.Lambda.Core;
 
 using HTCGrid;
-using HTCGrid.Common;
-
-
-using Armonik.example.ServiceContainer;
+using Armonik.sdk;
+using Htc.Mock;
+using Htc.Mock.RequestRunners;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -23,8 +22,7 @@ namespace HtcMock
 {
     public class Function
     {
-
-        private static readonly GridWorker gridWorker_;
+        private static readonly IGridWorker gridWorker_;
         private static GridConfig gridConfig_;
 
 
@@ -59,7 +57,7 @@ namespace HtcMock
 
             HtcGridClient htcGridClient = new HtcGridClient(gridConfig_, htcDataClient);
 
-            gridWorker_ = new(new DelegateRequestRunnerFactory((runConfiguration, sessionId)
+            gridWorker_ = new GridWorkerMock(new DelegateRequestRunnerFactory((runConfiguration, sessionId)
                                                               =>  new DistributedRequestRunnerWithAggregation(htcDataClient,
                                                                                               htcGridClient,
                                                                                               runConfiguration,

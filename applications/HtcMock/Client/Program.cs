@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Threading;
 
 using HTCGrid;
-using HTCGrid.Common;
+using Armonik.sdk;
 using Htc.Mock;
 using Htc.Mock.Core;
 
@@ -24,7 +24,7 @@ namespace HtcClient
              if(!String.IsNullOrEmpty(armonik_wait_client))
              {
                 int arminik_debug_wait_client = int.Parse(armonik_wait_client);
-             
+
              if (arminik_debug_wait_client > 0)
             {
                 Console.WriteLine($"Debug: Sleep {arminik_debug_wait_client} seconds");
@@ -54,13 +54,13 @@ namespace HtcClient
 
             GridConfig gridConfig = new GridConfig();
             gridConfig.Init(parsedConfig);
-            //get envirnoment variable 
+            //get envirnoment variable
             var var_env = Environment.GetEnvironmentVariable("ARMONIK_DEBUG_WAIT_TASK");
              if(!String.IsNullOrEmpty(var_env))
              {
                 gridConfig.debug = int.Parse(var_env);
              }
-            
+
 
 
             // Code below is standard.

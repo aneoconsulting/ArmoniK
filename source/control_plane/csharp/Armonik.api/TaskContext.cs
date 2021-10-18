@@ -8,11 +8,7 @@ namespace Armonik.sdk
         public string TaskId { get; set; }
         public byte[] payload_;
 
-
         public string SessionId { get; }
-
-        public string clientLibVersion { get; set; }
-
 
 
         /// <summary>
