@@ -20,7 +20,7 @@ public class ClientPayload {
     {
         if (payload == null || payload.Length == 0)
         {
-            return new ClientPayload {taskType = "No data", numbers = new List<int>(), result = "No result"};
+            return new ClientPayload() {taskType = "No data", numbers = new List<int>(), result = 0};
         }
         var str = System.Text.Encoding.ASCII.GetString(payload);
         return JsonSerializer.Deserialize<ClientPayload>(Base64ToString(str));
