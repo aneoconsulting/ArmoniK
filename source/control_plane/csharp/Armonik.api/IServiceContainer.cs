@@ -116,9 +116,9 @@ namespace Armonik.sdk
         /// <param name="payloads">
         /// The user payload list to execute. Generaly used for subtasking.
         /// </param>
-        public IEnumerable<string> SubmitTasks(string sessionId, IEnumerable<byte[]> payloads)
+        public IEnumerable<string> SubmitTasks(IEnumerable<byte[]> payloads)
         {
-            return htcGridClient.SubmitTasks(sessionId, payloads);
+            return htcGridClient.SubmitTasks(payloads);
         }
     }
 
@@ -133,9 +133,9 @@ namespace Armonik.sdk
         /// <param name="payload">
         /// The user payload to execute. Generaly used for subtasking.
         /// </param>
-        public static string SubmitTask(this IServiceContainer serviceContainer, string sessionId, byte[] payload)
+        public static string SubmitTask(this IServiceContainer serviceContainer, byte[] payload)
         {
-            return serviceContainer.SubmitTasks(sessionId, new []{payload})
+            return serviceContainer.SubmitTasks(new []{payload})
                                    .Single();
         }
     }

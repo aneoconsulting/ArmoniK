@@ -31,7 +31,7 @@ namespace ArmonikSamples
                     var subTaskPaylaod = new ClientPayload();
                     subTaskPaylaod.taskType = "Square";
                     subTaskPaylaod.numbers = new List<int>() {number};
-                    taskIds.Add(this.SubmitTask(sessionContext.SessionId, subTaskPaylaod.serialize()));
+                    taskIds.Add(this.SubmitTask(subTaskPaylaod.serialize()));
                 }
                 int sum = 0;
                 foreach (var task in taskIds)

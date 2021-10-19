@@ -52,34 +52,12 @@ namespace ArmonikSamples
 
             gridConfig_.Init(parsedConfig);
 
-            HtcDataClient htcDataClient = new HtcDataClient(gridConfig_);
-            htcDataClient.ConnectDB();
-
-            HtcGridClient htcGridClient = new HtcGridClient(gridConfig_, htcDataClient);
-
-            serviceContainer = new ServiceContainer();
-            serviceContainer.htcDataClient = htcDataClient;
-            serviceContainer.htcGridClient = htcGridClient;
-
             firstRun = true;
 
-            // Grid initialize gridWorker_ = new()
-            gridWorker = new GridWorker(serviceContainer);
-            gridWorker.htcDataClient = htcDataClient;
-            gridWorker.htcGridClient = htcGridClient;
+            gridWorker = new GridWorker();
 
-            // gridWorker_ = new(new DelegateRequestRunnerFactory((runConfiguration, sessionId)
-            //                                                   =>  new DistributedRequestRunnerWithAggregation(htcDataClient,
-            //                                                                                   htcGridClient,
-            //                                                                                   runConfiguration,
-            //                                                                                   sessionId,
-            //                                                                                   fastCompute: false,
-            //                                                                                   useLowMem: false,
-            //                                                                                   smallOutput: false)));
-
+            gridWorker.RegisterServiceContainer(new ServiceContainer());
             gridWorker.OnStart();
-
-            // girdWoorker_.onServiceCreate(serviceContainer)
         }
 
         public string FunctionHandler(HtcTask inputTask, ILambdaContext context)
@@ -95,14 +73,11 @@ namespace ArmonikSamples
 
             if (firstRun)
             {
-                gridWorker.OnSessionEnter(inputTask.SessionId, inputTask.TaskId, inputTask.Payload);
+                gridWorker.OnSessionEnter(gridConfig_, inputTask);
                 firstRun = false;
             }
 
-
-
             Console.WriteLine("New Payload : ");
-
 
 
             gridWorker.Execute(inputTask.SessionId, inputTask.TaskId, inputTask.Payload);

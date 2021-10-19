@@ -61,17 +61,13 @@ namespace HtcClient
             var htcGridClient = new HtcGridClient(gridConfig, dataClient);
 
             dataClient.ConnectDB();
-            HTCGridConnector gridConnector =  new HTCGridConnector(gridConfig);
-            GridSession gridSession = gridConnector.CreateSession();
 
             List<int> numbers = new List<int>() {1, 2, 3};
             string taskType = "Compute";
 
-            var clientPaylaod = new ClientPayload();
-            clientPaylaod.numbers = numbers;
-            clientPaylaod.taskType = taskType;
+            var clientPaylaod = new ClientPayload(){numbers = numbers, taskType = taskType};
 
-            string taskId = htcGridClient.SubmitTask(gridSession.SessionId, clientPaylaod.serialize());
+            string taskId = htcGridClient.SubmitTask(clientPaylaod.serialize());
             htcGridClient.WaitCompletion(taskId);
 
             byte [] output = dataClient.GetData(taskId);

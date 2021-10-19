@@ -19,6 +19,7 @@
 
 
 using System;
+using HTCGrid;
 
 
 namespace Armonik
@@ -34,13 +35,18 @@ namespace Armonik
             public HtcDataClient htcDataClient { get; set; }
             public HtcGridClient htcGridClient { get; set; }
 
-            public GridWorker(IServiceContainer iServiceContainer)
+            public GridWorker()
             {
-                serviceContainer = iServiceContainer;
+                
                 sessionContext = new SessionContext();
                 serviceContext = new ServiceContext();
                 serviceContext.ApplicationName = "ArmonikApplicationSamples";
                 serviceContext.ServiceName = "ArmonikServiceSamples";
+            }
+
+            public void RegisterServiceContainer(IServiceContainer iServiceContainer)
+            {
+                serviceContainer = iServiceContainer;
             }
 
             public void OnStart()
@@ -48,9 +54,15 @@ namespace Armonik
                 serviceContainer.OnCreateService(serviceContext);
             }
 
-            public void OnSessionEnter(string session, string taskId, byte[] payload)
+            public void OnSessionEnter(GridConfig gridConfig, HtcTask inputTask)
             {
-                sessionContext.SessionId = session;
+                htcDataClient = new HtcDataClient(gridConfig);
+                htcDataClient.ConnectDB();
+
+                htcGridClient = new HtcGridClient(gridConfig, htcDataClient, inputTask.SessionId);
+                serviceContainer.htcDataClient = htcDataClient;
+                serviceContainer.htcGridClient = htcGridClient;
+                sessionContext.SessionId = inputTask.SessionId;
                 sessionContext.clientLibVersion = "1.0.0";
                 serviceContainer.OnSessionEnter(sessionContext);
             }

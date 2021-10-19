@@ -6,9 +6,9 @@ using System.Runtime.Serialization;
 
 
 public class ClientPayload {
-    public string taskType;
-    public List<int> numbers;
-    public int result;
+    public string taskType {get;set;}
+    public List<int> numbers{get;set;}
+    public int result{get;set;}
 
     public byte[] serialize() {
         string jsonString = JsonSerializer.Serialize(this);

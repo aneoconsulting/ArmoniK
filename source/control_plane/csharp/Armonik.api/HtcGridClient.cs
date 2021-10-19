@@ -11,22 +11,34 @@ namespace Armonik.sdk
         private GridConfig gridConfig_;
 
         private GridSession gridSession_;
-
+    
         private HTCGridConnector gridConnector_;
 
         private TaskController submittedTasks_;
 
         private HtcDataClient htcDataClient_;
 
-        public HtcGridClient(GridConfig gridConfig, HtcDataClient htcDataClient)
+        public string SessionId => gridSession_.SessionId;
+
+        private HtcGridClient(GridConfig gridConfig, HtcDataClient htcDataClient, int dummy=0)
         {
-            this.gridConfig_ = gridConfig;
+            gridConfig_ = gridConfig;
+            gridConnector_ = new HTCGridConnector(gridConfig);
+            submittedTasks_ = new TaskController();
+            htcDataClient_ = htcDataClient;
+            GridContext context = new GridContext();
+            context.tasks_priority = 0;
+            gridSession_.SetContext(context);
+        }
 
-            this.gridConnector_ = new HTCGridConnector(gridConfig);
+        public HtcGridClient(GridConfig gridConfig, HtcDataClient htcDataClient):this(gridConfig, htcDataClient, 0)
+        {
+            this.gridSession_ = this.gridConnector_.CreateSession();
+        }
 
-            this.submittedTasks_ = new TaskController();
-
-            this.htcDataClient_ = htcDataClient;
+        public HtcGridClient(GridConfig gridConfig, HtcDataClient htcDataClient, string sessionId):this(gridConfig, htcDataClient, 0)
+        {
+            this.gridSession_ = this.gridConnector_.OpenSession(sessionId);
         }
 
         public byte[] GetResult(string taskId)
@@ -104,34 +116,9 @@ namespace Armonik.sdk
             }
         }
 
-        public string SubmitTask(string sessionId, byte[] payload)
+        public IEnumerable<string> SubmitTasks(IEnumerable<byte[]> payloads)
         {
-            Console.WriteLine("INFO : Submit single task ");
-            HtcTask htcTask = new HtcTask();
-            sessionId = gridSession_.SessionId;
-            htcTask.SessionId = sessionId;
-            htcTask.Payload = payload;
-            htcTask.debug = gridConfig_.debug;
-            Console.WriteLine("Set Payload and Session " + sessionId);
-            List<HtcTask> tasksToProcess = new List<HtcTask>();
-            tasksToProcess.Add(htcTask);
-            if (gridSession_ is null)
-            {
-                Console.WriteLine("ERROR : GridSession is null reference ");
-            }
-            else
-            {
-                Console.WriteLine("Ready to send task with gridSession " + gridSession_.GetHashCode());
-            }
-
-            string[] task_ids = gridSession_.SendTasks(tasksToProcess.ToArray());
-            // throw new NotImplementedException("TODO : Parsing of Agent config isn't implemented");
-            return (task_ids != null && task_ids.Length > 0) ? task_ids[0] : "Fail to send";
-        }
-
-        public IEnumerable<string> SubmitTasks(string session, IEnumerable<byte[]> payloads)
-        {
-            Console.WriteLine($"Will submit tasks for session {session}.");
+            Console.WriteLine($"Will submit tasks for session {gridSession_.SessionId}.");
 
             var result = new List<string>();
             var currentBatch = new List<HtcTask>(500);
@@ -155,34 +142,34 @@ namespace Armonik.sdk
                 currentBatch.Clear();
             }
 
-            Console.WriteLine($"{result.Count()} tasks submitted for session {session}.");
+            Console.WriteLine($"{result.Count()} tasks submitted for session {gridSession_.SessionId}.");
             return result;
         }
 
-        public string SubmitSubtask(string sessionId, string parentId, byte[] payload)
+        public string SubmitSubtask(string parentId, byte[] payload)
         {
-            string subTaskId = SubmitTask(sessionId, payload);
+            string subTaskId = this.SubmitTask(payload);
             htcDataClient_.AddSubTaskId(parentId, subTaskId);
 
             return subTaskId;
         }
 
-        public IEnumerable<string> SubmitSubtasks(string session, string parentId, IEnumerable<byte[]> payloads)
+        public IEnumerable<string> SubmitSubtasks(string parentId, IEnumerable<byte[]> payloads)
         {
             throw new NotImplementedException("TODO : Parsing of Agent config isn't implemented");
         }
 
-        public string SubmitTaskWithDependencies(string sessionId, byte[] payload, IList<string> dependencies)
+        public string SubmitTaskWithDependencies(byte[] payload, IList<string> dependencies)
         {
             throw new NotImplementedException("TODO Should be implemente when the scheduler will be able to handle dependecies");
         }
 
-        public IEnumerable<string> SubmitTaskWithDependencies(string session, IEnumerable<(byte[], IList<string>)> payloadWithDependencies)
+        public IEnumerable<string> SubmitTaskWithDependencies(IEnumerable<(byte[], IList<string>)> payloadWithDependencies)
         {
             throw new NotImplementedException("TODO : Parsing of Agent config isn't implemented");
         }
 
-        public string SubmitSubtaskWithDependencies(string session, string parentId, byte[] payload, IList<string> dependencies)
+        public string SubmitSubtaskWithDependencies(string parentId, byte[] payload, IList<string> dependencies)
         {
             throw new NotImplementedException("TODO Should be implemente when the scheduler will be able to handle dependecies");
 
@@ -197,48 +184,22 @@ namespace Armonik.sdk
 
             // return subTaskId;
         }
-        public IEnumerable<string> SubmitSubtaskWithDependencies(string session, string parentId, IEnumerable<Tuple<byte[], IList<string>>> payloadWithDependencies)
+        public IEnumerable<string> SubmitSubtaskWithDependencies(string parentId, IEnumerable<Tuple<byte[], IList<string>>> payloadWithDependencies)
         {
             throw new NotImplementedException("TODO : Parsing of Agent config isn't implemented (SubmitSubtaskWithDependencies)");
         }
 
-        public IEnumerable<string> SubmitTaskWithDependencies(string session, IEnumerable<Tuple<byte[], IList<string>>> payloadWithDependencies)
+        public IEnumerable<string> SubmitTaskWithDependencies(IEnumerable<Tuple<byte[], IList<string>>> payloadWithDependencies)
         {
             throw new NotImplementedException("TODO : Parsing of Agent config isn't implemented (SubmitSubtaskWithDependencies)");
         }
 
-        public IEnumerable<string> SubmitSubtaskWithDependencies(string session, string parentId, IEnumerable<(byte[], IList<string>)> payloadWithDependencies)
+        public IEnumerable<string> SubmitSubtaskWithDependencies(string parentId, IEnumerable<(byte[], IList<string>)> payloadWithDependencies)
         {
             throw new NotImplementedException("TODO : Parsing of Agent config isn't implemented");
         }
 
-
-        public string CreateSession()
-        {
-
-            gridSession_ = this.gridConnector_.CreateSession();
-            Console.WriteLine("DEBUG : CreateSession " + gridSession_.SessionId);
-
-            GridContext context = new GridContext();
-            context.tasks_priority = 0;
-            gridSession_.SetContext(context);
-
-            return gridSession_.SessionId;
-        }
-
-        public IDisposable OpenSession(string sessionId)
-        {
-            //gridSession_ = this.gridConnector_.OpenSession(sessionId);
-            gridSession_ = this.gridConnector_.CreateSession();
-            Console.WriteLine("DEBUG : OpenSession with Id " + gridSession_.SessionId);
-
-            GridContext context = new GridContext();
-            context.tasks_priority = 0;
-            gridSession_.SetContext(context);
-            return null;
-        }
-
-        public void CancelSession(string sessionId)
+        public void CancelSession()
         {
             if (gridSession_ != null)
                 gridSession_.CancelSession();
