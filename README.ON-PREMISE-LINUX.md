@@ -1,10 +1,11 @@
 # Table of contents
 1. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
 2. [Configure the environment](#configure-the-environment)
-3. [Build Armonik artifacts](#build-armonik-artifacts)
-4. [Deploy Armonik resources](#deploy-armonik-resources)
-5. [Running an example workload](#running-an-example-workload)
-6. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
+3. [Build Armonik artifacts on local](#build-armonik-artifacts-on-local)
+4. [Get Armonik artifacts from DockerHub](#get-armonik-artifacts-from-dockerhub)
+5. [Deploy Armonik resources](#deploy-armonik-resources)
+6. [Running an example workload](#running-an-example-workload)
+7. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
 
 # Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
 Instructions to install Kubernetes on local Linux machine.
@@ -77,12 +78,24 @@ cp configure/onpremise-linux-config.conf ./envvars.conf
 source ./envvars.conf
 ```
 
-# Build Armonik artifacts <a name="build-armonik-artifacts"></a>
+# Build Armonik artifacts on local <a name="build-armonik-artifacts-on-local"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
 
 To build and install these in `<project_root>`:
 ```bash
 make dotnet50-path
+```
+
+A folder named `generated` will be created at `<project_root>`. This folder should contain the following
+two files:
+ * `dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
+ * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
+
+# Get Armonik artifacts from DockerHub <a name="get-armonik-artifacts-from-dockerhub"></a>
+
+To build and install these in `<project_root>`:
+```bash
+make mock-config-local-dotnet5.0
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following
@@ -115,6 +128,13 @@ In the folder [mock_computation](./examples/workloads/dotnet5.0/mock_computation
 
 We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job
 and the grid are implemented by a client in folder [./examples/client/python](./examples/client/python).
+
+* If you get Armonik artifacts from DockerHub you need to execute : 
+
+ ```bash
+  make k8s-jobs
+   ```
+  before to launch a kubernetes job.
 
 1. Run the following command to launch a kubernetes job:
    ```bash
