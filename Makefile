@@ -231,13 +231,4 @@ build-htc-grid-dotnet5.0-api:
 build-armonik-dotnet5.0-api:
 	$(MAKE) -C ./source/control_plane/csharp/Armonik.api all BUILD_TYPE=$(BUILD_TYPE)
 
-build-dotnet5.0-simple-client:
-	$(MAKE) -C ./examples/client/csharp/ BUILD_TYPE=$(BUILD_TYPE)
-
-build-dotnet5.0-mock-integration:
-	$(MAKE) -C ./examples/mock_integration/ BUILD_TYPE=$(BUILD_TYPE)
-
-build-dotnet5.0-armonik-samples:
-	$(MAKE) -C ./examples/ArmonikSamples/ BUILD_TYPE=$(BUILD_TYPE)
-
 
