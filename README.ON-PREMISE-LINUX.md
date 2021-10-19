@@ -129,11 +129,13 @@ In the folder [mock_computation](./examples/workloads/dotnet5.0/mock_computation
 We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job
 and the grid are implemented by a client in folder [./examples/client/python](./examples/client/python).
 
-* If you get Armonik artifacts from DockerHub you need to execute before to launch a kubernetes job.
+* If you get Armonik artifacts from DockerHub you need to execute : 
 
  ```bash
   make k8s-jobs
    ```
+  before to launch a kubernetes job.
+
 1. Run the following command to launch a kubernetes job:
    ```bash
    kubectl apply -f ./generated/local-single-task-dotnet5.0.yaml
