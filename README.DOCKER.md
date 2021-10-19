@@ -1,16 +1,17 @@
 # Table of contents
 1. [Build Docker image](#build-docker-image)
 2. [Start Docker image](#start-docker-image)
-3. [Build Armonik artifacts](#build-armonik-artifacts)
-4. [Deploy Armonik resources](#deploy-armonik-resources)
-5. [Running an example workload](#running-an-example-workload)
-6. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
+3. [Deploy Armonik resources](#deploy-armonik-resources)
+4. [Running an example workload](#running-an-example-workload)
+5. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
 
 # Build Docker image <a name="build-docker-image"></a>
 
 ```bash
-docker build -t armonik:dev .
+docker build -t armonik:dev --build-arg BUILD_ID=XXXX .
 ```
+
+Where XXXX is the build id corresponding to the current version of the repo
 
 # Start Docker image <a name="start-docker-image"></a>
 
@@ -21,26 +22,6 @@ docker run -it --rm --privileged armonik:dev bash
 If you don't provide the `bash` command, the container will run with no shell and you would need to `docker exec` within the container.
 The container has currently no volume, so any modification (in particular the build) will be lost when the container is terminated.
 
-# Build Armonik artifacts <a name="build-armonik-artifacts"></a>
-Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
-
-To build and install these in `<project_root>`:
-```bash
-make dotnet50-path
-```
-
-A folder named `generated` will be created at `<project_root>`. This folder should contain the following
-two files:
- * `dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
- * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
-
-## Debug mode
-To build in `debug` mode, you execute this command:
-```bash
-make dotnet50-path BUILD_TYPE=Debug
-```
-
-For more information see [here](./docs/debug.md)
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 1. Run the following to initialize the Terraform environment:

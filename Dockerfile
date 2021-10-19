@@ -41,19 +41,6 @@ RUN groupadd -g 1000 armonik && \
 
 COPY docker-init.sh /usr/local/bin/init
 
-ENTRYPOINT ["/usr/local/bin/init"]
-
-COPY --chown=1000:1000 requirements.txt /armonik/
-
-ENV ARMONIK_TAG=armonik-test
-ENV ARMONIK_TASKS_TABLE_SERVICE=MongoDB
-ENV ARMONIK_QUEUE_SERVICE=RSMQ
-ENV ARMONIK_NUGET_REPOS=/armonik/dist/dotnet5.0
-ENV ARMONIK_REDIS_CERTIFICATES_DIRECTORY=/armonik/redis_certificates
-ENV ARMONIK_API_GATEWAY_SERVICE=NGINX
-
-WORKDIR /armonik
-
 COPY --chown=1000:1000 .dockerignore Makefile LICENSE *.md  /armonik/
 COPY --chown=1000:1000 deployment /armonik/deployment
 COPY --chown=1000:1000 docs /armonik/docs
@@ -62,15 +49,26 @@ COPY --chown=1000:1000 local_deployment /armonik/local_deployment
 COPY --chown=1000:1000 redis_certificates /armonik/redis_certificates
 COPY --chown=1000:1000 source /armonik/source
 
+ENTRYPOINT ["/usr/local/bin/init"]
+
+WORKDIR /armonik
+
 USER armonik
+
+ENV ARMONIK_TASKS_TABLE_SERVICE=MongoDB
+ENV ARMONIK_QUEUE_SERVICE=RSMQ
+ENV ARMONIK_NUGET_REPOS=/armonik/dist/dotnet5.0
+ENV ARMONIK_REDIS_CERTIFICATES_DIRECTORY=/armonik/redis_certificates
+ENV ARMONIK_API_GATEWAY_SERVICE=NGINX
 
 # This could be done in Docker build, but enlarges the image by ~200MB
 #RUN make init-grid-local-deployment
 
-ARG BUILDID
+ARG BUILD_ID=XXXX
+ARG DOCKER_REGISTRY=dockerhubaneo
 
-ENV ARMONIK_TAG=armonik-dev-$BUILDID
-ENV ARMONIK_DOCKER_REGISTRY=dockerhubaneo
+ENV ARMONIK_TAG=armonik-dev-${BUILD_ID}
+ENV ARMONIK_DOCKER_REGISTRY=${DOCKER_REGISTRY}
 
 RUN make mock-config-local-dotnet5.0 && \
     make k8s-jobs
