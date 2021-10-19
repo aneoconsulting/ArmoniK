@@ -1,5 +1,7 @@
 using HTCGrid;
 using System.Text;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Armonik.sdk
 {
@@ -27,7 +29,7 @@ namespace Armonik.sdk
         /// <param name="serviceContext">
         /// Holds all information on the state of the service at the start of the execution.
         /// </param>
-        public void OnCreateService(ServiceContext serviceContext) { }
+        public abstract void OnCreateService(ServiceContext serviceContext);
 
 
 
@@ -37,7 +39,7 @@ namespace Armonik.sdk
         /// <param name="sessionContext">
         /// Holds all information on the state of the session at the start of the execution.
         /// </param>
-        public void OnSessionEnter(SessionContext sessionContext) { }
+        public abstract void OnSessionEnter(SessionContext sessionContext);
 
 
 
@@ -62,7 +64,7 @@ namespace Armonik.sdk
         /// <param name="sessionContext">
         /// Holds all information on the state of the session at the start of the execution such as session ID.
         /// </param>
-        public void OnSessionLeave(SessionContext sessionContext) { }
+        public abstract void OnSessionLeave(SessionContext sessionContext);
 
 
 
@@ -73,7 +75,7 @@ namespace Armonik.sdk
         /// <param name="serviceContext">
         /// Holds all information on the state of the service at the start of the execution.
         /// </param>
-        public void OnDestroyService(ServiceContext serviceContext) { }
+        public abstract void OnDestroyService(ServiceContext serviceContext);
 
 
 
@@ -86,7 +88,7 @@ namespace Armonik.sdk
         /// <param name="value">
         /// The data value to put in the database.
         /// </param>
-        public sealed void writeTaskOutput(string key, byte[] value)
+        public void writeTaskOutput(string key, byte[] value)
         {
             htcDataClient.StoreData(key, value);
         }
@@ -100,7 +102,7 @@ namespace Armonik.sdk
         /// <param name="value">
         /// The data value to put in the database.
         /// </param>
-        public sealed byte[] GetData(string key)
+        public byte[] GetData(string key)
         {
             return htcDataClient.GetData(key);
         }

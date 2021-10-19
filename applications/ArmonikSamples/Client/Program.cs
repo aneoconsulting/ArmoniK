@@ -7,6 +7,7 @@ using System.Collections;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
+using System.Linq;
 
 using HTCGrid;
 using Armonik.sdk;
@@ -57,35 +58,25 @@ namespace HtcClient
 
             var dataClient = new HtcDataClient(gridConfig);
 
-            var htcGridclient = new HtcGridClient(gridConfig, dataClient);
+            var htcGridClient = new HtcGridClient(gridConfig, dataClient);
 
             dataClient.ConnectDB();
+            HTCGridConnector gridConnector =  new HTCGridConnector(gridConfig);
+            GridSession gridSession = gridConnector.CreateSession();
 
-            List<int> numbers = {1, 2, 3};
-            byte[] input;
+            List<int> numbers = new List<int>() {1, 2, 3};
             string taskType = "Compute";
 
-            using (MemoryStream m = new MemoryStream())
-            {
-                using (BinaryWriter writer = new BinaryWriter(m))
-                {
-                    writer.Write(taskType);
-                    writer.Write(numbers.Count());
-                    foreach( var v in numbers)
-                    {
-                        writer.Write(v);
-                    }
-                }
-                input = m.ToArray();
-            }
+            var clientPaylaod = new ClientPayload();
+            clientPaylaod.numbers = numbers;
+            clientPaylaod.taskType = taskType;
 
-            HtcTask clientTask_1 = new HtcTask() { sessionId_ = gridSession.SessionId, payload_ = input };
+            string taskId = htcGridClient.SubmitTask(gridSession.SessionId, clientPaylaod.serialize());
+            htcGridClient.WaitCompletion(taskId);
 
-            List<HtcTask> tasksToProcess = new List<HtcTask>();
-            tasksToProcess.Add(clientTask_1);
-
-            gridSession.SendTasks(tasksToProcess.ToArray());
-            gridSession.CheckResults();
+            byte [] output = dataClient.GetData(taskId);
+            ClientPayload outputPayload = ClientPayload.deserialize(output);
+            Console.WriteLine($"output result : {outputPayload.result}");
         }
     }
 }

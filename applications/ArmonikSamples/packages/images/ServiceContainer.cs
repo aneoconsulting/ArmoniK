@@ -3,6 +3,7 @@ using Armonik.sdk;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ArmonikSamples
 {
@@ -20,48 +21,40 @@ namespace ArmonikSamples
 
         public override void OnInvoke(SessionContext sessionContext, TaskContext taskContext)
         {
-            List<int> numbers = new List<int>();
-            string inputTaskType;
-            using (MemoryStream m = new MemoryStream(taskContext.TaskInput))
+            var clientPayload = ClientPayload.deserialize(taskContext.TaskInput);
+
+            if (string.Compare(clientPayload.taskType, "Compute") > 0)
             {
-                using (BinaryReader reader = new BinaryReader(m))
+                List<string> taskIds = new List<string>();
+                foreach (var number in clientPayload.numbers)
                 {
-                    inputTaskType = reader.ReadString();
-
-                    if (inputTaskType == "Compute")
-                    {
-                        byte[] nextTaskInput;
-                        int n = reader.ReadInt32();
-                        List<string> taskIds = new List<string>();
-                        for (int i = 0; i < n; i++)
-                        {
-                            int c = reader.ReadInt32();
-
-                            using (MemoryStream m2 = new MemoryStream())
-                            {
-                                using (BinaryWriter writer = new BinaryWriter(m2))
-                                {
-                                    writer.Write("Squarre");
-                                    writer.Write(c);
-                                }
-                                nextTaskInput = m2.ToArray();
-                            }
-                            taskIds.Add(SubmitTask(sessionContext.SessionId, nextTaskInput));
-                        }
-                        int sum = 0;
-                        foreach (var task in taskIds)
-                        {
-                            HtcGridClient.WaitCompletion(task);
-                            sum += BitConverter.ToInt32(GetData(task), 0);
-                        }
-                        writeTaskOutput(taskContext.TaskId, BitConverter.GetBytes(sum));
-                    }
-                    else if (inputTaskType == "Squarre")
-                    {
-                        int c = reader.ReadInt32();
-                        writeTaskOutput(taskContext.TaskId, BitConverter.GetBytes(c * c));
-                    }
+                    var subTaskPaylaod = new ClientPayload();
+                    subTaskPaylaod.taskType = "Square";
+                    subTaskPaylaod.numbers = new List<int>() {number};
+                    taskIds.Add(this.SubmitTask(sessionContext.SessionId, subTaskPaylaod.serialize()));
                 }
+                int sum = 0;
+                foreach (var task in taskIds)
+                {
+                    htcGridClient.WaitCompletion(task);
+                    byte [] taskOutput = GetData(task);
+                    var outputPayload = ClientPayload.deserialize(taskOutput);
+                    sum += outputPayload.result;
+                }
+                var sumPaylaod = new ClientPayload();
+                sumPaylaod.taskType = "Result Sum";
+                sumPaylaod.result = sum;
+                Console.WriteLine($"Compute sum = {sum}");
+                writeTaskOutput(taskContext.TaskId, sumPaylaod.serialize());
+            }
+            else if (string.Compare(clientPayload.taskType, "Square") > 0)
+            {
+                int c = clientPayload.numbers.First();
+                var subTaskPaylaod = new ClientPayload();
+                subTaskPaylaod.taskType = "Result Square";
+                subTaskPaylaod.result = c * c;
+                Console.WriteLine($"Compute {c} square = {subTaskPaylaod.result}");
+                writeTaskOutput(taskContext.TaskId, subTaskPaylaod.serialize());
             }
         }
 

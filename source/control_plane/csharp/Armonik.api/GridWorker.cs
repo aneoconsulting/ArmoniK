@@ -31,8 +31,8 @@ namespace Armonik
             private SessionContext sessionContext;
             private ServiceContext serviceContext;
 
-            HtcDataClient htcDataClient { get; set; }
-            HtcGridClient htcGridClient { get; set; }
+            public HtcDataClient htcDataClient { get; set; }
+            public HtcGridClient htcGridClient { get; set; }
 
             public GridWorker(IServiceContainer iServiceContainer)
             {
