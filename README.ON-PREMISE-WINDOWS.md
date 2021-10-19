@@ -193,7 +193,7 @@ make destroy-dotnet-local-runtime
 make clean-grid-local-project
 ```
 
-4. **If you want** remove all local docker images:
+4. **If you want remove ALL** local docker images:
 ```bash
 docker rmi -f $(docker images -a -q)
 ```

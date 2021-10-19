@@ -179,7 +179,7 @@ make clean-grid-local-project
 /usr/local/bin/k3s-uninstall.sh
 ```
 
-6. **If you want** remove all local docker images:
+6. **If you want remove ALL** local docker images:
 ```bash
 docker rmi -f $(docker images -a -q)
 ```

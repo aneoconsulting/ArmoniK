@@ -133,17 +133,22 @@ kubectl delete -f ./generated/single-task-dotnet5.0.yaml
 make destroy-dotnet-runtime
 ```
 
-3. Clean Terraform project:
+3. Delete the KMS key:
+```bash
+make delete-grid-state
+```
+
+4. Clean Terraform project:
 ```bash
 make clean-grid-deployment
 ```
 
-4. Clean binaries and generated files:
+5. Clean binaries and generated files:
 ```bash
 make clean-grid-project
 ```
 
-5. **If you want** remove all local docker images:
+6. **If you want remove ALL** local docker images:
 ```bash
 docker rmi -f $(docker images -a -q)
 ```
