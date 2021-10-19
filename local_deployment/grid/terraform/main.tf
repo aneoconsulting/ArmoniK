@@ -42,11 +42,7 @@ locals {
     lambda_name_submit_tasks = "${var.lambda_name_submit_tasks}-${local.project_name}"
     lambda_name_cancel_tasks = "${var.lambda_name_cancel_tasks}-${local.project_name}"
     lambda_name_ttl_checker = "${var.lambda_name_ttl_checker}-${local.project_name}"
-    lambda_name_scaling_metric = "${var.lambda_name_scaling_metric}-${local.project_name}"
-    metrics_name = "${var.metrics_name}-${local.project_name}"
     config_name = "${var.config_name}-${local.project_name}"
-    error_log_group = "${var.error_log_group}-${local.project_name}"
-    error_logging_stream = "${var.error_logging_stream}-${local.project_name}"
 
     default_agent_configuration = {
         agent_chart_url  = "../charts"
@@ -108,15 +104,11 @@ module "control_plane" {
     metrics_get_results_lambda_connection_string = var.metrics_get_results_lambda_connection_string
     metrics_cancel_tasks_lambda_connection_string = var.metrics_cancel_tasks_lambda_connection_string
     metrics_ttl_checker_lambda_connection_string = var.metrics_ttl_checker_lambda_connection_string
-    error_log_group = local.error_log_group
-    error_logging_stream = local.error_logging_stream
     agent_use_congestion_control = var.agent_use_congestion_control
     cluster_name = local.cluster_name
-    api_gateway_version = var.api_gateway_version
     mongodb_port = var.mongodb_port
     redis_port = var.redis_port
     queue_port = var.queue_port
-    retention_in_days = var.retention_in_days
     redis_with_ssl = var.redis_with_ssl
     connection_redis_timeout = var.connection_redis_timeout
     certificates_dir_path = var.certificates_dir_path

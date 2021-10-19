@@ -11,8 +11,6 @@ resource "kubernetes_config_map" "lambda_local" {
     TASKS_QUEUE_DLQ_NAME = var.dlq_name,
     METRICS_ARE_ENABLED = var.metrics_are_enabled,
     METRICS_SUBMIT_TASKS_LAMBDA_CONNECTION_STRING = var.metrics_submit_tasks_lambda_connection_string,
-    ERROR_LOG_GROUP = var.error_log_group,
-    ERROR_LOGGING_STREAM = var.error_logging_stream,
     TASK_INPUT_PASSED_VIA_EXTERNAL_STORAGE = var.task_input_passed_via_external_storage,
     GRID_STORAGE_SERVICE = var.grid_storage_service,
     GRID_QUEUE_SERVICE = var.grid_queue_service,
