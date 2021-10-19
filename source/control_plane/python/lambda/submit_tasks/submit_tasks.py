@@ -22,7 +22,7 @@ import logging
 logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s  - %(lineno)d - %(message)s",
                     datefmt='%H:%M:%S', level=logging.INFO)
 
-region = os.environ["REGION"]
+region = os.environ.get('REGION', None)
 
 tasks_queue = queue_manager(
     grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],
@@ -35,7 +35,7 @@ state_table = state_table_manager(grid_state_table_service=os.environ.get('TASKS
                                   grid_state_table_config=os.environ.get('TASKS_STATUS_TABLE_CONFIG', None),
                                   tasks_state_table_name=os.environ.get('TASKS_STATUS_TABLE_NAME', None),
                                   endpoint_url=os.environ.get('DB_ENDPOINT_URL', None),
-                                  region=os.environ.get('REGION', None))
+                                  region=region)
 
 perf_tracker = performance_tracker_initializer(
     os.environ["METRICS_ARE_ENABLED"],

@@ -20,8 +20,6 @@ resource "kubernetes_config_map" "lambda_local" {
     REDIS_URL = local.redis_pod_ip,
     REDIS_PORT = var.redis_port,
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
-    REGION = var.region,
-    AWS_DEFAULT_REGION = var.region,
     QUEUE_ENDPOINT_URL = "${local.queue_pod_ip}:${var.queue_port}",
     DB_ENDPOINT_URL = "mongodb://${local.mongodb_pod_ip}:${var.mongodb_port}",
     REDIS_USE_SSL = var.redis_with_ssl,
