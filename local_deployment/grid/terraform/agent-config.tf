@@ -4,7 +4,6 @@
 locals {
   agent_config =<<EOF
 {
-  "region": "${var.region}",
   "ddb_status_table" : "${local.ddb_status_table}",
   "queue_endpoint_url": "${module.control_plane.queue_pod_ip}:${var.queue_port}",
   "db_endpoint_url": "mongodb://${module.control_plane.mongodb_pod_ip}:${var.mongodb_port}",

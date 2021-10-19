@@ -1,12 +1,3 @@
-# Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: Apache-2.0
-# Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
-
-variable "region" {
-  default     = "eu-west-1"
-  description = "AWS region"
-}
-
 variable "k8s_config_context" {
   default = "default"
   description = ""
@@ -17,18 +8,8 @@ variable "k8s_config_path" {
   description = ""
 }
 
-variable "input_role" {
-  description = "Additional IAM roles to add to the aws-auth configmap."
-  type = list(object({
-    rolearn  = string
-    username = string
-    groups   = list(string)
-  }))
-  default = []
-}
-
 variable "cluster_name" {
-  default = "htc"
+  default = "armonik"
   description = "Name of EKS cluster in AWS"
 }
 

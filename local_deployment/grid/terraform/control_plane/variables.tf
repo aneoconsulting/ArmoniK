@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-variable "region" {
-  description = "AWS region"
-}
-
 variable "docker_registry" {
   description = "URL of Amazon ECR image repostiories"
 }

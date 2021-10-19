@@ -70,7 +70,6 @@ locals {
             function_name = "function"
             lambda_handler_file_name = ""
             lambda_handler_function_name = ""
-            region = var.region
         }
         test = {
             image = local.docker_registry != "" ? "${local.docker_registry}/submitter" : "submitter"
@@ -87,7 +86,6 @@ module "compute_plane" {
 module "control_plane" {
     source = "./control_plane"
     suffix = local.project_name
-    region = var.region
     ddb_status_table = local.ddb_status_table
     lambda_runtime = var.lambda_runtime
     lambda_timeout = var.lambda_timeout

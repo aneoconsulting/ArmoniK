@@ -9,7 +9,7 @@ import os
 from api.queue_manager import queue_manager
 
 # TODO - retrieve the endpoint url from Terraform
-region = os.environ["REGION"]
+region = os.environ.get('REGION', None)
 
 def lambda_handler(event, context):
     # For every x minute
