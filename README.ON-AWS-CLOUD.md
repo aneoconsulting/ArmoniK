@@ -55,7 +55,7 @@ ARMONIK_DOCKER_REGISTRY=<Your Docker registry>
 **Mandatory:** To set these environment variables:
 1. Copy the [template file for AWS](configure/onpremise-aws-config.conf) and modify the values of variables if needed:
 ```bash
-cp configure/onpremise-aws-config.conf ./envvars.conf
+cp configure/aws-config.conf ./envvars.conf
 ```
 
 2. Source the file of configuration:
@@ -66,7 +66,7 @@ source ./envvars.conf
 ## ECR authentication <a name="ecr-authentication"></a>
 As you'll be uploading images to ECR, to avoid timeouts, refresh your ECR authentication token:
 ```bash
-aws ecr get-login-password --region $ARMONIK_REGION | docker login --username AWS --password-stdin $ARMONIK_ACCOUNT_ID.dkr.ecr.$ARMONIK_REGION.amazonaws.com
+aws ecr get-login-password --region $ARMONIK_REGION | docker login --username AWS --password-stdin $ARMONIK_DOCKER_REGISTRY
 ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
@@ -74,7 +74,7 @@ Armonik artifacts include: .NET Core packages, docker images, configuration file
 
 To build and install these in `<project_root>`:
 ```bash
-make dotnet50-path REGION=$ARMONIK_REGION
+make dotnet50-path
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following 
@@ -83,20 +83,14 @@ two files:
  * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
-1. Create S3 buckets. The following step creates the S3 buckets and an encryption key that will be needed during the installation:
+1. Run the following to initialize the Terraform environment: 
    ```bash
-   make init-grid-state REGION=$ARMONIK_REGION
-
-   ```
-
-2. Run the following to initialize the Terraform environment: 
-   ```bash
-   make init-grid-deployment REGION=$ARMONIK_REGION
+   make init-grid-deployment
    ```
    
-3. If successful you can run terraform apply to create the infrastructure:
+2. If successful you can run terraform apply to create the infrastructure:
    ```bash
-   make apply-dotnet-runtime REGION=$ARMONIK_REGION
+   make apply-dotnet-runtime
    ```
    
 # Running an example workload <a name="running-an-example-workload"></a>
