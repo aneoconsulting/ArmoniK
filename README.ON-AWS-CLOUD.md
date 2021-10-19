@@ -55,7 +55,7 @@ ARMONIK_DOCKER_REGISTRY=<Your Docker registry>
 **Mandatory:** To set these environment variables:
 1. Copy the [template file for AWS](configure/onpremise-aws-config.conf) and modify the values of variables if needed:
 ```bash
-cp configure/onpremise-aws-config.conf ./envvars.conf
+cp configure/aws-config.conf ./envvars.conf
 ```
 
 2. Source the file of configuration:
@@ -74,7 +74,7 @@ Armonik artifacts include: .NET Core packages, docker images, configuration file
 
 To build and install these in `<project_root>`:
 ```bash
-make dotnet50-path REGION=$ARMONIK_REGION
+make dotnet50-path
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following 
