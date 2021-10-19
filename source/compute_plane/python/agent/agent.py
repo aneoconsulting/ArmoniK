@@ -70,7 +70,7 @@ task_ttl_refresh_interval_sec = agent_config_data['task_ttl_refresh_interval_sec
 task_input_passed_via_external_storage = agent_config_data['task_input_passed_via_external_storage']
 agent_sqs_visibility_timeout_sec = agent_config_data['agent_sqs_visibility_timeout_sec']
 USE_CC = agent_config_data['agent_use_congestion_control']
-IS_XRAY_ENABLE = agent_config_data['enable_xray']
+IS_XRAY_ENABLE = agent_config_data.get('enable_xray', 0)
 region = agent_config_data.get('region', None)
 # TODO: redirect logs to fluentD
 
