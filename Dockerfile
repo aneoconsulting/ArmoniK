@@ -2,28 +2,13 @@ FROM ubuntu:20.04 AS install
 
 RUN apt update -y && \
     DEBIAN_FRONTEND=noninteractive apt install -y \
-    apt-transport-https \
-    awscli \
-    ca-certificates \
     curl \
     docker.io \
     fuse-overlayfs \
-    gnupg \
-    jq \
-    python3-pip \
-    software-properties-common \
+    make \
     sudo \
     unzip \
     && apt clean && rm -rf /var/lib/apt/lists/*
-
-# Python alias
-RUN ln -s /usr/bin/python3 /usr/local/bin/python
-
-# Dotnet
-RUN curl -fsSL https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -o /tmp/pkg-microsoft.deb && \
-    dpkg -i /tmp/pkg-microsoft.deb && apt update -y && \
-    apt install -y dotnet-sdk-5.0 && \
-    apt clean && rm -rf /var/lib/apt/lists/*
 
 # Kubernetes
 RUN curl -fsSL https://github.com/k3s-io/k3s/releases/latest/download/k3s -o /usr/local/bin/k3s && \
@@ -60,8 +45,6 @@ ENTRYPOINT ["/usr/local/bin/init"]
 
 COPY --chown=1000:1000 requirements.txt /armonik/
 
-RUN pip install -r /armonik/requirements.txt
-
 ENV ARMONIK_TAG=armonik-test
 ENV ARMONIK_TASKS_TABLE_SERVICE=MongoDB
 ENV ARMONIK_QUEUE_SERVICE=RSMQ
@@ -80,3 +63,14 @@ COPY --chown=1000:1000 redis_certificates /armonik/redis_certificates
 COPY --chown=1000:1000 source /armonik/source
 
 USER armonik
+
+# This could be done in Docker build, but enlarges the image by ~200MB
+#RUN make init-grid-local-deployment
+
+ARG BUILDID
+
+ENV ARMONIK_TAG=armonik-dev-$BUILDID
+ENV ARMONIK_DOCKER_REGISTRY=dockerhubaneo
+
+RUN make mock-config-local-dotnet5.0 && \
+    make k8s-jobs
