@@ -47,5 +47,4 @@ ifeq ($(BUILD_TYPE), Debug)
 endif
 
 clean:
-	rm lambda.zip
 	rm -rf ./images/lib ./images/dist

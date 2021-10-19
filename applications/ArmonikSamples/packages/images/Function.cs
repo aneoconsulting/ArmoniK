@@ -24,7 +24,6 @@ namespace ArmonikSamples
         private static GridWorker gridWorker;
 
         private static bool firstRun;
-        private static IServiceContainer serviceContainer;
         private static GridConfig gridConfig_;
 
         static Function()

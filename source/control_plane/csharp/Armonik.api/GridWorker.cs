@@ -20,6 +20,7 @@
 
 using System;
 using HTCGrid;
+using System.Text;
 
 
 namespace Armonik
@@ -37,13 +38,12 @@ namespace Armonik
 
             public GridWorker()
             {
-                
+
                 sessionContext = new SessionContext();
                 serviceContext = new ServiceContext();
                 serviceContext.ApplicationName = "ArmonikApplicationSamples";
                 serviceContext.ServiceName = "ArmonikServiceSamples";
             }
-
             public void RegisterServiceContainer(IServiceContainer iServiceContainer)
             {
                 serviceContainer = iServiceContainer;
@@ -76,8 +76,8 @@ namespace Armonik
 
                 serviceContainer.OnInvoke(sessionContext, taskContext);
 
-                //TODO get result from redis or only request result ???
-                return new byte[0];
+                // Return to user the taskId, could be any other information
+                return Encoding.ASCII.GetBytes(taskId);
             }
 
             public void OnSessionLeave()
