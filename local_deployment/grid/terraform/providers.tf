@@ -8,47 +8,31 @@ terraform {
   }
 
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.55.0"
-    }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.4.1"
+      version = "~> 2.5.1"
     }
     helm = {
       source  = "hashicorp/helm"
-      version = "~> 2.2.0"
-    }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "~> 3.1.0"
-    }
-    archive = {
-      source = "hashicorp/archive"
-      version = "2.2.0"
-    }
-    template = {
-      source = "hashicorp/template"
-      version = "2.2.0"
+      version = "~> 2.3.0"
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
-      version = ">= 1.7.0"
+      version = ">= 1.13.0"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = ">= 2.1.0"
+    }
+    null = {
+      source  = "hashicorp/null"
+      version = ">= 3.1.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3.1.0"
     }
   }
-}
-
-provider "template" {
-}
-
-provider "tls" {
-}
-
-provider "archive" {
-}
-
-provider "kubectl" {
 }
 
 provider "kubernetes" {
@@ -64,16 +48,3 @@ provider "helm" {
     config_context = var.k8s_config_context
   }
 }
-
-provider "aws" {
-  access_key                  = var.access_key
-  region                      = var.region
-  secret_key                  = var.secret_key
-  skip_credentials_validation = true
-  skip_metadata_api_check     = true
-  skip_requesting_account_id  = true
-
-  endpoints {
-  }
-}
-

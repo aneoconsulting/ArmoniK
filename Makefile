@@ -65,7 +65,7 @@ show-password:
 	@$(MAKE) -C ./deployment/grid/terraform get-grafana-password
 
 clean-grid-local-project: clean-grid-local-deployment
-	rm -rf $(GENERATED) $(DIST_DIR)
+	rm -rf $(GENERATED) $(DIST_DIR) envvars.conf
 
 init-grid-local-deployment:
 	@$(MAKE) -C ./local_deployment/grid/terraform init

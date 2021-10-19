@@ -53,9 +53,7 @@ locals {
   "api_gateway_key": "mock",
   "enable_xray" : "${var.enable_xray}",
   "user_pool_id": "mock",
-  "cognito_userpool_client_id": "mock",
-  "access_key": "${var.access_key}",
-  "secret_key": "${var.secret_key}"
+  "cognito_userpool_client_id": "mock"
 }
 EOF
 }
