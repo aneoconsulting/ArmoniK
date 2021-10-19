@@ -17,9 +17,9 @@
   "no_proxy_lower": "{{no_proxy_lower}}",
   "agent_configuration": {
     "lambda": {
-      "minCPU": "200",
+      "minCPU": "50",
       "maxCPU": "900",
-      "minMemory": "400",
+      "minMemory": "100",
       "maxMemory": "1900",
       "runtime": "5.0.4",
       "lambda_handler_file_name" :"{{dotnet50_file_handler}}",

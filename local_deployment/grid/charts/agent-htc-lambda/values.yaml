@@ -13,7 +13,7 @@ http_proxy_lower: ""
 https_proxy_lower: ""
 no_proxy_lower: ""
 
-replicaCount: 3
+replicaCount: 10
 
 terminationGracePeriodSeconds: 1500
 
