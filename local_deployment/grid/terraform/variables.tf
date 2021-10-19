@@ -7,16 +7,6 @@ variable "region" {
   description = "AWS region"
 }
 
-variable "access_key" {
-  default = "mock_access_key"
-  description = "AWS access key"
-}
-
-variable "secret_key" {
-  default = "mock_secret_key"
-  description = "AWS secret key"
-}
-
 variable "k8s_config_context" {
   default = "default"
   description = ""

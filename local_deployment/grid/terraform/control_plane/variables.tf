@@ -6,14 +6,6 @@ variable "region" {
   description = "AWS region"
 }
 
-variable "access_key" {
-  description = "AWS access key"
-}
-
-variable "secret_key" {
-  description = "AWS secret key"
-}
-
 variable "docker_registry" {
   description = "URL of Amazon ECR image repostiories"
 }

@@ -86,8 +86,6 @@ module "compute_plane" {
 
 module "control_plane" {
     source = "./control_plane"
-    secret_key = var.secret_key
-    access_key = var.access_key
     suffix = local.project_name
     region = var.region
     ddb_status_table = local.ddb_status_table
