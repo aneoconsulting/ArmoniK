@@ -83,18 +83,12 @@ two files:
  * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
-1. Create S3 buckets. The following step creates the S3 buckets and an encryption key that will be needed during the installation:
-   ```bash
-   make init-grid-state
-
-   ```
-
-2. Run the following to initialize the Terraform environment: 
+1. Run the following to initialize the Terraform environment: 
    ```bash
    make init-grid-deployment
    ```
    
-3. If successful you can run terraform apply to create the infrastructure:
+2. If successful you can run terraform apply to create the infrastructure:
    ```bash
    make apply-dotnet-runtime
    ```

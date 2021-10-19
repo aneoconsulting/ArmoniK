@@ -8,46 +8,60 @@ terraform {
   }
   
   required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.46.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.3.2"
-    }
-    helm = {
-      source  = "hashicorp/helm"
+    cloudinit = {
+      source  = "hashicorp/cloudinit"
       version = "~> 2.2.0"
     }
+
     tls = {
       source  = "hashicorp/tls"
       version = "~> 3.1.0"
     }
-    archive = {
-      source = "hashicorp/archive"
-      version = "2.2.0"
+
+    null= {
+      source  = "hashicorp/null"
+      version = "~> 3.1.0"
     }
-    template = {
-      source = "hashicorp/template"
-      version = "2.2.0"
+
+    kubernetes= {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.5.1"
+    }
+
+    http= {
+      source  = "terraform-aws-modules/http"
+      version = "~> 2.4.1"
+    }
+
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.1.0"
+    }
+
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.3.0"
+    }
+
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.1.0"
+    }
+
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.63.0"
+    }
+
+    external = {
+      source  = "hashicorp/external"
+      version = "~> 2.1.0"
     }
   }
 }
 
-
-provider "template" {
-}
-
-provider "tls" {
-
-}
-
 provider "aws" {
   region  = var.region
-}
-
-provider "archive" {
 }
 
 provider "kubernetes" {
