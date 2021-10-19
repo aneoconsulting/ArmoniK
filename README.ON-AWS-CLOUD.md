@@ -83,7 +83,7 @@ two files:
  * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
-1. An encryption key that will be needed during the installation:
+1. An encryption key that will be needed during the deployment:
    ```bash
    make init-grid-state
    ```
