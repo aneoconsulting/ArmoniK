@@ -71,8 +71,9 @@ namespace HtcClient
             htcGridClient.WaitCompletion(taskId);
 
             byte [] output = dataClient.GetData(taskId);
-            ClientPayload outputPayload = ClientPayload.deserialize(output);
-            Console.WriteLine($"output result : {outputPayload.result}");
+            int result = BitConverter.ToInt32(output, 0);
+
+            Console.WriteLine($"output result : {result}");
         }
     }
 }
