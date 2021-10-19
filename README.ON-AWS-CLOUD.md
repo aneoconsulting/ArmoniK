@@ -119,3 +119,31 @@ and the grid are implemented by a client in folder [./examples/client/python](./
    ```bash
    kubectl delete -f ./generated/single-task-dotnet5.0.yaml
    ```
+   
+# Clean and destroy Armonik resources <a name="clean-and-destroy-armonik-resources"></a>
+In the root forlder `<project_root>`, to destroy all Armonik resources deployed on the local machine, execute the following commands:
+
+1. Delete the launched Kubernetes job, example:
+```bash
+kubectl delete -f ./generated/single-task-dotnet5.0.yaml
+```
+
+2. Destroy all Armonik resources:
+```bash
+make destroy-dotnet-runtime
+```
+
+3. Clean Terraform project:
+```bash
+make clean-grid-deployment
+```
+
+4. Clean binaries and generated files:
+```bash
+make clean-grid-project
+```
+
+5. **If you want** remove all local docker images:
+```bash
+docker rmi -f $(docker images -a -q)
+```

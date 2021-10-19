@@ -64,7 +64,10 @@ destroy-dotnet-runtime:
 show-password:
 	@$(MAKE) -C ./deployment/grid/terraform get-grafana-password
 
-clean-grid-local-project: clean-grid-local-deployment
+clean-grid-deployment:
+	@$(MAKE) -C ./deployment/grid/terraform clean
+
+clean-grid-project:
 	rm -rf $(GENERATED) $(DIST_DIR) envvars.conf
 
 init-grid-local-deployment:
@@ -81,6 +84,9 @@ destroy-dotnet-local-runtime:
 
 clean-grid-local-deployment:
 	@$(MAKE) -C ./local_deployment/grid/terraform clean
+
+clean-grid-local-project:
+	rm -rf $(GENERATED) $(DIST_DIR) envvars.conf
 
 #############################
 ##### building source #######

@@ -164,17 +164,22 @@ kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
 make destroy-dotnet-local-runtime
 ```
 
-3. Clean Terraform project, binaries and generated files:
+3. Clean Terraform project:
+```bash
+make clean-grid-local-deployment
+```
+
+4. Clean binaries and generated files:
 ```bash
 make clean-grid-local-project
 ```
 
-4. **If you want** uninstall Kubernetes on the local machine:
+5. **If you want** uninstall Kubernetes on the local machine:
 ```bash
 /usr/local/bin/k3s-uninstall.sh
 ```
 
-5. **If you want** remove all local docker images:
+6. **If you want** remove all local docker images:
 ```bash
 docker rmi -f $(docker images -a -q)
 ```

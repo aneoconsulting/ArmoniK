@@ -36,8 +36,7 @@ get-grafana-password:
 	@terraform output grafana_admin_password
 
 reset:
-	rm -rf .terraform
-	
-clean:
-	rm -rf $(BUILD_DIR)/tag.*
+	rm -rf .terraform* terraform.tfstate* Agent_config.json
+
+clean: reset
 	
