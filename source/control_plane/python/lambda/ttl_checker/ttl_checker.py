@@ -36,7 +36,7 @@ queue = queue_manager(
     region=region)
 
 dlq = queue_manager(
-    grid_queue_service="SQS",  # TODO extend parameters to configure this queue.
+    grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],  # TODO extend parameters to configure this queue.
     grid_queue_config=os.environ['GRID_QUEUE_CONFIG'],
     endpoint_url=os.environ["QUEUE_ENDPOINT_URL"],
     queue_name=os.environ['TASKS_QUEUE_DLQ_NAME'],
