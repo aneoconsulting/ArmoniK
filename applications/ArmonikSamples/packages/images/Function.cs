@@ -76,7 +76,7 @@ namespace ArmonikSamples
                 firstRun = false;
             }
 
-            Console.WriteLine("New Payload : ");
+            Console.WriteLine($"New Payload from task : {inputTask.TaskId} ");
 
 
             gridWorker.Execute(inputTask.SessionId, inputTask.TaskId, inputTask.Payload);

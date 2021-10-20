@@ -1,5 +1,6 @@
 
 using Armonik.sdk;
+using HTCGrid;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace ArmonikSamples
             if (clientPayload.numbers.Count == 1)
             {
                 int value = clientPayload.numbers[0] * clientPayload.numbers[0];
+                Logger.Log<ServiceContainer>($"Compute {value} in {taskContext.TaskId}");
                 writeTaskOutput(taskContext.TaskId, BitConverter.GetBytes(value));
             }
             else if (clientPayload.numbers.Count > 1)
@@ -43,6 +45,7 @@ namespace ArmonikSamples
                 byte[] arr = htcDataClient.GetData(subTaskId);
                 int subResult = BitConverter.ToInt32(arr);
 
+                Logger.Log<ServiceContainer>($"Compute {square} + {subResult} in {taskContext.TaskId}");
                 writeTaskOutput(taskContext.TaskId, BitConverter.GetBytes(square + subResult));
             }
         }
