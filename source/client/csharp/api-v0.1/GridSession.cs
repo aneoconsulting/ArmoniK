@@ -94,6 +94,7 @@ namespace HTCGrid
                     Guid.NewGuid().ToString());
 
                 new_task_ids.Add(task_id);
+                task.TaskId = task_id;
 
                 var client_task_base64 = strinToBase64(JsonConvert.SerializeObject(task));
 
