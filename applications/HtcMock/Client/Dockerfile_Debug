@@ -25,8 +25,6 @@ RUN dotnet publish "Client.csproj" \
             --self-contained false \
             --output /app/publish \
             -p:PublishReadyToRun=true
-RUN cp /app/Client/bin/Debug/net5.0/linux-x64/*.pdb /app/publish/
-RUN cp /app/lib/*.pdb /app/publish/
 
 WORKDIR /app/publish
 ENTRYPOINT ["dotnet"]

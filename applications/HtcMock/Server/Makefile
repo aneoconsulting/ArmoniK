@@ -37,9 +37,6 @@ import-dll:
 	mkdir -p ./mock_integration_image/src/mock_integration/lib/
 	mkdir -p ./mock_integration_image/src/mock_integration/dist/
 	cp -v $(ARMONIK_NUGET_REPOS)/*.nupkg ./mock_integration_image/src/mock_integration/dist/
-ifeq ($(BUILD_TYPE), Debug)
-	cp -v $(ARMONIK_NUGET_REPOS)/*.pdb ./mock_integration_image/src/mock_integration/dist/ || true
-endif
 
 clean:
 	rm -rf ./mock_integration_image/src/mock_integration/lib

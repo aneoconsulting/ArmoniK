@@ -5,6 +5,9 @@
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.0</Version>
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <!--<TargetFrameworks>net5.0;net461;netstandard2.0</TargetFrameworks>-->
   </PropertyGroup>
 

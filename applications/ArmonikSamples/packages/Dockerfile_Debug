@@ -6,26 +6,19 @@ COPY ./packages/images /app/images
 
 WORKDIR "/app/images"
 RUN mkdir -p ./dist
-COPY ./dist/*.nupkg ./dist/
-COPY ./dist/*.pdb ./dist/
+COPY ./dist/* ./dist/
 ENV ARMONIK_NUGET_REPOS=/app/images/dist
 
-WORKDIR "/app/images"
 RUN dotnet restore
-RUN mkdir -p ./lib/
-
-COPY ./dist/HtcCommon.* ./dist/
-COPY ./dist/HttpApi.* ./dist/
 
 FROM build AS publish
-RUN dotnet publish "mock_integration.csproj" \
+RUN dotnet publish "ArmonikExecutor.csproj" \
             --configuration Debug \
             --runtime linux-x64  \
             --self-contained false \
             --output /app/publish \
             -p:PublishReadyToRun=true
 
-RUN cp ./dist/*.pdb /app/publish
 RUN cp lambda_entry_point.sh /app/publish
 
 FROM base AS final

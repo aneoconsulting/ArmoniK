@@ -19,13 +19,7 @@ bin/$(BUILD_TYPE)/net5.0/ref/$(PROJECT_NAME).dll:
 	dotnet restore && dotnet clean && dotnet build -c $(BUILD_TYPE)
 
 ${ARMONIK_NUGET_REPOS}/$(PACKAGE_NAME): bin/$(BUILD_TYPE)/net5.0/ref/$(PROJECT_NAME).dll
-ifeq ($(BUILD_TYPE), Debug)
-	dotnet pack -c $(BUILD_TYPE) -o $(DIST_DIR)/dotnet5.0 --include-source --include-symbols
-	cp bin/$(BUILD_TYPE)/net5.0/*.pdb ${ARMONIK_NUGET_REPOS}
-	cp bin/$(BUILD_TYPE)/net5.0/*.dll ${ARMONIK_NUGET_REPOS}
-else
 	dotnet pack -c $(BUILD_TYPE) -o ${ARMONIK_NUGET_REPOS}
-endif
 
 build-package: ${ARMONIK_NUGET_REPOS}/$(PACKAGE_NAME)
 

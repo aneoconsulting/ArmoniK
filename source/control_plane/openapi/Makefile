@@ -50,13 +50,8 @@ $(PACKAGE_TARGET): python-package
 	cd $(GENERATED)/python/http_api/ && python setup.py bdist_wheel -d $(DIST_DIR)
 
 $(DOTNET50_PACKAGE_TARGET): csharp-api-package
-ifeq ($(BUILD_TYPE), Debug)
-	cd $(GENERATED)/csharp/http_api/ && dotnet pack -c $(BUILD_TYPE) --include-source --include-symbols -o $(DIST_DIR)/dotnet5.0
-	cp $(GENERATED)/csharp/http_api/src/HttpApi/bin/Debug/net5.0/*.pdb $(DIST_DIR)/dotnet5.0
-	cp $(GENERATED)/csharp/http_api/src/HttpApi/bin/Debug/net5.0/*.dll $(DIST_DIR)/dotnet5.0
-else
+	sed "s%  </PropertyGroup>%    <DebugType>embedded</DebugType>\n    <IncludeSymbols>true</IncludeSymbols>\n     <SymbolPackageFormat>snupkg</SymbolPackageFormat>\n  </PropertyGroup>%" -i $(GENERATED)/csharp/http_api/src/HttpApi/HttpApi.csproj
 	cd $(GENERATED)/csharp/http_api/ && dotnet pack -c $(BUILD_TYPE) -o $(DIST_DIR)/dotnet5.0
-endif
 
 create-dotnet-package: $(DOTNET50_PACKAGE_TARGET)
 

@@ -41,10 +41,5 @@ import-dll:
 	cp -v ../lib/*.dll ./packages/images/lib/ || true
 	cp -v ${ARMONIK_NUGET_REPOS}/*.nupkg ./images/dist/
 
-ifeq ($(BUILD_TYPE), Debug)
-	cp -v ${ARMONIK_NUGET_REPOS}/*.pdb ./images/dist/
-	cp -v ../lib/*.pdb ./packages/images/lib/
-endif
-
 clean:
 	rm -rf ./images/lib ./images/dist
