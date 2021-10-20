@@ -50,7 +50,7 @@ $(PACKAGE_TARGET): python-package
 	cd $(GENERATED)/python/http_api/ && python setup.py bdist_wheel -d $(DIST_DIR)
 
 $(DOTNET50_PACKAGE_TARGET): csharp-api-package
-	sed "s%  </PropertyGroup>%    <DebugType>embedded</DebugType>\n    <IncludeSymbols>true</IncludeSymbols>\n     <SymbolPackageFormat>snupkg</SymbolPackageFormat>\n  </PropertyGroup>%" -i $(GENERATED)/csharp/http_api/src/HttpApi/HttpApi.csproj
+	sed "s%  </PropertyGroup>%  </PropertyGroup>\n  <PropertyGroup Condition=\" '\$$(Configuration)' == 'Debug' \">\n    <DebugType>embedded</DebugType>\n    <IncludeSymbols>true</IncludeSymbols>\n     <SymbolPackageFormat>snupkg</SymbolPackageFormat>\n  </PropertyGroup>%" -i $(GENERATED)/csharp/http_api/src/HttpApi/HttpApi.csproj
 	cd $(GENERATED)/csharp/http_api/ && dotnet pack -c $(BUILD_TYPE) -o $(DIST_DIR)/dotnet5.0
 
 create-dotnet-package: $(DOTNET50_PACKAGE_TARGET)
