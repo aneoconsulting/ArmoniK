@@ -14,26 +14,16 @@ YAML_SRC:=encrypted_key.yaml
 export ARMONIK_TAG
 export ARMONIK_REGION?=eu-west-1
 
-all: $(BUILD_DIR)/grid_init/init-grid-$(ARMONIK_TAG)
+all: init
 
 .PHONY: clean delete init
 
-$(BUILD_DIR)/grid_init:
-	mkdir -p $(BUILD_DIR)/grid_init
-
-$(BUILD_DIR)/grid_init/tag.$(ARMONIK_TAG):
-	@touch $(BUILD_DIR)/grid_init/tag.$(ARMONIK_TAG)
-
-$(BUILD_DIR)/grid_init/init-grid-$(ARMONIK_TAG): $(BUILD_DIR)/grid_init/tag.$(ARMONIK_TAG) $(YAML_SRC)
+init: $(YAML_SRC)
 	aws cloudformation create-stack --stack-name $(ARMONIK_TAG) --region $(ARMONIK_REGION) --template-body file://$(YAML_SRC) --parameters ParameterKey=BucketTag,ParameterValue=$(ARMONIK_TAG)
 	@echo "Waiting for cloud formation successful deployment"
 	@aws cloudformation wait stack-create-complete --stack-name $(ARMONIK_TAG) --region $(ARMONIK_REGION)
 	@touch $(BUILD_DIR)/grid_init/init-grid-$(ARMONIK_TAG)
 	aws cloudformation describe-stacks --stack-name $(ARMONIK_TAG) --region $(ARMONIK_REGION) --query 'Stacks[0]'
-
-$(ARMONIK_TAG)-workload-bucket: $(BUILD_DIR)/grid_init/init-grid-$(ARMONIK_TAG)-workload-bucket
-
-init: $(BUILD_DIR)/grid_init
 
 delete:
 	aws cloudformation delete-stack --stack-name $(ARMONIK_TAG) --region $(ARMONIK_REGION)
