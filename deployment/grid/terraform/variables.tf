@@ -7,16 +7,6 @@ variable "region" {
   description = "AWS region"
 }
 
-variable "k8s_config_context" {
-  default = "default"
-  description = ""
-}
-
-variable "k8s_config_path" {
-  default = "/etc/rancher/k3s/k3s.yaml"
-  description = ""
-}
-
 variable "input_role" {
   description = "Additional IAM roles to add to the aws-auth configmap."
   type = list(object({
@@ -468,10 +458,12 @@ variable "kms_key_arn" {
 variable "redis_with_ssl" {
   type = bool
   description = "redis with ssl"
+  default = true
 }
 
 variable "connection_redis_timeout" {
   description = "connection redis timeout"
+  default = 300000
 }
 
 variable "redis_ca_cert" {
@@ -484,6 +476,7 @@ variable "redis_client_pfx" {
 
 variable "cluster_config" {
   description = "Configuration type of the cluster (Local, Cloud, OnPremise)"
+  default = "cloud"
 }
 
 variable "api_gateway_service" {
