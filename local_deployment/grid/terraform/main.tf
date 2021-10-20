@@ -117,9 +117,6 @@ module "control_plane" {
     kubectl_path_documents = data.kubectl_path_documents.manifests
     image_pull_policy = var.image_pull_policy
     api_gateway_service = var.api_gateway_service
-    depends_on = [
-        null_resource.k8s_config
-    ]
 }
 
 module "htc_agent" {
@@ -152,8 +149,7 @@ module "htc_agent" {
     depends_on = [
         module.compute_plane,
         module.control_plane,
-        kubernetes_config_map.htcagentconfig,
-        null_resource.k8s_config
+        kubernetes_config_map.htcagentconfig
     ]
 }
 
