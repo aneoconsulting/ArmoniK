@@ -462,7 +462,7 @@ async def do_task_local_lambda_execution_thread(perf_tracker, task, sqs_msg, tas
     # logs = base64.b64decode(response['LogResult']).decode('utf-8')
     # logging.info("logs : {}".format(logs))
 
-    ret_value = response.json()
+    ret_value = json.dumps(response.json())
     logging.info("retValue : {}".format(ret_value))
 
     execution_is_completed_flag = 1
