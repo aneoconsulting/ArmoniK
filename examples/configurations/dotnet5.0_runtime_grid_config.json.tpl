@@ -10,6 +10,8 @@
   "dynamodb_default_read_capacity" : 10,
   "dynamodb_default_write_capacity" : 10,
   "graceful_termination_delay":300,
+  "cluster_config": "{{cluster_config}}",
+  "image_pull_policy": "{{image_pull_policy}}",
   "eks_worker_groups" : [
       {
         "name"                    : "worker-small-spot",

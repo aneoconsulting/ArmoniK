@@ -54,6 +54,16 @@ ARMONIK_QUEUE_SERVICE=<Your message queue type>
 # Define an environment variable to select API Gateway service.
 ARMONIK_API_GATEWAY_SERVICE=<Your API gateway type>
 
+# Define type of the environment
+# It can be (the list is not exhaustive):
+# local
+# cluster
+# cloud
+export ARMONIK_CLUSTER_CONFIG=<Your environment type>
+
+# Define the image pull policy in Kubernetes
+export ARMONIK_IMAGE_PULL_POLICY=<Your image pull policy>
+
 # Define an environment variable containing the path to
 # the local nuget repository.
 ARMONIK_NUGET_REPOS=<Your NuGet repository>

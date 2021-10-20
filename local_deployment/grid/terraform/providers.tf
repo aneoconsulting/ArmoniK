@@ -37,7 +37,7 @@ terraform {
 
 provider "kubernetes" {
   config_path    = var.k8s_config_path
-  config_context = var.k8s_config_context
+  config_context = data.external.k8s_config_context.result
 }
 
 # package manager for kubernetes
@@ -45,6 +45,6 @@ provider "helm" {
   helm_driver = "configmap"
   kubernetes {
     config_path    = var.k8s_config_path
-    config_context = var.k8s_config_context
+    config_context = data.external.k8s_config_context.result
   }
 }
