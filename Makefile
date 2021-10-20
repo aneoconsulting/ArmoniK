@@ -23,7 +23,6 @@ all: utils api lambda lambda-control-plane
 
 init-grid-state:
 	$(MAKE) -C ./deployment/init_grid/cloudformation init
-	$(MAKE) -C ./deployment/init_grid/cloudformation
 
 delete-grid-state:
 	$(MAKE) -C ./deployment/init_grid/cloudformation delete
