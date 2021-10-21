@@ -5,6 +5,7 @@ RUN apt update -y && \
     curl \
     docker.io \
     fuse-overlayfs \
+    jq \
     make \
     sudo \
     unzip \
@@ -60,6 +61,8 @@ ENV ARMONIK_QUEUE_SERVICE=RSMQ
 ENV ARMONIK_NUGET_REPOS=/armonik/dist/dotnet5.0
 ENV ARMONIK_REDIS_CERTIFICATES_DIRECTORY=/armonik/redis_certificates
 ENV ARMONIK_API_GATEWAY_SERVICE=NGINX
+ENV ARMONIK_CLUSTER_CONFIG=local
+ENV ARMONIK_IMAGE_PULL_POLICY=IfNotPresent
 
 # This could be done in Docker build, but enlarges the image by ~200MB
 #RUN make init-grid-local-deployment

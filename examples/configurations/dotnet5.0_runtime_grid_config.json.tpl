@@ -10,7 +10,7 @@
   "dynamodb_default_read_capacity" : 10,
   "dynamodb_default_write_capacity" : 10,
   "graceful_termination_delay":300,
-  "docker_registry":"{{docker_registry}}",
+  "cluster_config": "{{cluster_config}}",
   "eks_worker_groups" : [
       {
         "name"                    : "worker-small-spot",

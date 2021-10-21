@@ -1,10 +1,12 @@
-# Table of contents
 1. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
-2. [Configure the environment](#configure-the-environment) 
+2. [Configure the environment](#configure-the-environment)
 3. [Build Armonik artifacts](#build-armonik-artifacts)
-4. [Deploy Armonik resources](#deploy-armonik-resources)
-5. [Running an example workload](#running-an-example-workload)
-6. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
+   1. [Build Armonik artifacts on local](#build-armonik-artifacts-on-local)
+   2. [Use built Armonik artifacts from a Docker registry](#use-built-armonik-artifacts-from-a-docker-registry)
+4. [Get Armonik artifacts from DockerHub](#get-armonik-artifacts-from-dockerhub)
+5. [Deploy Armonik resources](#deploy-armonik-resources)
+6. [Running an example workload](#running-an-example-workload)
+7. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
 
 # Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
 Instructions to install Kubernetes on local Windows machine. You can use WSL 2.
@@ -90,6 +92,16 @@ ARMONIK_QUEUE_SERVICE=<Your message queue type>
 # Define an environment variable to select API Gateway service.
 ARMONIK_API_GATEWAY_SERVICE=<Your API gateway type>
 
+# Define type of the environment
+# It can be (the list is not exhaustive):
+# local
+# cluster
+# cloud
+export ARMONIK_CLUSTER_CONFIG=<Your environment type>
+
+# Define the image pull policy in Kubernetes
+export ARMONIK_IMAGE_PULL_POLICY=<Your image pull policy>
+
 # Define an environment variable containing the path to
 # the local nuget repository.
 ARMONIK_NUGET_REPOS=<Your NuGet repository>
@@ -115,6 +127,7 @@ source ./envvars.conf
 ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
+## Build Armonik artifacts on local <a name="build-armonik-artifacts-on-local"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
 
 To build and install these in `<project_root>`:
@@ -124,16 +137,28 @@ make dotnet50-path
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following
 two files:
- * `dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
+ * `local_dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
  * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
 
-## Debug mode
+### Debug mode
 To build in `debug` mode, you execute this command:
 ```bash
 make dotnet50-path BUILD_TYPE=Debug
 ```
 
 For more information see [here](./docs/debug.md)
+
+## Use built Armonik artifacts from a Docker registry<a name="use-built-armonik-artifacts-from-a-docker-registry"></a>
+
+1. Generate the file of parameters for Terraform deployment `local_dotnet5.0_runtime_grid_config.json` . In the root of the project `<project_root>`:
+```bash
+make mock-config-local-dotnet5.0
+```
+
+2. Create a sample Kubernetes job `local-single-task-dotnet5.0.yaml` as follows:
+```bash
+  make k8s-jobs
+```
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 1. Run the following to initialize the Terraform environment:
@@ -193,7 +218,7 @@ make destroy-dotnet-local-runtime
 make clean-grid-local-project
 ```
 
-4. **If you want** remove all local docker images:
+4. **If you want remove ALL** local docker images:
 ```bash
 docker rmi -f $(docker images -a -q)
 ```

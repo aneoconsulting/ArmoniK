@@ -11,26 +11,33 @@ namespace HTCGrid
             this.debug = 0; 
         }
 
+        public string GetValue(JsonElement config, string key, bool lower=false)
+        {
+            string value = "";
+
+            try
+            {
+                value = lower ? config.GetProperty(key).GetString().ToLower() : config.GetProperty(key).GetString();
+                return value;
+            }
+            catch (Exception ex)
+            {
+                return value;
+            }
+        }
+
         public void Init(JsonDocument parsedConfiguration) {
             JsonElement root = parsedConfiguration.RootElement;
-            this.grid_storage_service = root.GetProperty("grid_storage_service").GetString();
-			this.private_api_gateway_url = root.GetProperty("private_api_gateway_url").GetString();
-			this.api_gateway_key = root.GetProperty("api_gateway_key").GetString();
-			this.redis_with_ssl = root.GetProperty("redis_with_ssl").GetString().ToLower();
-			this.redis_endpoint_url = root.GetProperty("redis_endpoint_url").GetString();
-			this.redis_port = root.GetProperty("redis_port").GetString();
-			this.cluster_config = root.GetProperty("cluster_config").GetString();
-
-            if ((String.Equals(this.cluster_config.ToLower(), "local") && String.Equals(this.redis_with_ssl, "true"))
-                || String.Equals(this.cluster_config.ToLower(), "cluster")) {
-                this.redis_ca_cert = root.GetProperty("redis_ca_cert").GetString();
-                this.redis_client_pfx = root.GetProperty("redis_client_pfx").GetString();
-            } else {
-                this.redis_ca_cert = "";
-                this.redis_client_pfx = "";
-            }
-
-			this.connection_redis_timeout = root.GetProperty("connection_redis_timeout").GetString();
+            this.grid_storage_service = GetValue(root, "grid_storage_service");
+			this.private_api_gateway_url = GetValue(root, "private_api_gateway_url"); 
+			this.api_gateway_key = GetValue(root, "api_gateway_key");
+			this.redis_with_ssl = GetValue(root, "redis_with_ssl", true);
+			this.redis_endpoint_url = GetValue(root, "redis_endpoint_url");
+			this.redis_port = GetValue(root, "redis_port");
+			this.cluster_config = GetValue(root, "cluster_config");
+			this.redis_ca_cert = GetValue(root, "redis_ca_cert");
+            this.redis_client_pfx = GetValue(root, "redis_client_pfx");
+            this.connection_redis_timeout = GetValue(root, "connection_redis_timeout");
         }
 
         public string grid_storage_service;

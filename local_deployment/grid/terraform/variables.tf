@@ -4,7 +4,7 @@ variable "k8s_config_context" {
 }
 
 variable "k8s_config_path" {
-  default = "/etc/rancher/k3s/k3s.yaml"
+  default = "~/.kube/config"
   description = ""
 }
 
@@ -141,11 +141,6 @@ variable "agent_use_congestion_control" {
 variable "htc_agent_name" {
   default = "armonik-agent"
   description = "name of the htc agent to scale out/in"
-}
-
-variable "htc_agent_namespace" {
-  default = "default"
-  description = "kubernetes namespace for the deployment of the agent"
 }
 
 variable "suffix" {
@@ -286,6 +281,7 @@ variable "redis_with_ssl" {
 
 variable "connection_redis_timeout" {
   description = "connection redis timeout"
+  default = 10000
 }
 
 variable "certificates_dir_path" {
@@ -295,22 +291,27 @@ variable "certificates_dir_path" {
 
 variable "redis_ca_cert" {
   description = "path to the authority certificate file (ca.crt) of the redis server in the docker machine"
+  default = "/redis_certificates/ca.crt"
 }
 
 variable "redis_client_pfx" {
   description = "path to the client certificate file (certificate.pfx) of the redis server in the docker machine"
+  default = "/redis_certificates/certificate.pfx"
 }
 
 variable "redis_key_file" {
   description = "path to the authority certificate file (redis.key) of the redis server in the docker machine"
+  default = "/redis_certificates/redis.key"
 }
 
 variable "redis_cert_file" {
   description = "path to the client certificate file (redis.crt) of the redis server in the docker machine"
+  default = "/redis_certificates/redis.crt"
 }
 
 variable "cluster_config" {
   description = "Configuration type of the cluster (local, cloud, cluster)"
+  default = "local"
 }
 
 variable "nginx_port" {
@@ -327,7 +328,7 @@ variable "nginx_endpoint_url" {
 
 variable "image_pull_policy" {
   description = "Pull image policy"
-  default = ""
+  default = "IfNotPresent"
   type = string
 }
 

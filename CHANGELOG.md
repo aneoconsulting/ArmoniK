@@ -1,5 +1,33 @@
 # Changelog
 
+## [v0.9.RC](https://github.com/aneoconsulting/armonik/tree/v0.9.RC) (2021-10-19)
+Added
+-
+* Logs and Logger
+* Armonik SDK
+* Armonik Samples for new SDK
+* MongoDB deployment in Kubernetes for Armonik task state DB
+* Redis MQ for task message queue
+
+Changed
+-
+* Folder structures for applications
+
+Fixed
+-
+* Deployment in WSL
+
+Removed
+-
+* Dependecies to AWS boto3 in local deployment
+* DynamoDB for local deployment
+* SQS for local deployment
+
+## [v0.1.8](https://github.com/aneoconsulting/armonik/tree/v0.1.8) (2021-10-14)
+Fixed
+-
+* Remove all proxies from pods
+
 ## [v0.1.6](https://github.com/aneoconsulting/armonik/tree/v0.1.6) (2021-10-08)
 Changed
 - 

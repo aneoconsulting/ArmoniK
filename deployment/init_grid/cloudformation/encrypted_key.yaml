@@ -105,46 +105,6 @@ Resources:
     Properties:
       AliasName: !Sub 'alias/${BucketTag}-htc-grid-KMS-key'
       TargetKeyId: !Ref Key
-  ImageTfstateHtcGrid:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Sub
-        - '${BucketTag}-image-tfstate-htc-grid-${RANDOM}'
-        - RANDOM: !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref 'AWS::StackId' ]]]]
-      VersioningConfiguration:
-        Status: Enabled
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: 'aws:kms'
-              KMSMasterKeyID: !GetAtt 'Key.Arn'
-    DeletionPolicy: Delete
-  TfstateHtcGrid:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Sub
-        - '${BucketTag}-tfstate-htc-grid-${RANDOM}'
-        - RANDOM: !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref 'AWS::StackId' ]]]]
-      VersioningConfiguration:
-        Status: Enabled
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: 'aws:kms'
-              KMSMasterKeyID: !GetAtt 'Key.Arn'
-    DeletionPolicy: Delete
-  LambdaUnitHtcGrid:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Sub
-        - '${BucketTag}-lambda-unit-htc-grid-${RANDOM}'
-        - RANDOM: !Select [0, !Split ['-', !Select [2, !Split ['/', !Ref 'AWS::StackId' ]]]]
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: 'aws:kms'
-              KMSMasterKeyID: !GetAtt 'Key.Arn'
-    DeletionPolicy: Delete
 Outputs:
   StackName:
     Description: 'Stack name.'
@@ -159,12 +119,3 @@ Outputs:
     Value: !GetAtt 'Key.Arn'
     Export:
       Name: !Sub '${AWS::StackName}-KeyArn'
-  ImageTfstateHtcGridBucketId:
-    Description: 'S3 bucket name of image tfstate htc-grid'
-    Value: !Ref ImageTfstateHtcGrid
-  TfstateHtcGridBucketId:
-    Description: 'S3 bucket name of tfstate htc-grid'
-    Value: !Ref TfstateHtcGrid
-  LambdaUnitHtcGridBucketId:
-    Description: 'S3 bucket name of lambda unit htc-grid'
-    Value: !Ref LambdaUnitHtcGrid

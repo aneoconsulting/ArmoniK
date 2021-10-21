@@ -2,15 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-resource "null_resource" "k8s_config" {
-    triggers = {
-        always_run = "${timestamp()}"
-    }
-
-    provisioner "local-exec" {
-      command = "./scripts_bash/k8s_config.sh"
-      interpreter = ["bash"]
-  }
+data "external" "k8s_config_context" {
+    program = ["bash", "k8s_config.sh"]
+    working_dir = "./scripts_bash"
 }
 
 data "kubectl_path_documents" "manifests" {
@@ -21,7 +15,6 @@ resource "random_string" "random_resources" {
     length = 5
     special = false
     upper = false
-    # number = false
 }
 
 resource "random_password" "password" {
@@ -124,9 +117,6 @@ module "control_plane" {
     kubectl_path_documents = data.kubectl_path_documents.manifests
     image_pull_policy = var.image_pull_policy
     api_gateway_service = var.api_gateway_service
-    depends_on = [
-        null_resource.k8s_config
-    ]
 }
 
 module "htc_agent" {
@@ -159,8 +149,7 @@ module "htc_agent" {
     depends_on = [
         module.compute_plane,
         module.control_plane,
-        kubernetes_config_map.htcagentconfig,
-        null_resource.k8s_config
+        kubernetes_config_map.htcagentconfig
     ]
 }
 

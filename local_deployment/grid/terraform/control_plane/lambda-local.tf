@@ -394,7 +394,8 @@ resource "kubernetes_deployment" "ttl_checker" {
 
 resource "kubernetes_cron_job" "ttl_checker_corn_job" {
   depends_on = [
-    kubernetes_deployment.ttl_checker,
+    kubectl_manifest.ingress-nginx,
+    kubernetes_deployment.ttl_checker
   ]
 
   metadata {
