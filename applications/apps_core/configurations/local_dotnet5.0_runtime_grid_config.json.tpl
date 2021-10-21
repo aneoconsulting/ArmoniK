@@ -8,7 +8,10 @@
   "max_htc_agents": 100,
   "min_htc_agents": 1,
   "graceful_termination_delay":300,
+  "docker_registry":"{{docker_registry}}",
   "certificates_dir_path": "{{certificates_dir_path}}",
+  "cluster_config": "{{cluster_config}}",
+  "image_pull_policy": "{{image_pull_policy}}",
   "agent_configuration": {
     "lambda": {
       "minCPU": "50",

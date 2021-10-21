@@ -1,14 +1,6 @@
-# Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: Apache-2.0
-# Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
-
-TAG?=mainline
-
-CURRENT_DIR:=$(shell pwd)
-
 BUILD_TYPE?=Release
-DIST_DIR?=$(shell pwd)/../../../dist
-DOCKER_REGISTRY=
+export ARMONIK_TAG
+export ARMONIK_DOCKER_REGISTRY
 
 .PHONY: clean
 
@@ -16,23 +8,23 @@ all: build
 
 
 build: Dockerfile import-dll
-ifneq ($(DOCKER_REGISTRY),)
+ifneq ($(ARMONIK_DOCKER_REGISTRY),)
 ifeq ($(BUILD_TYPE), Debug)
-	docker build .. -f ./Dockerfile_Debug -t $(DOCKER_REGISTRY)/lambda:$(TAG) --progress=plain
+	docker build .. -f ./Dockerfile_Debug -t $(ARMONIK_DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG) --progress=plain
 else
-	docker build .. -f ./Dockerfile -t $(DOCKER_REGISTRY)/lambda:$(TAG) --progress=plain
+	docker build .. -f ./Dockerfile -t $(ARMONIK_DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG) --progress=plain
 endif
 else
 ifeq ($(BUILD_TYPE), Debug)
-	docker build .. -f ./Dockerfile_Debug -t lambda:$(TAG) --progress=plain
+	docker build .. -f ./Dockerfile_Debug -t lambda:$(ARMONIK_TAG) --progress=plain
 else
-	docker build .. -f ./Dockerfile -t lambda:$(TAG) --progress=plain
+	docker build .. -f ./Dockerfile -t lambda:$(ARMONIK_TAG) --progress=plain
 endif
 endif
 
 upload: build
-ifneq ($(DOCKER_REGISTRY),)
-	docker push $(DOCKER_REGISTRY)/lambda:$(TAG)
+ifneq ($(ARMONIK_DOCKER_REGISTRY),)
+	docker push $(ARMONIK_DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG)
 endif
 
 import-dll:

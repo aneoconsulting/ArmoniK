@@ -4,7 +4,6 @@
 locals {
   agent_config =<<EOF
 {
-  "region": "${var.region}",
   "ddb_status_table" : "${local.ddb_status_table}",
   "queue_endpoint_url": "${module.control_plane.queue_pod_ip}:${var.queue_port}",
   "db_endpoint_url": "mongodb://${module.control_plane.mongodb_pod_ip}:${var.mongodb_port}",
@@ -36,9 +35,6 @@ locals {
   "tasks_status_table_service" : "${var.tasks_status_table_service}",
   "tasks_status_table_config" : "${var.tasks_status_table_config}",
   "tasks_queue_name": "${local.tasks_queue_name}",
-  "htc_path_logs" : "${var.htc_path_logs}",
-  "error_log_group" : "${local.error_log_group}",
-  "error_logging_stream" : "${local.error_logging_stream}",
   "metrics_are_enabled": "${var.metrics_are_enabled}",
   "metrics_grafana_private_ip": "influxdb.influxdb",
   "metrics_submit_tasks_lambda_connection_string": "${var.metrics_submit_tasks_lambda_connection_string}",
@@ -53,9 +49,7 @@ locals {
   "api_gateway_key": "mock",
   "enable_xray" : "${var.enable_xray}",
   "user_pool_id": "mock",
-  "cognito_userpool_client_id": "mock",
-  "access_key": "${var.access_key}",
-  "secret_key": "${var.secret_key}"
+  "cognito_userpool_client_id": "mock"
 }
 EOF
 }

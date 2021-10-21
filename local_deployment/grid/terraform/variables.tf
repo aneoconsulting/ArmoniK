@@ -1,44 +1,15 @@
-# Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: Apache-2.0
-# Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
-
-variable "region" {
-  default     = "eu-west-1"
-  description = "AWS region"
-}
-
-variable "access_key" {
-  default = "mock_access_key"
-  description = "AWS access key"
-}
-
-variable "secret_key" {
-  default = "mock_secret_key"
-  description = "AWS secret key"
-}
-
 variable "k8s_config_context" {
   default = "default"
   description = ""
 }
 
 variable "k8s_config_path" {
-  default = "/etc/rancher/k3s/k3s.yaml"
+  default = "~/.kube/config"
   description = ""
 }
 
-variable "input_role" {
-  description = "Additional IAM roles to add to the aws-auth configmap."
-  type = list(object({
-    rolearn  = string
-    username = string
-    groups   = list(string)
-  }))
-  default = []
-}
-
 variable "cluster_name" {
-  default = "htc"
+  default = "armonik"
   description = "Name of EKS cluster in AWS"
 }
 
@@ -72,26 +43,6 @@ variable "docker_registry" {
   description = "URL of Amazon ECR image repostiories"
 }
 
-variable "cwa_version" {
-  default     = "v0.8.0"
-  description = "Cloud Watch Adapter for kubernetes version"
-}
-
-variable "aws_node_termination_handler" {
-  default     = "v1.10.0"
-  description = "version of the deployment managing node termination"
-}
-
-variable "cw_agent_version" {
-  default     = "1.247347.5b250583"
-  description = "CloudWatch Agent version"
-}
-
-variable "fluentbit_version" {
-  default     = "2.10.0"
-  description = "Fluentbit version"
-}
-
 variable "tasks_status_table_config" {
   default  = "{}"
   description = "Custom configuration for status table"
@@ -123,7 +74,7 @@ variable "grid_storage_service" {
 }
 
 variable "grid_queue_service" {
-  default = "PrioritySQS"
+  default = "RSMQ"
   description = "Configuration string for the type of queuing service to be used"
 }
 
@@ -156,6 +107,7 @@ variable "lambda_alb_name" {
   default = "lambda-frontend"
   description = "Name of the load balancer for Lambdas"
 }
+
 variable "metrics_are_enabled" {
   default  = "0"
   description = "If set to True(1) then metrics will be accumulated and delivered downstream for visualisation"
@@ -186,74 +138,14 @@ variable "agent_use_congestion_control" {
   default = "0"
 }
 
-variable "error_log_group" {
-  default  = "grid_errors"
-  description = "Log group for errors"
-}
-
-variable "error_logging_stream" {
-  default  = "lambda_errors"
-  description = "Log stream for errors"
-}
-
-variable "namespace_metrics" {
-  default  = "CloudGrid/HTC/Scaling/"
-  description = "NameSpace for metrics"
-}
-
-variable "dimension_name_metrics" {
-  default  = "cluster_name"
-  description = "Dimensions name/value for the CloudWatch metrics"
-}
-
-variable "htc_path_logs" {
-  default  = "logs/"
-  description = "Path to fluentD to search de logs application"
-}
-
-variable "lambda_name_scaling_metric" {
-  default  = "lambda_scaling_metrics"
-  description = "Lambda function name for metrics"
-}
-
-variable "period_metrics" {
-  default  = "1"
-  description = "Period for metrics in minutes"
-}
-
-variable "metrics_name" {
-  default  = "pending_tasks_ddb"
-  description = "Metrics name"
-}
-
-variable "average_period" {
-  default = 30
-  description = "Average period in second used by the HPA to compute the current load on the system"
-}
-
-variable "metrics_event_rule_time" {
-  default  = "rate(1 minute)"
-  description = "Fires event rule to put metrics"
-}
-
 variable "htc_agent_name" {
-  default = "htc-agent"
+  default = "armonik-agent"
   description = "name of the htc agent to scale out/in"
-}
-
-variable "htc_agent_namespace" {
-  default = "default"
-  description = "kubernetes namespace for the deployment of the agent"
 }
 
 variable "suffix" {
   default = ""
   description = "suffix for generating unique name for AWS resource"
-}
-
-variable "eks_worker_groups" {
-  type        = any
-  default     = []
 }
 
 variable "max_htc_agents" {
@@ -321,106 +213,16 @@ variable "agent_configuration_filename" {
   default = "Agent_config.json"
 }
 
-variable "api_gateway_version" {
-  description = "version deployed by API Gateway"
-  type = string
-  default = "v1"
-}
-
 variable "enable_xray" {
   description = "Enable XRAY at the agent level"
   type = number
   default = 0
 }
 
-variable "aws_xray_daemon_version" {
-  description = "version for the XRay daemon"
-  type = string
-  default = "latest"
-}
-
-variable "enable_private_subnet" {
-  description = "enable private subnet"
-  type = bool
-  default = false
-}
-
 variable "agent_configuration" {
   description = "Additional IAM roles to add to the aws-auth configmap."
   type = any
   default = {}
-}
-
-variable "grafana_admin_password"{
-  description = "Holds the default password that wouldbe used within grafana"
-  type = string
-  default = "htcadmin"
-}
-
-variable "grafana_configuration" {
-  description = "this variable store the configuration for the grafana helm chart"
-  type = object({
-
-    downloadDashboardsImage_tag = string
-    grafana_tag = string
-    initChownData_tag = string
-    sidecar_tag = string
-    admin_password = string
-
-  })
-  default = {
-    sidecar_tag = "1.10.7"
-    initChownData_tag = "1.31.1"
-    grafana_tag = "7.4.2"
-    downloadDashboardsImage_tag = "7.73.0"
-    admin_password = ""
-  }
-}
-
-variable "prometheus_configuration" {
-  description = "this variable store the configuration for the prometheus helm chart"
-  type = object({
-
-    node_exporter_tag = string
-    server_tag = string
-    alertmanager_tag = string
-    kube_state_metrics_tag = string
-    pushgateway_tag = string
-    configmap_reload_tag = string
-
-  })
-  default = {
-    node_exporter_tag = "v1.1.2"
-    server_tag = "v2.26.0"
-    alertmanager_tag = "v0.22.0"
-    kube_state_metrics_tag = "v2.0.0"
-    pushgateway_tag = "v1.3.1"
-    configmap_reload_tag = "v0.5.0"
-  }
-}
-
-variable "vpc_cidr_block_public" {
-  description = "list of CIDR block associated with the public subnet"
-  type = list(string)
-  default = []
-}
-
-variable "vpc_main_cidr_block" {
-  description = "Main CIDR block associated to the VPC"
-  type = string
-  default = ""
-}
-
-variable "vpc_cidr_block_private" {
-  description = "list of CIDR block associated with the private subnet"
-  type = list(string)
-  default = []
-}
-
-variable "vpc_pod_cidr_block_private" {
-  description = "cidr block associated with pod"
-  type = list(string)
-  default = []
 }
 
 variable "project_name" {
@@ -471,12 +273,6 @@ variable "ttl_checker_port" {
   default = 9003
 }
 
-variable "retention_in_days" {
-  description = "Retention in days for cloudwatch logs"
-  type =  number
-  default = 3
-}
-
 variable "redis_with_ssl" {
   type = bool
   default = true
@@ -485,6 +281,7 @@ variable "redis_with_ssl" {
 
 variable "connection_redis_timeout" {
   description = "connection redis timeout"
+  default = 10000
 }
 
 variable "certificates_dir_path" {
@@ -494,22 +291,27 @@ variable "certificates_dir_path" {
 
 variable "redis_ca_cert" {
   description = "path to the authority certificate file (ca.crt) of the redis server in the docker machine"
+  default = "/redis_certificates/ca.crt"
 }
 
 variable "redis_client_pfx" {
   description = "path to the client certificate file (certificate.pfx) of the redis server in the docker machine"
+  default = "/redis_certificates/certificate.pfx"
 }
 
 variable "redis_key_file" {
   description = "path to the authority certificate file (redis.key) of the redis server in the docker machine"
+  default = "/redis_certificates/redis.key"
 }
 
 variable "redis_cert_file" {
   description = "path to the client certificate file (redis.crt) of the redis server in the docker machine"
+  default = "/redis_certificates/redis.crt"
 }
 
 variable "cluster_config" {
   description = "Configuration type of the cluster (local, cloud, cluster)"
+  default = "local"
 }
 
 variable "nginx_port" {
@@ -526,7 +328,7 @@ variable "nginx_endpoint_url" {
 
 variable "image_pull_policy" {
   description = "Pull image policy"
-  default = ""
+  default = "IfNotPresent"
   type = string
 }
 

@@ -1,5 +1,7 @@
 #! /bin/bash
-# Delete existing config
-sed -i -e '/k8s_config_context/d;$a\' parameters.auto.tfvars
+# Exit if any of the intermediate steps fail
+set -e
+
 CONFIG_CONTEXT=$(kubectl config current-context)
-echo 'k8s_config_context = "'$CONFIG_CONTEXT'"' >> parameters.auto.tfvars
+
+jq -n --arg k8s_config_context "$CONFIG_CONTEXT" '{"k8s_config_context":$k8s_config_context}'

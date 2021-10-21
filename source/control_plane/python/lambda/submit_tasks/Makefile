@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-TAG?=mainline
-DOCKER_REGISTRY=
 SUBMIT_TASKS_IMAGE=submit_tasks
 CONTEXT_DIR=../../../../..
 SRCS=submit_tasks.py
+export ARMONIK_TAG
+export ARMONIK_DOCKER_REGISTRY
 
 .PHONY: all lambda-submit-tasks build-lambda-submit-tasks push-lambda-submit-tasks
 
@@ -14,15 +14,15 @@ all: lambda-submit-tasks
 lambda-submit-tasks: build-lambda-submit-tasks push-lambda-submit-tasks
 
 build-lambda-submit-tasks: Dockerfile
-ifneq ($(DOCKER_REGISTRY),)
-	docker build $(CONTEXT_DIR) -t $(DOCKER_REGISTRY)/$(SUBMIT_TASKS_IMAGE):$(TAG) -f ./Dockerfile
+ifneq ($(ARMONIK_DOCKER_REGISTRY),)
+	docker build $(CONTEXT_DIR) -t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMIT_TASKS_IMAGE):$(ARMONIK_TAG) -f ./Dockerfile
 else
-	docker build $(CONTEXT_DIR) -t $(SUBMIT_TASKS_IMAGE):$(TAG) -f ./Dockerfile
+	docker build $(CONTEXT_DIR) -t $(SUBMIT_TASKS_IMAGE):$(ARMONIK_TAG) -f ./Dockerfile
 endif
 
 push-lambda-submit-tasks: build-lambda-submit-tasks
-ifneq ($(DOCKER_REGISTRY),)
-	docker push $(DOCKER_REGISTRY)/$(SUBMIT_TASKS_IMAGE):$(TAG)
+ifneq ($(ARMONIK_DOCKER_REGISTRY),)
+	docker push $(ARMONIK_DOCKER_REGISTRY)/$(SUBMIT_TASKS_IMAGE):$(ARMONIK_TAG)
 endif
 
 test: $(SRCS)

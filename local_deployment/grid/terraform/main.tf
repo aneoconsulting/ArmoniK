@@ -2,15 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-resource "null_resource" "k8s_config" {
-    triggers = {
-        always_run = "${timestamp()}"
-    }
-
-    provisioner "local-exec" {
-      command = "./scripts_bash/k8s_config.sh"
-      interpreter = ["bash"]
-  }
+data "external" "k8s_config_context" {
+    program = ["bash", "k8s_config.sh"]
+    working_dir = "./scripts_bash"
 }
 
 data "kubectl_path_documents" "manifests" {
@@ -21,7 +15,6 @@ resource "random_string" "random_resources" {
     length = 5
     special = false
     upper = false
-    # number = false
 }
 
 resource "random_password" "password" {
@@ -42,11 +35,7 @@ locals {
     lambda_name_submit_tasks = "${var.lambda_name_submit_tasks}-${local.project_name}"
     lambda_name_cancel_tasks = "${var.lambda_name_cancel_tasks}-${local.project_name}"
     lambda_name_ttl_checker = "${var.lambda_name_ttl_checker}-${local.project_name}"
-    lambda_name_scaling_metric = "${var.lambda_name_scaling_metric}-${local.project_name}"
-    metrics_name = "${var.metrics_name}-${local.project_name}"
     config_name = "${var.config_name}-${local.project_name}"
-    error_log_group = "${var.error_log_group}-${local.project_name}"
-    error_logging_stream = "${var.error_logging_stream}-${local.project_name}"
 
     default_agent_configuration = {
         agent_chart_url  = "../charts"
@@ -70,7 +59,6 @@ locals {
             function_name = "function"
             lambda_handler_file_name = ""
             lambda_handler_function_name = ""
-            region = var.region
         }
         test = {
             image = local.docker_registry != "" ? "${local.docker_registry}/submitter" : "submitter"
@@ -86,10 +74,7 @@ module "compute_plane" {
 
 module "control_plane" {
     source = "./control_plane"
-    secret_key = var.secret_key
-    access_key = var.access_key
     suffix = local.project_name
-    region = var.region
     ddb_status_table = local.ddb_status_table
     lambda_runtime = var.lambda_runtime
     lambda_timeout = var.lambda_timeout
@@ -112,15 +97,11 @@ module "control_plane" {
     metrics_get_results_lambda_connection_string = var.metrics_get_results_lambda_connection_string
     metrics_cancel_tasks_lambda_connection_string = var.metrics_cancel_tasks_lambda_connection_string
     metrics_ttl_checker_lambda_connection_string = var.metrics_ttl_checker_lambda_connection_string
-    error_log_group = local.error_log_group
-    error_logging_stream = local.error_logging_stream
     agent_use_congestion_control = var.agent_use_congestion_control
     cluster_name = local.cluster_name
-    api_gateway_version = var.api_gateway_version
     mongodb_port = var.mongodb_port
     redis_port = var.redis_port
     queue_port = var.queue_port
-    retention_in_days = var.retention_in_days
     redis_with_ssl = var.redis_with_ssl
     connection_redis_timeout = var.connection_redis_timeout
     certificates_dir_path = var.certificates_dir_path
@@ -136,9 +117,6 @@ module "control_plane" {
     kubectl_path_documents = data.kubectl_path_documents.manifests
     image_pull_policy = var.image_pull_policy
     api_gateway_service = var.api_gateway_service
-    depends_on = [
-        null_resource.k8s_config
-    ]
 }
 
 module "htc_agent" {
@@ -171,8 +149,7 @@ module "htc_agent" {
     depends_on = [
         module.compute_plane,
         module.control_plane,
-        kubernetes_config_map.htcagentconfig,
-        null_resource.k8s_config
+        kubernetes_config_map.htcagentconfig
     ]
 }
 

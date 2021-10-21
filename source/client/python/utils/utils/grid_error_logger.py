@@ -22,11 +22,11 @@ except OSError:
     # files
     agent_config_data = {"error_log_group": os.environ["ERROR_LOG_GROUP"],
                          "error_logging_stream": os.environ["ERROR_LOGGING_STREAM"],
-                         "region": os.environ["REGION"]}
+                         "region": os.environ.get('REGION', None)}
 
 
 try:
-    cw = boto3.client('logs', agent_config_data["region"])
+    cw = boto3.client('logs', agent_config_data.get('region', None))
 except:
     cw = None
 

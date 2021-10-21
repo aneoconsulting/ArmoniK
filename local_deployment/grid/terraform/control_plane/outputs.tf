@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-output "external_ip" {
-  value = lookup(tomap(data.external.external_ip.result), "external_ip", "localhost")
-}
-
 output "redis_pod_ip" {
   description = "IP address of redis pod"
   value = local.redis_pod_ip

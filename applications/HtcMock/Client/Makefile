@@ -5,9 +5,9 @@
 GENERATED?=$(shell pwd)/generated/dotnet5.0/client
 DIST_DIR?=$(shell pwd)/../../../dist
 SUBMITTER_IMAGE_NAME=submitter
-TAG=main
-DOCKER_REGISTRY=
 BUILD_TYPE?=Release
+export ARMONIK_TAG
+export ARMONIK_DOCKER_REGISTRY
 
 .PHONY: push push
 all: push
@@ -17,11 +17,11 @@ all: push
 all: push
 
 build: Dockerfile Dockerfile_Debug
-ifneq ($(DOCKER_REGISTRY),)
+ifneq ($(ARMONIK_DOCKER_REGISTRY),)
 ifeq ($(BUILD_TYPE), Debug)
-	docker build ../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile_Debug
+	docker build ../ -t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile_Debug
 else
-	docker build ../ -t $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
+	docker build ../ -t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
 endif
 else
 ifeq ($(BUILD_TYPE), Debug)
@@ -33,7 +33,7 @@ endif
 
 
 push: build
-ifneq ($(DOCKER_REGISTRY),)
-	docker push $(DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG)
+ifneq ($(ARMONIK_DOCKER_REGISTRY),)
+	docker push $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG)
 endif
 

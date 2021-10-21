@@ -2,18 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-variable "region" {
-  description = "AWS region"
-}
-
-variable "access_key" {
-  description = "AWS access key"
-}
-
-variable "secret_key" {
-  description = "AWS secret key"
-}
-
 variable "docker_registry" {
   description = "URL of Amazon ECR image repostiories"
 }
@@ -100,14 +88,6 @@ variable "agent_use_congestion_control" {
   description = "Use Congestion Control protocol at pods to avoid overloading DDB"
 }
 
-variable "error_log_group" {
-  description = "Log group for errors"
-}
-
-variable "error_logging_stream" {
-  description = "Log stream for errors"
-}
-
 variable "suffix" {
   description = "suffix for generating unique name for AWS resource"
 }
@@ -119,10 +99,6 @@ variable "nlb_influxdb" {
 
 variable "cluster_name" {
   description = "ARN of the user pool used for authentication"
-}
-
-variable "api_gateway_version" {
-  description = "version deployed by API Gateway"
 }
 
 variable "tasks_status_table_service" {
@@ -143,11 +119,6 @@ variable "redis_port" {
 
 variable "queue_port" {
   description = "Port for queue instance"
-}
-
-variable "retention_in_days" {
-  description = "Retention in days for cloudwatch logs"
-  type =  number
 }
 
 variable "redis_with_ssl" {

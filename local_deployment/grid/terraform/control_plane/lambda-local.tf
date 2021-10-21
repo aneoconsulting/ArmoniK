@@ -11,8 +11,6 @@ resource "kubernetes_config_map" "lambda_local" {
     TASKS_QUEUE_DLQ_NAME = var.dlq_name,
     METRICS_ARE_ENABLED = var.metrics_are_enabled,
     METRICS_SUBMIT_TASKS_LAMBDA_CONNECTION_STRING = var.metrics_submit_tasks_lambda_connection_string,
-    ERROR_LOG_GROUP = var.error_log_group,
-    ERROR_LOGGING_STREAM = var.error_logging_stream,
     TASK_INPUT_PASSED_VIA_EXTERNAL_STORAGE = var.task_input_passed_via_external_storage,
     GRID_STORAGE_SERVICE = var.grid_storage_service,
     GRID_QUEUE_SERVICE = var.grid_queue_service,
@@ -20,18 +18,12 @@ resource "kubernetes_config_map" "lambda_local" {
     REDIS_URL = local.redis_pod_ip,
     REDIS_PORT = var.redis_port,
     METRICS_GRAFANA_PRIVATE_IP = var.nlb_influxdb,
-    REGION = var.region,
-    AWS_DEFAULT_REGION = var.region,
-    AWS_ACCESS_KEY_ID = var.access_key,
-    AWS_SECRET_ACCESS_KEY = var.secret_key,
     QUEUE_ENDPOINT_URL = "${local.queue_pod_ip}:${var.queue_port}",
     DB_ENDPOINT_URL = "mongodb://${local.mongodb_pod_ip}:${var.mongodb_port}",
     REDIS_USE_SSL = var.redis_with_ssl,
     REDIS_CERTFILE = var.redis_cert_file,
     REDIS_KEYFILE = var.redis_key_file,
     REDIS_CA_CERT = var.redis_ca_cert,
-    USERNAME = var.access_key,
-    PASSWORD = var.secret_key,
     AWS_LAMBDA_FUNCTION_TIMEOUT = var.lambda_timeout,
     API_GATEWAY_SERVICE = var.api_gateway_service,
     METRICS_GET_RESULTS_LAMBDA_CONNECTION_STRING = var.metrics_get_results_lambda_connection_string,
@@ -402,7 +394,8 @@ resource "kubernetes_deployment" "ttl_checker" {
 
 resource "kubernetes_cron_job" "ttl_checker_corn_job" {
   depends_on = [
-    kubernetes_deployment.ttl_checker,
+    kubectl_manifest.ingress-nginx,
+    kubernetes_deployment.ttl_checker
   ]
 
   metadata {

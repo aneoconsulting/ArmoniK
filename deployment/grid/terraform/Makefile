@@ -9,11 +9,10 @@
 # BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the
 # License for the specific language governing permissions and limitations under the License
 
-REGION?=eu-west-1
-
-KMS_KEY_ARN:=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[4].OutputValue' --output text)
-S3_GRID_TFSTATE_BUCKET_NAME:=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[3].OutputValue' --output text)
 export GRAFANA_ADMIN_PASSWORD?=$(shell uuidgen)
+export ARMONIK_TAG
+export ARMONIK_REGION?=eu-west-1
+KMS_KEY_ARN:=$(shell aws cloudformation describe-stacks --stack-name $(ARMONIK_TAG) --region $(ARMONIK_REGION) --query 'Stacks[0].Outputs[1].OutputValue' --output text)
 TF_SRCS:=$(wildcard *.tf)
 
 all:
@@ -36,8 +35,7 @@ get-grafana-password:
 	@terraform output grafana_admin_password
 
 reset:
-	rm -rf .terraform
-	
-clean:
-	rm -rf $(BUILD_DIR)/tag.*
+	rm -rf .terraform* terraform.tfstate* Agent_config.json
+
+clean: reset
 	

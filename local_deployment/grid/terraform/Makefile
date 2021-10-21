@@ -15,9 +15,6 @@ all:
 
 .PHONY: clean apply reset init
 
-#$(BUILD_DIR)/grid:
-#	mkdir -p $@
-	
 init:
 	terraform init
 
@@ -31,11 +28,7 @@ validate:
 	terraform validate
 
 reset:
-	rm -rf .terraform
-
-k8s-config: scripts_bash/k8s_config.sh
-	bash ./scripts_bash/k8s_config.sh
+	rm -rf .terraform* terraform.tfstate* Agent_config.json
 	
-clean:
-	rm -rf $(BUILD_DIR)/tag.*
+clean: reset
 	

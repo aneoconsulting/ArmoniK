@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 KUBE_FILEPATH = '/tmp/kubeconfig'
-region = os.environ['AWS_REGION']
+region = os.environ.get('AWS_REGION', None)
 
 eks = boto3.client('eks', region_name=region)
 ec2 = boto3.client('ec2', region_name=region)

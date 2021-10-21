@@ -2,29 +2,18 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-export TAG=mainline
 export LAMBDA_AGENT_IMAGE_NAME=awshpc-lambda
 export SUBMITTER_IMAGE_NAME=submitter
 export GENERATED=$(shell pwd)/generated
-export BUCKET_NAME
-export TABLE_SERVICE
 export DIST_DIR=$(shell pwd)/dist
-export GRAFANA_ADMIN_PASSWORD
-export BUILD_DIR:=(shell pwd)/.build
-export HTTP_PROXY
-export HTTPS_PROXY
-export NO_PROXY
-export http_proxy
-export https_proxy
-export no_proxy
+export ARMONIK_CONFIG_TYPE?=CUSTOM
 
 APPLICATION_NAME?=ArmonikSamples
-
 BUILD_TYPE?=Release
+PACKAGE_DIR:=./dist
+PACKAGES:= $(wildcard $(PACKAGE_DIR)/*.whl)
 
-PACKAGE_DIR := ./dist
-PACKAGES    := $(wildcard $(PACKAGE_DIR)/*.whl)
-.PHONY: all utils api lambda submitter  packages test test-api test-utils test-agent lambda-control-plane
+.PHONY: all utils api lambda submitter packages test test-api test-utils test-agent lambda-control-plane
 
 all: utils api lambda lambda-control-plane
 
@@ -35,7 +24,6 @@ all: utils api lambda lambda-control-plane
 
 init-grid-state:
 	$(MAKE) -C ./deployment/init_grid/cloudformation init
-	$(MAKE) -C ./deployment/init_grid/cloudformation
 
 delete-grid-state:
 	$(MAKE) -C ./deployment/init_grid/cloudformation delete
@@ -73,14 +61,14 @@ apply-dotnet-runtime:
 destroy-dotnet-runtime:
 	@$(MAKE) -C ./deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/dotnet5.0_runtime_grid_config.json
 
-apply-custom-runtime:
-	@$(MAKE) -C ./deployment/grid/terraform apply GRID_CONFIG=$(GENERATED)/grid_config.json
-
-destroy-custom-runtime:
-	@$(MAKE) -C ./deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/grid_config.json
-
 show-password:
 	@$(MAKE) -C ./deployment/grid/terraform get-grafana-password
+
+clean-grid-deployment:
+	@$(MAKE) -C ./deployment/grid/terraform clean
+
+clean-grid-project:
+	rm -rf $(GENERATED) $(DIST_DIR) envvars.conf
 
 init-grid-local-deployment:
 	@$(MAKE) -C ./local_deployment/grid/terraform init
@@ -94,19 +82,12 @@ apply-dotnet-local-runtime:
 destroy-dotnet-local-runtime:
 	@$(MAKE) -C ./local_deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/local_dotnet5.0_runtime_grid_config.json
 
-clean-terraform:
-	find -name ".terraform*" -type d -exec rm -rf {} \;
-	find -name ".terraform*" -type f -exec rm -f {} \;
-	find -name "*.tfstate*" -type f -exec rm -f {} \;
+clean-grid-local-deployment:
+	@$(MAKE) -C ./local_deployment/grid/terraform clean
 
-apply-custom-local-runtime:
-	@$(MAKE) -C ./local_deployment/grid/terraform apply GRID_CONFIG=$(GENERATED)/grid_config.json
+clean-grid-local-project:
+	rm -rf $(GENERATED) $(DIST_DIR) envvars.conf
 
-destroy-custom-local-runtime:
-	@$(MAKE) -C ./local_deployment/grid/terraform destroy GRID_CONFIG=$(GENERATED)/grid_config.json
-
-show-local-password:
-	@$(MAKE) -C ./local_deployment/grid/terraform get-grafana-password
 #############################
 ##### building source #######
 #############################

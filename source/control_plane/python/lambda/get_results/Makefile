@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-TAG?=mainline
-DOCKER_REGISTRY=
 GET_RESULTS_IMAGE=get_results
 CONTEXT_DIR=../../../../..
 SRCS=get_results.py
+export ARMONIK_TAG
+export ARMONIK_DOCKER_REGISTRY
 
 .PHONY: all lambda-get-results build-lambda-get-results push-lambda-get-results
 
@@ -14,15 +14,15 @@ all: lambda-get-results
 lambda-get-results: build-lambda-get-results push-lambda-get-results
 
 build-lambda-get-results: Dockerfile
-ifneq ($(DOCKER_REGISTRY),)
-	docker build $(CONTEXT_DIR) -t $(DOCKER_REGISTRY)/$(GET_RESULTS_IMAGE):$(TAG) -f ./Dockerfile
+ifneq ($(ARMONIK_DOCKER_REGISTRY),)
+	docker build $(CONTEXT_DIR) -t $(ARMONIK_DOCKER_REGISTRY)/$(GET_RESULTS_IMAGE):$(ARMONIK_TAG) -f ./Dockerfile
 else
-	docker build $(CONTEXT_DIR) -t $(GET_RESULTS_IMAGE):$(TAG) -f ./Dockerfile
+	docker build $(CONTEXT_DIR) -t $(GET_RESULTS_IMAGE):$(ARMONIK_TAG) -f ./Dockerfile
 endif
 
 push-lambda-get-results: build-lambda-get-results
-ifneq ($(DOCKER_REGISTRY),)
-	docker push $(DOCKER_REGISTRY)/$(GET_RESULTS_IMAGE):$(TAG)
+ifneq ($(ARMONIK_DOCKER_REGISTRY),)
+	docker push $(ARMONIK_DOCKER_REGISTRY)/$(GET_RESULTS_IMAGE):$(ARMONIK_TAG)
 endif
 
 test: $(SRCS)

@@ -1,14 +1,12 @@
-# Table of contents
-1. [Install and configure WSL2](#install-and-configure-wsl2)
-2. [Install dependencies](#install-dependencies)
-3. [Setup the project](#setup-the-project)
-4. [Configure the environment](#configure-the-environment)
-5. [Build Armonik artifacts](#build-armonik-artifacts)
-6. [Deploy Armonik resources](#deploy-armonik-resources)
-7. [Running an example workload](#running-an-example-workload)
-8. [Destroy Armonik resources](#destroy-armonik-resources)
-
-
+1. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
+2. [Configure the environment](#configure-the-environment)
+3. [Build Armonik artifacts](#build-armonik-artifacts)
+   1. [Build Armonik artifacts on local](#build-armonik-artifacts-on-local)
+   2. [Use built Armonik artifacts from a Docker registry](#use-built-armonik-artifacts-from-a-docker-registry)
+4. [Get Armonik artifacts from DockerHub](#get-armonik-artifacts-from-dockerhub)
+5. [Deploy Armonik resources](#deploy-armonik-resources)
+6. [Running an example workload](#running-an-example-workload)
+7. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
 
 # Install and configure WSL2 <a name="install-and-configure-wsl2"></a>
 
@@ -205,109 +203,111 @@ sudo apt-get update; \
 ```
 
 # Setup the project <a name="setup-the-project"></a>
-
-## On-premise credentials
-
-Create needed credentials (on-premises): for the on-premises deployment, some credentials are needed to be defined by the user. Run the following command to create mock credentials needed for the Armonik agents (indeed AWS Dynamodb and AWS SQS are emulated in localstack on-premises):
-
-```bash
-kubectl create secret generic htc-agent-secret-mock --from-literal='AWS_ACCESS_KEY_ID=mock_secret_key' --from-literal='AWS_SECRET_ACCESS_KEY=mock_secret_key'
-```
-
 ## Virtualenv
 
 Inside the project folder.
 
 ```bash
 virtualenv --python=python3.8 venv
+source ./venv/bin/activate
 ```
 
 # Configure the environment <a name="configure-the-environment"></a>
+The project needs to define and set environment variables for building the binaries and deploying the infrastructure.
+The main environment variables are:
+```buildoutcfg
+# To simplify the installation it is suggested that
+# a unique <ARMONIK_TAG> name is used to prefix the
+# different required resources.
+ARMONIK_TAG=<Your tag>
 
-1. Import the virtualenv environment:
-   ```bash
-   source ./venv/bin/activate
-   ```
+# Define the type of the database service
+ARMONIK_TASKS_TABLE_SERVICE=<Your database type>
 
-2. To simplify this installation it is suggested that a unique <TAG> name (to be used later) is also used to prefix the
-   different required resources.
-   ```bash
-   export ARMONIK_TAG=<Your tag>
-   ```
+# Define the type of the message queue
+ARMONIK_QUEUE_SERVICE=<Your message queue type>
 
-3. Define the type of the database service
-   ```bash
-   export ARMONIK_TASKS_TABLE_SERVICE=MongoDB
-   ```
-   
-4. Define the type of the message queue
-   ```bash
-   export ARMONIK_QUEUE_SERVICE=RSMQ
-   ```
+# Define an environment variable to select API Gateway service.
+ARMONIK_API_GATEWAY_SERVICE=<Your API gateway type>
 
-5. Define an environment variable containing the path to the local nuget repository.
-   ```bash
-   export ARMONIK_NUGET_REPOS=<project directory>/dist/dotnet5.0
-   ```
+# Define type of the environment
+# It can be (the list is not exhaustive):
+# local
+# cluster
+# cloud
+export ARMONIK_CLUSTER_CONFIG=<Your environment type>
 
-6. Define an environment variable containing the path to the redis certificates.
-   ```bash
-   export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
-   ```
+# Define the image pull policy in Kubernetes
+export ARMONIK_IMAGE_PULL_POLICY=<Your image pull policy>
 
-7. Define an environment variable containing the docker registry if it exists, otherwise initialize the variable to empty.
-   ```bash
-   export ARMONIK_DOCKER_REGISTRY=<docker registry>
-   ```
-   
-8. Define an environment variable to select API Gateway service.
-   ```bash
-   export ARMONIK_API_GATEWAY_SERVICE=NGINX
-   ```
+# Define an environment variable containing the path to
+# the local nuget repository.
+ARMONIK_NUGET_REPOS=<Your NuGet repository>
 
-Complete example of environment setup script:
+# Define an environment variable containing the path to
+# the redis certificates.
+ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your path to Redis certificates>
 
+# Define an environment variable containing the docker registry
+# if it exists, otherwise initialize the variable to empty.
+ARMONIK_DOCKER_REGISTRY=<Your Docker registry>
+```
+
+**Mandatory:** To set these environment variables:
+1. Copy the [template file for WSL](configure/onpremise-linux-config.conf) and modify the values of variables if needed:
 ```bash
-source ./venv/bin/activate
-export ARMONIK_TAG=my_tag
-export ARMONIK_TASKS_TABLE_SERVICE=MongoDB
-export ARMONIK_QUEUE_SERVICE=RSMQ
-export ARMONIK_NUGET_REPOS="$PWD/dist/dotnet5.0"
-export ARMONIK_REDIS_CERTIFICATES_DIRECTORY="$PWD/redis_certificates"
-export ARMONIK_API_GATEWAY_SERVICE=NGINX
+cp configure/onpremise-linux-config.conf ./envvars.conf
+```
+
+2. Source the file of configuration:
+```bash
+source ./envvars.conf
 ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
+## Build Armonik artifacts on local <a name="build-armonik-artifacts-on-local"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
 
 To build and install these in `<project_root>`:
 ```bash
-make dotnet50-path TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+make dotnet50-path
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following
 two files:
- * `dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
+ * `local_dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
  * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
 
-## Debug mode
+### Debug mode
 To build in `debug` mode, you execute this command:
 ```bash
-make dotnet50-path BUILD_TYPE=Debug TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+make dotnet50-path BUILD_TYPE=Debug
 ```
 
 For more information see [here](./docs/debug.md)
+
+## Use built Armonik artifacts from a Docker registry<a name="use-built-armonik-artifacts-from-a-docker-registry"></a>
+
+1. Generate the file of parameters for Terraform deployment `local_dotnet5.0_runtime_grid_config.json` . In the root of the project `<project_root>`:
+```bash
+make mock-config-local-dotnet5.0
+```
+
+2. Create a sample Kubernetes job `local-single-task-dotnet5.0.yaml` as follows:
+```bash
+  make k8s-jobs
+```
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 
 1. Run the following to initialize the Terraform environment:
    ```bash
-   make init-grid-local-deployment TAG=$ARMONIK_TAG
+   make init-grid-local-deployment
    ```
 
 2. if successful you can run terraform apply to create the infrastructure:
    ```bash
-   make apply-dotnet-local-runtime TAG=$ARMONIK_TAG REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+   make apply-dotnet-local-runtime
    ```
 
 # Running an example workload <a name="running-an-example-workload"></a>
@@ -332,8 +332,30 @@ and the grid are implemented by a client in folder [./examples/client/python](./
    kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
    ```
 
-# Destroy Armonik resources <a name="destroy-armonik-resources"></a>
-In the root forlder `<project_root>`, to destroy all Armonik resources deploy on the local machine, execute the following command:
+# Clean and destroy Armonik resources <a name="clean-and-destroy-armonik-resources"></a>
+In the root forlder `<project_root>`, to destroy all Armonik resources deployed on the local machine, execute the following commands:
+
+1. Delete the launched Kubernetes job, example:
 ```bash
-make destroy-dotnet-local-runtime TAG=$ARMONIK_TAG REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY
+kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
+```
+
+2. Destroy all Armonik resources:
+```bash
+make destroy-dotnet-local-runtime
+```
+
+3. Clean Terraform project, binaries and generated files:
+```bash
+make clean-grid-local-project
+```
+
+4. **If you want** uninstall Kubernetes on the local machine:
+```bash
+/usr/local/bin/k3s-uninstall.sh
+```
+
+5. **If you want remove ALL** local docker images:
+```bash
+docker rmi -f $(docker images -a -q)
 ```
