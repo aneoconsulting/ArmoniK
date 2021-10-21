@@ -7,8 +7,6 @@ export LAMBDA_AGENT_IMAGE_NAME=awshpc-lambda
 export SUBMITTER_IMAGE_NAME=submitter
 export GENERATED=$(shell pwd)/generated
 export BUCKET_NAME
-export FILE_HANDLER
-export FUNCTION_HANDLER
 export TABLE_SERVICE
 export DIST_DIR=$(shell pwd)/dist
 export GRAFANA_ADMIN_PASSWORD
@@ -188,6 +186,8 @@ upload-dotnet5.0: dotnet50-core $(APPLICATION_NAME)-config-dotnet5.0 $(APPLICATI
 #############################
 ##### generate config #######
 #############################
+FILE_HANDLER="$(APPLICATION_NAME)::$(APPLICATION_NAME).Function::FunctionHandler"
+
 $(APPLICATION_NAME)-config-dotnet5.0:
 	@$(MAKE) -C ./applications/apps_core/configurations generated-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
 
