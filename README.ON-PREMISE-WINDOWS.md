@@ -5,7 +5,7 @@
    2. [Use built Armonik artifacts from a Docker registry](#use-built-armonik-artifacts-from-a-docker-registry)
 4. [Get Armonik artifacts from DockerHub](#get-armonik-artifacts-from-dockerhub)
 5. [Deploy Armonik resources](#deploy-armonik-resources)
-6. [Running an example workload](#running-an-example-workload)
+6. [Running an example application](#running-an-example-application)
 7. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
 
 # Install Kubernetes on local machine <a name="install-kubernetes-on-local-machine"></a>
@@ -165,7 +165,7 @@ make mock-config-local-dotnet5.0
    ```bash
    make init-grid-local-deployment
    ```
-   
+
 2. You need to execute `armonik/configure/bootstrap.sh` to mount `/redis_certificates`.
 ```bash
 cd configure
@@ -178,12 +178,10 @@ cd configure
    make apply-dotnet-local-runtime
    ```
 
-# Running an example workload <a name="running-an-example-workload"></a>
-In the folder [mock_computation](./examples/workloads/dotnet5.0/mock_computation), you will find the code of the
-.NET 5.0 program mocking computation.
+# Running an example application <a name="running-an-application-workload"></a>
+In the folder [applications/ArmonikSamples](./applications/ArmonikSamples), you will find the code of the .NET 5.0 Armonik samples.
 
-We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job
-and the grid are implemented by a client in folder [./examples/client/python](./examples/client/python).
+We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job and the grid are implemented by a client in folder [applications/ArmonikSamples/Client](./applications/ArmonikSamples/Client).
 
 1. Run the following command to launch a kubernetes job:
    ```bash

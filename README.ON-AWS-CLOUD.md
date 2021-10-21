@@ -5,7 +5,7 @@
    3. [ECR authentication](#ecr-authentication)
 2. [Build Armonik artifacts](#build-armonik-artifacts)
 3. [Deploy Armonik resources](#deploy-armonik-resources)
-4. [Running an example workload](#running-an-example-workload)
+4. [Running an example application](#running-an-example-application)
 
 # Configure the environment <a name="configure-the-environment"></a>
 ## Configure AWS Cli <a name="configure-aws-cli"></a>
@@ -77,14 +77,14 @@ aws ecr get-login-password --region $ARMONIK_REGION | docker login --username AW
 ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
-Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s. 
+Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
 
 To build and install these in `<project_root>`:
 ```bash
 make dotnet50-path
 ```
 
-A folder named `generated` will be created at `<project_root>`. This folder should contain the following 
+A folder named `generated` will be created at `<project_root>`. This folder should contain the following
 two files:
  * `dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
  * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
@@ -95,38 +95,36 @@ two files:
    make init-grid-state
    ```
 
-2. Run the following to initialize the Terraform environment: 
+2. Run the following to initialize the Terraform environment:
    ```bash
    make init-grid-deployment
    ```
-   
+
 3. If successful you can run terraform apply to create the infrastructure:
    ```bash
    make apply-dotnet-runtime
    ```
-   
-# Running an example workload <a name="running-an-example-workload"></a>
-In the folder [mock_computation](./examples/workloads/dotnet5.0/mock_computation), you will find the code of the
-.NET 5.0 program mocking computation. 
 
-We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job
-and the grid are implemented by a client in folder [./examples/client/python](./examples/client/python).
+# Running an example application <a name="running-an-example-application"></a>
+In the folder [applications/ArmonikSamples](./applications/ArmonikSamples), you will find the code of the .NET 5.0 Armonik samples.
+
+We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job and the grid are implemented by a client in folder [applications/ArmonikSamples/Client](./applications/ArmonikSamples/Client).
 
 1. Run the following command to launch a kubernetes job:
    ```bash
    kubectl apply -f ./generated/single-task-dotnet5.0.yaml
    ```
-   
+
 2. look at the log of the submission:
    ```bash
    kubectl logs job/single-task -f
    ```
-   
+
 3. To clean the job submission instance:
    ```bash
    kubectl delete -f ./generated/single-task-dotnet5.0.yaml
    ```
-   
+
 # Clean and destroy Armonik resources <a name="clean-and-destroy-armonik-resources"></a>
 In the root forlder `<project_root>`, to destroy all Armonik resources deployed on the local machine, execute the following commands:
 
