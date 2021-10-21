@@ -4,6 +4,7 @@
 Fixed
 -
 * Debug mode using BUILD_TYPE=Debug when compiling
+* Fix issues with environment variables
 
 ## [v0.9.RC](https://github.com/aneoconsulting/armonik/tree/v0.9.RC) (2021-10-19)
 Added
