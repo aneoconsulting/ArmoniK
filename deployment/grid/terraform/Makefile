@@ -13,7 +13,6 @@ export GRAFANA_ADMIN_PASSWORD?=$(shell uuidgen)
 export ARMONIK_TAG
 export ARMONIK_REGION?=eu-west-1
 KMS_KEY_ARN:=$(shell aws cloudformation describe-stacks --stack-name $(ARMONIK_TAG) --region $(ARMONIK_REGION) --query 'Stacks[0].Outputs[1].OutputValue' --output text)
-S3_GRID_TFSTATE_BUCKET_NAME:=$(shell aws cloudformation describe-stacks --stack-name $(ARMONIK_TAG) --region $(ARMONIK_REGION) --query 'Stacks[0].Outputs[3].OutputValue' --output text)
 TF_SRCS:=$(wildcard *.tf)
 
 all:

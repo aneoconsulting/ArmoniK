@@ -143,11 +143,6 @@ variable "htc_agent_name" {
   description = "name of the htc agent to scale out/in"
 }
 
-variable "htc_agent_namespace" {
-  default = "default"
-  description = "kubernetes namespace for the deployment of the agent"
-}
-
 variable "suffix" {
   default = ""
   description = "suffix for generating unique name for AWS resource"
