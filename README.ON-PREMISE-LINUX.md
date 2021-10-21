@@ -116,7 +116,7 @@ For more information see [here](./docs/debug.md)
 
 1. Generate the file of parameters for Terraform deployment `local_dotnet5.0_runtime_grid_config.json` . In the root of the project `<project_root>`:
 ```bash
-make mock-config-local-dotnet5.0
+make ArmonikSamples-config-local-dotnet5.0
 ```
 
 2. Create a sample Kubernetes job `local-single-task-dotnet5.0.yaml` as follows:
