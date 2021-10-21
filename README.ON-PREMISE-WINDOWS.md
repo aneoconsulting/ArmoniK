@@ -110,16 +110,6 @@ Define variables for deploying the infrastructure as follows:
       export ARMONIK_API_GATEWAY_SERVICE=NGINX
    ```
 
-8. Define environment variables if a proxy exists.
-   ```bash
-      export HTTP_PROXY=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
-      export HTTPS_PROXY=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
-      export NO_PROXY=<LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON>
-      export http_proxy=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
-      export https_proxy=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
-      export no_proxy=<LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON>
-   ```
-
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
 

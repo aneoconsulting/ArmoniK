@@ -242,12 +242,8 @@ virtualenv --python=python3.8 venv
    
 4. Define the type of the message queue
    ```bash
-   export ARMONIK_QUEUE_SERVICE=<Your queue service>
+   export ARMONIK_QUEUE_SERVICE=RSMQ
    ```
-   `<Your queue service>` can be (the list is not exhaustive)
-   - `RSMQ`
-   - `SQS`
-   - `PrioritySQS`
 
 5. Define an environment variable containing the path to the local nuget repository.
    ```bash
@@ -256,7 +252,7 @@ virtualenv --python=python3.8 venv
 
 6. Define an environment variable containing the path to the redis certificates.
    ```bash
-   export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=/run/desktop/mnt/host/wsl/cert
+   export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<redis certificates directory path>
    ```
 
 7. Define an environment variable containing the docker registry if it exists, otherwise initialize the variable to empty.
@@ -269,23 +265,13 @@ virtualenv --python=python3.8 venv
    export ARMONIK_API_GATEWAY_SERVICE=NGINX
    ```
 
-9. Define environment variables if a proxy exists.
-   ```bash
-   export HTTP_PROXY=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
-   export HTTPS_PROXY=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
-   export NO_PROXY=<LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON>
-   export http_proxy=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
-   export https_proxy=<PROXY_URL_WITH_OPTIONAL_USER:PWD>
-   export no_proxy=<LIST_URL_AVOIDING_PROXY_SEPERATED_BY_SEMICOLON>
-   ```
-
 Complete example of environment setup script:
 
 ```bash
 source ./venv/bin/activate
 export ARMONIK_TAG=my_tag
 export ARMONIK_TASKS_TABLE_SERVICE=MongoDB
-export ARMONIK_QUEUE_SERVICE=PrioritySQS
+export ARMONIK_QUEUE_SERVICE=RSMQ
 export ARMONIK_NUGET_REPOS="$PWD/dist/dotnet5.0"
 export ARMONIK_REDIS_CERTIFICATES_DIRECTORY="$PWD/redis_certificates"
 export ARMONIK_API_GATEWAY_SERVICE=NGINX
@@ -318,7 +304,6 @@ For more information see [here](./docs/debug.md)
    ```bash
    make init-grid-local-deployment TAG=$ARMONIK_TAG
    ```
-
 
 2. if successful you can run terraform apply to create the infrastructure:
    ```bash

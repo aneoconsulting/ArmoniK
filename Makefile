@@ -188,12 +188,6 @@ upload-dotnet5.0: dotnet50-core $(APPLICATION_NAME)-config-dotnet5.0 $(APPLICATI
 #############################
 ##### generate config #######
 #############################
-
-FILE_HANDLER="$(APPLICATION_NAME)::$(APPLICATION_NAME).Function::FunctionHandler"
-
-config-python:
-	@$(MAKE) -C ./applications/apps_core/configurations generated-python FILE_HANDLER=mock_compute_engine FUNCTION_HANDLER=lambda_handler
-
 $(APPLICATION_NAME)-config-dotnet5.0:
 	@$(MAKE) -C ./applications/apps_core/configurations generated-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
 
