@@ -1,5 +1,11 @@
 # Changelog
 
+## [dev](https://github.com/aneoconsulting/armonik/tree/dev) (2021-10-21)
+Changed
+-
+* Update some make commands
+* Update management of environment variables
+
 ## [v0.9.2.RC](https://github.com/aneoconsulting/armonik/tree/v0.9.2.RC) (2021-10-21)
 Fixed
 -
