@@ -40,7 +40,7 @@ locals {
     default_agent_configuration = {
         agent_chart_url  = "../charts"
         agent = {
-            image = local.docker_registry != "" ? "${local.docker_registry}/awshpc-lambda" : "awshpc-lambda"
+            image = local.docker_registry != "" ? "${local.docker_registry}/agent" : "agent"
             tag = local.project_name
             pullPolicy = "IfNotPresent"
             minCPU = "10"

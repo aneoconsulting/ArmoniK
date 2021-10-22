@@ -44,7 +44,7 @@ locals {
     default_agent_configuration = {
         agent_chart_url  = "../charts"
         agent = {
-            image = "${local.aws_htc_ecr}/awshpc-lambda"
+            image = "${local.aws_htc_ecr}/agent"
             tag = local.project_name
             pullPolicy = "IfNotPresent"
             minCPU = "10"

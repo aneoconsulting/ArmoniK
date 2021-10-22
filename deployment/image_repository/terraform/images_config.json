@@ -48,6 +48,7 @@
         "submitter",
         "influxdb",
         "aws-xray-daemon",
+        "agent",
         "lambda-build"
     ]
 }

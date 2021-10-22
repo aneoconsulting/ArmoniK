@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-export LAMBDA_AGENT_IMAGE_NAME=awshpc-lambda
+export AGENT_IMAGE_NAME=agent
 export SUBMITTER_IMAGE_NAME=submitter
 export GENERATED=$(shell pwd)/generated
 export DIST_DIR=$(shell pwd)/dist
