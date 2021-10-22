@@ -149,6 +149,12 @@ lambda-control-plane-cancel-tasks: utils api
 lambda-control-plane-ttl-checker: utils api
 	$(MAKE) -C ./source/control_plane/python/lambda/ttl_checker
 
+docker-armonik: .
+	docker build -t armonik:$(ARMONIK_TAG) . --build-arg DOCKER_REGISTRY=$(ARMONIK_DOCKER_REGISTRY) --build-arg TAG=$(ARMONIK_TAG)
+
+docker-armonik-dev: .
+	docker build -t armonik:$(ARMONIK_TAG)-dev . --build-arg DOCKER_REGISTRY=$(ARMONIK_DOCKER_REGISTRY) --build-arg TAG=$(ARMONIK_TAG) --build-arg MODE=dev
+
 ####################################
 ##### building documentation #######
 ####################################

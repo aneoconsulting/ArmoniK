@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 AS install
+FROM ubuntu:20.04
 
 RUN apt update -y && \
     DEBIAN_FRONTEND=noninteractive apt install -y \
@@ -33,6 +33,27 @@ RUN HELM_VERSION="$(curl -fsS https://github.com/helm/helm/releases/latest | sed
 # Docker config
 RUN echo '{"storage-driver": "fuse-overlayfs"}' > /etc/docker/daemon.json
 
+ARG MODE=user
+
+# Dotnet and python install for 'dev' MODE
+RUN if [ "${MODE}" = dev ]; then \
+      apt update -y && \
+      DEBIAN_FRONTEND=noninteractive apt install -y \
+        apt-transport-https \
+        ca-certificates \
+        gnupg \
+        software-properties-common \
+        python3-pip \
+        python-is-python3 \
+      && \
+      curl -fsSL https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -o /tmp/pkg-microsoft.deb && \
+      dpkg -i /tmp/pkg-microsoft.deb && \
+      rm -f /tmp/pkg-microsoft.deb && \
+      apt update -y && \
+      apt install -y dotnet-sdk-5.0 && \
+      apt clean && rm -rf /var/lib/apt/lists/* \
+    ;fi
+
 # Add user
 RUN groupadd -g 1000 armonik && \
     useradd -m -g armonik -u 1000 -d /home/armonik armonik && \
@@ -41,6 +62,12 @@ RUN groupadd -g 1000 armonik && \
     su armonik -c 'mkdir /home/armonik/.kube && ln -s /etc/rancher/k3s/k3s.yaml /home/armonik/.kube/config'
 
 COPY docker-init.sh /usr/local/bin/init
+
+COPY --chown=1000:1000 requirements.txt /armonik/
+
+RUN if [ "${MODE}" = dev ]; then \
+      pip install -r /armonik/requirements.txt \
+    ;fi
 
 COPY --chown=1000:1000 .dockerignore Makefile LICENSE *.md  /armonik/
 COPY --chown=1000:1000 deployment /armonik/deployment
@@ -67,11 +94,16 @@ ENV ARMONIK_IMAGE_PULL_POLICY=IfNotPresent
 # This could be done in Docker build, but enlarges the image by ~200MB
 #RUN make init-grid-local-deployment
 
-ARG BUILD_ID=XXXX
+# You can either specify BUILD_ID or the complete TAG
 ARG DOCKER_REGISTRY=dockerhubaneo
+ARG BUILD_ID=XXXX
+ARG TAG=armonik-dev-${BUILD_ID}
 
-ENV ARMONIK_TAG=armonik-dev-${BUILD_ID}
+ENV ARMONIK_TAG=${TAG}
 ENV ARMONIK_DOCKER_REGISTRY=${DOCKER_REGISTRY}
 
-RUN make mock-config-local-dotnet5.0 && \
-    make k8s-jobs
+RUN if [ -n "$DOCKER_REGISTRY" ]; then \
+      make mock-config-local-dotnet5.0 && \
+      make k8s-jobs ; \
+    fi
+
