@@ -22,7 +22,6 @@ init: $(YAML_SRC)
 	aws cloudformation create-stack --stack-name $(ARMONIK_TAG) --region $(ARMONIK_REGION) --template-body file://$(YAML_SRC) --parameters ParameterKey=BucketTag,ParameterValue=$(ARMONIK_TAG)
 	@echo "Waiting for cloud formation successful deployment"
 	@aws cloudformation wait stack-create-complete --stack-name $(ARMONIK_TAG) --region $(ARMONIK_REGION)
-	@touch $(BUILD_DIR)/grid_init/init-grid-$(ARMONIK_TAG)
 	aws cloudformation describe-stacks --stack-name $(ARMONIK_TAG) --region $(ARMONIK_REGION) --query 'Stacks[0]'
 
 delete:
