@@ -1,0 +1,529 @@
+# Docker
+# Build a Docker image
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+trigger:
+- '*'
+
+resources:
+- repo: self
+
+variables:
+- group: publish-keys
+- name : TAGVar 
+  value: 'armonik-dev-$(Build.BuildId)$(buildsuffix)'
+- name : buildsuffix
+  value: ""
+
+stages:
+- stage: Local
+  displayName: Local Deployment / Test
+  jobs:
+  - job: BuildHTTPAPI
+    displayName: Build HTTP API
+    strategy:
+      matrix:
+        Mode-Debug:
+           buildmode: 'Debug'
+           buildsuffix: '-dbg'
+        Mode-Release:
+           buildmode: 'Release'
+           buildsuffix: ''  
+
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'
+      - script: |
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          mkdir -p $(pwd)/generated/csharp/http_api $(pwd)/generated/python/http_api
+          sudo chown :sudo /var/run/docker.sock
+          docker run --user "$(id -u):$(id -g)" --rm  --mount "type=bind,src=$(pwd)/generated/csharp/http_api,dst=/tmp/http_api" -v "$(pwd)/source/control_plane/openapi/api.yaml:/api.yaml" openapitools/openapi-generator-cli generate -i /api.yaml -g csharp-netcore -o /tmp/http_api  --additional-properties=targetFramework=net5.0 --additional-properties=packageName=HttpApi
+          docker run --user "$(id -u):$(id -g)" --rm  --mount "type=bind,src=$(pwd)/generated/python/http_api,dst=/tmp/http_api" -v "$(pwd)/source/control_plane/openapi/api.yaml:/api.yaml" openapitools/openapi-generator-cli generate -i /api.yaml -g python -o /tmp/http_api  --additional-properties=packageName=httpapi
+        displayName: Generate OpenAPI code
+      - script: |
+          dotnet pack generated/csharp/http_api/src/HttpApi/HttpApi.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/HttpApi/$(buildmode)
+        displayName: Build dotnet package
+      - script: |
+          set -e
+          sudo apt-get update -y
+          sudo apt-get install -y python3 python3-pip python3-wheel
+          cd generated/python/http_api/ && python3 setup.py bdist_wheel -d $(Build.ArtifactStagingDirectory)/HttpApi
+        displayName: Build python package
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)/HttpApi
+          artifactName: HttpApi
+      #- task: NuGetAuthenticate@0
+       # displayName: 'NuGet Authenticate'   
+      #- script: |
+      #  dotnet nuget push $(Build.ArtifactStagingDirectory)/HttpApi.1.0.0.nupkg -k $(NugetAPIKey)
+      #  displayName: Push HttpApi to Nuget.org
+      #- task: DotNetCoreCLI@2
+      #  displayName: Push Nuget Package
+      #  inputs:
+      #    command: custom
+      #    custom: nuget
+      #    arguments: >
+      #     push $(Build.ArtifactStagingDirectory)/$(ArtifactName)/*.nupkg
+      #     -s https://api.nuget.org/v3/index.json
+      #     -k $(NuGetApiKey) 
+   
+
+
+  - job: BuildHTCGRIDAPI
+    displayName: Build HTCGrid API
+    dependsOn: BuildHTTPAPI
+    strategy:
+      matrix:
+        Mode-Debug:
+           buildmode: 'Debug'
+           buildsuffix: '-dbg'
+        Mode-Release:
+           buildmode: 'Release'
+           buildsuffix: ''  
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: HttpApi
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - script: |
+          set -e
+          export ARMONIK_NUGET_REPOS=$(System.ArtifactsDirectory)/HttpApi/$(buildmode)
+          dotnet pack source/client/csharp/api-v0.1/HTCGridAPI.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/HTCGridAPI/$(buildmode)
+        displayName: Build dotnet package
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)/HTCGridAPI
+          artifactName: HTCGridApi
+      # - script: |
+      #     dotnet nuget push $(Build.ArtifactStagingDirectory)/HTCGridAPI/HTCGridAPI.1.0.0.nupkg -k $NUGET_KEY
+      #   displayName: Push to Nuget.org
+      #   env:
+      #     NUGET_KEY: $(NugetAPIKey)
+
+
+  - job: BuildHTCCommon
+    displayName: Build HTC Common
+    dependsOn: BuildHTCGRIDAPI
+    strategy:
+      matrix:
+        Mode-Debug:
+           buildmode: 'Debug'
+           buildsuffix: '-dbg'
+        Mode-Release:
+           buildmode: 'Release'
+           buildsuffix: ''  
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: HttpApi
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: HTCGridApi
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - script: |
+          set -e
+          mkdir -p dist 
+          cp -r $(System.ArtifactsDirectory)/HTCGridApi/$(buildmode)/. $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. dist/. 
+          export ARMONIK_NUGET_REPOS=$PWD/dist
+          dotnet build examples/mock_integration/HtcCommon/HtcCommon.csproj -c $(buildmode)
+          dotnet pack examples/mock_integration/HtcCommon/HtcCommon.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/HTCCommon/$(buildmode)
+        displayName: Build dotnet package
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)/HTCCommon
+          artifactName: HTCCommon
+
+  - job: BuildDotnetClient
+    displayName: Build Dotnet Client
+    dependsOn: BuildHTCCommon
+    strategy:
+      matrix:
+        Mode-Debug:
+           buildmode: 'Debug'
+           buildsuffix: '-dbg'
+        Mode-Release:
+           buildmode: 'Release'
+           buildsuffix: ''   
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: HttpApi
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: HTCGridApi
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: HTCCommon
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - script: |
+          set -e
+          mkdir -p dist 
+          cp -r $(System.ArtifactsDirectory)/HTCGridApi/$(buildmode)/. $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. $(System.ArtifactsDirectory)/HTCCommon/$(buildmode)/. dist/. 
+          export ARMONIK_NUGET_REPOS=$PWD/dist
+          echo $ARMONIK_NUGET_REPOS
+          ls $ARMONIK_NUGET_REPOS
+          dotnet build examples/mock_integration/Client/Client.csproj -c $(buildmode)
+          dotnet pack examples/mock_integration/Client/Client.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
+          dotnet publish examples/mock_integration/Client/Client.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
+        displayName: Build dotnet package
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)/DotnetClient
+          artifactName: DotnetClient 
+      - script: | 
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          docker build -f examples/mock_integration/Client/Dockerfile.CI -t dockerhubaneo/submitter:$(TAGVar) $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
+          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
+          docker push dockerhubaneo/submitter:$(TAGVar)
+        displayName: Build and Push Submitter to DockerHub
+
+  - job: BuildDotnetServer
+    displayName: Build Dotnet Server
+    dependsOn: BuildHTCCommon
+    strategy:
+      matrix:
+        Mode-Debug:
+           buildmode: 'Debug'
+           buildsuffix: '-dbg'
+        Mode-Release:
+           buildmode: 'Release'
+           buildsuffix: ''   
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: HttpApi
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: HTCGridApi
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: HTCCommon
+          downloadPath: '$(System.ArtifactsDirectory)'
+      - script: |
+          set -e
+          mkdir -p dist 
+          cp -r $(System.ArtifactsDirectory)/HTCGridApi/$(buildmode)/. $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. $(System.ArtifactsDirectory)/HTCCommon/$(buildmode)/. dist/. 
+          export ARMONIK_NUGET_REPOS=$PWD/dist
+          echo $ARMONIK_NUGET_REPOS
+          ls $ARMONIK_NUGET_REPOS
+          dotnet build examples/mock_integration/Server/mock_integration_image/src/mock_integration/mock_integration.csproj -c $(buildmode)
+          dotnet pack examples/mock_integration/Server/mock_integration_image/src/mock_integration/mock_integration.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
+          dotnet publish examples/mock_integration/Server/mock_integration_image/src/mock_integration/mock_integration.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
+        displayName: Build dotnet package
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)/DotnetServer
+          artifactName: DotnetServer
+      - script: | 
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          docker build -f examples/mock_integration/Server/Dockerfile.CI -t dockerhubaneo/lambda:$(TAGVar) $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
+          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
+          docker push dockerhubaneo/lambda:$(TAGVar)
+        displayName: Build and Push lambda to DockerHub  
+
+  - job: BuildPythonUtils
+    displayName: Build PYTHON UTILS
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - script: |
+          set -e
+          sudo apt-get update -y
+          sudo apt-get install -y python3 python3-pip python3-wheel
+          cd source/client/python/utils && python3 setup.py bdist_wheel -d $(Build.ArtifactStagingDirectory)/PythonUtils
+        displayName: Build python package
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)/PythonUtils
+          artifactName: PythonUtils
+  
+  - job: BuildPythonApi
+    displayName: Build PYTHON API
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - script: |
+          set -e
+          sudo apt-get update -y
+          sudo apt-get install -y python3 python3-pip python3-wheel
+          cd source/client/python/api-v0.1 && python3 setup.py bdist_wheel -d $(Build.ArtifactStagingDirectory)/PythonApi
+        displayName: Build python package
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)/PythonApi
+          artifactName: PythonApi
+    
+  - job: BuildCancelTasks
+    displayName: Build Cancel Tasks
+    dependsOn: BuildPythonUtils   
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: PythonUtils
+          downloadPath: '$(Build.ArtifactStagingDirectory)/PythonUtils'  
+      - script: | 
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          docker build -f source/control_plane/python/lambda/cancel_tasks/Dockerfile -t dockerhubaneo/cancel_tasks:$(TAGVar) .
+          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
+          docker push dockerhubaneo/cancel_tasks:$(TAGVar)
+        displayName: Build and Push cancel tasks to DockerHub
+  
+  - job: BuildGetResults
+    displayName: Build Get Results
+    dependsOn: BuildPythonUtils 
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: PythonUtils
+          downloadPath: '$(Build.ArtifactStagingDirectory)/PythonUtils'
+      - script: | 
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          docker build -f source/control_plane/python/lambda/get_results/Dockerfile -t dockerhubaneo/get_results:$(TAGVar) .
+          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
+          docker push dockerhubaneo/get_results:$(TAGVar)
+        displayName: Build and Push get_results to DockerHub      
+
+  - job: BuildSubmitTasks
+    displayName: Build Submit Tasks 
+    dependsOn: BuildPythonUtils
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: PythonUtils
+          downloadPath: '$(Build.ArtifactStagingDirectory)/PythonUtils'
+      - script: | 
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          docker build -f source/control_plane/python/lambda/submit_tasks/Dockerfile -t dockerhubaneo/submit_tasks:$(TAGVar) .
+          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
+          docker push dockerhubaneo/submit_tasks:$(TAGVar)
+        displayName: Build and Push submit_tasks to DockerHub
+  
+  - job: BuildTtlChecker
+    displayName: Build Ttl Checker
+    dependsOn: BuildPythonUtils
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: PythonUtils
+          downloadPath: '$(Build.ArtifactStagingDirectory)/PythonUtils'
+      - script: | 
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          docker build -f source/control_plane/python/lambda/ttl_checker/Dockerfile -t dockerhubaneo/ttl_checker:$(TAGVar) .
+          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
+          docker push dockerhubaneo/ttl_checker:$(TAGVar)
+        displayName: Build and Push ttl_checker to DockerHub 
+
+  - job: BuildAwsHpcLocal
+    displayName: Build AwsHpc-Local
+    dependsOn: 
+      - BuildPythonApi
+      - BuildPythonUtils 
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: PythonUtils
+          downloadPath: 'dist'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: PythonApi
+          downloadPath: 'dist'    
+      - script: | 
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          docker build -f source/compute_plane/python/agent/Dockerfile.Local -t dockerhubaneo/awshpc-local:$(TAGVar) .
+          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
+          docker push dockerhubaneo/awshpc-local:$(TAGVar)
+        displayName: Build and Push awshpc-local to DockerHub 
+  
+  - job: BuildAwsHpcLambda
+    displayName: Build AwsHpc-Lambda
+    dependsOn: 
+      - BuildPythonApi
+      - BuildPythonUtils 
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: PythonUtils
+          downloadPath: 'dist'
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          buildType: 'current'
+          downloadType: 'single'
+          artifactName: PythonApi
+          downloadPath: 'dist'    
+      - script: | 
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          docker build -f source/compute_plane/python/agent/Dockerfile.Lambda -t dockerhubaneo/awshpc-lambda:$(TAGVar) .
+          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
+          docker push dockerhubaneo/awshpc-lambda:$(TAGVar)
+        displayName: Build and Push awshpc-lambda to DockerHub
+        
+  - job: DeployLocalJob
+    displayName: Deploy Local Job
+    dependsOn: 
+      - BuildAwsHpcLambda
+      - BuildAwsHpcLocal
+      - BuildDotnetClient
+      - BuildDotnetServer
+      - BuildCancelTasks
+      - BuildGetResults
+      - BuildTtlChecker
+      - BuildSubmitTasks
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - script : sudo apt update -y && sudo apt install -y jq
+        displayName: Install Apt dependencies
+      - script : |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh
+        displayName: Install Helm
+      - script: |
+          set -e
+          md5sum /usr/local/bin/k3s || true
+          sudo curl -fsSL https://github.com/k3s-io/k3s/releases/latest/download/k3s -o /usr/local/bin/k3s 
+          md5sum /usr/local/bin/k3s 
+          sudo chmod 755 /usr/local/bin/k3s 
+          sudo ln -s k3s /usr/local/bin/kubectl
+          sudo ln -s k3s /usr/local/bin/crictl
+          sudo cp cicd/azure/k3s.service /etc/systemd/system/
+          sudo systemctl daemon-reload 
+          sudo systemctl start k3s
+          mkdir -p ~/.kube
+          cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+        displayName: Install K3s
+      - script : |
+          sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+          sudo curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install terraform
+        displayName: Install terraform
+      - script : |
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          export ARMONIK_TAG=$(TAGVar)
+          export ARMONIK_TASKS_TABLE_SERVICE=MongoDB
+          export ARMONIK_QUEUE_SERVICE=RSMQ
+          export ARMONIK_NUGET_REPOS=$PWD/dist/dotnet5.0
+          export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=$PWD/redis_certificates
+          export ARMONIK_DOCKER_REGISTRY=dockerhubaneo
+          export ARMONIK_API_GATEWAY_SERVICE=NGINX
+          make init-grid-local-deployment TAG=$ARMONIK_TAG
+          make mock-config-local-dotnet5.0 TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+          cd local_deployment/grid/terraform && terraform apply -auto-approve -var-file ../../../generated/local_dotnet5.0_runtime_grid_config.json
+          kubectl get po -A 
+          cd - 
+          make k8s-jobs TAG=$ARMONIK_TAG TASKS_TABLE_SERVICE=$ARMONIK_TASKS_TABLE_SERVICE QUEUE_SERVICE=$ARMONIK_QUEUE_SERVICE REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY DOCKER_REGISTRY=$ARMONIK_DOCKER_REGISTRY API_GATEWAY_SERVICE=$ARMONIK_API_GATEWAY_SERVICE
+          kubectl apply -f ./generated/local-single-task-dotnet5.0.yaml
+          sleep 50
+          kubectl logs job/single-task -f
+          kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
