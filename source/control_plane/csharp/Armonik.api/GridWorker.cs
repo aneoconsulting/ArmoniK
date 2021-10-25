@@ -60,10 +60,10 @@ namespace Armonik
                 htcDataClient.ConnectDB();
 
                  //TODO Manage same sessionId from Client and Server request (Server can be a Client but the session should be the same)
-                // htcGridClient = new HtcGridClient(gridConfig, htcDataClient, inputTask.SessionId);
-                htcGridClient = new HtcGridClient(gridConfig, htcDataClient);
-                inputTask.SessionId = htcGridClient.SessionId;
-                
+                 htcGridClient = new HtcGridClient(gridConfig, htcDataClient, inputTask.SessionId);
+                //htcGridClient = new HtcGridClient(gridConfig, htcDataClient);
+                //inputTask.SessionId = htcGridClient.SessionId;
+
                 serviceContainer.htcDataClient = htcDataClient;
                 serviceContainer.htcGridClient = htcGridClient;
                 sessionContext.SessionId = inputTask.SessionId;
