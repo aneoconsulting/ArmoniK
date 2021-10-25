@@ -15,7 +15,7 @@ PACKAGES:= $(wildcard $(PACKAGE_DIR)/*.whl)
 
 .PHONY: all utils api lambda submitter packages test test-api test-utils test-agent lambda-control-plane
 
-all: utils api lambda lambda-control-plane
+all: app-configs k8s-jobs all-images
 
 
 ###############################################
@@ -88,62 +88,6 @@ clean-grid-local-deployment:
 clean-grid-local-project:
 	rm -rf $(GENERATED) $(DIST_DIR) envvars.conf
 
-#############################
-##### building source #######
-#############################
-http-apis:
-	$(MAKE) -C ./source/control_plane/openapi/ all BUILD_TYPE=$(BUILD_TYPE)
-
-utils:
-	$(MAKE) -C ./source/client/python/utils
-
-install-utils: utils
-	pip install --force-reinstall $(PACKAGE_DIR)/utils-*.whl
-
-test-utils:
-	$(MAKE) test -C ./source/client/python/utils
-
-api: http-apis
-	$(MAKE) -C ./source/client/python/api-v0.1
-
-dotnet5.0-htcgrid-api: http-apis
-	$(MAKE) -C ./source/client/csharp/api-v0.1 BUILD_TYPE=$(BUILD_TYPE)
-
-test-api: install-utils
-	$(MAKE) test -C ./source/client/python/api-v0.1
-
-test-agent:
-	$(MAKE) test -C ./source/compute_plane/python/agent
-
-packages: api utils
-
-test-packages: test-api test-utils
-
-test: test-agent test-packages
-
-#############################
-##### building images #######
-#############################
-lambda: utils api
-	$(MAKE) -C ./source/compute_plane/python/agent
-
-$(APPLICATION_NAME)-submitter: utils api
-	$(MAKE) -C ./applications/$(APPLICATION_NAME) client BUILD_TYPE=$(BUILD_TYPE)
-
-lambda-control-plane: utils api lambda-control-plane-submit-tasks lambda-control-plane-get-results lambda-control-plane-cancel-tasks lambda-control-plane-ttl-checker
-
-lambda-control-plane-submit-tasks: utils api
-	$(MAKE) -C ./source/control_plane/python/lambda/submit_tasks
-
-lambda-control-plane-get-results: utils api
-	$(MAKE) -C ./source/control_plane/python/lambda/get_results
-
-lambda-control-plane-cancel-tasks: utils api
-	$(MAKE) -C ./source/control_plane/python/lambda/cancel_tasks
-
-lambda-control-plane-ttl-checker: utils api
-	$(MAKE) -C ./source/control_plane/python/lambda/ttl_checker
-
 ####################################
 ##### building documentation #######
 ####################################
@@ -156,24 +100,6 @@ serve: import
 import: packages $(PACKAGES)
 	pip install --force-reinstall $(PACKAGES)
 
-######################################
-##### upload workload binaries #######
-######################################
-
-upload-dotnet5.0: dotnet50-core $(APPLICATION_NAME)-config-dotnet5.0 $(APPLICATION_NAME)-config-local-dotnet5.0
-	$(MAKE) -C ./applications/$(APPLICATION_NAME) upload BUILD_TYPE=$(BUILD_TYPE)
-
-
-#############################
-##### generate config #######
-#############################
-FILE_HANDLER="$(APPLICATION_NAME)::$(APPLICATION_NAME).Function::FunctionHandler"
-
-$(APPLICATION_NAME)-config-dotnet5.0:
-	@$(MAKE) -C ./applications/apps_core/configurations generated-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
-
-$(APPLICATION_NAME)-config-local-dotnet5.0:
-	@$(MAKE) -C ./applications/apps_core/configurations generated-local-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
 
 ###############################
 ##### generate k8s jobs #######
@@ -183,27 +109,73 @@ k8s-jobs:
 
 
 #############################
-##### path per example ######
+##### generate config #######
 #############################
+FILE_HANDLER="$(APPLICATION_NAME)::$(APPLICATION_NAME).Function::FunctionHandler"
 
-dotnet50-core: all dotnet5.0-htcgrid-api build-armonik-dotnet5.0-api
+app-configs: $(APPLICATION_NAME)-config-dotnet5.0 $(APPLICATION_NAME)-config-local-dotnet5.0
 
-dotnet50-path: upload-dotnet5.0 $(APPLICATION_NAME)-submitter k8s-jobs
+$(APPLICATION_NAME)-config-dotnet5.0:
+	@$(MAKE) -C ./applications/apps_core/configurations generated-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
 
-#############################
-##### C#              #######
-#############################
-# Place client code at the same level as root of project.
-# make build-dotnet5.0 BUILD_TYPE=Debug
-build-dotnet5.0: build-dotnet5.0-api build-htc-grid-dotnet5.0-api build-dotnet5.0-mock-integration upload-dotnet5.0
+$(APPLICATION_NAME)-config-local-dotnet5.0:
+	@$(MAKE) -C ./applications/apps_core/configurations generated-local-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
 
-build-dotnet5.0-api:
+
+########################################
+##### Build Armonik dependencies #######
+########################################
+
+http-apis:
+	$(MAKE) -C ./source/control_plane/openapi/ all BUILD_TYPE=$(BUILD_TYPE)
+
+utils:
+	$(MAKE) -C ./source/client/python/utils
+
+api: http-apis
+	$(MAKE) -C ./source/client/python/api-v0.1
+
+build-dotnet5.0-api: http-apis
 	cd ./generated/csharp/http_api/ && dotnet restore src/HttpApi/ && dotnet build src/HttpApi/ --configuration $(BUILD_TYPE)
 
-build-htc-grid-dotnet5.0-api:
+build-htc-grid-dotnet5.0-api: build-dotnet5.0-api
 	$(MAKE) -C ./source/client/csharp/api-v0.1 all BUILD_TYPE=$(BUILD_TYPE)
 
-build-armonik-dotnet5.0-api:
+build-armonik-dotnet5.0-api: build-htc-grid-dotnet5.0-api
 	$(MAKE) -C ./source/control_plane/csharp/Armonik.api all BUILD_TYPE=$(BUILD_TYPE)
 
+
+
+#############################
+##### building images #######
+#############################
+
+all-images: sample-app-with-dep image-agent lambda-control-plane
+
+sample-app: upload-dotnet5.0-submitter upload-dotnet5.0-server
+
+sample-app-with-dep: build-armonik-dotnet5.0-api sample-app
+
+upload-dotnet5.0-submitter:
+	$(MAKE) -C ./applications/$(APPLICATION_NAME) client BUILD_TYPE=$(BUILD_TYPE)
+
+upload-dotnet5.0-server:
+	$(MAKE) -C ./applications/$(APPLICATION_NAME) upload BUILD_TYPE=$(BUILD_TYPE)
+
+image-agent: utils api
+	$(MAKE) -C ./source/compute_plane/python/agent
+
+lambda-control-plane: lambda-control-plane-submit-tasks lambda-control-plane-get-results lambda-control-plane-cancel-tasks lambda-control-plane-ttl-checker
+
+lambda-control-plane-submit-tasks: utils api
+	$(MAKE) -C ./source/control_plane/python/lambda/submit_tasks
+
+lambda-control-plane-get-results: utils api
+	$(MAKE) -C ./source/control_plane/python/lambda/get_results
+
+lambda-control-plane-cancel-tasks: utils api
+	$(MAKE) -C ./source/control_plane/python/lambda/cancel_tasks
+
+lambda-control-plane-ttl-checker: utils api
+	$(MAKE) -C ./source/control_plane/python/lambda/ttl_checker
 
