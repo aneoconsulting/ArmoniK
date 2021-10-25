@@ -81,13 +81,32 @@ Armonik artifacts include: .NET Core packages, docker images, configuration file
 
 To build and install these in `<project_root>`:
 ```bash
-make dotnet50-path
+make all
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following
 two files:
  * `dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
  * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
+
+To build only the sample application in `<project_root>`:
+```bash
+make sample-app
+```
+To build only the sample application in `<project_root>` with all its dotnet dependencies (API, core packages):
+```bash
+make sample-app-with-dep
+```
+
+To build only the images of the control plane:
+```bash
+make lambda-control-plane
+```
+
+To build only the agent image:
+```bash
+make image-agent
+```
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 1. An encryption key that will be needed during the deployment:
