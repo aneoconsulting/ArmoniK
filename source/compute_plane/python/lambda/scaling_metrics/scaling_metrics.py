@@ -24,6 +24,8 @@ def lambda_handler(event, context):
         queue_name=os.environ['TASKS_QUEUE_NAME'],
         region=region)
     task_pending = task_queue.get_queue_length()
+    if task_pending > 0:
+        task_pending += 1
     print("pending task in DDB = {}".format(task_pending))
     # Create CloudWatch client
     cloudwatch = boto3.client('cloudwatch')
