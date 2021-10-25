@@ -138,14 +138,14 @@ kubectl delete -f ./generated/single-task-dotnet5.0.yaml
 make destroy-dotnet-runtime
 ```
 
-3. Clean Terraform project:
-```bash
-make clean-grid-deployment
-```
-
-4. Delete the KMS key:
+3. Delete the KMS key:
 ```bash
 make delete-grid-state
+```
+
+4. Clean Terraform project:
+```bash
+make clean-grid-deployment
 ```
 
 5. Clean binaries and generated files:
