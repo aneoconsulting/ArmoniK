@@ -19,15 +19,15 @@ all: push
 build: Dockerfile Dockerfile_Debug
 ifneq ($(ARMONIK_DOCKER_REGISTRY),)
 ifeq ($(BUILD_TYPE), Debug)
-	docker build ../ -t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile_Debug
+	docker build ../ -t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile_Debug
 else
-	docker build ../ -t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
+	docker build ../ -t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile
 endif
 else
 ifeq ($(BUILD_TYPE), Debug)
-	docker build ../ -t $(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile_Debug
+	docker build ../ -t $(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile_Debug
 else
-	docker build ../ -t $(SUBMITTER_IMAGE_NAME):$(TAG) -f ./Dockerfile
+	docker build ../ -t $(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile
 endif
 endif
 
