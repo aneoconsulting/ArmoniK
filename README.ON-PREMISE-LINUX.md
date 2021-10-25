@@ -123,6 +123,23 @@ To build only the agent image:
 make image-agent
 ```
 
+## Select the sample application to build
+
+The selection of the sample to compile is made via the variable `ARMONIK_APPLICATION_NAME`.
+It can be added in the configuration file with, for instance :
+```bash
+export ARMONIK_APPLICATION_NAME=ArmonikSamples
+```
+This is its default value.
+It can also be passed to the different make commands such as :
+```bash
+make sample-app ARMONIK_APPLICATION_NAME=ArmonikSamples
+```
+or
+```bash
+make all ARMONIK_APPLICATION_NAME=ArmonikSamples
+```
+
 ### Debug mode
 To build in `debug` mode, you execute this command:
 ```bash

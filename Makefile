@@ -7,8 +7,8 @@ export SUBMITTER_IMAGE_NAME=submitter
 export GENERATED=$(shell pwd)/generated
 export DIST_DIR=$(shell pwd)/dist
 export ARMONIK_CONFIG_TYPE?=CUSTOM
+export ARMONIK_APPLICATION_NAME?=ArmonikSamples
 
-APPLICATION_NAME?=ArmonikSamples
 BUILD_TYPE?=Release
 PACKAGE_DIR:=./dist
 PACKAGES:= $(wildcard $(PACKAGE_DIR)/*.whl)
@@ -111,14 +111,14 @@ k8s-jobs:
 #############################
 ##### generate config #######
 #############################
-FILE_HANDLER="$(APPLICATION_NAME)::$(APPLICATION_NAME).Function::FunctionHandler"
+FILE_HANDLER="$(ARMONIK_APPLICATION_NAME)::$(ARMONIK_APPLICATION_NAME).Function::FunctionHandler"
 
-app-configs: $(APPLICATION_NAME)-config-dotnet5.0 $(APPLICATION_NAME)-config-local-dotnet5.0
+app-configs: $(ARMONIK_APPLICATION_NAME)-config-dotnet5.0 $(ARMONIK_APPLICATION_NAME)-config-local-dotnet5.0
 
-$(APPLICATION_NAME)-config-dotnet5.0:
+$(ARMONIK_APPLICATION_NAME)-config-dotnet5.0:
 	@$(MAKE) -C ./applications/apps_core/configurations generated-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
 
-$(APPLICATION_NAME)-config-local-dotnet5.0:
+$(ARMONIK_APPLICATION_NAME)-config-local-dotnet5.0:
 	@$(MAKE) -C ./applications/apps_core/configurations generated-local-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
 
 
@@ -157,10 +157,10 @@ sample-app: upload-dotnet5.0-submitter upload-dotnet5.0-server
 sample-app-with-dep: build-armonik-dotnet5.0-api sample-app
 
 upload-dotnet5.0-submitter:
-	$(MAKE) -C ./applications/$(APPLICATION_NAME) client BUILD_TYPE=$(BUILD_TYPE)
+	$(MAKE) -C ./applications/$(ARMONIK_APPLICATION_NAME) client BUILD_TYPE=$(BUILD_TYPE)
 
 upload-dotnet5.0-server:
-	$(MAKE) -C ./applications/$(APPLICATION_NAME) upload BUILD_TYPE=$(BUILD_TYPE)
+	$(MAKE) -C ./applications/$(ARMONIK_APPLICATION_NAME) upload BUILD_TYPE=$(BUILD_TYPE)
 
 image-agent: utils api
 	$(MAKE) -C ./source/compute_plane/python/agent

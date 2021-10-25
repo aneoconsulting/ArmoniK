@@ -107,6 +107,22 @@ To build only the agent image:
 ```bash
 make image-agent
 ```
+## Select the sample application to build
+
+The selection of the sample to compile is made via the variable `ARMONIK_APPLICATION_NAME`.
+It can be added in the configuration file with, for instance :
+```bash
+export ARMONIK_APPLICATION_NAME=ArmonikSamples
+```
+This is its default value.
+It can also be passed to the different make commands such as :
+```bash
+make sample-app ARMONIK_APPLICATION_NAME=ArmonikSamples
+```
+or
+```bash
+make all ARMONIK_APPLICATION_NAME=ArmonikSamples
+```
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 1. An encryption key that will be needed during the deployment:
