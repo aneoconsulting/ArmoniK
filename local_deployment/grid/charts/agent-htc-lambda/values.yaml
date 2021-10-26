@@ -75,7 +75,7 @@ resourcesLambdaServer:
     cpu: 920m
     memory: 3966Mi
   requests:
-    cpu: 700m
+    cpu: 50m
     memory: 3966Mi
 
 nodeSelector: {}
