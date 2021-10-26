@@ -434,6 +434,32 @@ stages:
           docker push dockerhubaneo/agent:$(TAGVar)
         displayName: Build and Push agent to DockerHub
 
+  - job: BuildDockerImage
+    displayName: Build Docker Image
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - script: |
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+        displayName: Install Docker
+      - script: |
+          docker build -t dockerhubaneo/armonik:$(TAGVar)-dev --build-arg TAG=$(TAGVar) --build-arg MODE=dev --build-arg DOCKER_REGISTRY=  . 
+        displayName: Build Docker image  
+      - script: |
+          docker build -t dockerhubaneo/armonik:$(TAGVar) --build-arg TAG=$(TAGVar) .
+        displayName: Build Docker image   
+      - script: |
+          set -e
+          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
+          docker push dockerhubaneo/armonik:$(TAGVar)-dev
+          docker push dockerhubaneo/armonik:$(TAGVar)
+        displayName:  Push armonik to DockerHub  
+       
+      
+
 - stage: LocalDeployment
   displayName: Local Deployment with pull from dockerhub
   dependsOn: LocalBuildPush
@@ -453,9 +479,7 @@ stages:
         displayName: Install Helm
       - script: |
           set -e
-          md5sum /usr/local/bin/k3s || true
           sudo curl -fsSL https://github.com/k3s-io/k3s/releases/latest/download/k3s -o /usr/local/bin/k3s
-          md5sum /usr/local/bin/k3s
           sudo chmod 755 /usr/local/bin/k3s
           sudo ln -s k3s /usr/local/bin/kubectl
           sudo ln -s k3s /usr/local/bin/crictl
@@ -466,12 +490,14 @@ stages:
           cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
         displayName: Install K3s
       - script : |
+          set -e
           sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
           sudo curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
           sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
           sudo apt-get update && sudo apt-get install terraform
         displayName: Install terraform
       - script : |
+          set -e
           sudo  apt update && sudo apt install -y docker.io make
           sudo chown :sudo /var/run/docker.sock
           cp configure/onpremise-linux-config.conf ./envvars.conf
@@ -491,3 +517,32 @@ stages:
           kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
           cd local_deployment/grid/terraform && terraform destroy -auto-approve -var-file ../../../generated/local_dotnet5.0_runtime_grid_config.json
 
+- stage: Dockertest
+  displayName: Local Deployment / Test docker
+  jobs:
+  - job: RunImageDockerDev
+    displayName: Run Image Docker Dev 
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - script: |
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          docker run --rm --privileged dockerhubaneo/armonik:$(TAGVar)-dev sh -c 'make all && make init-grid-local-deployment && (cd local_deployment/grid/terraform && terraform apply -auto-approve -var-file ../../../generated/local_dotnet5.0_runtime_grid_config.json) && kubectl apply -f ./generated/local-single-task-dotnet5.0.yaml && sleep 10 && kubectl logs job/single-task -f && kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml'  
+        displayName: Run Docker image 
+
+  - job: PullImageDocker
+    displayName: Run Image Docker user
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - script: |
+          set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          docker run --rm --privileged dockerhubaneo/armonik:$(TAGVar) sh -c 'make init-grid-local-deployment && (cd local_deployment/grid/terraform && terraform apply -auto-approve -var-file ../../../generated/local_dotnet5.0_runtime_grid_config.json) && docker pull dockerhubaneo/submitter:$(TAGVar) && kubectl apply -f ./generated/local-single-task-dotnet5.0.yaml && sleep 10 && kubectl logs job/single-task -f && kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml'  
+        displayName: Run Docker image       
+    
