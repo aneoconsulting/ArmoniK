@@ -179,3 +179,25 @@ resource "aws_iam_role_policy_attachment" "lambda_metrics_data_attachment" {
   policy_arn = aws_iam_policy.lambda_metrics_data_policy.arn
 }
 
+data "aws_iam_policy_document" "decrypt_object_lambda_scaling" {
+    statement {
+      sid= "KMSAccess"
+      actions = [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+      ]
+      effect = "Allow"
+      resources = [var.kms_key_arn]
+    }
+}
+
+resource "aws_iam_policy" "decrypt_object_lambda_scaling" {
+  name_prefix = "decrypt-lambda-scaling"
+  description = "Policy for alowing decryption of encrypted value"
+  policy      = data.aws_iam_policy_document.decrypt_object_lambda_scaling.json
+}
+
+resource "aws_iam_role_policy_attachment" "decrypt_object_submit_task_lambda_scaling" {
+  role       = aws_iam_role.role_lambda_metrics.name
+  policy_arn = aws_iam_policy.decrypt_object_lambda_scaling.arn
+}

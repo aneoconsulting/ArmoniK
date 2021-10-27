@@ -122,6 +122,39 @@ class StateTableDDB:
             logging.error("Could not read row for task [{}] from Status Table. Exception: {}".format(task_id, e))
             raise e
 
+
+    def get_running_tasks_number(self):
+        """
+        Returns:
+            Returns the number of running tasks
+        """
+        count = 0
+        starting_state_id = random.randint(0, self.MAX_STATE_PARTITIONS - 1)
+        running_tasks = 0
+        while count < self.MAX_STATE_PARTITIONS:
+            partition_to_check = self.__get_state_partition_at_index(
+                starting_state_id % self.MAX_STATE_PARTITIONS)
+
+
+            running_tasks += self.__get_running_tasks_number_for_partition(partition_to_check)
+
+            count += 1
+            starting_state_id += 1
+        return running_tasks
+
+    def __get_running_tasks_number_for_partition(self, state_partition):
+        try:
+            response = self.state_table.query(
+                IndexName="gsi_ttl_index",
+                KeyConditionExpression=Key('task_status').eq(self.__make_task_state_from_state_and_partition(TASK_STATUS_PROCESSING, state_partition)),
+                Select='COUNT'
+            )
+
+            return response['Count']
+        except ClientError as e:
+            logging.error("Cannot retreive running tasks : {}".format(e))
+            raise e
+
     ###############################################################################################
     ## TTL Lambda #################################################################################
     ###############################################################################################

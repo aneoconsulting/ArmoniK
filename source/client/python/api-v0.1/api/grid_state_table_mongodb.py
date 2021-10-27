@@ -85,6 +85,23 @@ class MongoDBStateTableDDB:
             )
             raise e
 
+    def get_running_tasks_number(self):
+        """
+        Returns:
+            Returns a list of running tasks
+        """
+
+        try:
+            response = self.state_table.find(
+                {"task_status": {"$regex": TASK_STATUS_PROCESSING + ".*"}}
+            )
+
+            return len(list(response))
+
+        except Exception as e:
+            logging.error("Could not get running tasks. Exception: {}".format(e))
+            raise e
+
     ##########################################################################
     ## TTL Lambda ############################################################
     ##########################################################################
@@ -178,7 +195,11 @@ class MongoDBStateTableDDB:
                 }
             )
 
-            print("Partition: {} expired tasks: {}".format(state_partition, list(response)))
+            print(
+                "Partition: {} expired tasks: {}".format(
+                    state_partition, list(response)
+                )
+            )
 
             return list(response)[: self.RETRIEVE_EXPIRED_TASKS_LIMIT]
         except Exception as e:
