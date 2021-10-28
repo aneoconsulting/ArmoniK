@@ -2,6 +2,9 @@ BUILD_TYPE?=Release
 export ARMONIK_TAG
 export ARMONIK_DOCKER_REGISTRY
 
+DOCKER_IMG=$(shell if [ "$(ARMONIK_DOCKER_REGISTRY)" != "" ]; then echo "$(ARMONIK_DOCKER_REGISTRY)/lambda"; else echo "lambda"; fi)
+DOCKERFILE=$(shell if [ "$(BUILD_TYPE)" == "Debug" ]; then echo "./Dockerfile_Debug"; else echo "./Dockerfile"; fi)
+
 .PHONY: clean
 
 all: build
@@ -17,11 +20,7 @@ build: .
         -p:PublishReadyToRun=true
 
 image: build
-ifneq ($(ARMONIK_DOCKER_REGISTRY),)
-	docker build $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Server -t $(ARMONIK_DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG) -f ./Dockerfile
-else
-	docker build $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Server -t lambda:$(ARMONIK_TAG) -f ./Dockerfile
-endif
+	docker build $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Server -t $(DOCKER_IMG):$(ARMONIK_TAG) -f $(DOCKERFILE)
 
 
 upload: image

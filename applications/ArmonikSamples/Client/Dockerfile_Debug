@@ -1,49 +1,11 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim as base
-FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim as build
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim
 
-ARG HTCGRID_PACKAGE
-ARG HTTPAPI_PACKAGE
-ARG ARMONIKAPI_PACKAGE
-
-
-ENV HTCGRID_PACKAGE=${HTCGRID_PACKAGE}
-ENV HTTPAPI_PACKAGE=${HTTPAPI_PACKAGE}
-ENV ARMONIKAPI_PACKAGE=${ARMONIKAPI_PACKAGE}
-
-
-RUN apt-get update -y; apt-get install -y build-essential
-WORKDIR /app/sample
-RUN mkdir -p ./lib/dotnet5.0
-
-#Since Docker can't access to file ouside working path.
-#Need copy nupkg in dist directory
-COPY ./dist/${HTCGRID_PACKAGE} ./lib/dotnet5.0
-COPY ./dist/${HTTPAPI_PACKAGE} ./lib/dotnet5.0
-COPY ./dist/${ARMONIKAPI_PACKAGE} ./lib/dotnet5.0
-
-#Copy client project to be build in docker container
-COPY ./Client ./Client
-
-RUN ls ./lib
-RUN ls -la ./Client/nuget.config
-ENV ARMONIK_NUGET_REPOS=/app/sample/lib/dotnet5.0
-RUN echo $ARMONIK_NUGET_REPOS
-RUN ls $ARMONIK_NUGET_REPOS
-WORKDIR /app/sample/Client
-RUN dotnet restore
-RUN dotnet build "Client.csproj" --configuration Debug
-
-FROM build AS publish
 RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
-RUN dotnet publish "Client.csproj" \
-            --configuration Debug \
-            --runtime linux-x64  \
-            --self-contained false \
-            --output /app/publish \
-            -p:PublishReadyToRun=true
 
 ENV ARMONIK_DEBUG_WAIT_TASK=90
 ENV ARMONIK_DEBUG_WAIT_CLIENT=90
 
+COPY . /app/publish
 WORKDIR /app/publish
+
 ENTRYPOINT ["dotnet"]
