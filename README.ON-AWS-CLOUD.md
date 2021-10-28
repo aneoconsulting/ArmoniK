@@ -81,7 +81,7 @@ Armonik artifacts include: .NET Core packages, docker images, configuration file
 
 To build and install these in `<project_root>`:
 ```bash
-make all
+make build-all-infra
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following
@@ -95,18 +95,9 @@ make sample-app
 ```
 To build only the sample application in `<project_root>` with all its dotnet dependencies (API, core packages):
 ```bash
-make sample-app-with-dep
+make armonik-full
 ```
 
-To build only the images of the control plane:
-```bash
-make lambda-control-plane
-```
-
-To build only the agent image:
-```bash
-make image-agent
-```
 ## Select the sample application to build
 
 The selection of the sample to compile is made via the variable `ARMONIK_APPLICATION_NAME`.

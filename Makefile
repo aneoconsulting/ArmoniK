@@ -15,8 +15,8 @@ PACKAGES:= $(wildcard $(PACKAGE_DIR)/*.whl)
 
 .PHONY: all utils api lambda submitter packages test test-api test-utils test-agent lambda-control-plane
 
-all: app-configs k8s-jobs all-images
-
+all: build-all-infra
+build-all-infra: app-configs k8s-jobs all-images
 
 ###############################################
 #######     Manage HTC grid states     ########
@@ -154,7 +154,7 @@ all-images: sample-app-with-dep image-agent lambda-control-plane
 
 sample-app: upload-dotnet5.0-submitter upload-dotnet5.0-server
 
-sample-app-with-dep: build-armonik-dotnet5.0-api sample-app
+armonik-full: build-armonik-dotnet5.0-api sample-app
 
 upload-dotnet5.0-submitter:
 	$(MAKE) -C ./applications/$(ARMONIK_APPLICATION_NAME) client BUILD_TYPE=$(BUILD_TYPE)

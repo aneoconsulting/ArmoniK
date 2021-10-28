@@ -31,9 +31,14 @@ make -C source/control_plane/python/lambda/submit_tasks lambda-submit-tasks
 make -C source/control_plane/python/lambda/cancel_tasks lambda-cancel-tasks
 ```
 
-Re-comile client only (without dependencies)
+Re-compile all lambda
 ```bash
-make -C examples/mock_integration/Client/ build
+make lambda-control-plane
+```
+
+Re-compile agent image
+```bash
+make image-agent
 ```
 
 ## Debug C# container with Visual Studio Code
