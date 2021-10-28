@@ -150,7 +150,7 @@ build-armonik-dotnet5.0-api: build-htc-grid-dotnet5.0-api
 ##### building images #######
 #############################
 
-all-images: sample-app-with-dep image-agent lambda-control-plane
+all-images: armonik-full image-agent lambda-control-plane
 
 sample-app: upload-dotnet5.0-submitter upload-dotnet5.0-server
 
