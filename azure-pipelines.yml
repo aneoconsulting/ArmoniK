@@ -218,7 +218,7 @@ stages:
           set -e
           sudo  apt update && sudo apt install -y docker.io
           sudo chown :sudo /var/run/docker.sock
-          docker build -f applications/ArmonikSamples/Client/Dockerfile.CI -t dockerhubaneo/submitter:$(TAGVar) $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
+          docker build -f applications/ArmonikSamples/Client/Dockerfile -t dockerhubaneo/submitter:$(TAGVar) $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
           echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
           docker push dockerhubaneo/submitter:$(TAGVar)
         displayName: Build and Push Submitter to DockerHub
@@ -277,7 +277,7 @@ stages:
           set -e
           sudo  apt update && sudo apt install -y docker.io
           sudo chown :sudo /var/run/docker.sock
-          docker build -f applications/ArmonikSamples/packages/Dockerfile.CI -t dockerhubaneo/lambda:$(TAGVar) $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
+          docker build -f applications/ArmonikSamples/packages/Dockerfile -t dockerhubaneo/lambda:$(TAGVar) $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
           echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
           docker push dockerhubaneo/lambda:$(TAGVar)
         displayName: Build and Push lambda to DockerHub
