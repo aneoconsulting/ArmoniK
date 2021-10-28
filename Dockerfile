@@ -98,12 +98,17 @@ ENV ARMONIK_IMAGE_PULL_POLICY=IfNotPresent
 ARG DOCKER_REGISTRY=dockerhubaneo
 ARG BUILD_ID=XXXX
 ARG TAG=armonik-dev-${BUILD_ID}
+ARG BUILD_TYPE=Release
 
+ENV ARMONIK_DOCKER_MODE=${MODE}
 ENV ARMONIK_TAG=${TAG}
 ENV ARMONIK_DOCKER_REGISTRY=${DOCKER_REGISTRY}
+ENV BUILD_TYPE=${BUILD_TYPE}
 
-RUN if [ -n "$DOCKER_REGISTRY" ]; then \
+RUN if [ "${MODE}" != dev ]; then \
       make ArmonikSamples-config-local-dotnet5.0 && \
       make k8s-jobs ; \
     fi
 
+ARG APP=ArmonikSamples
+ENV ARMONIK_APPLICATION_NAME=${APP}

@@ -7,23 +7,66 @@
 
 # Build Docker image <a name="build-docker-image"></a>
 
+There is two modes for the image: the user image, and the dev image.
+The user image goal is to pull pod images during the deployment, while the dev image is meant to build locally (inside the container) the pod images, before deployement.
+
+## Build arguments
+
+There are a few arguments to the build:
+- `MODE`: which mode to use: `user` or `dev`. default = `user`
+- `DOCKER_REGISTRY`: tell which registry to use when pulling. If empty the images must be built locally. default = `dockerhubaneo`
+- `BUILD_ID`: suffix to the tag of docker images for pods. default = `XXXX`
+- `TAG`: tag of of docker images for pods. default = `armonik-dev-$BUILD_ID`
+- `BUILD_TYPE`: Either `Release` or `Debug`. default = `Release`
+- `APP`: Application to build. default = `ArmonikSamples`
+
+## User image
+
 ```bash
-docker build -t armonik:dev --build-arg BUILD_ID=XXXX .
+docker build -t armonik:user --build-arg MODE=user --build-arg BUILD_ID=XXXX .
 ```
 
 Where XXXX is the build id corresponding to the current version of the repo
 
+
+## Dev image
+
+```bash
+docker build -t armonik:dev --build-arg MODE=dev --build-arg DOCKER_REGISTRY= .
+```
+
 # Start Docker image <a name="start-docker-image"></a>
 
 ```bash
-docker run -it --rm --privileged armonik:dev bash
+docker run -it --rm --privileged armonik:user bash
 ```
 
 If you don't provide the `bash` command, the container will run with no shell and you would need to `docker exec` within the container.
 The container has currently no volume, so any modification (in particular the build) will be lost when the container is terminated.
 
+# Build Armonik artifacts <a name="build-armonik-artifacts"></a>
+
+Building artifacts is required (and possible) only in the dev mode.
+
+Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
+
+To build and install these in `/armonik`:
+```bash
+make dotnet50-path
+```
+
+A folder named `generated` will be created at `<project_root>`. This folder should contain the following
+two files:
+ * `local_dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
+ * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
+
+
+Those files are already created for the user mode during image build.
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
+
+The deployement procedure is the same for both modes (user and dev).
+
 1. Run the following to initialize the Terraform environment:
    ```bash
    make init-grid-local-deployment
