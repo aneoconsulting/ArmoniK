@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 
 
 public class ClientPayload {
-    public string taskType {get;set;}
+    public int taskType {get;set;}
     public List<int> numbers{get;set;}
     public int result{get;set;}
 
@@ -20,7 +20,7 @@ public class ClientPayload {
     {
         if (payload == null || payload.Length == 0)
         {
-            return new ClientPayload() {taskType = "No data", numbers = new List<int>(), result = 0};
+            return new ClientPayload() {taskType = 0, numbers = new List<int>(), result = 0};
         }
         var str = System.Text.Encoding.ASCII.GetString(payload);
         return JsonSerializer.Deserialize<ClientPayload>(Base64ToString(str));

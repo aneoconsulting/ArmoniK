@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Collections;
 using System.IO;
 using System.Text.Json;
+using System.Text;
 using System.Threading;
 using System.Linq;
+using System.Diagnostics;
 
 using HTCGrid;
 using Armonik.sdk;
@@ -62,18 +64,84 @@ namespace HtcClient
 
             dataClient.ConnectDB();
 
-            List<int> numbers = new List<int>() {1, 2, 3};
-            string taskType = "Compute";
+            ClientStartup1(dataClient, htcGridClient);
+            ClientStartup2(dataClient, htcGridClient);
+        }
 
-            var clientPaylaod = new ClientPayload(){numbers = numbers, taskType = taskType};
-
+        public static void ClientStartup1(HtcDataClient dataClient, HtcGridClient htcGridClient)
+        {
+            List<int> numbers = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var clientPaylaod = new ClientPayload() { numbers = numbers, taskType = 1 };
             string taskId = htcGridClient.SubmitTask(clientPaylaod.serialize());
-            htcGridClient.WaitCompletion(taskId);
 
-            byte [] output = dataClient.GetData(taskId);
+            htcGridClient.WaitCompletion(taskId);
+            byte[] output = dataClient.GetData(taskId);
             int result = BitConverter.ToInt32(output, 0);
 
-            Console.WriteLine($"output result : {result}");
+            Logger.Log($"output result : {result}");
+        }
+
+        public static void ClientStartup2(HtcDataClient dataClient, HtcGridClient htcGridClient)
+        {
+            List<int> numbers = new List<int>() { 2 };
+            var clientPayload = new ClientPayload() { numbers = numbers, taskType = 2 };
+            byte[] payload = clientPayload.serialize();
+            StringBuilder outputMessages = new StringBuilder();
+            outputMessages.AppendLine("In this serie of samples we're creating N jobs of one task.");
+            outputMessages.AppendLine(@"In the loop we have :
+    1 sending job of one task
+    2 wait for result
+    3 get associated payload");
+            N_Jobs_of_1_Task(dataClient, htcGridClient, payload, 1, outputMessages);
+            N_Jobs_of_1_Task(dataClient, htcGridClient, payload, 10, outputMessages);
+            N_Jobs_of_1_Task(dataClient, htcGridClient, payload, 100, outputMessages);
+            N_Jobs_of_1_Task(dataClient, htcGridClient, payload, 200, outputMessages);
+            N_Jobs_of_1_Task(dataClient, htcGridClient, payload, 500, outputMessages);
+
+            outputMessages.AppendLine("In this serie of samples we're creating 1 job of N tasks.");
+
+            _1_Job_of_N_Tasks(dataClient, htcGridClient, payload, 1, outputMessages);
+            _1_Job_of_N_Tasks(dataClient, htcGridClient, payload, 10, outputMessages);
+            _1_Job_of_N_Tasks(dataClient, htcGridClient, payload, 100, outputMessages);
+            _1_Job_of_N_Tasks(dataClient, htcGridClient, payload, 200, outputMessages);
+            _1_Job_of_N_Tasks(dataClient, htcGridClient, payload, 500, outputMessages);
+
+            Logger.Log(outputMessages.ToString());
+        }
+
+        private static void N_Jobs_of_1_Task(HtcDataClient dataClient, HtcGridClient htcGridClient, byte[] payload, int nbTasks, StringBuilder outputMessages)
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            int finalResult = 0;
+            for (int i = 0; i < nbTasks; i++)
+            {
+                string taskId = htcGridClient.SubmitTask(payload);
+                htcGridClient.WaitCompletion(taskId);
+                byte[] taskResult = dataClient.GetData(taskId);
+                finalResult += BitConverter.ToInt32(taskResult);
+            }
+            long elapsedMilliseconds = sw.ElapsedMilliseconds;
+            outputMessages.AppendLine($"Client called {nbTasks} jobs of one task in {elapsedMilliseconds} ms agregated result = {finalResult}");
+        }
+
+        private static void _1_Job_of_N_Tasks(HtcDataClient dataClient, HtcGridClient htcGridClient, byte[] payload, int nbTasks, StringBuilder outputMessages)
+        {
+            List<byte[]> payloads = new List<byte[]>(nbTasks);
+            for (int i = 0; i < nbTasks; i++)
+            {
+                payloads.Add(payload);
+            }
+            Stopwatch sw = Stopwatch.StartNew();
+            int finalResult = 0;
+            var taskIds = htcGridClient.SubmitTasks(payloads);
+            foreach (var taskId in taskIds)
+            {
+                htcGridClient.WaitCompletion(taskId);
+                byte[] taskResult = dataClient.GetData(taskId);
+                finalResult += BitConverter.ToInt32(taskResult);
+            }
+            long elapsedMilliseconds = sw.ElapsedMilliseconds;
+            outputMessages.AppendLine($"Client called {nbTasks} tasks in {elapsedMilliseconds} ms agregated result = {finalResult}");
         }
     }
 }

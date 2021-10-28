@@ -20,7 +20,7 @@ namespace ArmonikSamples
             //END USER PLEASE FIXME
         }
 
-        public void Compute(TaskContext taskContext, ClientPayload clientPayload)
+        public void ComputeSquare(TaskContext taskContext, ClientPayload clientPayload)
         {
             if (clientPayload.numbers.Count == 0) return; // Nothing to do
 
@@ -38,6 +38,7 @@ namespace ArmonikSamples
                 var subTaskPaylaod = new ClientPayload();
                 clientPayload.numbers.RemoveAt(0);
                 subTaskPaylaod.numbers = clientPayload.numbers;
+                subTaskPaylaod.taskType = clientPayload.taskType;
 
                 var subTaskId = this.SubmitTask(subTaskPaylaod.serialize());
 
@@ -50,11 +51,28 @@ namespace ArmonikSamples
             }
         }
 
+        public void ComputeCube(TaskContext taskContext, ClientPayload clientPayload)
+        {
+            int value = clientPayload.numbers[0] * clientPayload.numbers[0] * clientPayload.numbers[0];
+            writeTaskOutput(taskContext.TaskId, BitConverter.GetBytes(value));
+        }
+
         public override void OnInvoke(SessionContext sessionContext, TaskContext taskContext)
         {
             var clientPayload = ClientPayload.deserialize(taskContext.TaskInput);
 
-            Compute(taskContext, clientPayload);
+            if (clientPayload.taskType == 1)
+            {
+                ComputeSquare(taskContext, clientPayload);
+            }
+            else if (clientPayload.taskType == 2)
+            {
+                ComputeCube(taskContext, clientPayload);
+            }
+            else
+            {
+                Logger.Log<ServiceContainer>($"Task type {clientPayload.taskType}");
+            }
         }
 
         public override void OnSessionLeave(SessionContext sessionContext)
