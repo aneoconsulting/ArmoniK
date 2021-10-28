@@ -32,6 +32,11 @@ def lambda_handler(event, context):
 
     task_pending = task_queue.get_queue_length()
     task_running = state_table.get_running_tasks_number()
+    npods = 0
+    if task_pending > task_running:
+        npods = 2 * task_running + 1
+    else:
+        npods = task_pending + task_running
     print("pending task in Queue = {}".format(task_pending))
     print("running task in DB = {}".format(task_running))
     # Create CloudWatch client
@@ -50,7 +55,7 @@ def lambda_handler(event, context):
                 ],
                 'Unit': 'Count',
                 'StorageResolution': period,
-                'Value': task_pending + task_running,
+                'Value': npods,
 
             },
         ],
