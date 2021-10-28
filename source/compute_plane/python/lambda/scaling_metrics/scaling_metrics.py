@@ -7,6 +7,7 @@ import time
 import os
 
 from api.queue_manager import queue_manager
+from api.state_table_manager import state_table_manager
 
 # TODO - retrieve the endpoint url from Terraform
 region = os.environ.get('REGION', None)
@@ -23,8 +24,21 @@ def lambda_handler(event, context):
         endpoint_url=os.environ["QUEUE_ENDPOINT_URL"],
         queue_name=os.environ['TASKS_QUEUE_NAME'],
         region=region)
+    state_table = state_table_manager(grid_state_table_service=os.environ.get('TASKS_STATUS_TABLE_SERVICE', None),
+                                  grid_state_table_config=os.environ.get('TASKS_STATUS_TABLE_CONFIG', None),
+                                  tasks_state_table_name=os.environ.get('TASKS_STATUS_TABLE_NAME', None),
+                                  endpoint_url=os.environ.get('DB_ENDPOINT_URL', None),
+                                  region=os.environ.get('REGION', None))
+
     task_pending = task_queue.get_queue_length()
-    print("pending task in DDB = {}".format(task_pending))
+    task_running = state_table.get_running_tasks_number()
+    npods = 0
+    if task_pending > task_running:
+        npods = 2 * task_running + 1
+    else:
+        npods = task_pending + task_running
+    print("pending task in Queue = {}".format(task_pending))
+    print("running task in DB = {}".format(task_running))
     # Create CloudWatch client
     cloudwatch = boto3.client('cloudwatch')
     period = int(os.environ["PERIOD"])
@@ -41,7 +55,7 @@ def lambda_handler(event, context):
                 ],
                 'Unit': 'Count',
                 'StorageResolution': period,
-                'Value': task_pending,
+                'Value': npods,
 
             },
         ],

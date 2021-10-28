@@ -1,7 +1,5 @@
 FROM python:3.7.7-slim-buster
 
-RUN apt-get update ; apt-get install -y binutils ; apt-get install -y procps
-
 RUN mkdir -p /dist
 RUN mkdir -p /app/agent
 
@@ -11,8 +9,6 @@ COPY ./source/compute_plane/python/agent/requirements.txt /app/agent/
 WORKDIR /app/agent
 
 RUN pip install -r requirements.txt
-
-WORKDIR /app/agent
 ADD ./source/compute_plane/python/agent/agent.py .
 
 

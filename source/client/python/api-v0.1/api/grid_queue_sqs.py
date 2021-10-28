@@ -13,13 +13,12 @@ logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcN
 
 class QueueSQS:
 
-
     def __init__(self, endpoint_url, queue_name, region):
         # Connection + Authentication
 
         logging.info("Initializing QueueSQS: {} {} {}".format(
             endpoint_url, queue_name, region)
-            )
+        )
 
         self.endpoint_url = endpoint_url
 
@@ -34,9 +33,11 @@ class QueueSQS:
             self.sqs_client = boto3.client('sqs', region_name=region, endpoint_url=endpoint_url)
 
         except Exception as e:
-            logging.error("QueueSQS: cannot connect to queue_name [{}], endpoint_url [{}] region [{}] : {}".format(queue_name, endpoint_url, region, e))
+            logging.error(
+                "QueueSQS: cannot connect to queue_name [{}], endpoint_url [{}] region [{}] : {}".format(queue_name,
+                                                                                                         endpoint_url,
+                                                                                                         region, e))
             raise e
-
 
     # Single write &  Batch write
     def send_messages(self, message_bodies=[], message_attributes={}):
@@ -64,17 +65,16 @@ class QueueSQS:
 
         messages = self.sqs_queue.receive_messages(MaxNumberOfMessages=1, WaitTimeSeconds=wait_time_sec)
 
-
         if len(messages) == 0:
             # No messages were returned
             return {}
 
         return {
-                "body": messages[0].body,
-                "properties": {
-                    "message_handle_id": messages[0].receipt_handle
-                }
+            "body": messages[0].body,
+            "properties": {
+                "message_handle_id": messages[0].receipt_handle
             }
+        }
 
     def delete_message(self, message_handle_id, task_priority=None):
         """Deletes message from the queue by the message_handle_id.
@@ -124,11 +124,14 @@ class QueueSQS:
             logging.error("Cannot reset VTO for message {} : {}".format(message_handle_id, e))
             raise e
 
-
         return None
-
 
     def get_queue_length(self):
         queue_length = int(self.sqs_queue.attributes.get('ApproximateNumberOfMessages'))
         # print(f"Number of messages in the queue {queue_length}")
         return queue_length
+
+    def get_inflight_length(self):
+        inflight_length = int(self.sqs_queue.attributes.get('ApproximateNumberOfMessagesNotVisible'))
+        # print(f"Number of messages in the queue {queue_length}")
+        return inflight_length

@@ -263,7 +263,7 @@ variable "min_htc_agents" {
 
 variable "htc_agent_target_value" {
   description = "target value for the load on the system"
-  default = 2
+  default = 1
 }
 
 variable "graceful_termination_delay" {

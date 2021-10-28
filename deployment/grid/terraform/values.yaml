@@ -1,7 +1,7 @@
 fullnameOverride: htc-agent
 imageAgent:
   pullPolicy: IfNotPresent
-  repository: 125796369274.dkr.ecr.eu-west-1.amazonaws.com/awshpc-lambda
+  repository: 125796369274.dkr.ecr.eu-west-1.amazonaws.com/agent
   version: dotnet-support
 imageGetLayer:
   pullPolicy: IfNotPresent

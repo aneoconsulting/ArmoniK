@@ -16,7 +16,6 @@ logging.basicConfig(format="%(asctime)s - %(levelname)s - %(filename)s - %(funcN
 
 class QueuePrioritySQS:
 
-
     def __init__(self, endpoint_url, grid_queue_config, first_queue_name, region):
         # Connection + Authentication
 
@@ -35,7 +34,6 @@ class QueuePrioritySQS:
 
             self.priority_to_queue_lookup[priority] = QueueSQS(endpoint_url, queue_name, region)
 
-
     # Single write &  Batch write
     def send_messages(self, message_bodies=[], message_attributes={}):
 
@@ -47,7 +45,6 @@ class QueuePrioritySQS:
         response = queue.send_messages(message_bodies, message_attributes)
 
         return response
-
 
     def receive_message(self, wait_time_sec=0):
         # By default priority queues does not perform long polling as it need to
@@ -98,8 +95,8 @@ class QueuePrioritySQS:
 
         else:
             raise Exception("Can not find message to be deleted from SQS message_handle_id [{}] priority [{}]".format(
-                            message_handle_id, task_priority)
-                            )
+                message_handle_id, task_priority)
+            )
         return queue
 
     def delete_message(self, message_handle_id, task_priority=None):
@@ -114,9 +111,9 @@ class QueuePrioritySQS:
             return res
 
         except Exception as e:
-            logging.error("Cannot delete message_handle_id [{}] priority [{}] : {}".format(message_handle_id, task_priority, e))
+            logging.error(
+                "Cannot delete message_handle_id [{}] priority [{}] : {}".format(message_handle_id, task_priority, e))
             raise e
-
 
     def change_visibility(self, message_handle_id, visibility_timeout_sec, task_priority=None):
         """Changes visibility timeout of the message by its handle
@@ -139,9 +136,9 @@ class QueuePrioritySQS:
             return res
 
         except Exception as e:
-            logging.error("Cannot delete message_handle_id [{}] priority [{}] : {}".format(message_handle_id, task_priority, e))
+            logging.error(
+                "Cannot delete message_handle_id [{}] priority [{}] : {}".format(message_handle_id, task_priority, e))
             raise e
-
 
     def get_queue_length(self):
         """
@@ -155,6 +152,22 @@ class QueuePrioritySQS:
         all_queued_tasks = sum(
             self.priority_to_queue_lookup[p].get_queue_length()
             for p in self.priorities
-            )
+        )
 
         return all_queued_tasks
+
+    def get_inflight_length(self):
+        """
+
+        Args:
+
+        Returns: total number of in flight tasks across all queues under all priorities.
+
+        """
+
+        all_inflight_tasks = sum(
+            self.priority_to_queue_lookup[p].get_inflight_length()
+            for p in self.priorities
+        )
+
+        return all_inflight_tasks

@@ -2,54 +2,32 @@ SUBMITTER_IMAGE_NAME=submitter
 export ARMONIK_TAG
 export ARMONIK_DOCKER_REGISTRY
 BUILD_TYPE?=Release
-HTCGRID_PACKAGE=HTCGridAPI.1.0.0.nupkg
-HTTPAPI_PACKAGE=HttpApi.1.0.0.nupkg
-ARMONIKAPI_PACKAGE=Armonik.api.1.0.0.nupkg
 
 .PHONY: push
 
 all: push
 
-.PHONY: all clean external_packages
+.PHONY: all clean
 
 all: push
 
-build: external_packages Dockerfile Dockerfile_Debug
+build: .
+	dotnet restore && dotnet build "Client.csproj" --configuration $(BUILD_TYPE)
+	dotnet publish "Client.csproj" \
+        --configuration $(BUILD_TYPE) \
+        --runtime linux-x64  \
+        --self-contained false \
+        --output $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Client \
+        -p:PublishReadyToRun=true
+
+image: build
 ifneq ($(ARMONIK_DOCKER_REGISTRY),)
-ifeq ($(BUILD_TYPE), Debug)
-	docker build ../ \
-	--build-arg HTCGRID_PACKAGE=$(HTCGRID_PACKAGE) \
-	--build-arg HTTPAPI_PACKAGE=$(HTTPAPI_PACKAGE) \
-	--build-arg ARMONIKAPI_PACKAGE=$(ARMONIKAPI_PACKAGE) \
-	--build-arg NUGET_LOCAL_REPOS=${ARMONIK_NUGET_REPOS} \
-	-t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile_Debug
+	docker build $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Client -t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile
 else
-	docker build ../ \
-	--build-arg HTCGRID_PACKAGE=$(HTCGRID_PACKAGE) \
-	--build-arg HTTPAPI_PACKAGE=$(HTTPAPI_PACKAGE) \
-	--build-arg ARMONIKAPI_PACKAGE=$(ARMONIKAPI_PACKAGE) \
-	--build-arg NUGET_LOCAL_REPOS=${ARMONIK_NUGET_REPOS} \
-	-t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile
-endif
-else
-ifeq ($(BUILD_TYPE), Debug)
-	docker build ../ \
-	--build-arg HTCGRID_PACKAGE=$(HTCGRID_PACKAGE) \
-	--build-arg HTTPAPI_PACKAGE=$(HTTPAPI_PACKAGE) \
-	--build-arg ARMONIKAPI_PACKAGE=$(ARMONIKAPI_PACKAGE) \
-	--build-arg NUGET_LOCAL_REPOS=${ARMONIK_NUGET_REPOS} \
-	-t $(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile_Debug
-else
-	docker build ../ \
-	--build-arg HTCGRID_PACKAGE=$(HTCGRID_PACKAGE) \
-	--build-arg HTTPAPI_PACKAGE=$(HTTPAPI_PACKAGE) \
-	--build-arg ARMONIKAPI_PACKAGE=$(ARMONIKAPI_PACKAGE) \
-	--build-arg NUGET_LOCAL_REPOS=${ARMONIK_NUGET_REPOS} \
-	-t $(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile
-endif
+	docker build $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Client -t $(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile
 endif
 
-push: build
+upload: image
 ifneq ($(ARMONIK_DOCKER_REGISTRY),)
 	docker push $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG)
 endif
