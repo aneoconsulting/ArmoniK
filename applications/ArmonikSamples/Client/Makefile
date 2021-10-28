@@ -27,7 +27,7 @@ else
 	docker build $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Client -t $(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile
 endif
 
-push: image
+upload: image
 ifneq ($(ARMONIK_DOCKER_REGISTRY),)
 	docker push $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG)
 endif

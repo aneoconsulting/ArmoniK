@@ -160,7 +160,7 @@ upload-dotnet5.0-submitter:
 	$(MAKE) -C ./applications/$(ARMONIK_APPLICATION_NAME) client BUILD_TYPE=$(BUILD_TYPE)
 
 upload-dotnet5.0-server:
-	$(MAKE) -C ./applications/$(ARMONIK_APPLICATION_NAME) upload BUILD_TYPE=$(BUILD_TYPE)
+	$(MAKE) -C ./applications/$(ARMONIK_APPLICATION_NAME) server BUILD_TYPE=$(BUILD_TYPE)
 
 image-agent: utils api
 	$(MAKE) -C ./source/compute_plane/python/agent

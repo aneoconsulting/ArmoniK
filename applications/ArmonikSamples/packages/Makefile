@@ -8,8 +8,8 @@ all: build
 
 
 build: .
-	cd images && dotnet restore && dotnet build "ArmonikExecutor.csproj" --configuration $(BUILD_TYPE)
-	cd images && dotnet publish "ArmonikExecutor.csproj" \
+	dotnet restore && dotnet build "ArmonikExecutor.csproj" --configuration $(BUILD_TYPE)
+	dotnet publish "ArmonikExecutor.csproj" \
         --configuration $(BUILD_TYPE) \
         --runtime linux-x64  \
         --self-contained false \
@@ -30,4 +30,4 @@ ifneq ($(ARMONIK_DOCKER_REGISTRY),)
 endif
 
 clean:
-	rm -rf ./images/lib ./images/dist
+	rm -rf ./lib ./dist
