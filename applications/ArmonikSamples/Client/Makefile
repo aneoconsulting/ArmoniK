@@ -4,7 +4,7 @@ export ARMONIK_DOCKER_REGISTRY
 BUILD_TYPE?=Release
 
 DOCKER_IMG=$(shell if [ "$(ARMONIK_DOCKER_REGISTRY)" != "" ]; then echo "$(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME)"; else echo "$(SUBMITTER_IMAGE_NAME)"; fi)
-DOCKERFILE=$(shell if [ "$(BUILD_TYPE)" == "Debug" ]; then echo "./Dockerfile_Debug"; else echo "./Dockerfile"; fi)
+DOCKERFILE=$(shell if [ "${BUILD_TYPE}" = "Debug" ]; then echo "./Dockerfile_Debug"; else echo "./Dockerfile"; fi)
 
 .PHONY: push
 

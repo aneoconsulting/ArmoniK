@@ -3,7 +3,7 @@ export ARMONIK_TAG
 export ARMONIK_DOCKER_REGISTRY
 
 DOCKER_IMG=$(shell if [ "$(ARMONIK_DOCKER_REGISTRY)" != "" ]; then echo "$(ARMONIK_DOCKER_REGISTRY)/lambda"; else echo "lambda"; fi)
-DOCKERFILE=$(shell if [ "$(BUILD_TYPE)" == "Debug" ]; then echo "./Dockerfile_Debug"; else echo "./Dockerfile"; fi)
+DOCKERFILE=$(shell if [ "${BUILD_TYPE}" = "Debug" ]; then echo "./Dockerfile_Debug"; else echo "./Dockerfile"; fi)
 
 .PHONY: clean
 
