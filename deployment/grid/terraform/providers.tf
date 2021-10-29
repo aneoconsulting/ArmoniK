@@ -62,6 +62,11 @@ terraform {
 
 provider "aws" {
   region  = var.region
+  default_tags {
+    tags = {
+      ArmonikTag = "armonik-${local.project_name}"
+    }
+  }
 }
 
 provider "kubernetes" {
