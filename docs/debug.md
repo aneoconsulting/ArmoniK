@@ -21,6 +21,11 @@ kubectl get deployments --all-namespaces
 kubectl delete deployment -n default redis
 ```
 
+## Scale agent/compute lambda deployment
+```bash
+kubectl scale --replicas=11 deployment armonik-agent
+```
+
 ## Fast image redeployment
 Only re-compile the targeted image, use image_pull_policy = Always instead of IfNotPresent and delete the po in order to pull the new image. It works well for the lambda and the applications (single task).
 
