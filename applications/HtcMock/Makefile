@@ -1,30 +1,19 @@
 CURRENT_DIR:=$(shell pwd)
-DIST_DIR?=$(shell pwd)/../../dist
+DIST_DIR?=./dist
 BUILD_TYPE?=Release
 
-.PHONY: clean all upload build-mock
+.PHONY: clean all client server
 
-all: client upload
+all: client server
 
-client: external_packages
-	$(MAKE) -C ./Client BUILD_TYPE=$(BUILD_TYPE)
+client:
+	$(MAKE) -C ./Client upload BUILD_TYPE=$(BUILD_TYPE)
 
-server: external_packages
+server:
 	$(MAKE) -C ./Server upload BUILD_TYPE=$(BUILD_TYPE)
 
-external_packages:
-	mkdir -p dist lib
-	dotnet nuget locals global-packages -c
-	cp -u ${ARMONIK_NUGET_REPOS}/*.nupkg ./dist
-
-
-upload: server
-
-
-
 clean:
-	$(MAKE) -C ./Client clean BUILD_TYPE=$(BUILD_TYPE)
-	$(MAKE) -C ./Server clean BUILD_TYPE=$(BUILD_TYPE)
-	rm -f ./lib/*.dll
+	dotnet clean --configuration $(BUILD_TYPE) .
+	rm -rf ./lib ./dist 2>&1 > /dev/null || true
 
 

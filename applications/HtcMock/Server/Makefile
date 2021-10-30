@@ -1,39 +1,32 @@
-# Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: Apache-2.0
-# Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
-
 BUILD_TYPE?=Release
 export ARMONIK_TAG
 export ARMONIK_DOCKER_REGISTRY
 
+DOCKER_IMG=$(shell if [ "$(ARMONIK_DOCKER_REGISTRY)" != "" ]; then echo "$(ARMONIK_DOCKER_REGISTRY)/lambda"; else echo "lambda"; fi)
+DOCKERFILE=$(shell if [ "${BUILD_TYPE}" = "Debug" ]; then echo "./Dockerfile_Debug"; else echo "./Dockerfile"; fi)
+
 .PHONY: clean
 
-build: Dockerfile import-dll
-ifneq ($(ARMONIK_DOCKER_REGISTRY),)
-ifeq ($(BUILD_TYPE), Debug)
-	docker build . -f ./Dockerfile_Debug -t $(ARMONIK_DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG) --progress=plain
-else
-	docker build . -f ./Dockerfile -t $(ARMONIK_DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG) --progress=plain
-endif
-else
-ifeq ($(BUILD_TYPE), Debug)
-	docker build . -f ./Dockerfile_Debug -t lambda:$(ARMONIK_TAG) --progress=plain
-else
-	docker build . -f ./Dockerfile -t lambda:$(ARMONIK_TAG) --progress=plain
-endif
-endif
+all: build
 
 
-upload: build
+build: .
+	dotnet restore && dotnet build "mock_integration.csproj" --configuration $(BUILD_TYPE)
+	dotnet publish "mock_integration.csproj" \
+        --configuration $(BUILD_TYPE) \
+        --runtime linux-x64  \
+        --self-contained false \
+        --output $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Server \
+        -p:PublishReadyToRun=true
+
+image: build
+	docker build $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Server -t $(DOCKER_IMG):$(ARMONIK_TAG) -f $(DOCKERFILE)
+
+
+upload: image
 ifneq ($(ARMONIK_DOCKER_REGISTRY),)
 	docker push $(ARMONIK_DOCKER_REGISTRY)/lambda:$(ARMONIK_TAG)
 endif
 
-import-dll:
-	mkdir -p ./mock_integration_image/src/mock_integration/lib/
-	mkdir -p ./mock_integration_image/src/mock_integration/dist/
-	cp -v $(ARMONIK_NUGET_REPOS)/*.nupkg ./mock_integration_image/src/mock_integration/dist/
-
 clean:
-	rm -rf ./mock_integration_image/src/mock_integration/lib
-	rm -rf ./mock_integration_image/src/mock_integration/dist/
+	rm -rf ./lib ./dist

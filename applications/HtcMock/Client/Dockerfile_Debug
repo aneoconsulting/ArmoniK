@@ -1,30 +1,11 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim as base
-FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim as build
-
-
-RUN apt-get update ; apt-get install -y build-essential
-WORKDIR /app
-RUN mkdir -p ./lib/
-COPY ./dist/*.nupkg ./lib
-
-COPY ./Client ./Client
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim
 
 RUN curl -sSL https://aka.ms/getvsdbgsh | /bin/sh /dev/stdin -v latest -l /vsdbg
 
-
-ENV ARMONIK_NUGET_REPOS=/app/lib
 ENV ARMONIK_DEBUG_WAIT_TASK=90
 ENV ARMONIK_DEBUG_WAIT_CLIENT=90
 
-
-WORKDIR /app/Client
-
-RUN dotnet publish "Client.csproj" \
-            --configuration Debug \
-            --runtime linux-x64  \
-            --self-contained false \
-            --output /app/publish \
-            -p:PublishReadyToRun=true
-
+COPY . /app/publish
 WORKDIR /app/publish
+
 ENTRYPOINT ["dotnet"]

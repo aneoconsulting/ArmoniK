@@ -1,39 +1,35 @@
-# Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: Apache-2.0
-# Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
-
-GENERATED?=$(shell pwd)/generated/dotnet5.0/client
-DIST_DIR?=$(shell pwd)/../../../dist
 SUBMITTER_IMAGE_NAME=submitter
-BUILD_TYPE?=Release
 export ARMONIK_TAG
 export ARMONIK_DOCKER_REGISTRY
+BUILD_TYPE?=Release
 
-.PHONY: push push
+DOCKER_IMG=$(shell if [ "$(ARMONIK_DOCKER_REGISTRY)" != "" ]; then echo "$(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME)"; else echo "$(SUBMITTER_IMAGE_NAME)"; fi)
+DOCKERFILE=$(shell if [ "${BUILD_TYPE}" = "Debug" ]; then echo "./Dockerfile_Debug"; else echo "./Dockerfile"; fi)
+
+.PHONY: push
+
 all: push
 
 .PHONY: all clean
 
 all: push
 
-build: Dockerfile Dockerfile_Debug
-ifneq ($(ARMONIK_DOCKER_REGISTRY),)
-ifeq ($(BUILD_TYPE), Debug)
-	docker build ../ -t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile_Debug
-else
-	docker build ../ -t $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile
-endif
-else
-ifeq ($(BUILD_TYPE), Debug)
-	docker build ../ -t $(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile_Debug
-else
-	docker build ../ -t $(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG) -f ./Dockerfile
-endif
-endif
+build: .
+	dotnet restore && dotnet build "Client.csproj" --configuration $(BUILD_TYPE)
+	dotnet publish "Client.csproj" \
+        --configuration $(BUILD_TYPE) \
+        --runtime linux-x64  \
+        --self-contained false \
+        --output $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Client \
+        -p:PublishReadyToRun=true
 
+image: build
+	docker build $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Client -t $(DOCKER_IMG):$(ARMONIK_TAG) -f $(DOCKERFILE)
 
-push: build
+upload: image
 ifneq ($(ARMONIK_DOCKER_REGISTRY),)
 	docker push $(ARMONIK_DOCKER_REGISTRY)/$(SUBMITTER_IMAGE_NAME):$(ARMONIK_TAG)
 endif
 
+clean:
+	rm -rf ../dist 2>&1 > /dev/null || true
