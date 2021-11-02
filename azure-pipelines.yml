@@ -203,7 +203,7 @@ stages:
           downloadPath: '$(System.ArtifactsDirectory)'
       - script: |
           set -e
-          sudo  apt update && sudo apt install -y docker.io
+          sudo  apt update && sudo apt install -y docker.io make
           sudo chown :sudo /var/run/docker.sock
           echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
           mkdir -p dist
@@ -259,7 +259,7 @@ stages:
           downloadPath: '$(System.ArtifactsDirectory)'
       - script: |
           set -e
-          sudo  apt update && sudo apt install -y docker.io
+          sudo  apt update && sudo apt install -y docker.io make
           sudo chown :sudo /var/run/docker.sock
           echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
           mkdir -p dist
