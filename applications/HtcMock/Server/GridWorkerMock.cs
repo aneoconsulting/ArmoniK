@@ -39,7 +39,7 @@ namespace Armonik.sdk
             var readPayload = DataAdapter.ReadPayload(payload);
             if (session != currentSession)
             {
-                requestRunner = requestRunnerFactory.Create(readPayload.Item1, session);
+                requestRunner = requestRunnerFactory.Create(readPayload.Item1);
                 currentSession = session;
             }
 

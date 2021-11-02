@@ -57,11 +57,10 @@ namespace HtcMock
 
             HtcGridClient htcGridClient = new HtcGridClient(gridConfig_, htcDataClient);
 
-            gridWorker_ = new GridWorkerMock(new DelegateRequestRunnerFactory((runConfiguration, sessionId)
+            gridWorker_ = new GridWorkerMock(new DelegateRequestRunnerFactory((runConfiguration)
                                                               =>  new DistributedRequestRunnerWithAggregation(htcDataClient,
                                                                                               htcGridClient,
                                                                                               runConfiguration,
-                                                                                              sessionId,
                                                                                               fastCompute: false,
                                                                                               useLowMem: false,
                                                                                               smallOutput: false)));
