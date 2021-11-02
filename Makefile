@@ -16,7 +16,7 @@ PACKAGES:= $(wildcard $(PACKAGE_DIR)/*.whl)
 .PHONY: all utils api lambda submitter packages test test-api test-utils test-agent lambda-control-plane
 
 all: build-all-infra
-build-all-infra: app-configs k8s-jobs all-images
+build-all-infra: local-app-configs app-configs k8s-jobs all-images
 
 ###############################################
 #######     Manage HTC grid states     ########
@@ -55,7 +55,7 @@ init-grid-deployment:
 reset-grid-deployment:
 	@$(MAKE) -C ./deployment/grid/terraform reset
 
-apply-dotnet-runtime:
+apply-dotnet-runtime: app-configs
 	@$(MAKE) -C ./deployment/grid/terraform apply GRID_CONFIG=$(GENERATED)/dotnet5.0_runtime_grid_config.json
 
 destroy-dotnet-runtime:
@@ -76,7 +76,7 @@ init-grid-local-deployment:
 reset-grid-local-deployment:
 	@$(MAKE) -C ./local_deployment/grid/terraform reset
 
-apply-dotnet-local-runtime:
+apply-dotnet-local-runtime: local-app-configs
 	@$(MAKE) -C ./local_deployment/grid/terraform apply GRID_CONFIG=$(GENERATED)/local_dotnet5.0_runtime_grid_config.json
 
 destroy-dotnet-local-runtime:
@@ -113,7 +113,9 @@ k8s-jobs:
 #############################
 FILE_HANDLER="$(ARMONIK_APPLICATION_NAME)::$(ARMONIK_APPLICATION_NAME).Function::FunctionHandler"
 
-app-configs: $(ARMONIK_APPLICATION_NAME)-config-dotnet5.0 $(ARMONIK_APPLICATION_NAME)-config-local-dotnet5.0
+app-configs: $(ARMONIK_APPLICATION_NAME)-config-dotnet5.0
+
+local-app-configs: $(ARMONIK_APPLICATION_NAME)-config-local-dotnet5.0
 
 $(ARMONIK_APPLICATION_NAME)-config-dotnet5.0:
 	@$(MAKE) -C ./applications/apps_core/configurations generated-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)

@@ -381,5 +381,5 @@ make clean-grid-local-project
 
 5. **If you want remove ALL** local docker images:
 ```bash
-docker rmi -f $(docker images -a -q)
+docker rmi -f $(docker image ls --format="{{json .}}" | jq "select( (.Tag==\"$ARMONIK_TAG\") ) .ID" | tr -d \")
 ```
