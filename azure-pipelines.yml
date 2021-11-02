@@ -203,25 +203,22 @@ stages:
           downloadPath: '$(System.ArtifactsDirectory)'
       - script: |
           set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
           mkdir -p dist
           cp -r $(System.ArtifactsDirectory)/HTCGridApi/$(buildmode)/. $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. $(System.ArtifactsDirectory)/Armonik.api/$(buildmode)/. dist/.
           export ARMONIK_NUGET_REPOS=$PWD/dist
-          dotnet build applications/ArmonikSamples/Client/Client.csproj -c $(buildmode)
-          dotnet pack applications/ArmonikSamples/Client/Client.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
-          dotnet publish applications/ArmonikSamples/Client/Client.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
+          export ARMONIK_DOCKER_REGISTRY=dockerhubaneo
+          export ARMONIK_TAG=$(TAGVar)
+          export ARMONIK_APPLICATION_NAME=ArmonikSamples
+          make upload-dotnet5.0-submitter BUILD_TYPE=$(buildmode)
+          cp -r generated/$ARMONIK_APPLICATION_NAME/Client -o $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
         displayName: Build dotnet package
       - task: PublishBuildArtifacts@1
         inputs:
           pathToPublish: $(Build.ArtifactStagingDirectory)/DotnetClient
           artifactName: DotnetClient
-      - script: |
-          set -e
-          sudo  apt update && sudo apt install -y docker.io
-          sudo chown :sudo /var/run/docker.sock
-          docker build -f applications/ArmonikSamples/Client/Dockerfile -t dockerhubaneo/submitter:$(TAGVar) $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
-          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
-          docker push dockerhubaneo/submitter:$(TAGVar)
-        displayName: Build and Push Submitter to DockerHub
 
   - job: BuildDotnetServer
     displayName: Build Dotnet Server
@@ -262,25 +259,22 @@ stages:
           downloadPath: '$(System.ArtifactsDirectory)'
       - script: |
           set -e
+          sudo  apt update && sudo apt install -y docker.io
+          sudo chown :sudo /var/run/docker.sock
+          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
           mkdir -p dist
           cp -r $(System.ArtifactsDirectory)/HTCGridApi/$(buildmode)/. $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. $(System.ArtifactsDirectory)/Armonik.api/$(buildmode)/. dist/.
           export ARMONIK_NUGET_REPOS=$PWD/dist
-          dotnet build applications/ArmonikSamples/packages/images/ArmonikExecutor.csproj -c $(buildmode)
-          dotnet pack applications/ArmonikSamples/packages/images/ArmonikExecutor.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
-          dotnet publish applications/ArmonikSamples/packages/images/ArmonikExecutor.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
+          export ARMONIK_DOCKER_REGISTRY=dockerhubaneo
+          export ARMONIK_TAG=$(TAGVar)
+          export ARMONIK_APPLICATION_NAME=ArmonikSamples
+          make upload-dotnet5.0-server BUILD_TYPE=$(buildmode)
+          cp -r generated/$ARMONIK_APPLICATION_NAME/Server -o $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
         displayName: Build dotnet package
       - task: PublishBuildArtifacts@1
         inputs:
           pathToPublish: $(Build.ArtifactStagingDirectory)/DotnetServer
           artifactName: DotnetServer
-      - script: |
-          set -e
-          sudo  apt update && sudo apt install -y docker.io
-          sudo chown :sudo /var/run/docker.sock
-          docker build -f applications/ArmonikSamples/packages/Dockerfile -t dockerhubaneo/lambda:$(TAGVar) $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
-          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
-          docker push dockerhubaneo/lambda:$(TAGVar)
-        displayName: Build and Push lambda to DockerHub
 
   - job: BuildPythonUtils
     displayName: Build PYTHON UTILS
