@@ -114,7 +114,7 @@ replace the name of the sample application.
 
 For more information see [here](./docs/debug.md)
 
-## Build client/server artifacts on local <a name="build-client-/-server-artifacts-on-local"></a>
+## Build client/server artifacts on local <a name="build-client-/-server-artifacts"></a>
 To build only the sample application in `<project_root>`:
 ```bash
 make sample-app ARMONIK_APPLICATION_NAME=<Name of your sample>
