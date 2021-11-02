@@ -213,7 +213,7 @@ stages:
           export ARMONIK_TAG=$(TAGVar)
           export ARMONIK_APPLICATION_NAME=ArmonikSamples
           make upload-dotnet5.0-submitter BUILD_TYPE=$(buildmode)
-          cp -r generated/$ARMONIK_APPLICATION_NAME/Client -o $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
+          cp -r generated/$ARMONIK_APPLICATION_NAME/Client/ $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
         displayName: Build dotnet package
       - task: PublishBuildArtifacts@1
         inputs:
@@ -269,7 +269,7 @@ stages:
           export ARMONIK_TAG=$(TAGVar)
           export ARMONIK_APPLICATION_NAME=ArmonikSamples
           make upload-dotnet5.0-server BUILD_TYPE=$(buildmode)
-          cp -r generated/$ARMONIK_APPLICATION_NAME/Server -o $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
+          cp -r generated/$ARMONIK_APPLICATION_NAME/Server/ $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
         displayName: Build dotnet package
       - task: PublishBuildArtifacts@1
         inputs:
