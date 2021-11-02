@@ -13,7 +13,7 @@ server:
 	$(MAKE) -C ./Server upload BUILD_TYPE=$(BUILD_TYPE)
 
 clean:
-	dotnet clean --configuration $(BUILD_TYPE) .
-	rm -rf ./lib ./dist 2>&1 > /dev/null || true
+	$(MAKE) -C ./Client clean
+	$(MAKE) -C ./Server clean
 
 

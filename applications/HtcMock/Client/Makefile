@@ -32,4 +32,5 @@ ifneq ($(ARMONIK_DOCKER_REGISTRY),)
 endif
 
 clean:
-	rm -rf ../dist 2>&1 > /dev/null || true
+	dotnet clean
+	rm -rf bin/ obj/

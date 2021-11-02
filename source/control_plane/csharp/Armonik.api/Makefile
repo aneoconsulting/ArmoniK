@@ -26,4 +26,4 @@ build-package: ${ARMONIK_NUGET_REPOS}/$(PACKAGE_NAME)
 clean:
 	dotnet clean
 	rm -rf ${ARMONIK_NUGET_REPOS}/$(PACKAGE_NAME)
-
+	rm -rf bin obj

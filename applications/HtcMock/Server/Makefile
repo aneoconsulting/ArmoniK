@@ -29,4 +29,5 @@ ifneq ($(ARMONIK_DOCKER_REGISTRY),)
 endif
 
 clean:
-	rm -rf ./lib ./dist
+	dotnet clean
+	rm -rf bin/ obj/

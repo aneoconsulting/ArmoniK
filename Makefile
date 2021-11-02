@@ -144,6 +144,11 @@ build-htc-grid-dotnet5.0-api: build-dotnet5.0-api
 build-armonik-dotnet5.0-api: build-htc-grid-dotnet5.0-api
 	$(MAKE) -C ./source/control_plane/csharp/Armonik.api all BUILD_TYPE=$(BUILD_TYPE)
 
+clean-app:
+	rm -rf dist/ generated/
+	$(MAKE) -C ./source/client/csharp/api-v0.1 clean
+	$(MAKE) -C ./source/control_plane/csharp/Armonik.api clean
+	$(MAKE) -C ./applications/$(ARMONIK_APPLICATION_NAME) clean
 
 
 #############################

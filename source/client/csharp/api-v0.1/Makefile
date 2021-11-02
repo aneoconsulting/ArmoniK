@@ -22,5 +22,5 @@ build-package: $(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.nupkg
 
 clean:
 	dotnet clean
-	rm -rf $(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.nupkg
-
+	rm -rf $(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.*
+	rm -rf obj bin
