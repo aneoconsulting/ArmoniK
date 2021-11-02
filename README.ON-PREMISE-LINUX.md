@@ -4,7 +4,6 @@
 3. [Build Armonik artifacts](#build-armonik-artifacts)
    1. [Build Armonik artifacts on local](#build-armonik-artifacts-on-local)
    2. [Build client/server artifacts on local](#build-client-/-server-artifacts-on-local)
-4. [Get Armonik artifacts from DockerHub](#get-armonik-artifacts-from-dockerhub)
 5. [Deploy Armonik resources](#deploy-armonik-resources)
 6. [Running an example application](#running-an-example-application)
 7. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
@@ -150,9 +149,9 @@ In the folder [applications/ArmonikSamples](./applications/ArmonikSamples), you 
 We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job and the grid are implemented by a client in folder [applications/ArmonikSamples/Client](./applications/ArmonikSamples/Client).
 
 1. Create a sample Kubernetes job `local-single-task-dotnet5.0.yaml` as follows:
-```bash
-  make k8s-jobs
-```
+   ```bash
+   make k8s-jobs
+   ```
 
 2. Run the following command to launch a kubernetes job:
    ```bash
@@ -173,31 +172,31 @@ We will use a kubernetes Jobs to submit one execution of this .NET program. The 
 In the root forlder `<project_root>`, to destroy all Armonik resources deployed on the local machine, execute the following commands:
 
 1. Delete the launched Kubernetes job, example:
-```bash
-kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
-```
+   ```bash
+   kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
+   ```
 
 2. Destroy all Armonik resources:
-```bash
-make destroy-dotnet-local-runtime
-```
+   ```bash
+   make destroy-dotnet-local-runtime
+   ```
 
 3. Clean Terraform project:
-```bash
-make clean-grid-local-deployment
-```
+   ```bash
+   make clean-grid-local-deployment
+   ```
 
 4. Clean binaries and generated files:
-```bash
-make clean-grid-local-project
-```
+   ```bash
+   make clean-grid-local-project
+   ```
 
 5. **If you want** uninstall Kubernetes on the local machine:
-```bash
-/usr/local/bin/k3s-uninstall.sh
-```
+   ```bash
+   /usr/local/bin/k3s-uninstall.sh
+   ```
 
-6. **If you want remove ALL** local docker images:
-```bash
-docker rmi -f $(docker image ls --format="{{json .}}" | jq "select( (.Tag==\"$ARMONIK_TAG\") ) .ID" | tr -d \")
-```
+6. If you want remove local docker images with tag of `ARMONIK_TAG` environment variable:
+   ```bash
+   docker rmi -f $(docker image ls --format="{{json .}}" | jq "select( (.Tag==\"$ARMONIK_TAG\") ) .ID" | tr -d \")
+   ```

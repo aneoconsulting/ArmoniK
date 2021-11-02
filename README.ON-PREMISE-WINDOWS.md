@@ -2,8 +2,7 @@
 2. [Configure the environment](#configure-the-environment)
 3. [Build Armonik artifacts](#build-armonik-artifacts)
    1. [Build Armonik artifacts on local](#build-armonik-artifacts-on-local)
-   2. [Use built Armonik artifacts from a Docker registry](#use-built-armonik-artifacts-from-a-docker-registry)
-4. [Get Armonik artifacts from DockerHub](#get-armonik-artifacts-from-dockerhub)
+   2. [Build client/server artifacts on local](#build-client-/-server-artifacts-on-local)
 5. [Deploy Armonik resources](#deploy-armonik-resources)
 6. [Running an example application](#running-an-example-application)
 7. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
@@ -130,9 +129,22 @@ source ./envvars.conf
 ## Build Armonik artifacts on local <a name="build-armonik-artifacts-on-local"></a>
 Armonik artifacts include: .NET Core packages, docker images, configuration files for Armonik and k8s.
 
-To build and install these in `<project_root>`:
+To build and install all Armonik, in `<project_root>`:
+1. Set the name of your sample:
 ```bash
-make build-all-infra
+export ARMONIK_APPLICATION_NAME=<Name of your sample>
+```
+2. then build:
+```bash
+make all
+```
+or you can build in one command:
+```bash
+make all ARMONIK_APPLICATION_NAME=<Name of your sample>
+```
+for example in the project there is a sample of name `ArmonikSamples`:
+```bash
+make all ARMONIK_APPLICATION_NAME=ArmonikSamples
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following
@@ -140,51 +152,21 @@ two files:
  * `local_dotnet5.0_runtime_grid_config.json` a configuration file for the grid with basic setting.
  * `local-single-task-dotnet5.0.yaml` the kubernetes configuration for running a single tasks on the grid.
 
-To build only the sample application in `<project_root>`:
-```bash
-make sample-app
-```
-To build only the sample application in `<project_root>` with all its dotnet dependencies (API, core packages):
-```bash
-make armonik-full
-```
-
-## Select the sample application to build
-
-The selection of the sample to compile is made via the variable `ARMONIK_APPLICATION_NAME`.
-It can be added in the configuration file with, for instance :
-```bash
-export ARMONIK_APPLICATION_NAME=ArmonikSamples
-```
-This is its default value.
-It can also be passed to the different make commands such as :
-```bash
-make sample-app ARMONIK_APPLICATION_NAME=ArmonikSamples
-```
-or
-```bash
-make all ARMONIK_APPLICATION_NAME=ArmonikSamples
-```
-
 ### Debug mode
 To build in `debug` mode, you execute this command:
 ```bash
-make all BUILD_TYPE=Debug
+make all BUILD_TYPE=Debug ARMONIK_APPLICATION_NAME=<Name of your sample>
 ```
+replace the name of the sample application.
 
 For more information see [here](./docs/debug.md)
 
-## Use built Armonik artifacts from a Docker registry<a name="use-built-armonik-artifacts-from-a-docker-registry"></a>
-
-1. Generate the file of parameters for Terraform deployment `local_dotnet5.0_runtime_grid_config.json` . In the root of the project `<project_root>`:
+## Build client/server artifacts on local <a name="build-client-/-server-artifacts-on-local"></a>
+To build only the sample application in `<project_root>`:
 ```bash
-make app-configs
+make sample-app ARMONIK_APPLICATION_NAME=<Name of your sample>
 ```
-
-2. Create a sample Kubernetes job `local-single-task-dotnet5.0.yaml` as follows:
-```bash
-  make k8s-jobs
-```
+replace the name of the sample application.
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 1. Run the following to initialize the Terraform environment:
@@ -209,17 +191,22 @@ In the folder [applications/ArmonikSamples](./applications/ArmonikSamples), you 
 
 We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job and the grid are implemented by a client in folder [applications/ArmonikSamples/Client](./applications/ArmonikSamples/Client).
 
-1. Run the following command to launch a kubernetes job:
+1. Create a sample Kubernetes job `local-single-task-dotnet5.0.yaml` as follows:
+   ```bash
+   make k8s-jobs
+   ```
+
+2. Run the following command to launch a kubernetes job:
    ```bash
    kubectl apply -f ./generated/local-single-task-dotnet5.0.yaml
    ```
 
-2. look at the log of the submission:
+3. look at the log of the submission:
    ```bash
    kubectl logs job/single-task -f
    ```
 
-3. To clean the job submission instance:
+4. To clean the job submission instance:
    ```bash
    kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
    ```
@@ -242,7 +229,7 @@ make destroy-dotnet-local-runtime
 make clean-grid-local-project
 ```
 
-4. **If you want remove ALL** local docker images:
+4. If you want remove local docker images with tag of `ARMONIK_TAG` environment variable:
 ```bash
 docker rmi -f $(docker image ls --format="{{json .}}" | jq "select( (.Tag==\"$ARMONIK_TAG\") ) .ID" | tr -d \")
 ```
