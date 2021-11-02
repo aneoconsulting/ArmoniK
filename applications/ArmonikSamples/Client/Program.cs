@@ -65,12 +65,12 @@ namespace HtcClient
             dataClient.ConnectDB();
 
             ClientStartup1(dataClient, htcGridClient);
-            ClientStartup2(dataClient, htcGridClient);
+            //ClientStartup2(dataClient, htcGridClient);
         }
 
         public static void ClientStartup1(HtcDataClient dataClient, HtcGridClient htcGridClient)
         {
-            List<int> numbers = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            List<int> numbers = new List<int>() { 1, 2, 3 };
             var clientPaylaod = new ClientPayload() { numbers = numbers, taskType = 1 };
             string taskId = htcGridClient.SubmitTask(clientPaylaod.serialize());
 
