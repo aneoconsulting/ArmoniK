@@ -7,7 +7,7 @@ GENERATED?=$(shell pwd)/generated
 DIST_DIR?=$(shell pwd)/../../../../dist
 BUILD_TYPE?=Release
 
-.PHONY: all clean build-package bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll $(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.nupkg 
+.PHONY: all clean build-package bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll $(DIST_DIR)/dotnet5.0/HTCGridAPI.$(HTCGridAPI).nupkg
 
 
 all: build-package
@@ -15,12 +15,12 @@ all: build-package
 bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll:
 	dotnet restore && dotnet clean &&  dotnet build --configuration $(BUILD_TYPE)
 
-$(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.nupkg: bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll
+$(DIST_DIR)/dotnet5.0/HTCGridAPI.$(HTCGridAPI).nupkg: bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll
 	dotnet pack -c $(BUILD_TYPE) -o $(DIST_DIR)/dotnet5.0
 
-build-package: $(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.nupkg
+build-package: $(DIST_DIR)/dotnet5.0/HTCGridAPI.$(HTCGridAPI).nupkg
 
 clean:
 	dotnet clean
-	rm -rf $(DIST_DIR)/dotnet5.0/HTCGridAPI.1.0.0.*
+	rm -rf $(DIST_DIR)/dotnet5.0/HTCGridAPI.$(HTCGridAPI).*
 	rm -rf obj bin

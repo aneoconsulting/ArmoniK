@@ -15,7 +15,7 @@
 
   <ItemGroup>
 
-    <PackageReference Include="HTCGridAPI" Version="$(HTCGridAPI%)" />
+    <PackageReference Include="HTCGridAPI" Version="$(HTCGridAPI)" />
 
     <PackageReference Include="HttpApi" Version="$(HttpApi)" />
     <PackageReference Include="Armonik.api" Version="$(Armonik_api)" />
