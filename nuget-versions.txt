@@ -13,13 +13,3 @@ Newtonsoft_Json=13.0.1
 Polly=7.2.2
 RestSharp=106.11.7
 StackExchange_Redis=2.2.50
-
-
-
-
-
-
-
-
-
-
