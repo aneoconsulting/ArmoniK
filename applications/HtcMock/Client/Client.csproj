@@ -14,16 +14,16 @@
   </PropertyGroup>
   <ItemGroup>
 
-    <PackageReference Include="HTCGridAPI" Version="1.0.0" />
+    <PackageReference Include="HTCGridAPI" Version="$(HTCGridAPI)" />
 
-    <PackageReference Include="HttpApi" Version="1.0.0" />
-    <PackageReference Include="Armonik.api" Version="1.0.0" />
-    <PackageReference Include="Htc.Mock" Version="2.0.1" />
-    <PackageReference Include="StackExchange.Redis" Version="2.2.50" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.11.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="RestSharp" Version="106.11.7" />
-    <PackageReference Include="Polly" Version="7.2.2" />
+    <PackageReference Include="HttpApi" Version="$(HttpApi)" />
+    <PackageReference Include="Armonik.api" Version="$(Armonik_api)" />
+    <PackageReference Include="Htc.Mock" Version="$(Htc_Mock)" />
+    <PackageReference Include="StackExchange.Redis" Version="$(StackExchange_Redis)" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="$(Microsoft_IdentityModel_Tokens)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(Newtonsoft_Json)" />
+    <PackageReference Include="RestSharp" Version="$(RestSharp)" />
+    <PackageReference Include="Polly" Version="$(Polly)" />
 
 
   </ItemGroup>

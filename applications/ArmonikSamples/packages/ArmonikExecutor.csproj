@@ -15,17 +15,17 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.0.0" />
-    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.1.0" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="$(Amazon_Lambda_Core)" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="$(Amazon_Lambda_Serialization_SystemTextJson)" />
 
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.11.1" />
-    <PackageReference Include="Polly" Version="7.2.2" />
-    <PackageReference Include="RestSharp" Version="106.11.7" />
-    <PackageReference Include="StackExchange.Redis" Version="2.2.50" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="HTCGridAPI" Version="1.0.0" />
-    <PackageReference Include="HttpApi" Version="1.0.0" />
-    <PackageReference Include="Armonik.api" Version="1.0.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="$(Microsoft_IdentityModel_Tokens)" />
+    <PackageReference Include="Polly" Version="$(Polly)" />
+    <PackageReference Include="RestSharp" Version="$(RestSharp)" />
+    <PackageReference Include="StackExchange.Redis" Version="$(StackExchange_Redis)" />
+    <PackageReference Include="Newtonsoft.Json" Version="$(Newtonsoft_Json)" />
+    <PackageReference Include="HTCGridAPI" Version="$(HTCGridAPI)" />
+    <PackageReference Include="HttpApi" Version="$(HttpApi)" />
+    <PackageReference Include="Armonik.api" Version="$(Armonik_api)" />
 
 
   </ItemGroup>
