@@ -1,6 +1,6 @@
 # Changelog
 
-## [dev](https://github.com/aneoconsulting/armonik/tree/dev) (2021-11-04)
+## [v0.9.4](https://github.com/aneoconsulting/armonik/tree/v0.9.4) (2021-11-04)
 Added
 -
 * Automatic tag of resources deployed in AWS
