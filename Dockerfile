@@ -69,7 +69,7 @@ RUN if [ "${MODE}" = dev ]; then \
       pip install -r /armonik/requirements.txt \
     ;fi
 
-COPY --chown=1000:1000 .dockerignore Makefile LICENSE *.md  /armonik/
+COPY --chown=1000:1000 .dockerignore Makefile LICENSE *.md nuget-versions.txt /armonik/
 COPY --chown=1000:1000 applications /armonik/applications
 COPY --chown=1000:1000 deployment /armonik/deployment
 COPY --chown=1000:1000 docs /armonik/docs
