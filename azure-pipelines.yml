@@ -319,7 +319,9 @@ stages:
 
   - job: BuildCancelTasks
     displayName: Build Cancel Tasks
-    dependsOn: BuildPythonUtils
+    dependsOn:
+      - BuildPythonUtils
+      - BuildArmonikAPI
     pool:
       name : $(AgentPoolName)
       vmImage : 'ubuntu-20.04'
@@ -341,7 +343,9 @@ stages:
 
   - job: BuildGetResults
     displayName: Build Get Results
-    dependsOn: BuildPythonUtils
+    dependsOn:
+      - BuildPythonUtils
+      - BuildArmonikAPI
     pool:
       name : $(AgentPoolName)
       vmImage : 'ubuntu-20.04'
@@ -363,7 +367,9 @@ stages:
 
   - job: BuildSubmitTasks
     displayName: Build Submit Tasks
-    dependsOn: BuildPythonUtils
+    dependsOn:
+      - BuildPythonUtils
+      - BuildArmonikAPI
     pool:
       name : $(AgentPoolName)
       vmImage : 'ubuntu-20.04'
@@ -385,7 +391,9 @@ stages:
 
   - job: BuildTtlChecker
     displayName: Build Ttl Checker
-    dependsOn: BuildPythonUtils
+    dependsOn:
+      - BuildPythonUtils
+      - BuildArmonikAPI
     pool:
       name : $(AgentPoolName)
       vmImage : 'ubuntu-20.04'
@@ -410,6 +418,7 @@ stages:
     dependsOn:
       - BuildPythonApi
       - BuildPythonUtils
+      - BuildArmonikAPI
     pool:
       name : $(AgentPoolName)
       vmImage : 'ubuntu-20.04'
