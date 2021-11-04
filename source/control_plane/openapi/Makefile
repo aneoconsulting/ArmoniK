@@ -10,8 +10,8 @@ SRCS    := api.yaml
 BUILD_TYPE?=Release
 PACKAGE_NAME=httpapi
 PACKAGE_NAME_CSHARP=HttpApi
-PACKAGE_TARGET=$(DIST_DIR)/$(PACKAGE_NAME)-1.0.0-py3-none-any.whl
-DOTNET50_PACKAGE_TARGET=$(DIST_DIR)/dotnet5.0/$(PACKAGE_NAME_CSHARP).1.0.0.nupkg
+PACKAGE_TARGET=$(DIST_DIR)/$(PACKAGE_NAME)-$(HttpApi)-py3-none-any.whl
+DOTNET50_PACKAGE_TARGET=$(DIST_DIR)/dotnet5.0/$(PACKAGE_NAME_CSHARP).$(HttpApi).nupkg
 
 .PHONY: all clean
 
@@ -30,13 +30,13 @@ $(GENERATED)/csharp/http_server:
 	mkdir -p $(GENERATED)/csharp/http_server
 
 $(GENERATED)/python/http_api/setup.py: $(SRCS) $(GENERATED)/python/http_api
-	docker run --user "$(DOCKER_USER_ID):$(DOCKER_GROUP_ID)" --rm  --mount "type=bind,src=$(GENERATED)/python/http_api,dst=/tmp/http_api" -v "$(shell pwd)/$(SRCS):/api.yaml" openapitools/openapi-generator-cli generate -i /api.yaml -g python -o /tmp/http_api  --additional-properties=packageName=$(PACKAGE_NAME)
+	docker run --user "$(DOCKER_USER_ID):$(DOCKER_GROUP_ID)" --rm  --mount "type=bind,src=$(GENERATED)/python/http_api,dst=/tmp/http_api" -v "$(shell pwd)/$(SRCS):/api.yaml" openapitools/openapi-generator-cli generate -i /api.yaml -g python -o /tmp/http_api  --additional-properties=packageName=$(PACKAGE_NAME) --additional-properties=packageVersion=$(HttpApi)
 
 $(GENERATED)/csharp/http_api/README.md: $(SRCS) $(GENERATED)/csharp/http_api
-	docker run --user "$(DOCKER_USER_ID):$(DOCKER_GROUP_ID)" --rm  --mount "type=bind,src=$(GENERATED)/csharp/http_api,dst=/tmp/http_api" -v "$(shell pwd)/$(SRCS):/api.yaml" openapitools/openapi-generator-cli generate -i /api.yaml -g  csharp-netcore -o /tmp/http_api  --additional-properties=targetFramework=net5.0 --additional-properties=packageName=$(PACKAGE_NAME_CSHARP)
+	docker run --user "$(DOCKER_USER_ID):$(DOCKER_GROUP_ID)" --rm  --mount "type=bind,src=$(GENERATED)/csharp/http_api,dst=/tmp/http_api" -v "$(shell pwd)/$(SRCS):/api.yaml" openapitools/openapi-generator-cli generate -i /api.yaml -g  csharp-netcore -o /tmp/http_api  --additional-properties=targetFramework=net5.0 --additional-properties=packageName=$(PACKAGE_NAME_CSHARP) --additional-properties=packageVersion=$(HttpApi)
 
 $(GENERATED)/csharp/http_server/README.md: $(SRCS) $(GENERATED)/csharp/http_server
-	docker run  --user "$(DOCKER_USER_ID):$(DOCKER_GROUP_ID)" --rm  --mount "type=bind,src=$(GENERATED)/csharp/http_server,dst=/tmp/http_server" -v "$(shell pwd)/$(SRCS):/api.yaml" openapitools/openapi-generator-cli generate -i /api.yaml -g aspnetcore -o /tmp/http_server --additional-properties=aspnetCoreVersion=5.0 --additional-properties=packageName=$(PACKAGE_NAME_CSHARP)
+	docker run  --user "$(DOCKER_USER_ID):$(DOCKER_GROUP_ID)" --rm  --mount "type=bind,src=$(GENERATED)/csharp/http_server,dst=/tmp/http_server" -v "$(shell pwd)/$(SRCS):/api.yaml" openapitools/openapi-generator-cli generate -i /api.yaml -g aspnetcore -o /tmp/http_server --additional-properties=aspnetCoreVersion=5.0 --additional-properties=packageName=$(PACKAGE_NAME_CSHARP) --additional-properties=packageVersion=$(HttpApi)
 
 python-package: $(GENERATED)/python/http_api/setup.py
 
