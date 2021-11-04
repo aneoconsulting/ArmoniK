@@ -107,9 +107,11 @@ stages:
       - script: |
           set -e
           sudo apt update && sudo apt install -y make
-          export ARMONIK_NUGET_REPOS=$(System.ArtifactsDirectory)/HttpApi/$(buildmode)
+          mkdir -p dist
+          cp -r $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. dist/.
+          export ARMONIK_NUGET_REPOS=./dist
           make build-htc-grid-dotnet5.0-api-internal BUILD_TYPE=$(buildmode)
-          dotnet pack source/client/csharp/api-v0.1/HTCGridAPI.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/HTCGridAPI/$(buildmode)
+          cp ./dist/HTCGridAPI* $(Build.ArtifactStagingDirectory)/HTCGridAPI/$(buildmode)/
         displayName: Build dotnet package
       - task: PublishBuildArtifacts@1
         inputs:
@@ -158,9 +160,9 @@ stages:
           sudo apt update && sudo apt install -y make
           mkdir -p dist
           cp -r $(System.ArtifactsDirectory)/HTCGridApi/$(buildmode)/. $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. dist/.
-          export ARMONIK_NUGET_REPOS=$PWD/dist
+          export ARMONIK_NUGET_REPOS=./dist
           make build-armonik-dotnet5.0-api BUILD_TYPE=$(buildmode)
-          dotnet pack source/control_plane/csharp/Armonik.api/Armonik.api.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/Armonik.api/$(buildmode)
+          cp ./dist/Armonik.api* $(Build.ArtifactStagingDirectory)/Armonik.api/$(buildmode)/
         displayName: Build dotnet package
       - task: PublishBuildArtifacts@1
         inputs:
