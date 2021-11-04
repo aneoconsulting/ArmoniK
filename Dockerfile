@@ -106,7 +106,6 @@ ENV ARMONIK_DOCKER_REGISTRY=${DOCKER_REGISTRY}
 ENV BUILD_TYPE=${BUILD_TYPE}
 
 RUN if [ "${MODE}" != dev ]; then \
-      make ArmonikSamples-config-local-dotnet5.0 && \
       make k8s-jobs ; \
     fi
 
