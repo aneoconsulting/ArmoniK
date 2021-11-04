@@ -22,17 +22,6 @@ all: build-all-infra
 build-all-infra: local-app-configs app-configs k8s-jobs all-images
 
 ###############################################
-#######     Manage nuget versions     #########
-###############################################
-#set-nuget-versions:
-#    set -a
-#    . ./nuget-versions.txt
-#    set +a
-
-set-nuget-versions:
-#	. ./nuget-versions.txt
-	echo $(Microsoft_IdentityModel_Tokens)
-###############################################
 #######     Manage HTC grid states     ########
 ###############################################
 
