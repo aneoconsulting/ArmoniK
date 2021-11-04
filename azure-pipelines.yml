@@ -107,7 +107,7 @@ stages:
       - script: |
           set -e
           sudo apt update && sudo apt install -y make
-          mkdir -p dist
+          mkdir -p dist $(Build.ArtifactStagingDirectory)/HTCGridAPI/$(buildmode)/
           cp -r $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. dist/.
           export ARMONIK_NUGET_REPOS=$PWD/dist
           make build-htc-grid-dotnet5.0-api-internal BUILD_TYPE=$(buildmode)
@@ -158,7 +158,7 @@ stages:
       - script: |
           set -e
           sudo apt update && sudo apt install -y make
-          mkdir -p dist
+          mkdir -p dist $(Build.ArtifactStagingDirectory)/Armonik.api/$(buildmode)/
           cp -r $(System.ArtifactsDirectory)/HTCGridApi/$(buildmode)/. $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. dist/.
           export ARMONIK_NUGET_REPOS=$PWD/dist
           make build-armonik-dotnet5.0-api BUILD_TYPE=$(buildmode)
@@ -211,14 +211,13 @@ stages:
           sudo  apt update && sudo apt install -y docker.io make
           sudo chown :sudo /var/run/docker.sock
           echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
-          mkdir -p dist
+          mkdir -p dist $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
           cp -r $(System.ArtifactsDirectory)/HTCGridApi/$(buildmode)/. $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. $(System.ArtifactsDirectory)/Armonik.api/$(buildmode)/. dist/.
           export ARMONIK_NUGET_REPOS=$PWD/dist
           export ARMONIK_DOCKER_REGISTRY=dockerhubaneo
           export ARMONIK_TAG=$(TAGVar)
           export ARMONIK_APPLICATION_NAME=ArmonikSamples
           make upload-dotnet5.0-submitter BUILD_TYPE=$(buildmode)
-          mkdir -p $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
           cp -r generated/$ARMONIK_APPLICATION_NAME/Client/ $(Build.ArtifactStagingDirectory)/DotnetClient/$(buildmode)
         displayName: Build dotnet package
       - task: PublishBuildArtifacts@1
@@ -268,14 +267,13 @@ stages:
           sudo  apt update && sudo apt install -y docker.io make
           sudo chown :sudo /var/run/docker.sock
           echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
-          mkdir -p dist
+          mkdir -p dist $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
           cp -r $(System.ArtifactsDirectory)/HTCGridApi/$(buildmode)/. $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. $(System.ArtifactsDirectory)/Armonik.api/$(buildmode)/. dist/.
           export ARMONIK_NUGET_REPOS=$PWD/dist
           export ARMONIK_DOCKER_REGISTRY=dockerhubaneo
           export ARMONIK_TAG=$(TAGVar)
           export ARMONIK_APPLICATION_NAME=ArmonikSamples
           make upload-dotnet5.0-server BUILD_TYPE=$(buildmode)
-          mkdir -p $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
           cp -r generated/$ARMONIK_APPLICATION_NAME/Server/ $(Build.ArtifactStagingDirectory)/DotnetServer/$(buildmode)
         displayName: Build dotnet package
       - task: PublishBuildArtifacts@1
