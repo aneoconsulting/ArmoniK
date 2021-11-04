@@ -1,9 +1,3 @@
-# Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: Apache-2.0
-# Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
-
-
-GENERATED?=$(shell pwd)/generated
 BUILD_TYPE?=Release
 
 .PHONY: all clean build-package bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll ${ARMONIK_NUGET_REPOS}/HTCGridAPI.$(HTCGridAPI).nupkg
