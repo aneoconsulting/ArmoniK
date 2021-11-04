@@ -4,9 +4,8 @@
 
 
 BUILD_TYPE?=Release
-ARMONIK_VERSION_API=1.0.0 #TODO Set the version from global env
 PROJECT_NAME=Armonik.api
-PACKAGE_NAME=$(PROJECT_NAME).$(ARMONIK_VERSION_API).nupkg
+PACKAGE_NAME=$(PROJECT_NAME).$(Armonik_api).nupkg
 
 .PHONY: all clean build-package bin/$(BUILD_TYPE)/net5.0/ref/$(PROJECT_NAME).dll
 
