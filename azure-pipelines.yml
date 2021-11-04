@@ -109,7 +109,7 @@ stages:
           sudo apt update && sudo apt install -y make
           mkdir -p dist
           cp -r $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. dist/.
-          export ARMONIK_NUGET_REPOS=./dist
+          export ARMONIK_NUGET_REPOS=$PWD/dist
           make build-htc-grid-dotnet5.0-api-internal BUILD_TYPE=$(buildmode)
           cp ./dist/HTCGridAPI* $(Build.ArtifactStagingDirectory)/HTCGridAPI/$(buildmode)/
         displayName: Build dotnet package
@@ -160,7 +160,7 @@ stages:
           sudo apt update && sudo apt install -y make
           mkdir -p dist
           cp -r $(System.ArtifactsDirectory)/HTCGridApi/$(buildmode)/. $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. dist/.
-          export ARMONIK_NUGET_REPOS=./dist
+          export ARMONIK_NUGET_REPOS=$PWD/dist
           make build-armonik-dotnet5.0-api BUILD_TYPE=$(buildmode)
           cp ./dist/Armonik.api* $(Build.ArtifactStagingDirectory)/Armonik.api/$(buildmode)/
         displayName: Build dotnet package
