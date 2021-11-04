@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-DIST_DIR=../../../../dist
 SRC     := ./api
 SRCS    := $(wildcard $(SRC)/*.py)
 PACKAGE_NAME=api

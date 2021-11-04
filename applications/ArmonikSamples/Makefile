@@ -1,5 +1,4 @@
 CURRENT_DIR:=$(shell pwd)
-DIST_DIR?=./dist
 BUILD_TYPE?=Release
 
 .PHONY: clean all client server

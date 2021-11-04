@@ -4,7 +4,6 @@
 
 GENERATED?=$(shell pwd)/generated
 SRCS    := api.yaml
-DIST_DIR?=$(shell pwd)/../../../dist
 DOCKER_USER_ID:=$(shell id -u)
 DOCKER_GROUP_ID:=$(shell id -g)
 SRCS    := api.yaml

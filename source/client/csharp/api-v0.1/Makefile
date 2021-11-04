@@ -4,10 +4,9 @@
 
 
 GENERATED?=$(shell pwd)/generated
-DIST_DIR?=$(shell pwd)/../../../../dist
 BUILD_TYPE?=Release
 
-.PHONY: all clean build-package bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll $(DIST_DIR)/dotnet5.0/HTCGridAPI.$(HTCGridAPI).nupkg
+.PHONY: all clean build-package bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll ${ARMONIK_NUGET_REPOS}/HTCGridAPI.$(HTCGridAPI).nupkg
 
 
 all: build-package
@@ -15,12 +14,12 @@ all: build-package
 bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll:
 	dotnet restore && dotnet clean &&  dotnet build --configuration $(BUILD_TYPE)
 
-$(DIST_DIR)/dotnet5.0/HTCGridAPI.$(HTCGridAPI).nupkg: bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll
-	dotnet pack -c $(BUILD_TYPE) -o $(DIST_DIR)/dotnet5.0
+${ARMONIK_NUGET_REPOS}/HTCGridAPI.$(HTCGridAPI).nupkg: bin/$(BUILD_TYPE)/net5.0/ref/HTCGridAPI.dll
+	dotnet pack -c $(BUILD_TYPE) -o ${ARMONIK_NUGET_REPOS}
 
-build-package: $(DIST_DIR)/dotnet5.0/HTCGridAPI.$(HTCGridAPI).nupkg
+build-package: ${ARMONIK_NUGET_REPOS}/HTCGridAPI.$(HTCGridAPI).nupkg
 
 clean:
 	dotnet clean
-	rm -rf $(DIST_DIR)/dotnet5.0/HTCGridAPI.$(HTCGridAPI).*
+	rm -rf ${ARMONIK_NUGET_REPOS}/HTCGridAPI.$(HTCGridAPI).*
 	rm -rf obj bin

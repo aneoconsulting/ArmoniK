@@ -3,8 +3,6 @@
 # Licensed under the Apache License, Version 2.0 https://aneo.eu/apache-2-0/
 
 
-GENERATED?=$(shell pwd)/generated
-DIST_DIR?=$(shell pwd)/../../../../dist
 BUILD_TYPE?=Release
 ARMONIK_VERSION_API=1.0.0 #TODO Set the version from global env
 PROJECT_NAME=Armonik.api

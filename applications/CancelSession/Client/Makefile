@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
 
-GENERATED?=$(shell pwd)/generated/dotnet5.0/client
-DIST_DIR?=$(shell pwd)/../../../dist
 SUBMITTER_IMAGE_NAME=cancel_session
 BUILD_TYPE?=Release
 export ARMONIK_TAG
