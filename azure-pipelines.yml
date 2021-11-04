@@ -106,6 +106,7 @@ stages:
           downloadPath: '$(System.ArtifactsDirectory)'
       - script: |
           set -e
+          sudo apt update && sudo apt install -y make
           export ARMONIK_NUGET_REPOS=$(System.ArtifactsDirectory)/HttpApi/$(buildmode)
           make build-htc-grid-dotnet5.0-api-internal BUILD_TYPE=$(buildmode)
           dotnet pack source/client/csharp/api-v0.1/HTCGridAPI.csproj -c $(buildmode) -o $(Build.ArtifactStagingDirectory)/HTCGridAPI/$(buildmode)
@@ -154,6 +155,7 @@ stages:
           downloadPath: '$(System.ArtifactsDirectory)'
       - script: |
           set -e
+          sudo apt update && sudo apt install -y make
           mkdir -p dist
           cp -r $(System.ArtifactsDirectory)/HTCGridApi/$(buildmode)/. $(System.ArtifactsDirectory)/HttpApi/$(buildmode)/. dist/.
           export ARMONIK_NUGET_REPOS=$PWD/dist
