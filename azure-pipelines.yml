@@ -478,7 +478,9 @@ stages:
       name : $(AgentPoolName)
       vmImage : 'ubuntu-20.04'
     steps:
-      - script : sudo apt update -y && sudo apt install -y jq
+      - script : |
+          sudo apt update -y && sudo apt install -y jq docker.io make gnupg software-properties-common curl
+          sudo chown :sudo /var/run/docker.sock
         displayName: Install Apt dependencies
       - script : |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
@@ -486,6 +488,7 @@ stages:
           ./get_helm.sh
         displayName: Install Helm
       - script: |
+          set -e
           sudo curl -fsSL https://github.com/k3s-io/k3s/releases/latest/download/k3s -o /usr/local/bin/k3s
           sudo chmod 755 /usr/local/bin/k3s
           sudo ln -s k3s /usr/local/bin/kubectl
@@ -500,15 +503,12 @@ stages:
         displayName: Install K3s
       - script : |
           set -e
-          sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
           sudo curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
           sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
           sudo apt-get update && sudo apt-get install terraform
         displayName: Install terraform
       - script : |
           set -e
-          sudo  apt update && sudo apt install -y docker.io make
-          sudo chown :sudo /var/run/docker.sock
           cp configure/onpremise-linux-config.conf ./envvars.conf
           source ./envvars.conf
           export ARMONIK_TAG=$(TAGVar)
