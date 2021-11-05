@@ -486,7 +486,6 @@ stages:
           ./get_helm.sh
         displayName: Install Helm
       - script: |
-          set -e
           sudo curl -fsSL https://github.com/k3s-io/k3s/releases/latest/download/k3s -o /usr/local/bin/k3s
           sudo chmod 755 /usr/local/bin/k3s
           sudo ln -s k3s /usr/local/bin/kubectl
@@ -494,6 +493,8 @@ stages:
           sudo cp cicd/azure/k3s.service /etc/systemd/system/
           sudo systemctl daemon-reload
           sudo systemctl start k3s
+          sudo journalctl -u k3s
+          sudo systemctl status k3s.service
           mkdir -p ~/.kube
           cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
         displayName: Install K3s
