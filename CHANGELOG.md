@@ -1,10 +1,25 @@
 # Changelog
 
-## [dev](https://github.com/aneoconsulting/armonik/tree/dev) (2021-10-21)
+## [v0.9.4](https://github.com/aneoconsulting/armonik/tree/v0.9.4) (2021-11-04)
+Added
+-
+* Automatic tag of resources deployed in AWS
+* Implement other type of computations in ArmonikSamples
+* Ready to used docker image with Armonik installed
+
 Changed
 -
-* Update some make commands
+* Create more useful make target to compile only the relevant parts of the project
 * Update management of environment variables
+* Simplification of folder structure for applications
+* Use file and environment variables to track versions of Armonik projects and dependencies
+* Compile application client/server on the host instead of inside the build of the images to simplify and accelerate compilation
+
+Fixed
+-
+* Integration with Htc.Mock
+* Debug mode
+* Execution of ArmonikSample in AWS
 
 ## [v0.9.2.RC](https://github.com/aneoconsulting/armonik/tree/v0.9.2.RC) (2021-10-21)
 Fixed
