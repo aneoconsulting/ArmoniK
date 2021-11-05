@@ -116,14 +116,10 @@ k8s-jobs:
 #############################
 FILE_HANDLER="$(ARMONIK_APPLICATION_NAME)::$(ARMONIK_APPLICATION_NAME).Function::FunctionHandler"
 
-app-configs: $(ARMONIK_APPLICATION_NAME)-config-dotnet5.0
-
-local-app-configs: $(ARMONIK_APPLICATION_NAME)-config-local-dotnet5.0
-
-$(ARMONIK_APPLICATION_NAME)-config-dotnet5.0:
+app-configs:
 	@$(MAKE) -C ./applications/apps_core/configurations generated-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
 
-$(ARMONIK_APPLICATION_NAME)-config-local-dotnet5.0:
+local-app-configs:
 	@$(MAKE) -C ./applications/apps_core/configurations generated-local-dotnet5.0 FILE_HANDLER=$(FILE_HANDLER) BUILD_TYPE=$(BUILD_TYPE)
 
 

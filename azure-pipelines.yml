@@ -514,7 +514,7 @@ stages:
           export ARMONIK_TAG=$(TAGVar)
           export ARMONIK_DOCKER_REGISTRY=dockerhubaneo
           make init-grid-local-deployment
-          make app-configs
+          make local-app-configs
           cat generated/local_dotnet5.0_runtime_grid_config.json
           cd local_deployment/grid/terraform && terraform apply -auto-approve -var-file ../../../generated/local_dotnet5.0_runtime_grid_config.json
           kubectl get po -A
