@@ -136,15 +136,15 @@ utils:
 api: http-apis
 	$(MAKE) -C ./source/client/python/api-v0.1
 
-build-dotnet5.0-api: http-apis
+build-http-api: http-apis
 	cd ./generated/csharp/http_api/ && dotnet restore src/HttpApi/ && dotnet build src/HttpApi/ --configuration $(BUILD_TYPE)
 
-build-htc-grid-dotnet5.0-api: build-dotnet5.0-api build-htc-grid-dotnet5.0-api-internal
-build-htc-grid-dotnet5.0-api-internal:
+build-htc-grid-api: build-http-api build-htc-grid-api-internal
+build-htc-grid-api-internal:
 	$(MAKE) -C ./source/client/csharp/api-v0.1 all BUILD_TYPE=$(BUILD_TYPE)
 
-build-armonik-dotnet5.0-api: build-htc-grid-dotnet5.0-api build-armonik-dotnet5.0-api-internal
-build-armonik-dotnet5.0-api-internal:
+build-armonik-api: build-htc-grid-api build-armonik-api-internal
+build-armonik-api-internal:
 	$(MAKE) -C ./source/control_plane/csharp/Armonik.api all BUILD_TYPE=$(BUILD_TYPE)
 
 clean-app:
@@ -160,14 +160,14 @@ clean-app:
 
 all-images: armonik-full image-agent lambda-control-plane
 
-sample-app: upload-dotnet5.0-submitter upload-dotnet5.0-server
+sample-app: upload-submitter upload-server
 
-armonik-full: build-armonik-dotnet5.0-api sample-app
+armonik-full: build-armonik-api sample-app
 
-upload-dotnet5.0-submitter:
+upload-submitter:
 	$(MAKE) -C ./applications/$(ARMONIK_APPLICATION_NAME) client BUILD_TYPE=$(BUILD_TYPE)
 
-upload-dotnet5.0-server:
+upload-server:
 	$(MAKE) -C ./applications/$(ARMONIK_APPLICATION_NAME) server BUILD_TYPE=$(BUILD_TYPE)
 
 image-agent: utils api

@@ -3,6 +3,7 @@
 3. [Build Armonik artifacts](#build-armonik-artifacts)
    1. [Build Armonik artifacts on local](#build-armonik-artifacts-on-local)
    2. [Build client/server artifacts on local](#build-client-/-server-artifacts-on-local)
+   3. [Build Armonik API](#build-armonik-api)
 5. [Deploy Armonik resources](#deploy-armonik-resources)
 6. [Running an example application](#running-an-example-application)
 7. [Clean and destroy Armonik resources](#clean-and-destroy-armonik-resources)
@@ -167,6 +168,12 @@ To build only the sample application in `<project_root>`:
 make sample-app ARMONIK_APPLICATION_NAME=<Name of your sample>
 ```
 replace the name of the sample application.
+
+## Build Armonik API <a name="build-armonik-api"></a>
+To build only Armonik API in `<project_root>`:
+```bash
+make build-armonik-api
+```
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 1. Run the following to initialize the Terraform environment:

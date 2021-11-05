@@ -6,6 +6,7 @@
 2. [Build Armonik artifacts](#build-armonik-artifacts)
    1. [Build all Armonik artifacts](#build-all-armonik-artifacts)
    2. [Build client/server artifacts](#build-client-/-server-artifacts)
+   3. [Build Armonik API](#build-armonik-api)
 3. [Deploy Armonik resources](#deploy-armonik-resources)
 4. [Running an example application](#running-an-example-application)
 
@@ -120,6 +121,12 @@ To build only the sample application in `<project_root>`:
 make sample-app ARMONIK_APPLICATION_NAME=<Name of your sample>
 ```
 replace the name of the sample application.
+
+## Build Armonik API <a name="build-armonik-api"></a>
+To build only Armonik API in `<project_root>`:
+```bash
+make build-armonik-api
+```
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>
 1. An encryption key that will be needed during the deployment:
