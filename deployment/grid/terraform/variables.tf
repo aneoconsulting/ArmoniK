@@ -323,6 +323,10 @@ variable "agent_configuration_filename" {
   default = "Agent_config.json"
 }
 
+variable "client_configuration_filename" {
+  description = "filename were client configuration (in json) is going to be stored"
+  default = "Client_config.json"
+}
 
 variable "api_gateway_version" {
   description = "version deployed by API Gateway"
