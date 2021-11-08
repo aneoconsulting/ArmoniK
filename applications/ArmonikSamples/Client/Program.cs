@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.Serialization;
 using StackExchange.Redis;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections;
 using System.IO;
@@ -16,6 +15,17 @@ using Armonik.sdk;
 
 namespace HtcClient
 {
+    class SimpleStats
+    {
+        public int _run {get;set;}
+        public string _test {get;set;}
+        public long _ellapsedTime {get;set;}
+        public int _nbTasks {get;set;}
+        public string ToJson()
+        {
+            return JsonSerializer.Serialize(this);
+        }
+    }
     class Program
     {
         static void Main(string[] args)
@@ -66,41 +76,53 @@ namespace HtcClient
 
             ClientStartup1(dataClient, htcGridClient, 3);
             // ClientStartup2(dataClient, htcGridClient);
-            TestNTasksClient(dataClient, htcGridClient, 50);
-            TestNTasksServer(dataClient, htcGridClient, 50);
+            // TestNTasksClient(dataClient, htcGridClient, 50, 30);
+            // TestNTasksServer(dataClient, htcGridClient, 50, 30);
         }
 
-        public static void TestNTasksClient(HtcDataClient dataClient, HtcGridClient htcGridClient, int nbTasks)
+        public static void TestNTasksClient(HtcDataClient dataClient, HtcGridClient htcGridClient, int nbTasks, int nRuns)
         {
-            var clientPayload = new ClientPayload() { taskType = 3 };
-            byte[] payload = clientPayload.serialize();
+            for (int run = 0; run < nRuns; run++)
+            {
+                var clientPayload = new ClientPayload() { taskType = 3 };
+                byte[] payload = clientPayload.serialize();
 
-            List<byte[]> payloads = new List<byte[]>(nbTasks);
-            for (int i = 0; i < nbTasks; i++)
-            {
-                payloads.Add(payload);
+                List<byte[]> payloads = new List<byte[]>(nbTasks);
+                for (int i = 0; i < nbTasks; i++)
+                {
+                    payloads.Add(payload);
+                }
+                Stopwatch sw = Stopwatch.StartNew();
+                int finalResult = 0;
+                var taskIds = htcGridClient.SubmitTasks(payloads);
+                foreach (var taskId in taskIds)
+                {
+                    htcGridClient.WaitCompletion(taskId);
+                }
+                long elapsedMilliseconds = sw.ElapsedMilliseconds;
+                Logger.Info($"Client called {nbTasks} tasks in {elapsedMilliseconds} ms");
+                var stat = new SimpleStats() { _ellapsedTime = elapsedMilliseconds, _run = run, _test = "TestNTasksClient", _nbTasks = nbTasks };
+                Logger.Info("JSON Result : " + stat.ToJson());
+                Thread.Sleep(10000);
             }
-            Stopwatch sw = Stopwatch.StartNew();
-            int finalResult = 0;
-            var taskIds = htcGridClient.SubmitTasks(payloads);
-            foreach (var taskId in taskIds)
+        }
+
+        public static void TestNTasksServer(HtcDataClient dataClient, HtcGridClient htcGridClient, int nbTasks, int nRuns)
+        {
+            for (int run = 0; run < nRuns; run++)
             {
+                List<int> numbers = new List<int>() { nbTasks };
+                var clientPayload = new ClientPayload() { numbers = numbers, taskType = 4 };
+                Stopwatch sw = Stopwatch.StartNew();
+                string taskId = htcGridClient.SubmitTask(clientPayload.serialize());
                 htcGridClient.WaitCompletion(taskId);
+                long elapsedMilliseconds = sw.ElapsedMilliseconds;
+
+                Logger.Info($"Client called 1 tasks that spanws {nbTasks - 1} task on the server side in {elapsedMilliseconds} ms");
+                var stat = new SimpleStats() { _ellapsedTime = elapsedMilliseconds, _run = run, _test = "TestNTasksServer", _nbTasks = nbTasks };
+                Logger.Info("JSON Result : " + stat.ToJson());
+                Thread.Sleep(10000);
             }
-            long elapsedMilliseconds = sw.ElapsedMilliseconds;
-            Logger.Info($"Client called {nbTasks} tasks in {elapsedMilliseconds} ms");
-        }
-
-        public static void TestNTasksServer(HtcDataClient dataClient, HtcGridClient htcGridClient, int nbTasks)
-        {
-            List<int> numbers = new List<int>() { nbTasks };
-            var clientPayload = new ClientPayload() { numbers = numbers, taskType = 4 };
-            Stopwatch sw = Stopwatch.StartNew();
-            string taskId = htcGridClient.SubmitTask(clientPayload.serialize());
-            htcGridClient.WaitCompletion(taskId);
-            long elapsedMilliseconds = sw.ElapsedMilliseconds;
-
-            Logger.Info($"Client called 1 tasks that spanws {nbTasks - 1} task on the server side in {elapsedMilliseconds} ms");
         }
 
         public static void ClientStartup1(HtcDataClient dataClient, HtcGridClient htcGridClient, int nbTasks)
