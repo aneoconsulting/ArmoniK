@@ -12,7 +12,7 @@ namespace HTCGrid
         private static readonly object Sync = new object();
         private static Level _defaultLevel = Level.Info;
         private static bool _isTurned = true;
-        private static bool _isTurnedDebug = true;
+        private static bool _isTurnedDebug = false;
 
         public enum Level
         {
@@ -33,25 +33,20 @@ namespace HTCGrid
             }
         }
 
-        public static void DefaultInitialization()
+        public static void Info(string message)
         {
-            Log(Level.Info, "Default initialization");
-        }
 
-        public static Level DefaultLevel
-        {
-            get { return _defaultLevel; }
-            set { _defaultLevel = value; }
+            Log(Level.Info, message);
         }
-
-        public static void Log()
+        public static void Debug(string message)
         {
-            Log("There is no message");
+
+            Log(Level.Debug, message);
         }
-
-        public static void Log(string message)
+        public static void Error(string message)
         {
-            Log(_defaultLevel, message);
+
+            Log(Level.Error, message);
         }
 
         public static void Log(Level level, string message)
@@ -63,18 +58,6 @@ namespace HTCGrid
             var lineNumber = stackFrame.GetFileLineNumber();
 
             Log(level, message, callingClass, callingMethod, lineNumber);
-        }
-
-        public static void Log(Exception exception)
-        {
-            Log(Level.Error, exception.Message);
-        }
-
-        public static void Log<TClass>(Exception exception) where TClass : class
-        {
-            var message = string.Format("Log exception -> Message: {0}\nStackTrace: {1}", exception.Message,
-                                        exception.StackTrace);
-            Log<TClass>(Level.Error, message);
         }
 
         public static void Log<TClass>(string message) where TClass : class
@@ -118,7 +101,7 @@ namespace HTCGrid
             {
                 var methodBase = stackTrace.GetFrame(i).GetMethod();
                 var name = MethodBase.GetCurrentMethod().Name;
-                if (!methodBase.Name.Equals("Log") && !methodBase.Name.Equals(name))
+                if (!methodBase.Name.Equals("Log") && !methodBase.Name.Equals("Info") && !methodBase.Name.Equals("Error") && !methodBase.Name.Equals("Debug") && !methodBase.Name.Equals(name))
                     return new StackFrame(i, true);
             }
             return null;
@@ -142,6 +125,10 @@ namespace HTCGrid
         public static void DebugOff()
         {
             _isTurnedDebug = false;
+        }
+        public static bool isDebug()
+        {
+            return _isTurnedDebug;
         }
     }
 }

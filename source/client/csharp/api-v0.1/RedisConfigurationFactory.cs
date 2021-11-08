@@ -37,12 +37,12 @@ namespace HTCGrid
                 || String.Equals(gridConfig.cluster_config.ToLower(), "cluster")) {
 
                 if (!File.Exists(gridConfig.redis_ca_cert)) {
-                    Console.WriteLine(gridConfig.redis_ca_cert + " was not found !");
+                    Logger.Error(gridConfig.redis_ca_cert + " was not found !");
                     throw new FileNotFoundException(gridConfig.redis_ca_cert + " was not found !");
                 }
 
                 if (!File.Exists(gridConfig.redis_client_pfx)) {
-                    Console.WriteLine(gridConfig.redis_client_pfx + " was not found !");
+                    Logger.Error(gridConfig.redis_client_pfx + " was not found !");
                     throw new FileNotFoundException(gridConfig.redis_client_pfx + " was not found !");
                 }
 
@@ -59,11 +59,11 @@ namespace HTCGrid
                     if (sslPolicyErrors == SslPolicyErrors.None)
                         return true;
 
-                    Console.WriteLine("");
-                    Console.WriteLine("");
-                    Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
-                    Console.WriteLine(certificate);
-                    Console.WriteLine(chain);
+                    Logger.Error("");
+                    Logger.Error("");
+                    Logger.Error($"Certificate error: {sslPolicyErrors}");
+                    Logger.Error(certificate.ToString());
+                    Logger.Error(chain.ToString());
 
                     return false;
                 };

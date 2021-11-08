@@ -20,7 +20,7 @@ namespace HtcClient
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello Armonik Sample !");
+            Logger.Info("Hello Armonik Sample !");
             var armonik_wait_client = Environment.GetEnvironmentVariable("ARMONIK_DEBUG_WAIT_CLIENT");
             if (!String.IsNullOrEmpty(armonik_wait_client))
             {
@@ -28,7 +28,7 @@ namespace HtcClient
 
                 if (arminik_debug_wait_client > 0)
                 {
-                    Console.WriteLine($"Debug: Sleep {arminik_debug_wait_client} seconds");
+                    Logger.Info($"Debug: Sleep {arminik_debug_wait_client} seconds");
                     Thread.Sleep(arminik_debug_wait_client * 1000);
                 }
             }
@@ -45,7 +45,7 @@ namespace HtcClient
             }
             catch (FileNotFoundException ioEx)
             {
-                Console.WriteLine(ioEx.Message);
+                Logger.Error(ioEx.Message);
                 Environment.Exit(-1);
             }
 
@@ -66,8 +66,8 @@ namespace HtcClient
 
             ClientStartup1(dataClient, htcGridClient, 3);
             // ClientStartup2(dataClient, htcGridClient);
-            // TestNTasksClient(dataClient, htcGridClient, 50);
-            // TestNTasksServer(dataClient, htcGridClient, 50);
+            TestNTasksClient(dataClient, htcGridClient, 50);
+            TestNTasksServer(dataClient, htcGridClient, 50);
         }
 
         public static void TestNTasksClient(HtcDataClient dataClient, HtcGridClient htcGridClient, int nbTasks)
@@ -88,7 +88,7 @@ namespace HtcClient
                 htcGridClient.WaitCompletion(taskId);
             }
             long elapsedMilliseconds = sw.ElapsedMilliseconds;
-            Logger.Log($"Client called {nbTasks} tasks in {elapsedMilliseconds} ms");
+            Logger.Info($"Client called {nbTasks} tasks in {elapsedMilliseconds} ms");
         }
 
         public static void TestNTasksServer(HtcDataClient dataClient, HtcGridClient htcGridClient, int nbTasks)
@@ -100,7 +100,7 @@ namespace HtcClient
             htcGridClient.WaitCompletion(taskId);
             long elapsedMilliseconds = sw.ElapsedMilliseconds;
 
-            Logger.Log($"Client called 1 tasks that spanws {nbTasks - 1} task on the server side in {elapsedMilliseconds} ms");
+            Logger.Info($"Client called 1 tasks that spanws {nbTasks - 1} task on the server side in {elapsedMilliseconds} ms");
         }
 
         public static void ClientStartup1(HtcDataClient dataClient, HtcGridClient htcGridClient, int nbTasks)
@@ -117,7 +117,7 @@ namespace HtcClient
             byte[] output = dataClient.GetData(taskId);
             int result = BitConverter.ToInt32(output, 0);
 
-            Logger.Log($"output result : {result}");
+            Logger.Info($"output result : {result}");
         }
 
         public static void ClientStartup2(HtcDataClient dataClient, HtcGridClient htcGridClient)
@@ -145,7 +145,7 @@ namespace HtcClient
             _1_Job_of_N_Tasks(dataClient, htcGridClient, payload, 200, outputMessages);
             _1_Job_of_N_Tasks(dataClient, htcGridClient, payload, 500, outputMessages);
 
-            Logger.Log(outputMessages.ToString());
+            Logger.Info(outputMessages.ToString());
         }
 
         private static void N_Jobs_of_1_Task(HtcDataClient dataClient, HtcGridClient htcGridClient, byte[] payload, int nbTasks, StringBuilder outputMessages)

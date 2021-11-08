@@ -19,7 +19,7 @@ namespace HTCGrid
         // can be created only through HTCGridConnector not by a client explicitly.
         public GridSession(string session_id, StorageInterface storageInterface, GridConfig gridConfig)
         {
-            Console.WriteLine(String.Format("Instanciating Grid Session [{0}]", session_id));
+            Logger.Info(String.Format("Instanciating Grid Session [{0}]", session_id));
 
             this.session_id = session_id;
 
@@ -27,7 +27,7 @@ namespace HTCGrid
 
             SetUpHTTPConnection(gridConfig);
 
-            Console.WriteLine("GridSession created");
+            Logger.Info("GridSession created");
         }
 
         private string session_id;
@@ -68,7 +68,7 @@ namespace HTCGrid
             apiConfig.BasePath = gridConfig.private_api_gateway_url;
             apiConfig.ApiKey.Add("x-api-key", gridConfig.api_gateway_key);
             apiConfig.ApiKey.Add("api_key", gridConfig.api_gateway_key);
-            Console.WriteLine($"(GridSession) apigateway baseUrl: {apiConfig.BasePath}");
+            Logger.Info($"(GridSession) apigateway baseUrl: {apiConfig.BasePath}");
 
             this.apiInstance = new DefaultApi(apiConfig);
         }
@@ -108,7 +108,7 @@ namespace HTCGrid
             // TODO
             // string submission_id = String.Format("{0}.{0}", this.session_id, this.submissions_count);
             string submission_id = String.Format("{0}+submission_id{1}", session_id, Guid.NewGuid().ToString());
-            Console.WriteLine("(GridSession) submission_id: "+ submission_id);
+            Logger.Info("(GridSession) submission_id: "+ submission_id);
             this.submissions_count += 1;
 
             GridSubmissionContainer gsc = new GridSubmissionContainer(session_id, new_task_ids, context);
@@ -120,13 +120,13 @@ namespace HTCGrid
             // <3.> Invoke submit_tasks Lambda with the reference to the submission id
             try {
                 var res = apiInstance.SubmitPost(new PostSubmitResponse(sessionId: submission_id));
-                Console.WriteLine(res);
+                Logger.Info(res.ToString());
             }
             catch (ApiException e)
             {
-                Console.WriteLine("Exception when calling DefaultApi.SubmitPost: " + e.Message);
-                Console.WriteLine("Status Code: " + e.ErrorCode);
-                Console.WriteLine(e.StackTrace);
+                Logger.Error("Exception when calling DefaultApi.SubmitPost: " + e.Message);
+                Logger.Error("Status Code: " + e.ErrorCode);
+                Logger.Error(e.StackTrace);
             }
             return new_task_ids.ToArray();
         }
@@ -167,9 +167,9 @@ namespace HTCGrid
             }
             catch (ApiException e)
             {
-                Console.WriteLine("Exception when calling DefaultApi.CheckResults: " + e.Message);
-                Console.WriteLine("Status Code: " + e.ErrorCode);
-                Console.WriteLine(e.StackTrace);
+                Logger.Error("Exception when calling DefaultApi.CheckResults: " + e.Message);
+                Logger.Error("Status Code: " + e.ErrorCode);
+                Logger.Error(e.StackTrace);
                 return null;
             }
 
@@ -184,9 +184,9 @@ namespace HTCGrid
             }
             catch (ApiException e)
             {
-                Console.WriteLine("Exception when calling DefaultApi.CancelPost: " + e.Message);
-                Console.WriteLine("Status Code: " + e.ErrorCode);
-                Console.WriteLine(e.StackTrace);
+                Logger.Error("Exception when calling DefaultApi.CancelPost: " + e.Message);
+                Logger.Error("Status Code: " + e.ErrorCode);
+                Logger.Error(e.StackTrace);
                 return null;
             }
         }

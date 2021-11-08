@@ -52,11 +52,10 @@ namespace Armonik.sdk
         //TODO change signature to get a default timeout time in seconds
         public void WaitCompletion(string taskId)
         {
-            Console.WriteLine("Start WaitCompletion");
+            Logger.Info("Start WaitCompletion");
             int timeOut = 600; // 10 min
             if (submittedTasks_.AleradyFinished(taskId))
                 return;
-            Console.WriteLine("Check result WaitCompletion");
 
             for (int i = 0; i < timeOut; i++)
             {
@@ -65,19 +64,19 @@ namespace Armonik.sdk
 
                 if (sessionResponse == null)
                 {
-                    Console.WriteLine("sessionResponse = NULL");
+                    Logger.Error("sessionResponse = NULL");
                     continue;
                 }
 
                 if (sessionResponse.Cancelled != null && sessionResponse.Cancelled.Any())
                 {
-                    Console.WriteLine(String.Format("WARN :  Task {0} cancelled ", taskId));
+                    Logger.Debug(String.Format("Task {0} cancelled ", taskId));
                     break;
                 }
 
                 if (sessionResponse.Failed != null && sessionResponse.Failed.Any())
                 {
-                    Console.WriteLine(String.Format("ERROR :  Task {0} failed ", taskId));
+                    Logger.Error(String.Format("Task {0} failed ", taskId));
                     break;
                 }
 
@@ -85,20 +84,26 @@ namespace Armonik.sdk
 
                 if (finishedTasks == null || !finishedTasks.Any())
                 {
-                    Console.WriteLine(String.Format("WARN :  Task {0} no result available", taskId));
+                    Logger.Debug(String.Format("Task {0} no result available", taskId));
                     continue;
                 }
                 else
                 {
-                    Console.WriteLine("WARN : printing element in finished state");
-                    finishedTasks.ForEach(Console.WriteLine);
+                    if (Logger.isDebug())
+                    {
+                        Logger.Debug("printing element in finished state");
+                        foreach (var task in finishedTasks)
+                        {
+                            Logger.Debug(task);
+                        }
+                    }
                 }
 
                 submittedTasks_.Add(finishedTasks, sessionResponse.FinishedOutput);
 
                 if (submittedTasks_.AleradyFinished(taskId))
                 {
-                    Console.WriteLine("INFO: Task {0} finished", taskId);
+                    Logger.Info($"Task {taskId} finished");
                     return;
                 }
             }
@@ -121,7 +126,7 @@ namespace Armonik.sdk
 
         public IEnumerable<string> SubmitTasks(IEnumerable<byte[]> payloads)
         {
-            Console.WriteLine($"Will submit tasks for session {gridSession_.SessionId}.");
+            Logger.Info($"Tasks submission for session {gridSession_.SessionId}.");
 
             var result = new List<string>();
             var currentBatch = new List<HtcTask>(500);
@@ -130,7 +135,7 @@ namespace Armonik.sdk
                 currentBatch.Add(new HtcTask() { SessionId = gridSession_.SessionId, Payload = payload, debug = gridConfig_.debug });
                 if (currentBatch.Count() == 500)
                 {
-                    Console.WriteLine($"(1) Will submit a batch of {currentBatch.Count()} tasks");
+                    Logger.Debug($"(1) Will submit a batch of {currentBatch.Count()} tasks");
                     var ids = gridSession_.SendTasks(currentBatch.ToArray());
                     result.AddRange(ids);
                     currentBatch.Clear();
@@ -139,13 +144,13 @@ namespace Armonik.sdk
 
             if (currentBatch.Any())
             {
-                Console.WriteLine($"(2) Will submit a batch of {currentBatch.Count()} tasks");
+                Logger.Debug($"(2) Will submit a batch of {currentBatch.Count()} tasks");
                 var ids = gridSession_.SendTasks(currentBatch.ToArray());
                 result.AddRange(ids);
                 currentBatch.Clear();
             }
 
-            Console.WriteLine($"{result.Count()} tasks submitted for session {gridSession_.SessionId}.");
+            Logger.Info($"{result.Count()} tasks submitted for session {gridSession_.SessionId}.");
             return result;
         }
 

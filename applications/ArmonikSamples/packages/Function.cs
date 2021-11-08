@@ -64,7 +64,7 @@ namespace ArmonikSamples
             ////////////////////////////////////////////////////////////////////
             //// 1. First extract payload, sessionId ///////////////////////////
             ////////////////////////////////////////////////////////////////////
-            Console.WriteLine("Info: " + "New SessionId is coming from Armonik Client : " + inputTask.SessionId);
+            Logger.Info("New SessionId is coming from Armonik Client : " + inputTask.SessionId);
 
             ////////////////////////////////////////////////////////////////////
             //// 2. Do computation /////////////////////////////////////////////
@@ -76,7 +76,7 @@ namespace ArmonikSamples
                 firstRun = false;
             }
 
-            Console.WriteLine($"New Payload from task : {inputTask.TaskId} ");
+            Logger.Info($"New Payload from task : {inputTask.TaskId} ");
 
 
             gridWorker.Execute(inputTask.SessionId, inputTask.TaskId, inputTask.Payload);
@@ -90,7 +90,7 @@ namespace ArmonikSamples
             // // 3. Launch Sub-tasks ///////////////////////////////////////////
             // // ////////////////////////////////////////////////////////////////
 
-            Console.WriteLine("Info: " + "Task finished");
+            Logger.Info("Task finished");
 
             ////////////////////////////////////////////////////////////////////
             //// 4. Return Results /////////////////////////////////////////////

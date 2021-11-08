@@ -9,9 +9,9 @@ namespace HTCGrid
         
         public InOutRedis(GridConfig gridConfig) {
             var configurationOptions = RedisConfigurationFactory.createConfiguration(gridConfig);
-            Console.WriteLine($"(InOutRedis) Redis Connecting to URL: ({configurationOptions.EndPoints[0]}, ssl={configurationOptions.Ssl}, connectTimeout={configurationOptions.ConnectTimeout})");
+            Logger.Info($"(InOutRedis) Redis Connecting to URL: ({configurationOptions.EndPoints[0]}, ssl={configurationOptions.Ssl}, connectTimeout={configurationOptions.ConnectTimeout})");
             ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(configurationOptions);
-            Console.WriteLine("(InOutRedis) Redis Connecting successful");
+            Logger.Info("(InOutRedis) Redis Connecting successful");
             this.db = connection.GetDatabase();
         }
         

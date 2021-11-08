@@ -29,7 +29,7 @@ namespace ArmonikSamples
             if (clientPayload.numbers.Count == 1)
             {
                 int value = clientPayload.numbers[0] * clientPayload.numbers[0];
-                Logger.Log<ServiceContainer>($"Compute {value} in {taskContext.TaskId}");
+                Logger.Info($"Compute {value} in {taskContext.TaskId}");
                 writeTaskOutput(taskContext.TaskId, BitConverter.GetBytes(value));
             }
             else if (clientPayload.numbers.Count > 1)
@@ -48,7 +48,7 @@ namespace ArmonikSamples
                 byte[] arr = htcDataClient.GetData(subTaskId);
                 int subResult = BitConverter.ToInt32(arr);
 
-                Logger.Log<ServiceContainer>($"Compute {square} + {subResult} in {taskContext.TaskId}");
+                Logger.Info($"Compute {square} + {subResult} in {taskContext.TaskId}");
                 writeTaskOutput(taskContext.TaskId, BitConverter.GetBytes(square + subResult));
             }
         }
@@ -70,7 +70,7 @@ namespace ArmonikSamples
                 finalResult += BitConverter.ToInt32(taskResult);
             }
             long elapsedMilliseconds = sw.ElapsedMilliseconds;
-            Logger.Log($"Server called {nbTasks} tasks in {elapsedMilliseconds} ms agregated result = {finalResult}");
+            Logger.Info($"Server called {nbTasks} tasks in {elapsedMilliseconds} ms agregated result = {finalResult}");
         }
 
         public void ComputeCube(TaskContext taskContext, ClientPayload clientPayload)
@@ -93,7 +93,7 @@ namespace ArmonikSamples
             }
             else if (clientPayload.taskType == 3)
             {
-                Logger.Log($"Empty task, sessionId : {sessionContext.SessionId}, taskId : {taskContext.TaskId}, sessionId from task : {taskContext.SessionId}");
+                Logger.Info($"Empty task, sessionId : {sessionContext.SessionId}, taskId : {taskContext.TaskId}, sessionId from task : {taskContext.SessionId}");
             }
             else if (clientPayload.taskType == 4)
             {
@@ -103,7 +103,7 @@ namespace ArmonikSamples
             }
             else
             {
-                Logger.Log<ServiceContainer>($"Task type {clientPayload.taskType}");
+                Logger.Info($"Task type {clientPayload.taskType}");
             }
         }
 

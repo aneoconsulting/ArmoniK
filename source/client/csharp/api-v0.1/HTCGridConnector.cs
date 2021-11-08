@@ -37,7 +37,7 @@ namespace HTCGrid
         
         public GridSession OpenSession(string sessionId)
         {
-            Console.WriteLine("HtcGridConnector : OpenSession with Id : " + sessionId);
+            Logger.Info("HtcGridConnector : OpenSession with Id : " + sessionId);
             return new GridSession(sessionId, this.storageInterface, this.gridConfig);
         }
         
