@@ -64,13 +64,52 @@ namespace HtcClient
 
             dataClient.ConnectDB();
 
-            ClientStartup1(dataClient, htcGridClient);
-            //ClientStartup2(dataClient, htcGridClient);
+            ClientStartup1(dataClient, htcGridClient, 3);
+            // ClientStartup2(dataClient, htcGridClient);
+            // TestNTasksClient(dataClient, htcGridClient, 50);
+            // TestNTasksServer(dataClient, htcGridClient, 50);
         }
 
-        public static void ClientStartup1(HtcDataClient dataClient, HtcGridClient htcGridClient)
+        public static void TestNTasksClient(HtcDataClient dataClient, HtcGridClient htcGridClient, int nbTasks)
         {
-            List<int> numbers = new List<int>() { 1, 2, 3 };
+            var clientPayload = new ClientPayload() { taskType = 3 };
+            byte[] payload = clientPayload.serialize();
+
+            List<byte[]> payloads = new List<byte[]>(nbTasks);
+            for (int i = 0; i < nbTasks; i++)
+            {
+                payloads.Add(payload);
+            }
+            Stopwatch sw = Stopwatch.StartNew();
+            int finalResult = 0;
+            var taskIds = htcGridClient.SubmitTasks(payloads);
+            foreach (var taskId in taskIds)
+            {
+                htcGridClient.WaitCompletion(taskId);
+            }
+            long elapsedMilliseconds = sw.ElapsedMilliseconds;
+            Logger.Log($"Client called {nbTasks} tasks in {elapsedMilliseconds} ms");
+        }
+
+        public static void TestNTasksServer(HtcDataClient dataClient, HtcGridClient htcGridClient, int nbTasks)
+        {
+            List<int> numbers = new List<int>() { nbTasks };
+            var clientPayload = new ClientPayload() { numbers = numbers, taskType = 4 };
+            Stopwatch sw = Stopwatch.StartNew();
+            string taskId = htcGridClient.SubmitTask(clientPayload.serialize());
+            htcGridClient.WaitCompletion(taskId);
+            long elapsedMilliseconds = sw.ElapsedMilliseconds;
+
+            Logger.Log($"Client called 1 tasks that spanws {nbTasks - 1} task on the server side in {elapsedMilliseconds} ms");
+        }
+
+        public static void ClientStartup1(HtcDataClient dataClient, HtcGridClient htcGridClient, int nbTasks)
+        {
+            List<int> numbers = new List<int>();
+            for (int i = 0; i < nbTasks; i++)
+            {
+                numbers.Add(i);
+            }
             var clientPaylaod = new ClientPayload() { numbers = numbers, taskType = 1 };
             string taskId = htcGridClient.SubmitTask(clientPaylaod.serialize());
 
