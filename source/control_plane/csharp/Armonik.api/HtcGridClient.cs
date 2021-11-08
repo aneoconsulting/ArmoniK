@@ -52,7 +52,7 @@ namespace Armonik.sdk
         //TODO change signature to get a default timeout time in seconds
         public void WaitCompletion(string taskId)
         {
-            Logger.Info("Start WaitCompletion");
+            Logger.Debug("Start WaitCompletion");
             int timeOut = 600; // 10 min
             if (submittedTasks_.AleradyFinished(taskId))
                 return;
