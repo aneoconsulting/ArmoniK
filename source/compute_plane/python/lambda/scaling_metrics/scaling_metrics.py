@@ -39,6 +39,7 @@ def lambda_handler(event, context):
         npods = task_pending + task_running
     print("pending task in Queue = {}".format(task_pending))
     print("running task in DB = {}".format(task_running))
+    print("Target = {}".format(npods))
     # Create CloudWatch client
     cloudwatch = boto3.client('cloudwatch')
     period = int(os.environ["PERIOD"])
