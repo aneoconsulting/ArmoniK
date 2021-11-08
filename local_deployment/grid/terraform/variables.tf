@@ -213,6 +213,11 @@ variable "agent_configuration_filename" {
   default = "Agent_config.json"
 }
 
+variable "client_configuration_filename" {
+  description = "filename were client configuration (in json) is going to be stored"
+  default = "Client_config.json"
+}
+
 variable "enable_xray" {
   description = "Enable XRAY at the agent level"
   type = number
@@ -316,7 +321,7 @@ variable "cluster_config" {
 
 variable "nginx_port" {
   description = "Port for nginx instance"
-  default = 80
+  default = 9080
   type = number
 }
 

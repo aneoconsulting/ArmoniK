@@ -28,7 +28,7 @@ validate:
 	terraform validate
 
 reset:
-	rm -rf .terraform* terraform.tfstate* Agent_config.json
+	rm -rf .terraform* terraform.tfstate* Agent_config.json Client_config.json
 	
 clean: reset
 	
