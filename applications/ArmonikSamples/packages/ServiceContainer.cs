@@ -99,7 +99,7 @@ namespace ArmonikSamples
             {
                 var newPayload = new ClientPayload() { taskType = 3 };
                 byte[] bytePayload = newPayload.serialize();
-                _1_Job_of_N_Tasks(taskContext, bytePayload, clientPayload.numbers[0]);
+                _1_Job_of_N_Tasks(taskContext, bytePayload, clientPayload.numbers[0] - 1);
             }
             else
             {
