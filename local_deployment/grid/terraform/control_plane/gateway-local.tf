@@ -1,6 +1,6 @@
 resource "kubernetes_namespace" "nginx_namespace" {
   metadata {
-    name = "ingress-nginx"
+    name   = "ingress-nginx"
     labels = {
       "helm.sh/chart"                = "ingress-nginx-4.0.1"
       "app.kubernetes.io/name"       = "ingress-nginx"
@@ -291,6 +291,12 @@ resource "kubernetes_service" "nginx_ingress_controller_service" {
 }
 
 resource "kubernetes_deployment" "nginx_ingress_controller_deployment" {
+  depends_on = [
+    kubernetes_config_map.nginx_ingress_configmap,
+    kubernetes_service.nginx_ingress_controller_service,
+    kubernetes_service_account.nginx_ingress_service_account,
+    kubernetes_service_account.admission_webhooks_service_account
+  ]
   metadata {
     name      = "ingress-nginx-controller"
     namespace = kubernetes_namespace.nginx_namespace.metadata.0.name
@@ -632,6 +638,7 @@ resource "kubernetes_role_binding" "admission_webhooks_job_patch_role_binding" {
 }
 
 resource "kubernetes_job" "admission_webhooks_job_create_secret" {
+  depends_on = [kubernetes_service_account.admission_webhooks_service_account]
   metadata {
     name        = "ingress-nginx-admission-create"
     namespace   = kubernetes_namespace.nginx_namespace.metadata.0.name
@@ -696,13 +703,14 @@ resource "kubernetes_job" "admission_webhooks_job_create_secret" {
     }
   }
 }
-/*
+
 resource "kubernetes_job" "admission_webhooks_job_patch_webhook" {
+  depends_on = [kubernetes_service_account.admission_webhooks_service_account]
   metadata {
     name        = "ingress-nginx-admission-patch"
     namespace   = kubernetes_namespace.nginx_namespace.metadata.0.name
     annotations = {
-      "helm.sh/hook"               = "pre-install,pre-upgrade"
+      "helm.sh/hook"               = "post-install,post-upgrade"
       "helm.sh/hook-delete-policy" = "before-hook-creation,hook-succeeded"
     }
     labels      = {
@@ -738,7 +746,7 @@ resource "kubernetes_job" "admission_webhooks_job_patch_webhook" {
             "--namespace=$(POD_NAMESPACE)",
             "--patch-mutating=false",
             "--secret-name=ingress-nginx-admission",
-            "-patch-failure-policy=Fail"
+            "--patch-failure-policy=Fail"
           ]
           env {
             name = "POD_NAMESPACE"
@@ -749,24 +757,18 @@ resource "kubernetes_job" "admission_webhooks_job_patch_webhook" {
             }
           }
         }
-        restart_policy = "OnFailure"
+        restart_policy       = "OnFailure"
         service_account_name = "ingress-nginx-admission"
-        node_selector = {
+        node_selector        = {
           "kubernetes.io/os" = "linux"
         }
         security_context {
           run_as_non_root = true
-          run_as_user = "2000"
+          run_as_user     = "2000"
         }
       }
     }
   }
-}
-*/
-resource "kubectl_manifest" "ingress-nginx" {
-  depends_on = [kubernetes_namespace.nginx_namespace]
-  count     = length(var.kubectl_path_documents.documents)
-  yaml_body = element(var.kubectl_path_documents.documents, count.index)
 }
 
 resource "kubernetes_ingress" "lambda_local" {
@@ -779,11 +781,11 @@ resource "kubernetes_ingress" "lambda_local" {
   ]
 
   metadata {
-    name = "lambda-local"
+    name        = "lambda-local"
     annotations = {
-        "kubernetes.io/ingress.class" = "nginx"
-        "nginx.ingress.kubernetes.io/rewrite-target" = "/2015-03-31/functions/function/invocations$1"
-        "nginx.ingress.kubernetes.io/configuration-snippet" = "more_set_headers \"Content-Type: application/json\";"
+      "kubernetes.io/ingress.class"                       = "nginx"
+      "nginx.ingress.kubernetes.io/rewrite-target"        = "/2015-03-31/functions/function/invocations$1"
+      "nginx.ingress.kubernetes.io/configuration-snippet" = "more_set_headers \"Content-Type: application/json\";"
     }
   }
 
