@@ -35,8 +35,12 @@ queue = queue_manager(
     queue_name=os.environ['TASKS_QUEUE_NAME'],
     region=region)
 
+dlq_service = os.environ['GRID_QUEUE_SERVICE']
+if dlq_service == 'PrioritySQS':
+  dlq_service = 'SQS'
+
 dlq = queue_manager(
-    grid_queue_service=os.environ['GRID_QUEUE_SERVICE'],  # TODO extend parameters to configure this queue.
+    grid_queue_service=dlq_service,  # TODO extend parameters to configure this queue.
     grid_queue_config=os.environ['GRID_QUEUE_CONFIG'],
     endpoint_url=os.environ["QUEUE_ENDPOINT_URL"],
     queue_name=os.environ['TASKS_QUEUE_DLQ_NAME'],
@@ -251,4 +255,4 @@ def send_to_dlq(task):
 
     """
     print("Sending task [{}] to DLQ".format(task))
-    dlq.send_message(message_bodies=[str(task)])
+    dlq.send_messages(message_bodies=[str(task)])
