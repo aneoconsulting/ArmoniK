@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
 
 namespace ArmonikSamples
 {
@@ -94,10 +95,11 @@ namespace ArmonikSamples
             else if (clientPayload.taskType == 3)
             {
                 Logger.Info($"Empty task, sessionId : {sessionContext.SessionId}, taskId : {taskContext.TaskId}, sessionId from task : {taskContext.SessionId}");
+                Thread.Sleep(clientPayload.sleep * 1000);
             }
             else if (clientPayload.taskType == 4)
             {
-                var newPayload = new ClientPayload() { taskType = 3 };
+                var newPayload = new ClientPayload() { taskType = 3, sleep = clientPayload.sleep };
                 byte[] bytePayload = newPayload.serialize();
                 _1_Job_of_N_Tasks(taskContext, bytePayload, clientPayload.numbers[0] - 1);
             }

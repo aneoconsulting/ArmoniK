@@ -9,6 +9,7 @@ public class ClientPayload {
     public int taskType {get;set;}
     public List<int> numbers{get;set;}
     public int result{get;set;}
+    public int sleep{get;set;}
 
     public byte[] serialize()
     {
