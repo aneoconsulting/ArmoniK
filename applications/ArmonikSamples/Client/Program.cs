@@ -130,7 +130,7 @@ namespace HtcClient
             List<int> numbers = new List<int>();
             for (int i = 0; i < nbTasks; i++)
             {
-                numbers.Add(i);
+                numbers.Add(i + 1);
             }
             var clientPaylaod = new ClientPayload() { numbers = numbers, taskType = 1 };
             string taskId = htcGridClient.SubmitTask(clientPaylaod.serialize());
