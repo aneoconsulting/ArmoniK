@@ -17,5 +17,5 @@ EOF
 
 resource "local_file" "client_config_file" {
     content     =  local.client_config
-    filename = "${path.module}/${var.client_configuration_filename}"
+    filename = "${var.generated_dir_path}/${var.client_configuration_filename}"
 }

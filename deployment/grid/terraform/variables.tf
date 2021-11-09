@@ -478,3 +478,7 @@ variable "cluster_config" {
 variable "api_gateway_service" {
   description = "API Gateway Service"
 }
+
+variable "generated_dir_path" {
+  description = "Path of generated/ directory"
+}

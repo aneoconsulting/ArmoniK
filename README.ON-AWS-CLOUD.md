@@ -57,10 +57,6 @@ ARMONIK_NUGET_REPOS=<Your NuGet repository>
 # the redis certificates.
 ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your path to Redis certificates>
 
-# Define an environment variable containing the path to
-# generated/ directory.
-export ARMONIK_GENERATED_DIR_PATH=<Your generated/ directory path>
-
 # Define an environment variable containing the docker registry
 # if it exists, otherwise initialize the variable to empty.
 ARMONIK_DOCKER_REGISTRY=<Your Docker registry>

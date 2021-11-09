@@ -74,7 +74,7 @@ resource "kubernetes_config_map" "htcagentconfig" {
 
 resource "local_file" "agent_config_file" {
     content     =  local.agent_config
-    filename = "${path.module}/${var.agent_configuration_filename}"
+    filename = "${var.generated_dir_path}/${var.agent_configuration_filename}"
 }
 
 
