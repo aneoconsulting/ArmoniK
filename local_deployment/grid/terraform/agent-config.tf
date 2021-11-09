@@ -12,10 +12,10 @@ locals {
   "redis_port": "${var.redis_port}",
   "queue_name": "${local.queue_name}",
   "dlq_name": "${local.dlq_name}",
-  "redis_ca_cert": "${var.redis_ca_cert}",
-  "redis_client_pfx": "${var.redis_client_pfx}",
-  "redis_key_file": "${var.redis_key_file}",
-  "redis_cert_file": "${var.redis_cert_file}",
+  "redis_ca_cert": "/redis_certificates/${var.redis_ca_cert}",
+  "redis_client_pfx": "/redis_certificates/${var.redis_client_pfx}",
+  "redis_key_file": "/redis_certificates/${var.redis_key_file}",
+  "redis_cert_file": "/redis_certificates/${var.redis_cert_file}",
   "cluster_config": "${var.cluster_config}",
   "connection_redis_timeout": "${var.connection_redis_timeout}",
   "cluster_name": "${local.cluster_name}",
@@ -44,8 +44,8 @@ locals {
   "metrics_get_results_lambda_connection_string": "${var.metrics_get_results_lambda_connection_string}",
   "metrics_ttl_checker_lambda_connection_string": "${var.metrics_ttl_checker_lambda_connection_string}",
   "agent_use_congestion_control": "${var.agent_use_congestion_control}",
-  "public_api_gateway_url": "http://${module.control_plane.ngnix_pod_external_ip}:${var.nginx_port}",
   "private_api_gateway_url": "http://${module.control_plane.ngnix_pod_ip}:${var.nginx_port}",
+  "public_api_gateway_url": "http://${module.control_plane.ngnix_pod_external_ip}:${var.nginx_port}",
   "api_gateway_key": "mock",
   "enable_xray" : "${var.enable_xray}",
   "user_pool_id": "mock",
@@ -72,7 +72,7 @@ resource "kubernetes_config_map" "htcagentconfig" {
 
 resource "local_file" "agent_config_file" {
     content     =  local.agent_config
-    filename = "${path.module}/${var.agent_configuration_filename}"
+    filename = "${var.generated_dir_path}/${var.agent_configuration_filename}"
 }
 
 

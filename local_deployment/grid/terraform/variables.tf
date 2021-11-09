@@ -296,22 +296,22 @@ variable "certificates_dir_path" {
 
 variable "redis_ca_cert" {
   description = "path to the authority certificate file (ca.crt) of the redis server in the docker machine"
-  default = "/redis_certificates/ca.crt"
+  default = "ca.crt"
 }
 
 variable "redis_client_pfx" {
   description = "path to the client certificate file (certificate.pfx) of the redis server in the docker machine"
-  default = "/redis_certificates/certificate.pfx"
+  default = "certificate.pfx"
 }
 
 variable "redis_key_file" {
   description = "path to the authority certificate file (redis.key) of the redis server in the docker machine"
-  default = "/redis_certificates/redis.key"
+  default = "redis.key"
 }
 
 variable "redis_cert_file" {
   description = "path to the client certificate file (redis.crt) of the redis server in the docker machine"
-  default = "/redis_certificates/redis.crt"
+  default = "redis.crt"
 }
 
 variable "cluster_config" {
@@ -322,6 +322,12 @@ variable "cluster_config" {
 variable "nginx_port" {
   description = "Port for nginx instance"
   default = 9080
+  type = number
+}
+
+variable "nginx_ssl_port" {
+  description = "Port SSL for nginx instance"
+  default = 9443
   type = number
 }
 
@@ -339,4 +345,8 @@ variable "image_pull_policy" {
 
 variable "api_gateway_service" {
   description = "API Gateway Service"
+}
+
+variable "generated_dir_path" {
+  description = "Path of generated/ directory"
 }

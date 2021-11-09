@@ -9,8 +9,8 @@ locals {
   "redis_endpoint_url": "${module.control_plane.redis_pod_ip}",
   "redis_port": "${var.redis_port}",
   "cluster_config": "${var.cluster_config}",
-  "redis_ca_cert": "${var.redis_ca_cert}",
-  "redis_client_pfx": "${var.redis_client_pfx}",
+  "redis_ca_cert": "${var.certificates_dir_path}/${var.redis_ca_cert}",
+  "redis_client_pfx": "${var.certificates_dir_path}/${var.redis_client_pfx}",
   "connection_redis_timeout": "${var.connection_redis_timeout}"
 }
 EOF
@@ -18,7 +18,7 @@ EOF
 
 resource "local_file" "client_config_file" {
     content     =  local.client_config
-    filename = "${path.module}/${var.client_configuration_filename}"
+    filename = "${var.generated_dir_path}/${var.client_configuration_filename}"
 }
 
 

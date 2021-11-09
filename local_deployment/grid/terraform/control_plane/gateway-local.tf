@@ -243,8 +243,9 @@ resource "kubernetes_service" "controller_service_webhook" {
     type     = "ClusterIP"
     port {
       name        = "https-webhook"
-      port        = 443
+      port        = 7443
       target_port = "webhook"
+      protocol = "TCP"
     }
     selector = {
       "app.kubernetes.io/name"      = "ingress-nginx"
@@ -280,7 +281,7 @@ resource "kubernetes_service" "nginx_ingress_controller_service" {
 
     port {
       name        = "https"
-      port        = 9443
+      port        = var.nginx_ssl_port
       protocol    = "TCP"
       target_port = 443
     }
@@ -411,7 +412,7 @@ resource "kubernetes_deployment" "nginx_ingress_controller_deployment" {
           }
           port {
             name           = "https"
-            container_port = 9443
+            container_port = var.nginx_ssl_port
             protocol       = "TCP"
           }
           port {
@@ -491,6 +492,7 @@ resource "kubernetes_validating_webhook_configuration" "validating_webhook" {
         name      = kubernetes_service.controller_service_webhook.metadata.0.name
         namespace = kubernetes_namespace.nginx_namespace.metadata.0.name
         path      = "/networking/v1/ingresses"
+        port = 7443
       }
     }
     rule {
@@ -501,8 +503,7 @@ resource "kubernetes_validating_webhook_configuration" "validating_webhook" {
     }
     failure_policy            = "Fail"
     side_effects              = "None"
-    admission_review_versions = ["v1", "v1beta1"]
-    timeout_seconds = 30
+    admission_review_versions = ["v1"]
   }
 }
 
@@ -674,9 +675,9 @@ resource "kubernetes_job" "admission_webhooks_job_create_secret" {
           image_pull_policy = "IfNotPresent"
           args              = [
             "create",
-            "--host=ingress-nginx-controller-admission,ingress-nginx-controller-admission.$(POD_NAMESPACE).svc",
+            "--host=${kubernetes_service.controller_service_webhook.metadata.0.name},${kubernetes_service.controller_service_webhook.metadata.0.name}.$(POD_NAMESPACE).svc",
             "--namespace=$(POD_NAMESPACE)",
-            "--secret-name=ingress-nginx-admission"
+            "--secret-name=${kubernetes_service_account.admission_webhooks_service_account.metadata.0.name}"
           ]
           env {
             name = "POD_NAMESPACE"
@@ -688,7 +689,7 @@ resource "kubernetes_job" "admission_webhooks_job_create_secret" {
           }
         }
         restart_policy       = "OnFailure"
-        service_account_name = "ingress-nginx-admission"
+        service_account_name = kubernetes_service_account.admission_webhooks_service_account.metadata.0.name
         node_selector        = {
           "kubernetes.io/os" = "linux"
         }
@@ -738,10 +739,10 @@ resource "kubernetes_job" "admission_webhooks_job_patch_webhook" {
           image_pull_policy = "IfNotPresent"
           args              = [
             "patch",
-            "--webhook-name=ingress-nginx-admission",
+            "--webhook-name=${kubernetes_validating_webhook_configuration.validating_webhook.metadata.0.name}",
             "--namespace=$(POD_NAMESPACE)",
             "--patch-mutating=false",
-            "--secret-name=ingress-nginx-admission",
+            "--secret-name=${kubernetes_service_account.admission_webhooks_service_account.metadata.0.name}",
             "--patch-failure-policy=Fail"
           ]
           env {
@@ -754,7 +755,7 @@ resource "kubernetes_job" "admission_webhooks_job_patch_webhook" {
           }
         }
         restart_policy       = "OnFailure"
-        service_account_name = "ingress-nginx-admission"
+        service_account_name = kubernetes_service_account.admission_webhooks_service_account.metadata.0.name
         node_selector        = {
           "kubernetes.io/os" = "linux"
         }
@@ -772,7 +773,8 @@ resource "kubernetes_ingress" "lambda_local" {
     kubernetes_service.cancel_tasks,
     kubernetes_service.submit_task,
     kubernetes_service.get_results,
-    kubernetes_service.ttl_checker
+    kubernetes_service.ttl_checker,
+    kubernetes_deployment.nginx_ingress_controller_deployment
   ]
 
   metadata {

@@ -22,3 +22,11 @@ output "private_nginx_url" {
 output "public_nginx_url" {
   value = "http://${module.control_plane.ngnix_pod_external_ip}:${var.nginx_port}"
 }
+
+output "private_nginx_ssl_url" {
+  value = "https://${module.control_plane.ngnix_pod_ip}:${var.nginx_ssl_port}"
+}
+
+output "public_nginx_ssl_url" {
+  value = "https://${module.control_plane.ngnix_pod_external_ip}:${var.nginx_ssl_port}"
+}
