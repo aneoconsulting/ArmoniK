@@ -44,8 +44,8 @@ namespace ArmonikSamples
 
                 var subTaskId = this.SubmitTask(subTaskPaylaod.serialize());
 
-                htcGridClient.WaitCompletion(subTaskId);
-                byte[] arr = htcDataClient.GetData(subTaskId);
+                WaitCompletion(subTaskId);
+                byte[] arr = GetData(subTaskId);
                 int subResult = BitConverter.ToInt32(arr);
 
                 Logger.Info($"Compute {square} + {subResult} in {taskContext.TaskId}");
@@ -65,8 +65,8 @@ namespace ArmonikSamples
             var taskIds = this.SubmitTasks(payloads);
             foreach (var taskId in taskIds)
             {
-                htcGridClient.WaitCompletion(taskId);
-                byte[] taskResult = htcDataClient.GetData(taskId);
+                WaitCompletion(taskId);
+                byte[] taskResult = GetData(taskId);
                 finalResult += BitConverter.ToInt32(taskResult);
             }
             long elapsedMilliseconds = sw.ElapsedMilliseconds;

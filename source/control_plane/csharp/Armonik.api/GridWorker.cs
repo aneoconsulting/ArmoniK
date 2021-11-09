@@ -64,8 +64,7 @@ namespace Armonik
                 //htcGridClient = new HtcGridClient(gridConfig, htcDataClient);
                 //inputTask.SessionId = htcGridClient.SessionId;
 
-                serviceContainer.htcDataClient = htcDataClient;
-                serviceContainer.htcGridClient = htcGridClient;
+                serviceContainer.Init(htcDataClient, htcGridClient);
                 sessionContext.SessionId = inputTask.SessionId;
                 sessionContext.clientLibVersion = "1.0.0";
                 serviceContainer.OnSessionEnter(sessionContext);

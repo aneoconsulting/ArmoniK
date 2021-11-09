@@ -11,16 +11,22 @@ namespace Armonik.sdk
         ///
         /// </summary>
         /// <value></value>
-        public HtcGridClient htcGridClient
-        {
-            get;
-            set;
-        }
+        private HtcGridClient htcGridClient;
+
         /// <summary>
         ///
         /// </summary>
         /// <value></value>
-        public HtcDataClient htcDataClient { get; set; }
+        private HtcDataClient htcDataClient;
+
+        /// <summary>
+        /// Initialization method of the service.
+        /// </summary>
+        public void Init(HtcDataClient htcDataClient, HtcGridClient htcGridClient)
+        {
+            this.htcDataClient = htcDataClient;
+            this.htcGridClient = htcGridClient;
+        }
 
         /// <summary>
         /// The middleware triggers the invocation of this handler just after a Service Instance is started.
@@ -120,9 +126,20 @@ namespace Armonik.sdk
         {
             return htcGridClient.SubmitTasks(payloads);
         }
+
+        /// <summary>
+        /// User method to wait for tasks from the service
+        /// </summary>
+        /// <param name="taskID">
+        /// The task id of the task
+        /// </param>
+        public void WaitCompletion(string taskId)
+        {
+            htcGridClient.WaitCompletion(taskId);
+        }
     }
 
-    public static class ServiceContainerExt 
+    public static class ServiceContainerExt
     {
         /// <summary>
         /// User method to submit task from the service
@@ -135,7 +152,7 @@ namespace Armonik.sdk
         /// </param>
         public static string SubmitTask(this IServiceContainer serviceContainer, byte[] payload)
         {
-            return serviceContainer.SubmitTasks(new []{payload})
+            return serviceContainer.SubmitTasks(new[] { payload })
                                    .Single();
         }
     }
