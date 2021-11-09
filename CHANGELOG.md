@@ -8,7 +8,7 @@ Changed
 
 Added
 -
-* List of useful scripts as displaying logs of compute lambda in agent pods [tools/](./tools)
+* List of useful scripts ([tools/](./tools)) as displaying logs of compute lambda in agent pods
 
 ## [v0.9.4](https://github.com/aneoconsulting/armonik/tree/v0.9.4) (2021-11-04)
 Fixed
