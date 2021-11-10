@@ -73,6 +73,23 @@ locals {
     }
 }
 
+resource "aws_resourcegroups_group" "aws_resources" {
+  name = "group-${local.project_name}"
+    resource_query {
+        query = <<JSON
+{
+  "ResourceTypeFilters": ["AWS::AllSupported"],
+  "TagFilters": [
+    {
+      "Key": "ArmonikTag",
+      "Values": ["armonik-${local.project_name}"]
+    }
+  ]
+}
+JSON
+    }
+}
+
 module "vpc" {
 
     source = "./vpc"

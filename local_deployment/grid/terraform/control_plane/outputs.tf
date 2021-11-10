@@ -17,4 +17,14 @@ output "queue_pod_ip" {
   value = local.queue_pod_ip
 }
 
+output "ngnix_pod_ip" {
+  description = "IP address of nginx pod"
+  value = local.nginx_pod_ip
+}
+
+output "ngnix_pod_external_ip" {
+  description = "External IP address of nginx pod"
+  value = local.nginx_pod_external_ip
+}
+
 

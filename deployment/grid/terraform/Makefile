@@ -12,6 +12,7 @@
 export GRAFANA_ADMIN_PASSWORD?=$(shell uuidgen)
 export ARMONIK_TAG
 export ARMONIK_REGION?=eu-west-1
+GENERATED?=generated
 KMS_KEY_ARN:=$(shell aws cloudformation describe-stacks --stack-name $(ARMONIK_TAG) --region $(ARMONIK_REGION) --query 'Stacks[0].Outputs[1].OutputValue' --output text)
 TF_SRCS:=$(wildcard *.tf)
 
@@ -35,7 +36,7 @@ get-grafana-password:
 	@terraform output grafana_admin_password
 
 reset:
-	rm -rf .terraform* terraform.tfstate* Agent_config.json
+	rm -rf .terraform* terraform.tfstate* $(GENERATED)/Agent_config.json $(GENERATED)/Client_config.json
 
 clean: reset
 	

@@ -5,6 +5,7 @@
   "grid_queue_config" : "{'priorities':5}",
   "tasks_status_table_service": "{{tasks_status_table_service}}",
   "api_gateway_service": "{{api_gateway_service}}",
+  "generated_dir_path": "{{generated_dir_path}}",
   "max_htc_agents": 100,
   "min_htc_agents": 1,
   "dynamodb_default_read_capacity" : 10,

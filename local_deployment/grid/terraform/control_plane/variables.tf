@@ -166,6 +166,10 @@ variable "nginx_port" {
   description = "Port for nginx instance"
 }
 
+variable "nginx_ssl_port" {
+  description = "Port SSL for nginx instance"
+}
+
 variable "nginx_endpoint_url" {
   description = "Url for nginx instance"
 }
