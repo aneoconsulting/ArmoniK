@@ -232,8 +232,8 @@ variable "metrics_event_rule_time" {
 }
 
 variable "htc_agent_name" {
-  default = "htc-agent"
-  description = "name of the htc agent to scale out/in"
+  default = "armonik-agent"
+  description = "name of the armonik agent to scale out/in"
 }
 
 variable "htc_agent_namespace" {

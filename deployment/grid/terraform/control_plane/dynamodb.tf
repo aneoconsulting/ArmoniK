@@ -8,7 +8,8 @@ resource "aws_dynamodb_table" "htc_tasks_status_table" {
   write_capacity = var.dynamodb_table_write_capacity
 
   hash_key       = "task_id"
-
+  stream_enabled = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
 
   attribute {
     name = "session_id"

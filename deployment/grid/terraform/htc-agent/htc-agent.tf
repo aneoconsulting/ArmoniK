@@ -7,7 +7,7 @@ locals {
 }
 
 resource "helm_release" "htc_agent" {
-  name       = "htc-agent"
+  name       = "armonik-agent"
   chart      = "agent-htc-lambda"
   namespace  = var.agent_namespace
   repository = var.agent_chart_url

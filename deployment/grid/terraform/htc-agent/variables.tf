@@ -47,7 +47,7 @@ variable "lambda_image_tag" {
 variable "agent_name" {
   type = string
   description = "name of the kubernetes deployment managing the image"
-  default = "htc-agent"
+  default = "armonik-agent"
 }
 
 variable "agent_min_cpu" {
