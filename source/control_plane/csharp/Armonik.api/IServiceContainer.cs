@@ -105,9 +105,6 @@ namespace Armonik.sdk
         /// <param name="key">
         /// The user key that can be retrieved later from client side.
         /// </param>
-        /// <param name="value">
-        /// The data value to put in the database.
-        /// </param>
         public byte[] GetData(string key)
         {
             return htcDataClient.GetData(key);
@@ -116,9 +113,6 @@ namespace Armonik.sdk
         /// <summary>
         /// User method to submit task from the service
         /// </summary>
-        /// <param name="sessionId">
-        /// The session id to attach the new task.
-        /// </param>
         /// <param name="payloads">
         /// The user payload list to execute. Generaly used for subtasking.
         /// </param>
