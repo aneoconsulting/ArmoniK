@@ -16,7 +16,7 @@ bin/$(BUILD_TYPE)/net5.0/ref/$(PROJECT_NAME).dll:
 	dotnet restore && dotnet clean && dotnet build -c $(BUILD_TYPE)
 
 ${ARMONIK_NUGET_REPOS}/$(PACKAGE_NAME): bin/$(BUILD_TYPE)/net5.0/ref/$(PROJECT_NAME).dll
-	dotnet pack -c $(BUILD_TYPE) -o ${ARMONIK_NUGET_REPOS}
+	dotnet pack -c $(BUILD_TYPE) -o "${ARMONIK_NUGET_REPOS}"
 
 build-package: ${ARMONIK_NUGET_REPOS}/$(PACKAGE_NAME)
 

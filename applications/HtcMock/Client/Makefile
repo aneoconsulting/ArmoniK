@@ -20,11 +20,11 @@ build: .
         --configuration $(BUILD_TYPE) \
         --runtime linux-x64  \
         --self-contained false \
-        --output $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Client \
+        --output "$(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Client" \
         -p:PublishReadyToRun=true
 
 image: build
-	docker build $(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Client -t $(DOCKER_IMG):$(ARMONIK_TAG) -f $(DOCKERFILE)
+	docker build "$(GENERATED)/$(ARMONIK_APPLICATION_NAME)/Client" -t $(DOCKER_IMG):$(ARMONIK_TAG) -f $(DOCKERFILE)
 
 upload: image
 ifneq ($(ARMONIK_DOCKER_REGISTRY),)
