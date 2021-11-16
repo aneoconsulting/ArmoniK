@@ -33,6 +33,7 @@ for r in response:
     task_history[r['task_id']]['pending'] = list()
     task_history[r['task_id']]['processing'] = list()
     task_history[r['task_id']]['finished'] = list()
+    task_history[r['task_id']]['agent'] = r['task_owner']
 
 oplog = mongodb_con.local.oplog.rs
 
