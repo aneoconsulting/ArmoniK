@@ -89,7 +89,7 @@ clean-grid-local-deployment:
 	@$(MAKE) -C ./local_deployment/grid/terraform clean
 
 clean-grid-local-project:
-	rm -rf $(GENERATED) $(DIST_DIR) applications/ArmonikSamples/Client/bin/ applications/ArmonikSamples/Client/obj/ applications/ArmonikSamples/packages/bin/ applications/ArmonikSamples/packages/obj/ envvars.conf
+	rm -rf $(GENERATED) $(DIST_DIR) applications/$(ARMONIK_APPLICATION_NAME)/Client/bin/ applications/$(ARMONIK_APPLICATION_NAME)/Client/obj/ applications/$(ARMONIK_APPLICATION_NAME)/packages/bin/ applications/$(ARMONIK_APPLICATION_NAME)/packages/obj/
 
 ####################################
 ##### building documentation #######
