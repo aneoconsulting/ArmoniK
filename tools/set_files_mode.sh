@@ -1,1 +1,1 @@
-git ls-tree -r HEAD --name-only | xargs ls -l
+git ls-tree -r HEAD --name-only | xargs chmod 644
