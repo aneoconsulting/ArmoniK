@@ -1,6 +1,7 @@
 using HTCGrid;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Armonik.sdk
 {
@@ -18,6 +19,8 @@ namespace Armonik.sdk
             htcDataClient_.ConnectDB();
         }
 
+        public string SessionId => htcGridClient_.SessionId;
+
         /// <summary>
         /// User call to get customer data from client (Server side)
         /// </summary>
@@ -28,6 +31,12 @@ namespace Armonik.sdk
         {
             return htcDataClient_.GetData(key);
         }
+
+        public void StoreData(string key, byte[] data) => htcDataClient_.StoreData(key, data);
+
+        public string CreateSession() => htcGridClient_.CreateSession();
+
+        public IDisposable OpenSession(string session) => htcGridClient_.OpenSession(session);
 
         /// <summary>
         /// User method to submit task from the client
@@ -46,10 +55,9 @@ namespace Armonik.sdk
         /// <param name="taskID">
         /// The task id of the task
         /// </param>
-        public void WaitCompletion(string taskId)
-        {
-            htcGridClient_.WaitCompletion(taskId);
-        }
+        public void WaitCompletion(string taskId) => htcGridClient_.WaitCompletion(taskId);
+        public void WaitSubtasksCompletion(string parentId) => htcGridClient_.WaitSubtasksCompletion(parentId);
+        public string SubmitSubtask(string parentId, byte[] payload) => htcGridClient_.SubmitSubtask(parentId, payload);
     }
     public static class ArmonikClientExt
     {

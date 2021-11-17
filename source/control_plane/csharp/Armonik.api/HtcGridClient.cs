@@ -1,8 +1,9 @@
-using HTCGrid;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
+
+using HTCGrid;
 
 namespace Armonik.sdk
 {
@@ -30,7 +31,7 @@ namespace Armonik.sdk
 
         public HtcGridClient(GridConfig gridConfig, HtcDataClient htcDataClient) : this(gridConfig, htcDataClient, 0)
         {
-            this.gridSession_ = this.gridConnector_.CreateSession();
+            gridSession_ = gridConnector_.CreateSession();
             GridContext context = new GridContext();
             context.tasks_priority = 0;
             gridSession_.SetContext(context);
@@ -38,7 +39,7 @@ namespace Armonik.sdk
 
         public HtcGridClient(GridConfig gridConfig, HtcDataClient htcDataClient, string sessionId) : this(gridConfig, htcDataClient, 0)
         {
-            this.gridSession_ = this.gridConnector_.OpenSession(sessionId);
+            gridSession_ = gridConnector_.OpenSession(sessionId);
             GridContext context = new GridContext();
             context.tasks_priority = 0;
             gridSession_.SetContext(context);
@@ -48,6 +49,10 @@ namespace Armonik.sdk
         {
             return htcDataClient_.GetData(taskId);
         }
+
+        public string CreateSession() => gridConnector_.CreateSession().SessionId;
+
+        public IDisposable OpenSession(string session) => gridConnector_.OpenSession(session);
 
         //TODO change signature to get a default timeout time in seconds
         public void WaitCompletion(string taskId)
@@ -59,7 +64,7 @@ namespace Armonik.sdk
 
             for (int i = 0; i < timeOut; i++)
             {
-                System.Threading.Thread.Sleep(1000);
+                Thread.Sleep(1000);
                 var sessionResponse = gridSession_.CheckResults();
 
                 if (sessionResponse == null)
@@ -87,15 +92,13 @@ namespace Armonik.sdk
                     Logger.Debug(String.Format("Task {0} no result available", taskId));
                     continue;
                 }
-                else
+
+                if (Logger.isDebug())
                 {
-                    if (Logger.isDebug())
+                    Logger.Debug("printing element in finished state");
+                    foreach (var task in finishedTasks)
                     {
-                        Logger.Debug("printing element in finished state");
-                        foreach (var task in finishedTasks)
-                        {
-                            Logger.Debug(task);
-                        }
+                        Logger.Debug(task);
                     }
                 }
 
@@ -132,7 +135,7 @@ namespace Armonik.sdk
             var currentBatch = new List<HtcTask>(500);
             foreach (var payload in payloads)
             {
-                currentBatch.Add(new HtcTask() { SessionId = gridSession_.SessionId, Payload = payload, debug = gridConfig_.debug });
+                currentBatch.Add(new HtcTask { SessionId = gridSession_.SessionId, Payload = payload, debug = gridConfig_.debug });
                 if (currentBatch.Count() == 500)
                 {
                     Logger.Debug($"(1) Will submit a batch of {currentBatch.Count()} tasks");

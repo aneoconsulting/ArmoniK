@@ -1,7 +1,8 @@
 Amazon_Lambda_Core=2.0.0
 Amazon_Lambda_Serialization_SystemTextJson=2.1.0
 Armonik_api=1.0.0
-Htc_Mock=2.0.1
+Htc_Mock=1.1.1
+ArmonikMock=1.0.0
 HTCGridAPI=1.0.0
 HttpApi=1.0.0
 JsonSubTypes=1.8.0

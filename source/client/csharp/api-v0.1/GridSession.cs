@@ -13,7 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace HTCGrid
 {
-    public class GridSession {
+    public class GridSession : IDisposable
+    {
 
         // Builder class from the HTCGridConnector class.
         // can be created only through HTCGridConnector not by a client explicitly.
@@ -21,7 +22,7 @@ namespace HTCGrid
         {
             Logger.Info(String.Format("Instanciating Grid Session [{0}]", session_id));
 
-            this.session_id = session_id;
+            this.SessionId = session_id;
 
             this.storageInterface = storageInterface;
 
@@ -30,9 +31,7 @@ namespace HTCGrid
             Logger.Info("GridSession created");
         }
 
-        private string session_id;
-
-        public string SessionId { get { return session_id; } set { session_id = value; } }
+        public string SessionId { get; set; }
 
 
         private StorageInterface storageInterface;
@@ -90,7 +89,7 @@ namespace HTCGrid
                 //TODO : Check if task_id doesn't exist in control plane before
                 string task_id = String.Format(
                     "{0}_{1}", // NOTE: must be underscroll '_'
-                    this.session_id,
+                    this.SessionId,
                     Guid.NewGuid().ToString());
 
                 new_task_ids.Add(task_id);
@@ -107,11 +106,11 @@ namespace HTCGrid
             // <2.> Upload arguments for submit_task Lambda into the DataPlane
             // TODO
             // string submission_id = String.Format("{0}.{0}", this.session_id, this.submissions_count);
-            string submission_id = String.Format("{0}+submission_id{1}", session_id, Guid.NewGuid().ToString());
+            string submission_id = String.Format("{0}+submission_id{1}", SessionId, Guid.NewGuid().ToString());
             Logger.Info("(GridSession) submission_id: "+ submission_id);
             this.submissions_count += 1;
 
-            GridSubmissionContainer gsc = new GridSubmissionContainer(session_id, new_task_ids, context);
+            GridSubmissionContainer gsc = new GridSubmissionContainer(SessionId, new_task_ids, context);
 
             var submission = strinToBase64(JsonConvert.SerializeObject(gsc));
 
@@ -152,7 +151,7 @@ namespace HTCGrid
         {
             try
             {
-                GetResultsContainer grc = new GetResultsContainer(this.session_id);
+                GetResultsContainer grc = new GetResultsContainer(this.SessionId);
 
                 string client_task_string = JsonConvert.SerializeObject(grc);
 
@@ -179,7 +178,7 @@ namespace HTCGrid
         public PostCancelResponse CancelSession() {
             try
             {
-                var resp = apiInstance.CancelPost(new PostCancelResponse(session_id = session_id));
+                var resp = apiInstance.CancelPost(new PostCancelResponse(SessionId = SessionId));
                 return resp;
             }
             catch (ApiException e)
@@ -196,5 +195,8 @@ namespace HTCGrid
         //     // or
         //     // wait for all callbacks are completed.
         // }
+        public void Dispose()
+        {
+        }
     }
 }

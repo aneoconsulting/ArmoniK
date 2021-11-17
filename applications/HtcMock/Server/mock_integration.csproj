@@ -26,6 +26,7 @@
     <PackageReference Include="HTCGridAPI" Version="$(HTCGridAPI)" />
     <PackageReference Include="HttpApi" Version="$(HttpApi)" />
     <PackageReference Include="Armonik.api" Version="$(Armonik_api)" />
+    <PackageReference Include="ArmonikMock" Version="$(ArmonikMock)" />
 
 
   </ItemGroup>

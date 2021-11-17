@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading;
 
 using HTCGrid;
+using Armonik.Mock;
 using Armonik.sdk;
 using Htc.Mock;
 using Htc.Mock.Core;
@@ -64,13 +65,11 @@ namespace HtcClient
 
 
             // Code below is standard.
-            var dataClient = new HtcDataClient(gridConfig);
+            var amonikClient = new ArmonikClient(gridConfig);
+            var armonikGridClient = new ArmonikGridClient(amonikClient);
+            var armonikDataClient = new ArmonikDataClient(amonikClient);
 
-            var htcGridclient = new HtcGridClient(gridConfig, dataClient);
-
-            dataClient.ConnectDB();
-
-            var client = new Client(htcGridclient, dataClient);
+            var client = new Client(armonikGridClient, armonikDataClient);
 
             // Timespan(heures, minutes, secondes)
             // RunConfiguration runConfiguration = RunConfiguration.XSmall; // result : Aggregate_1871498793_result

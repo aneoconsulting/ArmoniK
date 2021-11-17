@@ -12,6 +12,7 @@ using System.Text.Json;
 using Amazon.Lambda.Core;
 
 using HTCGrid;
+using Armonik.Mock;
 using Armonik.sdk;
 using Htc.Mock;
 using Htc.Mock.RequestRunners;
@@ -49,18 +50,17 @@ namespace HtcMock
             }
 
             gridConfig_ = new GridConfig();
-
             gridConfig_.Init(parsedConfig);
 
-            HtcDataClient htcDataClient = new HtcDataClient(gridConfig_);
-            htcDataClient.ConnectDB();
+            var amonikClient = new ArmonikClient(gridConfig_);
+            var htcGridClient = new ArmonikGridClient(amonikClient);
+            var htcDataClient = new ArmonikDataClient(amonikClient);
 
-            HtcGridClient htcGridClient = new HtcGridClient(gridConfig_, htcDataClient);
-
-            gridWorker_ = new GridWorkerMock(new DelegateRequestRunnerFactory((runConfiguration)
+            gridWorker_ = new GridWorkerMock(new DelegateRequestRunnerFactory((runConfiguration, session)
                                                               =>  new DistributedRequestRunnerWithAggregation(htcDataClient,
                                                                                               htcGridClient,
                                                                                               runConfiguration,
+                                                                                              amonikClient.SessionId,
                                                                                               fastCompute: false,
                                                                                               useLowMem: false,
                                                                                               smallOutput: false)));
