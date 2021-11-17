@@ -1,4 +1,4 @@
-﻿/* IDataClient.cs is part of the Armonik.sdk solution.
+/* IDataClient.cs is part of the Armonik.sdk solution.
 
    Copyright (c) 2021-2021 ANEO.
      W. Kirschenmann (https://github.com/wkirschenmann)

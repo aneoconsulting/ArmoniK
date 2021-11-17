@@ -1,4 +1,4 @@
-﻿/* GridWorker.cs is part of the Htc.Mock solution.
+/* GridWorker.cs is part of the Htc.Mock solution.
 
    Copyright (c) 2021-2021 ANEO.
      D. DUBUC (https://github.com/ddubuc)
