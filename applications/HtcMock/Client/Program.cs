@@ -7,6 +7,8 @@ using System.Collections;
 using System.IO;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 using HTCGrid;
 using Armonik.Mock;
@@ -73,21 +75,47 @@ namespace HtcClient
 
             // Timespan(heures, minutes, secondes)
             // RunConfiguration runConfiguration = RunConfiguration.XSmall; // result : Aggregate_1871498793_result
-            RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 0, 0, 0, 100), 10, 1, 1, 1);
+            // RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 0, 0, 0, 100), 10, 1, 1, 1);
+            // AsyncExec(client, RunConfiguration.XSmall, 10);
+            SeqExec(client, RunConfiguration.XSmall, 10);
+        }
 
-            client.Start(runConfiguration);
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            client.Start(runConfiguration);
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            client.Start(runConfiguration);
-            Console.WriteLine("");
-            Console.WriteLine("");
-            Console.WriteLine("");
-            client.Start(runConfiguration);
+        public static async void AsyncExec(Client client, RunConfiguration runConfiguration, int nRun)
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            var tasks = new List<Task>();
+            for (int i = 0; i < nRun; i++)
+            {
+                tasks.Add(Task.Run(() => client.Start(runConfiguration)));
+            }
+            await Task.WhenAll(tasks);
+            long elapsedMilliseconds = sw.ElapsedMilliseconds;
+            var stat = new SimpleStats() { _ellapsedTime = elapsedMilliseconds, _conf = runConfiguration.ToString(), _test = "AsyncExec", _nRun = nRun };
+            Logger.Info("JSON Result : " + stat.ToJson());
+        }
+
+        public static void SeqExec(Client client, RunConfiguration runConfiguration, int nRun)
+        {
+            Stopwatch sw = Stopwatch.StartNew();
+            for (int i = 0; i < nRun; i++)
+            {
+                client.Start(runConfiguration);
+            }
+            long elapsedMilliseconds = sw.ElapsedMilliseconds;
+            var stat = new SimpleStats() { _ellapsedTime = elapsedMilliseconds, _conf = runConfiguration.ToString(), _test = "SeqExec", _nRun = nRun };
+            Logger.Info("JSON Result : " + stat.ToJson());
+        }
+
+    }
+    class SimpleStats
+    {
+        public long _ellapsedTime { get; set; }
+        public string _conf { get; set; }
+        public string _test { get; set; }
+        public int _nRun { get; set; }
+        public string ToJson()
+        {
+            return System.Text.Json.JsonSerializer.Serialize(this);
         }
     }
 }
