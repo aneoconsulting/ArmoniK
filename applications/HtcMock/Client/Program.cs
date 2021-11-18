@@ -76,11 +76,11 @@ namespace HtcClient
             // Timespan(heures, minutes, secondes)
             // RunConfiguration runConfiguration = RunConfiguration.XSmall; // result : Aggregate_1871498793_result
             // RunConfiguration runConfiguration = new RunConfiguration(new TimeSpan(0, 0, 0, 0, 100), 10, 1, 1, 1);
-            // AsyncExec(client, RunConfiguration.XSmall, 10);
-            SeqExec(client, RunConfiguration.XSmall, 10);
+            // AsyncExec(client, RunConfiguration.XSmall, "XSmall", 5);
+            SeqExec(client, RunConfiguration.XSmall, "XSmall", 5);
         }
 
-        public static async void AsyncExec(Client client, RunConfiguration runConfiguration, int nRun)
+        public static async void AsyncExec(Client client, RunConfiguration runConfiguration, string conf, int nRun)
         {
             Stopwatch sw = Stopwatch.StartNew();
             var tasks = new List<Task>();
@@ -90,11 +90,11 @@ namespace HtcClient
             }
             await Task.WhenAll(tasks);
             long elapsedMilliseconds = sw.ElapsedMilliseconds;
-            var stat = new SimpleStats() { _ellapsedTime = elapsedMilliseconds, _conf = runConfiguration.ToString(), _test = "AsyncExec", _nRun = nRun };
+            var stat = new SimpleStats() { _ellapsedTime = elapsedMilliseconds, _conf = conf, _test = "AsyncExec", _nRun = nRun };
             Logger.Info("JSON Result : " + stat.ToJson());
         }
 
-        public static void SeqExec(Client client, RunConfiguration runConfiguration, int nRun)
+        public static void SeqExec(Client client, RunConfiguration runConfiguration, string conf, int nRun)
         {
             Stopwatch sw = Stopwatch.StartNew();
             for (int i = 0; i < nRun; i++)
@@ -102,7 +102,7 @@ namespace HtcClient
                 client.Start(runConfiguration);
             }
             long elapsedMilliseconds = sw.ElapsedMilliseconds;
-            var stat = new SimpleStats() { _ellapsedTime = elapsedMilliseconds, _conf = runConfiguration.ToString(), _test = "SeqExec", _nRun = nRun };
+            var stat = new SimpleStats() { _ellapsedTime = elapsedMilliseconds, _conf = conf, _test = "SeqExec", _nRun = nRun };
             Logger.Info("JSON Result : " + stat.ToJson());
         }
 
