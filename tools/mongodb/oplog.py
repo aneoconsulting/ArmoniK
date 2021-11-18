@@ -29,11 +29,11 @@ for r in response:
     id_to_taskId[str(r['_id'])] = r['task_id']
     task_history[r['task_id']] = dict()
     task_history[r['task_id']]['submitted'] = TimeStamp(r['submission_timestamp']/1000)
-    task_history[r['task_id']]['completion'] = TimeStamp(r['task_completion_timestamp']/1000)
     task_history[r['task_id']]['pending'] = list()
     task_history[r['task_id']]['processing'] = list()
     task_history[r['task_id']]['finished'] = list()
-    task_history[r['task_id']]['agent'] = r['task_owner']
+    task_history[r['task_id']]['agent'] = list()
+    task_history[r['task_id']]['agent'].append(r['task_owner'])
 
 oplog = mongodb_con.local.oplog.rs
 
