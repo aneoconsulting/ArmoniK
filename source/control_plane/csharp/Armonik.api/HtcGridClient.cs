@@ -20,6 +20,7 @@ namespace Armonik.sdk
         private HtcDataClient htcDataClient_;
 
         public string SessionId => gridSession_.SessionId;
+        private GridContext context_;
 
         private HtcGridClient(GridConfig gridConfig, HtcDataClient htcDataClient, int dummy = 0)
         {
@@ -27,22 +28,20 @@ namespace Armonik.sdk
             gridConnector_ = new HTCGridConnector(gridConfig);
             submittedTasks_ = new TaskController();
             htcDataClient_ = htcDataClient;
+            context_ = new GridContext();
+            context_.tasks_priority = 0;
         }
 
         public HtcGridClient(GridConfig gridConfig, HtcDataClient htcDataClient) : this(gridConfig, htcDataClient, 0)
         {
             gridSession_ = gridConnector_.CreateSession();
-            GridContext context = new GridContext();
-            context.tasks_priority = 0;
-            gridSession_.SetContext(context);
+            gridSession_.SetContext(context_);
         }
 
         public HtcGridClient(GridConfig gridConfig, HtcDataClient htcDataClient, string sessionId) : this(gridConfig, htcDataClient, 0)
         {
             gridSession_ = gridConnector_.OpenSession(sessionId);
-            GridContext context = new GridContext();
-            context.tasks_priority = 0;
-            gridSession_.SetContext(context);
+            gridSession_.SetContext(context_);
         }
 
         public byte[] GetResult(string taskId)
@@ -53,12 +52,14 @@ namespace Armonik.sdk
         public string CreateSession()
         {
             gridSession_ = gridConnector_.CreateSession();
+            gridSession_.SetContext(context_);
             return gridSession_.SessionId;
         }
 
         public IDisposable OpenSession(string session)
         {
             gridSession_ = gridConnector_.OpenSession(session);
+            gridSession_.SetContext(context_);
             return this;
         }
 
