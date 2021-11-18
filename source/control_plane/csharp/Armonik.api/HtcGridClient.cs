@@ -7,7 +7,7 @@ using HTCGrid;
 
 namespace Armonik.sdk
 {
-    public class HtcGridClient : IGridClient
+    public class HtcGridClient : IGridClient, IDisposable
     {
         private GridConfig gridConfig_;
 
@@ -50,9 +50,17 @@ namespace Armonik.sdk
             return htcDataClient_.GetData(taskId);
         }
 
-        public string CreateSession() => gridConnector_.CreateSession().SessionId;
+        public string CreateSession()
+        {
+            gridSession_ = gridConnector_.CreateSession();
+            return gridSession_.SessionId;
+        }
 
-        public IDisposable OpenSession(string session) => gridConnector_.OpenSession(session);
+        public IDisposable OpenSession(string session)
+        {
+            gridSession_ = gridConnector_.OpenSession(session);
+            return this;
+        }
 
         //TODO change signature to get a default timeout time in seconds
         public void WaitCompletion(string taskId)
@@ -219,6 +227,11 @@ namespace Armonik.sdk
         public void CancelTask(string taskId)
         {
             throw new NotImplementedException("TODO : Parsing of Agent config isn't implemented");
+        }
+
+        public void Dispose()
+        {
+            gridSession_.Dispose();
         }
     }
 }
