@@ -87,8 +87,9 @@ namespace HtcClient
             for (int i = 0; i < nRun; i++)
             {
                 tasks.Add(Task.Run(() => client.Start(runConfiguration)));
+                Thread.Sleep(10000);
             }
-            await Task.WhenAll(tasks);
+            Task.WaitAll(tasks.ToArray());
             long elapsedMilliseconds = sw.ElapsedMilliseconds;
             var stat = new SimpleStats() { _ellapsedTime = elapsedMilliseconds, _conf = conf, _test = "AsyncExec", _nRun = nRun };
             Logger.Info("JSON Result : " + stat.ToJson());
