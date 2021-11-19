@@ -67,13 +67,13 @@ namespace Armonik.sdk
         public void WaitCompletion(string taskId)
         {
             Logger.Debug("Start WaitCompletion");
-            int timeOut = 600; // 10 min
+            int timeOut = 3600; // 5h (1h x sleep time)
             if (submittedTasks_.AleradyFinished(taskId))
                 return;
 
             for (int i = 0; i < timeOut; i++)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(5000);
                 var sessionResponse = gridSession_.CheckResults();
 
                 if (sessionResponse == null)
