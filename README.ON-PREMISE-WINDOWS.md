@@ -1,6 +1,6 @@
 1. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
 2. [Configure the environment](#configure-the-environment)
-3. [Create scecrets in Kubernetes](#create-scecrets-in-kubernetes)
+3. [Create secrets in Kubernetes](#create-secrets-in-kubernetes)
    1. [Secrets for Redis](#secrets-for-redis)
 4. [Build Armonik artifacts](#build-armonik-artifacts)
    1. [Build Armonik artifacts on local](#build-armonik-artifacts-on-local)
