@@ -185,3 +185,9 @@ variable "image_pull_policy" {
 variable "api_gateway_service" {
   description = "API Gateway Service"
 }
+
+variable "nginx_ingress_name" {
+  description = "The name of this nginx ingress controller"
+  type        = string
+  default     = "ingress-nginx"
+}
