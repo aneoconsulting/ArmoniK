@@ -13,8 +13,8 @@ resource "helm_release" "htc_agent" {
   repository = var.agent_chart_url
 
   set {
-    name = "redis_certificates_directory"
-    value = var.certificates_dir_path
+    name = "redis_secrets"
+    value = var.redis_secrets
   }
 
   set {

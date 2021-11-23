@@ -145,3 +145,7 @@ variable "lambda_handler_function_name" {
   type = string
   description = "The function name of the lambda handler"
 }
+
+variable "redis_secrets" {
+  description = "Kubernetes secret for Redis certificates"
+}

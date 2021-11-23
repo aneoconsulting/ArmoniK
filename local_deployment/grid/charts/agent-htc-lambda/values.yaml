@@ -4,7 +4,7 @@
 
 htcConfig: agent-configmap
 
-redis_certificates_directory: ""
+redis_secrets: ""
 
 replicaCount: 5
 

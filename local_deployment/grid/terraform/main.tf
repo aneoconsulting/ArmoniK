@@ -108,6 +108,7 @@ module "control_plane" {
     redis_ca_cert = "/redis_certificates/${var.redis_ca_cert}"
     redis_key_file = "/redis_certificates/${var.redis_key_file}"
     redis_cert_file = "/redis_certificates/${var.redis_cert_file}"
+    redis_secrets = var.redis_secrets
     submit_task_port = var.submit_task_port
     cancel_tasks_port = var.cancel_tasks_port
     get_results_port = var.get_results_port
@@ -128,7 +129,7 @@ module "htc_agent" {
     lambda_image_tag = local.default_agent_configuration.lambda.tag
     test_agent_image_tag = lookup(lookup(var.agent_configuration,"test",local.default_agent_configuration.test),"tag",local.default_agent_configuration.test.tag)
     agent_name = var.htc_agent_name
-    certificates_dir_path = var.certificates_dir_path
+    redis_secrets = var.redis_secrets
     image_pull_policy = var.image_pull_policy
     agent_min_cpu = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"minCPU",local.default_agent_configuration.agent.minCPU)
     agent_max_cpu = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"maxCPU",local.default_agent_configuration.agent.maxCPU)

@@ -79,10 +79,6 @@ resource "kubernetes_deployment" "cancel_tasks" {
       }
 
       spec {
-        image_pull_secrets {
-          name = "regcred"
-        }
-
         container {
           image   = var.docker_registry != "" ? "${var.docker_registry}/cancel_tasks:${var.suffix}" : "cancel_tasks:${var.suffix}"
           name    = "cancel-tasks"
@@ -164,10 +160,6 @@ resource "kubernetes_deployment" "get_results" {
       }
 
       spec {
-        image_pull_secrets {
-          name = "regcred"
-        }
-
         container {
           image   = var.docker_registry != "" ? "${var.docker_registry}/get_results:${var.suffix}" : "get_results:${var.suffix}"
           name    = "get-results"
@@ -193,19 +185,6 @@ resource "kubernetes_deployment" "get_results" {
 
           port {
             container_port = 8080
-          }
-
-          volume_mount {
-            name       = "submit-task-volume"
-            mount_path = "/redis_certificates"
-          }
-        }
-
-        volume {
-          name = "submit-task-volume"
-          host_path {
-            path = var.certificates_dir_path
-            type = ""
           }
         }
       }
@@ -240,10 +219,6 @@ resource "kubernetes_deployment" "submit_task" {
       }
 
       spec {
-        image_pull_secrets {
-          name = "regcred"
-        }
-
         container {
           image   = var.docker_registry != "" ? "${var.docker_registry}/submit_tasks:${var.suffix}" : "submit_tasks:${var.suffix}"
           name    = "submit-task"
@@ -272,16 +247,16 @@ resource "kubernetes_deployment" "submit_task" {
           }
 
           volume_mount {
-            name       = "submit-tasks-volume"
+            name       = "submit-tasks-secrets-volume"
             mount_path = "/redis_certificates"
+            read_only = true
           }
         }
 
         volume {
-          name = "submit-tasks-volume"
-          host_path {
-            path = var.certificates_dir_path
-            type = ""
+          name = "submit-tasks-secrets-volume"
+          secret {
+            secret_name = var.redis_secrets
           }
         }
       }
@@ -356,10 +331,6 @@ resource "kubernetes_deployment" "ttl_checker" {
       }
 
       spec {
-        image_pull_secrets {
-          name = "regcred"
-        }
-
         container {
           image   = var.docker_registry != "" ? "${var.docker_registry}/ttl_checker:${var.suffix}" : "ttl_checker:${var.suffix}"
           name    = "ttl-checker"

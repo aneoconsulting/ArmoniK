@@ -1,6 +1,6 @@
 # Changelog
 
-## [latest](https://github.com/aneoconsulting/armonik/tree/latest) (2021-11-23)
+## [latest](https://github.com/aneoconsulting/armonik/tree/main) (2021-11-23)
 Changed
 -
 * Deploy NGINX without using manifest file
@@ -8,6 +8,7 @@ Changed
 * Improve Armonik logs
 * Uniformize Armonik API (Client side with ArmonikClient class and hide internal data structures in IServiceContainer)
 * Reuse 1.1.1 version of Htc.Mock and add project that implement the interfaces between AmonikClient and Htc.Mock interfaces
+* Use a Kubernetes secret to connect to Redis (agent/lambda, submit tasks lambda and client)
 
 Added
 -
@@ -15,6 +16,7 @@ Added
 * Activate dynamodb stream logs and mongodb oplog
 * Scripts to process dynamodb stream logs and mongodb oplog so that we can retrieve when tasks change status
 * Enrich ArmonikSamples examples
+* Create a secret based on SSL/TLS certificates for Redis in Kubernetes
 
 
 ## [v0.9.4](https://github.com/aneoconsulting/armonik/tree/v0.9.4) (2021-11-04)

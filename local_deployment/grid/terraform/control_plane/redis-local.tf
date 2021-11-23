@@ -1,8 +1,8 @@
 resource "kubernetes_deployment" "redis" {
   metadata {
-    name      = "redis"
+    name   = "redis"
     labels = {
-      app = "local-scheduler"
+      app     = "local-scheduler"
       service = "redis"
     }
   }
@@ -11,7 +11,7 @@ resource "kubernetes_deployment" "redis" {
 
     selector {
       match_labels = {
-        app = "local-scheduler"
+        app     = "local-scheduler"
         service = "redis"
       }
     }
@@ -19,7 +19,7 @@ resource "kubernetes_deployment" "redis" {
     template {
       metadata {
         labels = {
-          app = "local-scheduler"
+          app     = "local-scheduler"
           service = "redis"
         }
       }
@@ -28,23 +28,30 @@ resource "kubernetes_deployment" "redis" {
         container {
           image   = "redis"
           name    = "redis"
-          command = ["redis-server", "--tls-port ${var.redis_port}", "--port 0", "--tls-cert-file /redis_certificates/redis.crt", "--tls-key-file /redis_certificates/redis.key", "--tls-ca-cert-file /redis_certificates/ca.crt"]
+          command = [
+            "redis-server",
+            "--tls-port ${var.redis_port}",
+            "--port 0",
+            "--tls-cert-file ${var.redis_cert_file}",
+            "--tls-key-file ${var.redis_key_file}",
+            "--tls-ca-cert-file ${var.redis_ca_cert}"
+          ]
 
           port {
             container_port = var.redis_port
           }
 
           volume_mount {
-            name       = "redis-vol"
+            name       = "redis-secrets-volume"
             mount_path = "/redis_certificates"
+            read_only = true
           }
         }
 
         volume {
-          name = "redis-vol"
-          host_path {
-            path = var.certificates_dir_path
-            type = ""
+          name = "redis-secrets-volume"
+          secret {
+            secret_name = var.redis_secrets
           }
         }
       }
@@ -63,11 +70,11 @@ resource "kubernetes_service" "redis" {
       app     = kubernetes_deployment.redis.metadata.0.labels.app
       service = kubernetes_deployment.redis.metadata.0.labels.service
     }
-    type = "LoadBalancer"
+    type     = "LoadBalancer"
     port {
       protocol = "TCP"
-      port = var.redis_port
-      name = "redis"
+      port     = var.redis_port
+      name     = "redis"
     }
   }
 }

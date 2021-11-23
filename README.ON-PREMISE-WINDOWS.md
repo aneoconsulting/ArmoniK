@@ -1,6 +1,8 @@
 1. [Install Kubernetes on local machine](#install-kubernetes-on-local-machine)
 2. [Configure the environment](#configure-the-environment)
-3. [Build Armonik artifacts](#build-armonik-artifacts)
+3. [Create scecrets in Kubernetes](#create-scecrets-in-kubernetes)
+   1. [Secrets for Redis](#secrets-for-redis)
+4. [Build Armonik artifacts](#build-armonik-artifacts)
    1. [Build Armonik artifacts on local](#build-armonik-artifacts-on-local)
    2. [Build client/server artifacts on local](#build-client-/-server-artifacts-on-local)
    3. [Build Armonik API](#build-armonik-api)
@@ -110,6 +112,9 @@ ARMONIK_NUGET_REPOS=<Your NuGet repository>
 # the redis certificates.
 ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your path to Redis certificates>
 
+# Redis secrets in Kubernetes
+export ARMONIK_REDIS_SECRETS=<Your Redis secrets name in Kubernetes>
+
 # Define an environment variable containing the docker registry
 # if it exists, otherwise initialize the variable to empty.
 ARMONIK_DOCKER_REGISTRY=<Your Docker registry>
@@ -124,6 +129,26 @@ cp configure/onpremise-wsl-config.conf ./envvars.conf
 2. Source the file of configuration:
 ```bash
 source ./envvars.conf
+```
+
+# Create secrets in Kubernetes <a name="create-secrets-in-kubernetes"></a>
+
+## Secrets for Redis <a name="secrets-for-redis"></a>
+
+Hereafter, Redis uses SSL/TLS support using certificates. In order to support TLS, Redis is configured with a X.509
+certificate (`redis.crt`) and a private key (`redis.key`). In addition, it is necessary to specify a CA certificate
+bundle file (`ca.crt`) or path to be used as a trusted root when validating certificates. A SSL certificate of
+type `PFX` is also used (`certificate.pfx`).
+
+Execute the following command to create Redis secrets in Kubernetes based on the certificates created and saved in the
+directory `$ARMONIK_REDIS_CERTIFICATES_DIRECTORY`:
+
+```bash
+kubectl create secret generic $ARMONIK_REDIS_SECRETS \
+        --from-file=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/redis.crt \
+        --from-file=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/redis.key \
+        --from-file=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/ca.crt \
+        --from-file=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/certificate.pfx
 ```
 
 # Build Armonik artifacts <a name="build-armonik-artifacts"></a>

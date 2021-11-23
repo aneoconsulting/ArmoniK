@@ -185,3 +185,7 @@ variable "image_pull_policy" {
 variable "api_gateway_service" {
   description = "API Gateway Service"
 }
+
+variable "redis_secrets" {
+  description = "Kubernetes secret for Redis certificates"
+}

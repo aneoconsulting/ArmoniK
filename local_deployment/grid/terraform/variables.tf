@@ -350,3 +350,8 @@ variable "api_gateway_service" {
 variable "generated_dir_path" {
   description = "Path of generated/ directory"
 }
+
+variable "redis_secrets" {
+  description = "Kubernetes secret for Redis certificates"
+  default = "redis-secrets"
+}
