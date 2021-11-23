@@ -1,14 +1,21 @@
 # Changelog
 
-## [latest](https://github.com/aneoconsulting/armonik/tree/latest) (2021-11-09)
+## [latest](https://github.com/aneoconsulting/armonik/tree/latest) (2021-11-23)
 Changed
 -
 * Deploy NGINX without using manifest file
 * Create separate configuration files for the client/server
+* Improve Armonik logs
+* Uniformize Armonik API (Client side with ArmonikClient class and hide internal data structures in IServiceContainer)
+* Reuse 1.1.1 version of Htc.Mock and add project that implement the interfaces between AmonikClient and Htc.Mock interfaces
 
 Added
 -
 * List of useful scripts ([tools/](./tools)) as displaying logs of compute lambda in agent pods
+* Activate dynamodb stream logs and mongodb oplog
+* Scripts to process dynamodb stream logs and mongodb oplog so that we can retrieve when tasks change status
+* Enrich ArmonikSamples examples
+
 
 ## [v0.9.4](https://github.com/aneoconsulting/armonik/tree/v0.9.4) (2021-11-04)
 Fixed
