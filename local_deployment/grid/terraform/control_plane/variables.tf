@@ -1,7 +1,3 @@
-# Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: Apache-2.0
-# Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
-
 variable "docker_registry" {
   description = "URL of Amazon ECR image repostiories"
 }
@@ -188,4 +184,10 @@ variable "api_gateway_service" {
 
 variable "redis_secrets" {
   description = "Kubernetes secret for Redis certificates"
+}
+
+variable "nginx_ingress_name" {
+  description = "The name of this nginx ingress controller"
+  type        = string
+  default     = "ingress-nginx"
 }
