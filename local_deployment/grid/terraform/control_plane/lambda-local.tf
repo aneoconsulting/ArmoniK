@@ -389,7 +389,7 @@ resource "kubernetes_cron_job" "ttl_checker_corn_job" {
             container {
               name    = "curl"
               image   = "curlimages/curl:latest"
-              args = ["-XPOST", "${var.nginx_endpoint_url}:${var.nginx_port}/check", "-d", "{}"]
+              args = ["-XPOST", "${local.nginx_pod_ip}:${var.nginx_port}/check", "-d", "{}"]
             }
           }
         }
