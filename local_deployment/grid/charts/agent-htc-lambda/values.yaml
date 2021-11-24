@@ -6,6 +6,8 @@ htcConfig: agent-configmap
 
 redis_secrets: ""
 
+nfs_pvc: ""
+
 replicaCount: 5
 
 terminationGracePeriodSeconds: 1500

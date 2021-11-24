@@ -149,3 +149,11 @@ variable "lambda_handler_function_name" {
 variable "redis_secrets" {
   description = "Kubernetes secret for Redis certificates"
 }
+
+variable "replica_count" {
+  description = "Replica count of agent"
+}
+
+variable "local_persistent_volume_claim" {
+  description = "Local persistent volume claim name"
+}

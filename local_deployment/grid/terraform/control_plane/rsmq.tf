@@ -34,19 +34,6 @@ resource "kubernetes_deployment" "rsmq" {
           port {
             container_port = var.queue_port
           }
-
-          volume_mount {
-            name       = "rsmq-vol"
-            mount_path = "/redis_certificates"
-          }
-        }
-
-        volume {
-          name = "rsmq-vol"
-          host_path {
-            path = var.certificates_dir_path
-            type = ""
-          }
         }
       }
     }

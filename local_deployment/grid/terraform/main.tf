@@ -68,6 +68,14 @@ locals {
     }
 }
 
+module "local_persistent_volume" {
+    source = "./local_persistent_volume"
+    persistent_volume_host_path = var.persistent_volume_host_path
+    persistent_volume_claim_size = var.persistent_volume_claim_size
+    persistent_volume_size = var.persistent_volume_size
+    persistent_volume_reclaim_policy = var.persistent_volume_reclaim_policy
+}
+
 module "compute_plane" {
     source = "./compute_plane"
 }
@@ -131,6 +139,8 @@ module "htc_agent" {
     agent_name = var.htc_agent_name
     redis_secrets = var.redis_secrets
     image_pull_policy = var.image_pull_policy
+    replica_count = var.replica_count
+    local_persistent_volume_claim = module.local_persistent_volume.local_persistent_volume_claim
     agent_min_cpu = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"minCPU",local.default_agent_configuration.agent.minCPU)
     agent_max_cpu = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"maxCPU",local.default_agent_configuration.agent.maxCPU)
     lambda_max_cpu = lookup(lookup(var.agent_configuration,"lambda",local.default_agent_configuration.lambda),"maxCPU",local.default_agent_configuration.lambda.maxCPU)
@@ -153,9 +163,5 @@ module "htc_agent" {
         module.control_plane,
         kubernetes_config_map.htcagentconfig
     ]
-}
-
-module "nfs_server_provisioner" {
-    source = "./nfs-server-provisioner"
 }
 

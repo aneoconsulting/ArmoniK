@@ -13,6 +13,11 @@ resource "helm_release" "htc_agent" {
   repository = var.agent_chart_url
 
   set {
+    name = "replicaCount"
+    value = var.replica_count
+  }
+
+  set {
     name = "redis_secrets"
     value = var.redis_secrets
   }
@@ -126,5 +131,8 @@ resource "helm_release" "htc_agent" {
     value = "${var.lambda_min_memory}Mi"
   }
 
-
+  set {
+    name = "nfs_pvc"
+    value = var.local_persistent_volume_claim
+  }
 }

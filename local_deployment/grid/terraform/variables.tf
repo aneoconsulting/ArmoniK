@@ -1,3 +1,8 @@
+variable "namespace" {
+  description = "Namespace"
+  default     = "default"
+}
+
 variable "k8s_config_context" {
   default = "default"
   description = ""
@@ -141,6 +146,11 @@ variable "agent_use_congestion_control" {
 variable "htc_agent_name" {
   default = "armonik-agent"
   description = "name of the htc agent to scale out/in"
+}
+
+variable "replica_count" {
+  description = "Replica count of agent"
+  default = 5
 }
 
 variable "suffix" {
@@ -354,4 +364,24 @@ variable "generated_dir_path" {
 variable "redis_secrets" {
   description = "Kubernetes secret for Redis certificates"
   default = "redis-secrets"
+}
+
+variable "persistent_volume_host_path" {
+  description = "Host path"
+  default = "/data"
+}
+
+variable "persistent_volume_size" {
+  description = "Size of the NFS persistent volume"
+  default = "10Gi"
+}
+
+variable "persistent_volume_claim_size" {
+  description = "Minimum amount of compute resources required"
+  default = "2Gi"
+}
+
+variable "persistent_volume_reclaim_policy" {
+  description = "What happens to a persistent volume when released from its claim"
+  default = "Delete"
 }

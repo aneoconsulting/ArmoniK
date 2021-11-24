@@ -14,6 +14,7 @@
   "redis_secrets": "{{redis_secrets}}",
   "cluster_config": "{{cluster_config}}",
   "image_pull_policy": "{{image_pull_policy}}",
+  "persistent_volume_host_path": "{{persistent_volume_host_path}}",
   "agent_configuration": {
     "lambda": {
       "minCPU": "50",

@@ -83,6 +83,8 @@ spec:
           - name: redis-secrets-volume
             mountPath: /redis_certificates
             readOnly: true
+          - name: libraries
+            mountPath: /libraries
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -105,3 +107,6 @@ spec:
         - name: redis-secrets-volume
           secret:
             secretName: {{.Values.redis_secrets}}
+        - name: libraries
+          persistentVolumeClaim:
+            claimName: {{.Values.nfs_pvc}}
