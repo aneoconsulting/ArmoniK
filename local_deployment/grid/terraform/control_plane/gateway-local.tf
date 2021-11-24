@@ -74,7 +74,7 @@ resource "kubernetes_cluster_role" "nginx_ingress_cluster_role" {
   }
 
   rule {
-    api_groups = ["networking.k8s.io"]
+    api_groups = ["extensions", "networking.k8s.io"]
     resources  = ["ingresses"]
     verbs      = ["get", "list", "watch"]
   }
@@ -86,13 +86,13 @@ resource "kubernetes_cluster_role" "nginx_ingress_cluster_role" {
   }
 
   rule {
-    api_groups = ["networking.k8s.io"]
+    api_groups = ["extensions", "networking.k8s.io"]
     resources  = ["ingresses/status"]
     verbs      = ["update"]
   }
 
   rule {
-    api_groups = ["networking.k8s.io"]
+    api_groups = ["extensions", "networking.k8s.io"]
     resources  = ["ingressclasses"]
     verbs      = ["get", "list", "watch"]
   }
@@ -155,19 +155,19 @@ resource "kubernetes_role" "nginx_ingress_controller_role" {
   }
 
   rule {
-    api_groups = ["networking.k8s.io"]
+    api_groups = ["extensions", "networking.k8s.io"]
     resources  = ["ingresses"]
     verbs      = ["get", "list", "watch"]
   }
 
   rule {
-    api_groups = ["networking.k8s.io"]
+    api_groups = ["extensions", "networking.k8s.io"]
     resources  = ["ingresses/status"]
     verbs      = ["update"]
   }
 
   rule {
-    api_groups = ["networking.k8s.io"]
+    api_groups = ["extensions", "networking.k8s.io"]
     resources  = ["ingressclasses"]
     verbs      = ["get", "list", "watch"]
   }
