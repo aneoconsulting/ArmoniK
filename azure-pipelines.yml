@@ -315,11 +315,10 @@ stages:
           pathToPublish: $(Build.ArtifactStagingDirectory)/PythonApi
           artifactName: PythonApi
 
-  - job: BuildCancelTasks
-    displayName: Build Cancel Tasks
+  - job: BuildControlPlane
+    displayName: Build Control Plane
     dependsOn:
       - BuildPythonUtils
-      - BuildArmonikAPI
     pool:
       name : $(AgentPoolName)
       vmImage : 'ubuntu-20.04'
@@ -334,82 +333,29 @@ stages:
           set -e
           sudo  apt update && sudo apt install -y docker.io
           sudo chown :sudo /var/run/docker.sock
-          docker build -f source/control_plane/python/lambda/cancel_tasks/Dockerfile -t dockerhubaneo/cancel_tasks:$(TAGVar) .
           echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
+        displayName: Install dependencies
+      - script: |
+          set -e
+          docker build -f source/control_plane/python/lambda/submit_tasks/Dockerfile -t dockerhubaneo/submit_tasks:$(TAGVar) .
+          docker push dockerhubaneo/submit_tasks:$(TAGVar)
+        displayName: Build and Push submit_tasks to DockerHub
+      - script: |
+          set -e
+          docker build -f source/control_plane/python/lambda/ttl_checker/Dockerfile -t dockerhubaneo/ttl_checker:$(TAGVar) .
+          docker push dockerhubaneo/ttl_checker:$(TAGVar)
+        displayName: Build and Push ttl_checker to DockerHub
+      - script: |
+          set -e
+          docker build -f source/control_plane/python/lambda/get_results/Dockerfile -t dockerhubaneo/get_results:$(TAGVar) .
+          docker push dockerhubaneo/get_results:$(TAGVar)
+        displayName: Build and Push get_results to DockerHub
+      - script: |
+          set -e
+          docker build -f source/control_plane/python/lambda/cancel_tasks/Dockerfile -t dockerhubaneo/cancel_tasks:$(TAGVar) .
           docker push dockerhubaneo/cancel_tasks:$(TAGVar)
         displayName: Build and Push cancel tasks to DockerHub
 
-  - job: BuildGetResults
-    displayName: Build Get Results
-    dependsOn:
-      - BuildPythonUtils
-      - BuildArmonikAPI
-    pool:
-      name : $(AgentPoolName)
-      vmImage : 'ubuntu-20.04'
-    steps:
-      - task: DownloadBuildArtifacts@0
-        inputs:
-          buildType: 'current'
-          downloadType: 'single'
-          artifactName: PythonUtils
-          downloadPath: '$(Build.ArtifactStagingDirectory)/PythonUtils'
-      - script: |
-          set -e
-          sudo  apt update && sudo apt install -y docker.io
-          sudo chown :sudo /var/run/docker.sock
-          docker build -f source/control_plane/python/lambda/get_results/Dockerfile -t dockerhubaneo/get_results:$(TAGVar) .
-          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
-          docker push dockerhubaneo/get_results:$(TAGVar)
-        displayName: Build and Push get_results to DockerHub
-
-  - job: BuildSubmitTasks
-    displayName: Build Submit Tasks
-    dependsOn:
-      - BuildPythonUtils
-      - BuildArmonikAPI
-    pool:
-      name : $(AgentPoolName)
-      vmImage : 'ubuntu-20.04'
-    steps:
-      - task: DownloadBuildArtifacts@0
-        inputs:
-          buildType: 'current'
-          downloadType: 'single'
-          artifactName: PythonUtils
-          downloadPath: '$(Build.ArtifactStagingDirectory)/PythonUtils'
-      - script: |
-          set -e
-          sudo  apt update && sudo apt install -y docker.io
-          sudo chown :sudo /var/run/docker.sock
-          docker build -f source/control_plane/python/lambda/submit_tasks/Dockerfile -t dockerhubaneo/submit_tasks:$(TAGVar) .
-          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
-          docker push dockerhubaneo/submit_tasks:$(TAGVar)
-        displayName: Build and Push submit_tasks to DockerHub
-
-  - job: BuildTtlChecker
-    displayName: Build Ttl Checker
-    dependsOn:
-      - BuildPythonUtils
-      - BuildArmonikAPI
-    pool:
-      name : $(AgentPoolName)
-      vmImage : 'ubuntu-20.04'
-    steps:
-      - task: DownloadBuildArtifacts@0
-        inputs:
-          buildType: 'current'
-          downloadType: 'single'
-          artifactName: PythonUtils
-          downloadPath: '$(Build.ArtifactStagingDirectory)/PythonUtils'
-      - script: |
-          set -e
-          sudo  apt update && sudo apt install -y docker.io
-          sudo chown :sudo /var/run/docker.sock
-          docker build -f source/control_plane/python/lambda/ttl_checker/Dockerfile -t dockerhubaneo/ttl_checker:$(TAGVar) .
-          echo $(DockerHubToken) | docker login -u dhaneo1 --password-stdin
-          docker push dockerhubaneo/ttl_checker:$(TAGVar)
-        displayName: Build and Push ttl_checker to DockerHub
 
   - job: BuildAgent
     displayName: Build Agent
