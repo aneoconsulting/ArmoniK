@@ -155,3 +155,7 @@ module "htc_agent" {
     ]
 }
 
+module "nfs_server_provisioner" {
+    source = "./nfs-server-provisioner"
+}
+
