@@ -1,4 +1,0 @@
-influxdb
-requests
-pymongo
-boto3
