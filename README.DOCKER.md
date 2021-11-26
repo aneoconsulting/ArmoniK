@@ -78,46 +78,36 @@ The deployement procedure is the same for both modes (user and dev).
    ```
 
 # Running an example workload <a name="running-an-example-workload"></a>
-In the folder [mock_computation](./examples/workloads/dotnet5.0/mock_computation), you will find the code of the
-.NET 5.0 program mocking computation.
+In the folder [applications/ArmonikSamples](./applications/ArmonikSamples), you will find the code of the .NET 5.0
+Armonik samples.
 
-We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job
-and the grid are implemented by a client in folder [./examples/client/python](./examples/client/python).
+We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job and the
+grid are implemented by a client in folder [applications/ArmonikSamples/Client](./applications/ArmonikSamples/Client).
 
-1. Run the following command to launch a kubernetes job:
+1. Export the location of the client config file. The config is passed this way for ArmonikSamples and HtcMock. This may be different for your application.
    ```bash
-   kubectl apply -f ./generated/local-single-task-dotnet5.0.yaml
+   export CLIENT_CONFIG_FILE=generated/Client_config.json
    ```
 
-2. look at the log of the submission:
-   ```bash
-   kubectl logs job/single-task -f
+2. Run your application
    ```
-
-3. To clean the job submission instance:
-   ```bash
-   kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
+   dotnet generated/$ARMONIK_APPLICATION_NAME/Client/Client.dll
    ```
 
 # Clean and destroy Armonik resources <a name="clean-and-destroy-armonik-resources"></a>
 In the root forlder `<project_root>`, to destroy all Armonik resources deployed on the local machine, execute the following commands:
 
-1. Delete the launched Kubernetes job, example:
-```bash
-kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
-```
-
-2. Destroy all Armonik resources:
+1. Destroy all Armonik resources:
 ```bash
 make destroy-dotnet-local-runtime
 ```
 
-3. Clean Terraform project, binaries and generated files:
+2. Clean Terraform project, binaries and generated files:
 ```bash
 make clean-grid-local-project
 ```
 
-4. **If you want** remove all local docker images:
+3. **If you want** remove all local docker images:
 ```bash
 docker rmi -f $(docker image ls --format="{{json .}}" | jq "select( (.Tag==\"$ARMONIK_TAG\") ) .ID" | tr -d \")
 ```

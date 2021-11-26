@@ -351,54 +351,49 @@ make build-armonik-api
    ```
 
 # Running an example application <a name="running-an-application-workload"></a>
-In the folder [applications/ArmonikSamples](./applications/ArmonikSamples), you will find the code of the .NET 5.0 Armonik samples.
 
-We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job and the grid are implemented by a client in folder [applications/ArmonikSamples/Client](./applications/ArmonikSamples/Client).
+In the folder [applications/ArmonikSamples](./applications/ArmonikSamples), you will find the code of the .NET 5.0
+Armonik samples.
 
-1. Create a sample Kubernetes job `local-single-task-dotnet5.0.yaml` as follows:
+We will use a kubernetes Jobs to submit one execution of this .NET program. The communication between the job and the
+grid are implemented by a client in folder [applications/ArmonikSamples/Client](./applications/ArmonikSamples/Client).
+
+1. Export the location of the client config file. The config is passed this way for ArmonikSamples and HtcMock. This may be different for your application.
    ```bash
-   make k8s-jobs
+   export CLIENT_CONFIG_FILE=generated/Client_config.json
    ```
 
-2. Run the following command to launch a kubernetes job:
-   ```bash
-   kubectl apply -f ./generated/local-single-task-dotnet5.0.yaml
+2. Run your application
    ```
-
-3. look at the log of the submission:
-   ```bash
-   kubectl logs job/single-task -f
-   ```
-
-4. To clean the job submission instance:
-   ```bash
-   kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
+   dotnet generated/$ARMONIK_APPLICATION_NAME/Client/Client.dll
    ```
 
 # Clean and destroy Armonik resources <a name="clean-and-destroy-armonik-resources"></a>
-In the root forlder `<project_root>`, to destroy all Armonik resources deployed on the local machine, execute the following commands:
 
-1. Delete the launched Kubernetes job, example:
-```bash
-kubectl delete -f ./generated/local-single-task-dotnet5.0.yaml
-```
+In the root forlder `<project_root>`, to destroy all Armonik resources deployed on the local machine, execute the
+following commands:
 
-2. Destroy all Armonik resources:
-```bash
-make destroy-dotnet-local-runtime
-```
+1. Destroy all Armonik resources:
+   ```bash
+   make destroy-dotnet-local-runtime
+   ```
 
-3. Clean Terraform project, binaries and generated files:
-```bash
-make clean-grid-local-project
-```
+2. Clean Terraform project:
+   ```bash
+   make clean-grid-local-deployment
+   ```
+
+3. Clean binaries and generated files:
+   ```bash
+   make clean-grid-local-project
+   ```
 
 4. **If you want** uninstall Kubernetes on the local machine:
-```bash
-/usr/local/bin/k3s-uninstall.sh
-```
+   ```bash
+   /usr/local/bin/k3s-uninstall.sh
+   ```
 
 5. If you want remove local docker images with tag of `ARMONIK_TAG` environment variable:
-```bash
-docker rmi -f $(docker image ls --format="{{json .}}" | jq "select( (.Tag==\"$ARMONIK_TAG\") ) .ID" | tr -d \")
-```
+   ```bash
+   docker rmi -f $(docker image ls --format="{{json .}}" | jq "select( (.Tag==\"$ARMONIK_TAG\") ) .ID" | tr -d \")
+   ```

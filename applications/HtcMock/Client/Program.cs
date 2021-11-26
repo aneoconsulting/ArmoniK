@@ -60,7 +60,7 @@ namespace HtcClient
                     Thread.Sleep(arminik_debug_wait_client * 1000);
                 }
             }
-            string agentConfigFileName = Environment.GetEnvironmentVariable("AGENT_CONFIG_FILE");
+            string agentConfigFileName = Environment.GetEnvironmentVariable("CLIENT_CONFIG_FILE");
             if (agentConfigFileName == null)
             {
                 agentConfigFileName = "/etc/agent/Agent_config.tfvars.json";

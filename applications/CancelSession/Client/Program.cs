@@ -19,7 +19,7 @@ namespace HtcClient
         {
             Console.WriteLine("Hello Cancel Task!");
 
-            string agentConfigFileName = Environment.GetEnvironmentVariable("AGENT_CONFIG_FILE");
+            string agentConfigFileName = Environment.GetEnvironmentVariable("CLIENT_CONFIG_FILE");
             if (agentConfigFileName == null)
             {
                 agentConfigFileName = "/etc/agent/Agent_config.tfvars.json";
