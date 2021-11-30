@@ -36,27 +36,27 @@ You can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/
 Install K3s as follows:
 
 ```bash
-  curl -sfL https://get.k3s.io | sh -
+curl -sfL https://get.k3s.io | sh -
 ```
 
 If you want use host's Docker rather than containerd use `--docker` option:
 
 ```bash
-  curl -sfL https://get.k3s.io | sh -s - --docker
+curl -sfL https://get.k3s.io | sh -s - --docker
 ```
 
 Then initialize the configuration file of Kubernetes:
 
 ```bash
-  sudo chmod 755 /etc/rancher/k3s/k3s.yaml
-  mkdir -p ~/.kube
-  cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chmod 755 /etc/rancher/k3s/k3s.yaml
+mkdir -p ~/.kube
+cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 ```
 
 To uninstall K3s, use the following command:
 
 ```bash
-  /usr/local/bin/k3s-uninstall.sh
+/usr/local/bin/k3s-uninstall.sh
 ```
 
 ## Set environment variables <a name="set-environment-variables"></a>
@@ -85,30 +85,30 @@ export ARMONIK_QUEUE_STORAGE_SECRET_NAME=<You kubernetes secret for the queue st
 
 1. copy the [template file](./utils/envvars.conf) in the [current directory](.):
 
-   ```bash
-      cp utils/envvars.conf ./envvars.conf
-   ```
+```bash
+cp utils/envvars.conf ./envvars.conf
+```
 
 2. modify the values of variables if needed in `./envvars.conf`
 
 3. Source the file of configuration :
 
-   ```bash
-      source ./envvars.conf
-   ```
+```bash
+source ./envvars.conf
+```
 
 # Create a namespace for ArmoniK <a name="create-a-namespace-for-armonik"></a>
 
 Before deploring the ArmoniK resources, you must first create a namespace in the Kubernetes cluster for ArmoniK:
 
 ```bash
-   kubectl create namespace $ARMONIK_NAMESPACE
+kubectl create namespace $ARMONIK_NAMESPACE
 ```
 
 You can see all active namespaces in your Kubernetes as follows:
 
 ```bash
-   kubectl get namespaces
+kubectl get namespaces
 ```
 
 # Create Kubernetes secrets <a name="create-kubernetes-secrets"></a>
@@ -124,14 +124,14 @@ Execute the following command to create the object storage secret in Kubernetes 
 saved in the directory `$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY`. In this project, we have certificates for test
 in [credentials](./credentials) directory. Create a Kubernetes secret for the ArmoniK object storage:
 
-   ```bash
-      kubectl create secret generic $ARMONIK_OBJECT_STORAGE_SECRET_NAME \
-              --namespace=$ARMONIK_NAMESPACE \
-              --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.crt \
-              --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.key \
-              --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/ca.crt \
-              --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/certificate.pfx
-   ```
+```bash
+kubectl create secret generic $ARMONIK_OBJECT_STORAGE_SECRET_NAME \
+        --namespace=$ARMONIK_NAMESPACE \
+        --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.crt \
+        --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.key \
+        --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/ca.crt \
+        --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/certificate.pfx
+```
 
 ## Queue storage secret <a name="queue-storage-secret"></a>
 In this project, we use ActiveMQ as queue storage for Armonik. ActiveMQ use a file `jetty-realm.properties`. This is the
@@ -143,8 +143,8 @@ created and saved in the directory `$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY
 name `jetty-realm.properties` in [credentials](./credentials) directory. Create a Kubernetes secret for the ArmoniK
 queue storage:
 
-   ```bash
-      kubectl create secret generic $ARMONIK_QUEUE_STORAGE_SECRET_NAME \
-              --namespace=$ARMONIK_NAMESPACE \
-              --from-file=$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY/jetty-realm.properties
-   ```
+```bash
+kubectl create secret generic $ARMONIK_QUEUE_STORAGE_SECRET_NAME \
+        --namespace=$ARMONIK_NAMESPACE \
+        --from-file=$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY/jetty-realm.properties
+```
