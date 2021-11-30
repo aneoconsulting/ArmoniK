@@ -1,0 +1,87 @@
+# Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+# Licensed under the Apache License, Version 2.0 https://aws.amazon.com/apache-2-0/
+
+htcConfig: agent-configmap
+
+redis_secrets: ""
+
+nfs_pvc: ""
+
+replicaCount: 5
+
+terminationGracePeriodSeconds: 1500
+
+imageAgent:
+  version: latest
+  pullPolicy: IfNotPresent
+
+imageLambdaServer:
+  pullPolicy: IfNotPresent
+
+
+imagePullSecrets:
+  - name: regcred
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+
+securityContext:
+  capabilities:
+    drop:
+    - SYS_PTRACE
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+lambda:
+  protocolEndpoint: http
+  hostEndpoint: localhost
+  port: 8080
+  timeout: 86400
+  mountPoint: /var/task
+  handler: bootstrap.main
+
+
+
+resourcesAgent:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+   cpu: 100m
+   memory: 128Mi
+
+resourcesLambdaServer:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 920m
+    memory: 3966Mi
+  requests:
+    cpu: 50m
+    memory: 3966Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
