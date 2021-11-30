@@ -84,6 +84,7 @@ armonik = {
       image             = "dockerhubaneo/armonik_compute",
       tag               = "dev-6276",
       image_pull_policy = "IfNotPresent",
+      port              = 9001,
       limits            = {
         cpu    = "920m",
         memory = "3966Mi"

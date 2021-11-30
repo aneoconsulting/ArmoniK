@@ -152,6 +152,7 @@ variable "armonik" {
         image             = string,
         tag               = string,
         image_pull_policy = string,
+        port              = number,
         limits            = object({
           cpu    = string,
           memory = string
@@ -190,6 +191,7 @@ variable "armonik" {
         image             = "dockerhubaneo/armonik_compute",
         tag               = "dev-6276",
         image_pull_policy = "IfNotPresent",
+        port              = 9001,
         limits            = {
           cpu    = "920m",
           memory = "3966Mi"

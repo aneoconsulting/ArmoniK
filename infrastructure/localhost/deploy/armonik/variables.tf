@@ -32,6 +32,7 @@ variable "armonik" {
       compute       = object({
         image             = string,
         image_pull_policy = string,
+        port              = number,
         limits            = object({
           cpu    = string,
           memory = string

@@ -68,6 +68,9 @@ resource "kubernetes_deployment" "agent" {
           name              = "compute"
           image             = var.armonik.agent.compute.image
           image_pull_policy = var.armonik.agent.compute.image_pull_policy
+          port {
+            container_port = var.armonik.agent.compute.port
+          }
           resources {
             limits   = {
               cpu    = var.armonik.agent.compute.limits.cpu
