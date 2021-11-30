@@ -33,3 +33,25 @@ queue_storage = ({
   ],
   secret   = "queue-storage-secret"
 })
+
+# Parameters for shared storage
+shared_storage = ({
+  storage_class           = ({
+    provisioner            = "kubernetes.io/no-provisioner",
+    name                   = "nfs",
+    volume_binding_mode    = "WaitForFirstConsumer",
+    allow_volume_expansion = true
+  }),
+  persistent_volume       = ({
+    name                             = "nfs-pv",
+    persistent_volume_reclaim_policy = "Delete",
+    access_modes                     = ["ReadWriteMany"],
+    size                             = "10Gi",
+    path                             = "/data"
+  }),
+  persistent_volume_claim = ({
+    name         = "nfs-pvc",
+    access_modes = ["ReadWriteMany"],
+    size         = "2Gi"
+  })
+})
