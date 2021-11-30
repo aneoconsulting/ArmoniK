@@ -64,10 +64,12 @@ Execute the following command to create the object storage secret in Kubernetes 
 saved in the directory `$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY`. In this project, we have certificates for test
 in [certificates](./certificates) directory:
 1. Set an environment variable to the path of the directory containing the certificates:
+
    ```bash
       export ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY=<path-to-directory-of-certificates>
    ```
 2. Create a Kubernetes secret for the ArmoniK object storage:
+
    ```bash
       kubectl create secret generic object-storage-secret \
               --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.crt \
