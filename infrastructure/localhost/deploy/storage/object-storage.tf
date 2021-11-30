@@ -14,7 +14,7 @@ resource "kubernetes_deployment" "redis" {
     }
   }
   spec {
-    replicas = var.object_storage_replicas
+    replicas = var.object_storage.replicas
     selector {
       match_labels = {
         app     = "storage"
@@ -38,25 +38,26 @@ resource "kubernetes_deployment" "redis" {
           image   = "redis"
           command = [
             "redis-server",
-            "--tls-port ${var.object_storage_port}",
+            "--tls-port ${var.object_storage.port}",
             "--port 0",
-            "--tls-cert-file /certificates/${var.object_storage_certificates["cert_file"]}",
-            "--tls-key-file /certificates/${var.object_storage_certificates["key_file"]}",
-            "--tls-ca-cert-file /certificates/${var.object_storage_certificates["ca_cert_file"]}"
+            "--tls-cert-file /certificates/${var.object_storage.certificates["cert_file"]}",
+            "--tls-key-file /certificates/${var.object_storage.certificates["key_file"]}",
+            "--tls-ca-cert-file /certificates/${var.object_storage.certificates["ca_cert_file"]}"
           ]
           port {
-            container_port = var.object_storage_port
+            container_port = var.object_storage.port
           }
           volume_mount {
-            name       = "object_storage_secrets_volume"
+            name       = "object-storage-secret-volume"
             mount_path = "/certificates"
             read_only  = true
           }
         }
         volume {
-          name = "object_storage_secrets_volume"
+          name = "object-storage-secret-volume"
           secret {
-            secret_name = var.object_storage_secret_name
+            secret_name = var.object_storage.secret
+            optional    = false
           }
         }
       }
@@ -81,10 +82,10 @@ resource "kubernetes_service" "redis" {
       type    = kubernetes_deployment.redis.metadata.0.labels.type
       service = kubernetes_deployment.redis.metadata.0.labels.service
     }
-    type     = "LoadBalancer"
+    type     = "ClusterIP"
     port {
       name     = kubernetes_deployment.redis.metadata.0.name
-      port     = var.object_storage_port
+      port     = var.object_storage.port
       protocol = "TCP"
     }
   }

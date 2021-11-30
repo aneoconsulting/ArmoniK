@@ -3,7 +3,9 @@
 2. [Getting started](#getteing-started)
    1. [Software prerequisites](#software-prerequisites)
    2. [Install Kubernetes](#install-kubernetes)
-3. [Create Kubernetes secrets](#create-kubernetes-secrets)
+3. [Set environment variables](#set-environment-variables)
+4. [Create a namespace for ArmoniK](#create-a-namespace-for-armonik)
+5. [Create Kubernetes secrets](#create-kubernetes-secrets)
    1. [Object storage secret](#object-storage-secret)
 
 # Introduction <a name="introduction"></a>
@@ -15,12 +17,10 @@ ArmoniK (example: different storage) are deployed as services in the Kubernetes 
 The following resources should be installed upon you local machine :
 
 * docker version > 1.19
-
 * kubectl version > 1.19
-
 * [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version > 1.0.0
-
 * [helm](https://helm.sh/docs/intro/install/) version > 3
+* [JQ](https://stedolan.github.io/jq/)
 
 ## Install Kubernetes <a name="install-kubernetes"></a>
 Instructions to install Kubernetes on local Linux machine.
@@ -52,6 +52,49 @@ To uninstall K3s, use the following command:
 ```bash
   /usr/local/bin/k3s-uninstall.sh
 ```
+## Set environment variables <a name="set-environment-variables"></a>
+The project needs to define and set environment variables for deploying the infrastructure.
+The main environment variables are:
+
+```buildoutcfg
+# Armonik namespace in the Kubernetes
+export ARMONIK_NAMESPACE=armonik
+
+# Directory path of the object storage certificates
+export ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY=$(PWD)/certificates
+    
+# Directory path of the object storage certificates
+export ARMONIK_OBJECT_STORAGE_SECRET_NAME=object-storage-secret
+```
+
+**Mandatory:** To set these environment variables, for example:
+
+1. copy the [template file](./utils/envvars.conf) in the current directory (`infrastructure/localhost/`):
+
+   ```bash
+      cp utils/envvars.conf ./envvars.conf
+   ```
+   
+2. modify the values of variables if needed in `./envvars.conf`
+
+3. Source the file of configuration :
+
+   ```bash
+      source ./envvars.conf
+   ```
+
+# Create a namespace for ArmoniK <a name="create-a-namespace-for-armonik"></a>
+Before deploring the ArmoniK resources, you must first create a namespace in the Kubernetes cluster for ArmoniK:
+
+```bash
+   kubectl create namespace $ARMONIK_NAMESPACE
+```
+
+You can see all active namespaces in your Kubernetes as follows:
+
+```bash
+   kubectl get namespaces
+```
 
 # Create Kubernetes secrets <a name="create-kubernetes-secrets"></a>
 ## Object storage secret <a name="object-storage-secret"></a>
@@ -62,16 +105,11 @@ certificates. A SSL certificate of type `PFX` is also used (`certificate.pfx`).
 
 Execute the following command to create the object storage secret in Kubernetes based on the certificates created and
 saved in the directory `$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY`. In this project, we have certificates for test
-in [certificates](./certificates) directory:
-1. Set an environment variable to the path of the directory containing the certificates:
+in [certificates](./certificates) directory. Create a Kubernetes secret for the ArmoniK object storage:
 
    ```bash
-      export ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY=<path-to-directory-of-certificates>
-   ```
-2. Create a Kubernetes secret for the ArmoniK object storage:
-
-   ```bash
-      kubectl create secret generic object-storage-secret \
+      kubectl create secret generic $ARMONIK_OBJECT_STORAGE_SECRET_NAME \
+              --namespace=$ARMONIK_NAMESPACE \
               --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.crt \
               --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.key \
               --from-file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/ca.crt \

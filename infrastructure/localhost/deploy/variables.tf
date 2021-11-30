@@ -1,30 +1,39 @@
+#Global variables
 variable "namespace" {
   description = "Namespace of ArmoniK resources"
   type        = string
   default     = "armonik"
 }
 
-# Parameters for object storage
-variable "object_storage_replicas" {
-  description = "Number of replicas for the object storage"
-  type        = number
-  default     = 1
-}
-
-variable "object_storage_port" {
-  description = "Port to the object storage"
-  type        = number
-  default     = 6379
-}
-
-variable "object_storage_certificates" {
-  description = "TLS certificates for object storage"
-  type        = map(string)
-  default     = { cert_file = "cert.crt", key_file = "cert.key", ca_cert_file = "ca.crt" }
-}
-
-variable "object_storage_secret_name" {
-  description = "Kubernetes secret for object storage"
+variable "k8s_config_path" {
+  description = "Path pf the configuration file of K8s"
   type        = string
-  default     = "object-storage-secret"
+  default     = "~/.kube/config"
+}
+
+variable "k8s_config_context" {
+  description = "Context of K8s"
+  type        = string
+  default     = "default"
+}
+
+# Parameters for object storage
+variable "object_storage" {
+  description = "Parameters of object storage of ArmoniK"
+  type        = object({
+    replicas     = number,
+    port         = number,
+    certificates = map(string),
+    secret       = string
+  })
+  default     = ({
+    replicas     = 1,
+    port         = 6379,
+    certificates = {
+      cert_file    = "cert.crt",
+      key_file     = "cert.key",
+      ca_cert_file = "ca.crt"
+    },
+    secret       = "object-storage-secret"
+  })
 }
