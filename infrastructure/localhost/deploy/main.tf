@@ -6,8 +6,9 @@ data "external" "k8s_config_context" {
 
 # Object storage
 module "storage" {
-  source         = "./storage"
-  namespace      = var.namespace
+  source    = "./storage"
+  namespace = var.namespace
+
   object_storage = {
     replicas     = var.object_storage.replicas,
     port         = var.object_storage.port,
@@ -17,5 +18,10 @@ module "storage" {
       ca_cert_file = var.object_storage.certificates["ca_cert_file"]
     },
     secret       = var.object_storage.secret
+  }
+
+  table_storage = {
+    replicas = var.table_storage.replicas,
+    port     = var.table_storage.port
   }
 }

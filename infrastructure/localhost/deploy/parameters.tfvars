@@ -14,3 +14,9 @@ object_storage = ({
   },
   secret       = "object-storage-secret"
 })
+
+# Table storage parameters
+table_storage = ({
+  replicas = 1,
+  port     = 27017
+})

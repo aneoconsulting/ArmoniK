@@ -2,8 +2,8 @@
 # Redis is used as object storage
 # Redis is deployed as a service in Kubernetes cluster
 
-# Kubernetes Redis deployment
-resource "kubernetes_deployment" "redis" {
+# Kubernetes Redis statefulset
+resource "kubernetes_stateful_set" "redis" {
   metadata {
     name      = "redis"
     namespace = var.namespace
@@ -14,7 +14,8 @@ resource "kubernetes_deployment" "redis" {
     }
   }
   spec {
-    replicas = var.object_storage.replicas
+    service_name = "reids"
+    replicas     = var.object_storage.replicas
     selector {
       match_labels = {
         app     = "storage"
@@ -24,9 +25,8 @@ resource "kubernetes_deployment" "redis" {
     }
     template {
       metadata {
-        name      = "redis"
-        namespace = var.namespace
-        labels    = {
+        name   = "redis"
+        labels = {
           app     = "storage"
           type    = "object"
           service = "redis"
@@ -36,8 +36,8 @@ resource "kubernetes_deployment" "redis" {
         container {
           name    = "redis"
           image   = "redis"
-          command = [
-            "redis-server",
+          command = ["redis-server"]
+          args    = [
             "--tls-port ${var.object_storage.port}",
             "--port 0",
             "--tls-cert-file /certificates/${var.object_storage.certificates["cert_file"]}",
@@ -68,23 +68,23 @@ resource "kubernetes_deployment" "redis" {
 # Kubernetes Redis service
 resource "kubernetes_service" "redis" {
   metadata {
-    name      = kubernetes_deployment.redis.metadata.0.name
-    namespace = kubernetes_deployment.redis.metadata.0.namespace
+    name      = kubernetes_stateful_set.redis.metadata.0.name
+    namespace = kubernetes_stateful_set.redis.metadata.0.namespace
     labels    = {
-      app     = kubernetes_deployment.redis.metadata.0.labels.app
-      type    = kubernetes_deployment.redis.metadata.0.labels.type
-      service = kubernetes_deployment.redis.metadata.0.labels.service
+      app     = kubernetes_stateful_set.redis.metadata.0.labels.app
+      type    = kubernetes_stateful_set.redis.metadata.0.labels.type
+      service = kubernetes_stateful_set.redis.metadata.0.labels.service
     }
   }
   spec {
-    selector = {
-      app     = kubernetes_deployment.redis.metadata.0.labels.app
-      type    = kubernetes_deployment.redis.metadata.0.labels.type
-      service = kubernetes_deployment.redis.metadata.0.labels.service
-    }
     type     = "ClusterIP"
+    selector = {
+      app     = kubernetes_stateful_set.redis.metadata.0.labels.app
+      type    = kubernetes_stateful_set.redis.metadata.0.labels.type
+      service = kubernetes_stateful_set.redis.metadata.0.labels.service
+    }
     port {
-      name     = kubernetes_deployment.redis.metadata.0.name
+      name     = kubernetes_stateful_set.redis.metadata.0.name
       port     = var.object_storage.port
       protocol = "TCP"
     }

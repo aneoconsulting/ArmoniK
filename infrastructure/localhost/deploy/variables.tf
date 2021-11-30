@@ -37,3 +37,16 @@ variable "object_storage" {
     secret       = "object-storage-secret"
   })
 }
+
+# Parameters for table storage
+variable "table_storage" {
+  description = "Parameters of table storage of ArmoniK"
+  type        = object({
+    replicas = number,
+    port     = number
+  })
+  default     = ({
+    replicas = 1,
+    port     = 27017
+  })
+}

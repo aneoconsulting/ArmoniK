@@ -69,7 +69,7 @@ export ARMONIK_OBJECT_STORAGE_SECRET_NAME=object-storage-secret
 
 **Mandatory:** To set these environment variables, for example:
 
-1. copy the [template file](./utils/envvars.conf) in the current directory (`infrastructure/localhost/`):
+1. copy the [template file](./utils/envvars.conf) in the [current directory](.):
 
    ```bash
       cp utils/envvars.conf ./envvars.conf

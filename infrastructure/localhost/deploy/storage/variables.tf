@@ -14,3 +14,12 @@ variable "object_storage" {
     secret       = string
   })
 }
+
+# Parameters for table storage
+variable "table_storage" {
+  description = "Parameters of table storage of ArmoniK"
+  type        = object({
+    replicas = number,
+    port     = number
+  })
+}
