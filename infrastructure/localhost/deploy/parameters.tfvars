@@ -57,10 +57,41 @@ shared_storage = {
 }
 
 # ArmoniK control plane
-control_plane = {
-  replicas          = 1,
-  image             = "dockerhubaneo/armonik_control",
-  tag               = "dev-6276",
-  image_pull_policy = "IfNotPresent",
-  port              = 9000
+armonik = {
+  control_plane = {
+    replicas          = 1,
+    image             = "dockerhubaneo/armonik_control",
+    tag               = "dev-6276",
+    image_pull_policy = "IfNotPresent",
+    port              = 9000
+  },
+  agent         = {
+    replicas      = 1,
+    polling_agent = {
+      image             = "dockerhubaneo/armonik_pollingagent",
+      tag               = "dev-6276",
+      image_pull_policy = "IfNotPresent",
+      limits            = {
+        cpu    = "100m",
+        memory = "128Mi"
+      },
+      requests          = {
+        cpu    = "100m",
+        memory = "128Mi"
+      }
+    },
+    compute       = {
+      image             = "dockerhubaneo/armonik_compute",
+      tag               = "dev-6276",
+      image_pull_policy = "IfNotPresent",
+      limits            = {
+        cpu    = "920m",
+        memory = "3966Mi"
+      },
+      requests          = {
+        cpu    = "50m",
+        memory = "3966Mi"
+      }
+    }
+  }
 }

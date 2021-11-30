@@ -40,9 +40,9 @@ resource "kubernetes_stateful_set" "redis" {
           args    = [
             "--tls-port ${var.object_storage.port}",
             "--port 0",
-            "--tls-cert-file /certificates/${var.object_storage.certificates["cert_file"]}",
-            "--tls-key-file /certificates/${var.object_storage.certificates["key_file"]}",
-            "--tls-ca-cert-file /certificates/${var.object_storage.certificates["ca_cert_file"]}"
+            "--tls-cert-file /certificates/${var.object_storage.certificates.cert_file}",
+            "--tls-key-file /certificates/${var.object_storage.certificates.key_file}",
+            "--tls-ca-cert-file /certificates/${var.object_storage.certificates.ca_cert_file}"
           ]
           port {
             container_port = var.object_storage.port

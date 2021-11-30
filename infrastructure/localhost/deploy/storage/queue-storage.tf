@@ -39,7 +39,7 @@ resource "kubernetes_stateful_set" "activemq" {
           volume_mount {
             name       = "queue-storage-secret-volume"
             mount_path = "/opt/activemq/conf/jetty-realm.properties"
-            sub_path = "jetty-realm.properties"
+            sub_path   = "jetty-realm.properties"
             read_only  = true
           }
         }
@@ -76,10 +76,10 @@ resource "kubernetes_service" "activemq" {
     dynamic "port" {
       for_each = var.queue_storage.port
       content {
-        name        = port.value["name"]
-        port        = port.value["port"]
-        target_port = port.value["target_port"]
-        protocol    = port.value["protocol"]
+        name        = port.value.name
+        port        = port.value.port
+        target_port = port.value.target_port
+        protocol    = port.value.protocol
       }
     }
   }

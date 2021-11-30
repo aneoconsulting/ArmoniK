@@ -112,7 +112,7 @@ variable "shared_storage" {
       persistent_volume_reclaim_policy = "Delete",
       access_modes                     = ["ReadWriteMany"],
       size                             = "10Gi",
-      path                             = "/data"
+      path                             = "./generated/data"
     },
     persistent_volume_claim = {
       name         = "nfs-pvc",
@@ -122,21 +122,83 @@ variable "shared_storage" {
   }
 }
 
-# ArmoniK control plane
-variable "control_plane" {
-  description = "Control plane of ArmoniK"
+# ArmoniK
+variable "armonik" {
+  description = "Components of ArmoniK"
   type        = object({
-    replicas          = number,
-    image             = string,
-    tag               = string,
-    image_pull_policy = string,
-    port              = number
+    control_plane = object({
+      replicas          = number,
+      image             = string,
+      tag               = string,
+      image_pull_policy = string,
+      port              = number,
+    }),
+    agent         = object({
+      replicas      = number,
+      polling_agent = object({
+        image             = string,
+        tag               = string,
+        image_pull_policy = string,
+        limits            = object({
+          cpu    = string,
+          memory = string
+        }),
+        requests          = object({
+          cpu    = string,
+          memory = string
+        })
+      }),
+      compute       = object({
+        image             = string,
+        tag               = string,
+        image_pull_policy = string,
+        limits            = object({
+          cpu    = string,
+          memory = string
+        }),
+        requests          = object({
+          cpu    = string,
+          memory = string
+        })
+      }),
+    })
   })
   default     = {
-    replicas          = 1,
-    image             = "dockerhubaneo/armonik_control",
-    tag               = "dev-6276",
-    image_pull_policy = "IfNotPresent",
-    port              = 9000
+    control_plane = {
+      replicas          = 1,
+      image             = "dockerhubaneo/armonik_control",
+      tag               = "dev-6276",
+      image_pull_policy = "IfNotPresent",
+      port              = 9000
+    },
+    agent         = {
+      replicas      = 1,
+      polling_agent = {
+        image             = "dockerhubaneo/armonik_pollingagent",
+        tag               = "dev-6276",
+        image_pull_policy = "IfNotPresent",
+        limits            = {
+          cpu    = "100m",
+          memory = "128Mi"
+        },
+        requests          = {
+          cpu    = "100m",
+          memory = "128Mi"
+        }
+      },
+      compute       = {
+        image             = "dockerhubaneo/armonik_compute",
+        tag               = "dev-6276",
+        image_pull_policy = "IfNotPresent",
+        limits            = {
+          cpu    = "920m",
+          memory = "3966Mi"
+        },
+        requests          = {
+          cpu    = "50m",
+          memory = "3966Mi"
+        }
+      }
+    }
   }
 }
