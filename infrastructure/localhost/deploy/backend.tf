@@ -1,6 +1,6 @@
 terraform {
   backend "local" {
-    path = "./backend/terraform.tfstate"
+    path = "./generated/backend/terraform.tfstate"
     workspace_dir = "armonik"
   }
 }
