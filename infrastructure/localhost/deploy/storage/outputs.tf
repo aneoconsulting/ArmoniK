@@ -7,3 +7,8 @@ output "object_storage" {
 output "table_storage" {
   value = kubernetes_service.mongodb
 }
+
+# Queue storage
+output "queue_storage" {
+  value = kubernetes_service.activemq
+}

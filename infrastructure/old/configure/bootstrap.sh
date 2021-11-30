@@ -16,7 +16,7 @@ is_wsl=$(grep -qEi "(Microsoft|WSL)" /proc/version; echo $?)
 
 echo "Boostrap for WSL ? $(echo $is_wsl)"
 
-#get absolute path of certificates
+#get absolute path of credentials
 cd ${redis_certificates_path}
 cert_path=$(pwd -P)
 cd ${root_path}

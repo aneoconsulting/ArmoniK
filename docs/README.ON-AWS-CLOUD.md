@@ -54,7 +54,7 @@ export ARMONIK_ACCOUNT_ID=<Your AWS account ID>
 ARMONIK_NUGET_REPOS=<Your NuGet repository>
 
 # Define an environment variable containing the path to
-# the redis certificates.
+# the redis credentials.
 ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your path to Redis certificates>
 
 # Define an environment variable containing the docker registry

@@ -109,7 +109,7 @@ export ARMONIK_IMAGE_PULL_POLICY=<Your image pull policy>
 ARMONIK_NUGET_REPOS=<Your NuGet repository>
 
 # Define an environment variable containing the path to
-# the redis certificates.
+# the redis credentials.
 ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your path to Redis certificates>
 
 # Redis secrets in Kubernetes

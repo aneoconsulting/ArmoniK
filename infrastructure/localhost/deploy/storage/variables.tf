@@ -23,3 +23,18 @@ variable "table_storage" {
     port     = number
   })
 }
+
+# Parameters for queue storage
+variable "queue_storage" {
+  description = "Parameters of queue storage of ArmoniK"
+  type        = object({
+    replicas = number,
+    port     = list(object({
+      name        = string,
+      port        = number,
+      target_port = number,
+      protocol    = string
+    })),
+    secret   = string
+  })
+}

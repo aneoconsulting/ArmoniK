@@ -334,8 +334,8 @@ spec:
             - --controller-class=k8s.io/ingress-nginx
             - --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
             - --validating-webhook=:8443
-            - --validating-webhook-certificate=/usr/local/certificates/cert
-            - --validating-webhook-key=/usr/local/certificates/key
+            - --validating-webhook-certificate=/usr/local/credentials/cert
+            - --validating-webhook-key=/usr/local/credentials/key
           securityContext:
             capabilities:
               drop:
@@ -387,7 +387,7 @@ spec:
               protocol: TCP
           volumeMounts:
             - name: webhook-cert
-              mountPath: /usr/local/certificates/
+              mountPath: /usr/local/credentials/
               readOnly: true
           resources:
             requests:

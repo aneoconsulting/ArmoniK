@@ -4,11 +4,12 @@ data "external" "k8s_config_context" {
   working_dir = "./scripts"
 }
 
-# Object storage
+# Storage
 module "storage" {
   source    = "./storage"
   namespace = var.namespace
 
+  # Object storage : Redis
   object_storage = {
     replicas     = var.object_storage.replicas,
     port         = var.object_storage.port,
@@ -20,8 +21,16 @@ module "storage" {
     secret       = var.object_storage.secret
   }
 
+  # Table storage : MongoDB
   table_storage = {
     replicas = var.table_storage.replicas,
     port     = var.table_storage.port
+  }
+
+  # Queue storage : ActiveMQ
+  queue_storage = {
+    replicas = var.queue_storage.replicas,
+    port     = var.queue_storage.port
+    secret   = var.queue_storage.secret
   }
 }
