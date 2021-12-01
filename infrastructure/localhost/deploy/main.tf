@@ -13,11 +13,6 @@ module "storage" {
   object_storage = {
     replicas     = var.object_storage.replicas,
     port         = var.object_storage.port,
-    certificates = {
-      cert_file    = var.object_storage.certificates.cert_file,
-      key_file     = var.object_storage.certificates.key_file,
-      ca_cert_file = var.object_storage.certificates.ca_cert_file
-    },
     secret       = var.object_storage.secret
   }
 
