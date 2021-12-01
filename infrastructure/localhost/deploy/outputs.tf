@@ -27,7 +27,7 @@ output "control_plane_external_endpoint_url" {
 output "queue_storage_endpoint_url" {
   value = [
   for port in module.storage.queue_storage.spec.0.port : {
-    "name"         = port.name,
+    "name"         = port.name
     "endpoint_url" = "http://${module.storage.queue_storage.spec.0.cluster_ip}:${port.port}"
   }
   ]
