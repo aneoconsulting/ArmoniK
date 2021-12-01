@@ -70,7 +70,7 @@ locals {
   },
   "ComputePlan": {
     "GrpcChannel": {
-      "Address": "https://localhost:${var.armonik.agent.compute.port}",
+      "Address": "https://localhost:80",
       "SocketType": "web"
     },
     "MessageBatchSize": 1

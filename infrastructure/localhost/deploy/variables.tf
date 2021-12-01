@@ -131,7 +131,7 @@ variable "armonik" {
       image             = string,
       tag               = string,
       image_pull_policy = string,
-      port              = number,
+      port              = number
     }),
     agent            = object({
       replicas      = number,
@@ -151,8 +151,7 @@ variable "armonik" {
       compute       = object({
         image             = string,
         tag               = string,
-        image_pull_policy = string,
-        port              = number,
+        image_pull_policy = string
         limits            = object({
           cpu    = string,
           memory = string
@@ -216,8 +215,7 @@ variable "armonik" {
       compute       = {
         image             = "dockerhubaneo/armonik_compute",
         tag               = "dev-6276",
-        image_pull_policy = "IfNotPresent",
-        port              = 9001,
+        image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "920m",
           memory = "3966Mi"

@@ -87,8 +87,7 @@ module "armonik" {
       },
       compute       = {
         image             = "${var.armonik.agent.compute.image}:${var.armonik.agent.compute.tag}",
-        image_pull_policy = var.armonik.agent.compute.image_pull_policy,
-        port              = var.armonik.agent.compute.port
+        image_pull_policy = var.armonik.agent.compute.image_pull_policy
         limits            = {
           cpu    = var.armonik.agent.compute.limits.cpu,
           memory = var.armonik.agent.compute.limits.memory

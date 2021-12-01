@@ -12,7 +12,7 @@ variable "armonik" {
       replicas          = number,
       image             = string,
       image_pull_policy = string,
-      port              = number,
+      port              = number
     }),
     agent            = object({
       replicas      = number,
@@ -31,8 +31,7 @@ variable "armonik" {
       }),
       compute       = object({
         image             = string,
-        image_pull_policy = string,
-        port              = number,
+        image_pull_policy = string
         limits            = object({
           cpu    = string,
           memory = string

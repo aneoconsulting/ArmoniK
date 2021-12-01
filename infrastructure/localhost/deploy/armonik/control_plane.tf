@@ -33,7 +33,8 @@ resource "kubernetes_deployment" "control_plane" {
           image             = var.armonik.control_plane.image
           image_pull_policy = var.armonik.control_plane.image_pull_policy
           port {
-            container_port = var.armonik.control_plane.port
+            name           = "control-port"
+            container_port = 80
           }
           volume_mount {
             name       = "control-plane-configmap"
@@ -80,7 +81,10 @@ resource "kubernetes_service" "control_plane" {
       service = kubernetes_deployment.control_plane.metadata.0.labels.service
     }
     port {
-      port = var.armonik.control_plane.port
+      name        = kubernetes_deployment.control_plane.spec.0.template.0.spec.0.container.0.port.0.name
+      port        = var.armonik.control_plane.port
+      target_port = kubernetes_deployment.control_plane.spec.0.template.0.spec.0.container.0.port.0.container_port
+      protocol    = "TCP"
     }
   }
 }
