@@ -23,17 +23,11 @@ variable "object_storage" {
   type        = object({
     replicas     = number,
     port         = number,
-    certificates = map(string),
     secret       = string
   })
   default     = {
     replicas     = 1,
     port         = 6379,
-    certificates = {
-      cert_file    = "cert.crt",
-      key_file     = "cert.key",
-      ca_cert_file = "ca.crt"
-    },
     secret       = "object-storage-secret"
   }
 }

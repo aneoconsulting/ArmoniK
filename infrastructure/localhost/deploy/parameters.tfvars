@@ -7,11 +7,6 @@ k8s_config_path    = "~/.kube/config"
 object_storage = {
   replicas     = 1,
   port         = 6379,
-  certificates = {
-    cert_file    = "cert.crt",
-    key_file     = "cert.key",
-    ca_cert_file = "ca.crt"
-  },
   secret       = "object-storage-secret"
 }
 
@@ -46,7 +41,7 @@ shared_storage = {
     name                             = "nfs-pv",
     persistent_volume_reclaim_policy = "Delete",
     access_modes                     = ["ReadWriteMany"],
-    size                             = "10Gi",
+    size                             = "5Gi",
     host_path                        = "/data"
   },
   persistent_volume_claim = {

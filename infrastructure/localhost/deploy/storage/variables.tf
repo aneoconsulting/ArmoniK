@@ -10,7 +10,6 @@ variable "object_storage" {
   type        = object({
     replicas     = number,
     port         = number,
-    certificates = map(string),
     secret       = string
   })
 }
