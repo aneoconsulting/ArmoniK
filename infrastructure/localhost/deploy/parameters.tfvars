@@ -61,7 +61,7 @@ armonik = {
   control_plane = {
     replicas          = 1,
     image             = "dockerhubaneo/armonik_control",
-    tag               = "dev-6276",
+    tag               = "dev-6283",
     image_pull_policy = "IfNotPresent",
     port              = 9000
   },
@@ -69,7 +69,7 @@ armonik = {
     replicas      = 1,
     polling_agent = {
       image             = "dockerhubaneo/armonik_pollingagent",
-      tag               = "dev-6276",
+      tag               = "dev-6283",
       image_pull_policy = "IfNotPresent",
       limits            = {
         cpu    = "100m",
@@ -82,7 +82,7 @@ armonik = {
     },
     compute       = {
       image             = "dockerhubaneo/armonik_compute",
-      tag               = "dev-6276",
+      tag               = "dev-6283",
       image_pull_policy = "IfNotPresent",
       port              = 9001,
       limits            = {

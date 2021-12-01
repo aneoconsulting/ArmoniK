@@ -120,7 +120,7 @@ module "armonik" {
         url  = module.storage.table_storage.spec.0.cluster_ip,
         port = module.storage.table_storage.spec.0.port.0.port
       },
-      shared_storage         = module.storage.shared_storage_claim
+      shared_storage         = module.storage.shared_storage_persistent_volume_claim.metadata.0.name
     }
   }
 }

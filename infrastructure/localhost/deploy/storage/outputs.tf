@@ -14,6 +14,14 @@ output "queue_storage" {
 }
 
 # Shared storage
-output "shared_storage_claim" {
-  value = kubernetes_persistent_volume_claim.nfs_persistent_volume_claim.metadata.0.name
+output "shared_storage_class_storage" {
+  value = kubernetes_storage_class.nfs_storage_class
+}
+
+output "shared_storage_persistent_volume" {
+  value = kubernetes_persistent_volume.nfs_persistent_volume
+}
+
+output "shared_storage_persistent_volume_claim" {
+  value = kubernetes_persistent_volume_claim.nfs_persistent_volume_claim
 }
