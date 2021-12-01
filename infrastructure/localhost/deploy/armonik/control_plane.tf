@@ -42,7 +42,7 @@ resource "kubernetes_deployment" "control_plane" {
           }
           volume_mount {
             name       = "shared-volume"
-            mount_path = "/app/data"
+            mount_path = var.armonik.storage_services.shared_storage.target_path
           }
         }
         volume {
@@ -55,7 +55,7 @@ resource "kubernetes_deployment" "control_plane" {
         volume {
           name = "shared-volume"
           persistent_volume_claim {
-            claim_name = var.armonik.storage_services.shared_storage
+            claim_name = var.armonik.storage_services.shared_storage.claim_name
           }
         }
       }

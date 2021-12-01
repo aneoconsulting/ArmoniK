@@ -48,7 +48,10 @@ variable "armonik" {
       table_storage          = object({ type = string, url = string, port = number }),
       queue_storage          = object({ type = string, url = string, port = number }),
       lease_provider_storage = object({ type = string, url = string, port = number }),
-      shared_storage         = string
+      shared_storage         = object({
+        claim_name  = string,
+        target_path = string
+      })
     })
   })
 }

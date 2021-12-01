@@ -27,7 +27,3 @@ output "control_plane_internal_endpoint_url" {
 output "control_plane_external_endpoint_url" {
   value = "${module.armonik.control_plane.status.0.load_balancer.0.ingress.0.ip}:${module.armonik.control_plane.spec.0.port.0.port}"
 }
-
-/*output "polling_agent_endpoint_url" {
-  value = "https://${module.armonik.agent.spec.0.template.0.spec.0.container.0.port.0.host_ip}:${module.armonik.agent.spec.0.template.0.spec.0.container.0.port.0.host_port}"
-}*/

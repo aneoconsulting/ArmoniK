@@ -47,7 +47,7 @@ module "storage" {
       persistent_volume_reclaim_policy = var.shared_storage.persistent_volume.persistent_volume_reclaim_policy,
       access_modes                     = var.shared_storage.persistent_volume.access_modes,
       size                             = var.shared_storage.persistent_volume.size,
-      path                             = var.shared_storage.persistent_volume.path
+      host_path                        = var.shared_storage.persistent_volume.host_path
     },
     persistent_volume_claim = {
       name         = var.shared_storage.persistent_volume_claim.name,
@@ -101,26 +101,29 @@ module "armonik" {
     },
     storage_services = {
       object_storage         = {
-        type = "MongoDB",
+        type = var.armonik.storage_services.object_storage.type,
         url  = module.storage.table_storage.spec.0.cluster_ip,
         port = module.storage.table_storage.spec.0.port.0.port
       },
       table_storage          = {
-        type = "MongoDB",
+        type = var.armonik.storage_services.table_storage.type,
         url  = module.storage.table_storage.spec.0.cluster_ip,
         port = module.storage.table_storage.spec.0.port.0.port
       },
       queue_storage          = {
-        type = "MongoDB",
+        type = var.armonik.storage_services.queue_storage.type,
         url  = module.storage.table_storage.spec.0.cluster_ip,
         port = module.storage.table_storage.spec.0.port.0.port
       },
       lease_provider_storage = {
-        type = "MongoDB",
+        type = var.armonik.storage_services.lease_provider_storage.type,
         url  = module.storage.table_storage.spec.0.cluster_ip,
         port = module.storage.table_storage.spec.0.port.0.port
       },
-      shared_storage         = module.storage.shared_storage_persistent_volume_claim.metadata.0.name
+      shared_storage         = {
+        claim_name  = module.storage.shared_storage_persistent_volume_claim.metadata.0.name,
+        target_path = var.armonik.storage_services.shared_storage.target_path
+      }
     }
   }
 }

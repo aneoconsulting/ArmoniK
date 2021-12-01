@@ -54,7 +54,7 @@ variable "shared_storage" {
       persistent_volume_reclaim_policy = string,
       access_modes                     = list(string),
       size                             = string,
-      path                             = string
+      host_path                        = string
     }),
     persistent_volume_claim = object({
       name         = string,

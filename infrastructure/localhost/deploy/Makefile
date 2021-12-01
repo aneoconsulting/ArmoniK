@@ -8,7 +8,7 @@ init:
 	terraform init
 
 plan:
-	terraform plan -var-file=$(CONFIG_FILE) -out ./backend/terraform.tfplan
+	terraform plan -var-file=$(CONFIG_FILE) -out ./generated/backend/terraform.tfplan
 
 apply:
 	terraform apply -var-file=$(CONFIG_FILE) -auto-approve

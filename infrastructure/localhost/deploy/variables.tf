@@ -92,7 +92,7 @@ variable "shared_storage" {
       persistent_volume_reclaim_policy = string,
       access_modes                     = list(string),
       size                             = string,
-      path                             = string
+      host_path                        = string
     }),
     persistent_volume_claim = object({
       name         = string,
@@ -112,7 +112,7 @@ variable "shared_storage" {
       persistent_volume_reclaim_policy = "Delete",
       access_modes                     = ["ReadWriteMany"],
       size                             = "10Gi",
-      path                             = "./generated/data"
+      host_path                        = "/data"
     },
     persistent_volume_claim = {
       name         = "nfs-pvc",
@@ -126,14 +126,14 @@ variable "shared_storage" {
 variable "armonik" {
   description = "Components of ArmoniK"
   type        = object({
-    control_plane = object({
+    control_plane    = object({
       replicas          = number,
       image             = string,
       tag               = string,
       image_pull_policy = string,
       port              = number,
     }),
-    agent         = object({
+    agent            = object({
       replicas      = number,
       polling_agent = object({
         image             = string,
@@ -162,17 +162,43 @@ variable "armonik" {
           memory = string
         })
       }),
+    }),
+    storage_services = object({
+      object_storage         = object({
+        type = string,
+        url  = string,
+        port = number
+      }),
+      table_storage          = object({
+        type = string,
+        url  = string,
+        port = number
+      }),
+      queue_storage          = object({
+        type = string,
+        url  = string,
+        port = number
+      }),
+      lease_provider_storage = object({
+        type = string,
+        url  = string,
+        port = number
+      }),
+      shared_storage         = object({
+        claim_name  = string,
+        target_path = string
+      })
     })
   })
   default     = {
-    control_plane = {
+    control_plane    = {
       replicas          = 1,
       image             = "dockerhubaneo/armonik_control",
       tag               = "dev-6276",
       image_pull_policy = "IfNotPresent",
       port              = 9000
     },
-    agent         = {
+    agent            = {
       replicas      = 1,
       polling_agent = {
         image             = "dockerhubaneo/armonik_pollingagent",
@@ -200,6 +226,32 @@ variable "armonik" {
           cpu    = "50m",
           memory = "3966Mi"
         }
+      }
+    },
+    storage_services = {
+      object_storage         = {
+        type = "MongoDB",
+        url  = "",
+        port = 0
+      },
+      table_storage          = {
+        type = "MongoDB",
+        url  = "",
+        port = 0
+      },
+      queue_storage          = {
+        type = "MongoDB",
+        url  = "",
+        port = 0
+      },
+      lease_provider_storage = {
+        type = "MongoDB",
+        url  = "",
+        port = 0
+      },
+      shared_storage         = {
+        claim_name  = "nfs-pvc",
+        target_path = "/app/data"
       }
     }
   }

@@ -2,6 +2,7 @@
 locals {
   polling_agent_config = <<EOF
 {
+  "target_data_path": "${var.armonik.storage_services.shared_storage.target_path}",
   "Logging": {
     "LogLevel": {
       "Default": "Information",

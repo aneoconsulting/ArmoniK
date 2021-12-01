@@ -56,7 +56,7 @@ resource "kubernetes_deployment" "agent" {
           }
           volume_mount {
             name       = "shared-volume"
-            mount_path = "/app/data"
+            mount_path = var.armonik.storage_services.shared_storage.target_path
           }
           volume_mount {
             name       = "object-storage-secret-volume"
@@ -88,7 +88,7 @@ resource "kubernetes_deployment" "agent" {
           }
           volume_mount {
             name       = "shared-volume"
-            mount_path = "/app/data"
+            mount_path = var.armonik.storage_services.shared_storage.target_path
           }
         }
         volume {
@@ -108,7 +108,7 @@ resource "kubernetes_deployment" "agent" {
         volume {
           name = "shared-volume"
           persistent_volume_claim {
-            claim_name = var.armonik.storage_services.shared_storage
+            claim_name = var.armonik.storage_services.shared_storage.claim_name
           }
         }
         volume {

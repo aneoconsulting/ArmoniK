@@ -47,7 +47,7 @@ shared_storage = {
     persistent_volume_reclaim_policy = "Delete",
     access_modes                     = ["ReadWriteMany"],
     size                             = "10Gi",
-    path                             = "/data"
+    host_path                        = "/data"
   },
   persistent_volume_claim = {
     name         = "nfs-pvc",
@@ -58,18 +58,18 @@ shared_storage = {
 
 # ArmoniK control plane
 armonik = {
-  control_plane = {
+  control_plane    = {
     replicas          = 1,
     image             = "dockerhubaneo/armonik_control",
-    tag               = "dev-6283",
+    tag               = "dev-6284",
     image_pull_policy = "IfNotPresent",
     port              = 9000
   },
-  agent         = {
+  agent            = {
     replicas      = 1,
     polling_agent = {
       image             = "dockerhubaneo/armonik_pollingagent",
-      tag               = "dev-6283",
+      tag               = "dev-6284",
       image_pull_policy = "IfNotPresent",
       limits            = {
         cpu    = "100m",
@@ -82,7 +82,7 @@ armonik = {
     },
     compute       = {
       image             = "dockerhubaneo/armonik_compute",
-      tag               = "dev-6283",
+      tag               = "dev-6284",
       image_pull_policy = "IfNotPresent",
       port              = 9001,
       limits            = {
@@ -93,6 +93,32 @@ armonik = {
         cpu    = "50m",
         memory = "3966Mi"
       }
+    }
+  },
+  storage_services = {
+    object_storage         = {
+      type = "MongoDB",
+      url  = "",
+      port = 0
+    },
+    table_storage          = {
+      type = "MongoDB",
+      url  = "",
+      port = 0
+    },
+    queue_storage          = {
+      type = "MongoDB",
+      url  = "",
+      port = 0
+    },
+    lease_provider_storage = {
+      type = "MongoDB",
+      url  = "",
+      port = 0
+    },
+    shared_storage         = {
+      claim_name  = "nfs-pvc",
+      target_path = "/app/data"
     }
   }
 }

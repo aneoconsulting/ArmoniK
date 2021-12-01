@@ -28,7 +28,7 @@ resource "kubernetes_persistent_volume" "nfs_persistent_volume" {
     }
     persistent_volume_source {
       host_path {
-        path = var.shared_storage.persistent_volume.path
+        path = var.shared_storage.persistent_volume.host_path
       }
     }
   }
