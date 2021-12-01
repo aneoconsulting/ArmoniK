@@ -14,7 +14,7 @@ variable "armonik" {
       image_pull_policy = string,
       port              = number
     }),
-    agent            = object({
+    compute_plane    = object({
       replicas      = number,
       polling_agent = object({
         image                 = string,

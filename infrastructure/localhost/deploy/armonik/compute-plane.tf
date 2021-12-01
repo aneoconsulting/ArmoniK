@@ -1,30 +1,30 @@
 # ArmoniK agent
 
 # Agent deployment
-resource "kubernetes_deployment" "agent" {
+resource "kubernetes_deployment" "compute_plane" {
   metadata {
-    name      = "agent"
+    name      = "compute-plane"
     namespace = var.namespace
     labels    = {
       app     = "armonik"
-      service = "agent"
+      service = "compute-plane"
     }
   }
   spec {
-    replicas = var.armonik.agent.replicas
+    replicas = var.armonik.compute_plane.replicas
     selector {
       match_labels = {
         app     = "armonik"
-        service = "agent"
+        service = "compute-plane"
       }
     }
     template {
       metadata {
-        name      = "agent"
+        name      = "compute-plane"
         namespace = var.namespace
         labels    = {
           app     = "armonik"
-          service = "agent"
+          service = "compute-plane"
         }
       }
       spec {
@@ -32,8 +32,8 @@ resource "kubernetes_deployment" "agent" {
         security_context {}
         container {
           name              = "polling-agent"
-          image             = var.armonik.agent.polling_agent.image
-          image_pull_policy = var.armonik.agent.polling_agent.image_pull_policy
+          image             = var.armonik.compute_plane.polling_agent.image
+          image_pull_policy = var.armonik.compute_plane.polling_agent.image_pull_policy
           security_context {
             capabilities {
               drop = ["SYS_PTRACE"]
@@ -41,12 +41,12 @@ resource "kubernetes_deployment" "agent" {
           }
           resources {
             limits   = {
-              cpu    = var.armonik.agent.polling_agent.limits.cpu
-              memory = var.armonik.agent.polling_agent.limits.memory
+              cpu    = var.armonik.compute_plane.polling_agent.limits.cpu
+              memory = var.armonik.compute_plane.polling_agent.limits.memory
             }
             requests = {
-              cpu    = var.armonik.agent.polling_agent.requests.cpu
-              memory = var.armonik.agent.polling_agent.requests.memory
+              cpu    = var.armonik.compute_plane.polling_agent.requests.cpu
+              memory = var.armonik.compute_plane.polling_agent.requests.memory
             }
           }
           volume_mount {
@@ -66,20 +66,20 @@ resource "kubernetes_deployment" "agent" {
         }
         container {
           name              = "compute"
-          image             = var.armonik.agent.compute.image
-          image_pull_policy = var.armonik.agent.compute.image_pull_policy
+          image             = var.armonik.compute_plane.compute.image
+          image_pull_policy = var.armonik.compute_plane.compute.image_pull_policy
           port {
             name           = "compute-port"
             container_port = 80
           }
           resources {
             limits   = {
-              cpu    = var.armonik.agent.compute.limits.cpu
-              memory = var.armonik.agent.compute.limits.memory
+              cpu    = var.armonik.compute_plane.compute.limits.cpu
+              memory = var.armonik.compute_plane.compute.limits.memory
             }
             requests = {
-              cpu    = var.armonik.agent.compute.requests.cpu
-              memory = var.armonik.agent.compute.requests.memory
+              cpu    = var.armonik.compute_plane.compute.requests.cpu
+              memory = var.armonik.compute_plane.compute.requests.memory
             }
           }
           volume_mount {
@@ -115,7 +115,7 @@ resource "kubernetes_deployment" "agent" {
         volume {
           name = "object-storage-secret-volume"
           secret {
-            secret_name = var.armonik.agent.polling_agent.object_storage_secret
+            secret_name = var.armonik.compute_plane.polling_agent.object_storage_secret
             optional    = false
           }
         }

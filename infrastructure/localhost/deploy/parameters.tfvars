@@ -63,9 +63,9 @@ armonik = {
     image             = "dockerhubaneo/armonik_control",
     tag               = "dev-6284",
     image_pull_policy = "IfNotPresent",
-    port              = 9000
+    port              = 5001
   },
-  agent            = {
+  compute_plane    = {
     replicas      = 1,
     polling_agent = {
       image             = "dockerhubaneo/armonik_pollingagent",

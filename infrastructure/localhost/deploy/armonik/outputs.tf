@@ -3,7 +3,7 @@ output "control_plane" {
   value = kubernetes_service.control_plane
 }
 
-# Armonik agent
-output "agent" {
-  value = kubernetes_deployment.agent
+# Armonik compute plane
+output "compute_plane" {
+  value = kubernetes_deployment.compute_plane
 }

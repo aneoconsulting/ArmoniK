@@ -133,7 +133,7 @@ variable "armonik" {
       image_pull_policy = string,
       port              = number
     }),
-    agent            = object({
+    compute_plane    = object({
       replicas      = number,
       polling_agent = object({
         image             = string,
@@ -195,9 +195,9 @@ variable "armonik" {
       image             = "dockerhubaneo/armonik_control",
       tag               = "dev-6276",
       image_pull_policy = "IfNotPresent",
-      port              = 9000
+      port              = 5001
     },
-    agent            = {
+    compute_plane    = {
       replicas      = 1,
       polling_agent = {
         image             = "dockerhubaneo/armonik_pollingagent",

@@ -70,31 +70,31 @@ module "armonik" {
       image_pull_policy = var.armonik.control_plane.image_pull_policy,
       port              = var.armonik.control_plane.port
     },
-    agent            = {
-      replicas      = var.armonik.agent.replicas,
+    compute_plane            = {
+      replicas      = var.armonik.compute_plane.replicas,
       polling_agent = {
-        image                 = "${var.armonik.agent.polling_agent.image}:${var.armonik.agent.polling_agent.tag}",
-        image_pull_policy     = var.armonik.agent.polling_agent.image_pull_policy,
+        image                 = "${var.armonik.compute_plane.polling_agent.image}:${var.armonik.compute_plane.polling_agent.tag}",
+        image_pull_policy     = var.armonik.compute_plane.polling_agent.image_pull_policy,
         limits                = {
-          cpu    = var.armonik.agent.polling_agent.limits.cpu,
-          memory = var.armonik.agent.polling_agent.limits.memory
+          cpu    = var.armonik.compute_plane.polling_agent.limits.cpu,
+          memory = var.armonik.compute_plane.polling_agent.limits.memory
         },
         requests              = {
-          cpu    = var.armonik.agent.polling_agent.requests.cpu,
-          memory = var.armonik.agent.polling_agent.requests.memory
+          cpu    = var.armonik.compute_plane.polling_agent.requests.cpu,
+          memory = var.armonik.compute_plane.polling_agent.requests.memory
         },
         object_storage_secret = var.object_storage.secret
       },
       compute       = {
-        image             = "${var.armonik.agent.compute.image}:${var.armonik.agent.compute.tag}",
-        image_pull_policy = var.armonik.agent.compute.image_pull_policy
+        image             = "${var.armonik.compute_plane.compute.image}:${var.armonik.compute_plane.compute.tag}",
+        image_pull_policy = var.armonik.compute_plane.compute.image_pull_policy
         limits            = {
-          cpu    = var.armonik.agent.compute.limits.cpu,
-          memory = var.armonik.agent.compute.limits.memory
+          cpu    = var.armonik.compute_plane.compute.limits.cpu,
+          memory = var.armonik.compute_plane.compute.limits.memory
         },
         requests          = {
-          cpu    = var.armonik.agent.compute.requests.cpu,
-          memory = var.armonik.agent.compute.requests.memory
+          cpu    = var.armonik.compute_plane.compute.requests.cpu,
+          memory = var.armonik.compute_plane.compute.requests.memory
         }
       }
     },
