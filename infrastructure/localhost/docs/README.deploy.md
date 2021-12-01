@@ -36,7 +36,22 @@ For the storage, three types of storage will be created as services in the Kuber
 
 # Configuration file <a name="configuration-file"></a>
 
-**TODO**
+Terraform needs a configuration file containing the list of parameters to configure the resources to be created. The
+complete list of parameters and their types are defined in [List of parameters](../docs/template-of-parameters.tf). An
+example of setting parameters of `object_storage`
+resource is as follows:
+
+```terraform
+object_storage = {
+  replicas = 1,
+  port     = 6379,
+  secret   = "object-storage-secret"
+}
+```
+
+An example of a configuration file is given in [example-parameters.tfvars](../utils/example-parameters.tfvars). You can
+make a copy to the file and change the values of each parameter of each resource if needed. This file will be used as
+the input for `Terraform apply`.
 
 # Deployment <a name="deployment"></a>
 
@@ -73,6 +88,7 @@ make all CONFIG_FILE=<Your configuration file>
 ```
 
 After the deployment you can display the list of created resources in Kubernetes as follows:
+
 ```bash
 kubectl get all -n $ARMONIK_NAMESPACE
 ```

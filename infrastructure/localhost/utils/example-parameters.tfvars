@@ -5,9 +5,9 @@ k8s_config_path    = "~/.kube/config"
 
 # Object storage parameters
 object_storage = {
-  replicas     = 1
-  port         = 6379
-  secret       = "object-storage-secret"
+  replicas = 1
+  port     = 6379
+  secret   = "object-storage-secret"
 }
 
 # Table storage parameters
@@ -42,6 +42,7 @@ shared_storage = {
     persistent_volume_reclaim_policy = "Delete"
     access_modes                     = ["ReadWriteMany"]
     size                             = "5Gi"
+    # Path of a directory in you local machine
     host_path                        = "/data"
   }
   persistent_volume_claim = {
@@ -69,12 +70,12 @@ armonik = {
       limits            = {
         cpu    = "100m"
         memory = "128Mi"
-      },
+      }
       requests          = {
         cpu    = "100m"
         memory = "128Mi"
       }
-    },
+    }
     compute       = {
       image             = "dockerhubaneo/armonik_compute"
       tag               = "dev-6284"
@@ -112,6 +113,7 @@ armonik = {
     }
     shared_storage         = {
       claim_name  = "nfs-pvc"
+      # Path of a directory in a pod, which contains data shared between pods and your local machine
       target_path = "/app/data"
     }
   }
