@@ -85,5 +85,5 @@ resource "kubernetes_config_map" "control_plane_config" {
 
 resource "local_file" "control_plane_config_file" {
   content  = local.control_plane_config
-  filename = "./generated/control-plane-appsettings.json"
+  filename = "./generated/configmaps/control-plane-appsettings.json"
 }

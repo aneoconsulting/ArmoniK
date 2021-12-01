@@ -92,5 +92,5 @@ resource "kubernetes_config_map" "polling_agent_config" {
 
 resource "local_file" "polling_agent_config_file" {
   content  = local.polling_agent_config
-  filename = "./generated/polling-agent-appsettings.json"
+  filename = "./generated/configmaps/polling-agent-appsettings.json"
 }

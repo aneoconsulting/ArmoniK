@@ -35,5 +35,5 @@ resource "kubernetes_config_map" "compute_config" {
 
 resource "local_file" "compute_config_file" {
   content  = local.compute_config
-  filename = "./generated/compute-config-appsettings.json"
+  filename = "./generated/configmaps/compute-config-appsettings.json"
 }
