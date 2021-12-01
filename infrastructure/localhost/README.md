@@ -1,9 +1,9 @@
 # Table of contents
 
 1. [Introduction](#introduction)
-2. [Prepare your Kubernetes cluster](#prepare-your-kubernetes-cluster)
-3. [Deploy ArmoniK](#deploy-armonik)
-4. [Clean-up](#clean-up)
+2. [Prepare your Kubernetes cluster](./docs/README.kubernetes.md)
+3. [Deploy ArmoniK](./docs/README.deploy.md)
+4. [Clean-up](./docs/README.clean.md)
 
 # Introduction <a name="introduction"></a>
 
