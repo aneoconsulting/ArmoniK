@@ -20,6 +20,7 @@ module "storage" {
 module "armonik" {
   source     = "./armonik"
   namespace  = var.namespace
+  priority   = var.priority
   depends_on = [module.storage]
 
   armonik = {

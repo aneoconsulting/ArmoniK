@@ -14,6 +14,12 @@ k8s_config_context = {
   type        = string
 }
 
+# number of queues according to priority of tasks
+priority = {
+  description = "Number of queues according to the priority of tasks"
+  type        = number
+}
+
 # Parameters for object storage
 # Redis
 object_storage = {
@@ -107,19 +113,23 @@ armonik = {
         }
       }
       # AmoniK compute
-      compute       = {
-        image             = string
-        tag               = string
-        image_pull_policy = string
-        limits            = {
-          cpu    = string
-          memory = string
+      compute       = [
+        {
+          name              = string
+          port              = number
+          image             = string
+          tag               = string
+          image_pull_policy = string
+          limits            = {
+            cpu    = string
+            memory = string
+          }
+          requests          = {
+            cpu    = string
+            memory = string
+          }
         }
-        requests          = {
-          cpu    = string
-          memory = string
-        }
-      }
+      ]
     }
     # List of storage services used by ArmoniK
     storage_services = {

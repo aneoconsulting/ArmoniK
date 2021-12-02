@@ -35,8 +35,8 @@ output "control_plane_external_endpoint_url" {
 
 output "compute_plane" {
   value = [
-  for container in module.armonik.compute_plane.spec.0.template.0.spec.0.container : {
-    name = container.name
+  for container in module.armonik.compute_plane.0.spec.0.template.0.spec.0.container : {
+    name           = container.name
     container_port = length(container.port) == 0 ? 0 : container.port.0.container_port
   }
   ]

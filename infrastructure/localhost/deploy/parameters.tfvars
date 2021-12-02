@@ -2,6 +2,8 @@
 namespace          = "armonik"
 k8s_config_context = "default"
 k8s_config_path    = "~/.kube/config"
+# number of queues according to the priority of tasks
+priority           = 2
 
 # Object storage parameters
 # Redis
@@ -68,6 +70,7 @@ armonik = {
   }
   # ArmoniK compute plane
   compute_plane    = {
+    # number of replicas for each deployment of compute plane
     replicas      = 1
     # ArmoniK polling agent
     polling_agent = {

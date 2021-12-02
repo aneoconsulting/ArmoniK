@@ -2,8 +2,9 @@
 
 # Agent deployment
 resource "kubernetes_deployment" "compute_plane" {
+  count = (var.priority == 0 ? 1 : var.priority)
   metadata {
-    name      = "compute-plane"
+    name      = "compute-plane-${count.index}"
     namespace = var.namespace
     labels    = {
       app     = "armonik"
@@ -20,7 +21,7 @@ resource "kubernetes_deployment" "compute_plane" {
     }
     template {
       metadata {
-        name      = "compute-plane"
+        name      = "compute-plane-${count.index}"
         namespace = var.namespace
         labels    = {
           app     = "armonik"

@@ -17,6 +17,13 @@ variable "k8s_config_context" {
   default     = "default"
 }
 
+# number of queues according to priority of tasks
+variable "priority" {
+  description = "Number of queues according to the priority of tasks"
+  type = number
+  default = 1
+}
+
 # Parameters for object storage
 # Redis
 variable "object_storage" {
@@ -134,6 +141,7 @@ variable "armonik" {
     })
     # ArmoniK compute plane
     compute_plane    = object({
+      # number of replicas for each deployment of compute plane
       replicas      = number
       # ArmoniK polling agent
       polling_agent = object({

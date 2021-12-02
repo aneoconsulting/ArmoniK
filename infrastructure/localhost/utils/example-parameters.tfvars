@@ -2,6 +2,8 @@
 namespace          = "armonik"
 k8s_config_context = "default"
 k8s_config_path    = "~/.kube/config"
+# number of queues according to the priority of tasks
+priority           = 2
 
 # Object storage parameters
 # Redis
@@ -58,42 +60,52 @@ shared_storage = {
 
 # ArmoniK components
 armonik = {
+  # ArmoniK contol plane
   control_plane    = {
     replicas          = 1
-    image             = "dockerhubaneo/armonik_control",
+    image             = "dockerhubaneo/armonik_control"
     tag               = "dev-6284"
     image_pull_policy = "IfNotPresent"
     port              = 5001
-  },
-  compute_plane    = {
-    replicas      = 1
-    polling_agent = {
-      image             = "dockerhubaneo/armonik_pollingagent",
-      tag               = "dev-6284"
-      image_pull_policy = "IfNotPresent"
-      limits            = {
-        cpu    = "100m"
-        memory = "128Mi"
-      }
-      requests          = {
-        cpu    = "100m"
-        memory = "128Mi"
-      }
-    }
-    compute       = {
-      image             = "dockerhubaneo/armonik_compute"
-      tag               = "dev-6284"
-      image_pull_policy = "IfNotPresent"
-      limits            = {
-        cpu    = "920m"
-        memory = "3966Mi"
-      }
-      requests          = {
-        cpu    = "50m"
-        memory = "3966Mi"
-      }
-    }
   }
+  # ArmoniK compute plane
+  compute_plane    = {
+    # number of replicas for each deployment of compute plane
+    replicas      = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      image             = "dockerhubaneo/armonik_pollingagent"
+      tag               = "dev-6284"
+      image_pull_policy = "IfNotPresent"
+      limits            = {
+        cpu    = "100m"
+        memory = "128Mi"
+      }
+      requests          = {
+        cpu    = "100m"
+        memory = "128Mi"
+      }
+    }
+    # ArmoniK computes
+    compute       = [
+      {
+        name              = "compute"
+        port              = 80
+        image             = "dockerhubaneo/armonik_compute"
+        tag               = "dev-6284"
+        image_pull_policy = "IfNotPresent"
+        limits            = {
+          cpu    = "920m"
+          memory = "2048Mi"
+        }
+        requests          = {
+          cpu    = "50m"
+          memory = "100Mi"
+        }
+      }
+    ]
+  }
+  # Storage used by ArmoniK
   storage_services = {
     object_storage         = {
       type = "MongoDB"

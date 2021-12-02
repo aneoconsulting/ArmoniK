@@ -4,6 +4,12 @@ variable "namespace" {
   type        = string
 }
 
+# number of queues according to priority of tasks
+variable "priority" {
+  description = "Number of queues according to the priority of tasks"
+  type        = number
+}
+
 # ArmoniK
 variable "armonik" {
   description = "Components of ArmoniK"
@@ -16,8 +22,8 @@ variable "armonik" {
       port              = number
     })
     compute_plane    = object({
-      replicas              = number
-      polling_agent         = object({
+      replicas      = number
+      polling_agent = object({
         image             = string
         tag               = string
         image_pull_policy = string
@@ -30,7 +36,7 @@ variable "armonik" {
           memory = string
         })
       })
-      compute               = list(object({
+      compute       = list(object({
         name              = string
         port              = number
         image             = string

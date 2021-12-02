@@ -3,6 +3,7 @@
 1. [Software prerequisites](#software-prerequisites)
 2. [Infrastructure source codes](#infrastructure-source-codes)
 3. [Configuration file](#configuration-file)
+   1. [List of resource parameters](#list-of-resource-parameters)
 4. [Deployment](#deployment)
 
 # Software prerequisites <a name="software-prerequisites"></a>
@@ -45,6 +46,7 @@ example of setting parameters of `object_storage`
 resource is as follows:
 
 ```terraform
+# Redis
 object_storage = {
   replicas = 1,
   port     = 6379,
@@ -55,6 +57,9 @@ object_storage = {
 An example of a configuration file is given in [example-parameters.tfvars](../utils/example-parameters.tfvars). You can
 make a copy to the file and change the values of each parameter of each resource if needed. This file will be used as
 the input for `Terraform apply`.
+
+## List of resource parameters <a name="list-of-resource-parameters"></a>
+***TODO***
 
 # Deployment <a name="deployment"></a>
 
