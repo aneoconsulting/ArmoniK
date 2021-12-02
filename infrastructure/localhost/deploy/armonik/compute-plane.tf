@@ -32,7 +32,7 @@ resource "kubernetes_deployment" "compute_plane" {
         security_context {}
         container {
           name              = "polling-agent"
-          image             = var.armonik.compute_plane.polling_agent.image
+          image             = var.armonik.compute_plane.polling_agent.tag != "" ? "${var.armonik.compute_plane.polling_agent.image}:${var.armonik.compute_plane.polling_agent.tag}" : var.armonik.compute_plane.polling_agent.image
           image_pull_policy = var.armonik.compute_plane.polling_agent.image_pull_policy
           security_context {
             capabilities {
@@ -58,38 +58,37 @@ resource "kubernetes_deployment" "compute_plane" {
             name       = "shared-volume"
             mount_path = var.armonik.storage_services.shared_storage.target_path
           }
-          volume_mount {
-            name       = "object-storage-secret-volume"
-            mount_path = "/certificates"
-            read_only  = true
-          }
         }
-        container {
-          name              = "compute"
-          image             = var.armonik.compute_plane.compute.image
-          image_pull_policy = var.armonik.compute_plane.compute.image_pull_policy
-          port {
-            name           = "compute-port"
-            container_port = 80
-          }
-          resources {
-            limits   = {
-              cpu    = var.armonik.compute_plane.compute.limits.cpu
-              memory = var.armonik.compute_plane.compute.limits.memory
+        # Containers of compute
+        dynamic container {
+          iterator = compute
+          for_each = var.armonik.compute_plane.compute
+          content {
+            name              = "${compute.value.name}-${compute.key}"
+            image             = compute.value.tag != "" ? "${compute.value.image}:${compute.value.tag}" : compute.value.image
+            image_pull_policy = compute.value.image_pull_policy
+            port {
+              container_port = compute.value.port
             }
-            requests = {
-              cpu    = var.armonik.compute_plane.compute.requests.cpu
-              memory = var.armonik.compute_plane.compute.requests.memory
+            resources {
+              limits   = {
+                cpu    = compute.value.limits.cpu
+                memory = compute.value.limits.memory
+              }
+              requests = {
+                cpu    = compute.value.requests.cpu
+                memory = compute.value.requests.memory
+              }
             }
-          }
-          volume_mount {
-            name       = "compute-configmap"
-            mount_path = "/app/appsettings.json"
-            sub_path   = "appsettings.json"
-          }
-          volume_mount {
-            name       = "shared-volume"
-            mount_path = var.armonik.storage_services.shared_storage.target_path
+            volume_mount {
+              name       = "compute-configmap"
+              mount_path = "/app/appsettings.json"
+              sub_path   = "appsettings.json"
+            }
+            volume_mount {
+              name       = "shared-volume"
+              mount_path = var.armonik.storage_services.shared_storage.target_path
+            }
           }
         }
         volume {
@@ -100,23 +99,16 @@ resource "kubernetes_deployment" "compute_plane" {
           }
         }
         volume {
-          name = "compute-configmap"
-          config_map {
-            name     = kubernetes_config_map.compute_config.metadata.0.name
-            optional = false
-          }
-        }
-        volume {
           name = "shared-volume"
           persistent_volume_claim {
             claim_name = var.armonik.storage_services.shared_storage.claim_name
           }
         }
         volume {
-          name = "object-storage-secret-volume"
-          secret {
-            secret_name = var.armonik.compute_plane.polling_agent.object_storage_secret
-            optional    = false
+          name = "compute-configmap"
+          config_map {
+            name     = kubernetes_config_map.compute_config.metadata.0.name
+            optional = false
           }
         }
       }

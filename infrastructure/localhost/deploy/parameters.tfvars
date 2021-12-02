@@ -6,9 +6,9 @@ k8s_config_path    = "~/.kube/config"
 # Object storage parameters
 # Redis
 object_storage = {
-  replicas     = 1
-  port         = 6379
-  secret       = "object-storage-secret"
+  replicas = 1
+  port     = 6379
+  secret   = "object-storage-secret"
 }
 
 # Table storage parameters
@@ -58,6 +58,7 @@ shared_storage = {
 
 # ArmoniK components
 armonik = {
+  # ArmoniK contol plane
   control_plane    = {
     replicas          = 1
     image             = "dockerhubaneo/armonik_control"
@@ -65,8 +66,10 @@ armonik = {
     image_pull_policy = "IfNotPresent"
     port              = 5001
   }
+  # ArmoniK compute plane
   compute_plane    = {
     replicas      = 1
+    # ArmoniK polling agent
     polling_agent = {
       image             = "dockerhubaneo/armonik_pollingagent"
       tag               = "dev-6284"
@@ -80,20 +83,26 @@ armonik = {
         memory = "128Mi"
       }
     }
-    compute       = {
-      image             = "dockerhubaneo/armonik_compute"
-      tag               = "dev-6284"
-      image_pull_policy = "IfNotPresent"
-      limits            = {
-        cpu    = "920m"
-        memory = "3966Mi"
+    # ArmoniK computes
+    compute       = [
+      {
+        name              = "compute"
+        port              = 80
+        image             = "dockerhubaneo/armonik_compute"
+        tag               = "dev-6284"
+        image_pull_policy = "IfNotPresent"
+        limits            = {
+          cpu    = "920m"
+          memory = "2048Mi"
+        }
+        requests          = {
+          cpu    = "50m"
+          memory = "100Mi"
+        }
       }
-      requests          = {
-        cpu    = "50m"
-        memory = "3966Mi"
-      }
-    }
+    ]
   }
+  # Storage used by ArmoniK
   storage_services = {
     object_storage         = {
       type = "MongoDB"

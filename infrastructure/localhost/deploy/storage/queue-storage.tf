@@ -73,7 +73,7 @@ resource "kubernetes_service" "activemq" {
       type    = kubernetes_stateful_set.activemq.metadata.0.labels.type
       service = kubernetes_stateful_set.activemq.metadata.0.labels.service
     }
-    dynamic "port" {
+    dynamic port {
       for_each = var.queue_storage.port
       content {
         name        = port.value.name

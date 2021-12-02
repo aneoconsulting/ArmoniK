@@ -30,7 +30,7 @@ resource "kubernetes_deployment" "control_plane" {
       spec {
         container {
           name              = "control-plane"
-          image             = var.armonik.control_plane.image
+          image             = var.armonik.control_plane.tag != "" ? "${var.armonik.control_plane.image}:${var.armonik.control_plane.tag}" : var.armonik.control_plane.image
           image_pull_policy = var.armonik.control_plane.image_pull_policy
           port {
             name           = "control-port"
