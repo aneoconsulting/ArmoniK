@@ -4,6 +4,7 @@ k8s_config_context = "default"
 k8s_config_path    = "~/.kube/config"
 
 # Object storage parameters
+# Redis
 object_storage = {
   replicas     = 1
   port         = 6379
@@ -11,12 +12,14 @@ object_storage = {
 }
 
 # Table storage parameters
+# MongoDB
 table_storage = {
   replicas = 1
   port     = 27017
 }
 
 # Parameters for queue storage
+# ActiveMQ
 queue_storage = {
   replicas = 1
   port     = [
@@ -30,6 +33,7 @@ queue_storage = {
 }
 
 # Parameters for shared storage
+# Local persistent volume
 shared_storage = {
   storage_class           = {
     provisioner            = "kubernetes.io/no-provisioner"
@@ -52,7 +56,7 @@ shared_storage = {
   }
 }
 
-# ArmoniK control plane
+# ArmoniK components
 armonik = {
   control_plane    = {
     replicas          = 1

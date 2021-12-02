@@ -15,6 +15,7 @@ k8s_config_context = {
 }
 
 # Parameters for object storage
+# MongoDB
 object_storage = {
   description = "Parameters of object storage of ArmoniK"
   type        = {
@@ -25,6 +26,7 @@ object_storage = {
 }
 
 # Parameters for table storage
+# Redis
 table_storage = {
   description = "Parameters of table storage of ArmoniK"
   type        = {
@@ -34,6 +36,7 @@ table_storage = {
 }
 
 # Parameters for queue storage
+# ActiveMQ
 queue_storage = {
   description = "Parameters of queue storage of ArmoniK"
   type        = {
@@ -49,6 +52,7 @@ queue_storage = {
 }
 
 # Parameters for shared storage
+# Local shared volume
 shared_storage = {
   description = "A local persistent volume used as NFS"
   type        = {
@@ -73,10 +77,11 @@ shared_storage = {
   }
 }
 
-# ArmoniK
+# ArmoniK components
 armonik = {
   description = "Components of ArmoniK"
   type        = {
+    # AmoniK control plane
     control_plane    = {
       replicas          = number
       image             = string
@@ -84,8 +89,10 @@ armonik = {
       image_pull_policy = string
       port              = number
     }
+    # AmoniK compute plane
     compute_plane    = {
       replicas      = number
+      # AmoniK polling agent
       polling_agent = {
         image             = string
         tag               = string
@@ -99,6 +106,7 @@ armonik = {
           memory = string
         }
       }
+      # AmoniK compute
       compute       = {
         image             = string
         tag               = string
@@ -113,6 +121,7 @@ armonik = {
         }
       }
     }
+    # List of storage services used by ArmoniK
     storage_services = {
       object_storage         = {
         type = string
