@@ -15,7 +15,7 @@ k8s_config_context = {
 }
 
 # Parameters for object storage
-# MongoDB
+# Redis
 object_storage = {
   description = "Parameters of object storage of ArmoniK"
   type        = {
@@ -26,7 +26,7 @@ object_storage = {
 }
 
 # Parameters for table storage
-# Redis
+# MongoDB
 table_storage = {
   description = "Parameters of table storage of ArmoniK"
   type        = {

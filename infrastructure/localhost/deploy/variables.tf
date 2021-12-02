@@ -1,4 +1,4 @@
-#Global variables
+# Global variables
 variable "namespace" {
   description = "Namespace of ArmoniK resources"
   type        = string
@@ -18,6 +18,7 @@ variable "k8s_config_context" {
 }
 
 # Parameters for object storage
+# Redis
 variable "object_storage" {
   description = "Parameters of object storage of ArmoniK"
   type        = object({
@@ -33,6 +34,7 @@ variable "object_storage" {
 }
 
 # Parameters for table storage
+# MongoDB
 variable "table_storage" {
   description = "Parameters of table storage of ArmoniK"
   type        = object({
@@ -46,6 +48,7 @@ variable "table_storage" {
 }
 
 # Parameters for queue storage
+# ActiveMQ
 variable "queue_storage" {
   description = "Parameters of queue storage of ArmoniK"
   type        = object({
@@ -72,6 +75,7 @@ variable "queue_storage" {
 }
 
 # Parameters for shared storage
+# Local shared storage
 variable "shared_storage" {
   description = "A local persistent volume used as NFS"
   type        = object({
@@ -116,10 +120,11 @@ variable "shared_storage" {
   }
 }
 
-# ArmoniK
+# ArmoniK components
 variable "armonik" {
   description = "Components of ArmoniK"
   type        = object({
+    # ArmoniK contol plane
     control_plane    = object({
       replicas          = number,
       image             = string,
@@ -127,8 +132,10 @@ variable "armonik" {
       image_pull_policy = string,
       port              = number
     }),
+    # ArmoniK compute plane
     compute_plane    = object({
       replicas      = number,
+      # ArmoniK polling agent
       polling_agent = object({
         image             = string,
         tag               = string,
@@ -142,6 +149,7 @@ variable "armonik" {
           memory = string
         })
       }),
+      # ArmoniK compute
       compute       = object({
         image             = string,
         tag               = string,
@@ -156,6 +164,7 @@ variable "armonik" {
         })
       }),
     }),
+    # Storage used by ArmoniK
     storage_services = object({
       object_storage         = object({
         type = string,

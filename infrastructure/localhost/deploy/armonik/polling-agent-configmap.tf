@@ -70,7 +70,7 @@ locals {
   },
   "ComputePlan": {
     "GrpcChannel": {
-      "Address": "https://localhost:5001",
+      "Address": "https://localhost:80",
       "SocketType": "web"
     },
     "MessageBatchSize": 1
