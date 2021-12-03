@@ -1,6 +1,6 @@
 # Storage
 module "storage" {
-  source    = "./storage"
+  source    = "./modules/storage"
   namespace = var.namespace
 
   # Object storage : Redis
@@ -18,7 +18,7 @@ module "storage" {
 
 # ArmoniK components
 module "armonik" {
-  source     = "./armonik"
+  source     = "./modules/armonik"
   namespace  = var.namespace
   priority   = var.priority
   depends_on = [module.storage]

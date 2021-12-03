@@ -19,12 +19,12 @@ The source codes of resources to be deployed are defined in the directory [deplo
 types of resources:
 
 * **Storage services**: ArmoniK needs a single or different types of storage to store its different
-  data ([storage](../deploy/storage)).
+  data ([storage](../deploy/modules/storage)).
     * Object storage
     * Table
     * Queue
     * Lease provider
-* **ArmoniK components**: are the components of the ArmoniK scheduler ([armonik](../deploy/armonik)).
+* **ArmoniK components**: are the components of the ArmoniK scheduler ([armonik](../deploy/modules/armonik)).
     * Control plane
     * Compute plane composed of polling agent and compute
 
