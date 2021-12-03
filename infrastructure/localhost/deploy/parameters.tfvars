@@ -3,7 +3,7 @@ namespace          = "armonik"
 k8s_config_context = "default"
 k8s_config_path    = "~/.kube/config"
 # number of queues according to the priority of tasks
-priority           = 2
+priority           = 1
 
 # Object storage parameters
 # Redis

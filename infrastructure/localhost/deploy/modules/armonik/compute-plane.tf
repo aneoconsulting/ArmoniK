@@ -59,6 +59,10 @@ resource "kubernetes_deployment" "compute_plane" {
             name       = "shared-volume"
             mount_path = var.armonik.storage_services.shared_storage.target_path
           }
+          volume_mount {
+            name       = "cache-volume"
+            mount_path = "/cache"
+          }
         }
         # Containers of compute
         dynamic container {
@@ -90,6 +94,10 @@ resource "kubernetes_deployment" "compute_plane" {
               name       = "shared-volume"
               mount_path = var.armonik.storage_services.shared_storage.target_path
             }
+            volume_mount {
+              name       = "cache-volume"
+              mount_path = "/cache"
+            }
           }
         }
         volume {
@@ -111,6 +119,10 @@ resource "kubernetes_deployment" "compute_plane" {
             name     = kubernetes_config_map.compute_config.metadata.0.name
             optional = false
           }
+        }
+        volume {
+          name = "cache-volume"
+          empty_dir {}
         }
       }
     }
