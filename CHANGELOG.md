@@ -1,6 +1,6 @@
 # Changelog
 
-## [latest](https://github.com/aneoconsulting/armonik/tree/main) (2021-11-23)
+## [v0.9.6](https://github.com/aneoconsulting/armonik/tree/v0.9.6) (2021-12-03)
 Changed
 -
 * Deploy NGINX without using manifest file
