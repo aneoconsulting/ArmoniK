@@ -20,14 +20,13 @@ variable "k8s_config_context" {
 # number of queues according to priority of tasks
 variable "priority" {
   description = "Number of queues according to the priority of tasks"
-  type = number
-  default = 1
+  type        = number
+  default     = 1
 }
 
-# Parameters for object storage
 # Redis
-variable "object_storage" {
-  description = "Parameters of object storage of ArmoniK"
+/*variable "redis" {
+  description = "Parameters of redis"
   type        = object({
     replicas = number
     port     = number
@@ -36,28 +35,13 @@ variable "object_storage" {
   default     = {
     replicas = 1
     port     = 6379
-    secret   = "object-storage-secret"
+    secret   = "redis-storage-secret"
   }
-}
+}*/
 
-# Parameters for table storage
-# MongoDB
-variable "table_storage" {
-  description = "Parameters of table storage of ArmoniK"
-  type        = object({
-    replicas = number
-    port     = number
-  })
-  default     = {
-    replicas = 1
-    port     = 27017
-  }
-}
-
-# Parameters for queue storage
 # ActiveMQ
-variable "queue_storage" {
-  description = "Parameters of queue storage of ArmoniK"
+/*variable "activemq" {
+  description = "Parameters of ActiveMQ"
   type        = object({
     replicas = number
     port     = list(object({
@@ -77,13 +61,25 @@ variable "queue_storage" {
       { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
       { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
     ]
-    secret   = "queue-storage-secret"
+    secret   = "activemq-storage-secret"
+  }
+}*/
+
+# MongoDB
+variable "mongodb" {
+  description = "Parameters of MongoDB"
+  type        = object({
+    replicas = number
+    port     = number
+  })
+  default     = {
+    replicas = 1
+    port     = 27017
   }
 }
 
-# Parameters for shared storage
 # Local shared storage
-variable "shared_storage" {
+variable "local_shared_storage" {
   description = "A local persistent volume used as NFS"
   type        = object({
     storage_class           = object({

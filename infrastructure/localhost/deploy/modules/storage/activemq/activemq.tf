@@ -1,5 +1,3 @@
-# In the local deployment:
-# ActiveMQ is used as queue storage
 # ActiveMQ is deployed as a service in Kubernetes cluster
 
 # Kubernetes ActiveMQ statefulset
@@ -15,7 +13,7 @@ resource "kubernetes_stateful_set" "activemq" {
   }
   spec {
     service_name = "activemq"
-    replicas     = var.queue_storage.replicas
+    replicas     = var.activemq.replicas
     selector {
       match_labels = {
         app     = "storage"
@@ -46,7 +44,7 @@ resource "kubernetes_stateful_set" "activemq" {
         volume {
           name = "queue-storage-secret-volume"
           secret {
-            secret_name = var.queue_storage.secret
+            secret_name = var.activemq.secret
             optional    = false
           }
         }
@@ -74,7 +72,7 @@ resource "kubernetes_service" "activemq" {
       service = kubernetes_stateful_set.activemq.metadata.0.labels.service
     }
     dynamic port {
-      for_each = var.queue_storage.port
+      for_each = var.activemq.port
       content {
         name        = port.value.name
         port        = port.value.port

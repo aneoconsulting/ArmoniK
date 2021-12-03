@@ -20,66 +20,51 @@ priority = {
   type        = number
 }
 
-# Parameters for object storage
 # Redis
-object_storage = {
-  description = "Parameters of object storage of ArmoniK"
-  type        = {
-    replicas = number
-    port     = number
-    secret   = string
-  }
+redis = {
+  replicas = 1
+  port     = 6379
+  secret   = "redis-storage-secret"
 }
 
-# Parameters for table storage
-# MongoDB
-table_storage = {
-  description = "Parameters of table storage of ArmoniK"
-  type        = {
-    replicas = number
-    port     = number
-  }
-}
-
-# Parameters for queue storage
 # ActiveMQ
-queue_storage = {
-  description = "Parameters of queue storage of ArmoniK"
-  type        = {
-    replicas = number
-    port     = list({
-      name        = string
-      port        = number
-      target_port = number
-      protocol    = string
-    })
-    secret   = string
-  }
+activemq = {
+  replicas = 1
+  port     = [
+    { name = "dashboard", port = 8161, target_port = 8161, protocol = "TCP" },
+    { name = "openwire", port = 61616, target_port = 61616, protocol = "TCP" },
+    { name = "amqp", port = 5672, target_port = 5672, protocol = "TCP" },
+    { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
+    { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
+  ]
+  secret   = "activemq-storage-secret"
 }
 
-# Parameters for shared storage
-# Local shared volume
-shared_storage = {
-  description = "A local persistent volume used as NFS"
-  type        = {
-    storage_class           = {
-      provisioner            = string
-      name                   = string
-      volume_binding_mode    = string
-      allow_volume_expansion = bool
-    }
-    persistent_volume       = {
-      name                             = string
-      persistent_volume_reclaim_policy = string
-      access_modes                     = list(string)
-      size                             = string
-      host_path                        = string
-    }
-    persistent_volume_claim = {
-      name         = string
-      access_modes = list(string)
-      size         = string
-    }
+# MongoDB
+mongodb = {
+  replicas = 1
+  port     = 27017
+}
+
+# Local shared storage
+local_shared_storage = {
+  storage_class           = {
+    provisioner            = "kubernetes.io/no-provisioner"
+    name                   = "nfs"
+    volume_binding_mode    = "WaitForFirstConsumer"
+    allow_volume_expansion = true
+  }
+  persistent_volume       = {
+    name                             = "nfs-pv"
+    persistent_volume_reclaim_policy = "Delete"
+    access_modes                     = ["ReadWriteMany"]
+    size                             = "10Gi"
+    host_path                        = "/data"
+  }
+  persistent_volume_claim = {
+    name         = "nfs-pvc"
+    access_modes = ["ReadWriteMany"]
+    size         = "2Gi"
   }
 }
 

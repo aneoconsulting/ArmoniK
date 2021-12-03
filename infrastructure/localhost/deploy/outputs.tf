@@ -1,27 +1,31 @@
 # Storage
-output "object_storage_endpoint_url" {
-  value = "${module.storage.object_storage.spec.0.cluster_ip}:${module.storage.object_storage.spec.0.port.0.port}"
-}
 
-output "table_storage_endpoint_url" {
-  value = "mongodb://${module.storage.table_storage.spec.0.cluster_ip}:${module.storage.table_storage.spec.0.port.0.port}"
+# Redis
+/*output "redis_endpoint_url" {
+  value = "${module.redis.storage.spec.0.cluster_ip}:${module.redis.storage.spec.0.port.0.port}"
+}*/
+
+# ActiveMQ
+/*output "activemq_endpoint_url" {
+  value = [
+  for port in module.activemq.storage.spec.0.port : {
+    name         = port.name
+    endpoint_url = "http://${module.activemq.storage.spec.0.cluster_ip}:${port.port}"
+  }
+  ]
+}*/
+
+# MongoDB
+output "mongodb_endpoint_url" {
+  value = "mongodb://${module.mongodb.storage.spec.0.cluster_ip}:${module.mongodb.storage.spec.0.port.0.port}"
 }
 
 output "shared_storage_pvc_name" {
-  value = module.storage.shared_storage_persistent_volume_claim.metadata.0.name
+  value = module.local_shared_storage.shared_storage_persistent_volume_claim.metadata.0.name
 }
 
 output "shared_storage_pvc_size" {
-  value = module.storage.shared_storage_persistent_volume_claim.spec.0.resources.0.requests.storage
-}
-
-output "queue_storage_endpoint_url" {
-  value = [
-  for port in module.storage.queue_storage.spec.0.port : {
-    name         = port.name
-    endpoint_url = "http://${module.storage.queue_storage.spec.0.cluster_ip}:${port.port}"
-  }
-  ]
+  value = module.local_shared_storage.shared_storage_persistent_volume_claim.spec.0.resources.0.requests.storage
 }
 
 # Armonik components

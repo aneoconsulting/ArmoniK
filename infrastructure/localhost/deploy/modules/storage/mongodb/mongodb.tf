@@ -1,5 +1,3 @@
-# In the local deployment:
-# MongoDB is used as table storage
 # MongoDB is deployed as a service in Kubernetes cluster
 
 # Kubernetes MongoDB statefulset
@@ -15,7 +13,7 @@ resource "kubernetes_stateful_set" "mongodb" {
   }
   spec {
     service_name = "mongodb"
-    replicas     = var.table_storage.replicas
+    replicas     = var.mongodb.replicas
     selector {
       match_labels = {
         app     = "storage"
@@ -39,16 +37,16 @@ resource "kubernetes_stateful_set" "mongodb" {
           command = ["mongod"]
           args    = [
             "--dbpath=/data/db",
-            "--port=${var.table_storage.port}",
+            "--port=${var.mongodb.port}",
             "--bind_ip=0.0.0.0",
             "--replSet=rs0"
           ]
           port {
-            container_port = var.table_storage.port
+            container_port = var.mongodb.port
           }
           env {
             name  = "EDGE_PORT"
-            value = var.table_storage.port
+            value = var.mongodb.port
           }
           volume_mount {
             name       = "configdir"
@@ -89,7 +87,7 @@ resource "kubernetes_service" "mongodb" {
       service = kubernetes_stateful_set.mongodb.metadata.0.labels.service
     }
     port {
-      port = var.table_storage.port
+      port = var.mongodb.port
     }
   }
 }

@@ -3,26 +3,17 @@ namespace          = "armonik"
 k8s_config_context = "default"
 k8s_config_path    = "~/.kube/config"
 # number of queues according to the priority of tasks
-priority           = 2
+priority           = 1
 
-# Object storage parameters
 # Redis
-object_storage = {
+redis = {
   replicas = 1
   port     = 6379
-  secret   = "object-storage-secret"
+  secret   = "redis-storage-secret"
 }
 
-# Table storage parameters
-# MongoDB
-table_storage = {
-  replicas = 1
-  port     = 27017
-}
-
-# Parameters for queue storage
 # ActiveMQ
-queue_storage = {
+activemq = {
   replicas = 1
   port     = [
     { name = "dashboard", port = 8161, target_port = 8161, protocol = "TCP" },
@@ -31,12 +22,17 @@ queue_storage = {
     { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
     { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
   ]
-  secret   = "queue-storage-secret"
+  secret   = "activemq-storage-secret"
 }
 
-# Parameters for shared storage
-# Local persistent volume
-shared_storage = {
+# MongoDB
+mongodb = {
+  replicas = 1
+  port     = 27017
+}
+
+# Local shared persistent volume
+local_shared_storage = {
   storage_class           = {
     provisioner            = "kubernetes.io/no-provisioner"
     name                   = "nfs"

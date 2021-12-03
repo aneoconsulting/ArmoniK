@@ -1,5 +1,3 @@
-# In the local deployment:
-# Redis is used as object storage
 # Redis is deployed as a service in Kubernetes cluster
 
 # Kubernetes Redis statefulset
@@ -15,7 +13,7 @@ resource "kubernetes_stateful_set" "redis" {
   }
   spec {
     service_name = "reids"
-    replicas     = var.object_storage.replicas
+    replicas     = var.redis.replicas
     selector {
       match_labels = {
         app     = "storage"
@@ -38,14 +36,14 @@ resource "kubernetes_stateful_set" "redis" {
           image   = "redis"
           command = ["redis-server"]
           args    = [
-            "--tls-port ${var.object_storage.port}",
+            "--tls-port ${var.redis.port}",
             "--port 0",
             "--tls-cert-file /certificates/cert_file",
             "--tls-key-file /certificates/key_file",
             "--tls-ca-cert-file /certificates/ca_cert_file"
           ]
           port {
-            container_port = var.object_storage.port
+            container_port = var.redis.port
           }
           volume_mount {
             name       = "object-storage-secret-volume"
@@ -56,7 +54,7 @@ resource "kubernetes_stateful_set" "redis" {
         volume {
           name = "object-storage-secret-volume"
           secret {
-            secret_name = var.object_storage.secret
+            secret_name = var.redis.secret
             optional    = false
           }
         }
@@ -85,7 +83,7 @@ resource "kubernetes_service" "redis" {
     }
     port {
       name     = kubernetes_stateful_set.redis.metadata.0.name
-      port     = var.object_storage.port
+      port     = var.redis.port
       protocol = "TCP"
     }
   }

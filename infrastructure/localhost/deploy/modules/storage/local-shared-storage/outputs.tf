@@ -1,19 +1,4 @@
-# Object storage
-output "object_storage" {
-  value = kubernetes_service.redis
-}
-
-# Table storage
-output "table_storage" {
-  value = kubernetes_service.mongodb
-}
-
-# Queue storage
-output "queue_storage" {
-  value = kubernetes_service.activemq
-}
-
-# Shared storage
+# local Shared storage
 output "shared_storage_class_storage" {
   value = kubernetes_storage_class.nfs_storage_class
 }
