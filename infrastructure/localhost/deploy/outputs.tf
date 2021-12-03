@@ -1,20 +1,5 @@
 # Storage
 
-# Redis
-/*output "redis_endpoint_url" {
-  value = "${module.redis.storage.spec.0.cluster_ip}:${module.redis.storage.spec.0.port.0.port}"
-}*/
-
-# ActiveMQ
-/*output "activemq_endpoint_url" {
-  value = [
-  for port in module.activemq.storage.spec.0.port : {
-    name         = port.name
-    endpoint_url = "http://${module.activemq.storage.spec.0.cluster_ip}:${port.port}"
-  }
-  ]
-}*/
-
 # MongoDB
 output "mongodb_endpoint_url" {
   value = "mongodb://${module.mongodb.storage.spec.0.cluster_ip}:${module.mongodb.storage.spec.0.port.0.port}"

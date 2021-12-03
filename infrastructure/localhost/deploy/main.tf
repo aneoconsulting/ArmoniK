@@ -1,19 +1,4 @@
 # Storage
-
-# Redis
-/*module "redis" {
-  source    = "./modules/storage/redis"
-  namespace = var.namespace
-  redis     = var.redis
-}*/
-
-# ActiveMQ
-/*module "activemq" {
-  source    = "./modules/storage/activemq"
-  namespace = var.namespace
-  activemq  = var.activemq
-}*/
-
 # MongoDB
 module "mongodb" {
   source    = "./modules/storage/mongodb"
