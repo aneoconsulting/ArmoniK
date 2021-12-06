@@ -14,7 +14,7 @@ To destroy ArmoniK resources and storage services in Kubernetes:
 cd ./deploy
 ```
 
-2execute the commandline:
+2. execute the commandline:
 
 ```bash
 make destroy CONFIG_FILE=<Your configuration file> 

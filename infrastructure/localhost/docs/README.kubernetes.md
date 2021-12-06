@@ -3,11 +3,11 @@
 1. [Getting started](#getteing-started)
     1. [Software prerequisites](#software-prerequisites)
     2. [Install Kubernetes](#install-kubernetes)
-4. [Set environment variables](#set-environment-variables)
-5. [Create a namespace for ArmoniK](#create-a-namespace-for-armonik)
-6. [Create Kubernetes secrets](#create-kubernetes-secrets)
-    1. [Object storage secret](#object-storage-secret)
-    2. [Queue storage secret](#queue-storage-secret)
+2. [Set environment variables](#set-environment-variables)
+3. [Create a namespace for ArmoniK](#create-a-namespace-for-armonik)
+4. [Create Kubernetes secrets](#create-kubernetes-secrets)
+    3. [Object storage secret](#object-storage-secret)
+    4. [Queue storage secret](#queue-storage-secret)
 
 # Getting started <a name="getting-started"></a>
 
@@ -44,7 +44,7 @@ mkdir -p ~/.kube
 cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 ```
 
-## Set environment variables <a name="set-environment-variables"></a>
+# Set environment variables <a name="set-environment-variables"></a>
 
 The project needs to define and set environment variables for deploying the infrastructure. The main environment
 variables are:
