@@ -1,0 +1,15 @@
+1. deploy ec2 instance as master with security group having inboud rules: ssh-port=22 and k3s-port=6443 and nfs-port=2049
+2. deploy 3 ec2 instances as workers with security group having inboud rules: ssh-port=22
+3. on master: curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--tls-san <public-ip-of-master>" sh -
+4. on worker: curl -sfL https://get.k3s.io | K3S_URL=https://<public-ip-of-master>:6443 K3S_TOKEN=<token> sh -
+such as: token = sudo cat /var/lib/rancher/k3s/server/node-token
+5. outside cluster:
+    * scp -i ~/.ssh/k3s.pem ec2-user@<public-ip-of-master>:/etc/rancher/k3s/k3s.yaml ~/.kube/config
+6. install nfs server on the master:
+    * sudo yum -y install nfs-utils nfs-utils-lib
+    * sudo mkdir -p /nfs
+    * sudo chown -R ec2-user:ec2-user /nfs
+    * echo "/nfs <subnet_prefixes>(rw,sync,no_subtree_check)" | sudo tee -a /etc/exports > /dev/null
+    * sudo exportfs -r
+    * sudo systemctl start nfs-server.service
+    * sudo systemctl enable nfs-server.service
