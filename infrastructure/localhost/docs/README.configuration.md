@@ -56,7 +56,7 @@ redis = {
 |:----------|:------------|:-----|:--------|
 | `replicas` | Number of desired replicas of Redis | number | `1` |
 | `port` | Port of Redis | number | `6379` |
-| secret | Kubernetes secret for Redis, created during the [preparation of the Kubernetes](./README.kubernetes.md#redis-storage-secret) based on TLS certificates | string | `"redis-storage-secret"` |
+|  `secret` | Kubernetes secret for Redis, created during the [preparation of the Kubernetes](./README.kubernetes.md#redis-storage-secret) based on TLS certificates | string | `"redis-storage-secret"` |
 
 # ActiveMQ parameters <a name="activemq-parameters"></a>
 
