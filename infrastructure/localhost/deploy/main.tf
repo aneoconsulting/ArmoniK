@@ -17,7 +17,7 @@ module "redis" {
 
 # ActiveMQ
 module "activemq" {
-  count     = (contains(local.list_of_storage, "activemq") ? 1 : 0)
+  count     = (contains(local.list_of_storage, "amqp") ? 1 : 0)
   source    = "./modules/storage/activemq"
   namespace = var.namespace
   activemq  = var.activemq

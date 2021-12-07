@@ -71,14 +71,11 @@ resource "kubernetes_service" "activemq" {
       type    = kubernetes_stateful_set.activemq.metadata.0.labels.type
       service = kubernetes_stateful_set.activemq.metadata.0.labels.service
     }
-    dynamic port {
-      for_each = var.activemq.port
-      content {
-        name        = port.value.name
-        port        = port.value.port
-        target_port = port.value.target_port
-        protocol    = port.value.protocol
-      }
+    port {
+      name        = "amqp"
+      port        = var.activemq.port
+      target_port = var.activemq.port
+      protocol    = "TCP"
     }
   }
 }

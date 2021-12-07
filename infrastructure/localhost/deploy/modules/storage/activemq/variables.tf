@@ -8,13 +8,8 @@ variable "namespace" {
 variable "activemq" {
   description = "Parameters of ActiveMQ"
   type        = object({
-    replicas = number,
-    port     = list(object({
-      name        = string,
-      port        = number,
-      target_port = number,
-      protocol    = string
-    })),
+    replicas = number
+    port     = number
     secret   = string
   })
 }

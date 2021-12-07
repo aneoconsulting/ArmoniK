@@ -66,14 +66,7 @@ broker.
 ```terraform
 activemq = {
   replicas = number
-  port     = [
-    {
-      name        = string
-      port        = number
-      target_port = number
-      protocol    = string
-    }
-  ]
+  port     = number
   secret   = string
 }
 ```
@@ -81,7 +74,7 @@ activemq = {
 | Parameter | Description | Type | Default |
 |:----------|:------------|:-----|:--------|
 | `replicas` | Number of desired replicas of ActiveMQ | number | `1` |
-| `port` | List of ports and their names | list(object({})) | `[{ name = "amqp", port = 5672, target_port = 5672, protocol = "TCP" },{ name = "dashboard", port = 8161, target_port = 8161, protocol = "TCP" },{ name = "openwire", port = 61616, target_port = 61616, protocol = "TCP" },{ name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },{ name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }]` |
+| `port` | List of ports and their names | list(object({})) | `5672` |
 | `secret` | Kubernetes secret for ActiveMQ, created during the [preparation of the Kubernetes](./README.kubernetes.md#activemq-storage-secret) | string | `"activemq-storage-secret"` |
 
 # Local shared storage parameters <a name="local-shared-storage-parameters"></a>
@@ -257,7 +250,7 @@ storage = {
   ]
   allowed_queue_storage          = [
     "MongoDB",
-    "ActiveMQ"
+    "Amqp"
   ]
   allowed_lease_provider_storage = [
     "MongoDB"

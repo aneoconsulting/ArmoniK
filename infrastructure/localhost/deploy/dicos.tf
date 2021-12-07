@@ -9,7 +9,7 @@ locals {
     ]
     allowed_queue_storage          = [
       "MongoDB",
-      "ActiveMQ"
+      "Amqp"
     ]
     allowed_lease_provider_storage = [
       "MongoDB"
