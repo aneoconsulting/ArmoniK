@@ -37,7 +37,7 @@ For the storage, three types of storage will be created as services in the Kuber
 * Shared volume used as NFS
 
 > **_NOTE:_**  The shared volume mount points are, respectively, in `host_path=/data` in your local machine and in
-`target_path=/app/data` in pods. Of course, you can change the values of these parameters in the configuration file of the deployment with Terraform.
+`target_path=/data` in pods. Of course, you can change the values of these parameters in the configuration file of the deployment with Terraform.
 
 # Configuration file <a name="configuration-file"></a>
 

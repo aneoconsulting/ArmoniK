@@ -18,7 +18,7 @@ max_priority       = number
 
 | Parameter             | Description | Type | Default |
 |:----------------------|:------------|:-----|:--------|
-| `namespace`           | Kubernetes namespace of ArmoniK resources, created during the [preparation of the Kubernetes](./README.kubernetes.md#redis-storage-secret) | string | `"armonik"`        |
+| `namespace`           | Kubernetes namespace of ArmoniK resources, created during the [preparation of the Kubernetes](./README.kubernetes.md#create-a-namespace-for-armonik) | string | `"armonik"`        |
 | `k8s_config_path`     | Path to the Kubernetes configuration file                                                                             | string | `"~/.kube/config"` |
 | `k8s_config_context`  | Configuration context of Kubernetes                                                                                   | string | `"default"`        |
 | `max_priority`        | Maximum number of priority for tasks. It defines the number of queues according to the priority too                   | number | `1`              |
@@ -56,7 +56,7 @@ redis = {
 |:----------|:------------|:-----|:--------|
 | `replicas` | Number of desired replicas of Redis | number | `1` |
 | `port` | Port of Redis | number | `6379` |
-| secret | Kubernetes secret for Redis, created during the [preparation of the Kubernetes](./README.kubernetes.md) based on TLS certificates | string | `"redis-storage-secret"` |
+| secret | Kubernetes secret for Redis, created during the [preparation of the Kubernetes](./README.kubernetes.md#redis-storage-secret) based on TLS certificates | string | `"redis-storage-secret"` |
 
 # ActiveMQ parameters <a name="activemq-parameters"></a>
 
@@ -82,7 +82,7 @@ activemq = {
 |:----------|:------------|:-----|:--------|
 | `replicas` | Number of desired replicas of ActiveMQ | number | `1` |
 | `port` | List of ports and their names | list(object({})) | `[{ name = "dashboard", port = 8161, target_port = 8161, protocol = "TCP" },{ name = "openwire", port = 61616, target_port = 61616, protocol = "TCP" },{ name = "amqp", port = 5672, target_port = 5672, protocol = "TCP" },{ name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },{ name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }]` |
-| `secret` | Kubernetes secret for ActiveMQ, created during the [preparation of the Kubernetes](./README.kubernetes.md) | string | `"activemq-storage-secret"` |
+| `secret` | Kubernetes secret for ActiveMQ, created during the [preparation of the Kubernetes](./README.kubernetes.md#activemq-storage-secret) | string | `"activemq-storage-secret"` |
 
 # Local shared storage parameters <a name="local-shared-storage-parameters"></a>
 
