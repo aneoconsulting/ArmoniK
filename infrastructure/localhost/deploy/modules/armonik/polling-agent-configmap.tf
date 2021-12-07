@@ -45,7 +45,7 @@ locals {
   },
   "Components": {
     "TableStorage": "ArmoniK.Adapters.${var.armonik.storage_services.table_storage.type}.TableStorage",
-    "QueueStorage": "ArmoniK.Adapters.${var.armonik.storage_services.queue_storage.type}.QueueStorage",
+    "QueueStorage": "ArmoniK.Adapters.${var.armonik.storage_services.queue_storage.type}.LockedQueueStorage",
     "ObjectStorage": "ArmoniK.Adapters.${var.armonik.storage_services.object_storage.type}.ObjectStorage",
     "LeaseProvider": "ArmoniK.Adapters.${var.armonik.storage_services.lease_provider_storage.type}.LeaseProvider"
   },
@@ -57,21 +57,21 @@ locals {
       "PollingDelay": "00:00:10"
     },
     "LeaseProvider": {
-      "AcquisitionPeriod": "00:20:00",
-      "AcquisitionDuration": "00:50:00"
+      "AcquisitionPeriod": "00:00:30",
+      "AcquisitionDuration": "00:01:00"
     },
     "ObjectStorage": {
       "ChunkSize": "100000"
     },
     "QueueStorage": {
-      "LockRefreshPeriodicity": "00:20:00",
-      "PollPeriodicity": "00:00:50",
-      "LockRefreshExtension": "00:50:00"
+      "LockRefreshPeriodicity": "00:00:45",
+      "PollPeriodicity": "00:00:10",
+      "LockRefreshExtension": "00:02:00"
     }
   },
   "ComputePlan": {
     "GrpcChannel": {
-      "Address": "https://localhost:80",
+      "Address": "http://localhost:80",
       "SocketType": "web"
     },
     "MessageBatchSize": 1
