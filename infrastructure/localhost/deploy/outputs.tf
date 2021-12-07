@@ -2,9 +2,20 @@
 
 # MongoDB
 output "mongodb_endpoint_url" {
-  value = "mongodb://${module.mongodb.storage.spec.0.cluster_ip}:${module.mongodb.storage.spec.0.port.0.port}"
+  value = (contains(local.list_of_storage, "mongodb") ? "mongodb://${module.mongodb.0.storage.spec.0.cluster_ip}:${module.mongodb.0.storage.spec.0.port.0.port}" : "NOT CREATED")
 }
 
+# Redis
+output "redis_endpoint_url" {
+  value = (contains(local.list_of_storage, "redis") ? "${module.redis.0.storage.spec.0.cluster_ip}:${module.redis.0.storage.spec.0.port.0.port}" : "NOT CREATED")
+}
+
+# ActiveMQ
+output "activemq_endpoint_url" {
+  value = (contains(local.list_of_storage, "activemq") ? "http://${module.activemq.0.storage.spec.0.cluster_ip}:${module.activemq.0.storage.spec.0.port.0.port}" : "NOT CREATED")
+}
+
+# Shared storage
 output "shared_storage_pvc_name" {
   value = module.local_shared_storage.shared_storage_persistent_volume_claim.metadata.0.name
 }
