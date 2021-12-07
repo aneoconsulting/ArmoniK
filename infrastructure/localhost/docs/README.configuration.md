@@ -1,11 +1,11 @@
 # Table of contents
 
-* [Global parameters](#global-parameters)
-* [MongoDB parameters](#mongodb-parameters)
-* [Redis parameters](#redis-parameters)
-* [ActiveMQ parameters](#activemq-parameters)
-* [Local shared storage parameters](#local-shared-storage-parameters)
-* [ArmoniK parameters](#armonik-parameters)
+1. [Global parameters](#global-parameters)
+2. [MongoDB parameters](#mongodb-parameters)
+3. [Redis parameters](#redis-parameters)
+4. [ActiveMQ parameters](#activemq-parameters)
+5. [Local shared storage parameters](#local-shared-storage-parameters)
+6. [ArmoniK parameters](#armonik-parameters)
 
 # Global parameters <a name="global-parameters"></a>
 
@@ -18,7 +18,7 @@ max_priority       = number
 
 | Parameter             | Description | Type | Default |
 |:----------------------|:------------|:-----|:--------|
-| `namespace`           | Kubernetes namespace of ArmoniK resources, created during the [preparation of the Kubernetes](./README.kubernetes.md) | string | `"armonik"`        |
+| `namespace`           | Kubernetes namespace of ArmoniK resources, created during the [preparation of the Kubernetes](./README.kubernetes.md#redis-storage-secret) | string | `"armonik"`        |
 | `k8s_config_path`     | Path to the Kubernetes configuration file                                                                             | string | `"~/.kube/config"` |
 | `k8s_config_context`  | Configuration context of Kubernetes                                                                                   | string | `"default"`        |
 | `max_priority`        | Maximum number of priority for tasks. It defines the number of queues according to the priority too                   | number | `1`              |

@@ -69,7 +69,7 @@ cd ./deploy
 make all CONFIG_FILE=<Your configuration file> 
 ```
 
-such as `make all` three commands in this order:
+such as `make all` executes three commands in this order:
 
 * `make init`
 * `make plan CONFIG_FILE=<Your configuration file>`

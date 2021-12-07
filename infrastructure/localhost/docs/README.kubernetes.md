@@ -6,8 +6,8 @@
 2. [Set environment variables](#set-environment-variables)
 3. [Create a namespace for ArmoniK](#create-a-namespace-for-armonik)
 4. [Create Kubernetes secrets](#create-kubernetes-secrets)
-    3. [Object storage secret](#object-storage-secret)
-    4. [Queue storage secret](#queue-storage-secret)
+    3. [Redis storage secret](#redis-storage-secret)
+    4. [ActiveMQ storage secret](#activemq-storage-secret)
 
 # Getting started <a name="getting-started"></a>
 
@@ -101,7 +101,7 @@ kubectl get namespaces
 
 # Create Kubernetes secrets <a name="create-kubernetes-secrets"></a>
 
-## Object storage secret <a name="object-storage-secret"></a>
+## Redis storage secret <a name="redis-storage-secret"></a>
 
 In this project, we use Redis as object storage for Armonik. Redis uses SSL/TLS support using certificates. In order to
 support TLS, Redis is configured with a X.509 certificate (`cert.crt`) and a private key (`cert.key`). In addition, it
@@ -121,7 +121,7 @@ kubectl create secret generic $ARMONIK_OBJECT_STORAGE_SECRET_NAME \
         --from-file=certificate_pfx=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/certificate.pfx
 ```
 
-## Queue storage secret <a name="queue-storage-secret"></a>
+## ActiveMQ storage secret <a name="activemq-storage-secret"></a>
 
 In this project, we use ActiveMQ as queue storage for Armonik. ActiveMQ use a file `jetty-realm.properties`. This is the
 file which stores user credentials and their roles in ActiveMQ. It contains custom usernames and passwords and replace
