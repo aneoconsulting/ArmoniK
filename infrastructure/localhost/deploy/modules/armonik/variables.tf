@@ -5,7 +5,7 @@ variable "namespace" {
 }
 
 # number of queues according to priority of tasks
-variable "priority" {
+variable "max_priority" {
   description = "Number of queues according to the priority of tasks"
   type        = number
 }

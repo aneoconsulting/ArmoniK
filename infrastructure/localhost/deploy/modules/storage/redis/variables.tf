@@ -4,9 +4,9 @@ variable "namespace" {
   type        = string
 }
 
-# Parameters for object storage
+# Parameters for Redis
 variable "redis" {
-  description = "Parameters of object storage of ArmoniK"
+  description = "Parameters of Redis of ArmoniK"
   type        = object({
     replicas = number,
     port     = number,

@@ -3,12 +3,12 @@
 
 # Storage class
 resource "kubernetes_storage_class" "nfs_storage_class" {
-  storage_provisioner    = var.local_shared_storage.storage_class.provisioner
+  storage_provisioner    = "kubernetes.io/no-provisioner"
   metadata {
     name = var.local_shared_storage.storage_class.name
   }
-  volume_binding_mode    = var.local_shared_storage.storage_class.volume_binding_mode
-  allow_volume_expansion = var.local_shared_storage.storage_class.allow_volume_expansion
+  volume_binding_mode    = "WaitForFirstConsumer"
+  allow_volume_expansion = true
 }
 
 # Persistent volume
@@ -21,8 +21,8 @@ resource "kubernetes_persistent_volume" "nfs_persistent_volume" {
   }
   spec {
     storage_class_name               = kubernetes_storage_class.nfs_storage_class.metadata.0.name
-    persistent_volume_reclaim_policy = var.local_shared_storage.persistent_volume.persistent_volume_reclaim_policy
-    access_modes                     = var.local_shared_storage.persistent_volume.access_modes
+    persistent_volume_reclaim_policy = "Delete"
+    access_modes                     = ["ReadWriteMany"]
     capacity                         = {
       storage = var.local_shared_storage.persistent_volume.size
     }
@@ -42,7 +42,7 @@ resource "kubernetes_persistent_volume_claim" "nfs_persistent_volume_claim" {
   }
   spec {
     storage_class_name = kubernetes_storage_class.nfs_storage_class.metadata.0.name
-    access_modes       = var.local_shared_storage.persistent_volume_claim.access_modes
+    access_modes       = ["ReadWriteMany"]
     resources {
       requests = {
         storage = var.local_shared_storage.persistent_volume_claim.size

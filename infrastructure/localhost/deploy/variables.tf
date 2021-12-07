@@ -6,7 +6,7 @@ variable "namespace" {
 }
 
 variable "k8s_config_path" {
-  description = "Path pf the configuration file of K8s"
+  description = "Path of the configuration file of K8s"
   type        = string
   default     = "~/.kube/config"
 }
@@ -18,7 +18,7 @@ variable "k8s_config_context" {
 }
 
 # number of queues according to priority of tasks
-variable "priority" {
+variable "max_priority" {
   description = "Number of queues according to the priority of tasks"
   type        = number
   default     = 1
@@ -37,47 +37,76 @@ variable "mongodb" {
   }
 }
 
+# Parameters for Redis
+variable "redis" {
+  description = "Parameters of Redis of ArmoniK"
+  type        = object({
+    replicas = number,
+    port     = number,
+    secret   = string
+  })
+  default     = {
+    replicas = 1
+    port     = 6379
+    secret   = "redis-storage-secret"
+  }
+}
+
+# Parameters for ActiveMQ
+variable "activemq" {
+  description = "Parameters of ActiveMQ"
+  type        = object({
+    replicas = number,
+    port     = list(object({
+      name        = string,
+      port        = number,
+      target_port = number,
+      protocol    = string
+    })),
+    secret   = string
+  })
+  default     = {
+    replicas = 1
+    port     = [
+      { name = "dashboard", port = 8161, target_port = 8161, protocol = "TCP" },
+      { name = "openwire", port = 61616, target_port = 61616, protocol = "TCP" },
+      { name = "amqp", port = 5672, target_port = 5672, protocol = "TCP" },
+      { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
+      { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
+    ]
+    secret   = "activemq-storage-secret"
+  }
+}
+
 # Local shared storage
 variable "local_shared_storage" {
   description = "A local persistent volume used as NFS"
   type        = object({
     storage_class           = object({
-      provisioner            = string
-      name                   = string
-      volume_binding_mode    = string
-      allow_volume_expansion = bool
+      name = string
     })
     persistent_volume       = object({
-      name                             = string
-      persistent_volume_reclaim_policy = string
-      access_modes                     = list(string)
-      size                             = string
-      host_path                        = string
+      name      = string
+      size      = string
+      host_path = string
     })
     persistent_volume_claim = object({
-      name         = string
-      access_modes = list(string)
-      size         = string
+      name = string
+      size = string
     })
   })
   default     = {
     storage_class           = {
-      provisioner            = "kubernetes.io/no-provisioner"
-      name                   = "nfs"
-      volume_binding_mode    = "WaitForFirstConsumer"
-      allow_volume_expansion = true
+      name = "nfs"
     }
     persistent_volume       = {
-      name                             = "nfs-pv"
-      persistent_volume_reclaim_policy = "Delete"
-      access_modes                     = ["ReadWriteMany"]
-      size                             = "10Gi"
-      host_path                        = "/data"
+      name      = "nfs-pv"
+      size      = "10Gi"
+      host_path = "/data"
     }
     persistent_volume_claim = {
-      name         = "nfs-pvc"
-      access_modes = ["ReadWriteMany"]
-      size         = "2Gi"
+      name = "nfs-pvc"
+      size = "2Gi"
     }
   }
 }
@@ -131,30 +160,11 @@ variable "armonik" {
     })
     # Storage used by ArmoniK
     storage_services = object({
-      object_storage         = object({
-        type = string
-        url  = string
-        port = number
-      })
-      table_storage          = object({
-        type = string
-        url  = string
-        port = number
-      })
-      queue_storage          = object({
-        type = string
-        url  = string
-        port = number
-      })
-      lease_provider_storage = object({
-        type = string
-        url  = string
-        port = number
-      })
-      shared_storage         = object({
-        claim_name  = string
-        target_path = string
-      })
+      object_storage_type         = string
+      table_storage_type          = string
+      queue_storage_type          = string
+      lease_provider_storage_type = string
+      shared_storage_target_path  = string
     })
   })
   default     = {
@@ -199,30 +209,11 @@ variable "armonik" {
       ]
     }
     storage_services = {
-      object_storage         = {
-        type = "MongoDB"
-        url  = ""
-        port = 0
-      }
-      table_storage          = {
-        type = "MongoDB"
-        url  = ""
-        port = 0
-      }
-      queue_storage          = {
-        type = "MongoDB"
-        url  = ""
-        port = 0
-      }
-      lease_provider_storage = {
-        type = "MongoDB"
-        url  = ""
-        port = 0
-      }
-      shared_storage         = {
-        claim_name  = "nfs-pvc"
-        target_path = "/app/data"
-      }
+      object_storage_type         = "MongoDB"
+      table_storage_type          = "MongoDB"
+      queue_storage_type          = "MongoDB"
+      lease_provider_storage_type = "MongoDB"
+      shared_storage_target_path  = "/data"
     }
   }
 }

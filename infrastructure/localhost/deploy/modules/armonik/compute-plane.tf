@@ -2,7 +2,7 @@
 
 # Agent deployment
 resource "kubernetes_deployment" "compute_plane" {
-  count = (var.priority == 0 ? 1 : var.priority)
+  count = (var.max_priority == 0 ? 1 : var.max_priority)
   metadata {
     name      = "compute-plane-${count.index}"
     namespace = var.namespace
