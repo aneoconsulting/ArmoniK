@@ -69,6 +69,10 @@ locals {
       "LockRefreshExtension": "00:02:00"
     }
   },
+  "Amqp" : {
+    "Address" : "amqp://${var.armonik.storage_services.queue_storage.url}:${var.armonik.storage_services.queue_storage.port}",
+    "MaxPriority" : 10
+  },
   "ComputePlan": {
     "GrpcChannel": {
       "Address": "http://localhost:80",

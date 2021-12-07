@@ -67,6 +67,10 @@ locals {
       "PollPeriodicity": "00:00:10",
       "LockRefreshExtension": "00:02:00"
     }
+  },
+  "Amqp" : {
+    "Address" : "amqp://${var.armonik.storage_services.queue_storage.url}:${var.armonik.storage_services.queue_storage.port}",
+    "MaxPriority" : 10
   }
 }
 EOF
