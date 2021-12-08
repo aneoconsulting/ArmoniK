@@ -58,9 +58,9 @@ To deploy ArmoniK components and the storage services:
 
 1. position you in the directory [deploy/](../deploy):
 
-```bash
-cd ./deploy
-```
+    ```bash
+    cd ./deploy
+    ```
 
 2. prepare a configuration file. You can reuse or modify the current [parameters.tfvars](../deploy/parameters.tfvars):
 
