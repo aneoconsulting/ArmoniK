@@ -26,22 +26,22 @@ locals {
   # Setting of ArmoniK storage services
   storage_services = {
     object_storage         = {
-      type = (local.needed_storage.object_storage == "redis" ? "Redis" : "MongoDB")
+      type = (local.needed_storage.object_storage == "redis" ? "Redis.ObjectStorage" : "MongoDB.ObjectStorage")
       url  = (local.needed_storage.object_storage == "redis" ? module.redis.0.storage.spec.0.cluster_ip : module.mongodb.0.storage.spec.0.cluster_ip)
       port = (local.needed_storage.object_storage == "redis" ? module.redis.0.storage.spec.0.port.0.port : module.mongodb.0.storage.spec.0.port.0.port)
     }
     table_storage          = {
-      type = "MongoDB"
+      type = "MongoDB.TableStorage"
       url  = module.mongodb.0.storage.spec.0.cluster_ip
       port = module.mongodb.0.storage.spec.0.port.0.port
     }
     queue_storage          = {
-      type = (local.needed_storage.object_storage == "amqp" ? "Amqp" : "MongoDB")
-      url  = (local.needed_storage.object_storage == "amqp" ? module.activemq.storage.spec.0.cluster_ip : module.mongodb.0.storage.spec.0.cluster_ip)
-      port = (local.needed_storage.object_storage == "amqp" ? module.activemq.storage.spec.0.port.0.port : module.mongodb.0.storage.spec.0.port.0.port)
+      type = (local.needed_storage.queue_storage == "amqp" ? "Amqp.QueueStorage" : "MongoDB.LockedQueueStorage")
+      url  = (local.needed_storage.queue_storage == "amqp" ? module.activemq.0.storage.spec.0.cluster_ip : module.mongodb.0.storage.spec.0.cluster_ip)
+      port = (local.needed_storage.queue_storage == "amqp" ? module.activemq.0.storage.spec.0.port.0.port : module.mongodb.0.storage.spec.0.port.0.port)
     }
     lease_provider_storage = {
-      type = "MongoDB"
+      type = "MongoDB.LeaseProvider"
       url  = module.mongodb.0.storage.spec.0.cluster_ip
       port = module.mongodb.0.storage.spec.0.port.0.port
     }

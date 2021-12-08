@@ -11,6 +11,13 @@ mongodb = {
   port     = 27017
 }
 
+# Parameters for ActiveMQ
+activemq = {
+  replicas = 1
+  port     = 5672
+  secret   = "activemq-storage-secret"
+}
+
 # Local shared persistent volume
 local_shared_storage = {
   storage_class           = {
@@ -85,7 +92,7 @@ armonik = {
   storage_services = {
     object_storage_type         = "MongoDB"
     table_storage_type          = "MongoDB"
-    queue_storage_type          = "MongoDB"
+    queue_storage_type          = "Amqp"
     lease_provider_storage_type = "MongoDB"
     # Path of a directory in a pod, which contains data shared between pods and your local machine
     shared_storage_target_path  = "/data"

@@ -12,7 +12,7 @@ output "redis_endpoint_url" {
 
 # ActiveMQ
 output "activemq_endpoint_url" {
-  value = (contains(local.list_of_storage, "amqp") ? "http://${module.activemq.0.storage.spec.0.cluster_ip}:${module.activemq.0.storage.spec.0.port.0.port}" : "NOT CREATED")
+  value = (contains(local.list_of_storage, "amqp") ? "amqp://${module.activemq.0.storage.spec.0.cluster_ip}:${module.activemq.0.storage.spec.0.port.0.port}" : "NOT CREATED")
 }
 
 # Shared storage

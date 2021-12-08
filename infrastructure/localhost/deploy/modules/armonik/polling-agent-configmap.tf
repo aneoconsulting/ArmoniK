@@ -44,10 +44,10 @@ locals {
     }
   },
   "Components": {
-    "TableStorage": "ArmoniK.Adapters.${var.armonik.storage_services.table_storage.type}.TableStorage",
-    "QueueStorage": "ArmoniK.Adapters.${var.armonik.storage_services.queue_storage.type}.LockedQueueStorage",
-    "ObjectStorage": "ArmoniK.Adapters.${var.armonik.storage_services.object_storage.type}.ObjectStorage",
-    "LeaseProvider": "ArmoniK.Adapters.${var.armonik.storage_services.lease_provider_storage.type}.LeaseProvider"
+    "TableStorage": "ArmoniK.Adapters.${var.armonik.storage_services.table_storage.type}",
+    "QueueStorage": "ArmoniK.Adapters.${var.armonik.storage_services.queue_storage.type}",
+    "ObjectStorage": "ArmoniK.Adapters.${var.armonik.storage_services.object_storage.type}",
+    "LeaseProvider": "ArmoniK.Adapters.${var.armonik.storage_services.lease_provider_storage.type}"
   },
   "MongoDB": {
     "ConnectionString": "mongodb://${var.armonik.storage_services.table_storage.url}:${var.armonik.storage_services.table_storage.port}",
