@@ -2,9 +2,9 @@
 
 resource "kubernetes_stateful_set" "mongodb" {
   metadata {
-    name      = "mongodb"
+    name   = "mongodb"
     labels = {
-      app = "local-scheduler"
+      app     = "local-scheduler"
       service = "mongodb"
     }
   }
@@ -13,7 +13,7 @@ resource "kubernetes_stateful_set" "mongodb" {
 
     selector {
       match_labels = {
-        app = "local-scheduler"
+        app     = "local-scheduler"
         service = "mongodb"
       }
     }
@@ -23,7 +23,7 @@ resource "kubernetes_stateful_set" "mongodb" {
     template {
       metadata {
         labels = {
-          app = "local-scheduler"
+          app     = "local-scheduler"
           service = "mongodb"
         }
       }
@@ -41,10 +41,15 @@ resource "kubernetes_stateful_set" "mongodb" {
           image   = "mongo:bionic"
           name    = "mongodb"
           command = ["mongod"]
-          args    = ["--dbpath=/data/db", "--port=${var.mongodb_port}", "--bind_ip=0.0.0.0", "--replSet=rs0"]
+          args    = [
+            "--dbpath=/data/db",
+            "--port=${var.mongodb_port}",
+            "--bind_ip=0.0.0.0",
+            #"--replSet=rs0"
+          ]
 
           env {
-            name = "EDGE_PORT"
+            name  = "EDGE_PORT"
             value = var.mongodb_port
           }
 
@@ -77,18 +82,19 @@ resource "kubernetes_service" "mongodb" {
       app     = kubernetes_stateful_set.mongodb.metadata.0.labels.app
       service = kubernetes_stateful_set.mongodb.metadata.0.labels.service
     }
-    type = "LoadBalancer"
+    type     = "LoadBalancer"
     port {
       protocol = "TCP"
-      port = var.mongodb_port
-      name = "mongodb"
+      port     = var.mongodb_port
+      name     = "mongodb"
     }
   }
 }
-
+/*
 resource "null_resource" "activate_replica_in_mongo" {
   depends_on = [kubernetes_stateful_set.mongodb]
   provisioner "local-exec" {
     command = "kubectl exec mongodb-0 -- mongo --eval 'rs.initiate()'"
   }
 }
+*/
