@@ -21,23 +21,17 @@ activemq = {
 # Local shared persistent volume
 local_shared_storage = {
   storage_class           = {
-    provisioner            = "kubernetes.io/no-provisioner"
-    name                   = "nfs"
-    volume_binding_mode    = "WaitForFirstConsumer"
-    allow_volume_expansion = true
+    name = "nfs"
   }
   persistent_volume       = {
-    name                             = "nfs-pv"
-    persistent_volume_reclaim_policy = "Delete"
-    access_modes                     = ["ReadWriteMany"]
-    size                             = "5Gi"
+    name      = "nfs-pv"
+    size      = "5Gi"
     # Path of a directory in you local machine
-    host_path                        = "/data"
+    host_path = "/data"
   }
   persistent_volume_claim = {
-    name         = "nfs-pvc"
-    access_modes = ["ReadWriteMany"]
-    size         = "2Gi"
+    name = "nfs-pvc"
+    size = "2Gi"
   }
 }
 
