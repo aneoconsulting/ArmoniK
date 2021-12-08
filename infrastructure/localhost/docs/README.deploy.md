@@ -99,7 +99,6 @@ To deploy ArmoniK components and the storage services:
     allowed_lease_provider_storage = ["MongoDB"]
     ```
 
-
 3. execute this command to deploy ArmoniK:
 
 ```bash
