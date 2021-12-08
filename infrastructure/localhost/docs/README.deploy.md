@@ -64,40 +64,40 @@ To deploy ArmoniK components and the storage services:
 
 2. prepare a configuration file. You can reuse or modify the current [parameters.tfvars](../deploy/parameters.tfvars):
 
-* Create a directory on your host (local machine), for example `/data`, and set the parameter `host_path=/data` in
-  the `local_shared_storage.persistent_volume` component:
+   * Create a directory on your host (local machine), for example `/data`, and set the parameter `host_path=/data` in
+     the `local_shared_storage.persistent_volume` component:
 
-    ```terraform
-    persistent_volume = {
-      name      = "nfs-pv"
-      size      = "5Gi"
-      # Path of a directory in you local machine
-      host_path = "/data"
-    }
-    ```
+       ```terraform
+       persistent_volume = {
+         name      = "nfs-pv"
+         size      = "5Gi"
+         # Path of a directory in you local machine
+         host_path = "/data"
+       }
+       ```
 
-* The resources to be used for each type of ArmoniK storage `storage_services` must be well-defined, for example:
+   * The resources to be used for each type of ArmoniK storage `storage_services` must be well-defined, for example:
 
-    ```terraform
-    # Storage used by ArmoniK
-    storage_services = {
-     object_storage_type         = "MongoDB"
-     table_storage_type          = "MongoDB"
-     queue_storage_type          = "Amqp"
-     lease_provider_storage_type = "MongoDB"
-     # Path of a directory in a pod, which contains data shared between pods and your local machine
-     shared_storage_target_path  = "/data"
-    }
-    ```
+       ```terraform
+       # Storage used by ArmoniK
+       storage_services = {
+        object_storage_type         = "MongoDB"
+        table_storage_type          = "MongoDB"
+        queue_storage_type          = "Amqp"
+        lease_provider_storage_type = "MongoDB"
+        # Path of a directory in a pod, which contains data shared between pods and your local machine
+        shared_storage_target_path  = "/data"
+       }
+       ```
 
-    such that the allowed resources for each storage are as follows:
+       such that the allowed resources for each storage are as follows:
 
-    ```terraform
-    allowed_object_storage         = ["MongoDB", "Redis"]
-    allowed_table_storage          = ["MongoDB"]
-    allowed_queue_storage          = ["MongoDB", "Amqp"]
-    allowed_lease_provider_storage = ["MongoDB"]
-    ```
+       ```terraform
+       allowed_object_storage         = ["MongoDB", "Redis"]
+       allowed_table_storage          = ["MongoDB"]
+       allowed_queue_storage          = ["MongoDB", "Amqp"]
+       allowed_lease_provider_storage = ["MongoDB"]
+       ```
 
 3. execute this command to deploy ArmoniK:
 
