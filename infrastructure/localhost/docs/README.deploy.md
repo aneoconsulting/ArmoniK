@@ -101,15 +101,15 @@ To deploy ArmoniK components and the storage services:
 
 3. execute this command to deploy ArmoniK:
 
-```bash
-make all CONFIG_FILE=<Your configuration file> 
-```
+    ```bash
+    make all CONFIG_FILE=<Your configuration file> 
+    ```
 
-such as `make all` executes three commands in the following order that you can execute separately:
+    such as `make all` executes three commands in the following order that you can execute separately:
 
-* `make init`
-* `make plan CONFIG_FILE=<Your configuration file>`
-* `make apply CONFIG_FILE=<Your configuration file>`
+   * `make init`
+   * `make plan CONFIG_FILE=<Your configuration file>`
+   * `make apply CONFIG_FILE=<Your configuration file>`
 
 After the deployment you can display the list of created resources in Kubernetes as follows:
 
