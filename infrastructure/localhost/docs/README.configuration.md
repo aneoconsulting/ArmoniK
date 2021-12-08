@@ -74,7 +74,7 @@ activemq = {
 | Parameter | Description | Type | Default |
 |:----------|:------------|:-----|:--------|
 | `replicas` | Number of desired replicas of ActiveMQ | number | `1` |
-| `port` | List of ports and their names | list(object({})) | `5672` |
+| `port` | List of ports and their names | number | `5672` |
 | `secret` | Kubernetes secret for ActiveMQ, created during the [preparation of the Kubernetes](./README.kubernetes.md#activemq-storage-secret) | string | `"activemq-storage-secret"` |
 
 # Local shared storage parameters <a name="local-shared-storage-parameters"></a>

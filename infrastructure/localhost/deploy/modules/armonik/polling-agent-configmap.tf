@@ -44,13 +44,13 @@ locals {
     }
   },
   "Components": {
-    "TableStorage": "ArmoniK.Adapters.${var.armonik.storage_services.table_storage.type}",
-    "QueueStorage": "ArmoniK.Adapters.${var.armonik.storage_services.queue_storage.type}",
-    "ObjectStorage": "ArmoniK.Adapters.${var.armonik.storage_services.object_storage.type}",
-    "LeaseProvider": "ArmoniK.Adapters.${var.armonik.storage_services.lease_provider_storage.type}"
+    "TableStorage": "ArmoniK.Adapters.${var.armonik.storage_services.table_storage_type}",
+    "QueueStorage": "ArmoniK.Adapters.${var.armonik.storage_services.queue_storage_type}",
+    "ObjectStorage": "ArmoniK.Adapters.${var.armonik.storage_services.object_storage_type}",
+    "LeaseProvider": "ArmoniK.Adapters.${var.armonik.storage_services.lease_provider_storage_type}"
   },
   "MongoDB": {
-    "ConnectionString": "mongodb://${var.armonik.storage_services.table_storage.url}:${var.armonik.storage_services.table_storage.port}",
+    "ConnectionString": "${var.armonik.storage_services.resources.mongodb_endpoint_url}",
     "DatabaseName": "database",
     "DataRetention": "10.00:00:00",
     "TableStorage": {
@@ -70,7 +70,7 @@ locals {
     }
   },
   "Amqp" : {
-    "Address" : "amqp://${var.armonik.storage_services.queue_storage.url}:${var.armonik.storage_services.queue_storage.port}",
+    "Address" : "${var.armonik.storage_services.resources.activemq_endpoint_url}",
     "MaxPriority" : 10
   },
   "ComputePlan": {

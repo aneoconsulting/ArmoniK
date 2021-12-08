@@ -86,7 +86,7 @@ armonik = {
   storage_services = {
     object_storage_type         = "MongoDB"
     table_storage_type          = "MongoDB"
-    queue_storage_type          = "Amqp"
+    queue_storage_type          = "MongoDB"
     lease_provider_storage_type = "MongoDB"
     # Path of a directory in a pod, which contains data shared between pods and your local machine
     shared_storage_target_path  = "/data"

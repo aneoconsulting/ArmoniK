@@ -41,11 +41,12 @@ module "armonik" {
     control_plane    = var.armonik.control_plane
     compute_plane    = var.armonik.compute_plane
     storage_services = {
-      object_storage         = local.storage_services.object_storage
-      table_storage          = local.storage_services.table_storage
-      queue_storage          = local.storage_services.queue_storage
-      lease_provider_storage = local.storage_services.lease_provider_storage
-      shared_storage         = {
+      object_storage_type         = local.storage_services.object_storage_type
+      table_storage_type          = local.storage_services.table_storage_type
+      queue_storage_type          = local.storage_services.queue_storage_type
+      lease_provider_storage_type = local.storage_services.lease_provider_storage_type
+      resources                   = local.storage_services.resources
+      shared_storage              = {
         claim_name  = module.local_shared_storage.shared_storage_persistent_volume_claim.metadata.0.name
         target_path = var.armonik.storage_services.shared_storage_target_path
       }

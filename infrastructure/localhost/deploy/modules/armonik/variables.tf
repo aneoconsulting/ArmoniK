@@ -53,27 +53,16 @@ variable "armonik" {
       }))
     })
     storage_services = object({
-      object_storage         = object({
-        type = string
-        url  = string
-        port = number
+      object_storage_type         = string
+      table_storage_type          = string
+      queue_storage_type          = string
+      lease_provider_storage_type = string
+      resources                   = object({
+        mongodb_endpoint_url  = string
+        redis_endpoint_url    = string
+        activemq_endpoint_url = string
       })
-      table_storage          = object({
-        type = string
-        url  = string
-        port = number
-      })
-      queue_storage          = object({
-        type = string
-        url  = string
-        port = number
-      })
-      lease_provider_storage = object({
-        type = string
-        url  = string
-        port = number
-      })
-      shared_storage         = object({
+      shared_storage              = object({
         claim_name  = string
         target_path = string
       })

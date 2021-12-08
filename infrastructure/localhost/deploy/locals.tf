@@ -25,25 +25,14 @@ locals {
 
   # Setting of ArmoniK storage services
   storage_services = {
-    object_storage         = {
-      type = (local.needed_storage.object_storage == "redis" ? "Redis.ObjectStorage" : "MongoDB.ObjectStorage")
-      url  = (local.needed_storage.object_storage == "redis" ? module.redis.0.storage.spec.0.cluster_ip : module.mongodb.0.storage.spec.0.cluster_ip)
-      port = (local.needed_storage.object_storage == "redis" ? module.redis.0.storage.spec.0.port.0.port : module.mongodb.0.storage.spec.0.port.0.port)
-    }
-    table_storage          = {
-      type = "MongoDB.TableStorage"
-      url  = module.mongodb.0.storage.spec.0.cluster_ip
-      port = module.mongodb.0.storage.spec.0.port.0.port
-    }
-    queue_storage          = {
-      type = (local.needed_storage.queue_storage == "amqp" ? "Amqp.QueueStorage" : "MongoDB.LockedQueueStorage")
-      url  = (local.needed_storage.queue_storage == "amqp" ? module.activemq.0.storage.spec.0.cluster_ip : module.mongodb.0.storage.spec.0.cluster_ip)
-      port = (local.needed_storage.queue_storage == "amqp" ? module.activemq.0.storage.spec.0.port.0.port : module.mongodb.0.storage.spec.0.port.0.port)
-    }
-    lease_provider_storage = {
-      type = "MongoDB.LeaseProvider"
-      url  = module.mongodb.0.storage.spec.0.cluster_ip
-      port = module.mongodb.0.storage.spec.0.port.0.port
+    object_storage_type         = (local.needed_storage.object_storage == "redis" ? "Redis.ObjectStorage" : "MongoDB.ObjectStorage")
+    table_storage_type          = "MongoDB.TableStorage"
+    queue_storage_type          = (local.needed_storage.queue_storage == "amqp" ? "Amqp.QueueStorage" : "MongoDB.LockedQueueStorage")
+    lease_provider_storage_type = "MongoDB.LeaseProvider"
+    resources                   = {
+      mongodb_endpoint_url  = (contains(local.list_of_storage, "mongodb") ? "mongodb://${module.mongodb.0.storage.spec.0.cluster_ip}:${module.mongodb.0.storage.spec.0.port.0.port}" : "")
+      redis_endpoint_url    = (contains(local.list_of_storage, "redis") ? "${module.redis.0.storage.spec.0.cluster_ip}:${module.redis.0.storage.spec.0.port.0.port}" : "")
+      activemq_endpoint_url = (contains(local.list_of_storage, "amqp") ? "amqp://${module.activemq.0.storage.spec.0.cluster_ip}:${module.activemq.0.storage.spec.0.port.0.port}" : "")
     }
   }
 }
