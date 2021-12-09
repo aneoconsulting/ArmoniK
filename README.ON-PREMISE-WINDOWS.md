@@ -115,6 +115,9 @@ ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your path to Redis certificates>
 # Redis secrets in Kubernetes
 export ARMONIK_REDIS_SECRETS=<Your Redis secrets name in Kubernetes>
 
+# Name of your client/server sample
+export ARMONIK_APPLICATION_NAME=<Your client/server sample's name>
+
 # Define an environment variable containing the docker registry
 # if it exists, otherwise initialize the variable to empty.
 ARMONIK_DOCKER_REGISTRY=<Your Docker registry>

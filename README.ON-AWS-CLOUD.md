@@ -57,6 +57,9 @@ ARMONIK_NUGET_REPOS=<Your NuGet repository>
 # the redis certificates.
 ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your path to Redis certificates>
 
+# Name of your client/server sample
+export ARMONIK_APPLICATION_NAME=<Your client/server sample's name>
+
 # Define an environment variable containing the docker registry
 # if it exists, otherwise initialize the variable to empty.
 ARMONIK_DOCKER_REGISTRY=<Your Docker registry>
