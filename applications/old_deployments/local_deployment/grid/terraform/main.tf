@@ -69,7 +69,7 @@ locals {
 }
 
 module "local_persistent_volume" {
-    source = "./local_persistent_volume"
+    source = "local_persistent_volume"
     persistent_volume_host_path = var.persistent_volume_host_path
     persistent_volume_claim_size = var.persistent_volume_claim_size
     persistent_volume_size = var.persistent_volume_size
@@ -77,11 +77,11 @@ module "local_persistent_volume" {
 }
 
 module "compute_plane" {
-    source = "./compute_plane"
+    source = "compute_plane"
 }
 
 module "control_plane" {
-    source = "./control_plane"
+    source = "control_plane"
     suffix = local.project_name
     ddb_status_table = local.ddb_status_table
     lambda_runtime = var.lambda_runtime
@@ -130,7 +130,7 @@ module "control_plane" {
 }
 
 module "htc_agent" {
-    source = "./htc-agent"
+    source = "htc-agent"
     agent_chart_url = lookup(var.agent_configuration,"agent_chart_url",local.default_agent_configuration.agent_chart_url)
     termination_grace_period =  var.graceful_termination_delay
     agent_image_tag = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"tag",local.default_agent_configuration.agent.tag)

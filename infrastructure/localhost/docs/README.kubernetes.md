@@ -1,24 +1,13 @@
 # Table of contents
 
-1. [Getting started](#getteing-started)
-    1. [Software prerequisites](#software-prerequisites)
-    2. [Install Kubernetes](#install-kubernetes)
+1. [Install Kubernetes](#install-kubernetes)
 2. [Set environment variables](#set-environment-variables)
 3. [Create a namespace for ArmoniK](#create-a-namespace-for-armonik)
 4. [Create Kubernetes secrets](#create-kubernetes-secrets)
     3. [Redis storage secret](#redis-storage-secret)
     4. [ActiveMQ storage secret](#activemq-storage-secret)
 
-# Getting started <a name="getting-started"></a>
-
-## Software prerequisites <a name="software-prerequisites"></a>
-
-The following resources should be installed upon you local machine :
-
-* docker version > 1.19
-* kubectl version > 1.19
-
-## Install Kubernetes <a name="install-kubernetes"></a>
+# Install Kubernetes <a name="install-kubernetes"></a>
 
 Instructions to install Kubernetes on local Linux machine.
 
@@ -30,13 +19,13 @@ Install K3s as follows:
 curl -sfL https://get.k3s.io | sh -
 ```
 
-If you want use host's Docker rather than containerd use `--docker` option:
+***Warning:*** If you want use host's Docker rather than containerd use `--docker` option:
 
 ```bash
 curl -sfL https://get.k3s.io | sh -s - --docker
 ```
 
-Then initialize the configuration file of Kubernetes:
+After the K3s installation, you initialize the configuration file of Kubernetes:
 
 ```bash
 sudo chmod 755 /etc/rancher/k3s/k3s.yaml

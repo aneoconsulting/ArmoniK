@@ -1,18 +1,10 @@
 # Table of contents
 
-1. [Software prerequisites](#software-prerequisites)
-2. [Infrastructure source codes](#infrastructure-source-codes)
-3. [Configuration file](#configuration-file)
+1. [Infrastructure source codes](#infrastructure-source-codes)
+2. [Configuration file](#configuration-file)
     1. [List of resource parameters](#list-of-resource-parameters)
     2. [Example of configuration file](#example-of-configuration-file)
-4. [Deployment](#deployment)
-
-# Software prerequisites <a name="software-prerequisites"></a>
-
-The following resources should be installed upon you local machine :
-
-* [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version > 1.0.0
-* [JQ](https://stedolan.github.io/jq/)
+3. [Deployment](#deployment)
 
 # Infrastructure source codes <a name="nfrastructure-source-codes"></a>
 

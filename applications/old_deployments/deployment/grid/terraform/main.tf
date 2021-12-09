@@ -92,7 +92,7 @@ JSON
 
 module "vpc" {
 
-    source = "./vpc"
+    source = "vpc"
     region = var.region
     cluster_name = local.cluster_name
     private_subnets = var.vpc_cidr_block_private
@@ -105,7 +105,7 @@ module "vpc" {
 }
 
 module "compute_plane" {
-    source = "./compute_plane"
+    source = "compute_plane"
 
     vpc_id = module.vpc.vpc_id
     vpc_private_subnet_ids = module.vpc.private_subnet_ids
@@ -175,7 +175,7 @@ module "compute_plane" {
 }
 
 module "control_plane" {
-    source = "./control_plane"
+    source = "control_plane"
 
     vpc_id = module.vpc.vpc_id
     vpc_private_subnet_ids = module.vpc.private_subnet_ids
@@ -235,7 +235,7 @@ module "control_plane" {
 
 
 module "htc_agent" {
-    source = "./htc-agent"
+    source = "htc-agent"
     agent_chart_url = lookup(var.agent_configuration,"agent_chart_url",local.default_agent_configuration.agent_chart_url)
     termination_grace_period =  var.graceful_termination_delay
     agent_image_tag = lookup(lookup(var.agent_configuration,"agent",local.default_agent_configuration.agent),"tag",local.default_agent_configuration.agent.tag)
