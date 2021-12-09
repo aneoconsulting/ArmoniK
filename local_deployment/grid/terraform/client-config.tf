@@ -2,8 +2,7 @@ locals {
   client_config =<<EOF
 {
   "grid_storage_service" : "${var.grid_storage_service}",
-  "private_api_gateway_url": "http://${module.control_plane.ngnix_pod_ip}:${var.nginx_port}",
-  "public_api_gateway_url": "http://${module.control_plane.ngnix_pod_external_ip}:${var.nginx_port}",
+  "private_api_gateway_url": "http://${module.control_plane.ngnix_pod_external_ip}:${var.nginx_port}",
   "api_gateway_key": "mock",
   "redis_with_ssl": "${var.redis_with_ssl}",
   "redis_endpoint_url": "${module.control_plane.redis_pod_ip}",
