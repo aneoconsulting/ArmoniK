@@ -136,28 +136,22 @@ Armonik artifacts include: .NET Core packages, docker images, configuration file
 
 To build and install all Armonik, in `<project_root>`:
 
-1. Set the name of your sample:
+1. Set the name of your sample (Optional):
 
 ```bash
 export ARMONIK_APPLICATION_NAME=<Name of your sample>
 ```
 
-2. then build:
+2. in the project there is a default sample of name `ArmonikSamples`, then you build as follows:
 
 ```bash
 make all
 ```
 
-or you can build in one command:
+To build with your own sample:
 
 ```bash
 make all ARMONIK_APPLICATION_NAME=<Name of your sample>
-```
-
-for example in the project there is a sample of name `ArmonikSamples`:
-
-```bash
-make all ARMONIK_APPLICATION_NAME=ArmonikSamples
 ```
 
 A folder named `generated` will be created at `<project_root>`. This folder should contain the following two files:
