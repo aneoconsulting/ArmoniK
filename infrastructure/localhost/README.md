@@ -17,7 +17,7 @@ Before deploying ArmoniK scheduler, you must first install and prepare the Kuber
 Follow the instructions described in [Kubernetes docs](./docs/README.kubernetes.md) to install and configure your
 Kubernetes cluster.
 
-# Deploy ArmoniK cluster <a name="deploy-armonik"></a>
+# Deploy ArmoniK <a name="deploy-armonik"></a>
 
 A set of instructions are presented in [ArmoniK local deployment](./docs/README.deploy.md) to deploy ArmoniK's
 components and all needed services on your local machine.

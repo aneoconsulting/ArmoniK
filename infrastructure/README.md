@@ -9,7 +9,7 @@
     5. [JQ](#jq)
 3. [ArmoniK deployments](#armonik-deployments)
     1. [Local machine](#local-machine)
-    2. [Onpremise](#onpremise)
+    2. [On-premise](#on-premise)
     3. [Amazon Web Services](#amazon-web-services)
 
 # Introduction <a name="introduction"></a>
@@ -51,9 +51,10 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io
 
 ## Kubectl <a name="kubectl"></a>
 
-You must use a [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) version that is within one minor
-version difference of your cluster. For example, a v1.23 client can communicate with v1.22, v1.23, and v1.24 control
-planes. Using the latest compatible version of kubectl helps avoid unforeseen issues.
+The Kubernetes CLI (kubectl), allows you to run commands against Kubernetes clusters. You must use
+a [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) version that is within one minor version
+difference of your cluster. For example, a v1.23 client can communicate with v1.22, v1.23, and v1.24 control planes.
+Using the latest compatible version of kubectl helps avoid unforeseen issues.
 
 ```bash
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -90,7 +91,7 @@ This is useful for development and testing environment only!
 
 The different steps to deploy ArmoniK on your local machine are described [here](./localhost/README.md).
 
-## Onpremise <a name="Onpremise"></a>
+## On-premise <a name="on-premise"></a>
 
 ***TODO***
 
