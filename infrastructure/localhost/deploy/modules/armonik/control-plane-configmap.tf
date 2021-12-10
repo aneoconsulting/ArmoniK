@@ -19,7 +19,7 @@ locals {
   },
   "Serilog": {
     "Using": [ "Serilog.Sinks.Console" ],
-    "MinimumLevel": "Debug",
+    "MinimumLevel": "Information",
     "WriteTo": [
       { "Name": "Console" }
     ],
@@ -70,7 +70,12 @@ locals {
   },
   "Amqp" : {
     "Address" : "${var.armonik.storage_services.resources.activemq_endpoint_url}",
-    "MaxPriority" : 10
+    "MaxPriority" : 10,
+    "QueueStorage": {
+      "LockRefreshPeriodicity": "00:00:45",
+      "PollPeriodicity": "00:00:10",
+      "LockRefreshExtension": "00:02:00"
+    }
   }
 }
 EOF
