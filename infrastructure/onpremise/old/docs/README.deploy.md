@@ -33,7 +33,7 @@ For the storage, three types of storage will be created as services in the Kuber
 # Configuration file <a name="configuration-file"></a>
 
 Terraform needs a configuration file containing the list of parameters to configure the resources to be created. The
-complete list of parameters and their types are defined in [List of parameters](../docs/template-of-parameters.tf). An
+complete list of parameters and their types are defined in [List of parameters](/template-of-parameters.tf). An
 example of setting parameters of `object_storage`
 resource is as follows:
 

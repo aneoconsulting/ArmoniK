@@ -39,7 +39,7 @@ export ARMONIK_QUEUE_STORAGE_SECRET_NAME=<You kubernetes secret for the queue st
 
 1. position yourself in the current directory `onpremise/`:
 
-2. copy the [template file](../utils/envvars.conf) in the [current directory](../../onpremise):
+2. copy the [template file](../../utils/envvars.conf) in the [current directory](../..):
 
 ```bash
 cp utils/envvars.conf ./envvars.conf
@@ -79,7 +79,7 @@ certificates. A SSL certificate of type `PFX` is also used (`certificate.pfx`).
 
 Execute the following command to create the object storage secret in Kubernetes based on the certificates created and
 saved in the directory `$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY`. In this project, we have certificates for test
-in [credentials](../credentials) directory. Create a Kubernetes secret for the ArmoniK object storage:
+in [credentials](../../credentials) directory. Create a Kubernetes secret for the ArmoniK object storage:
 
 ```bash
 kubectl create secret generic $ARMONIK_OBJECT_STORAGE_SECRET_NAME \
@@ -98,7 +98,7 @@ the file present by default inside the container.
 
 Execute the following command to create the queue storage secret in Kubernetes based on the `jetty-realm.properties`
 created and saved in the directory `$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY`. In this project, we have a file of
-name `jetty-realm.properties` in [credentials](../credentials) directory. Create a Kubernetes secret for the ArmoniK
+name `jetty-realm.properties` in [credentials](../../credentials) directory. Create a Kubernetes secret for the ArmoniK
 queue storage:
 
 ```bash

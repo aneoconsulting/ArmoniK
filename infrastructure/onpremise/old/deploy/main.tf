@@ -1,21 +1,21 @@
 # Storage
 # MongoDB
 module "mongodb" {
-  source    = "./modules/storage/mongodb"
+  source    = "modules/storage/mongodb"
   namespace = var.namespace
   mongodb   = var.mongodb
 }
 
 # NFS storage
 module "nfs_storage" {
-  source    = "./modules/storage/nfs"
+  source    = "modules/storage/nfs"
   namespace = var.namespace
   nfs       = var.nfs
 }
 
 # ArmoniK components
 module "armonik" {
-  source     = "./modules/armonik"
+  source     = "modules/armonik"
   namespace  = var.namespace
   priority   = var.priority
   depends_on = [module.mongodb]
