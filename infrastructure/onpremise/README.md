@@ -14,14 +14,16 @@ Kubernetes cluster.
 
 Before deploying ArmoniK scheduler, you must first install and prepare the Kubernetes cluster.
 
-Follow the instructions described in [Kubernetes docs](old/docs/README.kubernetes.md) to install and configure your
+> **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [source codes](./utils/cluster/README.md). This is useful for the development and testing only!
+
+Follow the instructions described in [Kubernetes docs](./docs/README.kubernetes.md) to install and configure your
 Kubernetes cluster.
 
 # Deploy ArmoniK <a name="deploy-armonik"></a>
 
-A set of instructions are presented in [ArmoniK onpremise deployment](old/docs/README.deploy.md) to deploy ArmoniK's
+A set of instructions are presented in [ArmoniK onpremise deployment](./docs/README.deploy.md) to deploy ArmoniK's
 components on Kubernetes cluster.
 
 # Clean-up <a name="clean-up"></a>
 
-To delete ArmoniK follow [Clean-up docs](old/docs/README.clean.md).
+To delete ArmoniK follow [Clean-up docs](./docs/README.clean.md).

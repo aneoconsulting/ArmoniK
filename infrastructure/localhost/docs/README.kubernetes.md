@@ -28,7 +28,7 @@ curl -sfL https://get.k3s.io | sh -s - --docker
 After the K3s installation, you initialize the configuration file of Kubernetes:
 
 ```bash
-sudo chmod 755 /etc/rancher/k3s/k3s.yaml
+sudo chmod 644 /etc/rancher/k3s/k3s.yaml
 mkdir -p ~/.kube
 cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 ```

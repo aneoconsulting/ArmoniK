@@ -1,0 +1,22 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+locale: en_US.UTF-8
+
+write_files:
+  - content: |
+      curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+      curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+      echo "$(<kubectl.sha256) kubectl" | sha256sum --check
+      sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+    path: /app/install-kubectl.sh
+    permissions: 0755
+    owner: root
+
+runcmd:
+  - bash /app/install-kubectl.sh

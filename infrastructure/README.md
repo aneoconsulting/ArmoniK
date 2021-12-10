@@ -6,7 +6,6 @@
     2. [Docker](#docker)
     3. [Kubectl](#kubectl)
     4. [Terraform](#terraform)
-    5. [JQ](#jq)
 3. [ArmoniK deployments](#armonik-deployments)
     1. [Local machine](#local-machine)
     2. [On-premise](#on-premise)
@@ -34,7 +33,7 @@ before installing the software prerequisites.
 First you must install the following packages:
 
 ```bash
-sudo apt install apt-transport-https ca-certificates curl gnupg lsb-release
+sudo apt install apt-transport-https ca-certificates curl gnupg lsb-release jq
 ```
 
 ## Docker <a name="docker"></a>
@@ -72,14 +71,6 @@ The procedure to install [Terraform](https://www.terraform.io/docs/cli/install/a
 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
 sudo apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 sudo apt install terraform
-```
-
-## JQ <a name="jq"></a>
-
-The procedure to install [JQ](https://stedolan.github.io/jq/download/):
-
-```bash
-sudo apt-get install jq
 ```
 
 # ArmoniK deployments <a name="armonik-deployments"></a>
