@@ -14,7 +14,7 @@ Kubernetes cluster.
 
 Before deploying ArmoniK scheduler, you must first install and prepare the Kubernetes cluster.
 
-> **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [source codes](./utils/cluster/README.md). This is useful for the development and testing only!
+> **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [source codes](./utils/cluster). This is useful for the development and testing only!
 
 Follow the instructions described in [Kubernetes docs](./docs/README.kubernetes.md) to install and configure your
 Kubernetes cluster.
