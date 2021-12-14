@@ -98,6 +98,11 @@ resource "kubernetes_deployment" "compute_plane" {
               name       = "cache-volume"
               mount_path = "/cache"
             }
+            volume_mount {
+              name       = "compute-secret-volume"
+              mount_path = "/certificates"
+              read_only  = true
+            }
           }
         }
         volume {
@@ -123,6 +128,13 @@ resource "kubernetes_deployment" "compute_plane" {
         volume {
           name = "cache-volume"
           empty_dir {}
+        }
+        volume {
+          name = "compute-secret-volume"
+          secret {
+            secret_name = "redis-storage-secret"
+            optional    = false
+          }
         }
       }
     }

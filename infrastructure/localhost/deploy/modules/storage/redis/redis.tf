@@ -75,7 +75,7 @@ resource "kubernetes_service" "redis" {
     }
   }
   spec {
-    type     = "ClusterIP"
+    type     = "LoadBalancer"
     selector = {
       app     = kubernetes_stateful_set.redis.metadata.0.labels.app
       type    = kubernetes_stateful_set.redis.metadata.0.labels.type

@@ -18,6 +18,17 @@ locals {
     "EndpointDefaults": {
       "Protocols": "Http2"
     }
+  },
+  "Redis": {
+    "Endpoint": "${var.armonik.redis.status.0.load_balancer.0.ingress.0.ip}",
+    "Port": ${var.armonik.redis.spec.0.port.0.port},
+    "SslHost": "127.0.0.1",
+    "Timeout": 3000,
+    "CaCertPath": "/certificates/ca.crt",
+    "ClientPfxPath": "/certificates/certificates.pfx"
+  },
+  "Grpc": {
+    "Endpoint": "http://${kubernetes_service.control_plane.status.0.load_balancer.0.ingress.0.ip}:${kubernetes_service.control_plane.spec.0.port.0.port}"
   }
 }
 EOF
