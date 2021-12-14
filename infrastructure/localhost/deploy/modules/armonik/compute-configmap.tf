@@ -23,8 +23,8 @@ locals {
     "EndpointUrl": "${var.armonik.storage_services.resources.redis_endpoint_url}",
     "SslHost": "127.0.0.1",
     "Timeout": 3000,
-    "CaCertPath": "/certificates/ca.crt",
-    "ClientPfxPath": "/certificates/certificates.pfx"
+    "CaCertPath": "/certificates/ca_cert_file",
+    "ClientPfxPath": "/certificates/certificate_pfx"
   },
   "Grpc": {
     "Endpoint": "http://${kubernetes_service.control_plane.status.0.load_balancer.0.ingress.0.ip}:${kubernetes_service.control_plane.spec.0.port.0.port}"
