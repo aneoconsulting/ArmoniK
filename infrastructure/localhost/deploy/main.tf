@@ -9,7 +9,7 @@ module "mongodb" {
 
 # Redis
 module "redis" {
-  count     = 1
+  count     = (contains(local.list_of_storage, "redis") ? 1 : 0)
   source    = "./modules/storage/redis"
   namespace = var.namespace
   redis     = var.redis

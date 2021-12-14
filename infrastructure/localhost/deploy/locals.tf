@@ -20,7 +20,8 @@ locals {
     local.needed_storage.object_storage,
     local.needed_storage.table_storage,
     local.needed_storage.queue_storage,
-    local.needed_storage.lease_provider_storage
+    local.needed_storage.lease_provider_storage,
+    "redis"
   ])
 
   # Setting of ArmoniK storage services

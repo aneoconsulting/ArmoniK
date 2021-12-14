@@ -20,8 +20,7 @@ locals {
     }
   },
   "Redis": {
-    "Endpoint": "${var.armonik.redis.status.0.load_balancer.0.ingress.0.ip}",
-    "Port": ${var.armonik.redis.spec.0.port.0.port},
+    "EndpointUrl": "${var.armonik.storage_services.resources.redis_endpoint_url}",
     "SslHost": "127.0.0.1",
     "Timeout": 3000,
     "CaCertPath": "/certificates/ca.crt",
