@@ -19,6 +19,31 @@ locals {
       "Protocols": "Http2"
     }
   },
+  "Serilog": {
+    "Using": ["Serilog.Sinks.Console"],
+    "MinimumLevel": "Debug",
+    "WriteTo": [
+      { "Name": "Console" }
+    ],
+    "Enrich": ["FromLogContext", "WithMachineName", "WithThreadId"],
+    "Destructure": [
+      {
+        "Name": "ToMaximumDepth",
+        "Args": { "maximumDestructuringDepth": 4 }
+      },
+      {
+        "Name": "ToMaximumStringLength",
+        "Args": { "maximumStringLength": 100 }
+      },
+      {
+        "Name": "ToMaximumCollectionCount",
+        "Args": { "maximumCollectionCount": 10 }
+      }
+    ],
+    "Properties": {
+      "Application": "ArmoniK.Compute.Worker"
+    }
+  },
   "Redis": {
     "EndpointUrl": "${var.armonik.storage_services.resources.redis_endpoint_url}",
     "SslHost": "127.0.0.1",
