@@ -20,8 +20,7 @@ locals {
     local.needed_storage.object_storage,
     local.needed_storage.table_storage,
     local.needed_storage.queue_storage,
-    local.needed_storage.lease_provider_storage,
-    "redis"
+    local.needed_storage.lease_provider_storage
   ])
 
   # Setting of ArmoniK storage services
@@ -35,5 +34,11 @@ locals {
       redis_endpoint_url    = (contains(local.list_of_storage, "redis") ? "${module.redis.0.storage.spec.0.cluster_ip}:${module.redis.0.storage.spec.0.port.0.port}" : "")
       activemq_endpoint_url = (contains(local.list_of_storage, "amqp") ? "amqp://${module.activemq.0.storage.spec.0.cluster_ip}:${module.activemq.0.storage.spec.0.port.0.port}" : "")
     }
+  }
+
+  # Secrets
+  secrets = {
+    redis_secret    = (contains(local.list_of_storage, "redis") ? var.redis.secret : "")
+    activemq_secret = (contains(local.list_of_storage, "amqp") ? var.activemq.secret : "")
   }
 }

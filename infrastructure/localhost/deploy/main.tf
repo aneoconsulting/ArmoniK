@@ -51,5 +51,6 @@ module "armonik" {
         target_path = var.armonik.storage_services.shared_storage_target_path
       }
     }
+    secrets          = local.secrets
   }
 }

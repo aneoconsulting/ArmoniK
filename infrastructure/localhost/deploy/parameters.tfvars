@@ -11,6 +11,13 @@ mongodb = {
   port     = 27017
 }
 
+# Redis
+redis = {
+  replicas = 1
+  port     = 6379
+  secret   = "redis-storage-secret"
+}
+
 # Parameters for ActiveMQ
 activemq = {
   replicas = 1

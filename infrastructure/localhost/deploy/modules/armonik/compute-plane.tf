@@ -132,7 +132,7 @@ resource "kubernetes_deployment" "compute_plane" {
         volume {
           name = "compute-secret-volume"
           secret {
-            secret_name = "redis-storage-secret"
+            secret_name = var.armonik.secrets.redis_secret
             optional    = false
           }
         }

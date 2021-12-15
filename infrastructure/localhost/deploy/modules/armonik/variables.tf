@@ -67,6 +67,10 @@ variable "armonik" {
         target_path = string
       })
     })
+    secrets          = object({
+      redis_secret    = string
+      activemq_secret = string
+    })
   })
 }
 
