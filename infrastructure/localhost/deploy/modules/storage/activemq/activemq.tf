@@ -1,7 +1,7 @@
 # ActiveMQ is deployed as a service in Kubernetes cluster
 
-# Kubernetes ActiveMQ statefulset
-resource "kubernetes_stateful_set" "activemq" {
+# Kubernetes ActiveMQ deployment
+resource "kubernetes_deployment" "activemq" {
   metadata {
     name      = "activemq"
     namespace = var.namespace
@@ -12,7 +12,6 @@ resource "kubernetes_stateful_set" "activemq" {
     }
   }
   spec {
-    service_name = "activemq"
     replicas     = var.activemq.replicas
     selector {
       match_labels = {
@@ -56,20 +55,20 @@ resource "kubernetes_stateful_set" "activemq" {
 # Kubernetes ActiveMQ service
 resource "kubernetes_service" "activemq" {
   metadata {
-    name      = kubernetes_stateful_set.activemq.metadata.0.name
-    namespace = kubernetes_stateful_set.activemq.metadata.0.namespace
+    name      = kubernetes_deployment.activemq.metadata.0.name
+    namespace = kubernetes_deployment.activemq.metadata.0.namespace
     labels    = {
-      app     = kubernetes_stateful_set.activemq.metadata.0.labels.app
-      type    = kubernetes_stateful_set.activemq.metadata.0.labels.type
-      service = kubernetes_stateful_set.activemq.metadata.0.labels.service
+      app     = kubernetes_deployment.activemq.metadata.0.labels.app
+      type    = kubernetes_deployment.activemq.metadata.0.labels.type
+      service = kubernetes_deployment.activemq.metadata.0.labels.service
     }
   }
   spec {
     type     = "ClusterIP"
     selector = {
-      app     = kubernetes_stateful_set.activemq.metadata.0.labels.app
-      type    = kubernetes_stateful_set.activemq.metadata.0.labels.type
-      service = kubernetes_stateful_set.activemq.metadata.0.labels.service
+      app     = kubernetes_deployment.activemq.metadata.0.labels.app
+      type    = kubernetes_deployment.activemq.metadata.0.labels.type
+      service = kubernetes_deployment.activemq.metadata.0.labels.service
     }
     port {
       name        = "amqp"
