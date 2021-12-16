@@ -96,6 +96,6 @@ resource "kubernetes_service" "mongodb" {
 resource "null_resource" "activate_replica_in_mongo" {
   depends_on = [kubernetes_service.mongodb]
   provisioner "local-exec" {
-    command = "kubectl exec mongodb-0 -n ${var.namespace} -- mongo --eval 'rs.initiate()'"
+    command = "kubectl exec svc/${kubernetes_service.mongodb.metadata.0.name} -n ${var.namespace} -- mongo --eval 'rs.initiate()'"
   }
 }
