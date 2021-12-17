@@ -54,19 +54,19 @@ locals {
     "DatabaseName": "database",
     "DataRetention": "10.00:00:00",
     "TableStorage": {
-      "PollingDelay": "00:00:10"
+      "PollingDelay": "00:00:01"
     },
     "LeaseProvider": {
       "AcquisitionPeriod": "00:00:30",
-      "AcquisitionDuration": "00:01:00"
+      "AcquisitionDuration": "00:05:00"
     },
     "ObjectStorage": {
       "ChunkSize": "100000"
     },
     "QueueStorage": {
-      "LockRefreshPeriodicity": "00:00:45",
-      "PollPeriodicity": "00:00:10",
-      "LockRefreshExtension": "00:02:00"
+      "LockRefreshPeriodicity": "00:00:15",
+      "PollPeriodicity": "00:00:01",
+      "LockRefreshExtension": "00:05:00"
     }
   },
   "Amqp" : {
