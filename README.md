@@ -86,16 +86,16 @@ Python 3.7.10
 
 # Armonik software on-premise <a name="armonik-software-on-premise"></a>
 ## On Linux <a name="on-linux"></a>
-All instructions to build, deploy and test Armonik software on Linux are described in [Armonik on Linux](./README.ON-PREMISE-LINUX.md)
+All instructions to build, deploy and test Armonik software on Linux are described in [Armonik on Linux](./docs/README.ON-PREMISE-LINUX.md)
 
 ## On Windows <a name="on-windows"></a>
-All instructions to build, deploy and test Armonik software on Windows are described in [Armonik on Windows](./README.ON-PREMISE-WINDOWS.md)
+All instructions to build, deploy and test Armonik software on Windows are described in [Armonik on Windows](./docs/README.ON-PREMISE-WINDOWS.md)
 
 ## On Windows without Docker-Desktop <a name="on-windows-no-docker-desktop"></a>
-All instructions to build, deploy and test Armonik software on Windows without Docker-Desktop are described in [Armonik on Windows without Docker-Desktop](./README.ON-PREMISE-WINDOWS-NO-DOCKER-DESKTOP.md)
+All instructions to build, deploy and test Armonik software on Windows without Docker-Desktop are described in [Armonik on Windows without Docker-Desktop](./docs/README.ON-PREMISE-WINDOWS-NO-DOCKER-DESKTOP.md)
 
 
 
 # Armonik software on cloud <a name="armonik-software-on-cloud"></a>
 ## Amazon Web Services (AWS) <a name="amazon-web-services"></a>
-All instructions to build, deploy and test Armonik software are described in [Armonik on AWS cloud](./README.ON-AWS-CLOUD.md)
+All instructions to build, deploy and test Armonik software are described in [Armonik on AWS cloud](./docs/README.ON-AWS-CLOUD.md)
