@@ -124,7 +124,7 @@ kubectl get all -n $ARMONIK_NAMESPACE
     control_plane    = {
       replicas          = 1
       image             = "dockerhubaneo/armonik_control"
-      tag               = "dev-1112"
+      tag               = "dev-6435"
       image_pull_policy = "IfNotPresent"
       port              = 5001
     }
@@ -135,7 +135,7 @@ kubectl get all -n $ARMONIK_NAMESPACE
       # ArmoniK polling agent
       polling_agent = {
         image             = "dockerhubaneo/armonik_pollingagent"
-        tag               = "dev-1112"
+        tag               = "dev-6435"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "100m"
@@ -152,7 +152,7 @@ kubectl get all -n $ARMONIK_NAMESPACE
           name              = "compute"
           port              = 80
           image             = "dockerhubaneo/armonik_worker_symphony"
-          tag               = "dev-1112"
+          tag               = "dev-6435"
           image_pull_policy = "IfNotPresent"
           limits            = {
             cpu    = "920m"

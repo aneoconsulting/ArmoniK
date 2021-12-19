@@ -30,7 +30,6 @@ print(tag)
 processes = []
 processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_control:{tag} -f src/Control/src/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_pollingagent:{tag} -f src/Compute/PollingAgent/src/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
-processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_compute:{tag} -f Samples/HelloWorld/GridWorker/src/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_worker_htcmock:{tag} -f Samples/HtcMock/GridWorker/src/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_worker_symphony:{tag} -f DevelopmentKit/csharp/WorkerApi/ArmoniK.DevelopmentKit.WorkerApi/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 
