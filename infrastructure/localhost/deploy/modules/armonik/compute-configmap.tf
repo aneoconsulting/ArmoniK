@@ -23,7 +23,12 @@ locals {
     "Using": ["Serilog.Sinks.Console"],
     "MinimumLevel": "Debug",
     "WriteTo": [
-      { "Name": "Console" }
+      {
+        "Name": "Console",
+        "Args": {
+          "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact"
+        }
+      }
     ],
     "Enrich": ["FromLogContext", "WithMachineName", "WithThreadId"],
     "Destructure": [

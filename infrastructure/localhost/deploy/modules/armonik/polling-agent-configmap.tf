@@ -6,9 +6,9 @@ locals {
   "target_grpc_sockets_path": "/cache",
   "Logging": {
     "LogLevel": {
-      "Default": "Information",
-      "Grpc": "Information",
-      "Microsoft": "Warning",
+      "Default": "Debug",
+      "Grpc": "Debug",
+      "Microsoft": "Debug",
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
@@ -20,9 +20,14 @@ locals {
   },
   "Serilog": {
     "Using": ["Serilog.Sinks.Console"],
-    "MinimumLevel": "Information",
+    "MinimumLevel": "Debug",
     "WriteTo": [
-      { "Name": "Console" }
+      {
+        "Name": "Console",
+        "Args": {
+          "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact"
+        }
+      }
     ],
     "Enrich": ["FromLogContext", "WithMachineName", "WithThreadId"],
     "Destructure": [
