@@ -3,6 +3,7 @@
    1. [When should I use Armonik](#when-should-i-use-armonik)
    2. [When should I not use Armonik](#when-should-i-not-use-armonik)
 2. [Armonik deployement](#armonik-deployment)
+3. [How Run ArmoniK.Samples](#how-to-run-armonik.samples)
 
 # Armonik <a name="Armonik"></a>
 <em>Armonik</em> is a high throughput compute grid project using Kubernetes. 
@@ -27,3 +28,6 @@ Armonik might not be the best choice if :
 
 # Armonik deployement <a name="armonik-deployment"></a>
 All instructions to build, deploy and test Armonik software on Linux are described in [Armonik on Linux](./infrastructure/README.md)
+
+# How Run ArmoniK.Samples <a name="how-to-run-armonik.samples"></a>
+Instructions to run ArmoniK.Samples are described in [Run Samples](https://github.com/aneoconsulting/ArmoniK.Samples/blob/main/README.md)
