@@ -2,15 +2,7 @@
 1. [Armonik](#armonik)
    1. [When should I use Armonik](#when-should-i-use-armonik)
    2. [When should I not use Armonik](#when-should-i-not-use-armonik)
-2. [Getting started](#getteing-started)
-   1. [Software prerequisites](#software-prerequisites)
-   2. [Python environment](#python-environment)
-3. [Armonik software on-premise](#armonik-software-on-premise)
-      1. [On Linux](#on-linux)
-      2. [On Windows](#on-windows)
-      3. [On Windows without Docker-Desktop](#on-windows-no-docker-desktop)
-4. [Armonik software on cloud](#armonik-software-on-cloud)
-   1. [Amazon Web Services (AWS)](#amazon-web-services)
+2. [Armonik deployement](#armonik-deployment)
 
 # Armonik <a name="Armonik"></a>
 <em>Armonik</em> is a high throughput compute grid project using Kubernetes. 
@@ -33,69 +25,5 @@ Armonik might not be the best choice if :
 2. The tasks are tightly coupled, or use MPI.
 3. The tasks uses third party licensed software.
 
-# Getting started <a name="getting-started"></a>
-## Software prerequisites <a name="software-prerequisites"></a>
-The following resources should be installed upon you local machine :
-
-* docker version > 1.19
-
-* kubectl version > 1.19
-
-* python > 3.7
-
-* [virtualenv](https://pypi.org/project/virtualenv/)
-
-* [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-
-* [helm](https://helm.sh/docs/intro/install/) version > 3
-
-* [JQ](https://stedolan.github.io/jq/)
-
-* [dotnet 5.0+](https://docs.microsoft.com/en-us/dotnet/core/install/)
-
-## Python environment <a name="python-environment"></a>
-The current release of Armonik requires python3 in the PATH of your system, and the documentation assumes the use of *virtualenv*. 
-
-Set up this as follows (for example python3.7):
-```bash
-virtualenv --python=python3.7 venv
-```
-
-When successful :
-```bash
-created virtual environment CPython3.7.10.final.0-64 in 1329ms
-  creator CPython3Posix(dest=<project_roor>/venv, clear=False, no_vcs_ignore=False, global=False)
-  seeder FromAppData(download=False, pip=bundle, setuptools=bundle, wheel=bundle, via=copy, app_data_dir=/Users/user/Library/Application Support/virtualenv)
-    added seed packages: pip==21.0.1, setuptools==54.1.2, wheel==0.36.2
-  activators BashActivator,CShellActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
-```
-
-Check you have the correct version of python (`3.7.x`), with a path rooted on `<project_root>`, 
-then start the environment:
-```
-source ./venv/bin/activate
-```
-
-Check the python version as follows:
-```bash
-$ which python
-<project_root>/venv/bin/python
-$ python -V
-Python 3.7.10
-```
-
-# Armonik software on-premise <a name="armonik-software-on-premise"></a>
-## On Linux <a name="on-linux"></a>
-All instructions to build, deploy and test Armonik software on Linux are described in [Armonik on Linux](./README.ON-PREMISE-LINUX.md)
-
-## On Windows <a name="on-windows"></a>
-All instructions to build, deploy and test Armonik software on Windows are described in [Armonik on Windows](./README.ON-PREMISE-WINDOWS.md)
-
-## On Windows without Docker-Desktop <a name="on-windows-no-docker-desktop"></a>
-All instructions to build, deploy and test Armonik software on Windows without Docker-Desktop are described in [Armonik on Windows without Docker-Desktop](./README.ON-PREMISE-WINDOWS-NO-DOCKER-DESKTOP.md)
-
-
-
-# Armonik software on cloud <a name="armonik-software-on-cloud"></a>
-## Amazon Web Services (AWS) <a name="amazon-web-services"></a>
-All instructions to build, deploy and test Armonik software are described in [Armonik on AWS cloud](./README.ON-AWS-CLOUD.md)
+# Armonik deployement <a name="armonik-deployment"></a>
+All instructions to build, deploy and test Armonik software on Linux are described in [Armonik on Linux](./infrastructure/README.md)

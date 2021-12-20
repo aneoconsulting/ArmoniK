@@ -127,30 +127,17 @@ local-app-configs:
 ##### Build Armonik dependencies #######
 ########################################
 
-http-apis:
-	$(MAKE) -C ./source/control_plane/openapi/ all BUILD_TYPE=$(BUILD_TYPE)
-
-utils:
-	$(MAKE) -C ./source/client/python/utils
-
-api: http-apis
-	$(MAKE) -C ./source/client/python/api-v0.1
-
-build-http-api: http-apis
-	cd ./generated/csharp/http_api/ && dotnet restore src/HttpApi/ && dotnet build src/HttpApi/ --configuration $(BUILD_TYPE)
-
-build-htc-grid-api: build-http-api build-htc-grid-api-internal
+build-htc-grid-api: build-htc-grid-api-internal
 build-htc-grid-api-internal:
-	$(MAKE) -C ./source/client/csharp/api-v0.1 all BUILD_TYPE=$(BUILD_TYPE)
+	$(MAKE) -C ./source/HTCGridAPI all BUILD_TYPE=$(BUILD_TYPE)
 
 build-armonik-api: build-htc-grid-api build-armonik-api-internal
 build-armonik-api-internal:
-	$(MAKE) -C ./source/control_plane/csharp/Armonik.api all BUILD_TYPE=$(BUILD_TYPE)
+	$(MAKE) -C ./source/Armonik.api all BUILD_TYPE=$(BUILD_TYPE)
 
 clean-app:
 	rm -rf dist/ generated/
-	$(MAKE) -C ./source/client/csharp/api-v0.1 clean
-	$(MAKE) -C ./source/control_plane/csharp/Armonik.api clean
+	$(MAKE) -C ./source/Armonik.api clean
 	$(MAKE) -C ./applications/$(ARMONIK_APPLICATION_NAME) clean
 
 
@@ -158,7 +145,7 @@ clean-app:
 ##### building images #######
 #############################
 
-all-images: armonik-full image-agent lambda-control-plane
+all-images: armonik-full image-agent
 
 sample-app: upload-submitter upload-server
 
@@ -169,21 +156,4 @@ upload-submitter:
 
 upload-server:
 	$(MAKE) -C ./applications/$(ARMONIK_APPLICATION_NAME) server BUILD_TYPE=$(BUILD_TYPE)
-
-image-agent: utils api
-	$(MAKE) -C ./source/compute_plane/python/agent
-
-lambda-control-plane: lambda-control-plane-submit-tasks lambda-control-plane-get-results lambda-control-plane-cancel-tasks lambda-control-plane-ttl-checker
-
-lambda-control-plane-submit-tasks: utils api
-	$(MAKE) -C ./source/control_plane/python/lambda/submit_tasks
-
-lambda-control-plane-get-results: utils api
-	$(MAKE) -C ./source/control_plane/python/lambda/get_results
-
-lambda-control-plane-cancel-tasks: utils api
-	$(MAKE) -C ./source/control_plane/python/lambda/cancel_tasks
-
-lambda-control-plane-ttl-checker: utils api
-	$(MAKE) -C ./source/control_plane/python/lambda/ttl_checker
 
