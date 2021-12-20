@@ -6,7 +6,7 @@ resources:
 
 parameters:
   - name: TAGInput
-    default: 'armonik-dev-$(Build.BuildId)'
+    default: 'dev-$(Build.BuildId)'
   - name: BaseBranch
     default: 'master'
 
@@ -16,8 +16,8 @@ variables:
   value: '${{parameters.TAGInput}}'
 
 stages:
-- stage: LocalIntegrationTest
-  displayName: Local Integration Test
+- stage: LocalIntegrationTestHtcMock
+  displayName: Local Integration Test for HtcMock
   jobs:
   - job: BuildRun
     displayName: Build And Run
@@ -47,7 +47,7 @@ stages:
           docker build -t armonik_control:$ARMONIK_IMAGES_TAG -f src/Control/src/Dockerfile .
           docker build -t armonik_pollingagent:$ARMONIK_IMAGES_TAG -f src/Compute/PollingAgent/src/Dockerfile .
           docker build -t armonik_worker_htcmock:$ARMONIK_IMAGES_TAG -f Samples/HtcMock/GridWorker/src/Dockerfile .
-          docker build -t armonik_worker_symphony:$ARMONIK_IMAGES_TAG -f DevelopmentKit/csharp/WorkerApi/ArmoniK.DevelopmentKit.WorkerApi/Dockerfile .
+          docker build -t armonik_worker_dll:$ARMONIK_IMAGES_TAG -f DevelopmentKit/csharp/WorkerApi/ArmoniK.DevelopmentKit.WorkerApi/Dockerfile .
         displayName: Build ArmoniK Images
       - script: |
           set -ex
