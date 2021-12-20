@@ -5,8 +5,8 @@ locals {
   "target_data_path": "${var.armonik.storage_services.shared_storage.target_path}",
   "Logging": {
     "LogLevel": {
-      "Default": "Debug",
-      "Grpc": "Debug",
+      "Default": "Information",
+      "Grpc": "Information",
       "Microsoft": "Warning",
       "Microsoft.Hosting.Lifetime": "Information"
     }
@@ -19,7 +19,7 @@ locals {
   },
   "Serilog": {
     "Using": [ "Serilog.Sinks.Console" ],
-    "MinimumLevel": "Debug",
+    "MinimumLevel": "Information",
     "WriteTo": [
       {
         "Name": "Console",

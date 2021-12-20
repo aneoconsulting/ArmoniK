@@ -7,8 +7,8 @@ locals {
   "Logging": {
     "LogLevel": {
       "Default": "Information",
-      "Microsoft": "Warning",
-      "Grpc": "Warning",
+      "Microsoft": "Information",
+      "Grpc": "Information",
       "GridLib": "Information",
       "Microsoft.Hosting.Lifetime": "Information"
     }
@@ -21,7 +21,7 @@ locals {
   },
   "Serilog": {
     "Using": ["Serilog.Sinks.Console"],
-    "MinimumLevel": "Debug",
+    "MinimumLevel": "Information",
     "WriteTo": [
       {
         "Name": "Console",
