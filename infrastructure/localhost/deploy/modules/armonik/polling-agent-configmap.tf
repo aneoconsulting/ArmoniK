@@ -27,6 +27,12 @@ locals {
         "Args": {
           "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact"
         }
+      },
+      {
+        "Name": "Seq",
+        "Args": {
+          "serverUrl": "http://${kubernetes_service.seq_ingestion.spec.0.cluster_ip}:5341"
+        }
       }
     ],
     "Enrich": ["FromLogContext", "WithMachineName", "WithThreadId"],
