@@ -1,3 +1,6 @@
 [submodule "source/ArmoniKGRPC"]
 	path = source/ArmoniKGRPC
 	url = git@github.com:wkirschenmann/ArmoniK.git
+[submodule "source/ArmoniK.Samples"]
+	path = source/ArmoniK.Samples
+	url = git@github.com:aneoconsulting/ArmoniK.Samples.git
