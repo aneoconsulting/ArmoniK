@@ -1,5 +1,26 @@
 # Changelog
 
+## [v2.0.0](https://github.com/aneoconsulting/armonik/tree/v2.0.0) (2021-12-17)
+Added
+-
+* New implementation for the compute plane
+* New implementation for the control plane
+* New docker images for control plane and compute plane
+* Images are prebuilt
+* Use Seq to ingest and show logs
+
+Changed
+-
+* Infrastructure to match the new control plane
+* Replace statefulsets by deployments
+* Use config maps to configure applications in pods
+
+Removed
+-
+* NGINX is not needed anymore
+* C# deprecated code
+* Python deprecated lambdas (previous control plane and agent)
+
 ## [v0.9.6](https://github.com/aneoconsulting/armonik/tree/v0.9.6) (2021-12-03)
 Changed
 -
