@@ -31,7 +31,7 @@ processes = []
 processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_control:{tag} -f src/Control/src/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_pollingagent:{tag} -f src/Compute/PollingAgent/src/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_worker_htcmock:{tag} -f Samples/HtcMock/GridWorker/src/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
-processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_worker_symphony:{tag} -f DevelopmentKit/csharp/WorkerApi/ArmoniK.DevelopmentKit.WorkerApi/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
+processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_worker_dll:{tag} -f DevelopmentKit/csharp/WorkerApi/ArmoniK.DevelopmentKit.WorkerApi/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 
 for p in processes:
     print(p.communicate()[0].decode('utf-8'))
@@ -43,7 +43,7 @@ if any([p.returncode for p in processes]):
             print(p.communicate()[1].decode('utf-8'))
     sys.exit(1)
 
-os.popen(f'sed s/dev-[0-9]*/{tag}/g -i ../../infrastructure/localhost/deploy/parameters.tfvars')
+os.popen(f'sed s/dev-[0-9a-zA-Z]*/{tag}/g -i ../../infrastructure/localhost/deploy/parameters.tfvars')
 print(tag)
 
 # kubectl logs -n armonik svc/control-plane
