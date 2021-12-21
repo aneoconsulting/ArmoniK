@@ -1,0 +1,144 @@
+trigger:
+  - "*"
+
+resources:
+- repo: self
+
+parameters:
+  - name: TAGInput
+    default: 'dev-$(Build.BuildId)'
+
+variables:
+- group: publish-keys
+- name : TAGVar
+  value: '${{parameters.TAGInput}}'
+
+stages:
+- stage: LocalIntegrationTest
+  displayName: Local Integration Test
+  jobs:
+  - job: SymphonyLikeSample
+    displayName: Build And Run SymphonyLike Sample
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'
+      - script: sudo  apt update && sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release jq make
+        displayName: Install dependencies
+      - script: bash tools/install/docker.sh && sudo chown :sudo /var/run/docker.sock
+        displayName: Install Docker
+      - script: bash tools/install/kubectl.sh
+        displayName: Install Kubectl
+      - script: bash tools/install/terraform.sh
+        displayName: Install Terraform
+      - script: bash tools/install/k3s.sh
+        displayName: Install k3s
+      - script: |
+          set -ex
+          cd infrastructure/localhost
+          cp utils/envvars.conf ./envvars.conf
+          source ./envvars.conf
+
+          kubectl create namespace $ARMONIK_NAMESPACE
+          kubectl create secret generic $ARMONIK_OBJECT_STORAGE_SECRET_NAME \
+            --namespace=$ARMONIK_NAMESPACE \
+            --from-file=cert_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.crt \
+            --from-file=key_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.key \
+            --from-file=ca_cert_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/ca.crt \
+            --from-file=certificate_pfx=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/certificate.pfx
+          kubectl create secret generic $ARMONIK_QUEUE_STORAGE_SECRET_NAME \
+            --namespace=$ARMONIK_NAMESPACE \
+            --from-file=$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY/jetty-realm.properties
+          cd ./deploy
+
+          make all CONFIG_FILE=parameters.tfvars
+        displayName: Deploy Infra With Default Worker
+      - script: |
+          set -ex
+          cd source/ArmoniK.Samples
+          git submodule update --init
+
+          export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].ip" --no-headers=true)
+          export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+          export Grpc__Endpoint=http://$CPIP:$CPPort
+
+          cd Samples/SymphonyLike/
+          dotnet publish --self-contained -r linux-x64 SymphonyLike.sln
+          sudo cp packages/ArmoniK.Samples.SymphonyPackage-v1.0.0.zip /data
+          cd ArmoniK.Samples.SymphonyClient/
+          dotnet bin/Debug/net5.0/linux-x64/ArmoniK.Samples.SymphonyClient.dll
+        displayName: Run ArmoniK.Samples.SymphonyClient.dll
+
+  - job: HtcMock
+    displayName: Build And Run HtcMock Sample
+    pool:
+      name : $(AgentPoolName)
+      vmImage : 'ubuntu-20.04'
+    steps:
+      - task: UseDotNet@2
+        inputs:
+          packageType: 'sdk'
+          version: '5.0.x'
+      - script: sudo  apt update && sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release jq make python3 python3-pip
+        displayName: Install dependencies
+      - script: bash tools/install/docker.sh && sudo chown :sudo /var/run/docker.sock
+        displayName: Install Docker
+      - script: bash tools/install/kubectl.sh
+        displayName: Install Kubectl
+      - script: bash tools/install/terraform.sh
+        displayName: Install Terraform
+      - script: bash tools/install/k3s.sh
+        displayName: Install k3s
+      - script: |
+          set -ex
+          cd source/ArmoniK.Samples
+          git submodule update --init
+          cd Samples/HtcMock
+          docker build -t armonik_worker_htcmock:$(TAGVar) -f GridWorker/src/Dockerfile .
+        displayName: Build HtcMock Worker Image
+      - script: |
+          set -ex
+          cd infrastructure/localhost
+          cp utils/envvars.conf ./envvars.conf
+          source ./envvars.conf
+
+          kubectl create namespace $ARMONIK_NAMESPACE
+          kubectl create secret generic $ARMONIK_OBJECT_STORAGE_SECRET_NAME \
+            --namespace=$ARMONIK_NAMESPACE \
+            --from-file=cert_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.crt \
+            --from-file=key_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.key \
+            --from-file=ca_cert_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/ca.crt \
+            --from-file=certificate_pfx=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/certificate.pfx
+          kubectl create secret generic $ARMONIK_QUEUE_STORAGE_SECRET_NAME \
+            --namespace=$ARMONIK_NAMESPACE \
+            --from-file=$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY/jetty-realm.properties
+
+          pip3 install python-hcl2
+          python3 ../../tools/modify_parameters.py deploy/parameters.tfvars deploy/parameters.tfvars.json --worker-tag $(TAGVar) --worker-img armonik_worker_htcmock
+          cat deploy/parameters.tfvars.json
+
+          cd ./deploy
+          make all CONFIG_FILE=parameters.tfvars.json
+        displayName: Deploy Infra With Default Worker
+      - script: |
+          set -ex
+
+          export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].ip" --no-headers=true)
+          export ReIP=$(kubectl get svc redis -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].ip" --no-headers=true)
+          export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+          export RePort=$(kubectl get svc redis -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+          export Grpc__Endpoint=http://$CPIP:$CPPort
+          export Redis__EndpointUrl=$ReIP:$RePort
+          export Redis__SslHost="127.0.0.1"
+          export Redis__Timeout=3000
+          export Redis__CaCertPath=$PWD/infrastructure/localhost/credentials/ca.crt
+          export Redis__ClientPfxPath=$PWD/infrastructure/localhost/credentials/certificate.pfx
+
+          cd source/ArmoniK.Samples/Samples/HtcMock/Client/src
+          dotnet build "ArmoniK.Samples.HtcMock.Client.csproj" -c Release
+          dotnet bin/Release/net5.0/ArmoniK.Samples.HtcMock.Client.dll
+        displayName: Run ArmoniK.Samples.HtcMock.Client.dll
