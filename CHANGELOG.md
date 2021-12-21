@@ -8,6 +8,9 @@ Added
 * New docker images for control plane and compute plane
 * Images are prebuilt
 * Use Seq to ingest and show logs
+* Dependency and subtasking management and corresponding api
+* Priority management and corresponding low level api
+* Component management through configuration files or environment variables
 
 Changed
 -
