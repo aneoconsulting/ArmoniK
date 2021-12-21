@@ -8,12 +8,14 @@ Added
 * New docker images for control plane and compute plane
 * Images are prebuilt
 * Use Seq to ingest and show logs
+* First stage to load dynamically Dll Application
 * Dependency and subtasking management and corresponding api
 * Priority management and corresponding low level api
 * Component management through configuration files or environment variables
 
 Changed
 -
+* New implementation of Symphony API
 * Infrastructure to match the new control plane
 * Replace statefulsets by deployments
 * Use config maps to configure applications in pods
