@@ -1,11 +1,12 @@
 # Table of contents
 
-1. [Install Kubernetes](#install-kubernetes)
-2. [Set environment variables](#set-environment-variables)
-3. [Create a namespace for ArmoniK](#create-a-namespace-for-armonik)
-4. [Create Kubernetes secrets](#create-kubernetes-secrets)
-    3. [Redis storage secret](#redis-storage-secret)
-    4. [ActiveMQ storage secret](#activemq-storage-secret)
+- [Table of contents](#table-of-contents)
+- [Install Kubernetes <a name="install-kubernetes"></a>](#install-kubernetes-)
+- [Set environment variables <a name="set-environment-variables"></a>](#set-environment-variables-)
+- [Create a namespace for ArmoniK <a name="create-a-namespace-for-armonik"></a>](#create-a-namespace-for-armonik-)
+- [Create Kubernetes secrets <a name="create-kubernetes-secrets"></a>](#create-kubernetes-secrets-)
+  - [Redis storage secret <a name="redis-storage-secret"></a>](#redis-storage-secret-)
+  - [ActiveMQ storage secret <a name="activemq-storage-secret"></a>](#activemq-storage-secret-)
 
 # Install Kubernetes <a name="install-kubernetes"></a>
 
@@ -57,7 +58,7 @@ export ARMONIK_QUEUE_STORAGE_SECRET_NAME=<You kubernetes secret for the queue st
 
 **Mandatory:** To set these environment variables, for example:
 
-1. position yourself in the current directory `localhost/`:
+1. position yourself in the current directory `infrastructure/localhost/` from the root of the repository:
 
 2. copy the [template file](../utils/envvars.conf) in the [current directory](../../localhost):
 
