@@ -12,12 +12,10 @@ def findTag(imgs):
             tags.append(i['Tag'])
         elif i['Repository'] == 'dockerhubaneo/armonik_pollingagent':
             tags.append(i['Tag'])
+    tags = [t for t in tags if t.startswith('dev')]
     if len(tags) > 0:
         tag = sorted(tags).pop()
-        if tag.startswith('dev'):
-            return tag
-        else:
-            return 'dev-1000'
+        return tag
     else:
         return 'dev-1000'
 
