@@ -165,5 +165,5 @@ kubectl get all -n $ARMONIK_NAMESPACE
         }
       ]
     }
-  ```
+    ```
   In this case, we use images hosted on Aneo's dockerhub. If the option `--docker` is passed to k3s during its intallation, the images can be stored in the local docker registry.
