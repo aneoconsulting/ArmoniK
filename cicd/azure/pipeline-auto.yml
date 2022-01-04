@@ -118,7 +118,7 @@ stages:
             --from-file=$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY/jetty-realm.properties
 
           pip3 install python-hcl2
-          python3 ../../tools/modify_parameters.py deploy/parameters.tfvars deploy/parameters.tfvars.json --worker-tag $(TAGVar) --worker-img armonik_worker_htcmock
+          python3 ../../tools/modify_parameters.py deploy/parameters.tfvars deploy/parameters.tfvars.json --worker-tag $(TAGVar) --worker-img armonik_worker_htcmock --storage-external Redis
           cat deploy/parameters.tfvars.json
 
           cd ./deploy
