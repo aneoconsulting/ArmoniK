@@ -32,7 +32,7 @@ resource "kubernetes_deployment" "redis" {
       spec {
         container {
           name    = "redis"
-          image   = "redis"
+          image   = "redis:bullseye"
           command = ["redis-server"]
           args    = [
             "--tls-port ${var.redis.port}",

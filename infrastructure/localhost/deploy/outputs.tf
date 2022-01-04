@@ -24,6 +24,11 @@ output "shared_storage_pvc_size" {
   value = module.local_shared_storage.shared_storage_persistent_volume_claim.spec.0.resources.0.requests.storage
 }
 
+# Seq web
+output "seq_web_console" {
+  value = "http://${module.armonik.seq.spec.0.cluster_ip}:8080"
+}
+
 # Armonik components
 output "control_plane_internal_endpoint_url" {
   value = "${module.armonik.control_plane.spec.0.cluster_ip}:${module.armonik.control_plane.spec.0.port.0.port}"
