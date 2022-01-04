@@ -168,7 +168,7 @@ locals {
 EOF
 }
 
-#configmap with all the variables
+# configmap with all the variables
 resource "kubernetes_config_map" "activemq_jetty_xml" {
   metadata {
     name      = "activemq-jetty-xml"
@@ -177,4 +177,9 @@ resource "kubernetes_config_map" "activemq_jetty_xml" {
   data = {
     "jetty.xml" = local.activemq_jetty_xml
   }
+}
+
+resource "local_file" "activemq_jetty_xml_file" {
+  content  = local.activemq_jetty_xml
+  filename = "./generated/configmaps/activemq_jetty.xml"
 }

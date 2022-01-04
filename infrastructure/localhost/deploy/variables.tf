@@ -53,19 +53,32 @@ variable "redis" {
 }
 
 # Parameters for ActiveMQ
+# Parameters for ActiveMQ
 variable "activemq" {
   description = "Parameters of ActiveMQ"
   type        = object({
     replicas = number
-    port     = number
+    port     = list(object({
+      name        = string
+      port        = number
+      target_port = number
+      protocol    = string
+    }))
     secret   = string
   })
   default     = {
     replicas = 1
-    port     = 5672
+    port     = [
+      { name = "amqp", port = 5672, target_port = 5672, protocol = "TCP" },
+      { name = "dashboard", port = 8161, target_port = 8161, protocol = "TCP" },
+      { name = "openwire", port = 61616, target_port = 61616, protocol = "TCP" },
+      { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
+      { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
+    ]
     secret   = "activemq-storage-secret"
   }
 }
+
 
 # Local shared storage
 variable "local_shared_storage" {

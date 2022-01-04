@@ -21,7 +21,14 @@ redis = {
 # Parameters for ActiveMQ
 activemq = {
   replicas = 1
-  port     = 5672
+  port     = [
+    { name = "amqp", port = 5672, target_port = 5672, protocol = "TCP" },
+    { name = "dashboard", port = 8161, target_port = 8161, protocol = "TCP" },
+    { name = "openwire", port = 61616, target_port = 61616, protocol = "TCP" },
+    { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
+    { name = "ws", port = 61614, target_port = 61614, protocol = "TCP" },
+    { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
+  ]
   secret   = "activemq-storage-secret"
 }
 
@@ -93,7 +100,7 @@ armonik = {
   storage_services = {
     object_storage_type         = "MongoDB"
     table_storage_type          = "MongoDB"
-    queue_storage_type          = "MongoDB"
+    queue_storage_type          = "Amqp"
     lease_provider_storage_type = "MongoDB"
     # Path of a directory in a pod, which contains data shared between pods and your local machine
     shared_storage_target_path  = "/data"

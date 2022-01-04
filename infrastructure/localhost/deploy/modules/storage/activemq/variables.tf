@@ -9,7 +9,12 @@ variable "activemq" {
   description = "Parameters of ActiveMQ"
   type        = object({
     replicas = number
-    port     = number
+    port     = list(object({
+      name        = string
+      port        = number
+      target_port = number
+      protocol    = string
+    }))
     secret   = string
   })
 }
