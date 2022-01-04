@@ -27,9 +27,7 @@ ArmoniK might not be the best choice if :
 3. The tasks uses third party licensed software.
 
 # ArmoniK deployment <a name="armonik-deployment"></a>
-All instructions to build, deploy and test ArmoniK software on Linux are described in [ArmoniK deployment](./infrastructure/README.md){
-   : target = "_blank"
-}
+All instructions to build, deploy and test ArmoniK software on Linux are described in [ArmoniK deployment](./infrastructure/README.md)
 
 # How to run ArmoniK.Samples <a name="how-to-run-armonik.samples"></a>
 Instructions to run ArmoniK.Samples are described in [Run Samples](https://github.com/aneoconsulting/ArmoniK.Samples/blob/main/README.md)
