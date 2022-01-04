@@ -11,6 +11,7 @@ parser.add_argument("--worker-tag", dest="workertag", help="Tag for compute plan
 parser.add_argument("--worker-img", dest="workerimg", help="registry/img for compute plane worker image", type=str, default=None)
 parser.add_argument("--agent-tag", dest="agenttag", help="Tag for polling agent image", type=str, default=None)
 parser.add_argument("--agent-img", dest="agentimg", help="registry/img for polling agent image", type=str, default=None)
+parser.add_argument("--storage-queue", dest="storagequeue", help="Change Queue Storage type", type=str, default=None)
 args = parser.parse_args()
 
 with open(args.inputfile, 'r') as fin:
@@ -34,6 +35,9 @@ if args.workertag != None or args.workerimg != None:
         if args.workerimg != None:
             w['image'] = args.workerimg
     content['armonik']['compute_plane']['compute'] = workers
+
+if args.storagequeue != None:
+    content['armonik']['storage_services']['queue_storage_type'] = args.storagequeue
 
 with open(args.outputfile, 'w') as fout:
     json.dump(content, fout, indent=2, sort_keys=True)
