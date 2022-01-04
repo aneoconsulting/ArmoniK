@@ -8,12 +8,12 @@
     4. [Terraform](#terraform)
 3. [ArmoniK deployments](#armonik-deployments)
     1. [Local machine](#local-machine)
-    2. [On-premise](#on-premise)
+    2. [On-premise cluster](#on-premise-cluster)
     3. [Amazon Web Services](#amazon-web-services)
 
 # Introduction <a name="introduction"></a>
 
-Armonik is a high throughput compute grid project using Kubernetes. The project provides a reference architecture that
+ArmoniK is a high throughput compute grid project using Kubernetes. The project provides a reference architecture that
 can be used to build and adapt a modern high throughput compute solution on-premise or using Cloud services, allowing
 users to submit high volumes of short and long-running tasks and scaling environments dynamically.
 
@@ -82,7 +82,7 @@ This is useful for development and testing environment only!
 
 The different steps to deploy ArmoniK on your local machine are described [here](./localhost/README.md).
 
-## On-premise <a name="on-premise"></a>
+## On-premise cluster <a name="on-premise-cluster"></a>
 
 ***TODO***
 
