@@ -49,7 +49,7 @@ resource "kubernetes_deployment" "activemq" {
             for_each = var.activemq.port
             content {
               name           = port.value.name
-              container_port = port.value.port
+              container_port = port.value.target_port
               protocol       = port.value.protocol
             }
           }
