@@ -189,7 +189,7 @@ armonik = {
         memory = string
       }
     }
-    compute       = [
+    worker        = [
       {
         name              = string
         port              = numebr
@@ -249,14 +249,14 @@ armonik = {
 | `limits` | Maximum amount of compute resources allowed in the polling agent container| object({}) | `limits = { cpu = "100m", memory = "128Mi" }`|
 | `requests` | Minimum amount of compute resources allowed in the polling agent container | object({}) | `requests = { cpu = "100m", memory = "128Mi" }` |
 
-#### ***compute***
+#### ***worker***
 
-`compute` parameter is a list of objects (`list(object({}))`) describing the attributes of each compute container in
+`worker` parameter is a list of objects (`list(object({}))`) describing the attributes of each worker container in
 compute plane, as follows:
 
 | Parameter | Description | Type | Default |
 |:----------|:------------|:-----|:--------|
-| `name` | Name of the compute container in compute plane | string | `"compute"` |
+| `name` | Name of the compute container in compute plane | string | `"worker"` |
 | `port` | Port of the compute container in compute plane | number | `80` |
 | `image` | Docker image name of the compute container in compute plane | string | `"dockerhubaneo/armonik_compute"` |
 | `tag` | Tag of docker image of the compute container in compute plane | string | `"dev-6330"` |
@@ -274,8 +274,7 @@ The different storage used by ArmoniK:
 | `table_storage_type` | Type of the table storage | string | `"MongoDB"` |
 | `queue_storage_type` | Type of the queue storage | string | `"MongoDB"` |
 | `lease_provider_storage_type` | Type of the lease provider storage | string | `"MongoDB"` |
-| `external_storage_types` | Types of the external storage. By default is set to empty list `[]`, but for **HtcMock
-sample** is set to `["Redis"]`  | list(string) | `[]` |
+| `external_storage_types` | Types of the external storage. By default is set to empty list `[]`, but for **HtcMock sample** is set to `["Redis"]`  | list(string) | `[]` |
 | `shared_storage_target_path` | | string | `"/data"` |
 
 The allowed types for each storage are as follows:

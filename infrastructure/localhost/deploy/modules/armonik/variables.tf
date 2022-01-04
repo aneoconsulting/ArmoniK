@@ -51,7 +51,7 @@ variable "armonik" {
           memory = string
         })
       })
-      compute       = list(object({
+      worker        = list(object({
         name              = string
         port              = number
         image             = string

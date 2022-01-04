@@ -21,7 +21,7 @@ types of resources:
     * External storage
 * **ArmoniK components**: are the components of the ArmoniK scheduler ([armonik](../deploy/modules/armonik)).
     * Control plane
-    * Compute plane composed of polling agent and compute
+    * Compute plane composed of polling agent and workers
     * Seq as the search, analysis, and alerting server for modern structured log data.
 
 For the storage, three types of storage will be created as services in the Kubernetes cluster:
@@ -124,15 +124,17 @@ kubectl get all -n $ARMONIK_NAMESPACE
   `external_storag` is a parameter to choose un external storage for data client. By default it is set to empty
   list `[]`, but for HTC Mock sample **you must set it to `["Redis"]`.**
 
-* You can choose the images that will be used as in the control plane and the compute plane in the `armonik` object as
+* You can choose the images that will be used as in the control plane and to compute plane in the `armonik` object as
   well as the registry and the tag:
 
   ```terraform
-    # ArmoniK contol plane
+   # Logging level
+  logging_level    = "Information"
+  # ArmoniK contol plane
   control_plane    = {
     replicas          = 1
     image             = "dockerhubaneo/armonik_control"
-    tag               = "dev-6435"
+    tag               = "v2.0.1"
     image_pull_policy = "IfNotPresent"
     port              = 5001
   }
@@ -143,7 +145,7 @@ kubectl get all -n $ARMONIK_NAMESPACE
     # ArmoniK polling agent
     polling_agent = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "dev-6435"
+      tag               = "v2.0.1"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "100m"
@@ -154,13 +156,13 @@ kubectl get all -n $ARMONIK_NAMESPACE
         memory = "128Mi"
       }
     }
-    # ArmoniK computes
-    compute       = [
+    # ArmoniK workers
+    worker        = [
       {
-        name              = "compute"
+        name              = "worker"
         port              = 80
-        image             = "dockerhubaneo/armonik_worker_symphony"
-        tag               = "dev-6435"
+        image             = "dockerhubaneo/armonik_worker_dll"
+        tag               = "v2.0.1"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "920m"

@@ -64,29 +64,29 @@ resource "kubernetes_deployment" "compute_plane" {
             mount_path = "/cache"
           }
         }
-        # Containers of compute
+        # Containers of workers
         dynamic container {
-          iterator = compute
-          for_each = var.armonik.compute_plane.compute
+          iterator = worker
+          for_each = var.armonik.compute_plane.worker
           content {
-            name              = "${compute.value.name}-${compute.key}"
-            image             = compute.value.tag != "" ? "${compute.value.image}:${compute.value.tag}" : compute.value.image
-            image_pull_policy = compute.value.image_pull_policy
+            name              = "${worker.value.name}-${worker.key}"
+            image             = worker.value.tag != "" ? "${worker.value.image}:${worker.value.tag}" : worker.value.image
+            image_pull_policy = worker.value.image_pull_policy
             port {
-              container_port = compute.value.port
+              container_port = worker.value.port
             }
             resources {
               limits   = {
-                cpu    = compute.value.limits.cpu
-                memory = compute.value.limits.memory
+                cpu    = worker.value.limits.cpu
+                memory = worker.value.limits.memory
               }
               requests = {
-                cpu    = compute.value.requests.cpu
-                memory = compute.value.requests.memory
+                cpu    = worker.value.requests.cpu
+                memory = worker.value.requests.memory
               }
             }
             volume_mount {
-              name       = "compute-configmap"
+              name       = "worker-configmap"
               mount_path = "/app/appsettings.json"
               sub_path   = "appsettings.json"
             }
@@ -101,7 +101,7 @@ resource "kubernetes_deployment" "compute_plane" {
             dynamic volume_mount {
               for_each = var.armonik.storage_services.external_storage_types
               content {
-                name       = "compute-secret-volume"
+                name       = "worker-secret-volume"
                 mount_path = "/certificates"
                 read_only  = true
               }
@@ -122,9 +122,9 @@ resource "kubernetes_deployment" "compute_plane" {
           }
         }
         volume {
-          name = "compute-configmap"
+          name = "worker-configmap"
           config_map {
-            name     = kubernetes_config_map.compute_config.metadata.0.name
+            name     = kubernetes_config_map.worker_config.metadata.0.name
             optional = false
           }
         }
@@ -135,7 +135,7 @@ resource "kubernetes_deployment" "compute_plane" {
         dynamic volume {
           for_each = var.armonik.storage_services.external_storage_types
           content {
-            name = "compute-secret-volume"
+            name = "worker-secret-volume"
             secret {
               secret_name = var.armonik.secrets.redis_secret
               optional    = false

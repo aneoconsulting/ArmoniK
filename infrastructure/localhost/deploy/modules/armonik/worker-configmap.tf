@@ -1,6 +1,6 @@
 # Envvars
 locals {
-  compute_config = <<EOF
+  worker_config = <<EOF
 {
   "target_data_path": "${var.armonik.storage_services.shared_storage.target_path}",
   "target_grpc_sockets_path": "/cache",
@@ -69,18 +69,18 @@ locals {
 EOF
 }
 
-#configmap with all the variables
-resource "kubernetes_config_map" "compute_config" {
+# configmap with all the variables
+resource "kubernetes_config_map" "worker_config" {
   metadata {
-    name      = "compute-configmap"
+    name      = "worker-configmap"
     namespace = var.namespace
   }
   data = {
-    "appsettings.json" = local.compute_config
+    "appsettings.json" = local.worker_config
   }
 }
 
-resource "local_file" "compute_config_file" {
-  content  = local.compute_config
-  filename = "./generated/configmaps/compute-config-appsettings.json"
+resource "local_file" "worker_config_file" {
+  content  = local.worker_config
+  filename = "./generated/configmaps/worker-config-appsettings.json"
 }

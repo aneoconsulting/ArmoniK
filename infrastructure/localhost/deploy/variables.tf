@@ -139,7 +139,7 @@ variable "armonik" {
   type        = object({
     # Logging level
     logging_level    = string
-    # ArmoniK contol plane
+    # ArmoniK control plane
     control_plane    = object({
       replicas          = number
       image             = string
@@ -165,8 +165,8 @@ variable "armonik" {
           memory = string
         })
       })
-      # ArmoniK computes
-      compute       = list(object({
+      # ArmoniK workers
+      worker        = list(object({
         name              = string
         port              = number
         image             = string
@@ -217,9 +217,9 @@ variable "armonik" {
           memory = "128Mi"
         }
       }
-      compute       = [
+      worker        = [
         {
-          name              = "compute"
+          name              = "worker"
           port              = 80
           image             = "dockerhubaneo/armonik_compute"
           tag               = "dev-6276"

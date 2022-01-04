@@ -89,10 +89,10 @@ armonik = {
         memory = "128Mi"
       }
     }
-    # ArmoniK computes
-    compute       = [
+    # ArmoniK workers
+    worker        = [
       {
-        name              = "compute"
+        name              = "worker"
         port              = 80
         image             = "dockerhubaneo/armonik_worker_dll"
         tag               = "v2.0.1"
