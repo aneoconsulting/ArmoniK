@@ -39,6 +39,12 @@ resource "kubernetes_deployment" "activemq" {
             sub_path   = "jetty-realm.properties"
             read_only  = true
           }
+          volume_mount {
+            name       = "activemq-jetty-xml"
+            mount_path = "/opt/activemq/conf/jetty.xml"
+            sub_path   = "jetty.xml"
+            read_only  = true
+          }
           port {
             name           = "input"
             container_port = var.activemq.port
@@ -53,6 +59,13 @@ resource "kubernetes_deployment" "activemq" {
           secret {
             secret_name = var.activemq.secret
             optional    = false
+          }
+        }
+        volume {
+          name = "activemq-jetty-xml"
+          config_map {
+            name     = kubernetes_config_map.activemq_jetty_xml.metadata.0.name
+            optional = false
           }
         }
       }
