@@ -12,6 +12,7 @@ parser.add_argument("--worker-img", dest="workerimg", help="registry/img for com
 parser.add_argument("--agent-tag", dest="agenttag", help="Tag for polling agent image", type=str, default=None)
 parser.add_argument("--agent-img", dest="agentimg", help="registry/img for polling agent image", type=str, default=None)
 parser.add_argument("--storage-queue", dest="storagequeue", help="Change Queue Storage type", type=str, default=None)
+parser.add_argument("--logging-level", dest="logginglevel", help="Change ArmoniK logging level", type=str, default=None, choices=["Information", "Debug", "Verbose"])
 args = parser.parse_args()
 
 with open(args.inputfile, 'r') as fin:
@@ -38,6 +39,9 @@ if args.workertag != None or args.workerimg != None:
 
 if args.storagequeue != None:
     content['armonik']['storage_services']['queue_storage_type'] = args.storagequeue
+
+if args.logginglevel != None:
+    content['armonik']['logging_level'] = args.logginglevel
 
 with open(args.outputfile, 'w') as fout:
     json.dump(content, fout, indent=2, sort_keys=True)
