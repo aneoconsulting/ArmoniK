@@ -37,6 +37,7 @@ module "armonik" {
   max_priority = var.max_priority
   seq          = var.seq
   armonik      = {
+    logging_level    = var.armonik.logging_level
     control_plane    = var.armonik.control_plane
     compute_plane    = var.armonik.compute_plane
     storage_services = {

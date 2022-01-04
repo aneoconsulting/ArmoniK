@@ -21,7 +21,7 @@ locals {
   },
   "Serilog": {
     "Using": ["Serilog.Sinks.Console"],
-    "MinimumLevel": "${var.seq.minimum_level}",
+    "MinimumLevel": "${var.armonik.logging_level}",
     "WriteTo": [
       {
         "Name": "Console",

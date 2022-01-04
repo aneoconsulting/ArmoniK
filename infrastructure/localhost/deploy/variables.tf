@@ -116,22 +116,20 @@ variable "local_shared_storage" {
 variable "seq" {
   description = "Parameters of Seq"
   type        = object({
-    replicas      = number
-    port          = list(object({
+    replicas = number
+    port     = list(object({
       name        = string
       port        = number
       target_port = number
       protocol    = string
     }))
-    minimum_level = string
   })
   default     = {
-    replicas      = 1
-    port          = [
+    replicas = 1
+    port     = [
       { name = "ingestion", port = 5341, target_port = 5341, protocol = "TCP" },
       { name = "web", port = 8080, target_port = 80, protocol = "TCP" }
     ]
-    minimum_level = "Information"
   }
 }
 
@@ -139,6 +137,8 @@ variable "seq" {
 variable "armonik" {
   description = "Components of ArmoniK"
   type        = object({
+    # Logging level
+    logging_level    = string
     # ArmoniK contol plane
     control_plane    = object({
       replicas          = number
@@ -194,6 +194,7 @@ variable "armonik" {
     })
   })
   default     = {
+    logging_level    = "Information"
     control_plane    = {
       replicas          = 1
       image             = "dockerhubaneo/armonik_control"

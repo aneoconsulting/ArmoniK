@@ -52,16 +52,17 @@ local_shared_storage = {
 # Parameters for Seq
 # Seq is the intelligent search, analysis, and alerting server built specifically for modern structured log data.
 seq = {
-  replicas      = 1
-  port          = [
+  replicas = 1
+  port     = [
     { name = "ingestion", port = 5341, target_port = 5341, protocol = "TCP" },
     { name = "web", port = 8080, target_port = 80, protocol = "TCP" }
   ]
-  minimum_level = "Information"
 }
 
 # ArmoniK components
 armonik = {
+  # Logging level
+  logging_level    = "Information"
   # ArmoniK contol plane
   control_plane    = {
     replicas          = 1
