@@ -30,7 +30,7 @@ locals {
       {
         "Name": "Seq",
         "Args": {
-          "serverUrl": "http://${kubernetes_service.seq_ingestion.spec.0.cluster_ip}:5341"
+          "serverUrl": "http://${kubernetes_service.seq.spec.0.cluster_ip}:5341"
         }
       }
     ],

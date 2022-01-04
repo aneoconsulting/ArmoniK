@@ -53,7 +53,6 @@ variable "redis" {
 }
 
 # Parameters for ActiveMQ
-# Parameters for ActiveMQ
 variable "activemq" {
   description = "Parameters of ActiveMQ"
   type        = object({
@@ -78,7 +77,6 @@ variable "activemq" {
     secret   = "activemq-storage-secret"
   }
 }
-
 
 # Local shared storage
 variable "local_shared_storage" {
@@ -110,6 +108,28 @@ variable "local_shared_storage" {
       name = "nfs-pvc"
       size = "2Gi"
     }
+  }
+}
+
+# Parameters for Seq
+# Seq is the intelligent search, analysis, and alerting server built specifically for modern structured log data.
+variable "seq" {
+  description = "Parameters of Seq"
+  type        = object({
+    replicas = number
+    port     = list(object({
+      name        = string
+      port        = number
+      target_port = number
+      protocol    = string
+    }))
+  })
+  default     = {
+    replicas = 1
+    port     = [
+      { name = "ingestion", port = 5341, target_port = 5341, protocol = "TCP" },
+      { name = "web", port = 8080, target_port = 80, protocol = "TCP" }
+    ]
   }
 }
 

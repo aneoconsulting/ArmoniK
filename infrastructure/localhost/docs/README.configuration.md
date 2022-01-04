@@ -5,7 +5,8 @@
 3. [Redis parameters](#redis-parameters)
 4. [ActiveMQ parameters](#activemq-parameters)
 5. [Local shared storage parameters](#local-shared-storage-parameters)
-6. [ArmoniK parameters](#armonik-parameters)
+6. [Seq parameters](#seq-parameters)
+7. [ArmoniK parameters](#armonik-parameters)
 
 # Global parameters <a name="global-parameters"></a>
 
@@ -134,6 +135,30 @@ specific size and access modes.
 |:----------|:------------|:-----|:--------| 
 | `name` | Name of the persistent volume claim | string | `nfs-pvc` | 
 | `size` | Minimum amount of storage size in `Mi`, `Gi`, etc. | string | `"2Gi"` |
+
+# Seq parameters <a name="seq-parameters"></a>
+
+[Seq](https://datalust.co/) is the intelligent search, analysis, and alerting server built specifically for modern
+structured log data.
+
+```terraform
+seq = {
+  replicas = number
+  port     = [
+    {
+      name        = string
+      port        = number
+      target_port = number
+      protocol    = string
+    }
+  ]
+}
+```
+
+| Parameter | Description | Type | Default |
+|:----------|:------------|:-----|:--------|
+| `replicas` | Number of desired replicas of Seq | number | `1` |
+| `port` | List of ports and their names | list(object({})) | `[{name="ingestion", port=5341, target_port=5341, protocol="TCP"}, {name="web", port=8080, target_port=80, protocol="TCP"}]` |
 
 # ArmoniK parameters <a name="armonik-parameters"></a>
 

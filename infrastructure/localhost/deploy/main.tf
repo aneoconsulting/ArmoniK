@@ -35,9 +35,8 @@ module "armonik" {
   source       = "./modules/armonik"
   namespace    = var.namespace
   max_priority = var.max_priority
-  depends_on   = [module.mongodb]
-
-  armonik = {
+  seq          = var.seq
+  armonik      = {
     control_plane    = var.armonik.control_plane
     compute_plane    = var.armonik.compute_plane
     storage_services = {
