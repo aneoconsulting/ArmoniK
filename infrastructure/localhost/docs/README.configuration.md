@@ -166,6 +166,7 @@ ArmoniK components are composed of :
 
 ```terraform
 armonik = {
+  logging_level    = string
   control_plane    = {
     replicas          = number
     image             = string
@@ -215,6 +216,12 @@ armonik = {
   }
 }
 ```
+
+### ***logging_level***
+
+| Parameter | Description | Type | Default |
+|:----------|:------------|:-----|:--------|
+| `logging_level` | The level for logging of Serilog | string | `Information` |
 
 ### ***control_plane***
 
@@ -267,7 +274,8 @@ The different storage used by ArmoniK:
 | `table_storage_type` | Type of the table storage | string | `"MongoDB"` |
 | `queue_storage_type` | Type of the queue storage | string | `"MongoDB"` |
 | `lease_provider_storage_type` | Type of the lease provider storage | string | `"MongoDB"` |
-| `external_storage_types` | Types of the external storage. By default is set to empty list `[]`, but for **HtcMock sample** is set to `["Redis"]`  | list(string) | `[]` |
+| `external_storage_types` | Types of the external storage. By default is set to empty list `[]`, but for **HtcMock
+sample** is set to `["Redis"]`  | list(string) | `[]` |
 | `shared_storage_target_path` | | string | `"/data"` |
 
 The allowed types for each storage are as follows:
