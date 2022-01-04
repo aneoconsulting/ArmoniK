@@ -14,13 +14,14 @@ variable "max_priority" {
 variable "seq" {
   description = "Parameters of Seq"
   type        = object({
-    replicas = number
-    port     = list(object({
+    replicas      = number
+    port          = list(object({
       name        = string
       port        = number
       target_port = number
       protocol    = string
     }))
+    minimum_level = string
   })
 }
 

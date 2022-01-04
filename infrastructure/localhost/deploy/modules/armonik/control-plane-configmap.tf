@@ -19,7 +19,7 @@ locals {
   },
   "Serilog": {
     "Using": [ "Serilog.Sinks.Console" ],
-    "MinimumLevel": "Information",
+    "MinimumLevel": "${var.seq.minimum_level}",
     "WriteTo": [
       {
         "Name": "Console",
