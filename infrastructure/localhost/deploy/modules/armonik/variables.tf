@@ -71,6 +71,7 @@ variable "armonik" {
       table_storage_type          = string
       queue_storage_type          = string
       lease_provider_storage_type = string
+      external_storage_types      = list(string)
       resources                   = object({
         mongodb_endpoint_url  = string
         redis_endpoint_url    = string

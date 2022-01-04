@@ -14,5 +14,8 @@ locals {
     allowed_lease_provider_storage = [
       "MongoDB"
     ]
+    allowed_external_storage       = [
+      "Redis"
+    ]
   }
 }

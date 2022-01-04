@@ -98,10 +98,13 @@ resource "kubernetes_deployment" "compute_plane" {
               name       = "cache-volume"
               mount_path = "/cache"
             }
-            volume_mount {
-              name       = "compute-secret-volume"
-              mount_path = "/certificates"
-              read_only  = true
+            dynamic volume_mount {
+              for_each = var.armonik.storage_services.external_storage_types
+              content {
+                name       = "compute-secret-volume"
+                mount_path = "/certificates"
+                read_only  = true
+              }
             }
           }
         }
@@ -129,11 +132,14 @@ resource "kubernetes_deployment" "compute_plane" {
           name = "cache-volume"
           empty_dir {}
         }
-        volume {
-          name = "compute-secret-volume"
-          secret {
-            secret_name = var.armonik.secrets.redis_secret
-            optional    = false
+        dynamic volume {
+          for_each = var.armonik.storage_services.external_storage_types
+          content {
+            name = "compute-secret-volume"
+            secret {
+              secret_name = var.armonik.secrets.redis_secret
+              optional    = false
+            }
           }
         }
       }

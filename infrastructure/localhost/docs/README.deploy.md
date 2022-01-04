@@ -14,13 +14,15 @@ types of resources:
 
 * **Storage services**: ArmoniK needs a single or different types of storage to store its different
   data ([storage](../deploy/modules/storage)).
-    * Object
-    * Table
-    * Queue
-    * Lease provider
+    * Object storage
+    * Table storage
+    * Queue storage
+    * Lease provider storage
+    * External storage
 * **ArmoniK components**: are the components of the ArmoniK scheduler ([armonik](../deploy/modules/armonik)).
     * Control plane
     * Compute plane composed of polling agent and compute
+    * Seq as the search, analysis, and alerting server for modern structured log data.
 
 For the storage, three types of storage will be created as services in the Kubernetes cluster:
 
@@ -104,6 +106,7 @@ kubectl get all -n $ARMONIK_NAMESPACE
     table_storage_type          = "MongoDB"
     queue_storage_type          = "MongoDB"
     lease_provider_storage_type = "MongoDB"
+    external_storage_types      = []
     # Path of a directory in a pod, which contains data shared between pods and your local machine
     shared_storage_target_path  = "/data"
     }
@@ -116,7 +119,11 @@ kubectl get all -n $ARMONIK_NAMESPACE
     allowed_table_storage          = ["MongoDB"]
     allowed_queue_storage          = ["MongoDB", "Amqp"]
     allowed_lease_provider_storage = ["MongoDB"]
+    allowed_external_storage       = []
     ```
+  `external_storag` is a parameter to choose un external storage for data client. By default it is set to empty
+  list `[]`, but for HTC Mock sample **you must set it to `["Redis"]`.**
+
 * You can choose the images that will be used as in the control plane and the compute plane in the `armonik` object as
   well as the registry and the tag:
 
@@ -169,4 +176,4 @@ kubectl get all -n $ARMONIK_NAMESPACE
   ```
 
 In this case, we use images hosted on Aneo's dockerhub. If the option `--docker` is passed to k3s during its
-intallation, the images can be stored in the local docker registry.
+installation, the images can be stored in the local docker registry.

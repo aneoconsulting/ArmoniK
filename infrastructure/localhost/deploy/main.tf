@@ -44,6 +44,7 @@ module "armonik" {
       table_storage_type          = local.storage_services.table_storage_type
       queue_storage_type          = local.storage_services.queue_storage_type
       lease_provider_storage_type = local.storage_services.lease_provider_storage_type
+      external_storage_types      = distinct(local.needed_storage.external_storage)
       resources                   = local.storage_services.resources
       shared_storage              = {
         claim_name  = module.local_shared_storage.shared_storage_persistent_volume_claim.metadata.0.name

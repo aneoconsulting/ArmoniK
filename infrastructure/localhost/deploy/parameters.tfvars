@@ -112,6 +112,8 @@ armonik = {
     table_storage_type          = "MongoDB"
     queue_storage_type          = "MongoDB"
     lease_provider_storage_type = "MongoDB"
+    # Mandatory: If you want execute the HtcMock sample, you must set this parameter to ["Redis"], otherwise let it to []
+    external_storage_types      = []
     # Path of a directory in a pod, which contains data shared between pods and your local machine
     shared_storage_target_path  = "/data"
   }

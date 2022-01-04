@@ -5,6 +5,7 @@ locals {
     table_storage          = [for type in local.storage.allowed_table_storage : lower(type)]
     queue_storage          = [for type in local.storage.allowed_queue_storage : lower(type)]
     lease_provider_storage = [for type in local.storage.allowed_lease_provider_storage : lower(type)]
+    external_storage       = [for type in local.storage.allowed_external_storage : lower(type)]
   }
 
   # Needed resource for each storage
@@ -13,16 +14,20 @@ locals {
     table_storage          = (contains(local.allowed_storage.table_storage, lower(var.armonik.storage_services.table_storage_type)) ? lower(var.armonik.storage_services.table_storage_type) : "mongodb")
     queue_storage          = (contains(local.allowed_storage.queue_storage, lower(var.armonik.storage_services.queue_storage_type)) ? lower(var.armonik.storage_services.queue_storage_type) : "mongodb")
     lease_provider_storage = (contains(local.allowed_storage.lease_provider_storage, lower(var.armonik.storage_services.lease_provider_storage_type)) ? lower(var.armonik.storage_services.lease_provider_storage_type) : "mongodb")
+    external_storage       = [for type in var.armonik.storage_services.external_storage_types : (contains(local.allowed_storage.external_storage, lower(type)) ? lower(type) : "redis")]
   }
 
   # List of resources to deploy
-  list_of_storage = distinct([
+  list_of_storage = distinct(
+  concat(
+  [
     local.needed_storage.object_storage,
     local.needed_storage.table_storage,
     local.needed_storage.queue_storage,
-    local.needed_storage.lease_provider_storage,
-    "redis"
-  ])
+    local.needed_storage.lease_provider_storage
+  ],
+  local.needed_storage.external_storage
+  ))
 
   # Setting of ArmoniK storage services
   storage_services = {

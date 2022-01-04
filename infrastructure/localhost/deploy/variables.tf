@@ -186,6 +186,8 @@ variable "armonik" {
       table_storage_type          = string
       queue_storage_type          = string
       lease_provider_storage_type = string
+      # Mandatory: If you want execute the HtcMock sample, you must set this parameter to ["Redis"], otherwise let it to []
+      external_storage_types      = list(string)
       shared_storage_target_path  = string
     })
   })
@@ -235,6 +237,8 @@ variable "armonik" {
       table_storage_type          = "MongoDB"
       queue_storage_type          = "MongoDB"
       lease_provider_storage_type = "MongoDB"
+      # Mandatory: If you want execute the HtcMock sample, you must set this parameter to ["Redis"], otherwise let it to []
+      external_storage_types      = []
       shared_storage_target_path  = "/data"
     }
   }
