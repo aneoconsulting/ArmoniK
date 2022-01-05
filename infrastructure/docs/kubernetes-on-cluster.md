@@ -16,6 +16,8 @@ Kubernetes on Linux machines:
 
 # K3s <a name="k3s"></a>
 
-The instructions to install Kubernetes on a cluster are presented in [K3s on a cluster](./k3s-on-cluster.md)
+The instructions to install K3s on a cluster are presented in [K3s on a cluster](./k3s-on-cluster.md)
 
 # Kubeadm <a name="Kubeadm"></a>
+
+The instructions to install kubeadm on a cluster are presented in [Kubeadm on a cluster](./kubeadm-on-cluster.md)

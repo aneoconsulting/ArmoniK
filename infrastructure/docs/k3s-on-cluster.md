@@ -1,11 +1,12 @@
 # Table of contents
 
-1. [Installation](#introduction)
-2. [Installation](#installation)
+1. [Introduction](#introduction)
+2. [Install Docker](#install-docker)
+3. [Install Kubernetes](#install-kubernetes)
     1. [On master node](#on-master-node)
     2. [On worker nodes](#on-worker-nodes)
-3. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
-4. [Uninstall Kubernetes](#uninstall-kubernetes)
+4. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
+5. [Uninstall Kubernetes](#uninstall-kubernetes)
 
 # Introduction <a name="introduction"></a>
 
@@ -14,7 +15,12 @@ on an onpremise cluster.
 
 > **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](../utils/cluster-on-aws). This is useful for the development and testing only!
 
-# Installation <a name="installation"></a>
+# Install Docker <a name="install-docker"></a>
+
+To install docker on each node of the cluster, you can follow the instructions
+presented [here](https://docs.docker.com/engine/install/) for each distribution.
+
+# Install Kubernetes <a name="install-kubernetes"></a>
 
 ## On master node <a name="on-master-node"></a>
 
@@ -48,9 +54,9 @@ Use the following command to configure the workers as follows:
 
 ```bash
 # retrieve the Kubernetes `node-token` from the master node
-token=$(ssh -i <public-ssh-key-path> <user>@<master-public-address-IP> 'sudo cat /var/lib/rancher/k3s/server/node-token')
+token=$(ssh -i <public-ssh-key-path> <user>@<master-public-address-ip> 'sudo cat /var/lib/rancher/k3s/server/node-token')
 # configure Kubernetes
-curl -sfL https://get.k3s.io | K3S_URL=https://<master-public-address-IP>:6443 K3S_TOKEN=$token sh -
+curl -sfL https://get.k3s.io | K3S_URL=https://<master-public-address-ip>:6443 K3S_TOKEN=$token sh -
 ```
 
 * If not, execute the following remote command on all workers:
@@ -59,21 +65,21 @@ curl -sfL https://get.k3s.io | K3S_URL=https://<master-public-address-IP>:6443 K
 # retrieve the Kubernetes `node-token` from the master node
 token=$(ssh -i <public-ssh-key-path> <user>@<master-public-address-IP> 'sudo cat /var/lib/rancher/k3s/server/node-token')
 # configure Kubernetes
-for ip in <list-public-ip-addresses-of-workers>; do ssh -i <public-ssh-key-path> -o "StrictHostKeyChecking no" <user>@$ip "curl -sfL https://get.k3s.io | K3S_URL=https://<master-public-address-IP>:6443 K3S_TOKEN=$token sh -"; done
+for ip in <list-public-ip-addresses-of-workers>; do ssh -i <public-ssh-key-path> -o "StrictHostKeyChecking no" <user>@$ip "curl -sfL https://get.k3s.io | K3S_URL=https://<master-public-address-ip>:6443 K3S_TOKEN=$token sh -"; done
 ```
 
 where:
 
 * `<public-ssh-key-path>` is the path of the public key to SSH the cluster instances.
 * `<user>` the user on the master node.
-* `<master-public-address-IP>` is the public IP of the master node.
-* `<list-public-ip-addresses-of-workers>`
+* `<master-public-address-ip>` is the public IP of the master node.
+* `<list-public-ip-addresses-of-workers>` is the list of public IP addresses of worker nodes.
 
 # Accessing the cluster from outside <a name="accessing-the-cluster-from-outside"></a>
 
 Copy `/etc/rancher/k3s/k3s.yaml` from the master on your machine located outside the cluster as `~/.kube/config`. Then
-replace `localhost` with the IP the K3s server (master node). kubectl can now manage your K3s cluster from your local
-machine.
+replace `localhost` or the private address IP with the public with the IP the K3s server (master node). kubectl can now
+manage your K3s cluster from your local machine.
 
 # Uninstall Kubernetes <a name="Uninstall Kubernetes"></a>
 

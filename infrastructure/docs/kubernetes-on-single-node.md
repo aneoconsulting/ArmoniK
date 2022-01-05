@@ -2,13 +2,19 @@
 
 1. [Introduction](#introduction)
 2. [Install Kubernetes](#install-kubernetes)
-3. [Uninstall Kubernetes](#uninstall-kubernetes)
+3. [Install Docker](#install-docker)
+4. [Uninstall Kubernetes](#uninstall-kubernetes)
 
 # Introduction <a name="introduction"></a>
 
 Instructions to install Kubernetes on local Linux machine or Windows machine on [WSL 2](./wsl2.md).
 
 You can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/) on Linux OS.
+
+# Install Docker <a name="install-docker"></a>
+
+To install docker, you can follow the instructions presented [here](https://docs.docker.com/engine/install/) for each
+distribution.
 
 # Install Kubernetes <a name="install-kubernetes"></a>
 
