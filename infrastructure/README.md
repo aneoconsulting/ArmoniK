@@ -91,12 +91,52 @@ Your can deploy ArmoniK scheduler:
 
 Before installing ArmoniK scheduler, you must install Kubernetes and the different storage requirements.
 
-#### 1. Kubernetes
+#### Kubernetes
 
 If you do not have Kubernetes already installed, you can follow these instructions:
 
-* for a development and testing environment on [a local machine or a VM](./docs/kubernetes-on-single-node.md).
-* for an [onpremise cluster](./docs/kubernetes-on-cluster.md)
+* for a development and testing environment on [a local machine or a VM](docs/kubernetes/kubernetes-on-single-node.md).
+* for an [onpremise cluster](docs/kubernetes/kubernetes-on-cluster.md)
+
+#### Storage
+
+ArmoniK needs a single or different storage to store its different types of data :
+
+* Object
+* Table
+* Queue
+* Lease provider
+* External cache
+
+The endpoint urls and access rights/connection strings to these storage resources must be passed to ArmoniK via a
+configuration file.
+
+To date, the storage resources allowed for each type of ArmoniK data are as follows:
+
+```json
+{
+  "allowed_object_storage": [
+    "MongoDB",
+    "Redis"
+  ],
+  "allowed_table_storage": [
+    "MongoDB"
+  ],
+  "allowed_queue_storage": [
+    "MongoDB",
+    "Amqp"
+  ],
+  "allowed_lease_provider_storage": [
+    "MongoDB"
+  ],
+  "allowed_external_storage": [
+    "Redis"
+  ]
+}
+```
+
+If these storage resources are not already created, you can follow [Storage creation for ArmoniK]() to create the needed
+storage.
 
 
 

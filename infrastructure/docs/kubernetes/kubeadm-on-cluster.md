@@ -11,7 +11,7 @@
 
 Hereafter we describe the instructions to install `Kubeadm` on an onpremise cluster.
 
-> **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](../utils/cluster-on-aws). This is useful for the development and testing only!
+> **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](../../utils/cluster-on-aws). This is useful for the development and testing only!
 
 # Install Docker <a name="install-docker"></a>
 

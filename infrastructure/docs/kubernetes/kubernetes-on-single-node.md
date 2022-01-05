@@ -7,7 +7,7 @@
 
 # Introduction <a name="introduction"></a>
 
-Instructions to install Kubernetes on local Linux machine or Windows machine on [WSL 2](./wsl2.md).
+Instructions to install Kubernetes on local Linux machine or Windows machine on [WSL 2](../wsl2.md).
 
 You can use [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/) on Linux OS.
 
