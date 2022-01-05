@@ -8,9 +8,8 @@
     4. [Terraform](#terraform)
 3. [ArmoniK deployments](#armonik-deployments)
     1. [Onpremise](#onpremise)
-        1. [Infrastructure requirements](#infrastructure-requirements)
 
-# Introduction <a name="introduction"></a>
+# Introduction
 
 ArmoniK is a high throughput compute grid project using Kubernetes. The project provides a reference architecture that
 can be used to build and adapt a modern high throughput compute solution on-premise or using Cloud services, allowing
@@ -18,7 +17,7 @@ users to submit high volumes of short and long-running tasks and scaling environ
 
 In this project, we present the different steps to deploy ArmoniK scheduler in different environments.
 
-# Software prerequisites <a name="software-prerequisites"></a>
+# Software prerequisites
 
 The following software should be installed upon your machine regardless of the environment of the deployment. This
 machine can host Kubernetes for dev/test environment, or the login machine to deploy and manage ArmoniK on a distant
@@ -27,7 +26,7 @@ Kubernetes cluster.
 ***Warning:*** If you have a **Windows machine** you must first install [WSL 2 and SystemD](./docs/wsl2.md)
 before installing the software prerequisites.
 
-## Dependencies <a name="dependencies"></a>
+## Dependencies
 
 First you must install the following packages:
 
@@ -35,7 +34,7 @@ First you must install the following packages:
 sudo apt install apt-transport-https ca-certificates curl gnupg lsb-release jq
 ```
 
-## Docker <a name="docker"></a>
+## Docker
 
 The procedure to install [Docker](https://docs.docker.com/engine/install/ubuntu/):
 
@@ -47,7 +46,7 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
 
-## Kubectl <a name="kubectl"></a>
+## Kubectl
 
 The Kubernetes CLI (kubectl), allows you to run commands against Kubernetes clusters. You must use
 a [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) version that is within one minor version
@@ -62,7 +61,7 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 kubectl version --client
 ```
 
-## Terraform <a name="terraform"></a>
+## Terraform
 
 The procedure to install [Terraform](https://www.terraform.io/docs/cli/install/apt.html):
 
@@ -72,47 +71,15 @@ sudo apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.rel
 sudo apt install terraform
 ```
 
-# ArmoniK deployments <a name="armonik-deployments"></a>
+# ArmoniK deployments
 
 This section presents the list of infrastructure requirements and their configurations (Kubernetes and storage) and
 ArmoniK deployments in different environments (onpremise and cloud).
 
-## Onpremise <a name="onpremise"></a>
+## Onpremise
 
-Your can deploy ArmoniK scheduler:
-
-1. on your local machine or a VM, Linux machine or Windows machine on [WSL 2](./docs/wsl2.md), on a single-node of
-   Kubernetes. This is useful for development and testing environment only!
-2. on an onpremise cluster composed of a master node and several worker nodes of Kubernetes.
-
-> **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](./utils/cluster-on-aws). This is useful for the development and testing only!
-
-### Infrastructure requirements <a name="infrastructure-requirements"></a>
-
-Before installing ArmoniK scheduler, you must install Kubernetes and the different storage requirements.
-
-#### Kubernetes
-
-If you do not have Kubernetes already installed, you can follow these instructions:
-
-* for a development and testing environment on [a local machine or a VM](docs/kubernetes/kubernetes-on-single-node.md).
-* for an [onpremise cluster](docs/kubernetes/kubernetes-on-cluster.md)
-
-#### Storage
-
-ArmoniK needs a single or different storage to store its different types of data :
-
-* Object
-* Table
-* Queue
-* Lease provider
-* External cache
-
-The endpoint urls and access rights/connection strings to these storage resources must be passed to ArmoniK via a
-configuration file.
-
-If these storage resources are not already created, you can follow [Storage creation for ArmoniK](./storage/README.md)
-to create the needed storage.
+The instructions to deploy ArmoniK on a local machine or an onpremise cluster are defined
+in [ArmoniK onpremise](./docs/deploy/onpremise.md).
 
 
 

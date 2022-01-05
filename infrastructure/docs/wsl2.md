@@ -3,11 +3,11 @@
 1. [Install WSL 2](#install-wsl-2)
 2. [Enable SystemD on WSL with Genie](#enable-systemd-on-wsl-with-genie)
 
-# Install WSL 2 <a name="install-wsl-2"></a>
+# Install WSL 2
 
 The following steps to install WSL are listed below and can be used to install Linux on any version of Windows 10.
 
-## 1. Enable Windows Subsystem for Linux <a name="enable-windows-subsystem-for-linux"></a>
+## 1. Enable Windows Subsystem for Linux
 
 You must first enable "Windows Subsystem for Linux" optional feature before installing any Linux distributions on
 Windows. Open **PowerShell as Administrator** and run:
@@ -16,7 +16,7 @@ Windows. Open **PowerShell as Administrator** and run:
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
 ```
 
-## 2. Enable virtual machine feature <a name="enable-virtual-machine-feature"></a>
+## 2. Enable virtual machine feature
 
 Before installing WSL 2, you must enable the Virtual Machine Platform optional feature. Your machine will require
 virtualization capabilities to use this feature.
@@ -29,7 +29,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 
 **Restart your machine** to complete the WSL install and update to WSL 2.
 
-## 3. Download the Linux kernel update package <a name="download-the-linux-kernel-update-package"></a>
+## 3. Download the Linux kernel update package
 
 1. Download the latest package: WSL2 Linux kernel update package for x64 machines
 2. Run the update package downloaded in the previous step. (**Double-click** to run - you will be prompted for elevated
@@ -38,7 +38,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 Once the installation is complete, move on to the next step - setting WSL 2 as your default version when installing new
 Linux distributions.
 
-## 4. Set WSL 2 as your default version <a name="set-wsl-2-as-your-default-version"></a>
+## 4. Set WSL 2 as your default version
 
 **Open PowerShell** and run this command to set WSL 2 as the default version when installing a new Linux distribution:
 
@@ -46,7 +46,7 @@ Linux distributions.
 wsl --set-default-version 2
 ```
 
-## 5. Install your Linux distribution of choice <a name="install-your-linux-distribution-of-choice"></a>
+## 5. Install your Linux distribution of choice
 
 1. Open the Microsoft Store and select your favorite Linux distribution (preferably Ubuntu 20.04 LTS).
 2. From the distribution's page, select "Get". The first time you launch a newly installed Linux distribution, a console
@@ -55,12 +55,12 @@ wsl --set-default-version 2
 
 You will then need to create a user account and password for your new Linux distribution.
 
-# Enable SystemD on WSL with Genie <a name="enable-systemd-on-wsl-with-genie"></a>
+# Enable SystemD on WSL with Genie
 
 Kubernetes (and docker) needs ***SystemD*** to work. For this, you need to
 install [Genie](https://github.com/arkane-systems/genie).
 
-## 1. Install Genie <a name="install-genie"></a>
+## 1. Install Genie
 
 Within **WSL**:
 
@@ -89,7 +89,7 @@ wsl --shutdown
 wsl genie -s
 ```
 
-## 2. Start a Genie session <a name="start-a-genie-session"></a>
+## 2. Start a Genie session
 
 Now that Genie is installed, you need to run `wsl genie -s` to start a session. The first session started will launch
 Genie and create a dedicated namespace (this should take a few seconds). Then, all sessions started with `wsl genie -s`
@@ -98,7 +98,7 @@ will live in that namespace, where **systemD** is running, as PID 1.
 ***Warning:*** Starting a session with `wsl` alone will not create the session within the Genie namespace, and thus
 services like docker or kubernetes will not behave as expected.
 
-## 3. Configure Genie <a name="configure-genie"></a>
+## 3. Configure Genie
 
 If you want to have access to Windows tools from within Genie (like `code`), you have to set `clone-path` to `true`. On
 Ubuntu 20.04, the path might not be set properly, even with `clone-path=true`. In that case, you would to add the

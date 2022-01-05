@@ -6,7 +6,7 @@
 4. [Deploy a cluster](#deploy-a-cluster)
 5. [Destroy the cluster](#destroy-the-cluster)
 
-# Introduction <a name="introduction"></a>
+# Introduction
 
 This project presents the creation of a small cluster on AWS. The cluster will be composed of a master node and three
 worker nodes.
@@ -15,7 +15,7 @@ We mount a NFS server on the master node too, from which workers will upload .dl
 
 > **_NOTE:_** You must have an AWS account to use these sources to create a cluster.
 
-# AWS credentials <a name="aws-credentials"></a>
+# AWS credentials
 
 You must create and provide your [AWS programmatic access keys](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
 in your dev/test environment:
@@ -29,7 +29,7 @@ aws_secret_access_key = <SECRET_ACCESS_KEY>
 EOF
 ```
 
-# Generate a SSH key pair <a name="generate-a-ssh-key-pair"></a>
+# Generate a SSH key pair
 
 Use the following procedure to generate a SSH key pair and save it in `~/.ssh`:
 
@@ -39,7 +39,7 @@ ssh-keygen -b 4096 -t rsa -f ~/.ssh/cluster-key
 
 The generated SSH key pair `cluster-key` will be used to ssh the instances of the cluster.
 
-# Deploy a cluster <a name="deploy-a-cluster"></a>
+# Deploy a cluster
 
 We will create a cluster on AWS composed of four ec2 instances:
 
@@ -82,7 +82,7 @@ worker_public_ip = [
 ]
 ```
 
-# Destroy the cluster <a name="Destroy the cluster"></a>
+# Destroy the cluster
 
 To delete all resources of the cluster created on AWS, execute the command:
 

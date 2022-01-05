@@ -7,18 +7,18 @@
     2. [On worker nodes](#on-worker-nodes)
 4. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
 
-# Introduction <a name="introduction"></a>
+# Introduction 
 
 Hereafter we describe the instructions to install `Kubeadm` on an onpremise cluster.
 
-> **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](../../utils/cluster-on-aws). This is useful for the development and testing only!
+> **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](../../utils/create-cluster). This is useful for the development and testing only!
 
-# Install Docker <a name="install-docker"></a>
+# Install Docker 
 
 To install docker on each node of the cluster, you can follow the instructions
 presented [here](https://docs.docker.com/engine/install/) for each distribution.
 
-# Install Kubernetes <a name="install-kubernetes"></a>
+# Install Kubernetes 
 
 Execute the following instruction **on all nodes**:
 
@@ -85,7 +85,7 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 ```
 
-## On master node <a name="on-master-node"></a>
+## On master node 
 
 Initialize kubeadm on master node:
 
@@ -105,7 +105,7 @@ where:
 
 **warning:** the end of the output of this command display the join command to execute on worker nodes.
 
-## On worker nodes <a name="on-worker-nodes"></a>
+## On worker nodes 
 
 Run the join command on worker nodes:
 
@@ -119,7 +119,7 @@ where:
 * `<token-value>` and `<token-hash>` are, respectively, the value and the hash of the token generated after the
   installation of Kubeadm on the master node.
 
-# Accessing the cluster from outside <a name="accessing-the-cluster-from-outside"></a>
+# Accessing the cluster from outside 
 
 Copy `/etc/kubernetes/admin.conf` from the master on your machine located outside the cluster as `~/.kube/config`. Then
 replace `localhost` or the private address IP with the public IP of the Kubeadm server (master node). kubectl can now
