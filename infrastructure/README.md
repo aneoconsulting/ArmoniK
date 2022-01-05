@@ -8,6 +8,7 @@
     4. [Terraform](#terraform)
 3. [ArmoniK deployments](#armonik-deployments)
     1. [Onpremise](#onpremise)
+        1. [Infrastructure requirements](#infrastructure-requirements)
 
 # Introduction <a name="introduction"></a>
 
@@ -23,7 +24,7 @@ The following software should be installed upon your machine regardless of the e
 machine can host Kubernetes for dev/test environment, or the login machine to deploy and manage ArmoniK on a distant
 Kubernetes cluster.
 
-***Warning:*** If you have a **Windows machine** you must first install [WSL 2 and SystemD](./docs/README.wsl2.md)
+***Warning:*** If you have a **Windows machine** you must first install [WSL 2 and SystemD](./docs/wsl2.md)
 before installing the software prerequisites.
 
 ## Dependencies <a name="dependencies"></a>
@@ -80,11 +81,22 @@ ArmoniK deployments in different environments (onpremise and cloud).
 
 Your can deploy ArmoniK scheduler:
 
-1. on your local machine or a VM, Linux machine or Windows machine on [WSL 2](./docs/README.wsl2.md), on a single-node
-   of Kubernetes. This is useful for development and testing environment only!
+1. on your local machine or a VM, Linux machine or Windows machine on [WSL 2](./docs/wsl2.md), on a single-node of
+   Kubernetes. This is useful for development and testing environment only!
 2. on an onpremise cluster composed of a master node and several worker nodes of Kubernetes.
 
 > **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](./utils/cluster-on-aws). This is useful for the development and testing only!
+
+### Infrastructure requirements <a name="infrastructure-requirements"></a>
+
+Before installing ArmoniK scheduler, you must install Kubernetes and the different storage requirements.
+
+#### 1. Kubernetes
+
+If you do not have Kubernetes already installed, you can follow these instructions:
+
+* for a development and testing environment on [a local machine or a VM](./docs/kubernetes-on-single-node.md).
+* for an [onpremise cluster](./docs/kubernetes-on-cluster.md)
 
 
 
