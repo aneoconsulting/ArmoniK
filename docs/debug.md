@@ -1,51 +1,5 @@
 # Debug Informations to save the day
 
-## While updating OpenAPI
-```bash
-dotnet nuget locals all --clear
-```
-
-## When nginx does not deploy
-Delete the nginx namespace
-```bash
-kubectl delete namespaces ingress-nginx
-```
-
-## List all on-going deployments
-```bash
-kubectl get deployments --all-namespaces
-```
-
-## Delete redis deployment
-```bash
-kubectl delete deployment -n default redis
-```
-
-## Scale agent/compute lambda deployment
-```bash
-kubectl scale --replicas=11 deployment armonik-agent
-```
-
-## Fast image redeployment
-Only re-compile the targeted image, use image_pull_policy = Always instead of IfNotPresent and delete the po in order to pull the new image. It works well for the lambda and the applications (single task).
-
-Re-compile one lambda
-```bash
-make -C source/control_plane/python/lambda/get_results lambda-get-results
-make -C source/control_plane/python/lambda/submit_tasks lambda-submit-tasks
-make -C source/control_plane/python/lambda/cancel_tasks lambda-cancel-tasks
-```
-
-Re-compile all lambda
-```bash
-make lambda-control-plane
-```
-
-Re-compile agent image
-```bash
-make image-agent
-```
-
 ## Debug C# container with Visual Studio Code
 ### Steps
 

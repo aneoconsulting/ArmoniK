@@ -7,9 +7,7 @@
     3. [Kubectl](#kubectl)
     4. [Terraform](#terraform)
 3. [ArmoniK deployments](#armonik-deployments)
-    1. [Local machine](#local-machine)
-    2. [On-premise cluster](#on-premise-cluster)
-    3. [Amazon Web Services](#amazon-web-services)
+    1. [Onpremise](#onpremise)
 
 # Introduction <a name="introduction"></a>
 
@@ -75,17 +73,18 @@ sudo apt install terraform
 
 # ArmoniK deployments <a name="armonik-deployments"></a>
 
-## Local machine <a name="local-machine"></a>
+This section presents the list of infrastructure requirements and their configurations (Kubernetes and storage) and
+ArmoniK deployments in different environments (onpremise and cloud).
 
-You can deploy ArmoniK on your local machine, Linux machine or Windows machine on WSL 2, on a single-node of Kubernetes.
-This is useful for development and testing environment only!
+## Onpremise <a name="onpremise"></a>
 
-The different steps to deploy ArmoniK on your local machine are described [here](./localhost/README.md).
+Your can deploy ArmoniK scheduler:
 
-## On-premise cluster <a name="on-premise-cluster"></a>
+1. on your local machine or a VM, Linux machine or Windows machine on [WSL 2](./docs/README.wsl2.md), on a single-node
+   of Kubernetes. This is useful for development and testing environment only!
+2. on an onpremise cluster composed of a master node and several worker nodes of Kubernetes.
 
-***TODO***
+> **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](./utils/cluster-on-aws). This is useful for the development and testing only!
 
-## Amazon Web Services <a name="amazon-web-services"></a>
 
-***TODO***
+
