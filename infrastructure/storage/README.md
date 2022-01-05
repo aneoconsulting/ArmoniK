@@ -12,7 +12,7 @@ This project presents an example of source codes to create storage resources for
 # Allowed storage resources
 
 To date, the storage resources allowed for each type of ArmoniK data are defined
-in [allowed storage resources](../../modules/needed-storage/allowed_storage.tf).
+in [allowed storage resources](../modules/needed-storage/allowed_storage.tf).
 
 # Storage deployment
 
@@ -21,7 +21,7 @@ in [allowed storage resources](../../modules/needed-storage/allowed_storage.tf).
 The storage resources will be created as **Kubernetes services**. Therefore, you must already have a Kubernetes already
 installed.
 
-> **_NOTE:_** If you do not have a Kubernetes already installed, you can use [Install Kubernetes docs](../../docs/deploy/onpremise.md#kubernetes) to install Kubernetes on a local machine or an onpremise cluster.
+> **_NOTE:_** If you do not have a Kubernetes already installed, you can use [Install Kubernetes docs](../docs/deploy/onpremise.md#kubernetes) to install Kubernetes on a local machine or an onpremise cluster.
 
 The source codes to create the needed storage resources for ArmoniK are defined
 in [Onpremise storage resources](onpremise/README.md).

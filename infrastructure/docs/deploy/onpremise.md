@@ -39,5 +39,5 @@ ArmoniK needs a single or different storage to store its different types of data
 The endpoint urls and access rights/connection strings to these storage resources must be passed to ArmoniK via a
 configuration file.
 
-If these storage resources are not already created, you can follow [Storage creation for ArmoniK](../../utils/storage/README.md)
+If these storage resources are not already created, you can follow [Storage creation for ArmoniK](../../storage/README.md)
 to create the needed storage.
