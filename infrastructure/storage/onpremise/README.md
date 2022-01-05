@@ -67,6 +67,9 @@ kubectl get namespaces
 
 # Create Kubernetes secrets
 
+You create the secret for each storage only if you want to create the needed storage. In the following, we give examples
+to create secrets for some storage.
+
 ## Redis storage secret
 
 Redis uses SSL/TLS support using certificates. In order to support TLS, Redis is configured with a X.509
