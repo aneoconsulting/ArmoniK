@@ -57,7 +57,7 @@ resource "kubernetes_deployment" "activemq" {
         volume {
           name = "queue-storage-secret-volume"
           secret {
-            secret_name = var.activemq.secret
+            secret_name = var.activemq.secrets.activemq
             optional    = false
           }
         }

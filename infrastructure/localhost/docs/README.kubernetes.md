@@ -5,8 +5,8 @@
 - [Set environment variables <a name="set-environment-variables"></a>](#set-environment-variables-)
 - [Create a namespace for ArmoniK <a name="create-a-namespace-for-armonik"></a>](#create-a-namespace-for-armonik-)
 - [Create Kubernetes secrets <a name="create-kubernetes-secrets"></a>](#create-kubernetes-secrets-)
-  - [Redis storage secret <a name="redis-storage-secret"></a>](#redis-storage-secret-)
-  - [ActiveMQ storage secret <a name="activemq-storage-secret"></a>](#activemq-storage-secret-)
+    - [Redis storage secret <a name="redis-storage-secret"></a>](#redis-storage-secret-)
+    - [ActiveMQ storage secret <a name="activemq-storage-secret"></a>](#activemq-storage-secret-)
 
 # Install Kubernetes <a name="install-kubernetes"></a>
 
@@ -46,14 +46,17 @@ export ARMONIK_NAMESPACE=<Your namespace in kubernetes>
 # Directory path of the object storage credentials
 export ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY=<Your directory path of the certificates for the object storage>
     
-# Directory path of the object storage credentials
+# Name of the object storage secret
 export ARMONIK_OBJECT_STORAGE_SECRET_NAME=<You kubernetes secret for the object storage>
 
 # Directory path of the queue storage credentials
 export ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY=<Your directory path of the credentials for the queue storage>
     
-# Directory path of the queue storage credentials
+# Name of the queue storage secret in ActiveMQ
 export ARMONIK_QUEUE_STORAGE_SECRET_NAME=<You kubernetes secret for the queue storage>
+
+# Name of the queue storage secret in ArmoniK components
+export ARMONIK_QUEUE_STORAGE_SECRET_NAME_FOR_ARMONIK_COMPONENTS=<You kubernetes secret for the queue storage in ArmoniK components>
 ```
 
 **Mandatory:** To set these environment variables, for example:
@@ -113,17 +116,40 @@ kubectl create secret generic $ARMONIK_OBJECT_STORAGE_SECRET_NAME \
 
 ## ActiveMQ storage secret <a name="activemq-storage-secret"></a>
 
-In this project, we use ActiveMQ as queue storage for Armonik. ActiveMQ use a file `jetty-realm.properties`. This is the
-file which stores user credentials and their roles in ActiveMQ. It contains custom usernames and passwords and replace
-the file present by default inside the container.
+In this project, Amqp protocol to manage the queue storage for ArmoniK.
 
-Execute the following command to create the queue storage secret in Kubernetes based on the `jetty-realm.properties`
-created and saved in the directory `$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY`. In this project, we have a file of
-name `jetty-realm.properties` in [credentials](../credentials) directory. Create a Kubernetes secret for the ArmoniK
-queue storage:
+The files which store credentials to access the Amqp queue storage. They contain custom usernames and passwords :
+
+* We use ActiveMQ as queue storage which use the file `jetty-realm.properties`:
+
+```text
+#username:password,[role-name]
+admin:<ADMIN_PASSWD>,admin
+user:<GUEST_PASSWD>,guest
+```
+
+* ArmoniK use the file `credentials.json` to access the Amqp queue:
+
+```json
+{
+  "Amqp": {
+    "User": "user",
+    "Password": "<GUEST_PASSWD>"
+  }
+}
+```
+
+Execute the following commands to create the queue storage secrets in Kubernetes based on the `jetty-realm.properties`
+and `credentials.json` created and saved in the directory `$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY`. In this
+project, we have the files of name `jetty-realm.properties` and `credentials.json` in [credentials](../credentials)
+directory:
 
 ```bash
 kubectl create secret generic $ARMONIK_QUEUE_STORAGE_SECRET_NAME \
         --namespace=$ARMONIK_NAMESPACE \
         --from-file=$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY/jetty-realm.properties
+        
+kubectl create secret generic $ARMONIK_QUEUE_STORAGE_SECRET_NAME_FOR_ARMONIK_COMPONENTS \
+        --namespace=$ARMONIK_NAMESPACE \
+        --from-file=$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY/credentials.json
 ```

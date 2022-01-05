@@ -63,6 +63,14 @@ resource "kubernetes_deployment" "compute_plane" {
             name       = "cache-volume"
             mount_path = "/cache"
           }
+          dynamic volume_mount {
+            for_each = (var.armonik.secrets.activemq_secret == "" ? [] : ["amqp"])
+            content {
+              name       = "queue-storage-secret-volume"
+              mount_path = "/amqp"
+              read_only  = true
+            }
+          }
         }
         # Containers of compute
         dynamic container {
@@ -101,7 +109,7 @@ resource "kubernetes_deployment" "compute_plane" {
             dynamic volume_mount {
               for_each = var.armonik.storage_services.external_storage_types
               content {
-                name       = "compute-secret-volume"
+                name       = "redis-secret-volume"
                 mount_path = "/certificates"
                 read_only  = true
               }
@@ -135,9 +143,19 @@ resource "kubernetes_deployment" "compute_plane" {
         dynamic volume {
           for_each = var.armonik.storage_services.external_storage_types
           content {
-            name = "compute-secret-volume"
+            name = "redis-secret-volume"
             secret {
               secret_name = var.armonik.secrets.redis_secret
+              optional    = false
+            }
+          }
+        }
+        dynamic volume {
+          for_each = (var.armonik.secrets.activemq_secret == "" ? [] : ["amqp"])
+          content {
+            name = "queue-storage-secret-volume"
+            secret {
+              secret_name = var.armonik.secrets.activemq_secret
               optional    = false
             }
           }

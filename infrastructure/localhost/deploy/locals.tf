@@ -45,6 +45,6 @@ locals {
   # Secrets
   secrets = {
     redis_secret    = (contains(local.list_of_storage, "redis") ? var.redis.secret : "")
-    activemq_secret = (contains(local.list_of_storage, "amqp") ? var.activemq.secret : "")
+    activemq_secret = (contains(local.list_of_storage, "amqp") ? var.activemq.secrets.armonik : "")
   }
 }

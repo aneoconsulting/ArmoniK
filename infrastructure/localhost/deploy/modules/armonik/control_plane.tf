@@ -45,6 +45,14 @@ resource "kubernetes_deployment" "control_plane" {
             name       = "shared-volume"
             mount_path = var.armonik.storage_services.shared_storage.target_path
           }
+          dynamic volume_mount {
+            for_each = (var.armonik.secrets.activemq_secret == "" ? [] : ["amqp"])
+            content {
+              name       = "queue-storage-secret-volume"
+              mount_path = "/amqp"
+              read_only  = true
+            }
+          }
         }
         volume {
           name = "control-plane-configmap"
@@ -57,6 +65,16 @@ resource "kubernetes_deployment" "control_plane" {
           name = "shared-volume"
           persistent_volume_claim {
             claim_name = var.armonik.storage_services.shared_storage.claim_name
+          }
+        }
+        dynamic volume {
+          for_each = (var.armonik.secrets.activemq_secret == "" ? [] : ["amqp"])
+          content {
+            name = "queue-storage-secret-volume"
+            secret {
+              secret_name = var.armonik.secrets.activemq_secret
+              optional    = false
+            }
           }
         }
       }

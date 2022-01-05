@@ -15,6 +15,9 @@ variable "activemq" {
       target_port = number
       protocol    = string
     }))
-    secret   = string
+    secrets  = object({
+      activemq = string
+      armonik  = string
+    })
   })
 }

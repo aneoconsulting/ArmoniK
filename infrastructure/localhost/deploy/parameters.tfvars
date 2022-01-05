@@ -29,7 +29,10 @@ activemq = {
     { name = "ws", port = 61614, target_port = 61614, protocol = "TCP" },
     { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
   ]
-  secret   = "activemq-storage-secret"
+  secrets  = {
+    activemq = "activemq-storage-secret"
+    armonik  = "activemq-storage-secret-for-armonik"
+  }
 }
 
 # Local shared persistent volume

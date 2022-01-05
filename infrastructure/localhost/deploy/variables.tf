@@ -63,7 +63,10 @@ variable "activemq" {
       target_port = number
       protocol    = string
     }))
-    secret   = string
+    secrets  = object({
+      activemq = string
+      armonik  = string
+    })
   })
   default     = {
     replicas = 1
@@ -74,7 +77,10 @@ variable "activemq" {
       { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
       { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
     ]
-    secret   = "activemq-storage-secret"
+    secrets  = {
+      activemq = "activemq-storage-secret"
+      armonik  = "activemq-storage-secret-for-armonik"
+    }
   }
 }
 
