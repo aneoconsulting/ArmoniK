@@ -39,7 +39,7 @@ export ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the Activ
 2. copy the [template file](../../utils/envvars-storage.conf):
 
     ```bash
-    cp  ../../envvars-storage.conf ./envvars.conf
+    cp  ../../utils/envvars-storage.conf ./envvars.conf
     ```
 
 3. modify the values of variables if needed in `./envvars.conf`
