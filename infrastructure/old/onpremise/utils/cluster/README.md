@@ -49,7 +49,7 @@ We will create a cluster on AWS composed of four ec2 instances:
 * a master node of Kubernetes
 * three worker nodes
 
-In [parameters.tfvars](./parameters.tfvars), set the value of the parameter `ssh_key` with the public SSH
+In [parameters.tfvars](parameters.tfvars), set the value of the parameter `ssh_key` with the public SSH
 key `~/.ssh/k3s-key.pub`, for example:
 
 ```bash

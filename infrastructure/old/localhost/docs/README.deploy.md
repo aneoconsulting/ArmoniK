@@ -40,7 +40,7 @@ Terraform needs a configuration file containing the list of parameters to config
 
 ## List of resource parameters <a name="list-of-resource-parameters"></a>
 
-The complete list of parameters and their types are defined in [List of parameters](../docs/README.configuration.md).
+The complete list of parameters and their types are defined in [List of parameters](README.configuration.md).
 
 ## Example of configuration file <a name="example-of-configuration-file"></a>
 

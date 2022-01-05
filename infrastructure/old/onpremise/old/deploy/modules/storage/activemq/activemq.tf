@@ -1,4 +1,4 @@
-# ActiveMQ is deployed as a service in Kubernetes cluster
+# ActiveMQ is deployed as a service in Kubernetes cluster-on-aws
 
 # Kubernetes ActiveMQ statefulset
 resource "kubernetes_stateful_set" "activemq" {

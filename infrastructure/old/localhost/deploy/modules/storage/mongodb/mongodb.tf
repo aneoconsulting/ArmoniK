@@ -1,7 +1,7 @@
-# MongoDB is deployed as a service in Kubernetes cluster
+# MongoDB is deployed as a service in Kubernetes cluster-on-aws
 
-# Kubernetes MongoDB statefulset
-resource "kubernetes_stateful_set" "mongodb" {
+# Kubernetes MongoDB deployment
+resource "kubernetes_deployment" "mongodb" {
   metadata {
     name      = "mongodb"
     namespace = var.namespace
@@ -12,7 +12,6 @@ resource "kubernetes_stateful_set" "mongodb" {
     }
   }
   spec {
-    service_name = "mongodb"
     replicas     = var.mongodb.replicas
     selector {
       match_labels = {
@@ -71,20 +70,20 @@ resource "kubernetes_stateful_set" "mongodb" {
 # Kubernetes MongoDB service
 resource "kubernetes_service" "mongodb" {
   metadata {
-    name      = kubernetes_stateful_set.mongodb.metadata.0.name
-    namespace = kubernetes_stateful_set.mongodb.metadata.0.namespace
+    name      = kubernetes_deployment.mongodb.metadata.0.name
+    namespace = kubernetes_deployment.mongodb.metadata.0.namespace
     labels    = {
-      app     = kubernetes_stateful_set.mongodb.metadata.0.labels.app
-      type    = kubernetes_stateful_set.mongodb.metadata.0.labels.type
-      service = kubernetes_stateful_set.mongodb.metadata.0.labels.service
+      app     = kubernetes_deployment.mongodb.metadata.0.labels.app
+      type    = kubernetes_deployment.mongodb.metadata.0.labels.type
+      service = kubernetes_deployment.mongodb.metadata.0.labels.service
     }
   }
   spec {
     type     = "ClusterIP"
     selector = {
-      app     = kubernetes_stateful_set.mongodb.metadata.0.labels.app
-      type    = kubernetes_stateful_set.mongodb.metadata.0.labels.type
-      service = kubernetes_stateful_set.mongodb.metadata.0.labels.service
+      app     = kubernetes_deployment.mongodb.metadata.0.labels.app
+      type    = kubernetes_deployment.mongodb.metadata.0.labels.type
+      service = kubernetes_deployment.mongodb.metadata.0.labels.service
     }
     port {
       port = var.mongodb.port
@@ -96,6 +95,6 @@ resource "kubernetes_service" "mongodb" {
 resource "null_resource" "activate_replica_in_mongo" {
   depends_on = [kubernetes_service.mongodb]
   provisioner "local-exec" {
-    command = "kubectl exec mongodb-0 -n ${var.namespace} -- mongo --eval 'rs.initiate()'"
+    command = "kubectl exec svc/${kubernetes_service.mongodb.metadata.0.name} -n ${var.namespace} -- mongo --eval 'rs.initiate()'"
   }
 }

@@ -60,7 +60,7 @@ export ARMONIK_QUEUE_STORAGE_SECRET_NAME=<You kubernetes secret for the queue st
 
 1. position yourself in the current directory `infrastructure/localhost/` from the root of the repository:
 
-2. copy the [template file](../utils/envvars.conf) in the [current directory](../../localhost):
+2. copy the [template file](../utils/envvars.conf) in the [current directory](..):
 
 ```bash
 cp utils/envvars.conf ./envvars.conf

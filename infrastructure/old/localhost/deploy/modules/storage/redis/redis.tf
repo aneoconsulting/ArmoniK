@@ -1,7 +1,7 @@
-# Redis is deployed as a service in Kubernetes cluster
+# Redis is deployed as a service in Kubernetes cluster-on-aws
 
-# Kubernetes Redis statefulset
-resource "kubernetes_stateful_set" "redis" {
+# Kubernetes Redis deployment
+resource "kubernetes_deployment" "redis" {
   metadata {
     name      = "redis"
     namespace = var.namespace
@@ -12,7 +12,6 @@ resource "kubernetes_stateful_set" "redis" {
     }
   }
   spec {
-    service_name = "reids"
     replicas     = var.redis.replicas
     selector {
       match_labels = {
@@ -33,7 +32,7 @@ resource "kubernetes_stateful_set" "redis" {
       spec {
         container {
           name    = "redis"
-          image   = "redis"
+          image   = "redis:bullseye"
           command = ["redis-server"]
           args    = [
             "--tls-port ${var.redis.port}",
@@ -66,23 +65,23 @@ resource "kubernetes_stateful_set" "redis" {
 # Kubernetes Redis service
 resource "kubernetes_service" "redis" {
   metadata {
-    name      = kubernetes_stateful_set.redis.metadata.0.name
-    namespace = kubernetes_stateful_set.redis.metadata.0.namespace
+    name      = kubernetes_deployment.redis.metadata.0.name
+    namespace = kubernetes_deployment.redis.metadata.0.namespace
     labels    = {
-      app     = kubernetes_stateful_set.redis.metadata.0.labels.app
-      type    = kubernetes_stateful_set.redis.metadata.0.labels.type
-      service = kubernetes_stateful_set.redis.metadata.0.labels.service
+      app     = kubernetes_deployment.redis.metadata.0.labels.app
+      type    = kubernetes_deployment.redis.metadata.0.labels.type
+      service = kubernetes_deployment.redis.metadata.0.labels.service
     }
   }
   spec {
-    type     = "ClusterIP"
+    type     = "LoadBalancer"
     selector = {
-      app     = kubernetes_stateful_set.redis.metadata.0.labels.app
-      type    = kubernetes_stateful_set.redis.metadata.0.labels.type
-      service = kubernetes_stateful_set.redis.metadata.0.labels.service
+      app     = kubernetes_deployment.redis.metadata.0.labels.app
+      type    = kubernetes_deployment.redis.metadata.0.labels.type
+      service = kubernetes_deployment.redis.metadata.0.labels.service
     }
     port {
-      name     = kubernetes_stateful_set.redis.metadata.0.name
+      name     = kubernetes_deployment.redis.metadata.0.name
       port     = var.redis.port
       protocol = "TCP"
     }

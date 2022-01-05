@@ -2,7 +2,7 @@
 # MongoDB
 module "mongodb" {
   count     = (contains(local.list_of_storage, "mongodb") ? 1 : 0)
-  source    = "./modules/storage/mongodb"
+  source    = "modules/storage/mongodb"
   namespace = var.namespace
   mongodb   = var.mongodb
 }
@@ -10,7 +10,7 @@ module "mongodb" {
 # Redis
 module "redis" {
   count     = (contains(local.list_of_storage, "redis") ? 1 : 0)
-  source    = "./modules/storage/redis"
+  source    = "modules/storage/redis"
   namespace = var.namespace
   redis     = var.redis
 }
@@ -18,21 +18,21 @@ module "redis" {
 # ActiveMQ
 module "activemq" {
   count     = (contains(local.list_of_storage, "amqp") ? 1 : 0)
-  source    = "./modules/storage/activemq"
+  source    = "modules/storage/activemq"
   namespace = var.namespace
   activemq  = var.activemq
 }
 
 # Local shared storage
 module "local_shared_storage" {
-  source               = "./modules/storage/local-shared-storage"
+  source               = "modules/storage/local-shared-storage"
   namespace            = var.namespace
   local_shared_storage = var.local_shared_storage
 }
 
 # ArmoniK components
 module "armonik" {
-  source       = "./modules/armonik"
+  source       = "modules/armonik"
   namespace    = var.namespace
   max_priority = var.max_priority
   seq          = var.seq
