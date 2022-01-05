@@ -111,32 +111,8 @@ ArmoniK needs a single or different storage to store its different types of data
 The endpoint urls and access rights/connection strings to these storage resources must be passed to ArmoniK via a
 configuration file.
 
-To date, the storage resources allowed for each type of ArmoniK data are as follows:
-
-```json
-{
-  "allowed_object_storage": [
-    "MongoDB",
-    "Redis"
-  ],
-  "allowed_table_storage": [
-    "MongoDB"
-  ],
-  "allowed_queue_storage": [
-    "MongoDB",
-    "Amqp"
-  ],
-  "allowed_lease_provider_storage": [
-    "MongoDB"
-  ],
-  "allowed_external_storage": [
-    "Redis"
-  ]
-}
-```
-
-If these storage resources are not already created, you can follow [Storage creation for ArmoniK]() to create the needed
-storage.
+If these storage resources are not already created, you can follow [Storage creation for ArmoniK](./storage/README.md)
+to create the needed storage.
 
 
 
