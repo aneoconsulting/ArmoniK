@@ -50,9 +50,9 @@ export ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the Activ
 
 4. Source the file of configuration :
 
-```bash
-source ./envvars.conf
-```
+   ```bash
+   source ./envvars.conf
+   ```
 
 # Create a namespace for ArmoniK storage
 
