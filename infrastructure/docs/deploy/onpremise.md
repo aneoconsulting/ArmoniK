@@ -144,7 +144,7 @@ client:
 ```bash
 kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME \
         --namespace=$ARMONIK_NAMESPACE \
-        --from-file=$ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY/amqp-credentials.json
+        --from-file=amqp_credentials=$ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY/amqp-credentials.json
 ```
 
 # Deploy
