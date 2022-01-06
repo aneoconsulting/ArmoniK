@@ -148,7 +148,8 @@ storage_kubernetes_secrets = {
 }
 ```
 
-**warning:** You have an example of [configuration file](./parameters.tfvars).
+**warning:** You have an example of [configuration file](./parameters.tfvars). There is
+also [Storage parameters docs](../../modules/storage/README.md).
 
 ## Deploy
 

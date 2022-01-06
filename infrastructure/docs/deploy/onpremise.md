@@ -4,6 +4,9 @@
 2. [Infrastructure requirements](#infrastructure-requirements)
     1. [Kubernetes](#kubernetes)
     2. [Storage](#storage)
+3. [Deploy ArmoniK](#deploy-armonik)
+    1. [Set environment variables](#set-environment-variables)
+    2. [Configure Kubernetes](#configure-kubernetes)
 
 # Introduction
 
@@ -36,8 +39,17 @@ ArmoniK needs a single or different storage to store its different types of data
 * Lease provider
 * External cache
 
+> **_NOTE:_** External cache is optional, and it is necessary only for HTC Mock sample !
+
 The endpoint urls and access rights/connection strings to these storage resources must be passed to ArmoniK via a
 configuration file.
 
-If these storage resources are not already created, you can follow [Storage creation for ArmoniK](../../storage/README.md)
+If these storage resources are not already created, you can
+follow [Storage creation for ArmoniK](../../storage/README.md)
 to create the needed storage.
+
+# Deploy ArmoniK
+
+## Set environment variables
+
+## Configure Kubernetes
