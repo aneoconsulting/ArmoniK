@@ -115,7 +115,7 @@ armonik = {
   storage_services = {
     object_storage_type         = "MongoDB"
     table_storage_type          = "MongoDB"
-    queue_storage_type          = "MongoDB"
+    queue_storage_type          = "Amqp"
     lease_provider_storage_type = "MongoDB"
     # Mandatory: If you want execute the HtcMock sample, you must set this parameter to ["Redis"], otherwise let it to []
     external_storage_types      = []
