@@ -6,6 +6,10 @@
 4. [Create Kubernetes secrets](#create-kubernetes-secrets)
     1. [Redis storage secret](#redis-storage-secret)
     2. [ActiveMQ storage secret](#activemq-storage-secret)
+5. [Create storages on Kubernetes](#create-storages-on-kubernetes)
+    1. [Prepare the configuration file](#prepare-the-configuration-file)
+    2. [Deploy](#deploy)
+    3. [Clean-up](#clean-up)
 
 # Introduction
 
@@ -90,7 +94,7 @@ kubectl create secret generic $ARMONIK_STORAGE_REDIS_SECRET_NAME \
 
 ## ActiveMQ storage secret
 
-ActiveMQ use a file `jetty-realm.properties`. This is the file which stores user credentials and their roles in
+ActiveMQ uses a file `jetty-realm.properties`. This is the file which stores user credentials and their roles in
 ActiveMQ. It contains custom usernames and passwords and replace the file present by default inside the container.
 
 Execute the following command to create the ActiveMQ storage secret in Kubernetes based on the `jetty-realm.properties`
@@ -101,4 +105,99 @@ name `jetty-realm.properties` in [credentials](../../credentials) directory:
 kubectl create secret generic $ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME \
         --namespace=$ARMONIK_STORAGE_NAMESPACE \
         --from-file=$ARMONIK_STORAGE_ACTIVEMQ_CREDENTIALS_DIRECTORY/jetty-realm.properties
+```
+
+# Create storages on Kubernetes
+
+## Prepare the configuration file
+
+Before deploying the storages, you must fist prepare a configuration file containing a list of the parameters of the
+storages to be created.
+
+The configuration has three components:
+
+1. Kubernetes namespace where the storage will be created:
+
+```terraform
+# Namespace of ArmoniK storage
+namespace = "armonik-storage"
+```
+
+2. List of storage to be created for each ArmoniK data:
+
+```terraform
+# Storage resources to be created
+storage = {
+  object         = "MongoDB"
+  table          = "MongoDB"
+  queue          = "MongoDB"
+  lease_provider = "MongoDB"
+  shared         = ""
+  external       = ""
+}
+```
+
+3. List of Kubernetes secrets of each storage to be created:
+
+```terraform
+# Kubernetes secrets for storage
+storage_kubernetes_secrets = {
+  mongodb  = ""
+  redis    = "redis-storage-secret"
+  activemq = "activemq-storage-secret"
+}
+```
+
+**warning:** You have an example of [configuration file](./parameters.tfvars).
+
+## Deploy
+
+Execute the following command to deploy storage:
+
+```bash
+make all CONFIG_FILE=<Your configuration file> 
+```
+
+You can also execute one of the following commands if you want to reuse the default configuration file:
+
+```bash
+make all CONFIG_FILE=parameters.tfvars 
+```
+
+or:
+
+```bash
+make all
+```
+
+The command `make all` executes three commands in the following order that you can execute separately:
+
+* `make init`
+* `make plan CONFIG_FILE=<Your configuration file>`
+* `make apply CONFIG_FILE=<Your configuration file>`
+
+After the deployment you can display the list of created resources in Kubernetes as follows:
+
+```bash
+kubectl get all -n $ARMONIK_STORAGE_NAMESPACE
+```
+
+## Clean-up
+
+**If you want** to delete all storage resources deployed as services in Kubernetes, execute the command:
+
+```bash
+make destroy CONFIG_FILE=<Your configuration file> 
+```
+
+or, if you have used the default configuration file:
+
+```bash
+make destroy
+```
+
+**If you want** to delete generated files too, execute the command:
+
+```bash
+make clean
 ```
