@@ -81,7 +81,8 @@ locals {
     }
   },
   "Amqp" : {
-    "Address" : "${var.armonik.storage_services.resources.activemq_endpoint_url}",
+    "Host" : "${var.armonik.storage_services.resources.activemq_host}",
+    "Port" : ${var.armonik.storage_services.resources.activemq_port},
     "MaxPriority" : 10,
     "QueueStorage": {
       "LockRefreshPeriodicity": "00:00:45",

@@ -76,7 +76,8 @@ variable "armonik" {
       resources                   = object({
         mongodb_endpoint_url  = string
         redis_endpoint_url    = string
-        activemq_endpoint_url = string
+        activemq_host = string
+        activemq_port = string
       })
       shared_storage              = object({
         claim_name  = string
