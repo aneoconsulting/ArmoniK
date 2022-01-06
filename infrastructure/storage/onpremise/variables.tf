@@ -17,6 +17,42 @@ variable "k8s_config_context" {
   default     = "default"
 }
 
+# Storage to be created
+variable "storage" {
+  description = "List of storage for each ArmoniK data to be created."
+  type        = object({
+    object         = string
+    table          = string
+    queue          = string
+    lease_provider = string
+    shared         = string
+    external       = string
+  })
+  default     = {
+    object         = "MongoDB"
+    table          = "MongoDB"
+    queue          = "MongoDB"
+    lease_provider = "MongoDB"
+    shared         = ""
+    external       = ""
+  }
+}
+
+# Kubernetes secrets for storage
+variable "storage_kubernetes_secrets" {
+  description = "List of Kubernetes secrets for the storage to be created"
+  type        = object({
+    mongodb  = string
+    redis    = string
+    activemq = string
+  })
+  default     = {
+    mongodb  = ""
+    redis    = "redis-storage-secret"
+    activemq = "activemq-storage-secret"
+  }
+}
+
 # MongoDB
 variable "mongodb" {
   description = "Parameters of MongoDB"
@@ -64,74 +100,5 @@ variable "activemq" {
       { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
       { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
     ]
-  }
-}
-
-# Local shared storage
-variable "local_shared_storage" {
-  description = "A local persistent volume used as NFS"
-  type        = object({
-    storage_class           = object({
-      name = string
-    })
-    persistent_volume       = object({
-      name      = string
-      size      = string
-      host_path = string
-    })
-    persistent_volume_claim = object({
-      name = string
-      size = string
-    })
-  })
-  default     = {
-    storage_class           = {
-      name = "nfs"
-    }
-    persistent_volume       = {
-      name      = "nfs-pv"
-      size      = "10Gi"
-      host_path = "/data"
-    }
-    persistent_volume_claim = {
-      name = "nfs-pvc"
-      size = "2Gi"
-    }
-  }
-}
-
-# Storage to be created
-variable "storage" {
-  description = "List of storage for each ArmoniK data to be created."
-  type        = object({
-    object         = string
-    table          = string
-    queue          = string
-    lease_provider = string
-    shared         = string
-    external       = string
-  })
-  default     = {
-    object         = "MongoDB"
-    table          = "MongoDB"
-    queue          = "MongoDB"
-    lease_provider = "MongoDB"
-    shared         = ""
-    external       = ""
-  }
-}
-
-# Kubernetes secrets for storage
-variable "storage_kubernetes_secrets" {
-  description = "List of Kubernetes secrets for the storage to be created"
-  type        = object({
-    mongodb  = string
-    redis    = string
-    activemq = string
-  })
-  default     = {
-    mongodb  = ""
-    redis    = "redis-storage-secret"
-    activemq = "activemq-storage-secret"
   }
 }
