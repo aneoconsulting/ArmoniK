@@ -25,7 +25,6 @@ variable "storage" {
     table          = string
     queue          = string
     lease_provider = string
-    shared         = string
     external       = string
   })
   default     = {
@@ -33,7 +32,6 @@ variable "storage" {
     table          = "MongoDB"
     queue          = "MongoDB"
     lease_provider = "MongoDB"
-    shared         = ""
     external       = ""
   }
 }

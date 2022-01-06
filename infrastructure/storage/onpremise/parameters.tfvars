@@ -9,7 +9,6 @@ storage = {
   table          = "MongoDB"
   queue          = "MongoDB"
   lease_provider = "MongoDB"
-  shared         = ""
   external       = ""
 }
 

@@ -136,10 +136,18 @@ kubectl create secret generic $ARMONIK_REDIS_SECRET_NAME \
 
 ActiveMQ client use a file `amqp-credentials.json`. This is the file which stores user credentials.
 
-Execute the following command to create the ActiveMQ client secret in Kubernetes based on the `amqp-credentials.json`
-created and saved in the directory `$ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY`. In this project, we have a file of
-name `amqp-credentials.json` in [credentials](../../credentials) directory. Create a Kubernetes secret for the ActiveMQ
-client:
+In this project, we have a file of name `amqp-credentials.json` in [credentials](../../credentials) directory:
+
+```json
+{
+  "Amqp": {
+    "User": "user",
+    "Password": "<GUEST_PASSWD>"
+  }
+}
+```
+
+Create a Kubernetes secret for the ActiveMQ client:
 
 ```bash
 kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME \

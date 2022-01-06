@@ -16,7 +16,8 @@ locals {
     ],
     shared         = [
       "HostPath",
-      "NFS"
+      "NFS",
+      "S3"
     ],
     external       = [
       "Redis"

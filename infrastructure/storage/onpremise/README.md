@@ -97,9 +97,15 @@ kubectl create secret generic $ARMONIK_STORAGE_REDIS_SECRET_NAME \
 ActiveMQ uses a file `jetty-realm.properties`. This is the file which stores user credentials and their roles in
 ActiveMQ. It contains custom usernames and passwords and replace the file present by default inside the container.
 
-Execute the following command to create the ActiveMQ storage secret in Kubernetes based on the `jetty-realm.properties`
-created and saved in the directory `$ARMONIK_STORAGE_ACTIVEMQ_CREDENTIALS_DIRECTORY`. In this project, we have a file of
-name `jetty-realm.properties` in [credentials](../../credentials) directory:
+In this project, we have a file of name `jetty-realm.properties` in [credentials](../../credentials) directory:
+
+```text
+#username:password,[role-name]
+admin:<ADMIN_PASSWD>,admin
+user:<GUEST_PASSWD>,guest
+```
+
+Create a Kubernetes secret for the ActiveMQ:
 
 ```bash
 kubectl create secret generic $ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME \
@@ -132,7 +138,6 @@ storage = {
   table          = "MongoDB"
   queue          = "MongoDB"
   lease_provider = "MongoDB"
-  shared         = ""
   external       = ""
 }
 ```
