@@ -69,7 +69,7 @@ resource "kubernetes_service" "seq" {
     }
   }
   spec {
-    type     = "ClusterIP"
+    type     = "LoadBalancer"
     selector = {
       app     = kubernetes_deployment.seq.metadata.0.labels.app
       type    = kubernetes_deployment.seq.metadata.0.labels.type
