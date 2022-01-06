@@ -53,7 +53,7 @@ resource "kubernetes_deployment" "redis" {
         volume {
           name = "object-storage-secret-volume"
           secret {
-            secret_name = var.redis.secret
+            secret_name = var.kubernetes_secret
             optional    = false
           }
         }

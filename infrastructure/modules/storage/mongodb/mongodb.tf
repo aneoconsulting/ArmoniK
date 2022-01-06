@@ -79,7 +79,7 @@ resource "kubernetes_service" "mongodb" {
     }
   }
   spec {
-    type     = "ClusterIP"
+    type     = "LoadBalancer"
     selector = {
       app     = kubernetes_deployment.mongodb.metadata.0.labels.app
       type    = kubernetes_deployment.mongodb.metadata.0.labels.type

@@ -57,7 +57,7 @@ resource "kubernetes_deployment" "activemq" {
         volume {
           name = "queue-storage-secret-volume"
           secret {
-            secret_name = var.activemq.secret
+            secret_name = var.kubernetes_secret
             optional    = false
           }
         }
@@ -85,7 +85,7 @@ resource "kubernetes_service" "activemq" {
     }
   }
   spec {
-    type     = "ClusterIP"
+    type     = "LoadBalancer"
     selector = {
       app     = kubernetes_deployment.activemq.metadata.0.labels.app
       type    = kubernetes_deployment.activemq.metadata.0.labels.type
