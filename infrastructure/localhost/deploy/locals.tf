@@ -39,7 +39,7 @@ locals {
       mongodb_endpoint_url  = (contains(local.list_of_storage, "mongodb") ? "mongodb://${module.mongodb.0.storage.spec.0.cluster_ip}:${module.mongodb.0.storage.spec.0.port.0.port}" : "")
       redis_endpoint_url    = (contains(local.list_of_storage, "redis") ? "${module.redis.0.storage.spec.0.cluster_ip}:${module.redis.0.storage.spec.0.port.0.port}" : "")
       activemq_host = (contains(local.list_of_storage, "amqp") ? "${module.activemq.0.storage.spec.0.cluster_ip}" : "")
-      activemq_port = (contains(local.list_of_storage, "amqp") ? "${module.activemq.0.storage.spec.0.port.0.port}" : "")
+      activemq_port = (contains(local.list_of_storage, "amqp") ? "${module.activemq.0.storage.spec.0.port.0.port}" : "0")
     }
   }
 
