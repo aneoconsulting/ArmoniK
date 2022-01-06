@@ -149,7 +149,7 @@ storage_kubernetes_secrets = {
 ```
 
 **warning:** You have an example of [configuration file](./parameters.tfvars). There is
-also [Storage parameters docs](../../modules/storage/README.md).
+also [parameters doc of storage deployment](../../docs/deploy/storage-deploy-config.md).
 
 ## Deploy
 
