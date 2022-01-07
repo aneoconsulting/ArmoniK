@@ -95,9 +95,9 @@ stages:
           python3 tools/modify_parameters.py infrastructure/localhost/deploy/parameters.tfvars infrastructure/localhost/deploy/parameters.tfvars.json \
             --worker-tag $(TAGVar) --worker-img armonik_worker_htcmock \
             --storage-external Redis
-          cat deploy/parameters.tfvars.json
-
+          
           cd ./infrastructure/localhost/deploy
+          cat parameters.tfvars.json
           make all CONFIG_FILE=parameters.tfvars.json
         displayName: Deploy Infra With HtcMock Worker
       - script: |
