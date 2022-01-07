@@ -151,5 +151,5 @@ kubectl create secret generic $ARMONIK_QUEUE_STORAGE_SECRET_NAME \
         
 kubectl create secret generic $ARMONIK_QUEUE_STORAGE_SECRET_NAME_FOR_ARMONIK_COMPONENTS \
         --namespace=$ARMONIK_NAMESPACE \
-        --from-file=$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY/credentials.json
+        --from-file=amqp_credentials=$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY/credentials.json
 ```

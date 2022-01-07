@@ -83,6 +83,7 @@ locals {
   "Amqp" : {
     "Host" : "${var.armonik.storage_services.resources.activemq_host}",
     "Port" : ${var.armonik.storage_services.resources.activemq_port},
+    "CredentialsPath": "/amqp/amqp_credentials",
     "MaxPriority" : 10,
     "QueueStorage": {
       "LockRefreshPeriodicity": "00:00:45",
