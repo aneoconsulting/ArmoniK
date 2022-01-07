@@ -37,24 +37,11 @@ stages:
         displayName: Install Terraform
       - script: bash tools/install/k3s.sh
         displayName: Install k3s
+      - script: bash tools/install/init_kube.sh
+        displayName: Init Kube
       - script: |
           set -ex
-          cd infrastructure/localhost
-          cp utils/envvars.conf ./envvars.conf
-          source ./envvars.conf
-
-          kubectl create namespace $ARMONIK_NAMESPACE
-          kubectl create secret generic $ARMONIK_OBJECT_STORAGE_SECRET_NAME \
-            --namespace=$ARMONIK_NAMESPACE \
-            --from-file=cert_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.crt \
-            --from-file=key_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.key \
-            --from-file=ca_cert_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/ca.crt \
-            --from-file=certificate_pfx=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/certificate.pfx
-          kubectl create secret generic $ARMONIK_QUEUE_STORAGE_SECRET_NAME \
-            --namespace=$ARMONIK_NAMESPACE \
-            --from-file=$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY/jetty-realm.properties
-          cd ./deploy
-
+          cd ./infrastructure/localhost/deploy
           make all CONFIG_FILE=parameters.tfvars
         displayName: Deploy Infra With Default Worker
       - script: |
@@ -93,6 +80,8 @@ stages:
         displayName: Install Terraform
       - script: bash tools/install/k3s.sh
         displayName: Install k3s
+      - script: bash tools/install/init_kube.sh
+        displayName: Init Kube
       - script: |
           set -ex
           cd source/ArmoniK.Samples
@@ -102,28 +91,15 @@ stages:
         displayName: Build HtcMock Worker Image
       - script: |
           set -ex
-          cd infrastructure/localhost
-          cp utils/envvars.conf ./envvars.conf
-          source ./envvars.conf
-
-          kubectl create namespace $ARMONIK_NAMESPACE
-          kubectl create secret generic $ARMONIK_OBJECT_STORAGE_SECRET_NAME \
-            --namespace=$ARMONIK_NAMESPACE \
-            --from-file=cert_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.crt \
-            --from-file=key_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/cert.key \
-            --from-file=ca_cert_file=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/ca.crt \
-            --from-file=certificate_pfx=$ARMONIK_OBJECT_STORAGE_CERTIFICATES_DIRECTORY/certificate.pfx
-          kubectl create secret generic $ARMONIK_QUEUE_STORAGE_SECRET_NAME \
-            --namespace=$ARMONIK_NAMESPACE \
-            --from-file=$ARMONIK_QUEUE_STORAGE_CREDENTIALS_DIRECTORY/jetty-realm.properties
-
           pip3 install python-hcl2
-          python3 ../../tools/modify_parameters.py deploy/parameters.tfvars deploy/parameters.tfvars.json --worker-tag $(TAGVar) --worker-img armonik_worker_htcmock --storage-external Redis
+          python3 tools/modify_parameters.py infrastructure/localhost/deploy/parameters.tfvars infrastructure/localhost/deploy/parameters.tfvars.json \
+            --worker-tag $(TAGVar) --worker-img armonik_worker_htcmock \
+            --storage-external Redis
           cat deploy/parameters.tfvars.json
 
-          cd ./deploy
+          cd ./infrastructure/localhost/deploy
           make all CONFIG_FILE=parameters.tfvars.json
-        displayName: Deploy Infra With Default Worker
+        displayName: Deploy Infra With HtcMock Worker
       - script: |
           set -ex
 
