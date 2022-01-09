@@ -59,7 +59,7 @@ variable "storage" {
   default     = {
     object         = "MongoDB"
     table          = "MongoDB"
-    queue          = "MongoDB"
+    queue          = "Amqp"
     lease_provider = "MongoDB"
     shared         = "HostPath"
     external       = ""

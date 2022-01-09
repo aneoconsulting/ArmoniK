@@ -20,7 +20,7 @@ The configuration has three components:
 
 ```terraform
 # Namespace of ArmoniK storage
-namespace = "armonik-storage"
+namespace = "armonik"
 ```
 
 2. List of storage to be created for each ArmoniK data:
@@ -30,9 +30,9 @@ namespace = "armonik-storage"
 storage = {
   object         = "MongoDB"
   table          = "MongoDB"
-  queue          = "MongoDB"
+  queue          = "Amqp"
   lease_provider = "MongoDB"
-  shared         = ""
+  shared         = "HostPath"
   external       = ""
 }
 ```
