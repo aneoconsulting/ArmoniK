@@ -70,7 +70,7 @@ armonik = {
   control_plane    = {
     replicas          = 1
     image             = "dockerhubaneo/armonik_control"
-    tag               = "0.0.4"
+    tag               = "0.0.5"
     image_pull_policy = "IfNotPresent"
     port              = 5001
   }
@@ -81,7 +81,7 @@ armonik = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.0.4"
+      tag               = "0.0.5"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "100m"
@@ -98,7 +98,7 @@ armonik = {
         name              = "compute"
         port              = 80
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.0.4"
+        tag               = "0.0.5"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "920m"
