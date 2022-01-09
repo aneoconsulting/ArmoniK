@@ -4,6 +4,6 @@ output "needed_storage" {
 }
 
 # List of resources to deploy
-output "list_of_storage" {
-  value = local.list_of_storage
+output "list_storage" {
+  value = local.list_storage
 }

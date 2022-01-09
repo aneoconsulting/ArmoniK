@@ -20,20 +20,8 @@ variable "k8s_config_context" {
 # Storage to be created
 variable "storage" {
   description = "List of storage for each ArmoniK data to be created."
-  type        = object({
-    object         = string
-    table          = string
-    queue          = string
-    lease_provider = string
-    external       = string
-  })
-  default     = {
-    object         = "MongoDB"
-    table          = "MongoDB"
-    queue          = "MongoDB"
-    lease_provider = "MongoDB"
-    external       = ""
-  }
+  type        = list(string)
+  default     = ["MongoDB"]
 }
 
 # Kubernetes secrets for storage

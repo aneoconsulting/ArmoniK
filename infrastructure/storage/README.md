@@ -12,7 +12,7 @@ This project presents an example of source codes to create storage resources for
 # Allowed storage resources
 
 To date, the storage resources allowed for each type of ArmoniK data are defined
-in [allowed storage resources](../modules/needed-storage/allowed_storage.tf).
+in [allowed storage resources](../modules/needed-storage/storage_for_each_armonik_data.tf).
 
 # Storage deployment
 

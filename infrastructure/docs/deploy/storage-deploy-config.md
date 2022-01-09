@@ -27,7 +27,7 @@ k8s_config_context = string
 # Storage
 
 The list of storage for each ArmoniK data
-type ([Allowed storage for ArmoniK](../../modules/needed-storage/allowed_storage.tf)).
+type ([Allowed storage for ArmoniK](../../modules/needed-storage/storage_for_each_armonik_data.tf)).
 
 ```terraform
 storage = {

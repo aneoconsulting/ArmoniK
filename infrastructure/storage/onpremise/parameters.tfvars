@@ -3,14 +3,8 @@ namespace = "armonik-storage"
 
 # Storage resources to be created
 # Warning: the allowed storage for ArmoniK are defined in:
-# "../../modules/needed-storage/allowed_storage.tf"
-storage = {
-  object         = "MongoDB"
-  table          = "MongoDB"
-  queue          = "MongoDB"
-  lease_provider = "MongoDB"
-  external       = ""
-}
+# "../../modules/needed-storage/storage_for_each_armonik_data.tf"
+storage = ["MongoDB"]
 
 # Kubernetes secrets for storage
 storage_kubernetes_secrets = {
