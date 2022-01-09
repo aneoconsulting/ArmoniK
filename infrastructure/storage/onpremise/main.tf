@@ -6,7 +6,7 @@ module "storage" {
 
 # MongoDB
 module "mongodb" {
-  count             = (contains(module.storage.list_of_storage, "mongodb") ? 1 : 0)
+  count             = (contains(module.storage.list_storage, "mongodb") ? 1 : 0)
   source            = "../../modules/storage/mongodb"
   namespace         = var.namespace
   mongodb           = var.mongodb
@@ -15,7 +15,7 @@ module "mongodb" {
 
 # Redis
 module "redis" {
-  count             = (contains(module.storage.list_of_storage, "redis") ? 1 : 0)
+  count             = (contains(module.storage.list_storage, "redis") ? 1 : 0)
   source            = "../../modules/storage/redis"
   namespace         = var.namespace
   redis             = var.redis
@@ -24,7 +24,7 @@ module "redis" {
 
 # ActiveMQ
 module "activemq" {
-  count             = (contains(module.storage.list_of_storage, "amqp") ? 1 : 0)
+  count             = (contains(module.storage.list_storage, "amqp") ? 1 : 0)
   source            = "../../modules/storage/activemq"
   namespace         = var.namespace
   activemq          = var.activemq

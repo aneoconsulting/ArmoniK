@@ -30,24 +30,12 @@ The list of storage for each ArmoniK data
 type ([Allowed storage for ArmoniK](../../modules/needed-storage/storage_for_each_armonik_data.tf)).
 
 ```terraform
-storage = {
-  object         = string
-  table          = string
-  queue          = string
-  lease_provider = string
-  shared         = string
-  external       = string
-}
+storage = list(string)
 ```
 
 | Parameter             | Description | Type | Default |
 |:----------------------|:------------|:-----|:--------|
-| `object` | Storage name of object data | string | `"MongoDB"` |
-| `table` | Storage name of table data | string | `"MongoDB"` |
-| `queue` | Storage name of queue data | string | `"MongoDB"` |
-| `lease_proviser` | Storage name of lease provider data | string | `"MongoDB"` |
-| `shared` | Storage name of shared data | string | `""` |
-| `external` | Storage name of external data | string | `""` |
+| `storage` | List of storage to be deployed | list(string) | `["MongoDB", "Amqp"]` |
 
 # Secrets
 
