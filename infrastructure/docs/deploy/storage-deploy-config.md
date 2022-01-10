@@ -35,7 +35,7 @@ storage = list(string)
 
 | Parameter             | Description | Type | Default |
 |:----------------------|:------------|:-----|:--------|
-| `storage` | List of storage to be deployed | list(string) | `["MongoDB", "Amqp"]` |
+| `storage` | List of storage to be deployed | list(string) | `["MongoDB", "Amqp", "Redis"]` |
 
 # Secrets
 
