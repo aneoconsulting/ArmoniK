@@ -152,7 +152,7 @@ also [parameters doc of storage deployment](../../docs/deploy/storage-deploy-con
 
 ## Deploy
 
-position yourself in `onpremise/` from the current directory:
+position yourself in `onpremise/` from the [current directory](..):
 
 ```bash
 cd onpremise/
