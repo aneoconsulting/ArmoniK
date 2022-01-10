@@ -58,3 +58,50 @@ resource "aws_security_group" "master_sg" {
   }
 }
 
+# For services
+resource "aws_security_group" "services_sg" {
+  name        = "services"
+  description = "Allow Redis, ActiveMQ, MongoDB and control plane inbound traffic"
+  vpc_id      = data.aws_vpc.default_vpc.id
+
+  ingress {
+    description = "Redis"
+    from_port   = 6379
+    to_port     = 6379
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "ActiveMQ"
+    from_port   = 5672
+    to_port     = 5672
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "ActiveMQ Web Console"
+    from_port   = 8161
+    to_port     = 8161
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "MongoDB"
+    from_port   = 27017
+    to_port     = 27017
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "ArmoniK Control plane"
+    from_port   = 5001
+    to_port     = 5001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+

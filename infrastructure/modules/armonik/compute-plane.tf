@@ -135,7 +135,7 @@ resource "kubernetes_deployment" "compute_plane" {
             name = "shared-volume"
             host_path {
               path = var.storage_endpoint_url.shared.path
-              type = ""
+              type = "Directory"
             }
           }
         }
@@ -146,6 +146,7 @@ resource "kubernetes_deployment" "compute_plane" {
             nfs {
               path   = var.storage_endpoint_url.shared.path
               server = var.storage_endpoint_url.shared.host
+              read_only = true
             }
           }
         }
