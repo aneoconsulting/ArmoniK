@@ -152,12 +152,6 @@ also [parameters doc of storage deployment](../../docs/deploy/storage-deploy-con
 
 ## Deploy
 
-position yourself in `onpremise/` from the [current directory](..):
-
-```bash
-cd onpremise/
-```
-
 Execute the following command to deploy storage:
 
 ```bash
