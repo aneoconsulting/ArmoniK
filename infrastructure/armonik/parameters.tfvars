@@ -11,34 +11,28 @@ storage = {
   queue          = "Amqp"
   lease_provider = "MongoDB"
   shared         = "HostPath"
-  # Mandatory: If you want execute the HTC Mock sample, you must set this parameter to "Redis", otherwise let it to ""
-  external       = "Redis"
+  external       = ""
 }
 
 # Endpoints and secrets of storage resources
 storage_endpoint_url = {
-  mongodb  = {
+  mongodb        = {
     url    = "mongodb://192.168.1.13:27017"
     secret = ""
   }
-  redis    = {
+  redis          = {
     url    = ""
-    secret = ""
+    secret = "redis-storage-secret"
   }
-  activemq = {
+  activemq       = {
     host   = "192.168.1.13"
     port   = "5672"
     secret = "activemq-storage-secret"
   }
-  shared   = {
+  shared_storage = {
     host   = ""
     secret = ""
-    # Path to external shared storage from which worker containers upload .dll
     path   = "/data"
-  }
-  external = {
-    url    = "192.168.1.13:6379"
-    secret = "external-redis-storage-secret"
   }
 }
 
@@ -46,7 +40,7 @@ storage_endpoint_url = {
 control_plane = {
   replicas          = 1
   image             = "dockerhubaneo/armonik_control"
-  tag               = "0.0.6"
+  tag               = "0.0.5"
   image_pull_policy = "IfNotPresent"
   port              = 5001
 }
@@ -60,7 +54,7 @@ compute_plane = {
   # ArmoniK polling agent
   polling_agent = {
     image             = "dockerhubaneo/armonik_pollingagent"
-    tag               = "0.0.6"
+    tag               = "0.0.5"
     image_pull_policy = "IfNotPresent"
     limits            = {
       cpu    = "100m"
@@ -76,11 +70,8 @@ compute_plane = {
     {
       name              = "worker"
       port              = 80
-      # [Default]
       image             = "dockerhubaneo/armonik_worker_dll"
-      # HTC Mock
-      #image             = "dockerhubaneo/armonik_worker_htcmock"
-      tag               = "0.0.6"
+      tag               = "0.0.5"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "920m"

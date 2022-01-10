@@ -78,27 +78,23 @@ variable "compute_plane" {
 variable "storage_endpoint_url" {
   description = "Endpoints and secrets of storage resources"
   type        = object({
-    mongodb  = object({
+    mongodb        = object({
       url    = string
       secret = string
     })
-    redis    = object({
+    redis          = object({
       url    = string
       secret = string
     })
-    activemq = object({
+    activemq       = object({
       host   = string
       port   = string
       secret = string
     })
-    shared   = object({
+    shared_storage = object({
       host   = string
       secret = string
       path   = string
-    })
-    external = object({
-      url    = string
-      secret = string
     })
   })
 }

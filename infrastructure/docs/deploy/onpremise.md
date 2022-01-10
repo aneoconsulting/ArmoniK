@@ -69,12 +69,6 @@ export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your directory path of the Redis ce
 # Name of Redis secret
 export ARMONIK_REDIS_SECRET_NAME=<You kubernetes secret for the Redis storage>
 
-# Directory path of the certificates of external Redis
-export ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY=<Your directory path of the certificates of external Redis>
-    
-# Name of secret of external Redis
-export ARMONIK_EXTERNAL_REDIS_SECRET_NAME=<You kubernetes secret for the external Redis storage>
-
 # Directory path of the ActiveMQ credentials
 export ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY=<Your directory path of the ActiveMQ credentials>
     
@@ -127,20 +121,15 @@ certificate (`cert.crt`) and a private key (`cert.key`). In addition, it is nece
 file (`ca.crt`) or path to be used as a trusted root when validating certificates. A SSL certificate of type `PFX` is
 also used (`certificate.pfx`).
 
-Execute the following command to create the Redis client secrets (Redis for ArmoniK and external Redis used by HTC Mock
-smaple) in Kubernetes. In this project, we have certificates for test in [credentials](../../credentials) directory.
-Create a Kubernetes secret for Redis client:
+Execute the following command to create the Redis client secret in Kubernetes based on the certificates created and
+saved in the directory `$ARMONIK_REDIS_CERTIFICATES_DIRECTORY`. In this project, we have certificates for test
+in [credentials](../../credentials) directory. Create a Kubernetes secret for Redis client:
 
 ```bash
 kubectl create secret generic $ARMONIK_REDIS_SECRET_NAME \
         --namespace=$ARMONIK_NAMESPACE \
         --from-file=ca_cert_file=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/ca.crt \
         --from-file=certificate_pfx=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/certificate.pfx
-        
-kubectl create secret generic $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
-        --namespace=$ARMONIK_NAMESPACE \
-        --from-file=ca_cert_file=$ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY/ca.crt \
-        --from-file=certificate_pfx=$ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY/certificate.pfx
 ```
 
 ## ActiveMQ storage

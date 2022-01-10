@@ -38,7 +38,7 @@ export ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the Activ
 
 **Mandatory:** To set these environment variables, for example:
 
-1. position yourself in `infrastructure/storage/onpremise` from the **root** of the repository.
+1. position yourself in `infrastructure/storage/onpremise/` from the **root** of the repository.
 
 2. copy the [template file](../../utils/envvars-storage.conf):
 
@@ -133,7 +133,7 @@ namespace = "armonik-storage"
 
 ```terraform
 # Storage resources to be created
-storage = ["MongoDB", "Amqp", "Redis"]
+storage = ["MongoDB", "Amqp"]
 ```
 
 3. List of Kubernetes secrets of each storage to be created:
