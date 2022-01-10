@@ -22,8 +22,8 @@ storage_endpoint_url = {
     secret = ""
   }
   redis    = {
-    url    = "192.168.1.13:6379"
-    secret = "redis-storage-secret"
+    url    = ""
+    secret = ""
   }
   activemq = {
     host   = "192.168.1.13"
@@ -38,7 +38,7 @@ storage_endpoint_url = {
   }
   external = {
     url    = "192.168.1.13:6379"
-    secret = "redis-storage-secret"
+    secret = "external-redis-storage-secret"
   }
 }
 

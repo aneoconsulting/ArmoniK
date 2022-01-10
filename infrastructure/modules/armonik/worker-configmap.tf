@@ -56,7 +56,7 @@ locals {
     }
   },
   "Redis": {
-    "EndpointUrl": "${var.storage_endpoint_url.redis.url}",
+    "EndpointUrl": "${var.storage_endpoint_url.external.url}",
     "SslHost": "127.0.0.1",
     "Timeout": 3000,
     "CaCertPath": "/certificates/ca_cert_file",

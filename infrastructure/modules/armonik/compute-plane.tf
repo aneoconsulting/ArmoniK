@@ -164,7 +164,7 @@ resource "kubernetes_deployment" "compute_plane" {
           content {
             name = "redis-secret-volume"
             secret {
-              secret_name = var.storage_endpoint_url.redis.secret
+              secret_name = var.storage_endpoint_url.external.secret
               optional    = false
             }
           }
