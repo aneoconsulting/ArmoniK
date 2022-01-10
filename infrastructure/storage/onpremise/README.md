@@ -133,7 +133,7 @@ namespace = "armonik-storage"
 
 ```terraform
 # Storage resources to be created
-storage = ["MongoDB", "Amqp"]
+storage = ["MongoDB", "Amqp", "Redis"]
 ```
 
 3. List of Kubernetes secrets of each storage to be created:
