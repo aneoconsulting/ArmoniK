@@ -62,6 +62,7 @@ variable "storage" {
     queue          = "Amqp"
     lease_provider = "MongoDB"
     shared         = "HostPath"
+    # Mandatory: If you want execute the HTC Mock sample, you must set this parameter to "Redis", otherwise let it to ""
     external       = ""
   }
 }
@@ -70,43 +71,52 @@ variable "storage" {
 variable "storage_endpoint_url" {
   description = "Endpoints and secrets of storage resources"
   type        = object({
-    mongodb        = object({
+    mongodb  = object({
       url    = string
       secret = string
     })
-    redis          = object({
+    redis    = object({
       url    = string
       secret = string
     })
-    activemq       = object({
+    activemq = object({
       host   = string
       port   = string
       secret = string
     })
-    shared_storage = object({
+    shared   = object({
       host   = string
       secret = string
       path   = string
     })
+    external = object({
+      url    = string
+      secret = string
+    })
   })
   default     = {
-    mongodb        = {
+    mongodb  = {
       url    = ""
       secret = ""
     }
-    redis          = {
+    redis    = {
       url    = ""
       secret = ""
     }
-    activemq       = {
+    activemq = {
       host   = ""
       port   = ""
       secret = ""
     }
-    shared_storage = {
+    shared   = {
       host   = ""
       secret = ""
+      # Path to external shared storage from which worker containers upload .dll
       path   = "/data"
+    }
+    external = {
+      url    = ""
+      secret = ""
     }
   }
 }

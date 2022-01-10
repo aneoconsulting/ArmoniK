@@ -134,8 +134,7 @@ resource "kubernetes_deployment" "compute_plane" {
           content {
             name = "shared-volume"
             host_path {
-              path = var.storage_endpoint_url.shared_storage.path
-              type = ""
+              path = var.storage_endpoint_url.shared.path
             }
           }
         }
@@ -144,8 +143,8 @@ resource "kubernetes_deployment" "compute_plane" {
           content {
             name = "shared-volume"
             nfs {
-              path   = var.storage_endpoint_url.shared_storage.path
-              server = var.storage_endpoint_url.shared_storage.host
+              path   = var.storage_endpoint_url.shared.path
+              server = var.storage_endpoint_url.shared.host
             }
           }
         }
@@ -164,7 +163,7 @@ resource "kubernetes_deployment" "compute_plane" {
           content {
             name = "redis-secret-volume"
             secret {
-              secret_name = var.storage_endpoint_url.redis.secret
+              secret_name = var.storage_endpoint_url.external.secret
               optional    = false
             }
           }

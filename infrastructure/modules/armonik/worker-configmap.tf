@@ -3,7 +3,7 @@ locals {
   worker_config = <<EOF
 {
   "target_grpc_sockets_path": "/cache",
-  "target_data_path": "${var.storage_endpoint_url.shared_storage.path}",
+  "target_data_path": "/data",
   "Logging": {
     "LogLevel": {
       "Default": "Information",
