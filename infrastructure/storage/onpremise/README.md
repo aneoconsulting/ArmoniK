@@ -38,12 +38,12 @@ export ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the Activ
 
 **Mandatory:** To set these environment variables, for example:
 
-1. position yourself in `infrastructure/storage/onpremise/` from the **root** of the repository.
+1. position yourself in `infrastructure/storage/` from the **root** of the repository.
 
 2. copy the [template file](../../utils/envvars-storage.conf):
 
     ```bash
-    cp  ../../utils/envvars-storage.conf ./envvars.conf
+    cp  ../utils/envvars-storage.conf ./envvars.conf
     ```
 
 3. modify the values of variables if needed in `./envvars.conf`
@@ -151,6 +151,12 @@ storage_kubernetes_secrets = {
 also [parameters doc of storage deployment](../../docs/deploy/storage-deploy-config.md).
 
 ## Deploy
+
+position yourself in `onpremise/` from the current directory:
+
+```bash
+cd onpremise/
+```
 
 Execute the following command to deploy storage:
 
