@@ -6,13 +6,8 @@ import sys
 def findTag(imgs):
     tags = []
     for i in imgs:
-        if i['Repository'] == 'dockerhubaneo/armonik_compute':
+        if i['Repository'].startswith('dockerhubaneo') and i['Tag'].startswith('dev'):
             tags.append(i['Tag'])
-        elif i['Repository'] == 'dockerhubaneo/armonik_control':
-            tags.append(i['Tag'])
-        elif i['Repository'] == 'dockerhubaneo/armonik_pollingagent':
-            tags.append(i['Tag'])
-    tags = [t for t in tags if t.startswith('dev')]
     if len(tags) > 0:
         tag = sorted(tags).pop()
         return tag
@@ -32,7 +27,7 @@ print(tag)
 processes = []
 processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_control:{tag} -f src/Control/src/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_pollingagent:{tag} -f src/Compute/PollingAgent/src/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
-processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_worker_htcmock:{tag} -f Samples/HtcMock/GridWorker/src/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
+#processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_worker_htcmock:{tag} -f Samples/HtcMock/GridWorker/src/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 processes.append(subprocess.Popen(f'docker build -t dockerhubaneo/armonik_worker_dll:{tag} -f DevelopmentKit/csharp/WorkerApi/ArmoniK.DevelopmentKit.WorkerApi/Dockerfile .', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 
 for p in processes:
@@ -45,9 +40,4 @@ if any([p.returncode for p in processes]):
             print(p.communicate()[1].decode('utf-8'))
     sys.exit(1)
 
-os.popen(f'sed s/dev-[0-9a-zA-Z]*/{tag}/g -i ../../infrastructure/localhost/deploy/parameters.tfvars')
 print(tag)
-
-# kubectl logs -n armonik svc/control-plane
-# kubectl logs -n armonik deployment/compute-plane-0 -c polling-agent
-# kubectl logs -n armonik deployment/compute-plane-0 -c compute-0
