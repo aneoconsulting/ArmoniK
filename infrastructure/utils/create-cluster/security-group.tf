@@ -1,3 +1,8 @@
+# Node Port for kubernetes services
+locals {
+  node_port = range(30000, 32768)
+}
+
 # For worker
 resource "aws_security_group" "worker_sg" {
   name        = "worker"
@@ -110,6 +115,16 @@ resource "aws_security_group" "services_sg" {
     to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  dynamic "ingress" {
+    for_each = local.node_port
+    content {
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
 }
 

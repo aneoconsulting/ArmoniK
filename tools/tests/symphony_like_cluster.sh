@@ -5,7 +5,7 @@ git submodule update --init
 git pull origin main
 git checkout main
 
-export Grpc__Endpoint="http://52.37.128.106:5001"
+export Grpc__Endpoint="http://34.222.110.169:5001"
 
 cd Samples/SymphonyLike/
 dotnet publish --self-contained -r linux-x64 SymphonyLike.sln

@@ -18,7 +18,7 @@ storage = {
 # Endpoints and secrets of storage resources
 storage_endpoint_url = {
   mongodb  = {
-    url    = "mongodb://172.31.18.27:27017"
+    url    = "mongodb://34.222.110.169:27017"
     secret = ""
   }
   redis    = {
@@ -26,18 +26,18 @@ storage_endpoint_url = {
     secret = ""
   }
   activemq = {
-    host   = "172.31.18.27"
+    host   = "34.222.60.103"
     port   = "5672"
     secret = "activemq-storage-secret"
   }
   shared   = {
-    host   = "172.31.18.27"
+    host   = "172.31.20.147"
     secret = ""
     # Path to external shared storage from which worker containers upload .dll
     path   = "/data"
   }
   external = {
-    url    = "172.31.18.27"
+    url    = "52.37.128.106"
     secret = "external-redis-storage-secret"
   }
 }
