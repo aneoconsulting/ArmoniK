@@ -105,10 +105,16 @@ where:
 
 **warning:** the end of the output of this command display the join command to execute on worker nodes.
 
-2. Install the CNI network plugin:
+2. Install the Tigera Calico operator and custom resource definitions:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+```
+
+3. Install Calico by creating the necessary custom resource:
+
+```bash
+kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
 ```
 
 ## On worker nodes
