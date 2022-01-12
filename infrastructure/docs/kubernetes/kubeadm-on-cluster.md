@@ -90,7 +90,7 @@ sudo systemctl restart docker
 1. Initialize kubeadm on master node:
 
 ```bash
-sudo kubeadm init --apiserver-cert-extra-sans=<master-public-address-ip> --pod-network-cidr=172.31.0.0/16
+sudo kubeadm init --apiserver-cert-extra-sans=<master-public-address-ip> --pod-network-cidr=192.168.0.0/16
 
 mkdir -p $HOME/.kube
 # Copy conf file to .kube directory for current user
@@ -108,9 +108,10 @@ where:
 2. Install the Calico:
 
 ```bash
-curl -s https://docs.projectcalico.org/v3.8/manifests/calico.yaml > calico.yaml
-POD_CIDR="172.31.0.0/16" sed -i -e "s?192.168.0.0/16?$POD_CIDR?g" calico.yaml
-kubectl apply -f calico.yaml
+#curl -s https://docs.projectcalico.org/manifests/calico.yaml > calico.yaml
+#POD_CIDR="172.31.0.0/16" sed -i -e "s?192.168.0.0/16?$POD_CIDR?g" calico.yaml
+#kubectl apply -f calico.yaml
+kubectl apply -y https://docs.projectcalico.org/manifests/calico.yaml
 ```
 
 ## On worker nodes
