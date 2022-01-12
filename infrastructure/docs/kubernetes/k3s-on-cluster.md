@@ -29,7 +29,7 @@ Use the following procedure to install and configure Kubernetes on the master no
 * If you are on the master, execute:
 
 ```bash
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--tls-san <master-public-address-ip> --cluster-cidr 172.31.0.0/16" sh -s - --write-kubeconfig-mode 644
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--tls-san <master-public-address-ip> --cluster-cidr 192.168.0.0/16" sh -s - --write-kubeconfig-mode 644
 mkdir -p ~/.kube
 cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 ```
@@ -37,7 +37,7 @@ cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 * If not, you can execute the following remote command:
 
 ```bash
-ssh -i <public-ssh-key-path> -o "StrictHostKeyChecking no" <user>@<master-public-address-ip> 'curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--tls-san <master-public-address-ip> --cluster-cidr 172.31.0.0/16" sh -s - --write-kubeconfig-mode 644 ; mkdir -p ~/.kube ; cp /etc/rancher/k3s/k3s.yaml ~/.kube/config'
+ssh -i <public-ssh-key-path> -o "StrictHostKeyChecking no" <user>@<master-public-address-ip> 'curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--tls-san <master-public-address-ip> --cluster-cidr 192.168.0.0/16" sh -s - --write-kubeconfig-mode 644 ; mkdir -p ~/.kube ; cp /etc/rancher/k3s/k3s.yaml ~/.kube/config'
 ```
 
 where :

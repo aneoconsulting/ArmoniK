@@ -102,28 +102,15 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 where:
 
 * `<master-public-address-ip>` is the public IP of the master node.
-* you can replace `172.31.0.0/16` by your own network CIDR.
 
 **warning:** the end of the output of this command display the join command to execute on worker nodes.
 
-2. Install the Tigera Calico operator and custom resource
-   definitions ([tigera-operator.yaml](../../utils/create-cluster/manifests/tigera-operator.yaml)):
+2. Install the Calico:
 
 ```bash
-kubectl create -f ./manifests/tigera-operator.yaml
-```
-
-3. Install Calico by creating the necessary custom resource. First you must replace `cidr: 172.31.0.0/16` by you own
-   network CIDR in [custom-resources.yaml](../../utils/create-cluster/manifests/custom-resources.yaml):
-
-```bash
-kubectl create -f ./manifests/custom-resources.yaml
-```
-
-4. **If you want**, you can remove the taints on the master so that you can schedule pods on it:
-
-```bash
-kubectl taint nodes --all node-role.kubernetes.io/master-
+curl -s https://docs.projectcalico.org/v3.8/manifests/calico.yaml > calico.yaml
+POD_CIDR="172.31.0.0/16" sed -i -e "s?192.168.0.0/16?$POD_CIDR?g" calico.yaml
+kubectl apply -f calico.yaml
 ```
 
 ## On worker nodes
