@@ -90,7 +90,7 @@ sudo systemctl restart docker
 1. Initialize kubeadm on master node:
 
 ```bash
-sudo kubeadm init --apiserver-cert-extra-sans=<master-public-address-ip> --pod-network-cidr=192.168.0.0/16
+sudo kubeadm init --apiserver-cert-extra-sans=<master-public-address-ip> --pod-network-cidr=172.31.0.0/16
 
 mkdir -p $HOME/.kube
 # Copy conf file to .kube directory for current user
@@ -102,19 +102,22 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 where:
 
 * `<master-public-address-ip>` is the public IP of the master node.
+* you can replace `172.31.0.0/16` by your own network CIDR.
 
 **warning:** the end of the output of this command display the join command to execute on worker nodes.
 
-2. Install the Tigera Calico operator and custom resource definitions:
+2. Install the Tigera Calico operator and custom resource
+   definitions ([tigera-operator.yaml](../../utils/create-cluster/manifests/tigera-operator.yaml)):
 
 ```bash
-kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
+kubectl create -f ./manifests/tigera-operator.yaml
 ```
 
-3. Install Calico by creating the necessary custom resource:
+3. Install Calico by creating the necessary custom resource. First you must replace `cidr: 172.31.0.0/16` by you own
+   network CIDR in [custom-resources.yaml](../../utils/create-cluster/manifests/custom-resources.yaml):
 
 ```bash
-kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
+kubectl create -f ./manifests/custom-resources.yaml
 ```
 
 4. **If you want**, you can remove the taints on the master so that you can schedule pods on it:
