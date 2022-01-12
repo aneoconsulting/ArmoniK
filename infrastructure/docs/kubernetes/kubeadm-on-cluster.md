@@ -90,7 +90,7 @@ sudo systemctl restart docker
 1. Initialize kubeadm on master node:
 
 ```bash
-sudo kubeadm init --apiserver-cert-extra-sans=<master-public-address-ip>
+sudo kubeadm init --apiserver-cert-extra-sans=<master-public-address-ip> --pod-network-cidr=192.168.0.0/16
 
 mkdir -p $HOME/.kube
 # Copy conf file to .kube directory for current user
@@ -115,6 +115,12 @@ kubectl create -f https://docs.projectcalico.org/manifests/tigera-operator.yaml
 
 ```bash
 kubectl create -f https://docs.projectcalico.org/manifests/custom-resources.yaml
+```
+
+4. **If you want**, you can remove the taints on the master so that you can schedule pods on it:
+
+```bash
+kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
 ## On worker nodes
