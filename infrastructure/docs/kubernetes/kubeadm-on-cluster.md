@@ -7,6 +7,7 @@
     1. [On master node](#on-master-node)
     2. [On worker nodes](#on-worker-nodes)
 5. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
+6. [Uninstall Kubernetes](#uninstall-kubernetes)
 
 # Introduction
 
@@ -139,4 +140,35 @@ where:
 Copy `/etc/kubernetes/admin.conf` from the master on your machine located outside the cluster as `~/.kube/config`. Then
 replace `localhost` or the private address IP with the public IP of the Kubeadm server (master node). kubectl can now
 manage your Kubeadm cluster from your local machine.
+
+# Uninstall Kubernetes
+
+If you want to deprovision your cluster more cleanly, you should first drain the node and make sure that the node is
+empty, then deconfigure the node.
+
+1. Drain the nodes, where `<node name>` is the name of a node:
+
+```bash
+kubectl drain <node name> --delete-emptydir-data --force --ignore-daemonsets
+```
+
+2. Before removing the node, reset the state installed by `kubeadm` on each node:
+
+```bash
+kubeadm reset
+```
+
+3. Remove the nodes:
+
+```bash
+kubectl delete node <node name>
+```
+
+4. **If you want** you can remove Kubernetes packages:
+
+```bash
+sudo yum remove kubeadm kubectl kubelet kubernetes-cni kube*
+sudo yum autoremove
+sudo rm -rf ~/.kube
+```
 
