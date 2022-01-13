@@ -12,7 +12,7 @@ resource "kubernetes_deployment" "redis" {
     }
   }
   spec {
-    replicas     = var.redis.replicas
+    replicas = var.redis.replicas
     selector {
       match_labels = {
         app     = "storage"
@@ -74,16 +74,18 @@ resource "kubernetes_service" "redis" {
     }
   }
   spec {
-    type     = "LoadBalancer"
-    selector = {
+    type                    = "NodePort"
+    external_traffic_policy = "Local"
+    selector                = {
       app     = kubernetes_deployment.redis.metadata.0.labels.app
       type    = kubernetes_deployment.redis.metadata.0.labels.type
       service = kubernetes_deployment.redis.metadata.0.labels.service
     }
     port {
-      name     = kubernetes_deployment.redis.metadata.0.name
-      port     = var.redis.port
-      protocol = "TCP"
+      name        = kubernetes_deployment.redis.metadata.0.name
+      port        = var.redis.port
+      target_port = var.redis.port
+      protocol    = "TCP"
     }
   }
 }

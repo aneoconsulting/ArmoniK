@@ -1,6 +1,8 @@
 # Node Port for kubernetes services
 locals {
-  node_port = range(30000, 30007)
+  #node_port = range(30000-32768)
+  node_port_tcp = [179, 6379, 5672, 8161, 27017, 5001, 8080, 2379, 2380, 10250, 10251, 10252, 10255, 443, 80, 53, 9153]
+  node_port_udp = [8285, 8472, 53, 9153]
 }
 
 # For worker
@@ -69,61 +71,24 @@ resource "aws_security_group" "services_sg" {
   description = "Allow Redis, ActiveMQ, MongoDB and control plane inbound traffic"
   vpc_id      = data.aws_vpc.default_vpc.id
 
-  ingress {
-    description = "Redis"
-    from_port   = 6379
-    to_port     = 6379
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "ActiveMQ"
-    from_port   = 5672
-    to_port     = 5672
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "ActiveMQ Web Console"
-    from_port   = 8161
-    to_port     = 8161
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "MongoDB"
-    from_port   = 27017
-    to_port     = 27017
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "ArmoniK Control plane"
-    from_port   = 5001
-    to_port     = 5001
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description = "Seq"
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   dynamic "ingress" {
-    for_each = local.node_port
+    for_each = local.node_port_tcp
     content {
       description = "ArmoniK services"
       from_port   = ingress.value
       to_port     = ingress.value
       protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+
+  dynamic "ingress" {
+    for_each = local.node_port_udp
+    content {
+      description = "ArmoniK services"
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "udp"
       cidr_blocks = ["0.0.0.0/0"]
     }
   }

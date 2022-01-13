@@ -1,7 +1,7 @@
 # K8s configuration
 data "external" "k8s_config_context" {
   program     = ["bash", "k8s_config.sh"]
-  working_dir = "./scripts"
+  working_dir = "../utils/scripts"
 }
 
 provider "kubernetes" {

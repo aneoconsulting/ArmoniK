@@ -81,8 +81,9 @@ resource "kubernetes_service" "control_plane" {
     }
   }
   spec {
-    type     = "LoadBalancer"
-    selector = {
+    type                    = "NodePort"
+    external_traffic_policy = "Local"
+    selector                = {
       app     = kubernetes_deployment.control_plane.metadata.0.labels.app
       service = kubernetes_deployment.control_plane.metadata.0.labels.service
     }

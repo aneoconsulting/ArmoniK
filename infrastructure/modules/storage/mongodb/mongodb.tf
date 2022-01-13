@@ -12,7 +12,7 @@ resource "kubernetes_deployment" "mongodb" {
     }
   }
   spec {
-    replicas     = var.mongodb.replicas
+    replicas = var.mongodb.replicas
     selector {
       match_labels = {
         app     = "storage"
@@ -41,6 +41,7 @@ resource "kubernetes_deployment" "mongodb" {
             "--replSet=rs0"
           ]
           port {
+            name           = "mongodb"
             container_port = var.mongodb.port
           }
           env {
@@ -79,14 +80,18 @@ resource "kubernetes_service" "mongodb" {
     }
   }
   spec {
-    type     = "LoadBalancer"
-    selector = {
+    type                    = "NodePort"
+    external_traffic_policy = "Local"
+    selector                = {
       app     = kubernetes_deployment.mongodb.metadata.0.labels.app
       type    = kubernetes_deployment.mongodb.metadata.0.labels.type
       service = kubernetes_deployment.mongodb.metadata.0.labels.service
     }
     port {
-      port = var.mongodb.port
+      name        = kubernetes_deployment.mongodb.metadata.0.name
+      port        = var.mongodb.port
+      target_port = var.mongodb.port
+      protocol    = "TCP"
     }
   }
 }

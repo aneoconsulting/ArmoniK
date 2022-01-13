@@ -32,7 +32,7 @@ locals {
       {
         "Name": "Seq",
         "Args": {
-          "serverUrl": "http://${kubernetes_service.seq.spec.0.cluster_ip}:5341"
+          "serverUrl": "${local.seq_url}"
         }
       }
     ],
@@ -63,7 +63,7 @@ locals {
     "ClientPfxPath": "/certificates/certificate_pfx"
   },
   "Grpc": {
-    "Endpoint": "http://${kubernetes_service.control_plane.status.0.load_balancer.0.ingress.0.ip}:${kubernetes_service.control_plane.spec.0.port.0.port}"
+    "Endpoint": "${local.control_plane_url}"
   }
 }
 EOF
