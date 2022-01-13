@@ -1,17 +1,23 @@
 # Table of contents
 
 1. [Introduction](#introduction)
-2. [Install Docker](#install-docker)
-3. [Install Kubernetes](#install-kubernetes)
+2. [Prerequisites](#Prerequisites)
+3. [Install Docker](#install-docker)
+4. [Install Kubernetes](#install-kubernetes)
     1. [On master node](#on-master-node)
     2. [On worker nodes](#on-worker-nodes)
-4. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
+5. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
 
 # Introduction
 
 Hereafter we describe the instructions to install `Kubeadm` on an onpremise cluster.
 
 > **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](../../utils/create-cluster). This is useful for the development and testing only!
+
+# Prerequisites
+
+You must open the following inbound ports:
+![](../../utils/create-cluster/images/ports.png)
 
 # Install Docker
 
@@ -105,13 +111,13 @@ where:
 
 **warning:** the end of the output of this command display the join command to execute on worker nodes.
 
-2. Install the Calico:
+2. Install the network plugin Calico:
 
 ```bash
-#curl -s https://docs.projectcalico.org/manifests/calico.yaml > calico.yaml
-#POD_CIDR="172.31.0.0/16" sed -i -e "s?192.168.0.0/16?$POD_CIDR?g" calico.yaml
-#kubectl apply -f calico.yaml
-kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+curl -s https://docs.projectcalico.org/manifests/calico.yaml > calico.yaml
+sed -i -e "s?# - name: CALICO_IPV4POOL_CIDR?- name: CALICO_IPV4POOL_CIDR?g" calico.yaml
+sed -i -e 's?#   value: "192.168.0.0/16"?  value: "192.168.0.0/16"?g' calico.yaml
+kubectl apply -f calico.yaml
 ```
 
 ## On worker nodes
@@ -133,3 +139,4 @@ where:
 Copy `/etc/kubernetes/admin.conf` from the master on your machine located outside the cluster as `~/.kube/config`. Then
 replace `localhost` or the private address IP with the public IP of the Kubeadm server (master node). kubectl can now
 manage your Kubeadm cluster from your local machine.
+

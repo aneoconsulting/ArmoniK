@@ -1,12 +1,13 @@
 # Table of contents
 
 1. [Introduction](#introduction)
-2. [Install Docker](#install-docker)
-3. [Install Kubernetes](#install-kubernetes)
+2. [Prerequisites](#prerequisites)
+3. [Install Docker](#install-docker)
+4. [Install Kubernetes](#install-kubernetes)
     1. [On master node](#on-master-node)
     2. [On worker nodes](#on-worker-nodes)
-4. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
-5. [Uninstall Kubernetes](#uninstall-kubernetes)
+5. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
+6. [Uninstall Kubernetes](#uninstall-kubernetes)
 
 # Introduction
 
@@ -15,14 +16,19 @@ on an onpremise cluster.
 
 > **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](../../utils/create-cluster). This is useful for the development and testing only!
 
+# Prerequisites
+
+You must open the following inbound ports:
+![](../../utils/create-cluster/images/ports.png)
+
 # Install Docker
 
 To install docker on each node of the cluster, you can follow the instructions
 presented [here](https://docs.docker.com/engine/install/) for each distribution.
 
-# Install Kubernetes 
+# Install Kubernetes
 
-## On master node 
+## On master node
 
 Use the following procedure to install and configure Kubernetes on the master node:
 
@@ -46,7 +52,7 @@ where :
 * `<user>` the user on the master node
 * `<master-public-address-ip>` is the public IP of the master node.
 
-## On worker nodes 
+## On worker nodes
 
 Use the following command to configure the workers as follows:
 
@@ -75,13 +81,13 @@ where:
 * `<master-public-address-ip>` is the public IP of the master node.
 * `<list-public-ip-addresses-of-workers>` is the list of public IP addresses of worker nodes.
 
-# Accessing the cluster from outside 
+# Accessing the cluster from outside
 
 Copy `/etc/rancher/k3s/k3s.yaml` from the master on your machine located outside the cluster as `~/.kube/config`. Then
 replace `localhost` or the private address IP with the public with the IP the K3s server (master node). kubectl can now
 manage your K3s cluster from your local machine.
 
-# Uninstall Kubernetes 
+# Uninstall Kubernetes
 
 On each node of the cluster, execute the command:
 
