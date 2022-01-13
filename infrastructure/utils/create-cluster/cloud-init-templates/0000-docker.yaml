@@ -1,0 +1,36 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+locale: en_US.UTF-8
+
+apt_reboot_if_required: false
+package_update: true
+package_upgrade: true
+
+packages:
+  - curl
+  - telnet
+
+write_files:
+  - content: |
+      sudo amazon-linux-extras enable docker
+      sudo yum -y install docker
+      sudo systemctl start docker
+      sudo systemctl enable docker.service
+      sudo systemctl enable containerd.service
+      sudo usermod -aG docker ec2-user
+      newgrp docker
+    path: /app/install-docker.sh
+    permissions: 0755
+    owner: root
+
+runcmd:
+  - yum update -y
+  - yum upgrade -y
+  - yum install -y curl telnet
+  - bash /app/install-docker.sh

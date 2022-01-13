@@ -7,11 +7,9 @@
     3. [Kubectl](#kubectl)
     4. [Terraform](#terraform)
 3. [ArmoniK deployments](#armonik-deployments)
-    1. [Local machine](#local-machine)
-    2. [On-premise cluster](#on-premise-cluster)
-    3. [Amazon Web Services](#amazon-web-services)
+    1. [Onpremise](#onpremise)
 
-# Introduction <a name="introduction"></a>
+# Introduction
 
 ArmoniK is a high throughput compute grid project using Kubernetes. The project provides a reference architecture that
 can be used to build and adapt a modern high throughput compute solution on-premise or using Cloud services, allowing
@@ -19,16 +17,16 @@ users to submit high volumes of short and long-running tasks and scaling environ
 
 In this project, we present the different steps to deploy ArmoniK scheduler in different environments.
 
-# Software prerequisites <a name="software-prerequisites"></a>
+# Software prerequisites
 
 The following software should be installed upon your machine regardless of the environment of the deployment. This
 machine can host Kubernetes for dev/test environment, or the login machine to deploy and manage ArmoniK on a distant
 Kubernetes cluster.
 
-***Warning:*** If you have a **Windows machine** you must first install [WSL 2 and SystemD](./docs/README.wsl2.md)
+***Warning:*** If you have a **Windows machine** you must first install [WSL 2 and SystemD](./docs/wsl2.md)
 before installing the software prerequisites.
 
-## Dependencies <a name="dependencies"></a>
+## Dependencies
 
 First you must install the following packages:
 
@@ -36,7 +34,7 @@ First you must install the following packages:
 sudo apt install apt-transport-https ca-certificates curl gnupg lsb-release jq
 ```
 
-## Docker <a name="docker"></a>
+## Docker
 
 The procedure to install [Docker](https://docs.docker.com/engine/install/ubuntu/):
 
@@ -48,7 +46,7 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
 
-## Kubectl <a name="kubectl"></a>
+## Kubectl
 
 The Kubernetes CLI (kubectl), allows you to run commands against Kubernetes clusters. You must use
 a [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) version that is within one minor version
@@ -63,7 +61,7 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 kubectl version --client
 ```
 
-## Terraform <a name="terraform"></a>
+## Terraform
 
 The procedure to install [Terraform](https://www.terraform.io/docs/cli/install/apt.html):
 
@@ -73,19 +71,15 @@ sudo apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.rel
 sudo apt install terraform
 ```
 
-# ArmoniK deployments <a name="armonik-deployments"></a>
+# ArmoniK deployments
 
-## Local machine <a name="local-machine"></a>
+This section presents the list of infrastructure requirements and their configurations (Kubernetes and storage) and
+ArmoniK deployments in different environments (onpremise and cloud).
 
-You can deploy ArmoniK on your local machine, Linux machine or Windows machine on WSL 2, on a single-node of Kubernetes.
-This is useful for development and testing environment only!
+## Onpremise
 
-The different steps to deploy ArmoniK on your local machine are described [here](./localhost/README.md).
+The instructions to deploy ArmoniK on a local machine or an onpremise cluster are defined
+in [ArmoniK onpremise](./docs/deploy/onpremise.md).
 
-## On-premise cluster <a name="on-premise-cluster"></a>
 
-***TODO***
 
-## Amazon Web Services <a name="amazon-web-services"></a>
-
-***TODO***
