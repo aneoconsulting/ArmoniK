@@ -15,12 +15,12 @@ data "external" "seq_node_ip" {
 # Node IP
 locals {
   control_plane_node_ip = lookup(tomap(data.external.control_plane_node_ip.result), "node_ip", "")
-  control_plane_host    = (local.control_plane_node_ip == "" ? kubernetes_service.control_plane.status.0.load_balancer.0.ingress.0.ip : local.control_plane_node_ip)
+  control_plane_host    = (local.control_plane_node_ip == "" ? kubernetes_service.control_plane.spec.cluster_ip : local.control_plane_node_ip)
   control_plane_port    = (local.control_plane_node_ip == "" ? kubernetes_service.control_plane.spec.0.port.0.port : kubernetes_service.control_plane.spec.0.port.0.node_port)
   control_plane_url     = "http://${local.control_plane_host}:${local.control_plane_port}"
 
   seq_node_ip = lookup(tomap(data.external.seq_node_ip.result), "node_ip", "")
-  seq_host    = (local.seq_node_ip == "" ? kubernetes_service.seq.status.0.load_balancer.0.ingress.0.ip : local.seq_node_ip)
+  seq_host    = (local.seq_node_ip == "" ? kubernetes_service.seq.spec.cluster_ip : local.seq_node_ip)
   seq_port    = (local.seq_node_ip == "" ? kubernetes_service.seq.spec.0.port.0.port : kubernetes_service.seq.spec.0.port.0.node_port)
   seq_url     = "http://${local.seq_host}:${local.seq_port}"
 }

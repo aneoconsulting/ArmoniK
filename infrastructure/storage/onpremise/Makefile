@@ -24,4 +24,4 @@ destroy:
 	terraform destroy -var-file=$(CONFIG_FILE) -auto-approve
 
 clean:
-	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl
+	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform
