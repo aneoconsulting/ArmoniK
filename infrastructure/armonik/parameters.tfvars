@@ -18,7 +18,7 @@ storage = {
 # Endpoints and secrets of storage resources
 storage_endpoint_url = {
   mongodb  = {
-    url    = "mongodb://192.168.1.13:27017"
+    url    = "mongodb://192.168.1.13:31940"
     secret = ""
   }
   redis    = {
@@ -27,7 +27,7 @@ storage_endpoint_url = {
   }
   activemq = {
     host   = "192.168.1.13"
-    port   = "5672"
+    port   = "32604"
     secret = "activemq-storage-secret"
   }
   shared   = {
@@ -37,7 +37,7 @@ storage_endpoint_url = {
     path   = "/data"
   }
   external = {
-    url    = "192.168.1.13:6379"
+    url    = "192.168.1.13:30501"
     secret = "external-redis-storage-secret"
   }
 }

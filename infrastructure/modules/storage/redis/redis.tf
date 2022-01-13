@@ -45,13 +45,13 @@ resource "kubernetes_deployment" "redis" {
             container_port = var.redis.port
           }
           volume_mount {
-            name       = "object-storage-secret-volume"
+            name       = "redis-storage-secret-volume"
             mount_path = "/certificates"
             read_only  = true
           }
         }
         volume {
-          name = "object-storage-secret-volume"
+          name = "redis-storage-secret-volume"
           secret {
             secret_name = var.kubernetes_secret
             optional    = false

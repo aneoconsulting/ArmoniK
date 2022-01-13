@@ -34,7 +34,7 @@ resource "kubernetes_deployment" "activemq" {
           name  = "activemq"
           image = "symptoma/activemq:5.16.3"
           volume_mount {
-            name       = "queue-storage-secret-volume"
+            name       = "activemq-storage-secret-volume"
             mount_path = "/opt/activemq/conf/jetty-realm.properties"
             sub_path   = "jetty-realm.properties"
             read_only  = true
@@ -55,7 +55,7 @@ resource "kubernetes_deployment" "activemq" {
           }
         }
         volume {
-          name = "queue-storage-secret-volume"
+          name = "activemq-storage-secret-volume"
           secret {
             secret_name = var.kubernetes_secret
             optional    = false
