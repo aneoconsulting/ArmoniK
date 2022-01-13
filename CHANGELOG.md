@@ -1,5 +1,18 @@
 # Changelog
 
+## [latest](https://github.com/aneoconsulting/armonik/tree/main) (2022-01-13)
+changed
+-
+* New ArmoniK infrastructure:
+  * Onpremise for both single node (local machine or VM) and cluster of nodes
+  * Split source codes of storage and ArmoniK's components deployments
+  * Create an external shared storage, of type host-path on local machine or NFS on a cluster, from which compute workers upload their .dll
+  * Source codes for dev/test onpremise Kubernetes cluster
+
+Removed
+-
+* Persistent volumes (PV) and persistent volume claims (PVC) are not used anymore
+
 ## [v2.0.0](https://github.com/aneoconsulting/armonik/tree/v2.0.0) (2021-12-17)
 Added
 -
