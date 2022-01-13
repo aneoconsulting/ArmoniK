@@ -111,7 +111,7 @@ where:
 #curl -s https://docs.projectcalico.org/manifests/calico.yaml > calico.yaml
 #POD_CIDR="172.31.0.0/16" sed -i -e "s?192.168.0.0/16?$POD_CIDR?g" calico.yaml
 #kubectl apply -f calico.yaml
-kubectl apply -y https://docs.projectcalico.org/manifests/calico.yaml
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 ```
 
 ## On worker nodes
