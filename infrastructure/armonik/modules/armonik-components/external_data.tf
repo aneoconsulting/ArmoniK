@@ -2,14 +2,14 @@
 data "external" "control_plane_node_ip" {
   depends_on  = [kubernetes_service.control_plane]
   program     = ["bash", "get_node_ip.sh", "control-plane", var.namespace]
-  working_dir = "../utils/scripts"
+  working_dir = "../../../utils/scripts"
 }
 
 # Node IP of Seq pod
 data "external" "seq_node_ip" {
   depends_on  = [kubernetes_service.seq]
   program     = ["bash", "get_node_ip.sh", "seq", var.namespace]
-  working_dir = "../utils/scripts"
+  working_dir = "../../../utils/scripts"
 }
 
 # Node IP

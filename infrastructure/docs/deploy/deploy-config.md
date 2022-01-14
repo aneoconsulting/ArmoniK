@@ -23,7 +23,7 @@ logging_level      = string
 
 | Parameter             | Description | Type | Default |
 |:----------------------|:------------|:-----|:--------|
-| `namespace`           | Kubernetes namespace of ArmoniK resources, created during the [Create a namespace for ArmoniK](./onpremise.md) | string | `"armonik"` |
+| `namespace`           | Kubernetes namespace of ArmoniK resources, created during the [Create a namespace for ArmoniK](../../armonik/README.md) | string | `"armonik"` |
 | `k8s_config_path`     | Path to the Kubernetes configuration file | string | `"~/.kube/config"` |
 | `k8s_config_context`  | Configuration context of Kubernetes | string | `"default"` |
 | `logging_level`  | Level of logging in ArmoniK | string | `"Information"` |

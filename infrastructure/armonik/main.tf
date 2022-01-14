@@ -1,6 +1,6 @@
 # ArmoniK
 module "armonik" {
-  source               = "../modules/armonik"
+  source               = "./modules/armonik-components"
   namespace            = var.namespace
   logging_level        = var.logging_level
   seq                  = var.seq

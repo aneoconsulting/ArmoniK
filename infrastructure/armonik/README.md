@@ -107,7 +107,7 @@ kubectl create secret generic $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
 
 ActiveMQ client use a file `amqp-credentials.json`. This is the file which stores user credentials.
 
-In this project, we have a file of name `amqp-credentials.json` in [credentials](../credentials) directory:
+In this project, we have a file of name `amqp-credentials.json` in [credentials](../credentials ) directory:
 
 ```json
 {
@@ -136,7 +136,7 @@ The configuration has six components:
 1. Kubernetes namespace where ArmoniK's components will be created:
 
 ```terraform
-namespace = "armonik-components"
+namespace = "armonik"
 ```
 
 2. Level of logging
