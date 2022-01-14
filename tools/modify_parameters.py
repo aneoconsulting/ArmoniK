@@ -5,47 +5,147 @@ import hcl2
 parser = argparse.ArgumentParser(description="Modify ArmoniK paramters.tfvars.json")
 parser.add_argument("inputfile", help="Path to the input paramters.tfvars file", type=str)
 parser.add_argument("outputfile", help="Path to the output paramters.tfvars.json file", type=str)
-parser.add_argument("--control-tag", dest="controltag", help="Tag for control plane image", type=str, default=None)
-parser.add_argument("--control-img", dest="controlimg", help="registry/img for control plane image", type=str, default=None)
-parser.add_argument("--worker-tag", dest="workertag", help="Tag for compute plane worker image", type=str, default=None)
-parser.add_argument("--worker-img", dest="workerimg", help="registry/img for compute plane worker image", type=str, default=None)
-parser.add_argument("--agent-tag", dest="agenttag", help="Tag for polling agent image", type=str, default=None)
-parser.add_argument("--agent-img", dest="agentimg", help="registry/img for polling agent image", type=str, default=None)
-parser.add_argument("--storage-queue", dest="storagequeue", help="Change Queue Storage type", type=str, default=None)
-parser.add_argument("--storage-external", dest="storageexternal", help="Add external storage", type=str, default=None)
 parser.add_argument("--logging-level", dest="logginglevel", help="Change ArmoniK logging level", type=str, default=None, choices=["Information", "Debug", "Verbose"])
+parser.add_argument("--storage-object", dest="storageobject", help="Change Object Storage type", type=str, default=None)
+parser.add_argument("--storage-table", dest="storagetable", help="Change Table Storage type", type=str, default=None)
+parser.add_argument("--storage-queue", dest="storagequeue", help="Change Queue Storage type", type=str, default=None)
+parser.add_argument("--storage-lease-provider", dest="storageleaseprovider", help="Change Lease Provider Storage type", type=str, default=None)
+parser.add_argument("--storage-shared-type", dest="storageshared", help="Change Shared Storage type", type=str, default=None)
+parser.add_argument("--storage-external", dest="storageexternal", help="Change External Storage type", type=str, default=None)
+parser.add_argument("--mongodb-url", dest="mongodburl", help="Change MongoDB Url", type=str, default=None)
+parser.add_argument("--mongodb-kube-secret", dest="mongodbkubesecret", help="Change MongoDB Kubernetes secret", type=str, default=None)
+parser.add_argument("--redis-url", dest="redisurl", help="Change Redis Url", type=str, default=None)
+parser.add_argument("--redis-kube-secret", dest="rediskubesecret", help="Change Redis Kubernetes secret", type=str, default=None)
+parser.add_argument("--activemq-host", dest="activemqhost", help="Change ActiveMQ host", type=str, default=None)
+parser.add_argument("--activemq-port", dest="activemqport", help="Change ActiveMQ port", type=str, default=None)
+parser.add_argument("--activemq-kube-secret", dest="activemqkubesecret", help="Change ActiveMQ Kubernetes secret", type=str, default=None)
+parser.add_argument("--shared-host", dest="sharedhost", help="Change Shared Storage host", type=str, default=None)
+parser.add_argument("--shared-kube-secret", dest="sharedkubesecret", help="Change Shared Storage Kubernetes secret", type=str, default=None)
+parser.add_argument("--shared-path", dest="sharedpath", help="Change Shared Storage path", type=str, default=None)
+parser.add_argument("--external-url", dest="externalurl", help="Change External cache Url", type=str, default=None)
+parser.add_argument("--external-kube-secret", dest="externalkubesecret", help="Change External cache Kubernetes secret", type=str, default=None)
+parser.add_argument("--control-plane-replicas", dest="controlplanereplicas", help="Change number of replicas in Control Plane", type=str, default=None)
+parser.add_argument("--control-plane-image", dest="controlplaneimage", help="Change docker image of Control Plane", type=str, default=None)
+parser.add_argument("--control-plane-tag", dest="controlplanetag", help="Change docker image tag of Control Plane", type=str, default=None)
+parser.add_argument("--control-plane-image-pull-policy", dest="controlplaneimagepullpolicy", help="Change docker image pull policy of Control Plane", type=str, default=None)
+parser.add_argument("--control-plane-port", dest="controlplaneport", help="Change port of Control Plane", type=str, default=None)
+parser.add_argument("--compute-plane-replicas", dest="computeplanereplicas", help="Change number of replicas in Compute Plane", type=str, default=None)
+parser.add_argument("--compute-plane-max-priority", dest="computeplanemaxpriority", help="Change max priority in Compute Plane", type=str, default=None)
+parser.add_argument("--polling-agent-image", dest="pollingagentimage", help="Change docker image of Polling Agent", type=str, default=None)
+parser.add_argument("--polling-agent-tag", dest="pollingagenttag", help="Change docker image tag of Polling Agent", type=str, default=None)
+parser.add_argument("--polling-agent-image-pull-policy", dest="pollingagentimagepullpolicy", help="Change docker image pull policy of Polling Agent", type=str, default=None)
+parser.add_argument("--polling-agent-limits-cpu", dest="pollingagentlimitscpu", help="Change CPU limit of Polling Agent", type=str, default=None)
+parser.add_argument("--polling-agent-limits-memory", dest="pollingagentlimitsmemory", help="Change Memory limit of Polling Agent", type=str, default=None)
+parser.add_argument("--polling-agent-requests-cpu", dest="pollingagentrequestscpu", help="Change CPU requests of Polling Agent", type=str, default=None)
+parser.add_argument("--polling-agent-requests-memory", dest="pollingagentrequestsmemory", help="Change Memory requests of Polling Agent", type=str, default=None)
+parser.add_argument("--worker-port", dest="workerport", help="Change port of worker", type=str, default=None)
+parser.add_argument("--worker-image", dest="workerimage", help="Change docker image of worker", type=str, default=None)
+parser.add_argument("--worker-tag", dest="workertag", help="Change docker image tag of worker", type=str, default=None)
+parser.add_argument("--worker-image-pull-policy", dest="workerimagepullpolicy", help="Change docker image pull policy of worker", type=str, default=None)
+parser.add_argument("--worker-limits-cpu", dest="workerlimitscpu", help="Change CPU limit of worker", type=str, default=None)
+parser.add_argument("--worker-limits-memory", dest="workerlimitsmemory", help="Change Memory limit of worker", type=str, default=None)
+parser.add_argument("--worker-requests-cpu", dest="workerrequestscpu", help="Change CPU requests of worker", type=str, default=None)
+parser.add_argument("--worker-requests-memory", dest="workerrequestsmemory", help="Change Memory requests of worker", type=str, default=None)
+
 args = parser.parse_args()
 
 with open(args.inputfile, 'r') as fin:
     content = hcl2.load(fin)
 
-if args.controlimg != None:
-    content['armonik']['control_plane']['image'] = args.controlimg
-if args.controltag != None:
-    content['armonik']['control_plane']['tag'] = args.controltag
+if args.logginglevel is not None:
+    content['logging_level'] = args.logginglevel
+if args.storageobject is not None:
+    content['storage']['object'] = args.storageobject
+if args.storagetable is not None:
+    content['storage']['table'] = args.storagetable
+if args.storagequeue is not None:
+    content['storage']['queue'] = args.storagequeue
+if args.storageleaseprovider is not None:
+    content['storage']['lease_provider'] = args.storageleaseprovider
+if args.storageshared is not None:
+    content['storage']['shared'] = args.storageshared
+if args.storageexternal is not None:
+    content['storage']['external'] = args.storageexternal
+if args.mongodburl is not None:
+    content['storage_endpoint_url']['mongodb']['url'] = args.mongodburl
+if args.mongodbkubesecret is not None:
+    content['storage_endpoint_url']['mongodb']['secret'] = args.mongodbkubesecret
+if args.redisurl is not None:
+    content['storage_endpoint_url']['redis']['url'] = args.redisurl
+if args.rediskubesecret is not None:
+    content['storage_endpoint_url']['redis']['secret'] = args.rediskubesecret
+if args.activemqhost is not None:
+    content['storage_endpoint_url']['activemq']['host'] = args.activemqhost
+if args.activemqport is not None:
+    content['storage_endpoint_url']['activemq']['port'] = args.activemqport
+if args.activemqkubesecret is not None:
+    content['storage_endpoint_url']['activemq']['secret'] = args.activemqkubesecret
+if args.sharedhost is not None:
+    content['storage_endpoint_url']['shared']['host'] = args.sharedhost
+if args.sharedkubesecret is not None:
+    content['storage_endpoint_url']['shared']['secret'] = args.sharedkubesecret
+if args.sharedpath is not None:
+    content['storage_endpoint_url']['shared']['path'] = args.sharedpath
+if args.externalurl is not None:
+    content['storage_endpoint_url']['external']['url'] = args.externalurl
+if args.externalkubesecret is not None:
+    content['storage_endpoint_url']['external']['secret'] = args.externalkubesecret
+if args.controlplanereplicas is not None:
+    content['control_plane']['replicas'] = args.controlplanereplicas
+if args.controlplaneimage is not None:
+    content['control_plane']['image'] = args.controlplaneimage
+if args.controlplanetag is not None:
+    content['control_plane']['tag'] = args.controlplanetag
+if args.controlplaneimagepullpolicy is not None:
+    content['control_plane']['image_pull_policy'] = args.controlplaneimagepullpolicy
+if args.controlplaneport is not None:
+    content['control_plane']['port'] = args.controlplaneport
+if args.computeplanereplicas is not None:
+    content['compute_plane']['replicas'] = args.computeplanereplicas
+if args.pollingagentimage is not None:
+    content['compute_plane']['polling_agent']['image'] = args.pollingagentimage
+if args.pollingagenttag is not None:
+    content['compute_plane']['polling_agent']['tag'] = args.pollingagenttag
+if args.pollingagentimagepullpolicy is not None:
+    content['compute_plane']['polling_agent']['image_pull_policy'] = args.pollingagentimagepullpolicy
+if args.pollingagentlimitscpu is not None:
+    content['compute_plane']['polling_agent']['limits']['cpu'] = args.pollingagentlimitscpu
+if args.pollingagentlimitsmemory is not None:
+    content['compute_plane']['polling_agent']['limits']['memory'] = args.pollingagentlimitsmemory
+if args.pollingagentrequestscpu is not None:
+    content['compute_plane']['polling_agent']['requests']['cpu'] = args.pollingagentrequestscpu
+if args.pollingagentrequestsmemory is not None:
+    content['compute_plane']['polling_agent']['requests']['memory'] = args.pollingagentrequestsmemory
 
-if args.agentimg != None:
-    content['armonik']['compute_plane']['polling_agent']['image'] = args.agentimg
-if args.agenttag != None:
-    content['armonik']['compute_plane']['polling_agent']['tag'] = args.agenttag
-
-if args.workertag != None or args.workerimg != None:
-    workers = content['armonik']['compute_plane']['compute']
+if args.workerport is not None \
+        or args.workerport is not None \
+        or args.workerimage is not None \
+        or args.workertag is not None \
+        or args.workerimagepullpolicy is not None \
+        or args.workerlimitscpu is not None \
+        or args.workerlimitsmemory is not None \
+        or args.workerrequestscpu is not None \
+        or args.workerrequestsmemory is not None:
+    workers = content['compute_plane']['worker']
     for w in workers:
-        if args.workertag != None:
+        if args.workerport is not None:
+            w['port'] = args.workerport
+        if args.workerimage is not None:
+            w['image'] = args.workerimage
+        if args.workertag is not None:
             w['tag'] = args.workertag
-        if args.workerimg != None:
-            w['image'] = args.workerimg
-    content['armonik']['compute_plane']['compute'] = workers
+        if args.workerimagepullpolicy is not None:
+            w['image_pull_policy'] = args.workerimagepullpolicy
+        if args.workerlimitscpu is not None:
+            w['limits']['cpu'] = args.workerlimitscpu
+        if args.workerlimitsmemory is not None:
+            w['limits']['memory'] = args.workerlimitsmemory
+        if args.workerrequestscpu is not None:
+            w['requests']['cpu'] = args.workerrequestscpu
+        if args.workerrequestsmemory is not None:
+            w['requests']['memory'] = args.workerrequestsmemory
+    content['compute_plane']['worker'] = workers
 
-if args.storagequeue != None:
-    content['armonik']['storage_services']['queue_storage_type'] = args.storagequeue
-
-if args.storageexternal != None:
-    content['armonik']['storage_services']['external_storage_types'].append(args.storageexternal)
-
-if args.logginglevel != None:
-    content['armonik']['logging_level'] = args.logginglevel
 
 with open(args.outputfile, 'w') as fout:
     json.dump(content, fout, indent=2, sort_keys=True)

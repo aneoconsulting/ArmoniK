@@ -23,7 +23,7 @@ storage_endpoint_url = {
   }
   redis    = {
     url    = ""
-    secret = ""
+    secret = "redis-storage-secret"
   }
   activemq = {
     host   = "172.31.33.110"
