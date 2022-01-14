@@ -130,7 +130,7 @@ replace the name of the sample application.
 ## Build Armonik API <a name="build-armonik-api"></a>
 To build only Armonik API in `<project_root>`:
 ```bash
-make build-armonik-api
+make build-armonik-components-api
 ```
 
 # Deploy Armonik resources <a name="deploy-armonik-resources"></a>

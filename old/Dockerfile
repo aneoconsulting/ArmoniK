@@ -55,18 +55,18 @@ RUN if [ "${MODE}" = dev ]; then \
     ;fi
 
 # Add user
-RUN groupadd -g 1000 armonik && \
-    useradd -m -g armonik -u 1000 -d /home/armonik armonik && \
-    usermod -a -G docker,sudo armonik && \
-    passwd -d armonik && \
-    su armonik -c 'mkdir /home/armonik/.kube && ln -s /etc/rancher/k3s/k3s.yaml /home/armonik/.kube/config'
+RUN groupadd -g 1000 armonik-components && \
+    useradd -m -g armonik-components -u 1000 -d /home/armonik-components armonik-components && \
+    usermod -a -G docker,sudo armonik-components && \
+    passwd -d armonik-components && \
+    su armonik-components -c 'mkdir /home/armonik-components/.kube && ln -s /etc/rancher/k3s/k3s.yaml /home/armonik-components/.kube/config'
 
 COPY docker-init.sh /usr/local/bin/init
 
 COPY --chown=1000:1000 requirements.txt /armonik/
 
 RUN if [ "${MODE}" = dev ]; then \
-      pip install -r /armonik/requirements.txt \
+      pip install -r /armonik-components/requirements.txt \
     ;fi
 
 COPY --chown=1000:1000 ../.dockerignore Makefile LICENSE *.md nuget-versions.txt /armonik/

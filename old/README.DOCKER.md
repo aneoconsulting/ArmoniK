@@ -23,7 +23,7 @@ There are a few arguments to the build:
 ## User image
 
 ```bash
-docker build -t armonik:user --build-arg MODE=user --build-arg BUILD_ID=XXXX .
+docker build -t armonik-components:user --build-arg MODE=user --build-arg BUILD_ID=XXXX .
 ```
 
 Where XXXX is the build id corresponding to the current version of the repo
@@ -32,13 +32,13 @@ Where XXXX is the build id corresponding to the current version of the repo
 ## Dev image
 
 ```bash
-docker build -t armonik:dev --build-arg MODE=dev --build-arg DOCKER_REGISTRY= .
+docker build -t armonik-components:dev --build-arg MODE=dev --build-arg DOCKER_REGISTRY= .
 ```
 
 # Start Docker image <a name="start-docker-image"></a>
 
 ```bash
-docker run -it --rm --privileged armonik:user bash
+docker run -it --rm --privileged armonik-components:user bash
 ```
 
 If you don't provide the `bash` command, the container will run with no shell and you would need to `docker exec` within the container.
