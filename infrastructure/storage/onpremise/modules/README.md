@@ -51,7 +51,7 @@ kubernetes_secret = string
 
 | Parameter | Description | Type | Default |
 |:----------|:------------|:-----|:--------|
-| `kubernetes_secret` | Kubernetes secret for ActiveMQ, created during the [Create Kubernetes secrets](../../README.md) | string | `"activemq-storage-secret"` |
+| `kubernetes_secret` | Kubernetes secret for ActiveMQ, created during the [Create Kubernetes secrets](../README.md) | string | `"activemq-storage-secret"` |
 
 # MongoDB
 
@@ -89,7 +89,7 @@ kubernetes_secret = string
 
 | Parameter | Description | Type | Default |
 |:----------|:------------|:-----|:--------|
-| `kubernetes_secret` | Kubernetes secret for MongoDB, created during the [Create Kubernetes secrets](../../README.md) | string | `""` |
+| `kubernetes_secret` | Kubernetes secret for MongoDB, created during the [Create Kubernetes secrets](../README.md) | string | `""` |
 
 # Redis
 
@@ -128,4 +128,4 @@ kubernetes_secret = string
 
 | Parameter | Description | Type | Default |
 |:----------|:------------|:-----|:--------|
-| `kubernetes_secret` | Kubernetes secret for Redis, created during the [Create Kubernetes secrets](../../README.md) | string | `"redis-storage-secret"` |
+| `kubernetes_secret` | Kubernetes secret for Redis, created during the [Create Kubernetes secrets](../README.md) | string | `"redis-storage-secret"` |
