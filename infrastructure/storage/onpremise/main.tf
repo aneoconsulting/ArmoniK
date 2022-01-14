@@ -7,7 +7,7 @@ module "storage" {
 # MongoDB
 module "mongodb" {
   count             = (contains(module.storage.list_storage, "mongodb") ? 1 : 0)
-  source            = "../../modules/storage/mongodb"
+  source            = "modules/storage/mongodb"
   namespace         = var.namespace
   mongodb           = var.mongodb
   kubernetes_secret = var.storage_kubernetes_secrets.mongodb
@@ -16,7 +16,7 @@ module "mongodb" {
 # Redis
 module "redis" {
   count             = (contains(module.storage.list_storage, "redis") ? 1 : 0)
-  source            = "../../modules/storage/redis"
+  source            = "modules/storage/redis"
   namespace         = var.namespace
   redis             = var.redis
   kubernetes_secret = var.storage_kubernetes_secrets.redis
@@ -25,7 +25,7 @@ module "redis" {
 # ActiveMQ
 module "activemq" {
   count             = (contains(module.storage.list_storage, "amqp") ? 1 : 0)
-  source            = "../../modules/storage/activemq"
+  source            = "modules/storage/activemq"
   namespace         = var.namespace
   activemq          = var.activemq
   kubernetes_secret = var.storage_kubernetes_secrets.activemq

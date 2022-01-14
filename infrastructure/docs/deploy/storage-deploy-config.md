@@ -57,5 +57,5 @@ storage_kubernetes_secrets = {
 
 # Parameters for each storage
 
-The details of parameters of each storage to be deployed are defined [here](../../modules/storage/README.md).
+The details of parameters of each storage to be deployed are defined [here](../../storage/onpremise/modules/storage/README.md).
 
