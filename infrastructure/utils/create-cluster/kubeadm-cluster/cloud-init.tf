@@ -16,10 +16,22 @@ data "template_cloudinit_config" "master_cloud_init" {
   }
 
   part {
-    filename   = "0002-nfs.yml"
-    content    = templatefile("cloud-init-templates/0002-nfs.yaml", {
+    filename   = "0002-nfs-master.yml"
+    content    = templatefile("cloud-init-templates/0002-nfs-master.yaml", {
       worker_subnet = aws_default_subnet.worker_subnet.cidr_block
     })
+    merge_type = var.extra_userdata_merge
+  }
+
+  part {
+    filename   = "0003-ssh.yml"
+    content    = templatefile("cloud-init-templates/0003-ssh.yaml", {})
+    merge_type = var.extra_userdata_merge
+  }
+
+  part {
+    filename   = "0004-kubeadm.yml"
+    content    = templatefile("cloud-init-templates/0004-kubeadm.yaml", {})
     merge_type = var.extra_userdata_merge
   }
 }
@@ -32,6 +44,18 @@ data "template_cloudinit_config" "worker_cloud_init" {
   part {
     filename   = "0000-dokcer.yml"
     content    = templatefile("cloud-init-templates/0000-docker.yaml", {})
+    merge_type = var.extra_userdata_merge
+  }
+
+  part {
+    filename   = "0003-ssh.yml"
+    content    = templatefile("cloud-init-templates/0003-ssh.yaml", {})
+    merge_type = var.extra_userdata_merge
+  }
+
+  part {
+    filename   = "0004-kubeadm.yml"
+    content    = templatefile("cloud-init-templates/0004-kubeadm.yaml", {})
     merge_type = var.extra_userdata_merge
   }
 }

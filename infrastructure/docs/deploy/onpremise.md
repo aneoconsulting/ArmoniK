@@ -14,8 +14,6 @@ Your can deploy ArmoniK scheduler:
    Kubernetes. This is useful for development and testing environment only!
 2. on an onpremise cluster composed of a master node and several worker nodes of Kubernetes.
 
-> **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](../../utils/create-cluster). This is useful for the development and testing only!
-
 # Infrastructure requirements
 
 Before installing ArmoniK scheduler, you must install Kubernetes and the different storage requirements.

@@ -1,7 +1,7 @@
 # SSH key
 resource "aws_key_pair" "ssh_key" {
   key_name   = "cluster-key"
-  public_key = var.ssh_key
+  public_key = var.ssh_key.public_key
 }
 
 # master

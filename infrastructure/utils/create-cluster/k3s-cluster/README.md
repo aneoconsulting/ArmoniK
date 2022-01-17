@@ -4,7 +4,8 @@
 2. [AWS credentials](#aws-credentials)
 3. [Generate a SSH key pair](#generate-a-ssh-key-pair)
 4. [Deploy a cluster](#deploy-a-cluster)
-5. [Destroy the cluster](#destroy-the-cluster)
+5. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
+6. [Destroy the cluster](#destroy-the-cluster)
 
 # Introduction
 
@@ -17,7 +18,8 @@ We mount a NFS server on the master node too, from which workers will upload .dl
 
 # AWS credentials
 
-You must create and provide your [AWS programmatic access keys](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
+You must create and provide
+your [AWS programmatic access keys](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
 in your dev/test environment:
 
 ```bash
@@ -46,11 +48,14 @@ We will create a cluster on AWS composed of four ec2 instances:
 * a master node
 * three worker nodes
 
-In [parameters.tfvars](parameters.tfvars), set the value of the parameter `ssh_key` with the public SSH
-key `~/.ssh/cluster-key.pub`, for example:
+In [parameters.tfvars](parameters.tfvars), set the value of the parameter `ssh_key` with the content of the public SSH
+key `~/.ssh/cluster-key.pub` and the path to the private SSH key, for example:
 
 ```bash
-ssh_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 email@example.com"
+ssh_key = {
+  private_key_path = "~/.ssh/cluster-key"
+  public_key       = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 email@example.com"
+}
 ```
 
 To deploy the cluster execute the command:
@@ -78,9 +83,15 @@ worker_public_ip = [
   {
     "ip" = "54.244.169.65"
     "name" = "i-0c691f1d971e62150"
-  },
+  }
 ]
 ```
+
+# Accessing the cluster from outside
+
+Copy `/etc/rancher/k3s/k3s.yaml` from the master on your machine located outside the cluster as `~/.kube/config`. Then
+replace `localhost` or the private address IP with the public with the IP the K3s server (master node). kubectl can now
+manage your K3s cluster from your local machine.
 
 # Destroy the cluster
 
