@@ -1,0 +1,82 @@
+name: TestWorker
+description: 'Test Armonik dynaminc dll loading worker'
+inputs:
+  control-plane-image:
+    description: 'Repository/image for control plane docker image'
+    required: false
+    default: 'None'
+  control-plane-tag:
+    description: 'Tag for control plane docker image'
+    required: false
+    default: 'None'
+  polling-agent-image:
+    description: 'Repository/image for polling agent docker image'
+    required: false
+    default: 'None'
+  polling-agent-tag:
+    description: 'Tag for polling agent docker image'
+    required: false
+    default: 'None'
+  worker-image:
+    description: 'Repository/image for worker docker image'
+    required: false
+    default: 'None'
+  worker-tag:
+    description: 'Tag for worker docker image'
+    required: false
+    default: 'None'
+  version:
+    description: 'ArmoniK repo version'
+    required: false
+    default: 'main'
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.version }}
+        submodules: true
+        repository: aneoconsulting/ArmoniK
+
+    - uses: ./
+      name: Run local action
+      with:
+        control-plane-image: ${{ inputs.control-plane-image }}
+        control-plane-tag: ${{ inputs.control-plane-tag }}
+        polling-agent-image: ${{ inputs.polling-agent-image }}
+        polling-agent-tag: ${{ inputs.polling-agent-tag }}
+        worker-image: ${{ inputs.worker-image }}
+        worker-tag: ${{ inputs.worker-tag }}
+
+    - name: Test Symphony Like
+      shell: bash
+      run: |
+        set -ex
+        cd tools/tests/
+        bash symphony_like.sh
+
+    - name: Test Datasynapse Like
+      shell: bash
+      run: |
+        set -ex
+        cd tools/tests/
+        bash datasynapse_like.sh
+
+    # - name: Destroy Onpremise Storage
+    #  shell: bash
+    #   run: |
+    #     set -ex
+    #     cd infrastructure/storage/onpremise/
+    #     terraform destroy -var-file=parameters.tfvars -auto-approve
+    #     make clean
+
+    # - name: Destroy Onpremise ArmoniK
+    #  shell: bash
+    #   run: |
+    #     set -ex
+    #     cd infrastructure/armonik/
+    #     terraform destroy -var-file=parameters.tfvars.json -auto-approve
+    #     make clean
+

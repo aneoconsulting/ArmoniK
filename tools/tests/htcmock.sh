@@ -1,9 +1,6 @@
 #!/bin/bash
 
 cd ../../source/ArmoniK.Samples
-git submodule update --init
-git pull origin main
-git checkout main
 
 export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
 export ReIP=$(kubectl get svc redis -n armonik-storage -o custom-columns="IP:.spec.clusterIP" --no-headers=true)

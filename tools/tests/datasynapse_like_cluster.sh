@@ -1,9 +1,6 @@
 #!/bin/bash
 
 cd ../../source/ArmoniK.Samples
-git submodule update --init
-git pull origin main
-git checkout main
 
 export Grpc__Endpoint="http://52.24.27.8:32417"
 

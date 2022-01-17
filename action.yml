@@ -1,0 +1,130 @@
+name: 'Deploy ArmoniK Infra'
+description: 'Action to deploy ArmoniK infra in current github workflow'
+inputs:
+  control-plane-image:
+    description: 'Repository/image for control plane docker image'
+    required: false
+    default: 'None'
+  control-plane-tag:
+    description: 'Tag for control plane docker image'
+    required: false
+    default: 'None'
+  polling-agent-image:
+    description: 'Repository/image for polling agent docker image'
+    required: false
+    default: 'None'
+  polling-agent-tag:
+    description: 'Tag for polling agent docker image'
+    required: false
+    default: 'None'
+  worker-image:
+    description: 'Repository/image for worker docker image'
+    required: false
+    default: 'None'
+  worker-tag:
+    description: 'Tag for worker docker image'
+    required: false
+    default: 'None'
+  docker-is-installed:
+    description: 'Is docker installed ?'
+    required: false
+    default: 'false'
+outputs:
+  credentials-ca-crt:
+    description: "Random number"
+    value: ${{ steps.credentialsoutput.outputs.credentials-ca-crt }}
+  credentials-certificate-pfx:
+    description: "Random number"
+    value: ${{ steps.credentialsoutput.outputs.credentials-certificate-pfx }}
+
+runs:
+  using: composite
+  steps:
+    - uses: docker-practice/actions-setup-docker@master
+      if: ${{ inputs.docker-is-installed != 'true' }}
+
+    - uses: azure/setup-kubectl@v2.0
+      with:
+        version: latest
+
+    - uses: hashicorp/setup-terraform@v1
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq
+        pip install python-hcl2
+
+    - name: Install K3s
+      shell: bash
+      run: |
+        cd ${{ github.action_path }}
+        bash tools/install/k3s.sh
+
+    - name: Init Kube secret
+      shell: bash
+      run: |
+        cd ${{ github.action_path }}
+        bash tools/install/init_kube.sh
+
+    - name: Set credentials output
+      id: credentialsoutput
+      shell: bash
+      run: |
+        echo "::set-output name=credentials-ca-crt::${{ github.action_path }}/infrastructure/credentials/ca.crt"
+        echo "::set-output name=credentials-certificate-pfx::${{ github.action_path }}/infrastructure/credentials/certificate.pfx"
+
+    - name: Deploy Onpremise Storage
+      shell: bash
+      run: |
+        set -ex
+        cd ${{ github.action_path }}/infrastructure/storage/onpremise/
+        terraform init
+        terraform apply -var-file=parameters.tfvars -auto-approve
+
+    - name: Create a configuration file for ArmoniK
+      shell: bash
+      run: |
+        set -ex
+        cd ${{ github.action_path }}/infrastructure/storage/onpremise/
+        terraform output -json > tmp.json
+        sed -i '1d;$d' tmp.json
+        cat tmp.json
+        export ACTIVEMQ_HOST=$(cat tmp.json | jq -r '.activemq_endpoint_url.value.host')
+        export ACTIVEMQ_PORT=$(cat tmp.json | jq -r '.activemq_endpoint_url.value.port')
+        export MONGODB_URL=$(cat tmp.json | jq -r '.mongodb_endpoint_url.value.url')
+        export REDIS_URL=$(cat tmp.json | jq -r '.redis_endpoint_url.value.url')
+        echo $ACTIVEMQ_HOST
+        echo $ACTIVEMQ_PORT
+        echo $MONGODB_URL
+        echo $REDIS_URL
+
+        python ../../../tools/modify_parameters.py \
+            --storage-shared-type "HostPath" \
+            --mongodb-url $MONGODB_URL \
+            --activemq-host $ACTIVEMQ_HOST \
+            --activemq-port $ACTIVEMQ_PORT \
+            --external-url $REDIS_URL \
+            --worker-image ${{ inputs.worker-image }} \
+            --worker-tag ${{ inputs.worker-tag }} \
+            --polling-agent-image ${{ inputs.polling-agent-image }} \
+            --polling-agent-tag ${{ inputs.polling-agent-tag }} \
+            --control-plane-image ${{ inputs.control-plane-image }} \
+            --control-plane-tag ${{ inputs.control-plane-tag }} \
+            ../../armonik/parameters.tfvars \
+            ../../armonik/parameters.tfvars.json
+
+    - name: Deploy ArmoniK on single node
+      shell: bash
+      run: |
+        set -ex
+        cd ${{ github.action_path }}/infrastructure/armonik/
+        cat parameters.tfvars.json
+        terraform init
+        terraform apply -var-file=parameters.tfvars.json -auto-approve

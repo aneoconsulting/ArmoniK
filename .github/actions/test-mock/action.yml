@@ -1,0 +1,77 @@
+name: TestMock
+description: 'Test for mock integrated worker'
+inputs:
+  control-plane-image:
+    description: 'Repository/image for control plane docker image'
+    required: false
+    default: 'None'
+  control-plane-tag:
+    description: 'Tag for control plane docker image'
+    required: false
+    default: 'None'
+  polling-agent-image:
+    description: 'Repository/image for polling agent docker image'
+    required: false
+    default: 'None'
+  polling-agent-tag:
+    description: 'Tag for polling agent docker image'
+    required: false
+    default: 'None'
+  version:
+    description: 'ArmoniK repo version'
+    required: false
+    default: 'main'
+
+runs:
+  using: composite
+  steps:
+    - uses: docker-practice/actions-setup-docker@master
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ inputs.version }}
+        submodules: true
+        repository: aneoconsulting/ArmoniK
+
+    - name: Create HTC Mock worker's docker image
+      shell: bash
+      run: |
+        cd source/ArmoniK.Samples/Samples/HtcMock
+        docker build -t dockerhubaneo/armonik_worker_htcmock:0.0.6 -f GridWorker/src/Dockerfile .
+
+    - uses: ./
+      name: Run local action
+      id: deploy-infra
+      with:
+        worker-image: dockerhubaneo/armonik_worker_htcmock
+        worker-tag: 0.0.6
+        docker-is-installed: true
+        control-plane-image: ${{ inputs.control-plane-image }}
+        control-plane-tag: ${{ inputs.control-plane-tag }}
+        polling-agent-image: ${{ inputs.polling-agent-image }}
+        polling-agent-tag: ${{ inputs.polling-agent-tag }}
+
+    - name: Test HTC Mock
+      shell: bash
+      run: |
+        set -ex
+        echo ${{ steps.deploy-infra.outputs.credentials-ca-crt }}
+        echo ${{ steps.deploy-infra.outputs.credentials-certificate-pfx }}
+        cd tools/tests/
+        bash htcmock.sh
+
+    # - name: Destroy Onpremise Storage
+    #   run: |
+    #     set -ex
+    #     cd infrastructure/storage/onpremise/
+    #     terraform destroy -var-file=parameters.tfvars -auto-approve
+    #     make clean
+
+    # - name: Destroy Onpremise ArmoniK
+    #   run: |
+    #     set -ex
+    #     cd infrastructure/armonik/
+    #     terraform destroy -var-file=parameters.tfvars.json -auto-approve
+    #     make clean
+

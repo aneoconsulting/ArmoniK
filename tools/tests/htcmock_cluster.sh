@@ -1,9 +1,6 @@
 #!/bin/bash
 
 cd ../../source/ArmoniK.Samples
-git submodule update --init
-git pull origin main
-git checkout main
 
 export Grpc__Endpoint="http://35.88.68.211:32622"
 export Redis__EndpointUrl="34.221.12.201:32108"
