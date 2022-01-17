@@ -1,6 +1,10 @@
 # Changelog
 
-## [latest](https://github.com/aneoconsulting/armonik/tree/main) (2022-01-13)
+## [v2.2.0](https://github.com/aneoconsulting/armonik/tree/v2.2.0) (2022-01-17)
+Added
+-
+* GitHub action to deploy ArmoniK infra on GitHub worker and test full integration
+
 changed
 -
 * New ArmoniK infrastructure:
@@ -8,10 +12,21 @@ changed
   * Split source codes of storage and ArmoniK's components deployments
   * Create an external shared storage, of type host-path on local machine or NFS on a cluster, from which compute workers upload their .dll
   * Source codes for dev/test onpremise Kubernetes cluster
+* Update ArmoniK.Samples
+* Create repositories for control plance, compute plane, Protos and Development kit
 
 Removed
 -
 * Persistent volumes (PV) and persistent volume claims (PVC) are not used anymore
+
+Fixed
+-
+* Session stop recrating at each OnInvoke (SendTask) call
+
+## [v2.1.0](https://github.com/aneoconsulting/armonik/tree/v2.1.0) (2022-01-06)
+Added
+-
+* Support for AMQP
 
 ## [v2.0.0](https://github.com/aneoconsulting/armonik/tree/v2.0.0) (2021-12-17)
 Added
