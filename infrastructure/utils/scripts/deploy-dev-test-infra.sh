@@ -71,12 +71,22 @@ endpoint_urls() {
 # create configuration file
 configuration_file() {
   python $BASEDIR/../../../tools/modify_parameters.py \
+    --storage-object "MongoDB" \
+    --storage-table "MongoDB" \
+    --storage-queue "MongoDB" \
+    --storage-lease-provider "MongoDB" \
     --storage-shared-type $1 \
+    --storage-external "MongoDB" \
     --mongodb-url $MONGODB_URL \
+    --mongodb-kube-secret "" \
     --activemq-host $ACTIVEMQ_HOST \
     --activemq-port $ACTIVEMQ_PORT \
+    --activemq-kube-secret "activemq-storage-secret" \
     --shared-host $SHARED_STORAGE_HOST \
+    --redis-url $REDIS_URL \
+    --redis-kube-secret "redis-storage-secret" \
     --external-url $REDIS_URL \
+    --external-kube-secret "external-redis-storage-secret" \
     $BASEDIR/../../armonik/parameters.tfvars \
     ./parameters.tfvars.json
 }
