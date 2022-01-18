@@ -1,6 +1,4 @@
-# ArmoniK grafana
-
-# grafana deployment
+# Grafana deployment
 resource "kubernetes_deployment" "grafana" {
   metadata {
     name      = "grafana"
@@ -12,7 +10,7 @@ resource "kubernetes_deployment" "grafana" {
     }
   }
   spec {
-    replicas = 1
+    replicas = var.grafana.replicas
     selector {
       match_labels = {
         app     = "armonik"
@@ -40,7 +38,9 @@ resource "kubernetes_deployment" "grafana" {
             value = "single-node"
           }
           port {
-            container_port = 3000
+            name           = var.grafana.port.name
+            container_port = var.grafana.port.target_port
+            protocol       = var.grafana.port.protocol
           }
         }
       }
@@ -60,15 +60,18 @@ resource "kubernetes_service" "grafana" {
     }
   }
   spec {
-    type     = "LoadBalancer"
-    selector = {
+    type                    = "NodePort"
+    external_traffic_policy = "Local"
+    selector                = {
       app     = kubernetes_deployment.grafana.metadata.0.labels.app
       type    = kubernetes_deployment.grafana.metadata.0.labels.type
       service = kubernetes_deployment.grafana.metadata.0.labels.service
     }
     port {
-      port = 3000
-      target_port = 3000
+      name        = var.grafana.port.name
+      port        = var.grafana.port.port
+      target_port = var.grafana.port.target_port
+      protocol    = var.grafana.port.protocol
     }
   }
 }

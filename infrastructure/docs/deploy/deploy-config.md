@@ -2,7 +2,7 @@
 
 1. [Introduction](#Introduction)
 2. [Global parameters](#global-parameters)
-3. [Seq](#seq)
+3. [Monitoring](#monitoring)
 4. [Storage](#storage)
 5. [Storage endpoint urls](#storage-endpoint-urls)
 6. [Control plane](#control-plane)
@@ -28,43 +28,24 @@ logging_level      = string
 | `k8s_config_context`  | Configuration context of Kubernetes | string | `"default"` |
 | `logging_level`  | Level of logging in ArmoniK | string | `"Information"` |
 
-# Seq
+# Monitoring
 
 [Seq](https://datalust.co/) is the intelligent search, analysis, and alerting server built specifically for modern
 structured log data.
 
 ```terraform
-seq = {
-  use       = bool
+monitoring = {
   namespace = string
+  seq       = bool
+  grafana   = bool
 }
 ```
 
 | Parameter | Description | Type | Default |
 |:----------|:------------|:-----|:--------|
-| `use` | Check if we want use Seq or not | bool | `true` |
 | `namespace` | Namespace of monitoring | string | `armonik-monitoring` |
-
-In module `Seq`, we have:
-
-```terraform
-seq = {
-  replicas = number
-  port     = [
-    {
-      name        = string
-      port        = number
-      target_port = number
-      protocol    = string
-    }
-  ]
-}
-```
-
-| Parameter | Description | Type | Default |
-|:----------|:------------|:-----|:--------|
-| `replicas` | Number of desired replicas of Seq | number | `1` |
-| `port` | List of ports and their names | list(object({})) | `[{name="ingestion", port=5341, target_port=5341, protocol="TCP"}, {name="web", port=8080, target_port=80, protocol="TCP"}]` |
+| `seq` | Check if we want use Seq or not | bool | `true` |
+| `grafana` | Check if we want use Grafana or not | bool | `true` |
 
 # Storage
 

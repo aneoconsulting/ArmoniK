@@ -4,10 +4,11 @@ namespace = "armonik"
 # Logging level
 logging_level = "Information"
 
-# Use Seq
-seq = {
-  use       = true
+# Use monitoring
+monitoring = {
   namespace = "armonik-monitoring"
+  seq       = true
+  grafana   = true
 }
 
 # Needed storage for each ArmoniK data type

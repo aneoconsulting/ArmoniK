@@ -24,16 +24,18 @@ variable "logging_level" {
   default     = "Information"
 }
 
-# Use Seq
-variable "seq" {
-  description = "Use Seq"
+# Use monitoring
+variable "monitoring" {
+  description = "Use monitoring tools"
   type        = object({
-    use       = bool
     namespace = string
+    seq       = bool
+    grafana   = bool
   })
   default     = {
-    use       = true
     namespace = "armonik-monitoring"
+    seq       = true
+    grafana   = true
   }
 }
 

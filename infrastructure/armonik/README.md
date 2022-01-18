@@ -152,9 +152,10 @@ logging_level = "Information"
 3. Use of Seq for display logs:
 
 ```terraform
-seq = {
-  use       = true
-  namespace = "armonik-monitoring"
+monitoring = {
+  namespace = string
+  seq       = bool
+  grafana   = bool
 }
 ```
 
