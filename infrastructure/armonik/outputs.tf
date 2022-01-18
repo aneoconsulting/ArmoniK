@@ -9,3 +9,7 @@ output "armonik_seq" {
 output "armonik_grafana" {
   value = (var.monitoring.grafana ? module.grafana.0.grafana_url : "")
 }
+
+output "armonik_prometheus" {
+  value = (var.monitoring.prometheus ? module.prometheus.0.prometheus_url : "")
+}
