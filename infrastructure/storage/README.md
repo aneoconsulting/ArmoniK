@@ -21,7 +21,5 @@ in [allowed storage resources](../modules/needed-storage/storage_for_each_armoni
 The storage resources will be created as **Kubernetes services**. Therefore, you must already have a Kubernetes already
 installed.
 
-> **_NOTE:_** If you do not have a Kubernetes already installed, you can use [Install Kubernetes docs](../docs/deploy/onpremise.md#kubernetes) to install Kubernetes on a local machine or an onpremise cluster.
-
 The source codes to create the needed storage resources for ArmoniK are defined
 in [Onpremise storage resources](onpremise/README.md).

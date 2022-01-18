@@ -1,11 +1,12 @@
 # Table of contents
 
 1. [Introduction](#introduction)
-2. [AWS credentials](#aws-credentials)
-3. [Generate a SSH key pair](#generate-a-ssh-key-pair)
-4. [Deploy a cluster](#deploy-a-cluster)
-5. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
-6. [Destroy the cluster](#destroy-the-cluster)
+2. [Prerequisites](#prerequisites)
+3. [AWS credentials](#aws-credentials)
+4. [Generate a SSH key pair](#generate-a-ssh-key-pair)
+5. [Deploy a cluster](#deploy-a-cluster)
+6. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
+7. [Destroy the cluster](#destroy-the-cluster)
 
 # Introduction
 
@@ -86,6 +87,11 @@ worker_public_ip = [
   }
 ]
 ```
+
+# Prerequisites
+
+You must open the following inbound ports:
+![](../images/ports.png)
 
 # Accessing the cluster from outside
 
