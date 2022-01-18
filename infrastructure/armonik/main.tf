@@ -9,5 +9,4 @@ module "armonik" {
   storage_adapters     = local.storage_adapters
   storage_endpoint_url = var.storage_endpoint_url
   seq_endpoint_url     = local.seq_endpoint_url
-  grafana_endpoint_url = local.grafana_endpoint_url
 }
