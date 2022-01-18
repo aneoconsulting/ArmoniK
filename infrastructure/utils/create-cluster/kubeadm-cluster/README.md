@@ -89,39 +89,6 @@ worker_public_ip = [
 ]
 ```
 
-## On master node
-
-1. Initialize kubeadm on master node:
-
-```bash
-ssh -i ~/.ssh/cluster-key -o "StrictHostKeyChecking no" ec2-user@<master-public-address-ip> 'sudo kubeadm init --apiserver-cert-extra-sans=<master-public-address-ip> --pod-network-cidr=192.168.0.0/16 ; mkdir -p $HOME/.kube ; sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config ; sudo chown $(id -u):$(id -g) $HOME/.kube/config'
-```
-
-**warning:** the end of the output of this command display the join command to execute on worker nodes.
-
-2. Install the network plugin Calico:
-
-```bash
-ssh -i ~/.ssh/cluster-key -o "StrictHostKeyChecking no" ec2-user@<master-public-address-ip> "curl -s https://docs.projectcalico.org/manifests/calico.yaml > calico.yaml ; sed -i -e 's?# - name: CALICO_IPV4POOL_CIDR?- name: CALICO_IPV4POOL_CIDR?g' calico.yaml ; sed -i -e 's?#   value: \"192.168.0.0/16\"?  value: \"192.168.0.0/16\"?g' calico.yaml ; kubectl apply -f calico.yaml"
-```
-
-where:
-
-* `<master-public-address-ip>` is the public IP of the master node.
-
-## On worker nodes
-
-Run the join command on worker nodes:
-
-```bash
-token=$(ssh -i ~/.ssh/cluster-key -o "StrictHostKeyChecking no" ec2-user@<master-public-address-ip> 'kubeadm token list' | sed 1d | awk '{print $1}') ; token_hash=$(ssh -i ~/.ssh/cluster-key -o "StrictHostKeyChecking no" ec2-user@<master-public-address-ip> 'openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex' | sed 's/^.* //') ; for ip in <list-public-ip-addresses-of-workers>; do ssh -i ~/.ssh/cluster-key -o "StrictHostKeyChecking no" ec2-user@$ip "sudo kubeadm join <master-public-address-ip>:6443 --token $token --discovery-token-ca-cert-hash $token_hash"; done
-```
-
-where:
-
-* `<master-public-address-ip>` is the public IP of the master node.
-* `<list-public-ip-addresses-of-workers>` is the list of public IP addresses of worker nodes.
-
 # Accessing the cluster from outside
 
 Copy `/etc/kubernetes/admin.conf` from the master on your machine located outside the cluster as `~/.kube/config`. Then
