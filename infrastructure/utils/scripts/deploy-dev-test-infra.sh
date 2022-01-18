@@ -8,6 +8,7 @@ export ARMONIK_STORAGE_REDIS_SECRET_NAME=redis-storage-secret
 export ARMONIK_STORAGE_ACTIVEMQ_CREDENTIALS_DIRECTORY=../../credentials
 export ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME=activemq-storage-secret
 export ARMONIK_NAMESPACE=armonik
+export ARMONIK_MONITORING_NAMESPACE=armonik-monitoring
 export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=../credentials
 export ARMONIK_REDIS_SECRET_NAME=redis-storage-secret
 export ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY=../credentials
@@ -107,6 +108,7 @@ deploy_armonik() {
 
   cd $BASEDIR/../../armonik
   kubectl create namespace $ARMONIK_NAMESPACE
+  kubectl create namespace $ARMONIK_MONITORING_NAMESPACE
   kubectl create secret generic $ARMONIK_REDIS_SECRET_NAME --namespace=$ARMONIK_NAMESPACE --from-file=ca_cert_file=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/ca.crt --from-file=certificate_pfx=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/certificate.pfx
   kubectl create secret generic $ARMONIK_EXTERNAL_REDIS_SECRET_NAME --namespace=$ARMONIK_NAMESPACE --from-file=ca_cert_file=$ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY/ca.crt --from-file=certificate_pfx=$ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY/certificate.pfx
   kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME --namespace=$ARMONIK_NAMESPACE --from-file=amqp_credentials=$ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY/amqp-credentials.json

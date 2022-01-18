@@ -10,18 +10,10 @@ variable "logging_level" {
   type        = string
 }
 
-# Parameters for Seq
-variable "seq" {
-  description = "Parameters of Seq"
-  type        = object({
-    replicas = number
-    port     = list(object({
-      name        = string
-      port        = number
-      target_port = number
-      protocol    = string
-    }))
-  })
+# use Seq
+variable "seq_endpoint_url" {
+  description = "Endpoint URL of Seq"
+  type        = string
 }
 
 # Parameters of control plane

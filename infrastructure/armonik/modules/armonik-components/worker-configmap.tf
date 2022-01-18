@@ -32,7 +32,7 @@ locals {
       {
         "Name": "Seq",
         "Args": {
-          "serverUrl": "${local.seq_url}"
+          "serverUrl": "${var.seq_endpoint_url}"
         }
       }
     ],

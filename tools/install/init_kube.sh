@@ -19,6 +19,7 @@ cd -
 cd infrastructure/armonik/
 source ../utils/envvars.conf
 kubectl create namespace $ARMONIK_NAMESPACE
+kubectl create namespace $ARMONIK_MONITORING_NAMESPACE
 kubectl create secret generic $ARMONIK_REDIS_SECRET_NAME \
         --namespace=$ARMONIK_NAMESPACE \
         --from-file=ca_cert_file=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/ca.crt \

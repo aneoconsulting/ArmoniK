@@ -4,6 +4,12 @@ namespace = "armonik"
 # Logging level
 logging_level = "Information"
 
+# Use Seq
+seq = {
+  use       = true
+  namespace = "armonik-monitoring"
+}
+
 # Needed storage for each ArmoniK data type
 storage = {
   object         = "Redis"

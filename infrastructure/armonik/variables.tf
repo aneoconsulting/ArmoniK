@@ -24,24 +24,16 @@ variable "logging_level" {
   default     = "Information"
 }
 
-# Parameters for Seq
+# Use Seq
 variable "seq" {
-  description = "Parameters of Seq"
+  description = "Use Seq"
   type        = object({
-    replicas = number
-    port     = list(object({
-      name        = string
-      port        = number
-      target_port = number
-      protocol    = string
-    }))
+    use       = bool
+    namespace = string
   })
   default     = {
-    replicas = 1
-    port     = [
-      { name = "ingestion", port = 5341, target_port = 5341, protocol = "TCP" },
-      { name = "web", port = 8080, target_port = 80, protocol = "TCP" }
-    ]
+    use       = true
+    namespace = "armonik-monitoring"
   }
 }
 

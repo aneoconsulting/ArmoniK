@@ -2,10 +2,12 @@ import json
 import argparse
 import hcl2
 
+
 def none_or_str(value):
     if value == 'None':
         return None
     return value
+
 
 parser = argparse.ArgumentParser(description="Modify ArmoniK paramters.tfvars.json")
 parser.add_argument("inputfile", help="Path to the input paramters.tfvars file", type=none_or_str)

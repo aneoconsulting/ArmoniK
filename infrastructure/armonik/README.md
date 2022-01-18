@@ -23,6 +23,9 @@ variables are:
 # Armonik namespace in the Kubernetes
 export ARMONIK_NAMESPACE=<Your namespace in kubernetes>
 
+# Armonik monitoring namespace in the Kubernetes
+export ARMONIK_MONITORING_NAMESPACE=<Your namespace in kubernetes for monitoring ArmoniK>
+
 # Directory path of the Redis certificates
 export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your directory path of the Redis certificates>
     
@@ -67,6 +70,7 @@ ArmoniK:
 
 ```bash
 kubectl create namespace $ARMONIK_NAMESPACE
+kubectl create namespace $ARMONIK_MONITORING_NAMESPACE
 ```
 
 You can see all active namespaces in your Kubernetes as follows:
@@ -88,8 +92,8 @@ file (`ca.crt`) or path to be used as a trusted root when validating certificate
 also used (`certificate.pfx`).
 
 Execute the following command to create the Redis client secrets (Redis for ArmoniK and external Redis used by HTC Mock
-smaple) in Kubernetes. In this project, we have certificates for test in [credentials](../credentials) directory.
-Create a Kubernetes secret for Redis client:
+smaple) in Kubernetes. In this project, we have certificates for test in [credentials](../credentials) directory. Create
+a Kubernetes secret for Redis client:
 
 ```bash
 kubectl create secret generic $ARMONIK_REDIS_SECRET_NAME \
@@ -145,7 +149,16 @@ namespace = "armonik"
 logging_level = "Information"
 ```
 
-3. List of storage for each ArmoniK data:
+3. Use of Seq for display logs:
+
+```terraform
+seq = {
+  use       = true
+  namespace = "armonik-monitoring"
+}
+```
+
+4. List of storage for each ArmoniK data:
 
 ```terraform
 storage = {
@@ -165,7 +178,7 @@ string `""`, but for **HTC Mock sample** you must set it to `"Redis"`.
 **Warning:** The list of storage adapted to each ArmoniK data type are defined
 in [Adapted storage for ArmoniK](../modules/needed-storage/storage_for_each_armonik_data.tf).
 
-4. List of endpoint urls and credentials for each needed storage:
+5. List of endpoint urls and credentials for each needed storage:
 
 ```terraform
 storage_endpoint_url = {
@@ -195,7 +208,7 @@ storage_endpoint_url = {
 }
 ```
 
-5. Information for **ArmoniK control plane**:
+6. Information for **ArmoniK control plane**:
 
 ```terraform
 control_plane = {

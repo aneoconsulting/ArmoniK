@@ -35,6 +35,20 @@ structured log data.
 
 ```terraform
 seq = {
+  use       = bool
+  namespace = string
+}
+```
+
+| Parameter | Description | Type | Default |
+|:----------|:------------|:-----|:--------|
+| `use` | Check if we want use Seq or not | bool | `true` |
+| `namespace` | Namespace of monitoring | string | `armonik-monitoring` |
+
+In module `Seq`, we have:
+
+```terraform
+seq = {
   replicas = number
   port     = [
     {

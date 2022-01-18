@@ -3,5 +3,5 @@ output "armonik_control_plane" {
 }
 
 output "armonik_seq" {
-  value = module.armonik.seq_web_url
+  value = (var.seq.use ? module.seq.0.seq_web_url : "")
 }
