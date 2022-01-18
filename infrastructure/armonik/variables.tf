@@ -57,7 +57,7 @@ variable "storage" {
     external       = string
   })
   default     = {
-    object         = "MongoDB"
+    object         = "Redis"
     table          = "MongoDB"
     queue          = "Amqp"
     lease_provider = "MongoDB"

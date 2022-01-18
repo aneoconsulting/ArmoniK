@@ -6,7 +6,7 @@ module "armonik" {
   seq                  = var.seq
   control_plane        = var.control_plane
   compute_plane        = var.compute_plane
-  storage              = module.storage.list_storage
+  storage              = local.storage
   storage_adapters     = local.storage_adapters
   storage_endpoint_url = var.storage_endpoint_url
 }

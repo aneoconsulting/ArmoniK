@@ -117,5 +117,15 @@ variable "storage_adapters" {
 # List of needed storage
 variable "storage" {
   description = "List of storage needed by ArmoniK"
-  type        = list(string)
+  type        = object({
+    data_type = object({
+      object         = string
+      table          = string
+      queue          = string
+      lease_provider = string
+      shared         = string
+      external       = string
+    })
+    list      = list(string)
+  })
 }

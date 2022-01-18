@@ -40,7 +40,7 @@ resource "kubernetes_deployment" "control_plane" {
             sub_path   = "appsettings.json"
           }
           dynamic volume_mount {
-            for_each = (contains(var.storage, "amqp") ? [1] : [])
+            for_each = (local.data_type.queue_amqp ? [1] : [])
             content {
               name       = "activemq-secret-volume"
               mount_path = "/amqp"
@@ -48,7 +48,7 @@ resource "kubernetes_deployment" "control_plane" {
             }
           }
           dynamic volume_mount {
-            for_each = (contains(var.storage, "redis") ? [1] : [])
+            for_each = (local.data_type.object_redis ? [1] : [])
             content {
               name       = "redis-secret-volume"
               mount_path = "/certificates"
@@ -64,7 +64,7 @@ resource "kubernetes_deployment" "control_plane" {
           }
         }
         dynamic volume {
-          for_each = (contains(var.storage, "amqp") ? [1] : [])
+          for_each = (local.data_type.queue_amqp ? [1] : [])
           content {
             name = "activemq-secret-volume"
             secret {
@@ -74,7 +74,7 @@ resource "kubernetes_deployment" "control_plane" {
           }
         }
         dynamic volume {
-          for_each = (contains(var.storage, "redis") ? [1] : [])
+          for_each = (local.data_type.object_redis ? [1] : [])
           content {
             name = "redis-secret-volume"
             secret {

@@ -12,4 +12,8 @@ locals {
     queue          = (module.storage.needed_storage.queue == "amqp" ? "Amqp.QueueStorage" : "MongoDB.LockedQueueStorage")
     lease_provider = "MongoDB.LeaseProvider"
   }
+  storage          = {
+    list      = module.storage.list_storage
+    data_type = module.storage.needed_storage
+  }
 }

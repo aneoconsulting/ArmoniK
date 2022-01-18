@@ -58,7 +58,7 @@ resource "kubernetes_deployment" "compute_plane" {
             mount_path = "/cache"
           }
           dynamic volume_mount {
-            for_each = (contains(var.storage, "amqp") ? [1] : [])
+            for_each = (local.data_type.queue_amqp ? [1] : [])
             content {
               name       = "activemq-secret-volume"
               mount_path = "/amqp"
@@ -66,7 +66,7 @@ resource "kubernetes_deployment" "compute_plane" {
             }
           }
           dynamic volume_mount {
-            for_each = (contains(var.storage, "redis") ? [1] : [])
+            for_each = (local.data_type.object_redis ? [1] : [])
             content {
               name       = "redis-secret-volume"
               mount_path = "/certificates"
@@ -110,7 +110,7 @@ resource "kubernetes_deployment" "compute_plane" {
               read_only  = true
             }
             dynamic volume_mount {
-              for_each = (contains(var.storage, "redis") ? [1] : [])
+              for_each = (local.data_type.external_redis ? [1] : [])
               content {
                 name       = "external-redis-secret-volume"
                 mount_path = "/certificates"
@@ -138,7 +138,7 @@ resource "kubernetes_deployment" "compute_plane" {
           empty_dir {}
         }
         dynamic volume {
-          for_each = (contains(var.storage, "hostpath") ? [1] : [])
+          for_each = (local.data_type.shared_host_path ? [1] : [])
           content {
             name = "shared-volume"
             host_path {
@@ -148,18 +148,18 @@ resource "kubernetes_deployment" "compute_plane" {
           }
         }
         dynamic volume {
-          for_each = (contains(var.storage, "nfs") ? [1] : [])
+          for_each = (local.data_type.shared_nfs ? [1] : [])
           content {
             name = "shared-volume"
             nfs {
-              path   = var.storage_endpoint_url.shared.path
-              server = var.storage_endpoint_url.shared.host
+              path      = var.storage_endpoint_url.shared.path
+              server    = var.storage_endpoint_url.shared.host
               read_only = true
             }
           }
         }
         dynamic volume {
-          for_each = (contains(var.storage, "amqp") ? [1] : [])
+          for_each = (local.data_type.queue_amqp ? [1] : [])
           content {
             name = "activemq-secret-volume"
             secret {
@@ -169,7 +169,7 @@ resource "kubernetes_deployment" "compute_plane" {
           }
         }
         dynamic volume {
-          for_each = (contains(var.storage, "redis") ? [1] : [])
+          for_each = (local.data_type.object_redis ? [1] : [])
           content {
             name = "redis-secret-volume"
             secret {
@@ -179,7 +179,7 @@ resource "kubernetes_deployment" "compute_plane" {
           }
         }
         dynamic volume {
-          for_each = (contains(var.storage, "redis") ? [1] : [])
+          for_each = (local.data_type.external_redis ? [1] : [])
           content {
             name = "external-redis-secret-volume"
             secret {
