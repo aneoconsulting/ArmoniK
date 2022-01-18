@@ -46,7 +46,7 @@ storage_endpoint_url = {
 control_plane = {
   replicas          = 1
   image             = "dockerhubaneo/armonik_control"
-  tag               = "0.2.0-redis.29.20d9f60"
+  tag               = "0.2.0"
   image_pull_policy = "IfNotPresent"
   port              = 5001
 }
@@ -60,7 +60,7 @@ compute_plane = {
   # ArmoniK polling agent
   polling_agent = {
     image             = "dockerhubaneo/armonik_pollingagent"
-    tag               = "0.2.0-redis.29.20d9f60"
+    tag               = "0.2.0"
     image_pull_policy = "IfNotPresent"
     limits            = {
       cpu    = "100m"
