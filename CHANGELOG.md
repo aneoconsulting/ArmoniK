@@ -1,5 +1,10 @@
 # Changelog
 
+## [latest](https://github.com/aneoconsulting/armonik/tree/main) (2022-01-31)
+Added
+-
+* Support for Redis as object storage
+
 ## [v2.2.0](https://github.com/aneoconsulting/armonik/tree/v2.2.0) (2022-01-17)
 Added
 -
