@@ -6,7 +6,7 @@ module "storage" {
 
 # Use Seq
 module "seq" {
-  source    = "./modules/seq"
+  source    = "./modules/monitoring/seq"
   count     = (var.seq.use ? 1 : 0)
   namespace = var.seq.namespace
 }
