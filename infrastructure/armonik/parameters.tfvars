@@ -6,7 +6,7 @@ logging_level = "Information"
 
 # Needed storage for each ArmoniK data type
 storage = {
-  object         = "MongoDB"
+  object         = "Redis"
   table          = "MongoDB"
   queue          = "Amqp"
   lease_provider = "MongoDB"
@@ -22,7 +22,7 @@ storage_endpoint_url = {
     secret = ""
   }
   redis    = {
-    url    = ""
+    url    = "192.168.1.13:32041"
     secret = "redis-storage-secret"
   }
   activemq = {
@@ -46,7 +46,7 @@ storage_endpoint_url = {
 control_plane = {
   replicas          = 1
   image             = "dockerhubaneo/armonik_control"
-  tag               = "0.0.6"
+  tag               = "0.2.0-redis.29.20d9f60"
   image_pull_policy = "IfNotPresent"
   port              = 5001
 }
@@ -60,7 +60,7 @@ compute_plane = {
   # ArmoniK polling agent
   polling_agent = {
     image             = "dockerhubaneo/armonik_pollingagent"
-    tag               = "0.0.6"
+    tag               = "0.2.0-redis.29.20d9f60"
     image_pull_policy = "IfNotPresent"
     limits            = {
       cpu    = "100m"

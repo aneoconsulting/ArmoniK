@@ -30,7 +30,6 @@ usage() {
 # Clean
 destroy_storage() {
   cd $BASEDIR/../../storage/onpremise
-  terraform init
   terraform destroy -auto-approve
   make clean
   kubectl delete namespace $ARMONIK_STORAGE_NAMESPACE
@@ -39,7 +38,6 @@ destroy_storage() {
 
 destroy_armonik() {
   cd $BASEDIR/../../armonik
-  terraform init
   terraform destroy -auto-approve
   make clean
   kubectl delete namespace $ARMONIK_NAMESPACE
@@ -52,7 +50,6 @@ deploy_storage() {
   kubectl create namespace $ARMONIK_STORAGE_NAMESPACE
   kubectl create secret generic $ARMONIK_STORAGE_REDIS_SECRET_NAME --namespace=$ARMONIK_STORAGE_NAMESPACE --from-file=cert_file=$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY/cert.crt --from-file=key_file=$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY/cert.key --from-file=ca_cert_file=$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY/ca.crt
   kubectl create secret generic $ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME --namespace=$ARMONIK_STORAGE_NAMESPACE --from-file=$ARMONIK_STORAGE_ACTIVEMQ_CREDENTIALS_DIRECTORY/jetty-realm.properties
-  terraform init
   terraform apply -var-file=parameters.tfvars -auto-approve
   cd -
 }
@@ -71,22 +68,28 @@ endpoint_urls() {
 # create configuration file
 configuration_file() {
   python $BASEDIR/../../../tools/modify_parameters.py \
-    --storage-object "MongoDB" \
+    --storage-object "Redis" \
     --storage-table "MongoDB" \
-    --storage-queue "MongoDB" \
+    --storage-queue "Amqp" \
     --storage-lease-provider "MongoDB" \
-    --storage-shared-type $1 \
-    --storage-external "MongoDB" \
+    --storage-external "Redis" \
     --mongodb-url $MONGODB_URL \
     --mongodb-kube-secret "" \
     --activemq-host $ACTIVEMQ_HOST \
     --activemq-port $ACTIVEMQ_PORT \
-    --activemq-kube-secret "activemq-storage-secret" \
+    --activemq-kube-secret $ARMONIK_ACTIVEMQ_SECRET_NAME \
     --shared-host $SHARED_STORAGE_HOST \
     --redis-url $REDIS_URL \
-    --redis-kube-secret "redis-storage-secret" \
+    --redis-kube-secret $ARMONIK_REDIS_SECRET_NAME \
     --external-url $REDIS_URL \
-    --external-kube-secret "external-redis-storage-secret" \
+    --external-kube-secret $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
+    --control-plane-image "dockerhubaneo/armonik_control" \
+    --control-plane-tag "0.2.0-redis.29.20d9f60" \
+    --polling-agent-image "dockerhubaneo/armonik_pollingagent" \
+    --polling-agent-tag "0.2.0-redis.29.20d9f60" \
+    --worker-image "dockerhubaneo/armonik_worker_dll" \
+    --worker-tag "0.1.1" \
+    --storage-shared-type $1 \
     $BASEDIR/../../armonik/parameters.tfvars \
     ./parameters.tfvars.json
 }
@@ -107,12 +110,18 @@ deploy_armonik() {
   kubectl create secret generic $ARMONIK_REDIS_SECRET_NAME --namespace=$ARMONIK_NAMESPACE --from-file=ca_cert_file=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/ca.crt --from-file=certificate_pfx=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/certificate.pfx
   kubectl create secret generic $ARMONIK_EXTERNAL_REDIS_SECRET_NAME --namespace=$ARMONIK_NAMESPACE --from-file=ca_cert_file=$ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY/ca.crt --from-file=certificate_pfx=$ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY/certificate.pfx
   kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME --namespace=$ARMONIK_NAMESPACE --from-file=amqp_credentials=$ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY/amqp-credentials.json
-  terraform init
   terraform apply -var-file=../utils/scripts/parameters.tfvars.json -auto-approve
   cd -
 }
 
 # Main
+cd $BASEDIR/../../storage/onpremise
+terraform init
+cd -
+cd $BASEDIR/../../armonik
+terraform init
+cd -
+
 for i in "$@"; do
   case $i in
   -h | --help)

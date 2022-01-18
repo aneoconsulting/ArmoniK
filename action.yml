@@ -106,11 +106,21 @@ runs:
         echo $REDIS_URL
 
         python ../../../tools/modify_parameters.py \
+            --storage-object "Redis" \
+            --storage-table "MongoDB" \
+            --storage-queue "Amqp" \
+            --storage-lease-provider "MongoDB" \
+            --storage-external "Redis" \
             --storage-shared-type "HostPath" \
             --mongodb-url $MONGODB_URL \
+            --mongodb-kube-secret "" \
             --activemq-host $ACTIVEMQ_HOST \
             --activemq-port $ACTIVEMQ_PORT \
+            --activemq-kube-secret "activemq-storage-secret" \
+            --redis-url $REDIS_URL \
+            --redis-kube-secret "redis-storage-secret" \
             --external-url $REDIS_URL \
+            --external-kube-secret "external-redis-storage-secret" \
             --worker-image ${{ inputs.worker-image }} \
             --worker-tag ${{ inputs.worker-tag }} \
             --polling-agent-image ${{ inputs.polling-agent-image }} \

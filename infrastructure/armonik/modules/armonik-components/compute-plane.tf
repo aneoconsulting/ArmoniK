@@ -65,6 +65,14 @@ resource "kubernetes_deployment" "compute_plane" {
               read_only  = true
             }
           }
+          dynamic volume_mount {
+            for_each = (contains(var.storage, "redis") ? [1] : [])
+            content {
+              name       = "redis-secret-volume"
+              mount_path = "/certificates"
+              read_only  = true
+            }
+          }
         }
         # Containers of worker
         dynamic container {
@@ -104,7 +112,7 @@ resource "kubernetes_deployment" "compute_plane" {
             dynamic volume_mount {
               for_each = (contains(var.storage, "redis") ? [1] : [])
               content {
-                name       = "redis-secret-volume"
+                name       = "external-redis-secret-volume"
                 mount_path = "/certificates"
                 read_only  = true
               }
@@ -164,6 +172,16 @@ resource "kubernetes_deployment" "compute_plane" {
           for_each = (contains(var.storage, "redis") ? [1] : [])
           content {
             name = "redis-secret-volume"
+            secret {
+              secret_name = var.storage_endpoint_url.redis.secret
+              optional    = false
+            }
+          }
+        }
+        dynamic volume {
+          for_each = (contains(var.storage, "redis") ? [1] : [])
+          content {
+            name = "external-redis-secret-volume"
             secret {
               secret_name = var.storage_endpoint_url.external.secret
               optional    = false

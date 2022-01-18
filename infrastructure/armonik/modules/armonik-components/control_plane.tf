@@ -47,6 +47,14 @@ resource "kubernetes_deployment" "control_plane" {
               read_only  = true
             }
           }
+          dynamic volume_mount {
+            for_each = (contains(var.storage, "redis") ? [1] : [])
+            content {
+              name       = "redis-secret-volume"
+              mount_path = "/certificates"
+              read_only  = true
+            }
+          }
         }
         volume {
           name = "control-plane-configmap"
@@ -61,6 +69,16 @@ resource "kubernetes_deployment" "control_plane" {
             name = "activemq-secret-volume"
             secret {
               secret_name = var.storage_endpoint_url.activemq.secret
+              optional    = false
+            }
+          }
+        }
+        dynamic volume {
+          for_each = (contains(var.storage, "redis") ? [1] : [])
+          content {
+            name = "redis-secret-volume"
+            secret {
+              secret_name = var.storage_endpoint_url.redis.secret
               optional    = false
             }
           }
