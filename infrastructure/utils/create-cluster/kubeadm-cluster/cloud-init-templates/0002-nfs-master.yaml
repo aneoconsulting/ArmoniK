@@ -1,0 +1,22 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+locale: en_US.UTF-8
+
+packages:
+  - nfs-utils
+  - nfs-utils-lib
+
+runcmd:
+  - yum install -y nfs-utils nfs-utils-lib
+  - mkdir -p /data
+  - echo "/data ${worker_subnet}(rw,sync,no_subtree_check)" | tee -a /etc/exports > /dev/null
+  - exportfs -r
+  - systemctl start nfs-server.service
+  - systemctl enable nfs-server.service
+  - chown -R ec2-user:ec2-user /data

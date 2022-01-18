@@ -12,12 +12,12 @@ Kubernetes on Linux machines:
 * [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/)
 * [Kubeadm (K8s)](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
 
-> **_NOTE:_** A developer or tester can deploy a small cluster in AWS using these [Terraform source codes](../../utils/create-cluster). This is useful for the development and testing only!
+> **_NOTE:_** A developer or tester can deploy a small cluster in AWS. This is useful for the development and testing only!
 
 # K3s
 
-The instructions to install K3s on a cluster are presented in [K3s on a cluster](k3s-on-cluster.md)
+The instructions to install K3s on a cluster are presented in [K3s on a cluster](../../utils/create-cluster/k3s-cluster/README.md)
 
 # Kubeadm
 
-The instructions to install kubeadm on a cluster are presented in [Kubeadm on a cluster](kubeadm-on-cluster.md)
+The instructions to install kubeadm on a cluster are presented in [Kubeadm on a cluster](../../utils/create-cluster/kubeadm-cluster/README.md)

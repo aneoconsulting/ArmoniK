@@ -1,0 +1,23 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [ append ]
+  - name: dict
+    settings: [ no_replace, recurse_list ]
+
+locale: en_US.UTF-8
+
+write_files:
+  - content: |
+      echo "Host *
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null" > /root/.ssh/config
+      echo "Host *
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null" > /home/ec2-user/.ssh/config
+      chown -R ec2-user:$ec2-user /home/ec2-user/.ssh/
+    path: /app/private-ssh-key.sh
+
+runcmd:
+  - bash /app/private-ssh-key.sh
