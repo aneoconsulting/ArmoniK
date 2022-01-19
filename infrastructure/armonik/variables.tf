@@ -31,12 +31,14 @@ variable "monitoring" {
     namespace = string
     seq       = bool
     grafana   = bool
+    prometheus = bool
     dashboard = bool
   })
   default     = {
     namespace = "armonik-monitoring"
     seq       = true
     grafana   = true
+    prometheus = true
     dashboard = true
   }
 }

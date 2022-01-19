@@ -18,6 +18,12 @@ module "grafana" {
   namespace = var.monitoring.namespace
 }
 
+module "prometheus" {
+  source    = "./modules/monitoring/prometheus"
+  count     = (var.monitoring.prometheus ? 1 : 0)
+  namespace = var.monitoring.namespace
+}
+
 # Use Kubernetes Dashboard
 module "dashboard" {
   source    = "./modules/monitoring/kubernetes-dashboard"
