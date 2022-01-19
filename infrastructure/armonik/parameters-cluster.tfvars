@@ -6,10 +6,10 @@ logging_level = "Information"
 
 # Use monitoring
 monitoring = {
-  namespace  = "armonik-monitoring"
-  seq        = true
-  grafana    = true
-  prometheus = true
+  namespace = "armonik-monitoring"
+  seq       = true
+  grafana   = true
+  dashboard = false
 }
 
 # Needed storage for each ArmoniK data type

@@ -36,23 +36,13 @@ export ARMONIK_STORAGE_ACTIVEMQ_CREDENTIALS_DIRECTORY=<Your directory path of th
 export ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the ActiveMQ>
 ```
 
-**Mandatory:** To set these environment variables, for example:
+**Mandatory:** To set these environment variables:
 
-1. position yourself in `infrastructure/storage/onpremise/` from the **root** of the repository.
+From the **root** of the repository source [file of environment variables](../../utils/envvars-storage.conf).
 
-2. copy the [template file](../../utils/envvars-storage.conf):
-
-    ```bash
-    cp  ../../utils/envvars-storage.conf ./envvars.conf
-    ```
-
-3. modify the values of variables if needed in `./envvars.conf`
-
-4. Source the file of configuration :
-
-   ```bash
-   source ./envvars.conf
-   ```
+```bash
+   source infrastructure/utils/envvars-storage.conf
+```
 
 # Create a namespace for ArmoniK storage
 
@@ -120,6 +110,9 @@ kubectl create secret generic $ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME \
 Before deploying the storages, you must fist prepare a configuration file containing a list of the parameters of the
 storages to be created.
 
+**warning:** You have an example of [parameters.tfvars](./parameters.tfvars). There is
+also [parameters doc of storage deployment](../../docs/deploy/storage-deploy-config.md).
+
 The configuration has three components:
 
 1. Kubernetes namespace where the storage will be created:
@@ -146,9 +139,6 @@ storage_kubernetes_secrets = {
   activemq = "activemq-storage-secret"
 }
 ```
-
-**warning:** You have an example of [configuration file](./parameters.tfvars). There is
-also [parameters doc of storage deployment](../../docs/deploy/storage-deploy-config.md).
 
 ## Deploy
 

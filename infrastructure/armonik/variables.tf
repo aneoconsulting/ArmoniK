@@ -26,18 +26,18 @@ variable "logging_level" {
 
 # Use monitoring
 variable "monitoring" {
-  description  = "Use monitoring tools"
-  type         = object({
-    namespace  = string
-    seq        = bool
-    grafana    = bool
-    prometheus = bool
+  description = "Use monitoring tools"
+  type        = object({
+    namespace = string
+    seq       = bool
+    grafana   = bool
+    dashboard = bool
   })
-  default      = {
-    namespace  = "armonik-monitoring"
-    seq        = true
-    grafana    = true
-    prometheus = true
+  default     = {
+    namespace = "armonik-monitoring"
+    seq       = true
+    grafana   = true
+    dashboard = true
   }
 }
 
