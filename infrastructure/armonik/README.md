@@ -120,14 +120,15 @@ kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME \
         --from-file=amqp_credentials=$ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY/amqp-credentials.json
 ```
 
-# Prepare the configuration file
+# Prepare the parameters files
 
-Before deploying the ArmoniK components, you must fist prepare a configuration file containing a list of the parameters.
+Before deploying the ArmoniK components, you must fist prepare the configuration files containing a list of the
+parameters.
 
-**warning:** You have an example of [parameters.tfvars](./parameters.tfvars). There is
-also [parameters doc of ArmoniK deployment](../docs/deploy/deploy-config.md).
+## Parameters for ArmoniK
 
-The configuration has six components:
+The parameters file for `ArmoniK` components are defined in [armonik-parameters.tfvars](./armonik-parameters.tfvars) and
+they are as follows (you can modify/update them):
 
 1. Kubernetes namespace where ArmoniK's components will be created:
 
@@ -141,79 +142,19 @@ namespace = "armonik"
 logging_level = "Information"
 ```
 
-3. Use of Seq for display logs:
-
-```terraform
-monitoring = {
-  namespace = string
-  seq       = bool
-  grafana   = bool
-}
-```
-
-4. List of storage for each ArmoniK data:
-
-```terraform
-storage = {
-  object         = "MongoDB"
-  table          = "MongoDB"
-  queue          = "Amqp"
-  lease_provider = "MongoDB"
-  shared         = "HostPath"
-  # Mandatory: If you want execute the HTC Mock sample, you must set this parameter to "Redis", otherwise let it to ""
-  external       = "Redis"
-}
-```
-
-`external` storage is a parameter to choose un external storage for data client. By default, it is set to empty
-string `""`, but for **HTC Mock sample** you must set it to `"Redis"`.
-
-**Warning:** The list of storage adapted to each ArmoniK data type are defined
-in [Adapted storage for ArmoniK](../modules/needed-storage/storage_for_each_armonik_data.tf).
-
-5. List of endpoint urls and credentials for each needed storage that **YOU MUST MODIFY**:
-
-```terraform
-storage_endpoint_url = {
-  mongodb  = {
-    url    = "mongodb://192.168.1.13:27017"
-    secret = ""
-  }
-  redis    = {
-    url    = ""
-    secret = ""
-  }
-  activemq = {
-    host   = "192.168.1.13"
-    port   = "5672"
-    secret = "activemq-storage-secret"
-  }
-  shared   = {
-    host   = ""
-    secret = ""
-    # Path to external shared storage from which worker containers upload .dll
-    path   = "/data"
-  }
-  external = {
-    url    = "192.168.1.13:6379"
-    secret = "external-redis-storage-secret"
-  }
-}
-```
-
-6. Information for **ArmoniK control plane**:
+3. Information for **ArmoniK control plane**:
 
 ```terraform
 control_plane = {
   replicas          = 1
   image             = "dockerhubaneo/armonik_control"
-  tag               = "0.0.6"
+  tag               = "0.2.0"
   image_pull_policy = "IfNotPresent"
   port              = 5001
 }
 ```
 
-6. Information for **ArmoniK compute plane** which is composed of a container of `polling agent` and container(s)
+4. Information for **ArmoniK compute plane** which is composed of a container of `polling agent` and container(s)
    of `worker(s)`:
 
 ```terraform
@@ -225,7 +166,7 @@ compute_plane = {
   # ArmoniK polling agent
   polling_agent = {
     image             = "dockerhubaneo/armonik_pollingagent"
-    tag               = "0.0.6"
+    tag               = "0.2.0"
     image_pull_policy = "IfNotPresent"
     limits            = {
       cpu    = "100m"
@@ -243,9 +184,7 @@ compute_plane = {
       port              = 80
       # [Default]
       image             = "dockerhubaneo/armonik_worker_dll"
-      # HTC Mock
-      #image             = "dockerhubaneo/armonik_worker_htcmock"
-      tag               = "0.0.6"
+      tag               = "0.1.1"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "920m"
@@ -260,18 +199,87 @@ compute_plane = {
 }
 ```
 
-# Deploy
+## Parameters for storage
 
-Execute the following command to deploy ArmoniK:
+The parameters file for `Storage` [storage-parameters.tfvars](./storage-parameters.tfvars) contains the types of storage
+for each ArmoniK data type, the endpoint urls and Kubernetes secrets of these storages. The parameters are defined as
+follows, and you must update them especially the endpoint urls:
 
-```bash
-make all CONFIG_FILE=<Your configuration file> 
+1. List of storage for each ArmoniK data:
+
+```terraform
+storage = {
+  object         = "MongoDB"
+  table          = "MongoDB"
+  queue          = "Amqp"
+  lease_provider = "MongoDB"
+  # shared = "NFS" if you use an onpremise cluster
+  shared         = "HostPath"
+  # Mandatory: If you want execute the HTC Mock sample, you must set this parameter to "Redis", otherwise let it to ""
+  external       = "Redis"
+}
 ```
 
-You can also execute one of the following commands if you want to reuse the default configuration file:
+`external` storage is a parameter to choose un external storage for data client. By default, it is set to empty
+string `""`, but for **HTC Mock sample** you must set it to `"Redis"`.
+
+**Warning:** The list of storage adapted to each ArmoniK data type are defined
+in [Adapted storage for ArmoniK](../modules/needed-storage/storage_for_each_armonik_data.tf).
+
+2. List of endpoint urls and credentials for each needed storage that **YOU MUST MODIFY**:
+
+```terraform
+storage_endpoint_url = {
+  mongodb  = {
+    url    = "mongodb://192.168.1.13:32670"
+    secret = ""
+  }
+  redis    = {
+    url    = "192.168.1.13:32041"
+    secret = "redis-storage-secret"
+  }
+  activemq = {
+    host   = "192.168.1.13"
+    port   = "30423"
+    secret = "activemq-storage-secret"
+  }
+  shared   = {
+    # host = "<NFS_SERVER_IP>" if you use an onpremise cluster
+    host   = ""
+    secret = ""
+    # Path to external shared storage from which worker containers upload .dll
+    path   = "/data"
+  }
+  external = {
+    url    = "192.168.1.13:32041"
+    secret = "external-redis-storage-secret"
+  }
+}
+```
+
+## Parameters for monitoring
+
+The parameters file for `Monitoring` [monitoring-parameters.tfvars](./monitoring-parameters.tfvars) contains the list of
+monitoring tools that we want to activate:
+
+```terraform
+monitoring = {
+  namespace  = "armonik-monitoring"
+  seq        = true
+  grafana    = true
+  prometheus = true
+  dashboard  = false
+}
+```
+
+# Deploy
+
+Position yourself in directory `infrastructure/armonik` and execute the following command to deploy ArmoniK:
 
 ```bash
-make all CONFIG_FILE=parameters.tfvars 
+make all ARMONIK_PARAMETERS_FILE=armonik-parameters.tfvars \
+         STORAGE_PARAMETERS_FILE=storage-parameters.tfvars \
+         MONITORING_PARAMETERS_FILE=monitoring-parameters.tfvars 
 ```
 
 or:
@@ -279,12 +287,6 @@ or:
 ```bash
 make all
 ```
-
-The command `make all` executes three commands in the following order that you can execute separately:
-
-* `make init`
-* `make plan CONFIG_FILE=<Your configuration file>`
-* `make apply CONFIG_FILE=<Your configuration file>`
 
 After the deployment you can display the list of created resources in Kubernetes as follows:
 
@@ -297,7 +299,9 @@ kubectl get all -n $ARMONIK_NAMESPACE
 **If you want** to delete all ArmoniK resources deployed as services in Kubernetes, execute the command:
 
 ```bash
-make destroy CONFIG_FILE=<Your configuration file> 
+make destroy ARMONIK_PARAMETERS_FILE=armonik-parameters.tfvars \
+             STORAGE_PARAMETERS_FILE=storage-parameters.tfvars \
+             MONITORING_PARAMETERS_FILE=monitoring-parameters.tfvars
 ```
 
 or, if you have used the default configuration file:

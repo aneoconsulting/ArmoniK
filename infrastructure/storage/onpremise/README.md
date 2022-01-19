@@ -105,13 +105,12 @@ kubectl create secret generic $ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME \
 
 # Create storages on Kubernetes
 
-## Prepare the configuration file
+## Prepare the parameters file
 
 Before deploying the storages, you must fist prepare a configuration file containing a list of the parameters of the
 storages to be created.
 
-**warning:** You have an example of [parameters.tfvars](./parameters.tfvars). There is
-also [parameters doc of storage deployment](../../docs/deploy/storage-deploy-config.md).
+**warning:** You have an example of [parameters.tfvars](./parameters.tfvars).
 
 The configuration has three components:
 
@@ -168,8 +167,8 @@ The command `make all` executes three commands in the following order that you c
 
 After the deployment :
 
-* an output file `./generated/output.conf` is generated having the endpoint urls of the created storage (**Needed for
-  ArmoniK deployment**):
+* an output file `./generated/output.conf` is generated containing the endpoint urls of the created storage (**Needed for
+  ArmoniK deployment**) like:
 
 ```bash
 MONGODB_URL="mongodb://192.168.1.13:31458"
