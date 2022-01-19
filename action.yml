@@ -143,7 +143,9 @@ runs:
       run: |
         set -ex
         cd ${{ github.action_path }}/infrastructure/armonik/
-        cat parameters.tfvars.json
+        cat armonik-parameters.tfvars.json
+        cat storage-parameters.tfvars.json
+        cat monitoring-parameters.tfvars.json
         terraform init
         terraform apply -var-file=armonik-parameters.tfvars.json \
                         -var-file=storage-parameters.tfvars.json \
