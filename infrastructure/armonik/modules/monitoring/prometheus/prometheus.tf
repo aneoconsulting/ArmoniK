@@ -5,7 +5,7 @@ resource "kubernetes_deployment" "prometheus" {
     namespace = var.namespace
     labels    = {
       app     = "armonik"
-      type    = "logs"
+      type    = "monitoring"
       service = "prometheus"
     }
   }
@@ -14,7 +14,7 @@ resource "kubernetes_deployment" "prometheus" {
     selector {
       match_labels = {
         app     = "armonik"
-        type    = "logs"
+        type    = "monitoring"
         service = "prometheus"
       }
     }
@@ -24,7 +24,7 @@ resource "kubernetes_deployment" "prometheus" {
         namespace = var.namespace
         labels    = {
           app     = "armonik"
-          type    = "logs"
+          type    = "monitoring"
           service = "prometheus"
         }
       }
@@ -41,6 +41,18 @@ resource "kubernetes_deployment" "prometheus" {
             name           = var.prometheus.port.name
             container_port = var.prometheus.port.target_port
             protocol       = var.prometheus.port.protocol
+          }
+          volume_mount {
+            name       = "prometheus-configmap"
+            mount_path = "/etc/prometheus/prometheus.yml"
+            sub_path   = "prometheus.yml"
+          }
+        }
+        volume {
+          name = "prometheus-configmap"
+          config_map {
+            name     = kubernetes_config_map.prometheus_config.metadata.0.name
+            optional = false
           }
         }
       }
@@ -72,5 +84,86 @@ resource "kubernetes_service" "prometheus" {
       target_port = var.prometheus.port.target_port
       protocol    = var.prometheus.port.protocol
     }
+  }
+}
+
+
+resource "kubernetes_cluster_role" "prometheus" {
+  metadata {
+    name      = kubernetes_deployment.prometheus.metadata.0.name
+    labels    = {
+      app     = "armonik"
+      type    = "monitoring"
+      service = "prometheus"
+    }
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["namespaces", "pods", "services", "endpoints", "nodes"]
+    verbs      = ["get", "list", "watch"]
+  }
+
+  rule {
+    non_resource_urls  = ["/metrics", "/metrics/cadvisor", "/metrics/resource", "/metrics/probes"]
+    verbs              = ["get"]
+  }
+
+  rule {
+    api_groups = ["networking.k8s.io"]
+    resources  = ["ingresses"]
+    verbs      = ["get", "list", "watch"]
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "prometheus" {
+  metadata {
+    name      = kubernetes_deployment.prometheus.metadata.0.name
+    labels    = {
+      app     = "armonik"
+      type    = "monitoring"
+      service = "prometheus"
+    }
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role.prometheus.metadata.0.name
+  }
+  # subject {
+  #   kind      = "User"
+  #   name      = "admin"
+  #   api_group = "rbac.authorization.k8s.io"
+  # }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "default"
+    namespace = var.namespace
+  }
+  # subject {
+  #   kind      = "Group"
+  #   name      = "system:masters"
+  #   api_group = "rbac.authorization.k8s.io"
+  # }
+}
+
+resource "kubernetes_cluster_role_binding" "prometheus_ns_armonik" {
+  metadata {
+    name      = "prometheus_ns_armonik"
+    labels    = {
+      app     = "armonik"
+      type    = "monitoring"
+      service = "prometheus"
+    }
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role.prometheus.metadata.0.name
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "default"
+    namespace = "armonik"
   }
 }

@@ -42,6 +42,41 @@ resource "kubernetes_deployment" "grafana" {
             container_port = var.grafana.port.target_port
             protocol       = var.grafana.port.protocol
           }
+          volume_mount {
+            name       = "datasources-configmap"
+            mount_path = "/etc/grafana/provisioning/datasources/datasources.yml"
+            sub_path   = "datasources.yml"
+          }
+          volume_mount {
+            name       = "dashboards-configmap"
+            mount_path = "/etc/grafana/provisioning/dashboards/dashboards.yml"
+            sub_path   = "dashboards.yml"
+          }
+          volume_mount {
+            name       = "dashboards-json-configmap"
+            mount_path = "/var/lib/grafana/dashboards/"
+          }
+        }
+        volume {
+          name = "datasources-configmap"
+          config_map {
+            name     = kubernetes_config_map.datasources_config.metadata.0.name
+            optional = false
+          }
+        }
+        volume {
+          name = "dashboards-json-configmap"
+          config_map {
+            name     = kubernetes_config_map.dashboards_json_config.metadata.0.name
+            optional = false
+          }
+        }
+        volume {
+          name = "dashboards-configmap"
+          config_map {
+            name     = kubernetes_config_map.dashboards_config.metadata.0.name
+            optional = false
+          }
         }
       }
     }
@@ -60,8 +95,7 @@ resource "kubernetes_service" "grafana" {
     }
   }
   spec {
-    type                    = "NodePort"
-    external_traffic_policy = "Local"
+    type                    = "LoadBalancer"
     selector                = {
       app     = kubernetes_deployment.grafana.metadata.0.labels.app
       type    = kubernetes_deployment.grafana.metadata.0.labels.type
