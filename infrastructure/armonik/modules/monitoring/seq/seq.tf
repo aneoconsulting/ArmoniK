@@ -10,7 +10,7 @@ resource "kubernetes_deployment" "seq" {
     }
   }
   spec {
-    replicas = 1
+    replicas = var.seq.replicas
     selector {
       match_labels = {
         app     = "armonik"

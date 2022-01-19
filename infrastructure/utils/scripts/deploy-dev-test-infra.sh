@@ -42,6 +42,7 @@ destroy_armonik() {
   terraform destroy -auto-approve
   make clean
   kubectl delete namespace $ARMONIK_NAMESPACE
+  kubectl delete namespace $ARMONIK_MONITORING_NAMESPACE
   cd -
 }
 

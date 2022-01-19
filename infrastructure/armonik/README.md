@@ -45,23 +45,13 @@ export ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY=<Your directory path of the Active
 export ARMONIK_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the ActiveMQ storage>
 ```
 
-**Mandatory:** To set these environment variables, for example:
+**Mandatory:** To set these environment variables:
 
-1. position yourself in the current directory `infrastructure/armonik/` from the **root** of the repository.
+From the **root** of the repository source [file of environment variables](../../utils/envvars.conf).
 
-2. copy the [template file](../utils/envvars.conf):
-
-   ```bash
-   cp ../utils/envvars.conf ./envvars.conf
-   ```
-
-3. modify the values of variables if needed in `./envvars.conf`.
-
-4. Source the file of configuration:
-
-   ```bash
-   source ./envvars.conf
-   ```
+```bash
+   source infrastructure/utils/envvars.conf
+```
 
 # Create a namespace for ArmoniK
 
@@ -132,8 +122,10 @@ kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME \
 
 # Prepare the configuration file
 
-Before deploying the storages, you must fist prepare a configuration file containing a list of the parameters of the
-storages to be created.
+Before deploying the ArmoniK components, you must fist prepare a configuration file containing a list of the parameters.
+
+**warning:** You have an example of [parameters.tfvars](./parameters.tfvars). There is
+also [parameters doc of ArmoniK deployment](../docs/deploy/deploy-config.md).
 
 The configuration has six components:
 
@@ -179,7 +171,7 @@ string `""`, but for **HTC Mock sample** you must set it to `"Redis"`.
 **Warning:** The list of storage adapted to each ArmoniK data type are defined
 in [Adapted storage for ArmoniK](../modules/needed-storage/storage_for_each_armonik_data.tf).
 
-5. List of endpoint urls and credentials for each needed storage:
+5. List of endpoint urls and credentials for each needed storage that **YOU MUST MODIFY**:
 
 ```terraform
 storage_endpoint_url = {
@@ -267,9 +259,6 @@ compute_plane = {
   ]
 }
 ```
-
-**warning:** You have an example of [configuration file](./parameters.tfvars). There is
-also [parameters doc of ArmoniK deployment](../docs/deploy/deploy-config.md).
 
 # Deploy
 
