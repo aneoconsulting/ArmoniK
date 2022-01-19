@@ -38,7 +38,7 @@ export ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the Activ
 
 **Mandatory:** To set these environment variables:
 
-From the **root** of the repository source [file of environment variables](../../utils/envvars-storage.conf).
+From the **root** of the repository, you source [file of environment variables](../../utils/envvars-storage.conf).
 
 ```bash
    source infrastructure/utils/envvars-storage.conf
@@ -142,7 +142,7 @@ storage_kubernetes_secrets = {
 
 ## Deploy
 
-Execute the following command to deploy storage:
+Position yourself in directory `infrastructure/storage/onpremise/` and execute the following command to deploy storage:
 
 ```bash
 make all CONFIG_FILE=<Your configuration file> 
@@ -166,7 +166,20 @@ The command `make all` executes three commands in the following order that you c
 * `make plan CONFIG_FILE=<Your configuration file>`
 * `make apply CONFIG_FILE=<Your configuration file>`
 
-After the deployment you can display the list of created resources in Kubernetes as follows:
+After the deployment :
+
+* an output file `./generated/output.conf` is generated having the endpoint urls of the created storage (**Needed for
+  ArmoniK deployment**):
+
+```bash
+MONGODB_URL="mongodb://192.168.1.13:31458"
+REDIS_URL="192.168.1.13:30129"
+ACTIVEMQ_HOST="192.168.1.13"
+ACTIVEMQ_PORT="31392"
+EXTERNAL_URL="192.168.1.13:30129"
+```
+
+* you can display the list of created resources in Kubernetes as follows:
 
 ```bash
 kubectl get all -n $ARMONIK_STORAGE_NAMESPACE
