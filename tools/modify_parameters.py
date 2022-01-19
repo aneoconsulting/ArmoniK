@@ -12,6 +12,7 @@ def none_or_str(value):
 parser = argparse.ArgumentParser(description="Modify ArmoniK paramters.tfvars.json")
 parser.add_argument("inputfile", help="Path to the input paramters.tfvars file", type=none_or_str)
 parser.add_argument("outputfile", help="Path to the output paramters.tfvars.json file", type=none_or_str)
+parser.add_argument("--namespace", dest="namespace", help="Change ArmoniK namespace", type=none_or_str, default=None)
 parser.add_argument("--logging-level", dest="logginglevel", help="Change ArmoniK logging level", type=none_or_str, default=None, choices=["Information", "Debug", "Verbose"])
 parser.add_argument("--storage-object", dest="storageobject", help="Change Object Storage type", type=none_or_str, default=None)
 parser.add_argument("--storage-table", dest="storagetable", help="Change Table Storage type", type=none_or_str, default=None)
@@ -53,14 +54,31 @@ parser.add_argument("--worker-limits-cpu", dest="workerlimitscpu", help="Change 
 parser.add_argument("--worker-limits-memory", dest="workerlimitsmemory", help="Change Memory limit of worker", type=none_or_str, default=None)
 parser.add_argument("--worker-requests-cpu", dest="workerrequestscpu", help="Change CPU requests of worker", type=none_or_str, default=None)
 parser.add_argument("--worker-requests-memory", dest="workerrequestsmemory", help="Change Memory requests of worker", type=none_or_str, default=None)
+parser.add_argument("--monitoring-namespace", dest="monitoringnamespace", help="Change Monitoring namespace", type=none_or_str, default=None)
+parser.add_argument("--use-seq", dest="useseq", help="Use Seq", type=none_or_str, default=None)
+parser.add_argument("--use-grafana", dest="usegrafana", help="Use Grafana", type=none_or_str, default=None)
+parser.add_argument("--use-prometheus", dest="useprometheus", help="Use Prometheus", type=none_or_str, default=None)
+parser.add_argument("--use-kubernetes-dashboard", dest="usekubernetesdashboard", help="Use kubernetes dashboard", type=none_or_str, default=None)
 
 args = parser.parse_args()
 
 with open(args.inputfile, 'r') as fin:
     content = hcl2.load(fin)
 
+if args.namespace is not None:
+    content['namespace'] = args.namespace
 if args.logginglevel is not None:
     content['logging_level'] = args.logginglevel
+if args.monitoringnamespace is not None:
+    content['monitoring']['namespace'] = args.monitoringnamespace
+if args.useseq is not None:
+    content['monitoring']['seq'] = args.useseq
+if args.usegrafana is not None:
+    content['monitoring']['grafana'] = args.usegrafana
+if args.useprometheus is not None:
+    content['monitoring']['prometheus'] = args.useprometheus
+if args.usekubernetesdashboard is not None:
+    content['monitoring']['dashboard'] = args.usekubernetesdashboard
 if args.storageobject is not None:
     content['storage']['object'] = args.storageobject
 if args.storagetable is not None:
