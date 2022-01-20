@@ -28,18 +28,18 @@ variable "logging_level" {
 variable "monitoring" {
   description = "Use monitoring tools"
   type        = object({
-    namespace = string
-    seq       = bool
-    grafana   = bool
+    namespace  = string
+    seq        = bool
+    grafana    = bool
     prometheus = bool
-    dashboard = bool
+    dashboard  = bool
   })
   default     = {
-    namespace = "armonik-monitoring"
-    seq       = true
-    grafana   = true
+    namespace  = "armonik-monitoring"
+    seq        = true
+    grafana    = true
     prometheus = true
-    dashboard = true
+    dashboard  = true
   }
 }
 
@@ -69,7 +69,8 @@ variable "storage_endpoint_url" {
   description = "Endpoints and secrets of storage resources"
   type        = object({
     mongodb  = object({
-      url    = string
+      host   = string
+      port   = string
       secret = string
     })
     redis    = object({
@@ -93,7 +94,8 @@ variable "storage_endpoint_url" {
   })
   default     = {
     mongodb  = {
-      url    = ""
+      host   = ""
+      port   = ""
       secret = ""
     }
     redis    = {
