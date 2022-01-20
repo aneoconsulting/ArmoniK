@@ -21,7 +21,7 @@ parser.add_argument("--storage-lease-provider", dest="storageleaseprovider", hel
 parser.add_argument("--storage-shared-type", dest="storageshared", help="Change Shared Storage type", type=none_or_str, default=None)
 parser.add_argument("--storage-external", dest="storageexternal", help="Change External Storage type", type=none_or_str, default=None)
 parser.add_argument("--mongodb-host", dest="mongodbhost", help="Change MongoDB Host", type=none_or_str, default=None)
-parser.add_argument("--mongodb-port", dest="mongodbportt", help="Change MongoDB Port", type=none_or_str, default=None)
+parser.add_argument("--mongodb-port", dest="mongodbport", help="Change MongoDB Port", type=none_or_str, default=None)
 parser.add_argument("--mongodb-kube-secret", dest="mongodbkubesecret", help="Change MongoDB Kubernetes secret", type=none_or_str, default=None)
 parser.add_argument("--redis-url", dest="redisurl", help="Change Redis Url", type=none_or_str, default=None)
 parser.add_argument("--redis-kube-secret", dest="rediskubesecret", help="Change Redis Kubernetes secret", type=none_or_str, default=None)
