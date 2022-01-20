@@ -98,11 +98,13 @@ runs:
         cat tmp.json
         export ACTIVEMQ_HOST=$(cat tmp.json | jq -r '.activemq_endpoint_url.value.host')
         export ACTIVEMQ_PORT=$(cat tmp.json | jq -r '.activemq_endpoint_url.value.port')
-        export MONGODB_URL=$(cat tmp.json | jq -r '.mongodb_endpoint_url.value.url')
+        export MONGODB_HOST=$(cat tmp.json | jq -r '.mongodb_endpoint_url.value.host')
+        export MONGODB_PORT=$(cat tmp.json | jq -r '.mongodb_endpoint_url.value.port')
         export REDIS_URL=$(cat tmp.json | jq -r '.redis_endpoint_url.value.url')
         echo $ACTIVEMQ_HOST
         echo $ACTIVEMQ_PORT
-        echo $MONGODB_URL
+        echo $MONGODB_HOST
+        echo $MONGODB_PORT
         echo $REDIS_URL
 
         python ../../../tools/modify_parameters.py \
@@ -112,7 +114,8 @@ runs:
             --storage-lease-provider "MongoDB" \
             --storage-external "Redis" \
             --storage-shared-type "HostPath" \
-            --mongodb-url $MONGODB_URL \
+            --mongodb-host $MONGODB_HOST \
+            --mongodb-port $MONGODB_PORT \
             --mongodb-kube-secret "" \
             --activemq-host $ACTIVEMQ_HOST \
             --activemq-port $ACTIVEMQ_PORT \
