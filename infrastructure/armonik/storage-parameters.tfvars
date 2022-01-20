@@ -12,7 +12,8 @@ storage = {
 # Endpoints and secrets of storage resources
 storage_endpoint_url = {
   mongodb  = {
-    url    = "mongodb://192.168.1.13:32670"
+    host   = "192.168.1.13"
+    port   = "32670"
     secret = ""
   }
   redis    = {

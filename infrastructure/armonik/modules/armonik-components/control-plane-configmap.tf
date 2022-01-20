@@ -59,7 +59,9 @@ locals {
     "LeaseProvider": "ArmoniK.Adapters.${var.storage_adapters.lease_provider}"
   },
   "MongoDB": {
-    "ConnectionString": "${var.storage_endpoint_url.mongodb.url}",
+    "ConnectionString": "mongodb://${var.storage_endpoint_url.mongodb.host}:${var.storage_endpoint_url.mongodb.port}",
+    "Host": "${var.storage_endpoint_url.mongodb.host}",
+    "Port": "${var.storage_endpoint_url.mongodb.port}",
     "DatabaseName": "database",
     "DataRetention": "10.00:00:00",
     "TableStorage": {

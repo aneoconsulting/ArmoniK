@@ -71,7 +71,8 @@ variable "storage_endpoint_url" {
   description = "Endpoints and secrets of storage resources"
   type        = object({
     mongodb  = object({
-      url    = string
+      host   = string
+      port   = string
       secret = string
     })
     redis    = object({
