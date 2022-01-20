@@ -1,10 +1,10 @@
 # Use monitoring
 monitoring = {
-  namespace = "armonik-monitoring"
-  seq       = true
-  grafana   = true
-  prometheus = true
-  dashboard = false
+  namespace  = "armonik-monitoring"
+  seq        = true
+  grafana    = false
+  prometheus = false
+  dashboard  = false
 }
 
 
