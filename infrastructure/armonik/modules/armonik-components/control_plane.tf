@@ -55,6 +55,14 @@ resource "kubernetes_deployment" "control_plane" {
               read_only  = true
             }
           }
+          dynamic volume_mount {
+            for_each = (local.data_type.table_mongodb ? [1] : [])
+            content {
+              name       = "mongodb-secret-volume"
+              mount_path = "/mongodb"
+              read_only  = true
+            }
+          }
         }
         volume {
           name = "control-plane-configmap"
@@ -79,6 +87,16 @@ resource "kubernetes_deployment" "control_plane" {
             name = "redis-secret-volume"
             secret {
               secret_name = var.storage_endpoint_url.redis.secret
+              optional    = false
+            }
+          }
+        }
+        dynamic volume {
+          for_each = (local.data_type.table_mongodb ? [1] : [])
+          content {
+            name = "mongodb-secret-volume"
+            secret {
+              secret_name = var.storage_endpoint_url.mongodb.secret
               optional    = false
             }
           }

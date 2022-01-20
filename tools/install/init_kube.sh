@@ -28,3 +28,8 @@ kubectl create secret generic $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
 kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME \
         --namespace=$ARMONIK_NAMESPACE \
         --from-file=amqp_credentials=$ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY/amqp-credentials.json || true
+# wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem -O $ARMONIK_MONGODB_CERTIFICATES_DIRECTORY/ca.pem
+kubectl create secret generic $ARMONIK_MONGODB_SECRET_NAME \
+        --namespace=$ARMONIK_NAMESPACE \
+        --from-file=ca_file=$ARMONIK_MONGODB_CERTIFICATES_DIRECTORY/ca.pem \
+        --from-file=mongodb_credentials=$ARMONIK_MONGODB_CREDENTIALS_DIRECTORY/mongodb-credentials.json || true
