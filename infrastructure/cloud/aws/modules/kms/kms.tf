@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "kms_policy" {
     sid       = ""
     effect    = "Allow"
     principals {
-      identifiers = ["arn:aws:iam::${var.account_id}:root"]
+      identifiers = ["arn:aws:iam::${var.account.id}:root"]
       type        = "AWS"
     }
     actions   = ["kms:*"]
@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "kms_policy" {
     sid       = "Supported resources"
     effect    = "Allow"
     principals {
-      identifiers = [var.account_id]
+      identifiers = [var.account.id]
       type        = "AWS"
     }
     actions   = [
@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "kms_policy" {
     resources = ["*"]
     condition {
       test     = "ArnEquals"
-      values   = ["arn:aws:logs:${var.region}:${var.account_id}:*:*"]
+      values   = ["arn:aws:logs:${var.region}:${var.account.id}:*:*"]
       variable = "kms:EncryptionContext:aws:logs:arn"
     }
   }
@@ -86,7 +86,7 @@ data "aws_iam_policy_document" "kms_policy" {
     effect    = "Allow"
     principals {
       identifiers = [
-        "arn:aws:iam::${var.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+        "arn:aws:iam::${var.account.id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
       ]
       type        = "AWS"
     }
@@ -104,7 +104,7 @@ data "aws_iam_policy_document" "kms_policy" {
     effect    = "Allow"
     principals {
       identifiers = [
-        "arn:aws:iam::${var.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+        "arn:aws:iam::${var.account.id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
       ]
       type        = "AWS"
     }

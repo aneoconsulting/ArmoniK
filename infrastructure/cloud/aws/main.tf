@@ -6,9 +6,9 @@ module "account" {
 
 # KMS
 module "kms" {
-  source     = "./modules/kms"
-  region     = var.region
-  tag        = var.tag
-  account_id = module.account.current_account.id
-  kms        = var.kms
+  source  = "./modules/kms"
+  region  = var.region
+  tag     = var.tag
+  account = module.account.current_account
+  kms     = var.kms
 }

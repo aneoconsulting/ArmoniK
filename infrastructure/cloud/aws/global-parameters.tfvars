@@ -1,3 +1,10 @@
+# one these:
+# profile="default"
+# profile="cacib-gmdprs-sbox/SysAdmin"
+# profile="cacib-cloud-equity-dev/SysAdmin"
+# profile="cacib-gmdprs-dev/DevOPS"
+profile = "default"
+
 # Region
 region = "eu-west-3"
 

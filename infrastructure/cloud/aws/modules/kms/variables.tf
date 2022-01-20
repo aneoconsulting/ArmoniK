@@ -10,11 +10,10 @@ variable "tag" {
   type        = string
 }
 
-
 # Account ID
-variable "account_id" {
+variable "account" {
   description = "Account ID that will have permissions."
-  type        = string
+  type        = any
 }
 
 # KMS

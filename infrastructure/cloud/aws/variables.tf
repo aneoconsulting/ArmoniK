@@ -1,3 +1,10 @@
+# Profile
+variable "profile" {
+  description = "Profile of AWS credentials to deploy Terraform sources"
+  type        = string
+  default     = "default"
+}
+
 # Region
 variable "region" {
   description = "AWS region where the infrastructure will be deployed"
