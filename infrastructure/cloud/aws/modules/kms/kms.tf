@@ -12,7 +12,7 @@ resource "aws_kms_key" "kms" {
 
 # KMS alis
 resource "aws_kms_alias" "kms_alias" {
-  name          = "alias/${var.tag}-${var.kms.name}"
+  name          = "alias/${var.tag}-armonik-${var.kms.name}"
   target_key_id = aws_kms_key.kms.id
 }
 
@@ -55,7 +55,8 @@ data "aws_iam_policy_document" "kms_policy" {
         "elasticache.${var.region}.amazonaws.com",
         "dax.${var.region}.amazonaws.com",
         "elasticfilesystem.${var.region}.amazonaws.com",
-        "mq.${var.region}.amazonaws.com"
+        "mq.${var.region}.amazonaws.com",
+        "rds.${var.region}.amazonaws.com"
       ]
       variable = "kms:ViaService"
     }

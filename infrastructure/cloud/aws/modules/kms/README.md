@@ -27,7 +27,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_account_id"></a> [account\_id](#input\_account\_id) | Account ID that will have permissions. | `string` | n/a | yes |
+| <a name="input_account"></a> [account](#input\_account) | Account ID that will have permissions. | `any` | n/a | yes |
 | <a name="input_kms"></a> [kms](#input\_kms) | AWS Key Management Service parameters | <pre>object({<br>    name                     = string<br>    multi_region             = bool<br>    deletion_window_in_days  = number<br>    customer_master_key_spec = string<br>    key_usage                = string<br>    enable_key_rotation      = bool<br>    is_enabled               = bool<br>  })</pre> | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | AWS region where the infrastructure will be deployed | `string` | n/a | yes |
 | <a name="input_tag"></a> [tag](#input\_tag) | Tag to prefix the AWS resources | `string` | n/a | yes |
@@ -36,5 +36,5 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_kms"></a> [kms](#output\_kms) | KMS |
+| <a name="output_selected"></a> [selected](#output\_selected) | KMS |
 <!-- END_TF_DOCS -->

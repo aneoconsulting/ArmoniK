@@ -4,7 +4,7 @@ provider "aws" {
     tags = {
       project         = "ARMONIK"
       deployed_by     = var.account.arn
-      resource        = "KMS"
+      resource        = "VPC"
     }
   }
 }
