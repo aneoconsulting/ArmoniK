@@ -4,8 +4,9 @@
 2. [Set environment variables](#set-environment-variables)
 3. [Create a namespace for ArmoniK](#create-a-namespace-for-armonik)
 4. [Create Kubernetes secrets](#create-kubernetes-secrets)
-    1. [Redis secret](#redis-secret)
-    2. [ActiveMQ secret](#activemq-secret)
+    1. [Redis client secret](#redis-client-secret)
+    2. [ActiveMQ client secret](#activemq-client-secret)
+    3. [MongoDB client secret](#mongodb-client-secret)
 5. [Prepare the configuration file](#prepare-the-configuration-file)
 6. [Deploy](#deploy)
 7. [Clean-up](#clean-up)
@@ -43,6 +44,12 @@ export ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY=<Your directory path of the Active
     
 # Name of ActiveMQ secret
 export ARMONIK_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the ActiveMQ storage>
+
+# Directory path of the MongoDB credentials
+export ARMONIK_MONGODB_CREDENTIALS_DIRECTORY=<Your directory path of the MongoDB credentials>
+
+# Name of MongoDB secret
+export ARMONIK_MONGODB_SECRET_NAME=<You kubernetes secret for the MongoDB storage>
 ```
 
 **Mandatory:** To set these environment variables:
@@ -74,7 +81,7 @@ kubectl get namespaces
 You create the secret for each storage only if you want to use these storages. In the following, we give examples to
 create secrets for some storage.
 
-## Redis secret
+## Redis client secret
 
 Redis uses SSL/TLS support using certificates. In order to support TLS, Redis is configured with a X.509
 certificate (`cert.crt`) and a private key (`cert.key`). In addition, it is necessary to specify a CA certificate bundle
@@ -97,11 +104,11 @@ kubectl create secret generic $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
         --from-file=certificate_pfx=$ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY/certificate.pfx
 ```
 
-## ActiveMQ storage
+## ActiveMQ Client secret
 
-ActiveMQ client use a file `amqp-credentials.json`. This is the file which stores user credentials.
+ActiveMQ client uses a file `amqp-credentials.json`. This is the file which stores user credentials.
 
-In this project, we have a file of name `amqp-credentials.json` in [credentials](../credentials ) directory:
+In this project, we have a file of name `amqp-credentials.json` in [credentials](../credentials ) directory, like:
 
 ```json
 {
@@ -118,6 +125,35 @@ Create a Kubernetes secret for the ActiveMQ client:
 kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME \
         --namespace=$ARMONIK_NAMESPACE \
         --from-file=amqp_credentials=$ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY/amqp-credentials.json
+```
+
+## MongoDB client secret
+
+MongoDB client uses a file `mongodb-credentials.json` and `chain.p7b`. This is the file which stores user credentials.
+
+In this project, we have a file of name `mongodb-credentials.json` and `chain.p7b` in [credentials](../credentials )
+directory. The file `mongodb-credentials.json` has this format:
+
+```json
+{
+  "MongoDB": {
+    "AllowInsecureTls": "true",
+    "Tls": "true",
+    "User": "admintest",
+    "Password": "<ADMIN_PASSWD>",
+    "CAFile": "/mongodb/ca_file",
+    "DirectConnection": "true"
+  }
+}
+```
+
+Create a Kubernetes secret for the MongoDB client:
+
+```bash
+kubectl create secret generic $ARMONIK_MONGODB_SECRET_NAME \
+        --namespace=$ARMONIK_NAMESPACE \
+        --from-file=ca_file=$ARMONIK_MONGODB_CERTIFICATES_DIRECTORY/chain.p7b \
+        --from-file=mongodb_credentials=$ARMONIK_MONGODB_CREDENTIALS_DIRECTORY/mongodb-credentials.json
 ```
 
 # Prepare the parameters files
@@ -148,7 +184,7 @@ logging_level = "Information"
 control_plane = {
   replicas          = 1
   image             = "dockerhubaneo/armonik_control"
-  tag               = "0.2.0"
+  tag               = "0.2.2-aws.17.17a7585"
   image_pull_policy = "IfNotPresent"
   port              = 5001
 }
@@ -166,7 +202,7 @@ compute_plane = {
   # ArmoniK polling agent
   polling_agent = {
     image             = "dockerhubaneo/armonik_pollingagent"
-    tag               = "0.2.0"
+    tag               = "0.2.2-aws.17.17a7585"
     image_pull_policy = "IfNotPresent"
     limits            = {
       cpu    = "100m"
@@ -210,7 +246,7 @@ follows, and you must update them especially the endpoint urls:
 ```terraform
 storage = {
   object         = "MongoDB"
-  table          = "MongoDB"
+  table          = "Redis"
   queue          = "Amqp"
   lease_provider = "MongoDB"
   # shared = "NFS" if you use an onpremise cluster
@@ -231,8 +267,9 @@ in [Adapted storage for ArmoniK](../modules/needed-storage/storage_for_each_armo
 ```terraform
 storage_endpoint_url = {
   mongodb  = {
-    url    = "mongodb://192.168.1.13:32670"
-    secret = ""
+    host   = "192.168.1.13"
+    port   = "32670"
+    secret = "mongodb-storage-secret"
   }
   redis    = {
     url    = "192.168.1.13:32041"

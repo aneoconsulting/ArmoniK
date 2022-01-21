@@ -4,8 +4,9 @@
 2. [Set environment variables](#set-environment-variables)
 3. [Create a namespace for ArmoniK storage](#create-a-namespace-for-armonik-storage)
 4. [Create Kubernetes secrets](#create-kubernetes-secrets)
-    1. [Redis storage secret](#redis-storage-secret)
-    2. [ActiveMQ storage secret](#activemq-storage-secret)
+    1. [Redis server secret](#redis-server-secret)
+    2. [ActiveMQ server secret](#activemq-server-secret)
+    3. [MongoDB server secret](#mongodb-server-secret)
 5. [Create storages on Kubernetes](#create-storages-on-kubernetes)
     1. [Prepare the configuration file](#prepare-the-configuration-file)
     2. [Deploy](#deploy)
@@ -34,6 +35,12 @@ export ARMONIK_STORAGE_ACTIVEMQ_CREDENTIALS_DIRECTORY=<Your directory path of th
     
 # Name of ActiveMQ secret
 export ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the ActiveMQ>
+
+# Directory path of the MongoDB credentials
+export ARMONIK_STORAGE_MONGODB_CREDENTIALS_DIRECTORY=<Your directory path of the MongoDB credentials>
+
+# Name of MongoDB secret
+export ARMONIK_STORAGE_MONGODB_SECRET_NAME=<You kubernetes secret for the MongoDB>
 ```
 
 **Mandatory:** To set these environment variables:
@@ -64,14 +71,14 @@ kubectl get namespaces
 You create the secret for each storage only if you want to create the needed storage. In the following, we give examples
 to create secrets for some storage.
 
-## Redis storage secret
+## Redis server secret
 
 Redis uses SSL/TLS support using certificates. In order to support TLS, Redis is configured with a X.509
 certificate (`cert.crt`) and a private key (`cert.key`). In addition, it is necessary to specify a CA certificate bundle
 file (`ca.crt`) or path to be used as a trusted root when validating certificates.
 
-Execute the following command to create the Redis secret in Kubernetes based on the certificates created and saved in
-the directory `$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY`. In this project, we have certificates for test
+Execute the following command to create the Redis server secret in Kubernetes based on the certificates created and
+saved in the directory `$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY`. In this project, we have certificates for test
 in [credentials](../../credentials) directory:
 
 ```bash
@@ -82,7 +89,7 @@ kubectl create secret generic $ARMONIK_STORAGE_REDIS_SECRET_NAME \
         --from-file=ca_cert_file=$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY/ca.crt
 ```
 
-## ActiveMQ storage secret
+## ActiveMQ server secret
 
 ActiveMQ uses a file `jetty-realm.properties`. This is the file which stores user credentials and their roles in
 ActiveMQ. It contains custom usernames and passwords and replace the file present by default inside the container.
@@ -95,12 +102,26 @@ admin:<ADMIN_PASSWD>,admin
 user:<GUEST_PASSWD>,guest
 ```
 
-Create a Kubernetes secret for the ActiveMQ:
+Create a Kubernetes secret for the ActiveMQ server:
 
 ```bash
 kubectl create secret generic $ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME \
         --namespace=$ARMONIK_STORAGE_NAMESPACE \
         --from-file=$ARMONIK_STORAGE_ACTIVEMQ_CREDENTIALS_DIRECTORY/jetty-realm.properties
+```
+
+## MongoDB server secret
+
+MongoDB uses SSL/TLS support using certificates (`cert.pem`).
+
+Execute the following command to create the MongoDB server secret in Kubernetes based on the certificates created and
+saved in the directory `$ARMONIK_STORAGE_MONGODB_CREDENTIALS_DIRECTORY`. In this project, we have certificates for test
+in [credentials](../../credentials) directory:
+
+```bash
+kubectl create secret generic $ARMONIK_STORAGE_MONGODB_SECRET_NAME \
+        --namespace=$ARMONIK_STORAGE_NAMESPACE \
+        --from-file=mongodb.pem=$ARMONIK_STORAGE_MONGODB_CREDENTIALS_DIRECTORY/cert.pem
 ```
 
 # Create storages on Kubernetes
@@ -133,7 +154,7 @@ storage = ["MongoDB", "Amqp", "Redis"]
 ```terraform
 # Kubernetes secrets for storage
 storage_kubernetes_secrets = {
-  mongodb  = ""
+  mongodb  = "mongodb-storage-secret"
   redis    = "redis-storage-secret"
   activemq = "activemq-storage-secret"
 }
@@ -167,8 +188,8 @@ The command `make all` executes three commands in the following order that you c
 
 After the deployment :
 
-* an output file `./generated/output.conf` is generated containing the endpoint urls of the created storage (**Needed for
-  ArmoniK deployment**) like:
+* an output file `./generated/output.conf` is generated containing the endpoint urls of the created storage (**Needed
+  for ArmoniK deployment**) like:
 
 ```bash
 MONGODB_URL="mongodb://192.168.1.13:31458"
