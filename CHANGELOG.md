@@ -4,6 +4,8 @@
 Added
 -
 * Support for Redis as object storage
+* Support for amqp and amqp+ssl protocols
+* Add Authentification for MongoDB and encryption in transit (TLS)
 
 ## [v2.2.0](https://github.com/aneoconsulting/armonik/tree/v2.2.0) (2022-01-17)
 Added
