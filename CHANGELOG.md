@@ -14,6 +14,17 @@ changed
 
 * Automate configurations of Kubernetes Kubeadm and K3s onpremise cluster (simulation of onpremise cluster on AWS)
 
+Added
+-
+
+* AWS Elastic Kubernetes Service (EKS)
+* Activate logs for EKS and VPC in CloudWatch
+* Encryption at rest:
+    * VPC flow log in cloudwatch log group
+    * EKS cloudwatch log group
+    * EKS secrets
+    * EBS of EKS nodes
+
 ## [v2.2.0](https://github.com/aneoconsulting/armonik/tree/v2.2.0) (2022-01-17)
 
 Added
