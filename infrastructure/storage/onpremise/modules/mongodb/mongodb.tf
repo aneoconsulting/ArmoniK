@@ -32,36 +32,53 @@ resource "kubernetes_deployment" "mongodb" {
       spec {
         container {
           name    = "mongodb"
-          image   = "mongo:bionic"
-          command = ["mongod"]
+          image   = "mongo:4.4.11"
+          # command = ["mongod"]
           args    = [
             "--dbpath=/data/db",
             "--port=${var.mongodb.port}",
             "--bind_ip=0.0.0.0",
-            "--replSet=rs0"
+            "--tlsMode=requireTLS",
+            "--tlsDisabledProtocols=TLS1_0",
+            "--tlsCertificateKeyFile=/mongodb/mongodb.pem",
+            "--auth",
           ]
+          # command = ["cat", "/mongodb/mongodb.pem"]
           port {
             name           = "mongodb"
             container_port = var.mongodb.port
           }
           env {
-            name  = "EDGE_PORT"
-            value = var.mongodb.port
+            name  = "MONGO_INITDB_ROOT_USERNAME"
+            value = "tmpAdmin"
+          }
+          env {
+            name  = "MONGO_INITDB_ROOT_PASSWORD"
+            value = "tmpPassword"
           }
           volume_mount {
-            name       = "configdir"
-            mount_path = "/data/configdb"
+            name       = "mongodb-secret-volume"
+            mount_path = "/mongodb/"
+            read_only  = true
           }
           volume_mount {
-            name       = "datadir"
-            mount_path = "/data/db"
+            name       = "init-files"
+            mount_path = "/docker-entrypoint-initdb.d/"
           }
         }
         volume {
-          name = "configdir"
+          name = "init-files"
+          config_map {
+            name     = kubernetes_config_map.init_mongodb_js.metadata.0.name
+            optional = false
+          }
         }
         volume {
-          name = "datadir"
+          name = "mongodb-secret-volume"
+          secret {
+            secret_name = "mongodb-storage-secret"
+            optional    = false
+          }
         }
       }
     }
@@ -93,13 +110,5 @@ resource "kubernetes_service" "mongodb" {
       target_port = var.mongodb.port
       protocol    = "TCP"
     }
-  }
-}
-
-# Active replicas in MongoDB
-resource "null_resource" "activate_replica_in_mongo" {
-  depends_on = [kubernetes_service.mongodb]
-  provisioner "local-exec" {
-    command = "kubectl exec svc/${kubernetes_service.mongodb.metadata.0.name} -n ${var.namespace} -- mongo --eval 'rs.initiate()'"
   }
 }
