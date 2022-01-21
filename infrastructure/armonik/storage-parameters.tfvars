@@ -14,7 +14,7 @@ storage_endpoint_url = {
   mongodb  = {
     host   = "192.168.1.13"
     port   = "32670"
-    secret = ""
+    secret = "mongodb-storage-secret"
   }
   redis    = {
     url    = "192.168.1.13:32041"

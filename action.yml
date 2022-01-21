@@ -116,7 +116,7 @@ runs:
             --storage-shared-type "HostPath" \
             --mongodb-host $MONGODB_HOST \
             --mongodb-port $MONGODB_PORT \
-            --mongodb-kube-secret "" \
+            --mongodb-kube-secret "mongodb-storage-secret" \
             --activemq-host $ACTIVEMQ_HOST \
             --activemq-port $ACTIVEMQ_PORT \
             --activemq-kube-secret "activemq-storage-secret" \
