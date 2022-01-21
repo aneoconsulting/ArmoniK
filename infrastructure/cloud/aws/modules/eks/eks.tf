@@ -57,8 +57,16 @@ module "eks" {
 
   ##### IAM #####
   cluster_identity_providers   = {}
+  iam_role_name                = "${var.cluster_name}-iam-role"
   create_iam_role              = true
-  iam_role_use_name_prefix     = true
+  # Required if create_iam_role=false
+  iam_role_arn                 = ""
+  iam_role_description         = "EKS IAM role"
+  # Cluster IAM role path
+  #iam_role_path = ""
+  # ARN of the policy that is used to set the permissions boundary for the IAM role
+  #iam_role_permissions_boundary = ""
+  iam_role_use_name_prefix     = ""
   iam_role_additional_policies = []
 
   ##### OpenID Connect Provider for EKS to enable IRSA #####
@@ -73,6 +81,7 @@ module "eks" {
 
   ##### Managed node groups #####
   eks_managed_node_group_defaults = {}
+  eks_managed_node_groups         = {}
 
   ##### Self managed groups #####
   self_managed_node_group_defaults = {}
@@ -80,6 +89,7 @@ module "eks" {
 
   ##### Fargate profiles #####
   fargate_profile_defaults = {}
+  fargate_profiles         = {}
 }
 
 data "aws_eks_cluster" "cluster" {
