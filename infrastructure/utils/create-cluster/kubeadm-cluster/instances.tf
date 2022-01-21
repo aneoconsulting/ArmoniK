@@ -15,7 +15,7 @@ module "master" {
   monitoring                  = false
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.master_sg.id, aws_security_group.services_sg.id]
-  subnet_id                   = aws_default_subnet.master_subnet.id
+  subnet_id                   = data.aws_subnet.master_subnet.id
   user_data_base64            = data.template_cloudinit_config.master_cloud_init.rendered
   tags                        = var.tags
 }
@@ -32,7 +32,7 @@ module "worker" {
   monitoring                  = false
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.worker_sg.id, aws_security_group.services_sg.id]
-  subnet_id                   = aws_default_subnet.worker_subnet.id
+  subnet_id                   = data.aws_subnet.worker_subnet.id
   user_data_base64            = data.template_cloudinit_config.worker_cloud_init.rendered
   tags                        = var.tags
 }

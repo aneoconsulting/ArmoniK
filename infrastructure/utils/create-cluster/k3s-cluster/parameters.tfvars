@@ -7,6 +7,10 @@ tags = {
   Environment = "dev"
 }
 
+# VPC
+vpc_id    = "vpc-ce2e16b6"
+subnet_id = "subnet-2a31bb52"
+
 # SSH key
 ssh_key = {
   private_key_path = "~/.ssh/cluster-key"

@@ -15,6 +15,20 @@ variable "tags" {
   }
 }
 
+# VPC
+variable "vpc_id" {
+  description = "ID of an existing VPC"
+  type = string
+  default = ""
+}
+
+# Subnet
+variable "subnet_id" {
+  description = "ID of an existing Subnet in the VPC"
+  type = string
+  default = ""
+}
+
 # SSH key
 variable "ssh_key" {
   description = "ssh key"

@@ -7,10 +7,14 @@ tags = {
   Environment = "dev"
 }
 
+# VPC
+vpc_id    = "vpc-ce2e16b6"
+subnet_id = "subnet-2a31bb52"
+
 # SSH key
 ssh_key = {
   private_key_path = "~/.ssh/cluster-key"
-  public_key       = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCeyb187cAe1ENdI0eUYQic5L7vFUj2CST2RM01DdMXrsiWHimoiWzrq4+roQADcTCXEqY/w3q3on63cRcjx+uc9gQJvp7B+BnDAqga3mBnxvGBdVdP/VGw55M2E9XynOWtQU+uHiUP1i+rJHY7lhkHbPyFOFxOL2fuMl3S9BEEF75GcX+Ug4hZxpc7bXdYLhSrpvSBI+Amj7RXTpaRK/5/RRkAXkNasYVby/6yyypHayxOZlbm2faHchTFKKFG5oKsCrKUR7v09htmDJDQ67y6Z2dxeEUygtN1D1s2bLa979dSH2grfV0WLq8TY1ZaPKOgR9D49XG+t1rnHgwPrJrP91k6YFqZ8yKbjsA5GyhEP8Uc2Ndhv/2tTKeUQBYP6rsDVuZ1f4RTtC6Vmz6rp0/xxpZsj6yczY9HEMw4voS7o6pJxGrXDa/cKrI6MS98dGLtcIjRPPetSPuvjRczCmU8+8chtdZzQFP0yorPIoQJVw7MExv0HhKTa88BcVSWedaRYmrBOX0a1CANlPMTci0Zft7FeAzX8+KhYccx1z20X6woPmmhev0RN7T6J+EKZLcynrNstDq2ruwWOBPZdSQg0XC4ngxorehjff5bTFCTJFHCb0HIq+QaDGtjYuV3sSJH2R3swo5Q77FohG/SvrZX1QXTPystpMtpds8550HKkw== sysadmin@ANEO-5B0QJR2"
+  public_key       = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 email@example.com"
 }
 
 # Number of workers
