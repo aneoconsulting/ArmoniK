@@ -23,13 +23,15 @@ variable "cluster_name" {
 }
 
 # VPC
-variable "vpc" {
+variable "vpc_parameters" {
   description = "Parameters of AWS VPC"
   type        = object({
-    name                  = string
-    cidr                  = string
-    private_subnets_cidr  = list(string)
-    public_subnets_cidr   = list(string)
-    enable_private_subnet = bool
+    name                                            = string
+    cidr                                            = string
+    private_subnets_cidr                            = list(string)
+    public_subnets_cidr                             = list(string)
+    enable_private_subnet                           = bool
+    flow_log_cloudwatch_log_group_kms_key_id        = string
+    flow_log_cloudwatch_log_group_retention_in_days = number
   })
 }

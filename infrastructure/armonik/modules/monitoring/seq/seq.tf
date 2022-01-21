@@ -67,9 +67,8 @@ resource "kubernetes_service" "seq" {
     }
   }
   spec {
-    type                    = "NodePort"
-    external_traffic_policy = "Local"
-    selector                = {
+    type     = "LoadBalancer"
+    selector = {
       app     = kubernetes_deployment.seq.metadata.0.labels.app
       type    = kubernetes_deployment.seq.metadata.0.labels.type
       service = kubernetes_deployment.seq.metadata.0.labels.service

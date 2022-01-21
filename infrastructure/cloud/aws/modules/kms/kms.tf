@@ -8,11 +8,12 @@ resource "aws_kms_key" "kms" {
   is_enabled               = var.kms.is_enabled
   multi_region             = var.kms.multi_region
   policy                   = data.aws_iam_policy_document.kms_policy.json
+  tags                     = local.tags
 }
 
 # KMS alis
 resource "aws_kms_alias" "kms_alias" {
-  name          = "alias/${var.tag}-armonik-${var.kms.name}"
+  name          = "alias/${var.tag}-${var.kms.name}"
   target_key_id = aws_kms_key.kms.id
 }
 

@@ -12,7 +12,7 @@ region = "eu-west-3"
 tag = "main"
 
 # KMS
-kms = {
+kms_parameters = {
   name                     = "armonik-kms"
   multi_region             = false
   deletion_window_in_days  = 7
@@ -20,5 +20,15 @@ kms = {
   key_usage                = "ENCRYPT_DECRYPT"
   enable_key_rotation      = true
   is_enabled               = true
+}
+
+# ARN of encrypt/decrypt keys
+encryption_keys_arn = {
+  vpc_flow_log_cloudwatch_log_group = ""
+  eks                               = {
+    secrets              = ""
+    ebs                  = ""
+    cloudwatch_log_group = ""
+  }
 }
 

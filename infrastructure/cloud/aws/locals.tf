@@ -6,6 +6,6 @@ resource "random_string" "random_resources" {
 
 locals {
   tag          = var.tag != "" ? var.tag : random_string.random_resources.result
-  cluster_name = "${local.tag}-armonik-eks"
+  cluster_name = "${local.tag}-${var.eks_parameters.name}"
 }
 
