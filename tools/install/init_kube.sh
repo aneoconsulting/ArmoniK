@@ -47,5 +47,5 @@ kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME \
 kubectl delete secret $ARMONIK_MONGODB_SECRET_NAME --namespace=$ARMONIK_NAMESPACE || true
 kubectl create secret generic $ARMONIK_MONGODB_SECRET_NAME \
         --namespace=$ARMONIK_NAMESPACE \
-        --from-file=ca_file=$ARMONIK_MONGODB_CERTIFICATES_DIRECTORY/chain.p7b \
+        --from-file=ca_file=$ARMONIK_MONGODB_CREDENTIALS_DIRECTORY/chain.p7b \
         --from-file=mongodb_credentials=$ARMONIK_MONGODB_CREDENTIALS_DIRECTORY/mongodb-credentials.json
