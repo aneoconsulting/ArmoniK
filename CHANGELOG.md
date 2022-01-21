@@ -6,7 +6,8 @@ Added
 -
 
 * Support for Redis as object storage
-* Support TLS in MongoDB
+* Support for amqp and amqp+ssl protocols
+* Add Authentication for MongoDB and encryption in transit (TLS)
 
 changed
 -
