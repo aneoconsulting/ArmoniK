@@ -39,7 +39,8 @@ resource "kubernetes_deployment" "redis" {
             "--port 0",
             "--tls-cert-file /certificates/cert_file",
             "--tls-key-file /certificates/key_file",
-            "--tls-ca-cert-file /certificates/ca_cert_file"
+            "--tls-auth-clients no",
+            "--requirepass foobared"
           ]
           port {
             container_port = var.redis.port

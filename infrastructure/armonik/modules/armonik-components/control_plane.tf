@@ -51,7 +51,7 @@ resource "kubernetes_deployment" "control_plane" {
             for_each = (local.data_type.object_redis ? [1] : [])
             content {
               name       = "redis-secret-volume"
-              mount_path = "/certificates"
+              mount_path = "/redis"
               read_only  = true
             }
           }
