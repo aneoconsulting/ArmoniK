@@ -1,6 +1,6 @@
 module "eks" {
   source           = "terraform-aws-modules/eks/aws"
-  version          = "18.2.1"
+  version          = "18.2.2"
   cluster_name     = var.cluster_name
   cluster_version  = var.eks.version
   # Controls if EKS resources should be created (affects nearly all resources)
@@ -32,8 +32,7 @@ module "eks" {
   cluster_security_group_id               = ""
   cluster_additional_security_group_ids   = []
   cluster_security_group_additional_rules = {}
-  cluster_security_group_tags             = ""
-  cluster_security_group_use_name_prefix  = ""
+  cluster_security_group_use_name_prefix  = true
 
   ##### Node security group #####
   create_node_security_group           = true
@@ -41,7 +40,7 @@ module "eks" {
   node_security_group_description      = "EKS node shared security group"
   node_security_group_id               = ""
   # Determines whether node security group name (`node_security_group_name`) is used as a prefix
-  node_security_group_use_name_prefix  = ""
+  node_security_group_use_name_prefix  = true
   node_security_group_additional_rules = {}
 
   ##### Config #####
@@ -66,7 +65,7 @@ module "eks" {
   #iam_role_path = ""
   # ARN of the policy that is used to set the permissions boundary for the IAM role
   #iam_role_permissions_boundary = ""
-  iam_role_use_name_prefix     = ""
+  iam_role_use_name_prefix     = true
   iam_role_additional_policies = []
 
   ##### OpenID Connect Provider for EKS to enable IRSA #####
@@ -74,10 +73,11 @@ module "eks" {
   openid_connect_audiences = []
 
   ##### Tags #####
-  cluster_tags             = { cluster = var.cluster_name }
-  iam_role_tags            = { cluster = var.cluster_name }
-  node_security_group_tags = { cluster = var.cluster_name }
-  tags                     = local.tags
+  cluster_tags                = { cluster = var.cluster_name }
+  iam_role_tags               = { cluster = var.cluster_name }
+  cluster_security_group_tags = { cluster = var.cluster_name }
+  node_security_group_tags    = { cluster = var.cluster_name }
+  tags                        = local.tags
 
   ##### Managed node groups #####
   eks_managed_node_group_defaults = {}

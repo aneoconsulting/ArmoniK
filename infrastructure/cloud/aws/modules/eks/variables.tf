@@ -30,7 +30,6 @@ variable "eks" {
     vpc                                    = any
     encryption_keys_arn                    = object({
       secrets              = string
-      ebs                  = string
       cloudwatch_log_group = string
     })
     cloudwatch_log_group_retention_in_days = number

@@ -1,4 +1,4 @@
 # KMS
-output "selected" {
+output "armonik" {
   value = aws_kms_key.kms
 }

@@ -17,7 +17,7 @@ changed
 Added
 -
 
-* AWS Elastic Kubernetes Service (EKS)
+* AWS Elastic Kubernetes Service (EKS version 1.21)
 * Activate logs for EKS and VPC in CloudWatch
 * Encryption at rest:
     * VPC flow log in cloudwatch log group

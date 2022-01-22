@@ -102,3 +102,16 @@ variable "eks_parameters" {
     cluster_endpoint_public_access_cidrs   = ["0.0.0.0/0"]
   }
 }
+
+# EKS managed node groups
+variable "armonik_managed_node_group" {
+  description = "ArmoniK EKS managed node group"
+  type        = object({
+    name               = string
+    ebs_encryption_key = string
+  })
+  default     = {
+    name               = "armonik-mng"
+    ebs_encryption_key = ""
+  }
+}
