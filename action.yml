@@ -36,6 +36,9 @@ outputs:
   credentials-certificate-pfx:
     description: "Random number"
     value: ${{ steps.credentialsoutput.outputs.credentials-certificate-pfx }}
+  credentials-redis:
+    description: "Random number"
+    value: ${{ steps.credentialsoutput.outputs.credentials-redis }}
 
 runs:
   using: composite
@@ -79,6 +82,7 @@ runs:
       run: |
         echo "::set-output name=credentials-ca-crt::${{ github.action_path }}/infrastructure/credentials/ca.crt"
         echo "::set-output name=credentials-certificate-pfx::${{ github.action_path }}/infrastructure/credentials/certificate.pfx"
+        echo "::set-output name=credentials-redis::${{ github.action_path }}/infrastructure/credentials/redis-credentials.json"
 
     - name: Deploy Onpremise Storage
       shell: bash
