@@ -6,7 +6,7 @@ locals {
 
     <bean id="securityLoginService" class="org.eclipse.jetty.security.HashLoginService">
         <property name="name" value="ActiveMQRealm" />
-        <property name="config" value="$${activemq.conf}/jetty-realm.properties" />
+        <property name="config" value="/credentials/jetty-realm.properties" />
     </bean>
 
     <bean id="securityConstraint" class="org.eclipse.jetty.util.security.Constraint">
@@ -166,20 +166,235 @@ locals {
     </bean>
 </beans>
 EOF
+
+  activemq_xml = <<EOF
+<beans
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+
+    <!-- Allows us to use system properties as variables in this configuration file -->
+    <!--
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <value>file:$${activemq.conf}/credentials.properties</value>
+        </property>
+    </bean>
+    -->
+
+   <!-- Allows accessing the server log -->
+    <bean id="logQuery" class="io.fabric8.insight.log.log4j.Log4jLogQuery"
+          lazy-init="false" scope="singleton"
+          init-method="start" destroy-method="stop">
+    </bean>
+
+    <!--
+        The <broker> element is used to configure the ActiveMQ broker.
+    -->
+    <broker xmlns="http://activemq.apache.org/schema/core" brokerName="localhost" dataDirectory="$${activemq.data}">
+
+        <destinationPolicy>
+            <policyMap>
+              <policyEntries>
+                <policyEntry topic=">" >
+                    <!-- The constantPendingMessageLimitStrategy is used to prevent
+                         slow topic consumers to block producers and affect other consumers
+                         by limiting the number of messages that are retained
+                         For more information, see:
+
+                         http://activemq.apache.org/slow-consumer-handling.html
+
+                    -->
+                  <pendingMessageLimitStrategy>
+                    <constantPendingMessageLimitStrategy limit="10000"/>
+                  </pendingMessageLimitStrategy>
+                </policyEntry>
+              </policyEntries>
+            </policyMap>
+        </destinationPolicy>
+
+
+        <!--
+            The managementContext is used to configure how ActiveMQ is exposed in
+            JMX. By default, ActiveMQ uses the MBean server that is started by
+            the JVM. For more information, see:
+
+            http://activemq.apache.org/jmx.html
+        -->
+        <managementContext>
+            <managementContext createConnector="false"/>
+        </managementContext>
+
+        <!--
+            Configure message persistence for the broker. The default persistence
+            mechanism is the KahaDB store (identified by the kahaDB tag).
+            For more information, see:
+
+            http://activemq.apache.org/persistence.html
+        -->
+        <persistenceAdapter>
+            <kahaDB directory="$${activemq.data}/kahadb"/>
+        </persistenceAdapter>
+
+
+          <!--
+            The systemUsage controls the maximum amount of space the broker will
+            use before disabling caching and/or slowing down producers. For more information, see:
+            http://activemq.apache.org/producer-flow-control.html
+          -->
+          <systemUsage>
+            <systemUsage>
+                <memoryUsage>
+                    <memoryUsage percentOfJvmHeap="70" />
+                </memoryUsage>
+                <storeUsage>
+                    <storeUsage limit="100 gb"/>
+                </storeUsage>
+                <tempUsage>
+                    <tempUsage limit="50 gb"/>
+                </tempUsage>
+            </systemUsage>
+        </systemUsage>
+
+
+
+        <!--
+            The transport connectors expose ActiveMQ over a given protocol to
+            clients and other brokers. For more information, see:
+
+            http://activemq.apache.org/configuring-transports.html
+        -->
+        <transportConnectors>
+            <!-- DOS protection, limit concurrent connections to 1000 and frame size to 100MB -->
+            <!--
+            <transportConnector name="openwire" uri="tcp://0.0.0.0:61616?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <transportConnector name="stomp" uri="stomp://0.0.0.0:61613?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <transportConnector name="mqtt" uri="mqtt://0.0.0.0:1883?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <transportConnector name="ws" uri="ws://0.0.0.0:61614?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            -->
+            <transportConnector name="amqp+ssl" uri="amqp+ssl://0.0.0.0:5672?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+        </transportConnectors>
+
+        <!-- destroy the spring context on shutdown to stop jetty -->
+        <shutdownHooks>
+            <bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.hooks.SpringContextHook" />
+        </shutdownHooks>
+
+        <sslContext>
+            <sslContext keyStore="file:/credentials/certificate.pfx"
+                        keyStorePassword=""/>
+        </sslContext>
+    </broker>
+
+    <!--
+        Enable web consoles, REST and Ajax APIs and demos
+        The web consoles requires by default login, you can disable this in the jetty.xml file
+
+        Take a look at $${ACTIVEMQ_HOME}/conf/jetty.xml for more details
+    -->
+    <import resource="jetty.xml"/>
+
+</beans>
+EOF
+
+
+  log4j_properties = <<EOF
+#
+# This file controls most of the logging in ActiveMQ which is mainly based around
+# the commons logging API.
+#
+log4j.rootLogger=INFO, console, logfile
+log4j.logger.org.apache.activemq.spring=WARN
+log4j.logger.org.apache.activemq.web.handler=WARN
+log4j.logger.org.springframework=WARN
+log4j.logger.org.apache.xbean=WARN
+log4j.logger.org.apache.camel=INFO
+log4j.logger.org.eclipse.jetty=WARN
+
+# When debugging or reporting problems to the ActiveMQ team,
+# comment out the above lines and uncomment the next.
+
+#log4j.rootLogger=DEBUG, logfile, console
+
+# Or for more fine grained debug logging uncomment one of these
+#log4j.logger.org.apache.activemq=DEBUG
+#log4j.logger.org.apache.camel=DEBUG
+
+# Console appender
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=%5p | %m%n
+log4j.appender.console.threshold=INFO
+
+# File appender
+log4j.appender.logfile=org.apache.log4j.RollingFileAppender
+log4j.appender.logfile.file=$${activemq.data}/activemq.log
+log4j.appender.logfile.maxFileSize=1024KB
+log4j.appender.logfile.maxBackupIndex=5
+log4j.appender.logfile.append=true
+log4j.appender.logfile.layout=org.apache.log4j.EnhancedPatternLayout
+log4j.appender.logfile.layout.ConversionPattern=%d | %-5p | %m | %c | %t%n%throwable{full}
+
+# you can control the rendering of exception in the ConversionPattern
+# by default, we display the full stack trace
+# if you want to display short form of the exception, you can use
+#
+# log4j.appender.logfile.layout.ConversionPattern=%d | %-5p | %m | %c | %t%n%throwable{short}
+#
+# a classic issue with filebeat/logstash is about multiline exception. The following pattern
+# allows to work smoothly with filebeat/logstash
+#
+# log4j.appender.logfile.layour.ConversionPattern=%d | %-5p | %m | %c | %t%n%replace(%throwable){\n}{ }
+#
+
+# use some of the following patterns to see MDC logging data
+#
+# %X{activemq.broker}
+# %X{activemq.connector}
+# %X{activemq.destination}
+#
+# e.g.
+#
+# log4j.appender.logfile.layout.ConversionPattern=%d | %-20.20X{activemq.connector} | %-5p | %m | %c | %t%n
+
+###########
+# Audit log
+###########
+
+log4j.additivity.org.apache.activemq.audit=false
+log4j.logger.org.apache.activemq.audit=INFO, audit
+
+log4j.appender.audit=org.apache.log4j.RollingFileAppender
+log4j.appender.audit.file=$${activemq.data}/audit.log
+log4j.appender.audit.maxFileSize=1024KB
+log4j.appender.audit.maxBackupIndex=5
+log4j.appender.audit.append=true
+log4j.appender.audit.layout=org.apache.log4j.PatternLayout
+log4j.appender.audit.layout.ConversionPattern=%-5p | %m | %t%n
+
+EOF
 }
 
 # configmap with all the variables
-resource "kubernetes_config_map" "activemq_jetty_xml" {
+resource "kubernetes_config_map" "activemq_configs" {
   metadata {
-    name      = "activemq-jetty-xml"
+    name      = "activemq-configs"
     namespace = var.namespace
   }
   data = {
     "jetty.xml" = local.activemq_jetty_xml
+    "activemq.xml" = local.activemq_xml
+    "log4j.properties" = local.log4j_properties
   }
 }
 
 resource "local_file" "activemq_jetty_xml_file" {
   content  = local.activemq_jetty_xml
-  filename = "./generated/configmaps/activemq_jetty.xml"
+  filename = "./generated/configmaps/activemq/jetty.xml"
+}
+
+resource "local_file" "activemq_xml_file" {
+  content  = local.activemq_xml
+  filename = "./generated/configmaps/activemq/activemq.xml"
 }
