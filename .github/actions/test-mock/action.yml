@@ -69,6 +69,7 @@ runs:
         export Redis__EndpointUrl=$ReIP:$RePort
         export Redis__Timeout=3000
         export Redis__CredentialsPath=${{ steps.deploy-infra.outputs.credentials-redis }}
+        export Redis__CaPath=${{ steps.deploy-infra.outputs.credentials-redis-ca-p7b }}
 
         cd source/ArmoniK.Samples/Samples/HtcMock/Client/src/
         dotnet build "ArmoniK.Samples.HtcMock.Client.csproj" -c Release
