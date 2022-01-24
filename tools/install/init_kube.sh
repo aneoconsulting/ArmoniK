@@ -17,7 +17,7 @@ kubectl create secret generic $ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME \
 
 
 # ArmoniK
-source infrastructure/utils/envvars.conf
+source infrastructure/utils/envvars-armonik.conf
 
 kubectl create namespace $ARMONIK_NAMESPACE || true
 

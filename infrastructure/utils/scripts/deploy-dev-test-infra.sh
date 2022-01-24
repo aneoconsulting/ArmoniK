@@ -5,19 +5,6 @@ pushd $BASEDIR
   BASEDIR=$(pwd -P)
 popd
 
-export ARMONIK_STORAGE_NAMESPACE=armonik-storage
-export ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY=../../credentials
-export ARMONIK_STORAGE_REDIS_SECRET_NAME=redis-storage-secret
-export ARMONIK_STORAGE_ACTIVEMQ_CREDENTIALS_DIRECTORY=../../credentials
-export ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME=activemq-storage-secret
-export ARMONIK_NAMESPACE=armonik
-export ARMONIK_MONITORING_NAMESPACE=armonik-monitoring
-export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=../credentials
-export ARMONIK_REDIS_SECRET_NAME=redis-storage-secret
-export ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY=../credentials
-export ARMONIK_EXTERNAL_REDIS_SECRET_NAME=external-redis-storage-secret
-export ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY=../credentials
-export ARMONIK_ACTIVEMQ_SECRET_NAME=activemq-storage-secret
 export MODE=""
 export SERVER_NFS_IP=""
 
@@ -157,12 +144,6 @@ configuration_file() {
     --redis-kube-secret $ARMONIK_REDIS_SECRET_NAME \
     --external-url $REDIS_URL \
     --external-kube-secret $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
-    --control-plane-image "dockerhubaneo/armonik_control" \
-    --control-plane-tag "0.2.0-redis.29.20d9f60" \
-    --polling-agent-image "dockerhubaneo/armonik_pollingagent" \
-    --polling-agent-tag "0.2.0-redis.29.20d9f60" \
-    --worker-image "dockerhubaneo/armonik_worker_dll" \
-    --worker-tag "0.1.1" \
     --storage-shared-type $1 \
     $BASEDIR/../../armonik/parameters.tfvars \
     $BASEDIR/parameters.tfvars.json
@@ -247,6 +228,11 @@ function main()
     esac
   done
 
+  # source envvars
+  source $BASEDIR/../envvars-storage.conf
+  source $BASEDIR/../envvars-armonik.conf
+
+  # Manage infra
   if [ -z $MODE ]; then
     usage
     exit

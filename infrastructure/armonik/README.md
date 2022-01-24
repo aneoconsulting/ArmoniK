@@ -49,10 +49,10 @@ export ARMONIK_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the ActiveMQ stor
 
 1. position yourself in the current directory `infrastructure/armonik/` from the **root** of the repository.
 
-2. copy the [template file](../utils/envvars.conf):
+2. copy the [template file](../utils/envvars-armonik.conf):
 
    ```bash
-   cp ../utils/envvars.conf ./envvars.conf
+   cp ../utils/envvars-armonik.conf ./envvars.conf
    ```
 
 3. modify the values of variables if needed in `./envvars.conf`.

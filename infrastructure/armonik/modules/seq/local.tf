@@ -7,10 +7,9 @@ data "external" "seq_node_ip" {
 
 locals {
   seq_node_ip  = lookup(tomap(data.external.seq_node_ip.result), "node_ip", "")
-  seq_host     = (local.seq_node_ip == "" ? (kubernetes_service.seq.spec.0.type == "ClusterIP" ? kubernetes_service.seq.spec.0.cluster_ip : (kubernetes_service.seq.spec.0.type == "LoadBalancer" ? kubernetes_service.seq.status.0.load_balancer.0.ingress.0.ip : kubernetes_service.seq.spec.0.cluster_ip)) : local.seq_node_ip)
-  #seq_host     = (local.seq_node_ip == "" || kubernetes_service.seq.spec.0.type == "LoadBalancer" ? kubernetes_service.seq.spec.0.cluster_ip : local.seq_node_ip)
-  seq_port     = (local.seq_node_ip == "" || kubernetes_service.seq.spec.0.type == "LoadBalancer" || kubernetes_service.seq.spec.0.type == "ClusterIP" ? kubernetes_service.seq.spec.0.port.0.port : kubernetes_service.seq.spec.0.port.0.node_port)
-  seq_web_port = (local.seq_node_ip == "" || kubernetes_service.seq.spec.0.type == "LoadBalancer" || kubernetes_service.seq.spec.0.type == "ClusterIP" ? kubernetes_service.seq.spec.0.port.1.port : kubernetes_service.seq.spec.0.port.1.node_port)
+  seq_host     = (kubernetes_service.seq.spec.0.type == "LoadBalancer" ? kubernetes_service.seq.status.0.load_balancer.0.ingress.0.ip : (kubernetes_service.seq.spec.0.type == "NodePort" && local.seq_node_ip != "" ? local.seq_node_ip : kubernetes_service.seq.spec.0.cluster_ip))
+  seq_port     = (kubernetes_service.seq.spec.0.type == "NodePort" && local.seq_node_ip != "" ? kubernetes_service.seq.spec.0.port.0.node_port : kubernetes_service.seq.spec.0.port.0.port)
+  seq_web_port = (kubernetes_service.seq.spec.0.type == "NodePort" && local.seq_node_ip != "" ? kubernetes_service.seq.spec.0.port.1.node_port : kubernetes_service.seq.spec.0.port.1.port)
   seq_url      = "http://${local.seq_host}:${local.seq_port}"
   seq_web_url  = "http://${local.seq_host}:${local.seq_web_port}"
 }
