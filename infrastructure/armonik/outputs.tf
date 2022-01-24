@@ -11,5 +11,5 @@ output "armonik_grafana" {
 }
 
 output "armonik_kubernetes_dashboard" {
-  value = (var.monitoring.dashboard ? module.dashboard.kubernetes_dashboard_url : "")
+  value = (var.monitoring.dashboard ? module.dashboard.0.kubernetes_dashboard_url : "")
 }

@@ -54,10 +54,10 @@ export ARMONIK_MONGODB_SECRET_NAME=<You kubernetes secret for the MongoDB storag
 
 **Mandatory:** To set these environment variables:
 
-From the **root** of the repository source [file of environment variables](../../utils/envvars.conf).
+From the **root** of the repository source [file of environment variables](../../utils/envvars-armonik.conf).
 
 ```bash
-   source infrastructure/utils/envvars.conf
+   source infrastructure/utils/envvars-armonik.conf
 ```
 
 # Create a namespace for ArmoniK

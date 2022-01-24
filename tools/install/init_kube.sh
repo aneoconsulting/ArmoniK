@@ -2,7 +2,6 @@
 set -ex
 
 # Storage
-source  infrastructure/utils/envvars-storage.conf
 kubectl create namespace $ARMONIK_STORAGE_NAMESPACE || true
 
 kubectl delete secret $ARMONIK_STORAGE_REDIS_SECRET_NAME --namespace=$ARMONIK_STORAGE_NAMESPACE || true
@@ -23,7 +22,6 @@ kubectl create secret generic $ARMONIK_STORAGE_MONGODB_SECRET_NAME \
         --from-file=mongodb.pem=$ARMONIK_STORAGE_MONGODB_CREDENTIALS_DIRECTORY/cert.pem
 
 # ArmoniK
-source infrastructure/utils/envvars.conf
 kubectl create namespace $ARMONIK_NAMESPACE || true
 kubectl create namespace $ARMONIK_MONITORING_NAMESPACE || true
 

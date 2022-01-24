@@ -6,8 +6,8 @@ data "external" "grafana_node_ip" {
 }
 
 locals {
-  grafana_node_ip = lookup(tomap(data.external.grafana_node_ip.result), "node_ip", "")
-  grafana_host    = (local.grafana_node_ip == "" ? kubernetes_service.grafana.spec.0.cluster_ip : local.grafana_node_ip)
-  grafana_port    = (local.grafana_node_ip == "" ? kubernetes_service.grafana.spec.0.port.0.port : kubernetes_service.grafana.spec.0.port.0.node_port)
-  grafana_url     = "http://${local.grafana_host}:${local.grafana_port}"
+  grafana_node_ip  = lookup(tomap(data.external.grafana_node_ip.result), "node_ip", "")
+  grafana_host     = (kubernetes_service.grafana.spec.0.type == "LoadBalancer" ? kubernetes_service.grafana.status.0.load_balancer.0.ingress.0.ip : (kubernetes_service.grafana.spec.0.type == "NodePort" && local.grafana_node_ip != "" ? local.grafana_node_ip : kubernetes_service.grafana.spec.0.cluster_ip))
+  grafana_port     = (kubernetes_service.grafana.spec.0.type == "NodePort" && local.grafana_node_ip != "" ? kubernetes_service.grafana.spec.0.port.0.node_port : kubernetes_service.grafana.spec.0.port.0.port)
+  grafana_url      = "http://${local.grafana_host}:${local.grafana_port}"
 }
