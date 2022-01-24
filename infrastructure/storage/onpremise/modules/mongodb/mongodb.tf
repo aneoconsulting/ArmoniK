@@ -97,9 +97,8 @@ resource "kubernetes_service" "mongodb" {
     }
   }
   spec {
-    type                    = "NodePort"
-    external_traffic_policy = "Local"
-    selector                = {
+    type     = "ClusterIP"
+    selector = {
       app     = kubernetes_deployment.mongodb.metadata.0.labels.app
       type    = kubernetes_deployment.mongodb.metadata.0.labels.type
       service = kubernetes_deployment.mongodb.metadata.0.labels.service
