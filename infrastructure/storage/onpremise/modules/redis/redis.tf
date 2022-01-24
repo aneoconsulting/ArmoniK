@@ -74,8 +74,7 @@ resource "kubernetes_service" "redis" {
     }
   }
   spec {
-    type                    = "NodePort"
-    external_traffic_policy = "Local"
+    type                    = "ClusterIP"
     selector                = {
       app     = kubernetes_deployment.redis.metadata.0.labels.app
       type    = kubernetes_deployment.redis.metadata.0.labels.type

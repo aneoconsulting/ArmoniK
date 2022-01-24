@@ -1,9 +1,9 @@
 # MongoDB
 output "mongodb_endpoint_url" {
-  value = (contains(module.storage.list_storage, "mongodb") ? (local.mongodb_node_ip == "" ? {
+  value = (contains(module.storage.list_storage, "mongodb") ? (local.mongodb_node_ip == "" || module.mongodb.0.service.spec.0.type == "ClusterIP"? {
     Status = "READY"
-    url    = "mongodb://${module.mongodb.0.service.spec.cluster_ip}:${module.mongodb.0.service.spec.0.port.0.port}"
-    host   = module.mongodb.0.service.spec.cluster_ip
+    url    = "mongodb://${module.mongodb.0.service.spec.0.cluster_ip}:${module.mongodb.0.service.spec.0.port.0.port}"
+    host   = module.mongodb.0.service.spec.0.cluster_ip
     port   = module.mongodb.0.service.spec.0.port.0.port
   } : {
     Status = "READY"
@@ -15,10 +15,10 @@ output "mongodb_endpoint_url" {
 
 # Redis
 output "redis_endpoint_url" {
-  value = (contains(module.storage.list_storage, "redis") ? (local.redis_node_ip == "" ? {
+  value = (contains(module.storage.list_storage, "redis") ? (local.redis_node_ip == "" || module.redis.0.service.spec.0.type == "ClusterIP"? {
     Status = "READY"
-    url    = "${module.redis.0.service.spec.cluster_ip}:${module.redis.0.service.spec.0.port.0.port}"
-    host   = module.redis.0.service.spec.cluster_ip
+    url    = "${module.redis.0.service.spec.0.cluster_ip}:${module.redis.0.service.spec.0.port.0.port}"
+    host   = module.redis.0.service.spec.0.cluster_ip
     port   = module.redis.0.service.spec.0.port.0.port
   } : {
     Status = "READY"
@@ -30,10 +30,10 @@ output "redis_endpoint_url" {
 
 # ActiveMQ
 output "activemq_endpoint_url" {
-  value = (contains(module.storage.list_storage, "amqp") ? (local.activemq_node_ip== "" ? {
+  value = (contains(module.storage.list_storage, "amqp") ? (local.activemq_node_ip== "" || module.activemq.0.service.spec.0.type == "ClusterIP"? {
     Status = "READY"
-    url    = "amqp://${module.activemq.0.service.spec.cluster_ip}:${module.activemq.0.service.spec.0.port.0.port}"
-    host   = module.activemq.0.service.spec.cluster_ip
+    url    = "amqp://${module.activemq.0.service.spec.0.cluster_ip}:${module.activemq.0.service.spec.0.port.0.port}"
+    host   = module.activemq.0.service.spec.0.cluster_ip
     port   = module.activemq.0.service.spec.0.port.0.port
   } : {
     Status = "READY"
