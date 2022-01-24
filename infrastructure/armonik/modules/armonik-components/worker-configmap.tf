@@ -57,10 +57,8 @@ locals {
   },
   "Redis": {
     "EndpointUrl": "${var.storage_endpoint_url.external.url}",
-    "SslHost": "127.0.0.1",
-    "Timeout": 3000,
-    "CaCertPath": "/certificates/ca_cert_file",
-    "ClientPfxPath": "/certificates/certificate_pfx"
+    "CredentialsPath": "/redis/redis_credentials",
+    "Timeout": 3000
   },
   "Grpc": {
     "Endpoint": "${local.control_plane_url}"
