@@ -7,6 +7,7 @@ popd
 
 export MODE=""
 export SERVER_NFS_IP=""
+export STORAGE_TYPE="HostPath"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -66,22 +67,21 @@ function getHostName()
 usage() {
   echo "Usage: $0 [option...]" >&2
   echo
-  echo "   -m, --mode <destroy | destroy-armonik | destroy-storage | deploy-localhost | deploy-cluster | deploy-storage| armonik-localhost | armonik-cluster | redeploy-localhost | redeploy-armonik >"
+  echo "   -m, --mode <Possible options below>"
 cat <<- EOF
   Where --mode should be :
-        destroy             : To destroy all storage and armonik in the same command
+        destroy-all         : To destroy all storage and armonik in the same command
         destroy-armonik     : To destroy Armonik deployment only
         destroy-storage     : To destroy storage deployment only
-        deploy-localhost    : To deploy both Storage and Armonik on a single node or VM or localhost machine
-        deploy-cluster      : To deploy both storage and Armonik on a multi nodes servers (on premise)
         deploy-storage      : To deploy Storage independently on master machine. Available (Cluster or single node)
-        armonik-localhost   : To deploy armonik on a single node or VM, localhost
-        armonik-cluster     : To deploy armonik on a multi node cluster (on premise)
-        redeploy-localhost  : To REdeploy both storage and armonik on a single node or VM or localhost machine
-        redeploy-armonik    : To REdeploy armonik on a single node or VM or localhost machine
+        deploy-armonik      : To deploy armonik
+        deploy-all          : To deploy both Storage and Armonik
+        redeploy-storage    : To REdeploy storage
+        redeploy-armonik    : To REdeploy armonik
+        redeploy-all        : To REdeploy both storage and armonik
 
 EOF
-  echo "   -ip, --master-ip <SERVER_NFS_IP>"
+  echo "   -ip, --nfs-server-ip <SERVER_NFS_IP>"
   echo
   exit 1
 }
@@ -158,11 +158,8 @@ deploy_armonik() {
   execute pip install python-hcl2
   execute echo "Get Optional IP for Shared Storage: ${SERVER_NFS_IP}"
   endpoint_urls $SERVER_NFS_IP
-  if [[ $1 == "armonik-cluster" || $1 == "deploy-cluster" || $1 == "redeploy-cluster" ]]; then
-    configuration_file "NFS"
-  elif [[ $1 == "armonik-localhost" || $1 == "deploy-localhost" || $1 == "redeploy-localhost" ]]; then
-    configuration_file "HostPath"
-  fi
+
+  configuration_file ${STORAGE_TYPE}
 
   cd $BASEDIR/../../armonik
   kubectl create namespace $ARMONIK_NAMESPACE  || true
@@ -212,11 +209,13 @@ function main()
       ;;
     -ip)
       SERVER_NFS_IP="$2"
+      STORAGE_TYPE="NFS"
       shift
       shift
       ;;
     --nfs-server-ip)
       SERVER_NFS_IP="$2"
+      STORAGE_TYPE="NFS"
       shift
       shift
       ;;
@@ -242,22 +241,29 @@ function main()
     destroy_armonik
   elif [ $MODE == "destroy-storage" ]; then
     destroy_storage
-  elif [ $MODE == "destroy" ]; then
+  elif [ $MODE == "destroy-all" ]; then
     destroy_storage
     destroy_armonik
   elif [ $MODE == "deploy-storage" ]; then
     deploy_storage
-  elif [[ $MODE == "redeploy-localhost" || $MODE == "redeploy-cluster" ]]; then
+  elif [ $MODE == "deploy-armonik" ]; then
+    deploy_armonik
+  elif [ $MODE == "deploy-all" ]; then
+    deploy_storage
+    deploy_armonik
+  elif [[ $MODE == "redeploy-storage" ]]; then
+    destroy_storage
+    deploy_storage
+  elif [[ $MODE == "redeploy-armonik" ]]; then
+    destroy_armonik
+    deploy_armonik
+  elif [[ $MODE == "redeploy-all" ]]; then
     destroy_storage
     destroy_armonik
     deploy_storage
-    deploy_armonik $MODE
-  elif [[ $MODE == "armonik-localhost" || $MODE == "armonik-cluster" || $MODE == "deploy-localhost" || $MODE == "deploy-cluster" ]]; then
-    if [[ $MODE == "deploy-localhost" || $MODE == "deploy-cluster" ]]; then
-      deploy_storage
-    fi
-    deploy_armonik $MODE
+    deploy_armonik
   else
+    echo -e "\n${RED}$0 $@ where [ $MODE ] is not a correct Mode${NC}\n"
     usage
     exit
   fi
