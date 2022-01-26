@@ -1,8 +1,4 @@
 # Based on the official aws-node-termination-handler setup guide at https://github.com/aws/aws-node-termination-handler#infrastructure-setup
-# authenticate to ECR repository
-variable "repos" {
-  default = ["ecr-public"]
-}
 resource "helm_release" "aws_node_termination_handler" {
   depends_on = [
     module.eks
@@ -12,18 +8,18 @@ resource "helm_release" "aws_node_termination_handler" {
   namespace        = "kube-system"
   repository       = "https://aws.github.io/eks-charts"
   chart            = "aws-node-termination-handler"
-  version          = "0.15.0"
+  version          = "0.16.0"
   create_namespace = true
 
   set {
     name  = "awsRegion"
     value = var.eks.region
   }
-  set {
-    name  = "image.pullSecrets"
-    value = "{${join(",", var.repos)}}"
-  }
   /*set {
+    name  = "image.pullSecrets"
+    value = "{${join(",", ["ecr-public"])}}"
+  }*/
+  set {
     name  = "serviceAccount.name"
     value = "aws-node-termination-handler"
   }
@@ -36,7 +32,7 @@ resource "helm_release" "aws_node_termination_handler" {
     name  = "enableSqsTerminationDraining"
     value = "true"
   }
-  set {
+  /*set {
     name  = "enableSpotInterruptionDraining"
     value = "true"
   }
@@ -50,20 +46,24 @@ resource "helm_release" "aws_node_termination_handler" {
   }
 }
 
-/*
+resource "local_file" "aws_node_termination_handler_manifest" {
+  content  = helm_release.aws_node_termination_handler.manifest
+  filename = "${path.root}/generated/eks/aws_node_termination_handler.json"
+}
+
 module "aws_node_termination_handler_role" {
   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version                       = "4.1.0"
   create_role                   = true
-  role_description              = "IRSA role for ANTH, cluster ${local.cluster_name}"
-  role_name_prefix              = local.cluster_name
+  role_description              = "IRSA role for ANTH, cluster ${var.eks.cluster_name}"
+  role_name_prefix              = var.eks.cluster_name
   provider_url                  = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   role_policy_arns              = [aws_iam_policy.aws_node_termination_handler.arn]
   oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:aws-node-termination-handler"]
 }
 
 resource "aws_iam_policy" "aws_node_termination_handler" {
-  name   = "${local.cluster_name}-aws-node-termination-handler"
+  name   = "${var.eks.cluster_name}-aws-node-termination-handler"
   policy = data.aws_iam_policy_document.aws_node_termination_handler.json
 }
 
@@ -86,7 +86,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
     ]
     resources = module.eks.workers_asg_arns
   }
-  statement {
+  /*statement {
     effect    = "Allow"
     actions   = [
       "sqs:DeleteMessage",
@@ -95,7 +95,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
     resources = [
       module.aws_node_termination_handler_sqs.sqs_queue_arn
     ]
-  }
+  }*/
 }
 
 /*resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
