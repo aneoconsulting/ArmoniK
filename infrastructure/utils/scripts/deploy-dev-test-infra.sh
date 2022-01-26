@@ -88,7 +88,7 @@ destroy_storage() {
   cd $BASEDIR/../../storage/onpremise
   execute terraform destroy -auto-approve
   execute make clean
-  execute kubectl delete namespace $ARMONIK_STORAGE_NAMESPACE
+  #execute kubectl delete namespace $ARMONIK_STORAGE_NAMESPACE
   cd -
 }
 
@@ -96,7 +96,7 @@ destroy_armonik() {
   cd $BASEDIR/../../armonik
   execute terraform destroy -auto-approve
   execute make clean
-  execute kubectl delete namespace $ARMONIK_NAMESPACE
+  #execute kubectl delete namespace $ARMONIK_NAMESPACE
   cd -
 }
 

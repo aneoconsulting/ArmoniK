@@ -96,7 +96,7 @@ locals {
   "Redis": {
     "EndpointUrl": "${var.storage_endpoint_url.redis.url}",
     "SslHost": "127.0.0.1",
-    "Timeout": 3000,
+    "Timeout": 30000,
     "InstanceName" : "ArmoniKRedis",
     "ClientName" : "ArmoniK.Compute.PollingAgent",
     "CaCertPath": "/certificates/ca_cert_file",

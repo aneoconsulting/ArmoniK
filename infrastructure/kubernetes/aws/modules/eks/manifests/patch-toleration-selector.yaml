@@ -1,0 +1,10 @@
+spec:
+  template:
+    spec:
+      nodeSelector:
+        grid/type: Operator
+      tolerations:
+      - effect: NoSchedule
+        key: grid/type
+        operator: Equal
+        value: Operator
