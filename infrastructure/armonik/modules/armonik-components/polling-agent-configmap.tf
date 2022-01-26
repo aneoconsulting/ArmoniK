@@ -105,8 +105,8 @@ locals {
   },
   "ComputePlan": {
     "GrpcChannel": {
-      "Address": "http://localhost:80",
-      "SocketType": "web"
+      "Address": "/cache/armonik.sock",
+      "SocketType": "unixsocket"
     },
     "MessageBatchSize": 1
   }
