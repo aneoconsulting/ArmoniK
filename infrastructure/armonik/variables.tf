@@ -85,6 +85,7 @@ variable "storage_endpoint_url" {
     shared   = object({
       host   = string
       secret = string
+      id     = string
       path   = string
     })
     external = object({
@@ -110,6 +111,7 @@ variable "storage_endpoint_url" {
     shared   = {
       host   = ""
       secret = ""
+      id     = ""
       path   = "/data"
     }
     external = {

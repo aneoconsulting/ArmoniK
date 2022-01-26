@@ -7,7 +7,7 @@ popd
 
 export MODE=""
 export SERVER_NFS_IP=""
-export STORAGE_TYPE="HostPath"
+export SHARED_STORAGE_TYPE="HostPath"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -80,13 +80,21 @@ usage() {
 EOF
   echo "   -ip, --nfs-server-ip <SERVER_NFS_IP>"
   echo
+  echo "   -s, --shared-storage-type <SHARED_STORAGE_TYPE>"
+  cat <<-EOF
+  Where --shared-storage-type should be :
+        HostPath            : Use in localhost
+        NFS                 : Use a NFS server
+        AWS_EBS             : Use an AWS Elastic Block Store
+EOF
+  echo
   exit 1
 }
 
 # Clean
 destroy_storage() {
   terraform_init_storage
-  cd $BASEDIR/../../storage/onpremise
+  cd $BASEDIR/../../storage
   execute terraform destroy -auto-approve
   execute make clean
   # execute kubectl delete namespace $ARMONIK_STORAGE_NAMESPACE
@@ -105,19 +113,20 @@ destroy_armonik() {
 # deploy storage
 deploy_storage() {
   terraform_init_storage
-  cd $BASEDIR/../../storage/onpremise
+  cd $BASEDIR/../../storage
   execute terraform apply -var-file=parameters.tfvars -auto-approve
   cd -
 }
 
 # storage endpoint urls
 endpoint_urls() {
-  pushd $BASEDIR/../../storage/onpremise >/dev/null 2>&1
+  pushd $BASEDIR/../../storage >/dev/null 2>&1
   export ACTIVEMQ_HOST=$(terraform output -json activemq_endpoint_url | jq -r '.host')
   export ACTIVEMQ_PORT=$(terraform output -json activemq_endpoint_url | jq -r '.port')
   export MONGODB_HOST=$(terraform output -json mongodb_endpoint_url | jq -r '.host')
   export MONGODB_PORT=$(terraform output -json mongodb_endpoint_url | jq -r '.port')
   export REDIS_URL=$(terraform output -json redis_endpoint_url | jq -r '.url')
+  export SHARED_STORAGE_ID=$(terraform output -json aws_ebs | jq -r '.id')
   export SHARED_STORAGE_HOST=${1:-""}
   execute echo "Get Hostname for Shared Storage: ${SHARED_STORAGE_HOST}"
   popd >/dev/null 2>&1
@@ -131,7 +140,7 @@ configuration_file() {
     --storage-queue "Amqp" \
     --storage-lease-provider "MongoDB" \
     --storage-external "Redis" \
-    --storage-shared-type "HostPath" \
+    --storage-shared-type $SHARED_STORAGE_TYPE \
     --mongodb-host $MONGODB_HOST \
     --mongodb-port $MONGODB_PORT \
     --mongodb-kube-secret "mongodb-storage-secret" \
@@ -140,6 +149,8 @@ configuration_file() {
     --activemq-kube-secret "activemq-storage-secret" \
     --redis-url $REDIS_URL \
     --redis-kube-secret "redis-storage-secret" \
+    --shared-host $SHARED_STORAGE_HOST \
+    --shared-id $SHARED_STORAGE_ID \
     --external-url $REDIS_URL \
     --external-kube-secret "external-redis-storage-secret" \
     $BASEDIR/../../armonik/storage-parameters.tfvars \
@@ -159,19 +170,18 @@ deploy_armonik() {
   terraform_init_armonik
   # install hcl2
   execute pip install python-hcl2
-  execute echo "Get Optional IP for Shared Storage: ${SERVER_NFS_IP}"
+  execute echo "Get Optional IP for Shared Storage: \"${SERVER_NFS_IP}\""
   endpoint_urls $SERVER_NFS_IP
 
-  configuration_file ${STORAGE_TYPE}
+  configuration_file ${SHARED_STORAGE_TYPE}
 
   cd $BASEDIR/../../armonik
   execute terraform apply -var-file $BASEDIR/storage-parameters.tfvars.json -var-file $BASEDIR/armonik-parameters.tfvars.json -var-file $BASEDIR/monitoring-parameters.tfvars.json -auto-approve
   cd -
 }
 
-# Main
 function terraform_init_storage() {
-  pushd $BASEDIR/../../storage/onpremise >/dev/null 2>&1
+  pushd $BASEDIR/../../storage >/dev/null 2>&1
   execute echo "change to directory : $(pwd -P)"
   execute terraform init
   popd >/dev/null 2>&1
@@ -184,6 +194,11 @@ function terraform_init_armonik() {
   popd >/dev/null 2>&1
 }
 
+create_kube_secrets() {
+  bash $BASEDIR/../../../tools/install/init_kube.sh
+}
+
+# Main
 function main() {
   for i in "$@"; do
     case $i in
@@ -204,13 +219,23 @@ function main() {
       ;;
     -ip)
       SERVER_NFS_IP="$2"
-      STORAGE_TYPE="NFS"
+      SHARED_STORAGE_TYPE="NFS"
       shift
       shift
       ;;
     --nfs-server-ip)
       SERVER_NFS_IP="$2"
-      STORAGE_TYPE="NFS"
+      SHARED_STORAGE_TYPE="NFS"
+      shift
+      shift
+      ;;
+    -s)
+      SHARED_STORAGE_TYPE="$2"
+      shift
+      shift
+      ;;
+    --shared-storage-type)
+      SHARED_STORAGE_TYPE="$2"
       shift
       shift
       ;;
@@ -227,6 +252,9 @@ function main() {
   # source envvars
   source $BASEDIR/../envvars-storage.conf
   source $BASEDIR/../envvars-armonik.conf
+
+  # Create Kubernetes secrets
+  create_kube_secrets
 
   # Manage infra
   if [ -z $MODE ]; then

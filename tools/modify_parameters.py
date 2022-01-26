@@ -29,6 +29,7 @@ parser.add_argument("--activemq-host", dest="activemqhost", help="Change ActiveM
 parser.add_argument("--activemq-port", dest="activemqport", help="Change ActiveMQ port", type=none_or_str, default=None)
 parser.add_argument("--activemq-kube-secret", dest="activemqkubesecret", help="Change ActiveMQ Kubernetes secret", type=none_or_str, default=None)
 parser.add_argument("--shared-host", dest="sharedhost", help="Change Shared Storage host", type=none_or_str, default=None)
+parser.add_argument("--shared-id", dest="sharedid", help="Change Shared Storage ID", type=none_or_str, default=None)
 parser.add_argument("--shared-kube-secret", dest="sharedkubesecret", help="Change Shared Storage Kubernetes secret", type=none_or_str, default=None)
 parser.add_argument("--shared-path", dest="sharedpath", help="Change Shared Storage path", type=none_or_str, default=None)
 parser.add_argument("--external-url", dest="externalurl", help="Change External cache Url", type=none_or_str, default=None)
@@ -110,6 +111,8 @@ if args.activemqkubesecret is not None:
     content['storage_endpoint_url']['activemq']['secret'] = args.activemqkubesecret
 if args.sharedhost is not None:
     content['storage_endpoint_url']['shared']['host'] = args.sharedhost
+if args.sharedid is not None:
+    content['storage_endpoint_url']['shared']['id'] = args.sharedid
 if args.sharedkubesecret is not None:
     content['storage_endpoint_url']['shared']['secret'] = args.sharedkubesecret
 if args.sharedpath is not None:

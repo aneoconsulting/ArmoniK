@@ -28,6 +28,7 @@ storage_endpoint_url = {
   shared   = {
     host   = ""
     secret = ""
+    id     = ""
     # Path to external shared storage from which worker containers upload .dll
     path   = "/data"
   }

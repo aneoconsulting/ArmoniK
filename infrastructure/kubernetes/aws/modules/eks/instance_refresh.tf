@@ -8,17 +8,25 @@ resource "helm_release" "aws_node_termination_handler" {
   namespace        = "kube-system"
   repository       = "https://aws.github.io/eks-charts"
   chart            = "aws-node-termination-handler"
-  version          = "0.16.0"
+  version          = "0.15.0"
   create_namespace = true
 
   set {
     name  = "awsRegion"
     value = var.eks.region
   }
+  set {
+    name  = "logLevel"
+    value = "debug"
+  }
+  set {
+    name  = "enableSpotInterruptionDraining"
+    value = "true"
+  }
   /*set {
     name  = "image.pullSecrets"
     value = "{${join(",", ["ecr-public"])}}"
-  }*/
+  }
   set {
     name  = "serviceAccount.name"
     value = "aws-node-termination-handler"
@@ -32,25 +40,13 @@ resource "helm_release" "aws_node_termination_handler" {
     name  = "enableSqsTerminationDraining"
     value = "true"
   }
-  /*set {
-    name  = "enableSpotInterruptionDraining"
-    value = "true"
-  }
+
   set {
     name  = "queueURL"
     value = module.aws_node_termination_handler_sqs.sqs_queue_id
   }*/
-  set {
-    name  = "logLevel"
-    value = "debug"
-  }
 }
-
-resource "local_file" "aws_node_termination_handler_manifest" {
-  content  = helm_release.aws_node_termination_handler.manifest
-  filename = "${path.root}/generated/eks/aws_node_termination_handler.json"
-}
-
+/*
 module "aws_node_termination_handler_role" {
   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version                       = "4.1.0"
@@ -86,7 +82,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
     ]
     resources = module.eks.workers_asg_arns
   }
-  /*statement {
+  statement {
     effect    = "Allow"
     actions   = [
       "sqs:DeleteMessage",
@@ -95,11 +91,11 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
     resources = [
       module.aws_node_termination_handler_sqs.sqs_queue_arn
     ]
-  }*/
+  }
 }
 
-/*resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
-  name          = "${local.cluster_name}-asg-termination"
+resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
+  name          = "${var.eks.cluster_name}-asg-termination"
   description   = "Node termination event rule"
   event_pattern = jsonencode(
   {
@@ -115,7 +111,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
 }
 
 resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
-  name          = "${local.cluster_name}-spot-termination"
+  name          = "${var.eks.cluster_name}-spot-termination"
   description   = "Node termination event rule"
   event_pattern = jsonencode(
   {

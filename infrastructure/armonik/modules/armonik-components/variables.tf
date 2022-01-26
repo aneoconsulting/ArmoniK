@@ -86,6 +86,7 @@ variable "storage_endpoint_url" {
     })
     shared   = object({
       host   = string
+      id     = string
       secret = string
       path   = string
     })

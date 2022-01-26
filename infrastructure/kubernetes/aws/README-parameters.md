@@ -24,7 +24,7 @@
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_eks"></a> [eks](#module\_eks) | ./modules/eks | n/a |
-| <a name="module_kms"></a> [kms](#module\_kms) | ./modules/kms | n/a |
+| <a name="module_kms"></a> [kms](#module\_kms) | ../../modules/aws/kms | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | ./modules/vpc | n/a |
 
 ## Resources
@@ -41,7 +41,6 @@
 | <a name="input_cluster_autoscaler_resources"></a> [cluster\_autoscaler\_resources](#input\_cluster\_autoscaler\_resources) | Resources limits/requests for the cluster autoscaler | <pre>object({<br>    limits                   = object({<br>      cpu    = string<br>      memory = string<br>    })<br>    requests                 = object({<br>      cpu    = string<br>      memory = string<br>    })<br>    use_static_instance_list = bool<br>  })</pre> | <pre>{<br>  "limits": {<br>    "cpu": "3000m",<br>    "memory": "3000Mi"<br>  },<br>  "requests": {<br>    "cpu": "1000m",<br>    "memory": "1000Mi"<br>  },<br>  "use_static_instance_list": true<br>}</pre> | no |
 | <a name="input_eks"></a> [eks](#input\_eks) | Parameters of AWS EKS | <pre>object({<br>    cluster_version                      = string<br>    cluster_endpoint_public_access       = bool<br>    cluster_endpoint_public_access_cidrs = list(string)<br>    encryption_keys                      = object({<br>      cluster_log_kms_key_id    = string<br>      cluster_encryption_config = string<br>      ebs_kms_key_id            = string<br>    })<br>    cluster_log_retention_in_days        = number<br>  })</pre> | <pre>{<br>  "cluster_endpoint_public_access": true,<br>  "cluster_endpoint_public_access_cidrs": [<br>    "0.0.0.0/0"<br>  ],<br>  "cluster_log_retention_in_days": 30,<br>  "cluster_version": "1.21",<br>  "encryption_keys": {<br>    "cluster_encryption_config": "",<br>    "cluster_log_kms_key_id": "",<br>    "ebs_kms_key_id": ""<br>  }<br>}</pre> | no |
 | <a name="input_eks_worker_groups"></a> [eks\_worker\_groups](#input\_eks\_worker\_groups) | EKS worker groups | `list(object({}))` | <pre>[<br>  {}<br>]</pre> | no |
-| <a name="input_kms"></a> [kms](#input\_kms) | AWS Key Management Service parameters | <pre>object({<br>    name                     = string<br>    multi_region             = bool<br>    deletion_window_in_days  = number<br>    customer_master_key_spec = string<br>    key_usage                = string<br>    enable_key_rotation      = bool<br>    is_enabled               = bool<br>  })</pre> | <pre>{<br>  "customer_master_key_spec": "SYMMETRIC_DEFAULT",<br>  "deletion_window_in_days": 7,<br>  "enable_key_rotation": true,<br>  "is_enabled": true,<br>  "key_usage": "ENCRYPT_DECRYPT",<br>  "multi_region": false,<br>  "name": "armonik-kms"<br>}</pre> | no |
 | <a name="input_profile"></a> [profile](#input\_profile) | Profile of AWS credentials to deploy Terraform sources | `string` | `"default"` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region where the infrastructure will be deployed | `string` | `"eu-west-3"` | no |
 | <a name="input_tag"></a> [tag](#input\_tag) | Tag to prefix the AWS resources | `string` | `null` | no |

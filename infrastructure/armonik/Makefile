@@ -8,6 +8,7 @@ MONITORING_PARAMETERS_FILE?=monitoring-parameters.tfvars
 PLAN_FILE=$(BACKEND)/terraform.tfplan
 STATE_FILE=$(BACKEND)/terraform.tfstate
 OUTPUT_FILE=generated/output.json
+CURRENT_DIR=$(shell pwd)
 
 .PHONY: plan apply destroy
 
@@ -33,3 +34,11 @@ destroy:
 
 clean:
 	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform
+
+docs:
+	terraform-docs markdown table --output-file README-parameters.md --output-mode inject $(CURRENT_DIR)
+	terraform-docs markdown table --output-file README.md --output-mode inject $(CURRENT_DIR)/modules/armonik-components
+	terraform-docs markdown table --output-file README.md --output-mode inject $(CURRENT_DIR)/modules/monitoring/seq
+	terraform-docs markdown table --output-file README.md --output-mode inject $(CURRENT_DIR)/modules/monitoring/grafana
+	terraform-docs markdown table --output-file README.md --output-mode inject $(CURRENT_DIR)/modules/monitoring/prometheus
+	terraform-docs markdown table --output-file README.md --output-mode inject $(CURRENT_DIR)/modules/monitoring/kubernetes-dashboard
