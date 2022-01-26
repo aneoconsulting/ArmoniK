@@ -12,7 +12,7 @@ module "eks" {
   # KUBECONFIG
   kubeconfig_name                           = "kubeconfig-${var.eks.cluster_name}"
   write_kubeconfig                          = true
-  #kubeconfig_output_path                    = "${path.root}/generated/eks/${module.eks.kubeconfig_filename}"
+  kubeconfig_output_path                    = "${path.root}/generated/eks/${module.eks.kubeconfig_filename}"
   kubeconfig_file_permission                = "0600"
   kubeconfig_api_version                    = "client.authentication.k8s.io/v1alpha1"
   kubeconfig_aws_authenticator_command      = "aws"

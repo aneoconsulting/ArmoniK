@@ -6,10 +6,38 @@ data "external" "seq_node_ip" {
 }
 
 locals {
-  seq_node_ip  = lookup(tomap(data.external.seq_node_ip.result), "node_ip", "")
-  seq_host     = (kubernetes_service.seq.spec.0.type == "LoadBalancer" ? kubernetes_service.seq.status.0.load_balancer.0.ingress.0.ip : (kubernetes_service.seq.spec.0.type == "NodePort" && local.seq_node_ip != "" ? local.seq_node_ip : kubernetes_service.seq.spec.0.cluster_ip))
-  seq_port     = (kubernetes_service.seq.spec.0.type == "NodePort" && local.seq_node_ip != "" ? kubernetes_service.seq.spec.0.port.0.node_port : kubernetes_service.seq.spec.0.port.0.port)
-  seq_web_port = (kubernetes_service.seq.spec.0.type == "NodePort" && local.seq_node_ip != "" ? kubernetes_service.seq.spec.0.port.1.node_port : kubernetes_service.seq.spec.0.port.1.port)
-  seq_url      = "http://${local.seq_host}:${local.seq_port}"
-  seq_web_url  = "http://${local.seq_host}:${local.seq_web_port}"
+  seq_node_ip = lookup(tomap(data.external.seq_node_ip.result), "node_ip", "")
+
+  load_balancer = (kubernetes_service.seq.spec.0.type == "LoadBalancer" ? {
+    ip           = (kubernetes_service.seq.status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.seq.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.seq.status.0.load_balancer.0.ingress.0.ip)
+    seq_port     = kubernetes_service.seq.spec.0.port.0.port
+    seq_web_port = kubernetes_service.seq.spec.0.port.1.port
+  } : {
+    ip           = ""
+    seq_port     = ""
+    seq_web_port = ""
+  })
+
+  node_port = (local.load_balancer.ip == "" && kubernetes_service.seq.spec.0.type == "NodePort" ? {
+    ip           = local.seq_node_ip
+    seq_port     = kubernetes_service.seq.spec.0.port.0.node_port
+    seq_web_port = kubernetes_service.seq.spec.0.port.1.node_port
+  } : {
+    ip           = local.load_balancer.ip
+    seq_port     = local.load_balancer.seq_port
+    seq_web_port = local.load_balancer.seq_web_port
+  })
+
+  seq_endpoints = (local.node_port.ip == "" && kubernetes_service.seq.spec.0.type == "ClusterIP" ? {
+    ip           = kubernetes_service.seq.spec.0.cluster_ip
+    seq_port     = kubernetes_service.seq.spec.0.port.0.port
+    seq_web_port = kubernetes_service.seq.spec.0.port.1.port
+  } : {
+    ip           = local.node_port.ip
+    seq_port     = local.node_port.seq_port
+    seq_web_port = local.node_port.seq_web_port
+  })
+
+  seq_url     = "http://${local.seq_endpoints.ip}:${local.seq_endpoints.seq_port}"
+  seq_web_url = "http://${local.seq_endpoints.ip}:${local.seq_endpoints.seq_web_port}"
 }
