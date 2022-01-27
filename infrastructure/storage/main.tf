@@ -32,16 +32,14 @@ module "activemq" {
 }
 
 # AWS Elastic Block Store
-module "aws_ebs" {
+/*module "aws_ebs" {
   count  = (contains(module.storage.list_storage, "aws_ebs") ? 1 : 0)
   source = "./modules/aws/ebs"
   ebs    = {
-    region            = var.aws_region
-    profile           = var.aws_profile
     availability_zone = var.aws_ebs.availability_zone
     size              = var.aws_ebs.size
     encrypted         = var.aws_ebs.encrypted
     kms_key_id        = var.aws_ebs.kms_key_id
     tags              = var.aws_ebs.tags
   }
-}
+}*/

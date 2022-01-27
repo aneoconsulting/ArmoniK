@@ -35,11 +35,11 @@ output "activemq_endpoint_url" {
 }
 
 # AWS EBS
-output "aws_ebs" {
+/*output "aws_ebs" {
   value = (contains(module.storage.list_storage, "aws_ebs") ? {
     Status = "READY"
     id     = module.aws_ebs.0.selected.id
   } : {
     Status = "NOT CREATED"
   })
-}
+}*/
