@@ -86,7 +86,7 @@ runs:
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/storage
+        cd ${{ github.action_path }}/infrastructure/storage/onpremise
         terraform init
         terraform apply -var-file parameters.tfvars -auto-approve
 
@@ -94,7 +94,7 @@ runs:
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/storage
+        cd ${{ github.action_path }}/infrastructure/storage/onpremise
         terraform output -json > tmp.json
         sed -i '1d;$d' tmp.json
         cat tmp.json
