@@ -9,9 +9,8 @@ provider "kubernetes" {
   config_context = lookup(tomap(data.external.k8s_config_context.result), "k8s_config_context", var.k8s_config_context)
 }
 
-provider "aws" {
-  count = 0
+/*provider "aws" {
   region                  = var.aws_region
   shared_credentials_file = pathexpand(".aws/credentials")
   profile                 = var.aws_profile
-}
+}*/
