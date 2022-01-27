@@ -1,3 +1,14 @@
+
+resource "aws_iam_role_policy_attachment" "workers_xray_attach" {
+  policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+  role       = module.eks.worker_iam_role_name
+}
+
+resource "aws_iam_role_policy_attachment" "ssm_agent" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = module.eks.worker_iam_role_name
+}
+
 # Decrypt objects in S3
 data "aws_iam_policy_document" "decrypt_object_document" {
   statement {

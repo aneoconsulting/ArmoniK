@@ -23,10 +23,7 @@ resource "helm_release" "aws_node_termination_handler" {
     name  = "enableSpotInterruptionDraining"
     value = "true"
   }
-  /*set {
-    name  = "image.pullSecrets"
-    value = "{${join(",", ["ecr-public"])}}"
-  }
+
   set {
     name  = "serviceAccount.name"
     value = "aws-node-termination-handler"
@@ -36,7 +33,7 @@ resource "helm_release" "aws_node_termination_handler" {
     value = module.aws_node_termination_handler_role.iam_role_arn
     type  = "string"
   }
-  set {
+  /*set {
     name  = "enableSqsTerminationDraining"
     value = "true"
   }
@@ -46,7 +43,7 @@ resource "helm_release" "aws_node_termination_handler" {
     value = module.aws_node_termination_handler_sqs.sqs_queue_id
   }*/
 }
-/*
+
 module "aws_node_termination_handler_role" {
   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version                       = "4.1.0"
@@ -82,7 +79,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
     ]
     resources = module.eks.workers_asg_arns
   }
-  statement {
+  /*statement {
     effect    = "Allow"
     actions   = [
       "sqs:DeleteMessage",
@@ -91,7 +88,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
     resources = [
       module.aws_node_termination_handler_sqs.sqs_queue_arn
     ]
-  }
+  }*/
 }
 
 resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
@@ -136,7 +133,7 @@ resource "aws_autoscaling_lifecycle_hook" "aws_node_termination_handler" {
   lifecycle_transition   = "autoscaling:EC2_INSTANCE_TERMINATING"
   heartbeat_timeout      = 300
   default_result         = "CONTINUE"
-}*/
+}
 
 
 
