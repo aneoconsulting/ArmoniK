@@ -84,7 +84,7 @@ locals {
   "Redis": {
     "EndpointUrl": "${var.storage_endpoint_url.redis.url}",
     "CredentialsPath": "/redis/redis_credentials",
-    "Timeout": 3000,
+    "Timeout": 30000,
     "InstanceName" : "ArmoniKRedis",
     "ClientName" : "ArmoniK.Control",
     "ObjectStorage": {

@@ -23,7 +23,7 @@ kubectl create secret generic $ARMONIK_STORAGE_MONGODB_SECRET_NAME \
         --from-file=mongodb.pem=$ARMONIK_STORAGE_MONGODB_CERTIFICATES_DIRECTORY/cert.pem
 
 # ArmoniK
-source infrastructure/utils/envvars.conf
+source infrastructure/utils/envvars-armonik.conf
 kubectl create namespace $ARMONIK_NAMESPACE || true
 kubectl create namespace $ARMONIK_MONITORING_NAMESPACE || true
 

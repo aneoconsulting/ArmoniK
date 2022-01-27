@@ -1,14 +1,18 @@
 # Table of contents
 
-1. [Introduction](#introduction)
-2. [Set environment variables](#set-environment-variables)
-3. [Create a namespace for ArmoniK](#create-a-namespace-for-armonik)
-4. [Create Kubernetes secrets](#create-kubernetes-secrets)
-    1. [Redis secret](#redis-secret)
-    2. [ActiveMQ secret](#activemq-secret)
-5. [Prepare the configuration file](#prepare-the-configuration-file)
-6. [Deploy](#deploy)
-7. [Clean-up](#clean-up)
+- [Table of contents](#table-of-contents)
+- [Introduction](#introduction)
+- [Set environment variables](#set-environment-variables)
+- [Create a namespace for ArmoniK](#create-a-namespace-for-armonik)
+- [Create Kubernetes secrets](#create-kubernetes-secrets)
+  - [Redis secret](#redis-secret)
+  - [ActiveMQ storage](#activemq-storage)
+- [Prepare the parameters files](#prepare-the-parameters-files)
+  - [Parameters for ArmoniK](#parameters-for-armonik)
+  - [Parameters for storage](#parameters-for-storage)
+  - [Parameters for monitoring](#parameters-for-monitoring)
+- [Deploy](#deploy)
+- [Clean-up](#clean-up)
 
 # Introduction
 
@@ -49,9 +53,19 @@ export ARMONIK_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the ActiveMQ stor
 
 From the **root** of the repository source [file of environment variables](../../utils/envvars.conf).
 
-```bash
-   source infrastructure/utils/envvars.conf
-```
+2. copy the [template file](../utils/envvars-armonik.conf):
+
+   ```bash
+   cp ../utils/envvars-armonik.conf ./envvars.conf
+   ```
+
+3. modify the values of variables if needed in `./envvars.conf`.
+
+4. Source the file of configuration:
+
+   ```bash
+   source ./envvars.conf
+   ```
 
 # Create a namespace for ArmoniK
 

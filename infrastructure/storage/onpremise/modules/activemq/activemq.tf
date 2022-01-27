@@ -83,8 +83,7 @@ resource "kubernetes_service" "activemq" {
     }
   }
   spec {
-    type                    = "NodePort"
-    external_traffic_policy = "Local"
+    type                    = "ClusterIP"
     selector                = {
       app     = kubernetes_deployment.activemq.metadata.0.labels.app
       type    = kubernetes_deployment.activemq.metadata.0.labels.type

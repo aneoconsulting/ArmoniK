@@ -8,8 +8,31 @@ data "external" "control_plane_node_ip" {
 # Node IP
 locals {
   control_plane_node_ip = lookup(tomap(data.external.control_plane_node_ip.result), "node_ip", "")
-  control_plane_host    = (local.control_plane_node_ip == "" ? kubernetes_service.control_plane.spec.0.cluster_ip : local.control_plane_node_ip)
-  control_plane_port    = (local.control_plane_node_ip == "" ? kubernetes_service.control_plane.spec.0.port.0.port : kubernetes_service.control_plane.spec.0.port.0.node_port)
-  control_plane_url     = "http://${local.control_plane_host}:${local.control_plane_port}"
+
+  load_balancer = (kubernetes_service.control_plane.spec.0.type == "LoadBalancer" ? {
+    ip   = (kubernetes_service.control_plane.status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.control_plane.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.control_plane.status.0.load_balancer.0.ingress.0.ip)
+    port = kubernetes_service.control_plane.spec.0.port.0.port
+  } : {
+    ip   = ""
+    port = ""
+  })
+
+  node_port = (local.load_balancer.ip == "" && kubernetes_service.control_plane.spec.0.type == "NodePort" ? {
+    ip   = local.control_plane_node_ip
+    port = kubernetes_service.control_plane.spec.0.port.0.node_port
+  } : {
+    ip   = local.load_balancer.ip
+    port = local.load_balancer.port
+  })
+
+  control_plane_endpoints = (local.node_port.ip == "" && kubernetes_service.control_plane.spec.0.type == "ClusterIP" ? {
+    ip   = kubernetes_service.control_plane.spec.0.cluster_ip
+    port = kubernetes_service.control_plane.spec.0.port.0.port
+  } : {
+    ip   = local.node_port.ip
+    port = local.node_port.port
+  })
+
+  control_plane_url = "http://${local.control_plane_endpoints.ip}:${local.control_plane_endpoints.port}"
 }
 
