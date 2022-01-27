@@ -82,6 +82,17 @@ runs:
         echo "::set-output name=credentials-ca-crt::${{ github.action_path }}/infrastructure/credentials/ca.crt"
         echo "::set-output name=credentials-certificate-pfx::${{ github.action_path }}/infrastructure/credentials/certificate.pfx"
 
+    - name: Fake AWS credentials
+      shell: bash
+      run: |
+        set -ex
+        mkdir -p ~/.aws
+        cat <<EOF | tee ~/.aws/credentials
+        [default]
+        aws_access_key_id = XXXXXXXXXXXXXXX
+        aws_secret_access_key = XXXXXXXXXXXXXXX
+        EOF
+
     - name: Deploy Onpremise Storage
       shell: bash
       run: |
