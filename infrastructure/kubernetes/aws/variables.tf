@@ -50,6 +50,21 @@ variable "vpc" {
   }
 }
 
+# S3 bucket as Filesystem
+variable "s3fs_bucket" {
+  description = "AWS S3 bucket to be used as filesystem shared between pods"
+  type        = object({
+    name       = string
+    kms_key_id = string
+    tags       = object({})
+  })
+  default     = {
+    name       = "s3fs"
+    kms_key_id = ""
+    tags       = {}
+  }
+}
+
 # EKS
 variable "eks" {
   description = "Parameters of AWS EKS"
@@ -74,33 +89,6 @@ variable "eks" {
       ebs_kms_key_id            = ""
     }
     cluster_log_retention_in_days        = 30
-  }
-}
-
-# Cluster autoscaler
-variable "cluster_autoscaler_resources" {
-  description = "Resources limits/requests for the cluster autoscaler"
-  type        = object({
-    limits                   = object({
-      cpu    = string
-      memory = string
-    })
-    requests                 = object({
-      cpu    = string
-      memory = string
-    })
-    use_static_instance_list = bool
-  })
-  default     = {
-    limits                   = {
-      cpu    = "3000m"
-      memory = "3000Mi"
-    }
-    requests                 = {
-      cpu    = "1000m"
-      memory = "1000Mi"
-    }
-    use_static_instance_list = true
   }
 }
 

@@ -37,5 +37,5 @@ docs:
 	terraform-docs markdown table --output-file README-parameters.md --output-mode inject $(CURRENT_DIR)
 	terraform-docs markdown table --output-file README.md --output-mode inject $(CURRENT_DIR)/modules/eks
 	terraform-docs markdown table --output-file README.md --output-mode inject $(CURRENT_DIR)/modules/vpc
-	terraform-docs markdown table --output-file README.md --output-mode inject $(CURRENT_DIR)/modules/kms
+	terraform-docs markdown table --output-file README.md --output-mode inject $(CURRENT_DIR)/modules/s3
 
