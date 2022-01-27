@@ -2,21 +2,21 @@
 data "external" "redis_node_ip" {
   depends_on  = [module.redis]
   program     = ["bash", "get_node_ip.sh", "redis", var.namespace]
-  working_dir = "../utils/scripts"
+  working_dir = "../../utils/scripts"
 }
 
 # Node IP of MongoDB pod
 data "external" "mongodb_node_ip" {
   depends_on  = [module.mongodb]
   program     = ["bash", "get_node_ip.sh", "mongodb", var.namespace]
-  working_dir = "../utils/scripts"
+  working_dir = "../../utils/scripts"
 }
 
 # Node IP of ActiveMQ pod
 data "external" "activemq_node_ip" {
   depends_on  = [module.activemq]
   program     = ["bash", "get_node_ip.sh", "activemq", var.namespace]
-  working_dir = "../utils/scripts"
+  working_dir = "../../utils/scripts"
 }
 
 # Node names

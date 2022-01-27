@@ -17,20 +17,6 @@ variable "k8s_config_context" {
   default     = "default"
 }
 
-# Profile
-variable "aws_profile" {
-  description = "Profile of AWS credentials to deploy Terraform sources"
-  type        = string
-  default     = "default"
-}
-
-# AWS region
-variable "aws_region" {
-  description = "AWS region where resources will be created"
-  type        = string
-  default     = "eu-west-3"
-}
-
 # Storage to be created
 variable "storage" {
   description = "List of storage for each ArmoniK data to be created."
@@ -100,24 +86,5 @@ variable "activemq" {
       { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
       { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
     ]
-  }
-}
-
-# AWS Elastic Block Store
-variable "aws_ebs" {
-  description = "AWS EBS for shared storage between pods"
-  type        = object({
-    availability_zone = string
-    size              = number
-    encrypted         = bool
-    kms_key_id        = string
-    tags              = object({})
-  })
-  default     = {
-    availability_zone = "eu-west-3a"
-    size              = 5
-    encrypted         = true
-    kms_key_id        = ""
-    tags              = {}
   }
 }

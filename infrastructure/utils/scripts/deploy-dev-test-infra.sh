@@ -6,7 +6,7 @@ BASEDIR=$(pwd -P)
 popd
 
 export MODE=""
-export SERVER_NFS_IP=""
+export SERVER_NFS_IP=$(hostname -I | awk '{print $1}')
 export SHARED_STORAGE_TYPE="HostPath"
 
 RED='\033[0;31m'
@@ -94,7 +94,7 @@ EOF
 # Clean
 destroy_storage() {
   terraform_init_storage
-  cd $BASEDIR/../../storage
+  cd $BASEDIR/../../storage/onpremise
   execute terraform destroy -auto-approve
   execute make clean
   # execute kubectl delete namespace $ARMONIK_STORAGE_NAMESPACE
@@ -113,22 +113,21 @@ destroy_armonik() {
 # deploy storage
 deploy_storage() {
   terraform_init_storage
-  cd $BASEDIR/../../storage
+  cd $BASEDIR/../../storage/onpremise
   execute terraform apply -var-file=parameters.tfvars -auto-approve
   cd -
 }
 
 # storage endpoint urls
 endpoint_urls() {
-  pushd $BASEDIR/../../storage >/dev/null 2>&1
+  pushd $BASEDIR/../../storage/onpremise >/dev/null 2>&1
   export ACTIVEMQ_HOST=$(terraform output -json activemq_endpoint_url | jq -r '.host')
   export ACTIVEMQ_PORT=$(terraform output -json activemq_endpoint_url | jq -r '.port')
   export MONGODB_HOST=$(terraform output -json mongodb_endpoint_url | jq -r '.host')
   export MONGODB_PORT=$(terraform output -json mongodb_endpoint_url | jq -r '.port')
   export REDIS_URL=$(terraform output -json redis_endpoint_url | jq -r '.url')
-  export SHARED_STORAGE_ID=$(terraform output -json aws_ebs | jq -r '.id')
   export SHARED_STORAGE_HOST=${1:-""}
-  execute echo "Get Hostname for Shared Storage: ${SHARED_STORAGE_HOST}"
+  execute echo "Get Hostname for Shared Storage: \"${SHARED_STORAGE_HOST}\""
   popd >/dev/null 2>&1
 }
 
@@ -150,7 +149,6 @@ configuration_file() {
     --redis-url $REDIS_URL \
     --redis-kube-secret "redis-storage-secret" \
     --shared-host $SHARED_STORAGE_HOST \
-    --shared-id $SHARED_STORAGE_ID \
     --external-url $REDIS_URL \
     --external-kube-secret "external-redis-storage-secret" \
     $BASEDIR/../../armonik/storage-parameters.tfvars \
@@ -181,7 +179,7 @@ deploy_armonik() {
 }
 
 function terraform_init_storage() {
-  pushd $BASEDIR/../../storage >/dev/null 2>&1
+  pushd $BASEDIR/../../storage/onpremise >/dev/null 2>&1
   execute echo "change to directory : $(pwd -P)"
   execute terraform init
   popd >/dev/null 2>&1
@@ -205,7 +203,7 @@ function main() {
     -h | --help)
       usage
       exit
-      shift # past argument=value
+      shift
       ;;
     -m)
       MODE="$2"
