@@ -36,6 +36,8 @@ module "aws_ebs" {
   count  = (contains(module.storage.list_storage, "aws_ebs") ? 1 : 0)
   source = "./modules/aws/ebs"
   ebs    = {
+    region            = var.aws_region
+    profile           = var.aws_profile
     availability_zone = var.aws_ebs.availability_zone
     size              = var.aws_ebs.size
     encrypted         = var.aws_ebs.encrypted
