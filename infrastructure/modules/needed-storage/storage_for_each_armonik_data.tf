@@ -16,8 +16,7 @@ locals {
     ],
     shared         = [
       "HostPath",
-      "NFS",
-      "AWS_EBS"
+      "NFS"
     ],
     external       = [
       "Redis"

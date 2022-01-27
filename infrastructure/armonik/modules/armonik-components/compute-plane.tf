@@ -167,16 +167,6 @@ resource "kubernetes_deployment" "compute_plane" {
           }
         }
         dynamic volume {
-          for_each = (local.data_type.shared_aws_ebs ? [1] : [])
-          content {
-            name = "shared-volume"
-            aws_elastic_block_store {
-              volume_id = var.storage_endpoint_url.shared.id
-              fs_type   = "ext4"
-            }
-          }
-        }
-        dynamic volume {
           for_each = (local.data_type.queue_amqp ? [1] : [])
           content {
             name = "activemq-secret-volume"
