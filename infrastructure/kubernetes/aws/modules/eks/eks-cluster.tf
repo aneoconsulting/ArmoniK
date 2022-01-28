@@ -66,6 +66,14 @@ module "eks" {
       spot_allocation_strategy = "capacity-optimized"
       root_encrypted           = true
       root_kms_key_id          = var.eks.encryption_keys.ebs_kms_key_id
+      additional_userdata                      = <<-EOT
+        sudo yum update -y
+        sudo amazon-linux-extras install -y epel
+        sudo yum install -y s3fs-fuse
+        sudo mkdir -p /data
+        sudo s3fs ${var.eks.shared_storage} /data -o iam_role="auto"
+        sudo echo "${var.eks.shared_storage} /data fuse.s3fs _netdev,allow_other 0 0" >> /etc/fstab
+      EOT
       "tags"                   = [
         {
           key                 = "k8s.io/cluster-autoscaler/enabled"
@@ -76,7 +84,12 @@ module "eks" {
           key                 = "k8s.io/cluster-autoscaler/${var.eks.cluster_name}"
           propagate_at_launch = "false"
           value               = "true"
-        }
+        },
+        /*{
+          key                 = "aws-node-termination-handler/managed"
+          value               = ""
+          propagate_at_launch = true
+        }*/
       ]
     },
     {
@@ -90,6 +103,14 @@ module "eks" {
       spot_allocation_strategy = "capacity-optimized"
       root_encrypted           = true
       root_kms_key_id          = var.eks.encryption_keys.ebs_kms_key_id
+      additional_userdata                      = <<-EOT
+        sudo yum update -y
+        sudo amazon-linux-extras install -y epel
+        sudo yum install -y s3fs-fuse
+        sudo mkdir -p /data
+        sudo s3fs ${var.eks.shared_storage} /data -o iam_role="auto"
+        sudo echo "${var.eks.shared_storage} /data fuse.s3fs _netdev,allow_other 0 0" >> /etc/fstab
+      EOT
       "tags"                   = [
         {
           key                 = "k8s.io/cluster-autoscaler/enabled"
@@ -114,6 +135,14 @@ module "eks" {
       spot_allocation_strategy = "capacity-optimized"
       root_encrypted           = true
       root_kms_key_id          = var.eks.encryption_keys.ebs_kms_key_id
+      additional_userdata                      = <<-EOT
+        sudo yum update -y
+        sudo amazon-linux-extras install -y epel
+        sudo yum install -y s3fs-fuse
+        sudo mkdir -p /data
+        sudo s3fs ${var.eks.shared_storage} /data -o iam_role="auto"
+        sudo echo "${var.eks.shared_storage} /data fuse.s3fs _netdev,allow_other 0 0" >> /etc/fstab
+      EOT
       "tags"                   = [
         {
           key                 = "k8s.io/cluster-autoscaler/enabled"
@@ -138,6 +167,14 @@ module "eks" {
       spot_allocation_strategy = "capacity-optimized"
       root_encrypted           = true
       root_kms_key_id          = var.eks.encryption_keys.ebs_kms_key_id
+      additional_userdata                      = <<-EOT
+        sudo yum update -y
+        sudo amazon-linux-extras install -y epel
+        sudo yum install -y s3fs-fuse
+        sudo mkdir -p /data
+        sudo s3fs ${var.eks.shared_storage} /data -o iam_role="auto"
+        sudo echo "${var.eks.shared_storage} /data fuse.s3fs _netdev,allow_other 0 0" >> /etc/fstab
+      EOT
       "tags"                   = [
         {
           key                 = "k8s.io/cluster-autoscaler/enabled"
@@ -164,6 +201,14 @@ module "eks" {
       kubelet_extra_args                       = "--node-labels=grid/type=Operator --register-with-taints=grid/type=Operator:NoSchedule"
       root_encrypted                           = true
       root_kms_key_id                          = var.eks.encryption_keys.ebs_kms_key_id
+      additional_userdata                      = <<-EOT
+        sudo yum update -y
+        sudo amazon-linux-extras install -y epel
+        sudo yum install -y s3fs-fuse
+        sudo mkdir -p /data
+        sudo s3fs ${var.eks.shared_storage} /data -o iam_role="auto"
+        sudo echo "${var.eks.shared_storage} /data fuse.s3fs _netdev,allow_other 0 0" >> /etc/fstab
+      EOT
     }
   ]
 

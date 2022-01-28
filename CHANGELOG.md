@@ -17,13 +17,16 @@ changed
 Added
 -
 
+* AWS VPC
 * AWS Elastic Kubernetes Service (EKS version 1.21)
 * Activate logs for EKS and VPC in CloudWatch
+* S3 as shared filesystem for worker containers
 * Encryption at rest:
     * VPC flow log in cloudwatch log group
     * EKS cloudwatch log group
     * EKS secrets
     * EBS of EKS nodes
+    * S3
 
 ## [v2.2.0](https://github.com/aneoconsulting/armonik/tree/v2.2.0) (2022-01-17)
 

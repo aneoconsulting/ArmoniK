@@ -17,22 +17,7 @@ variable "eks" {
       ebs_kms_key_id            = string
     })
     cluster_log_retention_in_days        = number
+    shared_storage                       = string
     tags                                 = map(string)
   })
 }
-/*
-# Cluster autoscaler
-variable "cluster_autoscaler_resources" {
-  description = "Resources limits/requests for the cluster autoscaler"
-  type        = object({
-    limits                   = object({
-      cpu    = string
-      memory = string
-    })
-    requests                 = object({
-      cpu    = string
-      memory = string
-    })
-    use_static_instance_list = bool
-  })
-}*/
