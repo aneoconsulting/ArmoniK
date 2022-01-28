@@ -77,6 +77,9 @@ runs:
       shell: bash
       run: |
         cd ${{ github.action_path }}
+        source infrastructure/utils/envvars-storage.conf
+        source infrastructure/utils/envvars-armonik.conf
+        cd ${{ github.action_path }}
         bash tools/install/init_kube.sh
 
     - name: Set credentials output
