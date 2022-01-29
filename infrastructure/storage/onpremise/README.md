@@ -20,7 +20,7 @@ Hereafter we present the creation of onpremise storage resources needed for Armo
 # Allowed storage resources
 
 To date, the storage resources allowed for each type of ArmoniK data are defined
-in [allowed storage resources](../modules/needed-storage/storage_for_each_armonik_data.tf).
+in [allowed storage resources](../../modules/needed-storage/storage_for_each_armonik_data.tf).
 
 # Set environment variables
 
@@ -51,7 +51,7 @@ export ARMONIK_STORAGE_MONGODB_SECRET_NAME=<You kubernetes secret for the MongoD
 
 **Mandatory:** To set these environment variables:
 
-From the **root** of the repository, you source [file of environment variables](../utils/envvars-storage.conf).
+From the **root** of the repository, you source [file of environment variables](../../utils/envvars-storage.conf).
 
 ```bash
    source infrastructure/utils/envvars-storage.conf
@@ -85,7 +85,7 @@ file (`ca.crt`) or path to be used as a trusted root when validating certificate
 
 Execute the following command to create the Redis server secret in Kubernetes based on the certificates created and
 saved in the directory `$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY`. In this project, we have certificates for test
-in [credentials](../credentials) directory:
+in [credentials](../../credentials) directory:
 
 ```bash
 kubectl create secret generic $ARMONIK_STORAGE_REDIS_SECRET_NAME \
@@ -100,7 +100,7 @@ kubectl create secret generic $ARMONIK_STORAGE_REDIS_SECRET_NAME \
 ActiveMQ uses a file `jetty-realm.properties`. This is the file which stores user credentials and their roles in
 ActiveMQ. It contains custom usernames and passwords and replace the file present by default inside the container.
 
-In this project, we have a file of name `jetty-realm.properties` in [credentials](../credentials) directory:
+In this project, we have a file of name `jetty-realm.properties` in [credentials](../../credentials) directory:
 
 ```text
 #username:password,[role-name]
@@ -122,7 +122,7 @@ MongoDB uses SSL/TLS support using certificates (`cert.pem`).
 
 Execute the following command to create the MongoDB server secret in Kubernetes based on the certificates created and
 saved in the directory `$ARMONIK_STORAGE_MONGODB_CREDENTIALS_DIRECTORY`. In this project, we have certificates for test
-in [credentials](../credentials) directory:
+in [credentials](../../credentials) directory:
 
 ```bash
 kubectl create secret generic $ARMONIK_STORAGE_MONGODB_SECRET_NAME \
