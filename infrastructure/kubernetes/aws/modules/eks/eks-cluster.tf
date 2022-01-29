@@ -30,12 +30,12 @@ module "eks" {
   cluster_endpoint_public_access       = var.eks.cluster_endpoint_public_access
   cluster_endpoint_public_access_cidrs = var.eks.cluster_endpoint_public_access_cidrs
   cluster_enabled_log_types            = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-  cluster_log_kms_key_id               = var.eks.encryption_keys.cluster_log_kms_key_id
+  cluster_log_kms_key_id               = var.encryption_keys.cluster_log_kms_key_id
   cluster_log_retention_in_days        = var.eks.cluster_log_retention_in_days
   cluster_create_security_group        = true
   cluster_encryption_config            = [
     {
-      provider_key_arn = var.eks.encryption_keys.cluster_encryption_config
+      provider_key_arn = var.encryption_keys.cluster_encryption_config
       resources        = ["secrets"]
     }
   ]
@@ -53,185 +53,8 @@ module "eks" {
     }
   ]
 
-  # Workers
-  worker_groups_launch_template = [
-    {
-      name                     = "worker-small-spot"
-      override_instance_types  = ["m5.xlarge", "m5d.xlarge", "m5a.xlarge"]
-      spot_instance_pools      = 0
-      asg_min_size             = 0
-      asg_max_size             = 20
-      asg_desired_capacity     = 0
-      on_demand_base_capacity  = 0
-      spot_allocation_strategy = "capacity-optimized"
-      root_encrypted           = true
-      root_kms_key_id          = var.eks.encryption_keys.ebs_kms_key_id
-      additional_userdata                      = <<-EOT
-        sudo yum update -y
-        sudo amazon-linux-extras install -y epel
-        sudo yum install -y s3fs-fuse
-        sudo mkdir -p ${var.eks.shared_storage.host_path}
-        sudo s3fs ${var.eks.shared_storage.id} ${var.eks.shared_storage.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${var.eks.region}.amazonaws.com"
-      EOT
-      "tags"                   = [
-        {
-          key                 = "k8s.io/cluster-autoscaler/enabled"
-          propagate_at_launch = "false"
-          value               = "true"
-        },
-        {
-          key                 = "k8s.io/cluster-autoscaler/${var.eks.cluster_name}"
-          propagate_at_launch = "false"
-          value               = "true"
-        },
-        {
-          key                 = "aws-node-termination-handler/managed"
-          value               = ""
-          propagate_at_launch = true
-        }
-      ]
-    },
-    {
-      name                     = "worker-medium-spot"
-      override_instance_types  = ["m5.2xlarge", "m5d.2xlarge", "m5a.2xlarge"]
-      spot_instance_pools      = 0
-      asg_min_size             = 0
-      asg_max_size             = 20
-      asg_desired_capacity     = 0
-      on_demand_base_capacity  = 0
-      spot_allocation_strategy = "capacity-optimized"
-      root_encrypted           = true
-      root_kms_key_id          = var.eks.encryption_keys.ebs_kms_key_id
-      additional_userdata                      = <<-EOT
-        sudo yum update -y
-        sudo amazon-linux-extras install -y epel
-        sudo yum install -y s3fs-fuse
-        sudo mkdir -p ${var.eks.shared_storage.host_path}
-        sudo s3fs ${var.eks.shared_storage.id} ${var.eks.shared_storage.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${var.eks.region}.amazonaws.com"
-      EOT
-      "tags"                   = [
-        {
-          key                 = "k8s.io/cluster-autoscaler/enabled"
-          propagate_at_launch = "false"
-          value               = "true"
-        },
-        {
-          key                 = "k8s.io/cluster-autoscaler/${var.eks.cluster_name}"
-          propagate_at_launch = "false"
-          value               = "true"
-        },
-        {
-          key                 = "aws-node-termination-handler/managed"
-          value               = ""
-          propagate_at_launch = true
-        }
-      ]
-    },
-    {
-      name                     = "worker-medium-spot"
-      override_instance_types  = ["m5.4xlarge", "m5d.4xlarge", "m5a.4xlarge"]
-      spot_instance_pools      = 0
-      asg_min_size             = 0
-      asg_max_size             = 20
-      asg_desired_capacity     = 0
-      on_demand_base_capacity  = 0
-      spot_allocation_strategy = "capacity-optimized"
-      root_encrypted           = true
-      root_kms_key_id          = var.eks.encryption_keys.ebs_kms_key_id
-      additional_userdata                      = <<-EOT
-        sudo yum update -y
-        sudo amazon-linux-extras install -y epel
-        sudo yum install -y s3fs-fuse
-        sudo mkdir -p ${var.eks.shared_storage.host_path}
-        sudo s3fs ${var.eks.shared_storage.id} ${var.eks.shared_storage.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${var.eks.region}.amazonaws.com"
-      EOT
-      "tags"                   = [
-        {
-          key                 = "k8s.io/cluster-autoscaler/enabled"
-          propagate_at_launch = "false"
-          value               = "true"
-        },
-        {
-          key                 = "k8s.io/cluster-autoscaler/${var.eks.cluster_name}"
-          propagate_at_launch = "false"
-          value               = "true"
-        },
-        {
-          key                 = "aws-node-termination-handler/managed"
-          value               = ""
-          propagate_at_launch = true
-        }
-      ]
-    },
-    {
-      name                     = "worker-medium-spot"
-      override_instance_types  = ["m5.8xlarge", "m5d.8xlarge", "m5a.8xlarge"]
-      spot_instance_pools      = 0
-      asg_min_size             = 0
-      asg_max_size             = 20
-      asg_desired_capacity     = 0
-      on_demand_base_capacity  = 0
-      spot_allocation_strategy = "capacity-optimized"
-      root_encrypted           = true
-      root_kms_key_id          = var.eks.encryption_keys.ebs_kms_key_id
-      "tags"                   = [
-        {
-          key                 = "k8s.io/cluster-autoscaler/enabled"
-          propagate_at_launch = "false"
-          value               = "true"
-        },
-        {
-          key                 = "k8s.io/cluster-autoscaler/${var.eks.cluster_name}"
-          propagate_at_launch = "false"
-          value               = "true"
-        },
-        {
-          key                 = "aws-node-termination-handler/managed"
-          value               = ""
-          propagate_at_launch = true
-        }
-      ]
-    },
-    {
-      name                                     = "operational-worker-ondemand"
-      override_instance_types                  = ["m5.xlarge", "m5d.xlarge"]
-      spot_instance_pools                      = 0
-      asg_min_size                             = 1
-      asg_max_size                             = 1
-      asg_desired_capacity                     = 1
-      on_demand_base_capacity                  = 1
-      on_demand_percentage_above_base_capacity = 100
-      spot_allocation_strategy                 = "capacity-optimized"
-      kubelet_extra_args                       = "--node-labels=grid/type=Operator --register-with-taints=grid/type=Operator:NoSchedule"
-      root_encrypted                           = true
-      root_kms_key_id                          = var.eks.encryption_keys.ebs_kms_key_id
-      additional_userdata                      = <<-EOT
-        sudo yum update -y
-        sudo amazon-linux-extras install -y epel
-        sudo yum install -y s3fs-fuse
-        sudo mkdir -p ${var.eks.shared_storage.host_path}
-        sudo s3fs ${var.eks.shared_storage.id} ${var.eks.shared_storage.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${var.eks.region}.amazonaws.com"
-      EOT
-      "tags"                                   = [
-        {
-          key                 = "k8s.io/cluster-autoscaler/enabled"
-          propagate_at_launch = "false"
-          value               = "true"
-        },
-        {
-          key                 = "k8s.io/cluster-autoscaler/${var.eks.cluster_name}"
-          propagate_at_launch = "false"
-          value               = "true"
-        },
-        {
-          key                 = "aws-node-termination-handler/managed"
-          value               = ""
-          propagate_at_launch = true
-        }
-      ]
-    }
-  ]
-
+  # Worker groups
+  worker_groups_launch_template = local.eks_worker_group
 
   /*
     # Required

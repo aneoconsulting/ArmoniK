@@ -1,17 +1,5 @@
 data "aws_availability_zones" "available" {}
 
-locals {
-  subnets = {
-    subnets = [
-    for index, id in var.eks.pods_subnet_ids : {
-      subnet_id          = id
-      az_name            = element(data.aws_availability_zones.available.names, index)
-      security_group_ids = [module.eks.worker_security_group_id]
-    }
-    ]
-  }
-}
-
 resource "null_resource" "trigger_custom_cni" {
   provisioner "local-exec" {
     command     = "kubectl set env ds aws-node -n kube-system AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG=true"
@@ -29,7 +17,6 @@ resource "helm_release" "eni_config" {
   chart      = "eniconfig"
   namespace  = "default"
   repository = "${path.module}/charts"
-
   values     = [yamlencode(local.subnets)]
 }
 

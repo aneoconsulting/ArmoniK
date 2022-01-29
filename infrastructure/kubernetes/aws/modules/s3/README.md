@@ -27,5 +27,6 @@ No resources.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_kms_key_id"></a> [kms\_key\_id](#output\_kms\_key\_id) | KMS ARN of AWS S3 bucket |
 | <a name="output_selected"></a> [selected](#output\_selected) | AWS S3 bucket |
 <!-- END_TF_DOCS -->

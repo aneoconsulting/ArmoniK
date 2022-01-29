@@ -16,11 +16,12 @@ control_plane = {
 # Parameters of the compute plane
 compute_plane = {
   # number of replicas for each deployment of compute plane
-  replicas      = 1
+  replicas                         = 1
+  termination_grace_period_seconds = 30
   # number of queues according to priority of tasks
-  max_priority  = 1
+  max_priority                     = 1
   # ArmoniK polling agent
-  polling_agent = {
+  polling_agent                    = {
     image             = "dockerhubaneo/armonik_pollingagent"
     tag               = "0.2.2-aws.17.17a7585"
     image_pull_policy = "IfNotPresent"
@@ -34,7 +35,7 @@ compute_plane = {
     }
   }
   # ArmoniK workers
-  worker        = [
+  worker                           = [
     {
       name              = "worker"
       port              = 80

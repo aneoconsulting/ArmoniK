@@ -54,14 +54,16 @@ variable "vpc" {
 variable "s3fs_bucket" {
   description = "AWS S3 bucket to be used as filesystem shared between pods"
   type        = object({
-    name       = string
-    kms_key_id = string
-    tags       = object({})
+    name             = string
+    kms_key_id       = string
+    shared_host_path = string
+    tags             = object({})
   })
   default     = {
-    name       = "s3fs"
-    kms_key_id = ""
-    tags       = {}
+    name             = "s3fs"
+    kms_key_id       = ""
+    shared_host_path = "/data"
+    tags             = {}
   }
 }
 
@@ -72,31 +74,71 @@ variable "eks" {
     cluster_version                      = string
     cluster_endpoint_public_access       = bool
     cluster_endpoint_public_access_cidrs = list(string)
-    encryption_keys                      = object({
-      cluster_log_kms_key_id    = string
-      cluster_encryption_config = string
-      ebs_kms_key_id            = string
-    })
-    shared_storage_host_path             = string
     cluster_log_retention_in_days        = number
   })
   default     = {
     cluster_version                      = "1.21"
     cluster_endpoint_public_access       = true
     cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
-    encryption_keys                      = {
-      cluster_log_kms_key_id    = ""
-      cluster_encryption_config = ""
-      ebs_kms_key_id            = ""
-    }
-    shared_storage_host_path             = "/data"
     cluster_log_retention_in_days        = 30
   }
 }
 
 # EKS worker groups
 variable "eks_worker_groups" {
-  description = "EKS worker groups"
-  type        = list(object({}))
-  default     = [{}]
+  description = "List of EKS worker node groups"
+  type        = any
+  default     = [
+    {
+      name                     = "worker-small-spot"
+      override_instance_types  = ["m5.xlarge", "m5d.xlarge", "m5a.xlarge"]
+      spot_instance_pools      = 0
+      asg_min_size             = 0
+      asg_max_size             = 20
+      asg_desired_capacity     = 0
+      on_demand_base_capacity  = 0
+    },
+    {
+      name                     = "worker-2xmedium-spot"
+      override_instance_types  = ["m5.2xlarge", "m5d.2xlarge", "m5a.2xlarge"]
+      spot_instance_pools      = 0
+      asg_min_size             = 0
+      asg_max_size             = 20
+      asg_desired_capacity     = 0
+      on_demand_base_capacity  = 0
+    },
+    {
+      name                     = "worker-4xmedium-spot"
+      override_instance_types  = ["m5.4xlarge", "m5d.4xlarge", "m5a.4xlarge"]
+      spot_instance_pools      = 0
+      asg_min_size             = 0
+      asg_max_size             = 20
+      asg_desired_capacity     = 0
+      on_demand_base_capacity  = 0
+    },
+    {
+      name                     = "worker-8xmedium-spot"
+      override_instance_types  = ["m5.8xlarge", "m5d.8xlarge", "m5a.8xlarge"]
+      spot_instance_pools      = 0
+      asg_min_size             = 0
+      asg_max_size             = 20
+      asg_desired_capacity     = 0
+      on_demand_base_capacity  = 0
+    }
+  ]
+}
+
+# Encryption at rest
+variable "encryption_keys" {
+  description = "Encryption keys ARN for EKS components"
+  type        = object({
+    cluster_log_kms_key_id    = string
+    cluster_encryption_config = string
+    ebs_kms_key_id            = string
+  })
+  default     = {
+    cluster_log_kms_key_id    = ""
+    cluster_encryption_config = ""
+    ebs_kms_key_id            = ""
+  }
 }

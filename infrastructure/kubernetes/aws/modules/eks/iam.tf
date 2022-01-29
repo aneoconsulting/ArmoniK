@@ -50,14 +50,15 @@ data "aws_iam_policy_document" "decrypt_object_document" {
   statement {
     sid       = "KMSAccess"
     actions   = [
+      "kms:Encrypt",
       "kms:Decrypt",
-      "kms:GenerateDataKey"
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
     ]
     effect    = "Allow"
     resources = [
-      var.eks.encryption_keys.ebs_kms_key_id,
-      var.eks.encryption_keys.cluster_log_kms_key_id,
-      var.eks.encryption_keys.cluster_encryption_config,
+      var.s3_bucket_shared_storage.kms_key_id
     ]
   }
 }

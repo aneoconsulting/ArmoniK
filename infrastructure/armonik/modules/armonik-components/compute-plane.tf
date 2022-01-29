@@ -27,7 +27,8 @@ resource "kubernetes_deployment" "compute_plane" {
         }
       }
       spec {
-        share_process_namespace = true
+        termination_grace_period_seconds = var.compute_plane.termination_grace_period_seconds
+        share_process_namespace          = true
         security_context {}
         container {
           name              = "polling-agent"

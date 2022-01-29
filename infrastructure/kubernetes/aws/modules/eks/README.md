@@ -32,10 +32,14 @@
 | [aws_cloudwatch_event_rule.aws_node_termination_handler_asg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_cloudwatch_event_rule.aws_node_termination_handler_spot](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_event_rule) | resource |
 | [aws_iam_policy.aws_node_termination_handler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_policy.decrypt_object_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.worker_assume_role_agent_permissions_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_policy.worker_autoscaling_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_role_policy_attachment.decrypt_object_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.ssm_agent](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.worker_assume_role_agent_permissions_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.workers_autoscaling_attach](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.workers_xray_attach](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [helm_release.aws_node_termination_handler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.cluster_autoscaler](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.eni_config](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -47,6 +51,7 @@
 | [aws_eks_cluster.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
 | [aws_eks_cluster_auth.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
 | [aws_iam_policy_document.aws_node_termination_handler](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.decrypt_object_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.worker_assume_role_agent_permissions_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.worker_autoscaling_document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [local_file.patch_core_dns](https://registry.terraform.io/providers/hashicorp/local/latest/docs/data-sources/file) | data source |
@@ -55,7 +60,10 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_eks"></a> [eks](#input\_eks) | Parameters of AWS EKS | <pre>object({<br>    region                               = string<br>    cluster_name                         = string<br>    cluster_version                      = string<br>    vpc_private_subnet_ids               = list(string)<br>    vpc_id                               = string<br>    pods_subnet_ids                      = list(string)<br>    enable_private_subnet                = bool<br>    cluster_endpoint_public_access       = bool<br>    cluster_endpoint_public_access_cidrs = list(string)<br>    encryption_keys                      = object({<br>      cluster_log_kms_key_id    = string<br>      cluster_encryption_config = string<br>      ebs_kms_key_id            = string<br>    })<br>    cluster_log_retention_in_days        = number<br>    tags                                 = map(string)<br>  })</pre> | n/a | yes |
+| <a name="input_eks"></a> [eks](#input\_eks) | Parameters of AWS EKS | <pre>object({<br>    region                               = string<br>    cluster_name                         = string<br>    cluster_version                      = string<br>    vpc_private_subnet_ids               = list(string)<br>    vpc_id                               = string<br>    pods_subnet_ids                      = list(string)<br>    enable_private_subnet                = bool<br>    cluster_endpoint_public_access       = bool<br>    cluster_endpoint_public_access_cidrs = list(string)<br>    cluster_log_retention_in_days        = number<br>    tags                                 = map(string)<br>  })</pre> | n/a | yes |
+| <a name="input_eks_worker_groups"></a> [eks\_worker\_groups](#input\_eks\_worker\_groups) | List of EKS worker node groups | `any` | n/a | yes |
+| <a name="input_encryption_keys"></a> [encryption\_keys](#input\_encryption\_keys) | Encryption keys ARN for EKS components | <pre>object({<br>    cluster_log_kms_key_id    = string<br>    cluster_encryption_config = string<br>    ebs_kms_key_id            = string<br>  })</pre> | n/a | yes |
+| <a name="input_s3_bucket_shared_storage"></a> [s3\_bucket\_shared\_storage](#input\_s3\_bucket\_shared\_storage) | S3 bucket as shared storage for EKS pods | <pre>object({<br>    id         = string<br>    host_path  = string<br>    kms_key_id = string<br>  })</pre> | n/a | yes |
 
 ## Outputs
 
