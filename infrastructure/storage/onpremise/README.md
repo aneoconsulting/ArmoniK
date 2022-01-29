@@ -168,7 +168,7 @@ storage_kubernetes_secrets = {
 
 ## Deploy
 
-Position yourself in directory `infrastructure/storage/` and execute the following command to deploy storage:
+Position yourself in directory `infrastructure/storage/onpremise` and execute the following command to deploy storage:
 
 ```bash
 make all CONFIG_FILE=<Your configuration file> 

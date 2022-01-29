@@ -28,8 +28,8 @@ module "eks" {
 
   # S3 bucket as shared storage for pods
   s3_bucket_shared_storage = {
-    id         = module.s3fs_bucket.id
+    id         = module.s3fs_bucket.selected.s3_bucket_id
     host_path  = var.s3fs_bucket.shared_host_path
-    kms_key_id = module.s3fs_bucket.kms_key_id
+    kms_key_id = (module.s3fs_bucket.kms_key_id != "" ? module.s3fs_bucket.kms_key_id : module.kms.selected.arn)
   }
 }
