@@ -177,7 +177,7 @@ make all CONFIG_FILE=<Your configuration file>
 You can also execute one of the following commands if you want to reuse the default configuration file:
 
 ```bash
-make all CONFIG_FILE=parameters.tfvars 
+make all CONFIG_FILE=global-parameters.tfvars 
 ```
 
 or:

@@ -314,9 +314,9 @@ monitoring = {
 Position yourself in directory `infrastructure/armonik` and execute the following command to deploy ArmoniK:
 
 ```bash
-make all ARMONIK_PARAMETERS_FILE=armonik-parameters.tfvars \
-         STORAGE_PARAMETERS_FILE=storage-parameters.tfvars \
-         MONITORING_PARAMETERS_FILE=monitoring-parameters.tfvars 
+make all ARMONIK_PARAMETERS_FILE=armonik-global-parameters.tfvars \
+         STORAGE_PARAMETERS_FILE=storage-global-parameters.tfvars \
+         MONITORING_PARAMETERS_FILE=monitoring-global-parameters.tfvars 
 ```
 
 or:
@@ -336,9 +336,9 @@ kubectl get all -n $ARMONIK_NAMESPACE
 **If you want** to delete all ArmoniK resources deployed as services in Kubernetes, execute the command:
 
 ```bash
-make destroy ARMONIK_PARAMETERS_FILE=armonik-parameters.tfvars \
-             STORAGE_PARAMETERS_FILE=storage-parameters.tfvars \
-             MONITORING_PARAMETERS_FILE=monitoring-parameters.tfvars
+make destroy ARMONIK_PARAMETERS_FILE=armonik-global-parameters.tfvars \
+             STORAGE_PARAMETERS_FILE=storage-global-parameters.tfvars \
+             MONITORING_PARAMETERS_FILE=monitoring-global-parameters.tfvars
 ```
 
 or, if you have used the default configuration file:

@@ -17,10 +17,10 @@ init:
 	terraform init
 
 plan:
-	terraform plan -var-file parameters.tfvars -out $(PLAN_FILE)
+	terraform plan -var-file global-parameters.tfvars -var-file vpc-parameters.tfvars -var-file eks-parameters.tfvars -out $(PLAN_FILE)
 
 apply:
-	terraform apply -var-file parameters.tfvars -auto-approve
+	terraform apply -var-file global-parameters.tfvars -var-file vpc-parameters.tfvars -var-file eks-parameters.tfvars -auto-approve
 	$(MAKE) -C . output
 	@echo "\nOUTPUT FILE: $(CURRENT_DIR)/$(OUTPUT_FILE)"
 
@@ -28,7 +28,7 @@ output:
 	@echo "`terraform output -state=$(STATE_FILE) -json`" > $(OUTPUT_FILE)
 
 destroy:
-	terraform destroy -var-file parameters.tfvars -auto-approve
+	terraform destroy -var-file global-parameters.tfvars -var-file vpc-parameters.tfvars -var-file eks-parameters.tfvars -auto-approve
 
 clean:
 	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform

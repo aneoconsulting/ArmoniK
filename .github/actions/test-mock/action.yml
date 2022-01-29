@@ -65,13 +65,13 @@ runs:
     #   run: |
     #     set -ex
     #     cd infrastructure/storage/onpremise/
-    #     terraform destroy -var-file=parameters.tfvars -auto-approve
+    #     terraform destroy -var-file=global-parameters.tfvars -auto-approve
     #     make clean
 
     # - name: Destroy Onpremise ArmoniK
     #   run: |
     #     set -ex
     #     cd infrastructure/armonik/
-    #     terraform destroy -var-file=parameters.tfvars.json -auto-approve
+    #     terraform destroy -var-file=global-parameters.tfvars.json -auto-approve
     #     make clean
 
