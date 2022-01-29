@@ -61,7 +61,7 @@ module "eks" {
       spot_instance_pools      = 0
       asg_min_size             = 0
       asg_max_size             = 20
-      asg_desired_capacity     = 1
+      asg_desired_capacity     = 0
       on_demand_base_capacity  = 0
       spot_allocation_strategy = "capacity-optimized"
       root_encrypted           = true
@@ -70,9 +70,8 @@ module "eks" {
         sudo yum update -y
         sudo amazon-linux-extras install -y epel
         sudo yum install -y s3fs-fuse
-        sudo mkdir -p /data
-        sudo s3fs ${var.eks.shared_storage} /data -o iam_role="auto"
-        sudo echo "${var.eks.shared_storage} /data fuse.s3fs _netdev,allow_other 0 0" >> /etc/fstab
+        sudo mkdir -p ${var.eks.shared_storage.host_path}
+        sudo s3fs ${var.eks.shared_storage.id} ${var.eks.shared_storage.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${var.eks.region}.amazonaws.com"
       EOT
       "tags"                   = [
         {
@@ -85,11 +84,11 @@ module "eks" {
           propagate_at_launch = "false"
           value               = "true"
         },
-        /*{
+        {
           key                 = "aws-node-termination-handler/managed"
           value               = ""
           propagate_at_launch = true
-        }*/
+        }
       ]
     },
     {
@@ -107,9 +106,8 @@ module "eks" {
         sudo yum update -y
         sudo amazon-linux-extras install -y epel
         sudo yum install -y s3fs-fuse
-        sudo mkdir -p /data
-        sudo s3fs ${var.eks.shared_storage} /data -o iam_role="auto"
-        sudo echo "${var.eks.shared_storage} /data fuse.s3fs _netdev,allow_other 0 0" >> /etc/fstab
+        sudo mkdir -p ${var.eks.shared_storage.host_path}
+        sudo s3fs ${var.eks.shared_storage.id} ${var.eks.shared_storage.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${var.eks.region}.amazonaws.com"
       EOT
       "tags"                   = [
         {
@@ -121,6 +119,11 @@ module "eks" {
           key                 = "k8s.io/cluster-autoscaler/${var.eks.cluster_name}"
           propagate_at_launch = "false"
           value               = "true"
+        },
+        {
+          key                 = "aws-node-termination-handler/managed"
+          value               = ""
+          propagate_at_launch = true
         }
       ]
     },
@@ -139,9 +142,8 @@ module "eks" {
         sudo yum update -y
         sudo amazon-linux-extras install -y epel
         sudo yum install -y s3fs-fuse
-        sudo mkdir -p /data
-        sudo s3fs ${var.eks.shared_storage} /data -o iam_role="auto"
-        sudo echo "${var.eks.shared_storage} /data fuse.s3fs _netdev,allow_other 0 0" >> /etc/fstab
+        sudo mkdir -p ${var.eks.shared_storage.host_path}
+        sudo s3fs ${var.eks.shared_storage.id} ${var.eks.shared_storage.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${var.eks.region}.amazonaws.com"
       EOT
       "tags"                   = [
         {
@@ -153,6 +155,11 @@ module "eks" {
           key                 = "k8s.io/cluster-autoscaler/${var.eks.cluster_name}"
           propagate_at_launch = "false"
           value               = "true"
+        },
+        {
+          key                 = "aws-node-termination-handler/managed"
+          value               = ""
+          propagate_at_launch = true
         }
       ]
     },
@@ -167,14 +174,6 @@ module "eks" {
       spot_allocation_strategy = "capacity-optimized"
       root_encrypted           = true
       root_kms_key_id          = var.eks.encryption_keys.ebs_kms_key_id
-      additional_userdata                      = <<-EOT
-        sudo yum update -y
-        sudo amazon-linux-extras install -y epel
-        sudo yum install -y s3fs-fuse
-        sudo mkdir -p /data
-        sudo s3fs ${var.eks.shared_storage} /data -o iam_role="auto"
-        sudo echo "${var.eks.shared_storage} /data fuse.s3fs _netdev,allow_other 0 0" >> /etc/fstab
-      EOT
       "tags"                   = [
         {
           key                 = "k8s.io/cluster-autoscaler/enabled"
@@ -185,6 +184,11 @@ module "eks" {
           key                 = "k8s.io/cluster-autoscaler/${var.eks.cluster_name}"
           propagate_at_launch = "false"
           value               = "true"
+        },
+        {
+          key                 = "aws-node-termination-handler/managed"
+          value               = ""
+          propagate_at_launch = true
         }
       ]
     },
@@ -193,7 +197,7 @@ module "eks" {
       override_instance_types                  = ["m5.xlarge", "m5d.xlarge"]
       spot_instance_pools                      = 0
       asg_min_size                             = 1
-      asg_max_size                             = 2
+      asg_max_size                             = 1
       asg_desired_capacity                     = 1
       on_demand_base_capacity                  = 1
       on_demand_percentage_above_base_capacity = 100
@@ -205,10 +209,26 @@ module "eks" {
         sudo yum update -y
         sudo amazon-linux-extras install -y epel
         sudo yum install -y s3fs-fuse
-        sudo mkdir -p /data
-        sudo s3fs ${var.eks.shared_storage} /data -o iam_role="auto"
-        sudo echo "${var.eks.shared_storage} /data fuse.s3fs _netdev,allow_other 0 0" >> /etc/fstab
+        sudo mkdir -p ${var.eks.shared_storage.host_path}
+        sudo s3fs ${var.eks.shared_storage.id} ${var.eks.shared_storage.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${var.eks.region}.amazonaws.com"
       EOT
+      "tags"                                   = [
+        {
+          key                 = "k8s.io/cluster-autoscaler/enabled"
+          propagate_at_launch = "false"
+          value               = "true"
+        },
+        {
+          key                 = "k8s.io/cluster-autoscaler/${var.eks.cluster_name}"
+          propagate_at_launch = "false"
+          value               = "true"
+        },
+        {
+          key                 = "aws-node-termination-handler/managed"
+          value               = ""
+          propagate_at_launch = true
+        }
+      ]
     }
   ]
 

@@ -77,6 +77,7 @@ variable "eks" {
       cluster_encryption_config = string
       ebs_kms_key_id            = string
     })
+    shared_storage_host_path             = string
     cluster_log_retention_in_days        = number
   })
   default     = {
@@ -88,6 +89,7 @@ variable "eks" {
       cluster_encryption_config = ""
       ebs_kms_key_id            = ""
     }
+    shared_storage_host_path             = "/data"
     cluster_log_retention_in_days        = 30
   }
 }

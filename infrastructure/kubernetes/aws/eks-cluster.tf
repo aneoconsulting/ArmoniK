@@ -16,7 +16,10 @@ module "eks" {
       ebs_kms_key_id            = (var.eks.encryption_keys.ebs_kms_key_id != "" ? var.eks.encryption_keys.ebs_kms_key_id : module.kms.selected.arn)
     }
     cluster_log_retention_in_days        = var.eks.cluster_log_retention_in_days
-    shared_storage                       = module.s3fs_bucket.selected.s3_bucket_id
+    shared_storage                       = {
+      id        = module.s3fs_bucket.selected.s3_bucket_id
+      host_path = var.eks.shared_storage_host_path
+    }
     tags                                 = local.tags
   }
 }

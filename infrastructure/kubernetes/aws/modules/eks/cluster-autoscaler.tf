@@ -1,5 +1,5 @@
 # A component that automatically adjusts the size of a Kubernetes Cluster so that all pods have a place to run and there are no unneeded nodes
-/*resource "helm_release" "cluster_autoscaler" {
+resource "helm_release" "cluster_autoscaler" {
   name       = "armonik"
   chart      = "cluster-autoscaler"
   repository = "https://kubernetes.github.io/autoscaler"
@@ -20,7 +20,7 @@
 
   # Method 2 - Specifying groups manually
   # Example for an ASG
-  set {
+  /*set {
     name  = "autoscalingGroups[0].name"
     value = "<your-asg-name>"
   }
@@ -31,7 +31,7 @@
   set {
     name  = "autoscalingGroups[0].minSize"
     value = "1"
-  }
+  }*/
 
   values = [file("${path.module}/manifests/cluster_autoscaler.yaml")]
 }
@@ -73,4 +73,4 @@ resource "aws_iam_role_policy_attachment" "workers_autoscaling_attach" {
   policy_arn = aws_iam_policy.worker_autoscaling_policy.arn
   role       = module.eks.worker_iam_role_name
 }
-*/
+

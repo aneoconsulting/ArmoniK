@@ -17,7 +17,10 @@ variable "eks" {
       ebs_kms_key_id            = string
     })
     cluster_log_retention_in_days        = number
-    shared_storage                       = string
+    shared_storage                       = object({
+      id        = string
+      host_path = string
+    })
     tags                                 = map(string)
   })
 }
