@@ -8,7 +8,7 @@ storage = ["MongoDB", "Amqp", "Redis"]
 mongodb = {
   replicas = 1
   port     = 27017
-  image    = "mongodb"
+  image    = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongodb"
   tag      = "4.4.11"
   secret   = "mongodb-storage-secret"
 }
@@ -17,7 +17,7 @@ mongodb = {
 redis = {
   replicas = 1
   port     = 6379
-  image    = "redis"
+  image    = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/redis"
   tag      = "bullseye"
   secret   = "redis-storage-secret"
 }
@@ -32,7 +32,7 @@ activemq = {
     { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
     { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
   ]
-  image    = "symptoma/activemq"
+  image    = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/activemq"
   tag      = "5.16.3"
   secret   = "activemq-storage-secret"
 }

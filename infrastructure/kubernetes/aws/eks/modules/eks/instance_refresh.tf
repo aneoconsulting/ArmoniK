@@ -34,7 +34,7 @@ resource "helm_release" "aws_node_termination_handler" {
   }
   set {
     name  = "image.repository"
-    value = "${var.eks.docker_registry}/${var.eks.docker_images.instance_refresh.image}"
+    value = "${var.eks.docker_images.instance_refresh.registry}/${var.eks.docker_images.instance_refresh.image}"
   }
 
   set {

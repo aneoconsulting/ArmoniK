@@ -83,8 +83,8 @@ variable "repositories" {
     },
     {
       name  = "aws-node-termination-handler"
-      image = "public.ecr.aws/aws-ec2/aws-node-termination-handler"
-      tag   = "v1.4.0"
+      image = "amazon/aws-node-termination-handler"
+      tag   = "v1.10.0"
     }
   ]
 }

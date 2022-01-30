@@ -12,15 +12,16 @@ variable "eks" {
     cluster_endpoint_public_access       = bool
     cluster_endpoint_public_access_cidrs = list(string)
     cluster_log_retention_in_days        = number
-    docker_registry                      = string
     docker_images                        = object({
       cluster_autoscaler = object({
-        image = string
-        tag   = string
+        registry = string
+        image    = string
+        tag      = string
       })
       instance_refresh   = object({
-        image = string
-        tag   = string
+        registry = string
+        image    = string
+        tag      = string
       })
     })
     tags                                 = map(string)

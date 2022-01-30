@@ -78,12 +78,14 @@ variable "eks" {
     docker_registry                      = string
     docker_images                        = object({
       cluster_autoscaler = object({
-        image = string
-        tag   = string
+        registry = string
+        image    = string
+        tag      = string
       })
       instance_refresh   = object({
-        image = string
-        tag   = string
+        registry = string
+        image    = string
+        tag      = string
       })
     })
   })
@@ -95,12 +97,14 @@ variable "eks" {
     docker_registry                      = ""
     docker_images                        = {
       cluster_autoscaler = {
-        image = "cluster-autoscaler"
-        tag   = "v1.21.0"
+        registry = "k8s.gcr.io/autoscaling"
+        image    = "cluster-autoscaler"
+        tag      = "v1.21.0"
       }
       instance_refresh   = {
-        image = "aws-node-termination-handler"
-        tag   = "v1.4.0"
+        registry = "amazon"
+        image    = "aws-node-termination-handler"
+        tag      = "v1.10.0"
       }
     }
   }
