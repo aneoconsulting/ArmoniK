@@ -2,9 +2,9 @@
 output "mongodb_endpoint_url" {
   value = (contains(module.storage.list_storage, "mongodb") ? {
     Status = "READY"
-    url    = "mongodb://${local.mongodb_endpoints.ip}:${local.mongodb_endpoints.port}"
-    host   = local.mongodb_endpoints.ip
-    port   = local.mongodb_endpoints.port
+    url    = module.mongodb.0.url
+    host   = module.mongodb.0.host
+    port   = module.mongodb.0.port
   } : {
     Status = "NOT CREATED"
   })
@@ -14,9 +14,9 @@ output "mongodb_endpoint_url" {
 output "redis_endpoint_url" {
   value = (contains(module.storage.list_storage, "redis") ? {
     Status = "READY"
-    url    = "${local.redis_endpoints.ip}:${local.redis_endpoints.port}"
-    host   = local.redis_endpoints.ip
-    port   = local.redis_endpoints.port
+    url    = module.redis.0.url
+    host   = module.redis.0.host
+    port   = module.redis.0.port
   } : {
     Status = "NOT CREATED"
   })
@@ -26,9 +26,9 @@ output "redis_endpoint_url" {
 output "activemq_endpoint_url" {
   value = (contains(module.storage.list_storage, "amqp") ? {
     Status = "READY"
-    url    = "${local.activemq_endpoints.ip}:${local.activemq_endpoints.port}"
-    host   = local.activemq_endpoints.ip
-    port   = local.activemq_endpoints.port
+    url    = module.activemq.0.url
+    host   = module.activemq.0.host
+    port   = module.activemq.0.port
   } : {
     Status = "NOT CREATED"
   })

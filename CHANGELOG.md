@@ -8,6 +8,7 @@ Added
 * Support for Redis as object storage
 * Support for amqp and amqp+ssl protocols
 * Add Authentication for MongoDB and encryption in transit (TLS)
+* Setup TLS for AMQP, Redis and MongoDB on prem storages
 
 changed
 -
@@ -17,8 +18,9 @@ changed
 Added
 -
 
-* AWS VPC
+* AWS Virtual Private Cloud (VPC)
 * AWS Elastic Kubernetes Service (EKS version 1.21)
+* AWS Elastic Container Registry (ECR)
 * Activate logs for EKS and VPC in CloudWatch
 * S3 as shared filesystem for worker containers
 * Encryption at rest:

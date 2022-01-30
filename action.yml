@@ -36,6 +36,12 @@ outputs:
   credentials-certificate-pfx:
     description: "Random number"
     value: ${{ steps.credentialsoutput.outputs.credentials-certificate-pfx }}
+  credentials-redis:
+    description: "Random number"
+    value: ${{ steps.credentialsoutput.outputs.credentials-redis }}
+  credentials-redis-ca-p7b:
+    description: "Random number"
+    value: ${{ steps.credentialsoutput.outputs.credentials-redis-ca-p7b }}
 
 runs:
   using: composite
@@ -71,7 +77,7 @@ runs:
       shell: bash
       run: |
         cd ${{ github.action_path }}
-        source  infrastructure/utils/envvars-storage.conf
+        source infrastructure/utils/envvars-storage.conf
         source infrastructure/utils/envvars-armonik.conf
         bash tools/install/init_kube.sh
 
@@ -81,6 +87,8 @@ runs:
       run: |
         echo "::set-output name=credentials-ca-crt::${{ github.action_path }}/infrastructure/credentials/ca.crt"
         echo "::set-output name=credentials-certificate-pfx::${{ github.action_path }}/infrastructure/credentials/certificate.pfx"
+        echo "::set-output name=credentials-redis::${{ github.action_path }}/infrastructure/credentials/redis-credentials.json"
+        echo "::set-output name=credentials-redis-ca-p7b::${{ github.action_path }}/infrastructure/credentials/chain.p7b"
 
     - name: Deploy Onpremise Storage
       shell: bash

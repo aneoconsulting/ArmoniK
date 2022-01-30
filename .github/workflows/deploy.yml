@@ -33,7 +33,7 @@ jobs:
       - uses: ./.github/actions/test-worker
         name: Test with dll worker
         with:
-          version: ${{ github.head_ref }}
+          version: ${{ github.ref }}
 
   htcMock:
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
       - uses: ./.github/actions/test-mock
         name: Test with htc mock
         with:
-          version: ${{ github.head_ref }}
+          version: ${{ github.ref }}
 
   htcMockV3:
     runs-on: ubuntu-latest
@@ -53,4 +53,4 @@ jobs:
       - uses: ./.github/actions/test-mock-v3
         name: Test with htc mock v3
         with:
-          version: ${{ github.head_ref }}
+          version: ${{ github.ref }}

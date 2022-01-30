@@ -1,8 +1,12 @@
 # ActiveMQ
-output "service" {
-  value = kubernetes_service.activemq
+output "host" {
+  value = local.activemq_endpoints.ip
 }
 
-output "deployment" {
-  value = kubernetes_deployment.activemq
+output "port" {
+  value = local.activemq_endpoints.port
+}
+
+output "url" {
+  value = local.activemq_url
 }

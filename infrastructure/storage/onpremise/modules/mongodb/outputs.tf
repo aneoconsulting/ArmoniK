@@ -1,8 +1,12 @@
 # MongoDB
-output "service" {
-  value = kubernetes_service.mongodb
+output "host" {
+  value = local.mongodb_endpoints.ip
 }
 
-output "deployment" {
-  value = kubernetes_deployment.mongodb
+output "port" {
+  value = local.mongodb_endpoints.port
+}
+
+output "url" {
+  value = local.mongodb_url
 }

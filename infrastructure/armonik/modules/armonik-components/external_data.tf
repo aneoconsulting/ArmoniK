@@ -5,7 +5,6 @@ data "external" "control_plane_node_ip" {
   working_dir = "../utils/scripts"
 }
 
-# Node IP
 locals {
   control_plane_node_ip = lookup(tomap(data.external.control_plane_node_ip.result), "node_ip", "")
 

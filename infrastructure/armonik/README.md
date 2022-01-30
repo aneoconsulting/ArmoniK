@@ -8,6 +8,9 @@
     2. [ActiveMQ client secret](#activemq-client-secret)
     3. [MongoDB client secret](#mongodb-client-secret)
 5. [Prepare the configuration file](#prepare-the-configuration-file)
+   1. [Parameters for ArmoniK](#parameters-for-armonik)
+   2. [Parameters for storage](#parameters-for-storage)
+   3. [Parameters for monitoring](#parameters-for-monitoring)
 6. [Deploy](#deploy)
 7. [Clean-up](#clean-up)
 

@@ -35,14 +35,12 @@ resource "kubernetes_deployment" "activemq" {
           image = "${var.activemq.image}:${var.activemq.tag}"
           volume_mount {
             name       = "activemq-storage-secret-volume"
-            mount_path = "/opt/activemq/conf/jetty-realm.properties"
-            sub_path   = "jetty-realm.properties"
+            mount_path = "/credentials/"
             read_only  = true
           }
           volume_mount {
             name       = "activemq-jetty-xml"
-            mount_path = "/opt/activemq/conf/jetty.xml"
-            sub_path   = "jetty.xml"
+            mount_path = "/opt/activemq/conf/"
             read_only  = true
           }
           dynamic port {
@@ -64,7 +62,7 @@ resource "kubernetes_deployment" "activemq" {
         volume {
           name = "activemq-jetty-xml"
           config_map {
-            name     = kubernetes_config_map.activemq_jetty_xml.metadata.0.name
+            name     = kubernetes_config_map.activemq_configs.metadata.0.name
             optional = false
           }
         }

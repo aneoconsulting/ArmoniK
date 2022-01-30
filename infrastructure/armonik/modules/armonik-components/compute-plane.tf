@@ -70,7 +70,7 @@ resource "kubernetes_deployment" "compute_plane" {
             for_each = (local.data_type.object_redis ? [1] : [])
             content {
               name       = "redis-secret-volume"
-              mount_path = "/certificates"
+              mount_path = "/redis"
               read_only  = true
             }
           }
@@ -122,7 +122,7 @@ resource "kubernetes_deployment" "compute_plane" {
               for_each = (local.data_type.external_redis ? [1] : [])
               content {
                 name       = "external-redis-secret-volume"
-                mount_path = "/certificates"
+                mount_path = "/redis"
                 read_only  = true
               }
             }

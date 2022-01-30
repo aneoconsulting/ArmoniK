@@ -58,20 +58,18 @@ runs:
         set -ex
         echo ${{ steps.deploy-infra.outputs.credentials-ca-crt }}
         echo ${{ steps.deploy-infra.outputs.credentials-certificate-pfx }}
-        cd tools/tests/
-        bash htcmock.sh
+        echo ${{ steps.deploy-infra.outputs.credentials-redis }}
+        export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
+        export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+        export Grpc__Endpoint=http://$CPIP:$CPPort
 
-    # - name: Destroy Onpremise Storage
-    #   run: |
-    #     set -ex
-    #     cd infrastructure/storage/onpremise/
-    #     terraform destroy -var-file=global-parameters.tfvars -auto-approve
-    #     make clean
+        export ReIP=$(kubectl get svc redis -n armonik-storage -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
+        export RePort=$(kubectl get svc redis -n armonik-storage -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+        export Redis__EndpointUrl=$ReIP:$RePort
+        export Redis__Timeout=3000
+        export Redis__CredentialsPath=${{ steps.deploy-infra.outputs.credentials-redis }}
+        export Redis__CaPath=${{ steps.deploy-infra.outputs.credentials-redis-ca-p7b }}
 
-    # - name: Destroy Onpremise ArmoniK
-    #   run: |
-    #     set -ex
-    #     cd infrastructure/armonik/
-    #     terraform destroy -var-file=global-parameters.tfvars.json -auto-approve
-    #     make clean
-
+        cd source/ArmoniK.Samples/Samples/HtcMock/Client/src/
+        dotnet build "ArmoniK.Samples.HtcMock.Client.csproj" -c Release
+        dotnet bin/Release/net5.0/ArmoniK.Samples.HtcMock.Client.dll

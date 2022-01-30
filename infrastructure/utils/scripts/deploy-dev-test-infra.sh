@@ -193,7 +193,9 @@ function terraform_init_armonik() {
 }
 
 create_kube_secrets() {
-  bash $BASEDIR/../../../tools/install/init_kube.sh
+  cd $BASEDIR/../../../tools/install
+  bash init_kube.sh
+  cd -
 }
 
 # Main
