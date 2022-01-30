@@ -8,7 +8,7 @@ storage = ["MongoDB", "Amqp", "Redis"]
 mongodb = {
   replicas = 1
   port     = 27017
-  image    = "mongodb"
+  image    = "mongo"
   tag      = "4.4.11"
   secret   = "mongodb-storage-secret"
 }
