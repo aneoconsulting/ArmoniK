@@ -26,6 +26,5 @@ output "kms" {
   value = {
     id    = module.kms.selected.key_id
     arn   = module.kms.selected.arn
-    alias = module.kms.kms_alias
   }
 }

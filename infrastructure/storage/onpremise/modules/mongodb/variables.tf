@@ -10,11 +10,8 @@ variable "mongodb" {
   type        = object({
     replicas = number
     port     = number
+    image    = string
+    tag      = string
+    secret   = string
   })
-}
-
-# Kubernetes secrets for MongoDB
-variable "kubernetes_secret" {
-  description = "Secret for MongoDB created in Kubernetes"
-  type = string
 }

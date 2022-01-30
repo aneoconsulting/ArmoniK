@@ -32,7 +32,7 @@ resource "kubernetes_deployment" "activemq" {
       spec {
         container {
           name  = "activemq"
-          image = "symptoma/activemq:5.16.3"
+          image = "${var.activemq.image}:${var.activemq.tag}"
           volume_mount {
             name       = "activemq-storage-secret-volume"
             mount_path = "/opt/activemq/conf/jetty-realm.properties"
@@ -57,7 +57,7 @@ resource "kubernetes_deployment" "activemq" {
         volume {
           name = "activemq-storage-secret-volume"
           secret {
-            secret_name = var.kubernetes_secret
+            secret_name = var.activemq.secret
             optional    = false
           }
         }

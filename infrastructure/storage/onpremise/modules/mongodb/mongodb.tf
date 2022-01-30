@@ -32,7 +32,7 @@ resource "kubernetes_deployment" "mongodb" {
       spec {
         container {
           name  = "mongodb"
-          image = "mongo:4.4.11"
+          image = "${var.mongodb.image}:${var.mongodb.tag}"
           # command = ["mongod"]
           args  = [
             "--dbpath=/data/db",
@@ -76,7 +76,7 @@ resource "kubernetes_deployment" "mongodb" {
         volume {
           name = "mongodb-secret-volume"
           secret {
-            secret_name = var.kubernetes_secret
+            secret_name = var.mongodb.secret
             optional    = false
           }
         }

@@ -4,6 +4,19 @@ variable "namespace" {
   type        = string
 }
 
+# Docker image
+variable "docker_image" {
+  description = "Docker image for Prometheus"
+  type        = object({
+    image = string
+    tag   = string
+  })
+  default     = {
+    image = "prom/prometheus"
+    tag   = "latest"
+  }
+}
+
 # Parameters for prometheus
 variable "prometheus" {
   description = "Parameters of prometheus"

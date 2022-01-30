@@ -29,6 +29,16 @@ First you must install the following packages:
 sudo apt install apt-transport-https ca-certificates curl gnupg lsb-release jq
 ```
 
+## AWS CLI
+
+[AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html) installation instructions:
+
+```bash
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+
 ## Docker
 
 The procedure to install [Docker](https://docs.docker.com/engine/install/ubuntu/):

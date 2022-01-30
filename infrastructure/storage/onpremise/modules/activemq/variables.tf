@@ -15,11 +15,8 @@ variable "activemq" {
       target_port = number
       protocol    = string
     }))
+    image    = string
+    tag      = string
+    secret   = string
   })
-}
-
-# Kubernetes secrets for ActiveMQ
-variable "kubernetes_secret" {
-  description = "Secret for ActiveMQ created in Kubernetes"
-  type = string
 }

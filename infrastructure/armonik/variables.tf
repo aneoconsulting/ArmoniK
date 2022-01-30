@@ -29,17 +29,39 @@ variable "monitoring" {
   description = "Use monitoring tools"
   type        = object({
     namespace  = string
-    seq        = bool
-    grafana    = bool
-    prometheus = bool
-    dashboard  = bool
+    seq        = object({
+      image = string
+      tag   = string
+      use   = bool
+    })
+    grafana    = object({
+      image = string
+      tag   = string
+      use   = bool
+    })
+    prometheus = object({
+      image = string
+      tag   = string
+      use   = bool
+    })
   })
   default     = {
     namespace  = "armonik-monitoring"
-    seq        = true
-    grafana    = true
-    prometheus = true
-    dashboard  = true
+    seq        = {
+      image = "datalust/seq"
+      tag   = "2021.4"
+      use   = true
+    }
+    grafana    = {
+      image = "grafana/grafana"
+      tag   = "latest"
+      use   = false
+    }
+    prometheus = {
+      image = "prom/prometheus"
+      tag   = "latest"
+      use   = false
+    }
   }
 }
 

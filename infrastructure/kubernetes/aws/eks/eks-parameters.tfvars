@@ -4,6 +4,17 @@ eks = {
   cluster_endpoint_public_access       = true
   cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
   cluster_log_retention_in_days        = 30
+  docker_registry                      = ""
+  docker_images                        = {
+    cluster_autoscaler = {
+      image = "cluster-autoscaler"
+      tag   = "v1.21.0"
+    }
+    instance_refresh   = {
+      image = "aws-node-termination-handler"
+      tag   = "v1.4.0"
+    }
+  }
 }
 
 # EKS worker groups

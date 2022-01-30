@@ -31,7 +31,7 @@ resource "kubernetes_deployment" "seq" {
       spec {
         container {
           name              = "seq"
-          image             = "datalust/seq:2021.4"
+          image             = "${var.docker_image.image}:${var.docker_image.tag}"
           image_pull_policy = "IfNotPresent"
           env {
             name  = "ACCEPT_EULA"

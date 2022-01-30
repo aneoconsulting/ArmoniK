@@ -32,7 +32,7 @@ resource "kubernetes_deployment" "redis" {
       spec {
         container {
           name    = "redis"
-          image   = "redis:bullseye"
+          image   = "${var.redis.image}:${var.redis.tag}"
           command = ["redis-server"]
           args    = [
             "--tls-port ${var.redis.port}",
@@ -53,7 +53,7 @@ resource "kubernetes_deployment" "redis" {
         volume {
           name = "redis-storage-secret-volume"
           secret {
-            secret_name = var.kubernetes_secret
+            secret_name = var.redis.secret
             optional    = false
           }
         }

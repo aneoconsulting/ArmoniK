@@ -10,7 +10,6 @@ module "mongodb" {
   source            = "./modules/mongodb"
   namespace         = var.namespace
   mongodb           = var.mongodb
-  kubernetes_secret = var.storage_kubernetes_secrets.mongodb
 }
 
 # Redis
@@ -19,7 +18,6 @@ module "redis" {
   source            = "./modules/redis"
   namespace         = var.namespace
   redis             = var.redis
-  kubernetes_secret = var.storage_kubernetes_secrets.redis
 }
 
 # ActiveMQ
@@ -28,5 +26,4 @@ module "activemq" {
   source            = "./modules/activemq"
   namespace         = var.namespace
   activemq          = var.activemq
-  kubernetes_secret = var.storage_kubernetes_secrets.activemq
 }

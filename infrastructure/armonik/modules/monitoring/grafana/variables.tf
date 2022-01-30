@@ -4,6 +4,19 @@ variable "namespace" {
   type        = string
 }
 
+# Docker image
+variable "docker_image" {
+  description = "Docker image for Grafana"
+  type        = object({
+    image = string
+    tag   = string
+  })
+  default     = {
+    image = "grafana/grafana"
+    tag   = "latest"
+  }
+}
+
 # Parameters for Grafana
 variable "grafana" {
   description = "Parameters of Grafana"

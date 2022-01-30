@@ -31,7 +31,7 @@ resource "kubernetes_deployment" "prometheus" {
       spec {
         container {
           name              = "prometheus"
-          image             = "prom/prometheus:latest"
+          image             = "${var.docker_image.image}:${var.docker_image.tag}"
           image_pull_policy = "IfNotPresent"
           env {
             name  = "discovery.type"
@@ -72,8 +72,8 @@ resource "kubernetes_service" "prometheus" {
     }
   }
   spec {
-    type                    = "LoadBalancer"
-    selector                = {
+    type     = "LoadBalancer"
+    selector = {
       app     = kubernetes_deployment.prometheus.metadata.0.labels.app
       type    = kubernetes_deployment.prometheus.metadata.0.labels.type
       service = kubernetes_deployment.prometheus.metadata.0.labels.service
@@ -90,8 +90,8 @@ resource "kubernetes_service" "prometheus" {
 
 resource "kubernetes_cluster_role" "prometheus" {
   metadata {
-    name      = kubernetes_deployment.prometheus.metadata.0.name
-    labels    = {
+    name   = kubernetes_deployment.prometheus.metadata.0.name
+    labels = {
       app     = "armonik"
       type    = "monitoring"
       service = "prometheus"
@@ -105,8 +105,8 @@ resource "kubernetes_cluster_role" "prometheus" {
   }
 
   rule {
-    non_resource_urls  = ["/metrics", "/metrics/cadvisor", "/metrics/resource", "/metrics/probes"]
-    verbs              = ["get"]
+    non_resource_urls = ["/metrics", "/metrics/cadvisor", "/metrics/resource", "/metrics/probes"]
+    verbs             = ["get"]
   }
 
   rule {
@@ -118,8 +118,8 @@ resource "kubernetes_cluster_role" "prometheus" {
 
 resource "kubernetes_cluster_role_binding" "prometheus" {
   metadata {
-    name      = kubernetes_deployment.prometheus.metadata.0.name
-    labels    = {
+    name   = kubernetes_deployment.prometheus.metadata.0.name
+    labels = {
       app     = "armonik"
       type    = "monitoring"
       service = "prometheus"
@@ -149,8 +149,8 @@ resource "kubernetes_cluster_role_binding" "prometheus" {
 
 resource "kubernetes_cluster_role_binding" "prometheus_ns_armonik" {
   metadata {
-    name      = "prometheus_ns_armonik"
-    labels    = {
+    name   = "prometheus_ns_armonik"
+    labels = {
       app     = "armonik"
       type    = "monitoring"
       service = "prometheus"

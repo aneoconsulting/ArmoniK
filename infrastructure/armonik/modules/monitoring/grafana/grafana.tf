@@ -31,7 +31,7 @@ resource "kubernetes_deployment" "grafana" {
       spec {
         container {
           name              = "grafana"
-          image             = "grafana/grafana:latest"
+          image             = "${var.docker_image.image}:${var.docker_image.tag}"
           image_pull_policy = "IfNotPresent"
           env {
             name  = "discovery.type"
@@ -95,8 +95,8 @@ resource "kubernetes_service" "grafana" {
     }
   }
   spec {
-    type                    = "LoadBalancer"
-    selector                = {
+    type     = "LoadBalancer"
+    selector = {
       app     = kubernetes_deployment.grafana.metadata.0.labels.app
       type    = kubernetes_deployment.grafana.metadata.0.labels.type
       service = kubernetes_deployment.grafana.metadata.0.labels.service

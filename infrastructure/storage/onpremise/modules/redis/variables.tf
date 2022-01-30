@@ -10,11 +10,8 @@ variable "redis" {
   type        = object({
     replicas = number
     port     = number
+    image    = string
+    tag      = string
+    secret   = string
   })
-}
-
-# Kubernetes secrets for Redis
-variable "kubernetes_secret" {
-  description = "Secret for Redis created in Kubernetes"
-  type = string
 }

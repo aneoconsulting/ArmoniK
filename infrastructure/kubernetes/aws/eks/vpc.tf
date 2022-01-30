@@ -1,6 +1,6 @@
 # vpc
 module "vpc" {
-  source = "./modules/vpc"
+  source = "modulespc"
   vpc    = {
     cluster_name                                    = local.cluster_name
     private_subnets                                 = var.vpc.cidr_block_private

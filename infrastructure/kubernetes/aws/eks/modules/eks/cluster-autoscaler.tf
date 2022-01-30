@@ -17,6 +17,14 @@ resource "helm_release" "cluster_autoscaler" {
     name  = "cloudProvider"
     value = "aws"
   }
+  set {
+    name  = "image.repository"
+    value = "${var.eks.docker_registry}/${var.eks.docker_images.cluster_autoscaler.image}"
+  }
+  set {
+    name  = "image.tag"
+    value = var.eks.docker_images.cluster_autoscaler.tag
+  }
 
   # Method 2 - Specifying groups manually
   # Example for an ASG

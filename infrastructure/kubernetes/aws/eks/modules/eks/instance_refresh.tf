@@ -23,7 +23,6 @@ resource "helm_release" "aws_node_termination_handler" {
     name  = "enableSpotInterruptionDraining"
     value = "true"
   }
-
   set {
     name  = "serviceAccount.name"
     value = "aws-node-termination-handler"
@@ -32,6 +31,15 @@ resource "helm_release" "aws_node_termination_handler" {
     name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = module.aws_node_termination_handler_role.iam_role_arn
     type  = "string"
+  }
+  set {
+    name  = "image.repository"
+    value = "${var.eks.docker_registry}/${var.eks.docker_images.instance_refresh.image}"
+  }
+
+  set {
+    name  = "image.tag"
+    value = var.eks.docker_images.instance_refresh.tag
   }
   /*set {
     name  = "enableSqsTerminationDraining"
@@ -134,7 +142,6 @@ resource "aws_autoscaling_lifecycle_hook" "aws_node_termination_handler" {
   heartbeat_timeout      = 300
   default_result         = "CONTINUE"
 }
-
 
 
 /*

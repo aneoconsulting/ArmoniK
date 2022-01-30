@@ -3,13 +3,13 @@ output "armonik_control_plane" {
 }
 
 output "armonik_seq" {
-  value = (var.monitoring.seq ? module.seq.0.seq_web_url : "")
+  value = local.seq_endpoint_url
 }
 
 output "armonik_grafana" {
-  value = (var.monitoring.grafana ? module.grafana.0.grafana_url : "")
+  value = local.grafana_endpoint_url
 }
 
-output "armonik_kubernetes_dashboard" {
-  value = (var.monitoring.dashboard ? module.dashboard.0.kubernetes_dashboard_url : "")
+output "armonik_prometheus" {
+  value = local.prometheus_endpoint_url
 }

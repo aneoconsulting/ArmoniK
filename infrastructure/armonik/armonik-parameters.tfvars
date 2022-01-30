@@ -7,7 +7,7 @@ logging_level = "Information"
 # Parameters of control plane
 control_plane = {
   replicas          = 1
-  image             = "dockerhubaneo/armonik_control"
+  image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/control-plane"
   tag               = "0.2.2-aws.17.17a7585"
   image_pull_policy = "IfNotPresent"
   port              = 5001
@@ -22,7 +22,7 @@ compute_plane = {
   max_priority                     = 1
   # ArmoniK polling agent
   polling_agent                    = {
-    image             = "dockerhubaneo/armonik_pollingagent"
+    image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/polling-agent"
     tag               = "0.2.2-aws.17.17a7585"
     image_pull_policy = "IfNotPresent"
     limits            = {
@@ -39,7 +39,7 @@ compute_plane = {
     {
       name              = "worker"
       port              = 80
-      image             = "dockerhubaneo/armonik_worker_dll"
+      image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/worker"
       # HTC Mock
       #image             = "dockerhubaneo/armonik_worker_htcmock"
       tag               = "0.1.1"

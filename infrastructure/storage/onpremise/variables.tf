@@ -24,31 +24,22 @@ variable "storage" {
   default     = ["MongoDB"]
 }
 
-# Kubernetes secrets for storage
-variable "storage_kubernetes_secrets" {
-  description = "List of Kubernetes secrets for the storage to be created"
-  type        = object({
-    mongodb  = string
-    redis    = string
-    activemq = string
-  })
-  default     = {
-    mongodb  = ""
-    redis    = "redis-storage-secret"
-    activemq = "activemq-storage-secret"
-  }
-}
-
 # MongoDB
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type        = object({
     replicas = number
     port     = number
+    image    = string
+    tag      = string
+    secret   = string
   })
   default     = {
     replicas = 1
     port     = 27017
+    image    = "mongo"
+    tag      = "4.4.11"
+    secret   = "mongodb-storage-secret"
   }
 }
 
@@ -58,10 +49,16 @@ variable "redis" {
   type        = object({
     replicas = number
     port     = number
+    image    = string
+    tag      = string
+    secret   = string
   })
   default     = {
     replicas = 1
     port     = 6379
+    image    = "redis"
+    tag      = "bullseye"
+    secret   = "redis-storage-secret"
   }
 }
 
@@ -76,6 +73,9 @@ variable "activemq" {
       target_port = number
       protocol    = string
     }))
+    image    = string
+    tag      = string
+    secret   = string
   })
   default     = {
     replicas = 1
@@ -86,5 +86,8 @@ variable "activemq" {
       { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
       { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
     ]
+    image    = "symptoma/activemq"
+    tag      = "5.16.3"
+    secret   = "activemq-storage-secret"
   }
 }

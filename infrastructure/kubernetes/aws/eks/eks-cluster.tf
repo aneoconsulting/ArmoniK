@@ -1,5 +1,5 @@
 module "eks" {
-  source = "./modules/eks"
+  source = "modulesks"
 
   # EKS
   eks = {
@@ -13,6 +13,8 @@ module "eks" {
     cluster_endpoint_public_access       = var.eks.cluster_endpoint_public_access
     cluster_endpoint_public_access_cidrs = var.eks.cluster_endpoint_public_access_cidrs
     cluster_log_retention_in_days        = var.eks.cluster_log_retention_in_days
+    docker_registry                      = local.docker_registry
+    docker_images                        = var.eks.docker_images
     tags                                 = local.tags
   }
 
