@@ -8,6 +8,7 @@ popd
 export MODE=""
 export SERVER_NFS_IP=$(hostname -I | awk '{print $1}')
 export SHARED_STORAGE_TYPE="HostPath"
+export ENV="onpremise"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -81,11 +82,19 @@ EOF
   echo "   -ip, --nfs-server-ip <SERVER_NFS_IP>"
   echo
   echo "   -s, --shared-storage-type <SHARED_STORAGE_TYPE>"
+  echo
   cat <<-EOF
   Where --shared-storage-type should be :
         HostPath            : Use in localhost
         NFS                 : Use a NFS server
         AWS_EBS             : Use an AWS Elastic Block Store
+EOF
+  echo
+  echo "   -env, --environment <COMPUTE_ENVIRONMENT>"
+  cat <<-EOF
+  Where --mode should be :
+        onpremise           : ArmoniK is deployed on localhost or onpremise cluster
+        aws                 : ArmoniK is deployed on AWS cloud
 EOF
   echo
   exit 1
@@ -114,7 +123,14 @@ destroy_armonik() {
 deploy_storage() {
   terraform_init_storage
   cd $BASEDIR/../../storage/onpremise
-  execute terraform apply -var-file=parameters.tfvars -auto-approve
+  if [ $ENV == "onpremise" ]; then
+    execute terraform apply -var-file=parameters.tfvars -auto-approve
+  elif [ $ENV == "aws" ]; then
+    execute terraform apply -var-file=aws-parameters.tfvars -auto-approve
+  else
+    echo "Environment $ENV is unknown ! Possible values: -env=<\"onpremise\" | \"aws\">."
+    exit 1
+  fi
   cd -
 }
 
@@ -132,7 +148,7 @@ endpoint_urls() {
 }
 
 # create configuration file
-configuration_file() {
+storage_configuration_file (){
   python $BASEDIR/../../../tools/modify_parameters.py \
     --storage-object "Redis" \
     --storage-table "MongoDB" \
@@ -153,14 +169,32 @@ configuration_file() {
     --external-kube-secret $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
     $BASEDIR/../../armonik/storage-parameters.tfvars \
     $BASEDIR/storage-parameters.tfvars.json
+}
 
+armonik_configuration_file (){
+  FILE=$BASEDIR/../../armonik/armonik-parameters.tfvars
+  if [ $ENV == "aws" ]; then
+    FILE=$BASEDIR/../../armonik/aws-armonik-parameters.tfvars
+  fi
   python $BASEDIR/../../../tools/modify_parameters.py \
-    $BASEDIR/../../armonik/armonik-parameters.tfvars \
+    $FILE \
     $BASEDIR/armonik-parameters.tfvars.json
+}
 
+monitoring_configuration_file (){
+  FILE=$BASEDIR/../../armonik/aws-monitoring-parameters.tfvars
+  if [ $ENV == "aws" ]; then
+    FILE=$BASEDIR/../../armonik/monitoring-parameters.tfvars
+  fi
   python $BASEDIR/../../../tools/modify_parameters.py \
-    $BASEDIR/../../armonik/monitoring-parameters.tfvars \
+    $FILE \
     $BASEDIR/monitoring-parameters.tfvars.json
+}
+
+configuration_file() {
+  storage_configuration_file
+  armonik_configuration_file
+  monitoring_configuration_file
 }
 
 # deploy armonik
@@ -236,6 +270,16 @@ function main() {
       ;;
     --shared-storage-type)
       SHARED_STORAGE_TYPE="$2"
+      shift
+      shift
+      ;;
+    env)
+      ENV="$2"
+      shift
+      shift
+      ;;
+    --envirnment)
+      ENV="$2"
       shift
       shift
       ;;

@@ -49,17 +49,17 @@ variable "repositories" {
     {
       name  = "control-plane"
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.2.2-aws.17.17a7585"
+      tag   = "0.3.1-dockercompose.4.ed1ecbe"
     },
     {
       name  = "polling-agent"
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.2.2-aws.17.17a7585"
+      tag   = "0.3.1-dockercompose.4.ed1ecbe"
     },
     {
       name  = "worker"
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.1.1"
+      tag   = "0.1.2-SNAPSHOT.4.cfda5d1"
     },
     {
       name  = "seq"
