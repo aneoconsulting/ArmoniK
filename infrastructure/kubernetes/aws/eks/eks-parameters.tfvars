@@ -7,14 +7,14 @@ eks = {
   docker_registry                      = ""
   docker_images                        = {
     cluster_autoscaler = {
-      registry = "k8s.gcr.io/autoscaling"
-      image    = "cluster-autoscaler"
-      tag      = "v1.21.0"
+      #image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/cluster-autoscaler"
+      image = "k8s.gcr.io/autoscaling/cluster-autoscaler"
+      tag   = "v1.21.0"
     }
     instance_refresh   = {
-      registry = "amazon"
-      image    = "aws-node-termination-handler"
-      tag      = "v1.10.0"
+      #image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-node-termination-handler"
+      image = "amazon/aws-node-termination-handler"
+      tag   = "v1.10.0"
     }
   }
 }

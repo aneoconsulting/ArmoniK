@@ -13,7 +13,16 @@ module "eks" {
     cluster_endpoint_public_access       = var.eks.cluster_endpoint_public_access
     cluster_endpoint_public_access_cidrs = var.eks.cluster_endpoint_public_access_cidrs
     cluster_log_retention_in_days        = var.eks.cluster_log_retention_in_days
-    docker_images                        = var.eks.docker_images
+    docker_images                        = {
+      cluster_autoscaler = {
+        image = var.eks.docker_images.cluster_autoscaler.image
+        tag   = var.eks.docker_images.cluster_autoscaler.tag
+      }
+      instance_refresh   = {
+        image = var.eks.docker_images.instance_refresh.image
+        tag   = var.eks.docker_images.instance_refresh.tag
+      }
+    }
     tags                                 = local.tags
   }
 

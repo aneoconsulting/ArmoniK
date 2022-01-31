@@ -75,17 +75,14 @@ variable "eks" {
     cluster_endpoint_public_access       = bool
     cluster_endpoint_public_access_cidrs = list(string)
     cluster_log_retention_in_days        = number
-    docker_registry                      = string
     docker_images                        = object({
       cluster_autoscaler = object({
-        registry = string
-        image    = string
-        tag      = string
+        image = string
+        tag   = string
       })
       instance_refresh   = object({
-        registry = string
-        image    = string
-        tag      = string
+        image = string
+        tag   = string
       })
     })
   })
@@ -94,17 +91,14 @@ variable "eks" {
     cluster_endpoint_public_access       = true
     cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
     cluster_log_retention_in_days        = 30
-    docker_registry                      = ""
     docker_images                        = {
       cluster_autoscaler = {
-        registry = "k8s.gcr.io/autoscaling"
-        image    = "cluster-autoscaler"
-        tag      = "v1.21.0"
+        image = "k8s.gcr.io/autoscaling/cluster-autoscaler"
+        tag   = "v1.21.0"
       }
       instance_refresh   = {
-        registry = "amazon"
-        image    = "aws-node-termination-handler"
-        tag      = "v1.10.0"
+        image = "amazon/aws-node-termination-handler"
+        tag   = "v1.10.0"
       }
     }
   }

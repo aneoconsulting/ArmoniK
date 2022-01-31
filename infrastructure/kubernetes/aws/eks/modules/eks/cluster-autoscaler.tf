@@ -19,7 +19,7 @@ resource "helm_release" "cluster_autoscaler" {
   }
   set {
     name  = "image.repository"
-    value = "${var.eks.docker_images.cluster_autoscaler.registry}/${var.eks.docker_images.cluster_autoscaler.image}"
+    value = var.eks.docker_images.cluster_autoscaler.image
   }
   set {
     name  = "image.tag"

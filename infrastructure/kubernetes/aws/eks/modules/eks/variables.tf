@@ -14,14 +14,12 @@ variable "eks" {
     cluster_log_retention_in_days        = number
     docker_images                        = object({
       cluster_autoscaler = object({
-        registry = string
-        image    = string
-        tag      = string
+        image = string
+        tag   = string
       })
       instance_refresh   = object({
-        registry = string
-        image    = string
-        tag      = string
+        image = string
+        tag   = string
       })
     })
     tags                                 = map(string)

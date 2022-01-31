@@ -28,6 +28,7 @@ Added
     * EKS cloudwatch log group
     * EKS secrets
     * EBS of EKS nodes
+    * ECR
     * S3
 
 ## [v2.2.0](https://github.com/aneoconsulting/armonik/tree/v2.2.0) (2022-01-17)
