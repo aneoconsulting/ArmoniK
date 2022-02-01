@@ -11,9 +11,13 @@ variable "logging_level" {
 }
 
 # use Seq
-variable "seq_endpoint_url" {
+variable "seq_endpoints" {
   description = "Endpoint URL of Seq"
-  type        = string
+  type        = object({
+    url  = string
+    host = string
+    port = string
+  })
 }
 
 # Parameters of control plane

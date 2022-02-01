@@ -45,6 +45,15 @@ locals {
     data_type = module.storage.needed_storage
   }
 
-  seq_endpoint_url     = (var.monitoring.seq ? module.seq.0.seq_url : "")
+  seq_endpoints        = (var.monitoring.seq ? {
+    url  = module.seq.0.seq_endpoints.url
+    host = module.seq.0.seq_endpoints.host
+    port = module.seq.0.seq_endpoints.port
+  } : {
+    url  = ""
+    host = ""
+    port = ""
+  })
+
   grafana_endpoint_url = (var.monitoring.grafana ? module.grafana.0.grafana_url : "")
 }
