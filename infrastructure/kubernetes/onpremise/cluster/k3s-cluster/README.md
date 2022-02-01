@@ -113,3 +113,5 @@ To delete all resources of the cluster created on AWS, execute the command:
 ```bash
 make destroy
 ```
+
+# [Return to ArmoniK deployments](../../../../README.md#armonik-deployments)

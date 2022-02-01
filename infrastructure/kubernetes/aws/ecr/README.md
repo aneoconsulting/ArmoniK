@@ -104,3 +104,5 @@ make destroy
 ```bash
 make clean
 ```
+
+# [Create Amazon EKS](../eks/README.md)
