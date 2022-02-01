@@ -27,17 +27,22 @@ locals {
     "tags"                     = [
       {
         key                 = "k8s.io/cluster-autoscaler/enabled"
-        propagate_at_launch = "false"
-        value               = "true"
+        propagate_at_launch = true
+        value               = true
       },
       {
         key                 = "k8s.io/cluster-autoscaler/${var.eks.cluster_name}"
-        propagate_at_launch = "false"
-        value               = "true"
+        propagate_at_launch = true
+        value               = true
       },
       {
         key                 = "aws-node-termination-handler/managed"
-        value               = ""
+        value               = true
+        propagate_at_launch = true
+      },
+      {
+        key                 = "lifecycle=OnDemand"
+        value               = true
         propagate_at_launch = true
       }
     ]

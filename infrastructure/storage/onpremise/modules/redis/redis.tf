@@ -30,6 +30,7 @@ resource "kubernetes_deployment" "redis" {
         }
       }
       spec {
+        node_selector = var.redis.node_selector
         container {
           name    = "redis"
           image   = "${var.redis.image}:${var.redis.tag}"

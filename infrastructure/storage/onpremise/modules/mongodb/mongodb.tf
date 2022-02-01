@@ -30,6 +30,7 @@ resource "kubernetes_deployment" "mongodb" {
         }
       }
       spec {
+        node_selector = var.mongodb.node_selector
         container {
           name  = "mongodb"
           image = "${var.mongodb.image}:${var.mongodb.tag}"
