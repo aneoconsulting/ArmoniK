@@ -26,6 +26,12 @@ resource "kubernetes_deployment" "control_plane" {
         }
       }
       spec {
+        dynamic image_pull_secrets {
+          for_each = (var.control_plane.image_pull_secrets != "" ? [1] : [])
+          content {
+            name = var.control_plane.image_pull_secrets
+          }
+        }
         container {
           name              = "control-plane"
           image             = var.control_plane.tag != "" ? "${var.control_plane.image}:${var.control_plane.tag}" : var.control_plane.image

@@ -147,34 +147,36 @@ variable "storage_endpoint_url" {
 variable "control_plane" {
   description = "Parameters of the control plane"
   type        = object({
-    replicas          = number
-    image             = string
-    tag               = string
-    image_pull_policy = string
-    port              = number
-    limits            = object({
+    replicas           = number
+    image              = string
+    tag                = string
+    image_pull_policy  = string
+    port               = number
+    limits             = object({
       cpu    = string
       memory = string
     })
-    requests          = object({
+    requests           = object({
       cpu    = string
       memory = string
     })
+    image_pull_secrets = string
   })
   default     = {
-    replicas          = 1
-    image             = "dockerhubaneo/armonik_control"
-    tag               = "0.0.4"
-    image_pull_policy = "IfNotPresent"
-    port              = 5001
-    limits            = {
+    replicas           = 1
+    image              = "dockerhubaneo/armonik_control"
+    tag                = "0.0.4"
+    image_pull_policy  = "IfNotPresent"
+    port               = 5001
+    limits             = {
       cpu    = "1000m"
       memory = "1024Mi"
     }
-    requests          = {
+    requests           = {
       cpu    = "100m"
       memory = "128Mi"
     }
+    image_pull_secrets = ""
   }
 }
 
@@ -186,6 +188,7 @@ variable "compute_plane" {
     termination_grace_period_seconds = number
     # number of queues according to priority of tasks
     max_priority                     = number
+    image_pull_secrets               = string
     polling_agent                    = object({
       image             = string
       tag               = string
@@ -221,6 +224,7 @@ variable "compute_plane" {
     termination_grace_period_seconds = 30
     # number of queues according to priority of tasks
     max_priority                     = 1
+    image_pull_secrets               = ""
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"

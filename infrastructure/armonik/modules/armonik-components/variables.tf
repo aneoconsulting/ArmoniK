@@ -20,19 +20,20 @@ variable "seq_endpoint_url" {
 variable "control_plane" {
   description = "Parameters of the control plane"
   type        = object({
-    replicas          = number
-    image             = string
-    tag               = string
-    image_pull_policy = string
-    port              = number
-    limits            = object({
+    replicas           = number
+    image              = string
+    tag                = string
+    image_pull_policy  = string
+    port               = number
+    limits             = object({
       cpu    = string
       memory = string
     })
-    requests          = object({
+    requests           = object({
       cpu    = string
       memory = string
     })
+    image_pull_secrets = string
   })
 }
 
@@ -44,6 +45,7 @@ variable "compute_plane" {
     termination_grace_period_seconds = number
     # number of queues according to priority of tasks
     max_priority                     = number
+    image_pull_secrets               = string
     polling_agent                    = object({
       image             = string
       tag               = string

@@ -6,19 +6,20 @@ logging_level = "Information"
 
 # Parameters of control plane
 control_plane = {
-  replicas          = 1
-  image             = "dockerhubaneo/armonik_control"
-  tag               = "0.4.0"
-  image_pull_policy = "IfNotPresent"
-  port              = 5001
-  limits            = {
+  replicas           = 1
+  image              = "dockerhubaneo/armonik_control"
+  tag                = "0.4.0"
+  image_pull_policy  = "IfNotPresent"
+  port               = 5001
+  limits             = {
     cpu    = "1000m"
     memory = "1024Mi"
   }
-  requests          = {
+  requests           = {
     cpu    = "100m"
     memory = "128Mi"
   }
+  image_pull_secrets = ""
 }
 
 # Parameters of the compute plane
@@ -28,6 +29,7 @@ compute_plane = {
   termination_grace_period_seconds = 30
   # number of queues according to priority of tasks
   max_priority                     = 1
+  image_pull_secrets               = ""
   # ArmoniK polling agent
   polling_agent                    = {
     image             = "dockerhubaneo/armonik_pollingagent"
