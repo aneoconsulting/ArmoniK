@@ -29,7 +29,7 @@ locals {
       {
         "Name": "Seq",
         "Args": {
-          "serverUrl": "${var.seq_endpoint_url}"
+          "serverUrl": "${var.seq_endpoints.url}"
         }
       }
     ],

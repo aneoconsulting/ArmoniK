@@ -8,5 +8,5 @@ module "armonik" {
   storage              = local.storage
   storage_adapters     = local.storage_adapters
   storage_endpoint_url = var.storage_endpoint_url
-  seq_endpoint_url     = local.seq_endpoint_url
+  seq_endpoints        = local.seq_endpoints
 }
