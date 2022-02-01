@@ -2,7 +2,7 @@
 
 1. [Introduction](#introduction)
 2. [Onpremise](#onpremise)
-4. [Amazon Web Service (AWS)](#amazon-web-services-aws)
+3. [Amazon Web Service (AWS)](#amazon-web-services-aws)
 
 # Introduction
 
@@ -10,10 +10,12 @@ Hereafter you have instructions ton install storage needed for ArmoniK onpremise
 
 # Onpremise
 
-To install onpremise storage (Redis, MongoDB and/or ActiveMQ), you can follow the instructions
+To install onpremise storage (Redis, MongoDB and/or ActiveMQ) as Kubernetes services, you can follow the instructions
 in [Onpremise ArmoniK storage](onpremise/README.md).
 
 # Amazon Web Services (AWS)
 
-To install AWS managed storage services (Elasticache, AmazonMQ, SQS, DynamoDB, ...), you can follow the instructions
+To install AWS managed storage services (Elasticache, AmazonMQ, DynamoDB, ...), you can follow the instructions
 in [AWS ArmoniK storage](aws/README.md).
+
+### [Return to ArmoniK deployments](../README.md#armonik-deployments)

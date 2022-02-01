@@ -8,14 +8,14 @@
     1. [Redis server secret](#redis-server-secret)
     2. [ActiveMQ server secret](#activemq-server-secret)
     3. [MongoDB server secret](#mongodb-server-secret)
-6. [Create storages on Kubernetes](#create-storages-on-kubernetes)
-    1. [Prepare the configuration file](#prepare-the-configuration-file)
+6. [Create storage](#create-storage)
+    1. [Prepare input parameters](#prepare-input-parameters)
     2. [Deploy](#deploy)
     3. [Clean-up](#clean-up)
 
 # Introduction
 
-Hereafter we present the creation of onpremise storage resources needed for ArmoniK on Kubernetes cluster.
+Hereafter you have instructions to create onpremise storage resources, as Kubernetes services, needed for ArmoniK.
 
 # Allowed storage resources
 
@@ -24,7 +24,8 @@ in [allowed storage resources](../../modules/needed-storage/storage_for_each_arm
 
 # Set environment variables
 
-You must set environment variables for deploying the storage resources. The main environment variables are:
+You must set environment variables for deploying the storage resources. The
+main [environment variables](../../utils/envvars-storage.conf) are:
 
 ```buildoutcfg
 # Armonik storage namespace in the Kubernetes
@@ -38,20 +39,22 @@ export ARMONIK_STORAGE_REDIS_SECRET_NAME=<You kubernetes secret for the Redis>
 
 # Directory path of the ActiveMQ credentials
 export ARMONIK_STORAGE_ACTIVEMQ_CREDENTIALS_DIRECTORY=<Your directory path of the ActiveMQ credentials>
+export ARMONIK_STORAGE_ACTIVEMQ_CERTIFICATES_DIRECTORY=<Your directory path of the ActiveMQ certificates>
     
 # Name of ActiveMQ secret
 export ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the ActiveMQ>
 
 # Directory path of the MongoDB credentials
-export ARMONIK_STORAGE_MONGODB_CREDENTIALS_DIRECTORY=<Your directory path of the MongoDB credentials>
+export ARMONIK_STORAGE_MONGODB_CERTIFICATES_DIRECTORY=<Your directory path of the MongoDB certificates>
 
 # Name of MongoDB secret
 export ARMONIK_STORAGE_MONGODB_SECRET_NAME=<You kubernetes secret for the MongoDB>
 ```
 
-**Mandatory:** To set these environment variables:
+**Mandatory:** You must set these environment variables:
 
-From the **root** of the repository, you source [file of environment variables](../../utils/envvars-storage.conf).
+From the **root** of the repository, position yourself in directory `infrastructure/storage/onpremise` and
+source [envvars-storage.conf](../../utils/envvars-storage.conf):
 
 ```bash
    source infrastructure/utils/envvars-storage.conf
@@ -59,8 +62,7 @@ From the **root** of the repository, you source [file of environment variables](
 
 # Create a namespace for ArmoniK storage
 
-**Mandatory:** Before deploring the ArmoniK storage resources, you must first create a namespace in the Kubernetes
-cluster for ArmoniK storage:
+**Mandatory:** Before deploring the ArmoniK storage resources, you must first create a namespace in the Kubernetes:
 
 ```bash
 kubectl create namespace $ARMONIK_STORAGE_NAMESPACE
@@ -79,105 +81,55 @@ to create secrets for some storage.
 
 ## Redis server secret
 
-Redis uses SSL/TLS support using certificates. In order to support TLS, Redis is configured with a X.509
-certificate (`cert.crt`) and a private key (`cert.key`). In addition, it is necessary to specify a CA certificate bundle
-file (`ca.crt`) or path to be used as a trusted root when validating certificates.
-
-Execute the following command to create the Redis server secret in Kubernetes based on the certificates created and
-saved in the directory `$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY`. In this project, we have certificates for test
-in [credentials](../../credentials) directory:
+Example of certificates for Redis server are in [Redis certificates](../../security/certificates). Execute the following
+command to create the Redis server secret in Kubernetes:
 
 ```bash
 kubectl create secret generic $ARMONIK_STORAGE_REDIS_SECRET_NAME \
         --namespace=$ARMONIK_STORAGE_NAMESPACE \
         --from-file=cert_file=$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY/cert.crt \
-        --from-file=key_file=$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY/cert.key \
-        --from-file=ca_cert_file=$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY/ca.crt
+        --from-file=key_file=$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY/cert.key
 ```
 
 ## ActiveMQ server secret
 
-ActiveMQ uses a file `jetty-realm.properties`. This is the file which stores user credentials and their roles in
-ActiveMQ. It contains custom usernames and passwords and replace the file present by default inside the container.
-
-In this project, we have a file of name `jetty-realm.properties` in [credentials](../../credentials) directory:
-
-```text
-#username:password,[role-name]
-admin:<ADMIN_PASSWD>,admin
-user:<GUEST_PASSWD>,guest
-```
-
-Create a Kubernetes secret for the ActiveMQ server:
+Example of certificates are in [ActiveMQ certificates](../../security/certificates) and credentials for authentication
+are in [ActiveMQ certificates](../../security/credentials). Execute the following command to create the ActiveMQ server
+secret in Kubernetes:
 
 ```bash
 kubectl create secret generic $ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME \
         --namespace=$ARMONIK_STORAGE_NAMESPACE \
-        --from-file=$ARMONIK_STORAGE_ACTIVEMQ_CREDENTIALS_DIRECTORY/jetty-realm.properties
+        --from-file=certificate.pfx=$ARMONIK_STORAGE_ACTIVEMQ_CERTIFICATES_DIRECTORY/certificate.pfx \
+        --from-file=jetty-realm.properties=$ARMONIK_STORAGE_ACTIVEMQ_CREDENTIALS_DIRECTORY/jetty-realm.properties
 ```
 
 ## MongoDB server secret
 
-MongoDB uses SSL/TLS support using certificates (`cert.pem`).
-
-Execute the following command to create the MongoDB server secret in Kubernetes based on the certificates created and
-saved in the directory `$ARMONIK_STORAGE_MONGODB_CREDENTIALS_DIRECTORY`. In this project, we have certificates for test
-in [credentials](../../credentials) directory:
+Example of certificates for MongoDB server are in [MongoDB certificates](../../security/certificates). Execute the
+following command to create the MongoDB server secret in Kubernetes:
 
 ```bash
 kubectl create secret generic $ARMONIK_STORAGE_MONGODB_SECRET_NAME \
         --namespace=$ARMONIK_STORAGE_NAMESPACE \
-        --from-file=mongodb.pem=$ARMONIK_STORAGE_MONGODB_CREDENTIALS_DIRECTORY/cert.pem
+        --from-file=mongodb.pem=$ARMONIK_STORAGE_MONGODB_CERTIFICATES_DIRECTORY/cert.pem
 ```
 
-# Create storages on Kubernetes
+# Create storage
 
-## Prepare the parameters file
+## Prepare input parameters
 
-Before deploying the storages, you must fist prepare a configuration file containing a list of the parameters of the
-storages to be created.
+Before deploying the storages, you must prepare the [parameters.tfvars](parameters.tfvars) containing a list of
+parameters for storages to be created.
 
-**warning:** You have an example of [parameters.tfvars](parameters.tfvars).
-
-The configuration has three components:
-
-1. Kubernetes namespace where the storage will be created:
-
-```terraform
-# Namespace of ArmoniK storage
-namespace = "armonik-storage"
-```
-
-2. List of storage to be created for each ArmoniK data:
-
-```terraform
-# Storage resources to be created
-storage = ["MongoDB", "Amqp", "Redis"]
-```
-
-3. List of Kubernetes secrets of each storage to be created:
-
-```terraform
-# Kubernetes secrets for storage
-storage_kubernetes_secrets = {
-  mongodb  = "mongodb-storage-secret"
-  redis    = "redis-storage-secret"
-  activemq = "activemq-storage-secret"
-}
-```
+> **_NOTE:_** You have th list of parameters and their type/default values in [parameters.md](parameters.md)
 
 ## Deploy
 
-Position yourself in directory `infrastructure/storage/onpremise` and execute the following command to deploy storage:
+From the **root** of the repository, position yourself in directory `infrastructure/storage/onpremise` and execute:
 
 ```bash
-make all CONFIG_FILE=<Your configuration file> 
-```
-
-You can also execute one of the following commands if you want to reuse the default configuration file:
-
-```bash
-make all CONFIG_FILE=global-parameters.tfvars 
+make all PARAMETERS_FILE=parameters.tfvars 
 ```
 
 or:
@@ -186,40 +138,17 @@ or:
 make all
 ```
 
-The command `make all` executes three commands in the following order that you can execute separately:
-
-* `make init`
-* `make plan CONFIG_FILE=<Your configuration file>`
-* `make apply CONFIG_FILE=<Your configuration file>`
-
-After the deployment :
-
-* an output file `./generated/output.conf` is generated containing the endpoint urls of the created storage (**Needed
-  for ArmoniK deployment**) like:
-
-```bash
-MONGODB_URL="mongodb://192.168.1.13:31458"
-REDIS_URL="192.168.1.13:30129"
-ACTIVEMQ_HOST="192.168.1.13"
-ACTIVEMQ_PORT="31392"
-EXTERNAL_URL="192.168.1.13:30129"
-```
-
-* you can display the list of created resources in Kubernetes as follows:
-
-```bash
-kubectl get all -n $ARMONIK_STORAGE_NAMESPACE
-```
+After the deployment, an output file `generated/output.json` is generated containing the list of created storage.
 
 ## Clean-up
 
-**If you want** to delete all storage resources deployed as services in Kubernetes, execute the command:
+**If you want** to delete all storage, execute the command:
 
 ```bash
-make destroy CONFIG_FILE=<Your configuration file> 
+make destroy PARAMETERS_FILE=parameters.tfvars 
 ```
 
-or, if you have used the default configuration file:
+or:
 
 ```bash
 make destroy
@@ -230,3 +159,5 @@ make destroy
 ```bash
 make clean
 ```
+
+### [Return to ArmoniK deployments](../../README.md#armonik-deployments)

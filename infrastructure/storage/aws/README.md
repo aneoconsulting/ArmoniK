@@ -72,7 +72,7 @@ file (`ca.crt`) or path to be used as a trusted root when validating certificate
 
 Execute the following command to create the Redis secret in Kubernetes based on the certificates created and saved in
 the directory `$ARMONIK_STORAGE_REDIS_CERTIFICATES_DIRECTORY`. In this project, we have certificates for test
-in [credentials](../../credentials) directory:
+in [credentials](../../security/credentials) directory:
 
 ```bash
 kubectl create secret generic $ARMONIK_STORAGE_REDIS_SECRET_NAME \
@@ -87,7 +87,7 @@ kubectl create secret generic $ARMONIK_STORAGE_REDIS_SECRET_NAME \
 ActiveMQ uses a file `jetty-realm.properties`. This is the file which stores user credentials and their roles in
 ActiveMQ. It contains custom usernames and passwords and replace the file present by default inside the container.
 
-In this project, we have a file of name `jetty-realm.properties` in [credentials](../../credentials) directory:
+In this project, we have a file of name `jetty-realm.properties` in [credentials](../../security/credentials) directory:
 
 ```text
 #username:password,[role-name]

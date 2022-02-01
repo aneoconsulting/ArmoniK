@@ -92,7 +92,7 @@ file (`ca.crt`) or path to be used as a trusted root when validating certificate
 also used (`certificate.pfx`).
 
 Execute the following command to create the Redis client secrets (Redis for ArmoniK and external Redis used by HTC Mock
-smaple) in Kubernetes. In this project, we have certificates for test in [credentials](../credentials) directory. Create
+smaple) in Kubernetes. In this project, we have certificates for test in [credentials](../security/credentials) directory. Create
 a Kubernetes secret for Redis client:
 
 ```bash
@@ -111,7 +111,7 @@ kubectl create secret generic $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
 
 ActiveMQ client uses a file `amqp-credentials.json`. This is the file which stores user credentials.
 
-In this project, we have a file of name `amqp-credentials.json` in [credentials](../credentials ) directory, like:
+In this project, we have a file of name `amqp-credentials.json` in [credentials](../security/credentials ) directory, like:
 
 ```json
 {
@@ -134,7 +134,7 @@ kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME \
 
 MongoDB client uses a file `mongodb-credentials.json` and `chain.p7b`. This is the file which stores user credentials.
 
-In this project, we have a file of name `mongodb-credentials.json` and `chain.p7b` in [credentials](../credentials )
+In this project, we have a file of name `mongodb-credentials.json` and `chain.p7b` in [credentials](../security/credentials )
 directory. The file `mongodb-credentials.json` has this format:
 
 ```json
