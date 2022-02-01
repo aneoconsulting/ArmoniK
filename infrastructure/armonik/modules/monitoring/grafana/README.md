@@ -32,6 +32,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_docker_image"></a> [docker\_image](#input\_docker\_image) | Docker image for Grafana | <pre>object({<br>    image = string<br>    tag   = string<br>  })</pre> | <pre>{<br>  "image": "grafana/grafana",<br>  "tag": "latest"<br>}</pre> | no |
 | <a name="input_grafana"></a> [grafana](#input\_grafana) | Parameters of Grafana | <pre>object({<br>    replicas = number<br>    port     = object({<br>      name        = string<br>      port        = number<br>      target_port = number<br>      protocol    = string<br>    })<br>  })</pre> | <pre>{<br>  "port": {<br>    "name": "grafana",<br>    "port": 3000,<br>    "protocol": "TCP",<br>    "target_port": 3000<br>  },<br>  "replicas": 1<br>}</pre> | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace of ArmoniK monitoring | `string` | n/a | yes |
 

@@ -53,8 +53,7 @@ export ARMONIK_STORAGE_MONGODB_SECRET_NAME=<You kubernetes secret for the MongoD
 
 **Mandatory:** You must set these environment variables:
 
-From the **root** of the repository, position yourself in directory `infrastructure/storage/onpremise` and
-source [envvars-storage.conf](../../utils/envvars-storage.conf):
+From the **root** of the repository, source [envvars-storage.conf](../../utils/envvars-storage.conf):
 
 ```bash
    source infrastructure/utils/envvars-storage.conf

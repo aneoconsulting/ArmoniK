@@ -2,26 +2,23 @@
 
 1. [Introduction](#introduction)
 2. [Set environment variables](#set-environment-variables)
-3. [Create a namespace for ArmoniK](#create-a-namespace-for-armonik)
+3. [Create a namespace for ArmoniK storage](#create-a-namespace-for-armonik-storage)
 4. [Create Kubernetes secrets](#create-kubernetes-secrets)
     1. [Redis client secret](#redis-client-secret)
     2. [ActiveMQ client secret](#activemq-client-secret)
     3. [MongoDB client secret](#mongodb-client-secret)
-5. [Prepare the configuration file](#prepare-the-configuration-file)
-   1. [Parameters for ArmoniK](#parameters-for-armonik)
-   2. [Parameters for storage](#parameters-for-storage)
-   3. [Parameters for monitoring](#parameters-for-monitoring)
+5. [Prepare input parameters](#prepare-input-parameters)
 6. [Deploy](#deploy)
 7. [Clean-up](#clean-up)
 
 # Introduction
 
-This project presents the instructions to deploy ArmoniK in Kubernetes.
+Hereafter you have instructions to deploy ArmoniK in Kubernetes.
 
 # Set environment variables
 
-The project needs to define and set environment variables for deploying the infrastructure. The main environment
-variables are:
+You must set environment variables for deploying ArmoniK. The
+main [environment variables](../../utils/envvars-armonik.conf) are:
 
 ```buildoutcfg
 # Armonik namespace in the Kubernetes
@@ -32,32 +29,36 @@ export ARMONIK_MONITORING_NAMESPACE=<Your namespace in kubernetes for monitoring
 
 # Directory path of the Redis certificates
 export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your directory path of the Redis certificates>
+export ARMONIK_REDIS_CREDENTIALS_DIRECTORY=<Your directory path of the Redis credentials>
     
 # Name of Redis secret
 export ARMONIK_REDIS_SECRET_NAME=<You kubernetes secret for the Redis storage>
 
 # Directory path of the certificates of external Redis
 export ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY=<Your directory path of the certificates of external Redis>
+export ARMONIK_EXTERNAL_REDIS_CREDENTIALS_DIRECTORY=<Your directory path of the credentials of external Redis>
     
 # Name of secret of external Redis
 export ARMONIK_EXTERNAL_REDIS_SECRET_NAME=<You kubernetes secret for the external Redis storage>
 
 # Directory path of the ActiveMQ credentials
 export ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY=<Your directory path of the ActiveMQ credentials>
+export ARMONIK_ACTIVEMQ_CERTIFICATES_DIRECTORY=<Your directory path of the ActiveMQ certificates>
     
 # Name of ActiveMQ secret
 export ARMONIK_ACTIVEMQ_SECRET_NAME=<You kubernetes secret for the ActiveMQ storage>
 
 # Directory path of the MongoDB credentials
 export ARMONIK_MONGODB_CREDENTIALS_DIRECTORY=<Your directory path of the MongoDB credentials>
+export ARMONIK_MONGODB_CERTIFICATES_DIRECTORY=<Your directory path of the MongoDB certificates>
 
 # Name of MongoDB secret
 export ARMONIK_MONGODB_SECRET_NAME=<You kubernetes secret for the MongoDB storage>
 ```
 
-**Mandatory:** To set these environment variables:
+**Mandatory:** You must set these environment variables:
 
-From the **root** of the repository source [file of environment variables](../utils/envvars-armonik.conf).
+From the **root** of the repository, source [envvars-armonik.conf](../../utils/envvars-armonik.conf):
 
 ```bash
    source infrastructure/utils/envvars-armonik.conf
@@ -86,71 +87,40 @@ create secrets for some storage.
 
 ## Redis client secret
 
-Redis uses SSL/TLS support using certificates. In order to support TLS, Redis is configured with a X.509
-certificate (`cert.crt`) and a private key (`cert.key`). In addition, it is necessary to specify a CA certificate bundle
-file (`ca.crt`) or path to be used as a trusted root when validating certificates. A SSL certificate of type `PFX` is
-also used (`certificate.pfx`).
-
-Execute the following command to create the Redis client secrets (Redis for ArmoniK and external Redis used by HTC Mock
-smaple) in Kubernetes. In this project, we have certificates for test in [credentials](../security/credentials) directory. Create
-a Kubernetes secret for Redis client:
+Example of certificates for Redis client are in [Redis certificates](../../security/certificates) and credentials of
+authentication are in [Redis credentials](../../security/credentials). Execute the following command to create the Redis
+server secret in Kubernetes:
 
 ```bash
 kubectl create secret generic $ARMONIK_REDIS_SECRET_NAME \
         --namespace=$ARMONIK_NAMESPACE \
-        --from-file=ca_cert_file=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/ca.crt \
-        --from-file=certificate_pfx=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/certificate.pfx
+        --from-file=ca_file=$ARMONIK_REDIS_CERTIFICATES_DIRECTORY/chain.p7b \
+        --from-file=redis_credentials=$ARMONIK_REDIS_CREDENTIALS_DIRECTORY/redis-credentials.json
         
 kubectl create secret generic $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
         --namespace=$ARMONIK_NAMESPACE \
-        --from-file=ca_cert_file=$ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY/ca.crt \
-        --from-file=certificate_pfx=$ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY/certificate.pfx
+        --from-file=ca_file=$ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY/chain.p7b \
+        --from-file=redis_credentials=$ARMONIK_REDIS_CREDENTIALS_DIRECTORY/redis-credentials.json
 ```
 
 ## ActiveMQ Client secret
 
-ActiveMQ client uses a file `amqp-credentials.json`. This is the file which stores user credentials.
-
-In this project, we have a file of name `amqp-credentials.json` in [credentials](../security/credentials ) directory, like:
-
-```json
-{
-  "Amqp": {
-    "User": "user",
-    "Password": "<GUEST_PASSWD>"
-  }
-}
-```
-
-Create a Kubernetes secret for the ActiveMQ client:
+Example of certificates for ActiveMQ client are in [ActiveMQ certificates](../../security/certificates) and credentials
+of authentication are in [ActiveMQ credentials](../../security/credentials). Execute the following command to create the
+ActiveMQ server secret in Kubernetes:
 
 ```bash
 kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME \
         --namespace=$ARMONIK_NAMESPACE \
+        --from-file=ca_file=$ARMONIK_ACTIVEMQ_CERTIFICATES_DIRECTORY/chain.p7b \
         --from-file=amqp_credentials=$ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY/amqp-credentials.json
 ```
 
 ## MongoDB client secret
 
-MongoDB client uses a file `mongodb-credentials.json` and `chain.p7b`. This is the file which stores user credentials.
-
-In this project, we have a file of name `mongodb-credentials.json` and `chain.p7b` in [credentials](../security/credentials )
-directory. The file `mongodb-credentials.json` has this format:
-
-```json
-{
-  "MongoDB": {
-    "AllowInsecureTls": "true",
-    "Tls": "true",
-    "User": "admintest",
-    "Password": "<ADMIN_PASSWD>",
-    "CAFile": "/mongodb/ca_file",
-    "DirectConnection": "true"
-  }
-}
-```
-
-Create a Kubernetes secret for the MongoDB client:
+Example of certificates for MongoDB client are in [MongoDB certificates](../../security/certificates) and credentials of
+authentication are in [MongoDB credentials](../../security/credentials). Execute the following command to create the
+MongoDB server secret in Kubernetes:
 
 ```bash
 kubectl create secret generic $ARMONIK_MONGODB_SECRET_NAME \
@@ -159,167 +129,27 @@ kubectl create secret generic $ARMONIK_MONGODB_SECRET_NAME \
         --from-file=mongodb_credentials=$ARMONIK_MONGODB_CREDENTIALS_DIRECTORY/mongodb-credentials.json
 ```
 
-# Prepare the parameters files
+# Prepare input parameters
 
-Before deploying the ArmoniK components, you must fist prepare the configuration files containing a list of the
-parameters.
+Before deploying ArmoniK, you must prepare the parameters [*.tfvars](parameters) containing:
 
-## Parameters for ArmoniK
+* Storage parameters [storage-parameters.tfvars](parameters/storage-parameters.tfvars).
+* Monitoring parameters [monitoring-parameters.tfvars](parameters/monitoring-parameters.tfvars).
+* ArmoniK parameters [armonik-parameters.tvvars](parameters/armonik-parameters.tfvars).
 
-The parameters file for `ArmoniK` components are defined in [armonik-parameters.tfvars](./armonik-parameters.tfvars) and
-they are as follows (you can modify/update them):
-
-1. Kubernetes namespace where ArmoniK's components will be created:
-
-```terraform
-namespace = "armonik"
-```
-
-2. Level of logging
-
-```terraform
-logging_level = "Information"
-```
-
-3. Information for **ArmoniK control plane**:
-
-```terraform
-control_plane = {
-  replicas          = 1
-  image             = "dockerhubaneo/armonik_control"
-  tag               = "0.2.2-aws.17.17a7585"
-  image_pull_policy = "IfNotPresent"
-  port              = 5001
-}
-```
-
-4. Information for **ArmoniK compute plane** which is composed of a container of `polling agent` and container(s)
-   of `worker(s)`:
-
-```terraform
-compute_plane = {
-  # number of replicas for each deployment of compute plane
-  replicas      = 1
-  # number of queues according to priority of tasks
-  max_priority  = 1
-  # ArmoniK polling agent
-  polling_agent = {
-    image             = "dockerhubaneo/armonik_pollingagent"
-    tag               = "0.2.2-aws.17.17a7585"
-    image_pull_policy = "IfNotPresent"
-    limits            = {
-      cpu    = "100m"
-      memory = "128Mi"
-    }
-    requests          = {
-      cpu    = "100m"
-      memory = "128Mi"
-    }
-  }
-  # ArmoniK workers
-  worker        = [
-    {
-      name              = "worker"
-      port              = 80
-      # [Default]
-      image             = "dockerhubaneo/armonik_worker_dll"
-      tag               = "0.1.1"
-      image_pull_policy = "IfNotPresent"
-      limits            = {
-        cpu    = "920m"
-        memory = "2048Mi"
-      }
-      requests          = {
-        cpu    = "50m"
-        memory = "100Mi"
-      }
-    }
-  ]
-}
-```
-
-## Parameters for storage
-
-The parameters file for `Storage` [storage-parameters.tfvars](./storage-parameters.tfvars) contains the types of storage
-for each ArmoniK data type, the endpoint urls and Kubernetes secrets of these storages. The parameters are defined as
-follows, and you must update them especially the endpoint urls:
-
-1. List of storage for each ArmoniK data:
-
-```terraform
-storage = {
-  object         = "MongoDB"
-  table          = "Redis"
-  queue          = "Amqp"
-  lease_provider = "MongoDB"
-  # shared = "NFS" if you use an onpremise cluster
-  shared         = "HostPath"
-  # Mandatory: If you want execute the HTC Mock sample, you must set this parameter to "Redis", otherwise let it to ""
-  external       = "Redis"
-}
-```
-
-`external` storage is a parameter to choose un external storage for data client. By default, it is set to empty
-string `""`, but for **HTC Mock sample** you must set it to `"Redis"`.
-
-**Warning:** The list of storage adapted to each ArmoniK data type are defined
-in [Adapted storage for ArmoniK](../modules/needed-storage/storage_for_each_armonik_data.tf).
-
-2. List of endpoint urls and credentials for each needed storage that **YOU MUST MODIFY**:
-
-```terraform
-storage_endpoint_url = {
-  mongodb  = {
-    host   = "192.168.1.13"
-    port   = "32670"
-    secret = "mongodb-storage-secret"
-  }
-  redis    = {
-    url    = "192.168.1.13:32041"
-    secret = "redis-storage-secret"
-  }
-  activemq = {
-    host   = "192.168.1.13"
-    port   = "30423"
-    secret = "activemq-storage-secret"
-  }
-  shared   = {
-    # host = "<NFS_SERVER_IP>" if you use an onpremise cluster
-    host   = ""
-    secret = ""
-    # Path to external shared storage from which worker containers upload .dll
-    path   = "/data"
-  }
-  external = {
-    url    = "192.168.1.13:32041"
-    secret = "external-redis-storage-secret"
-  }
-}
-```
-
-## Parameters for monitoring
-
-The parameters file for `Monitoring` [monitoring-parameters.tfvars](./monitoring-parameters.tfvars) contains the list of
-monitoring tools that we want to activate:
-
-```terraform
-monitoring = {
-  namespace  = "armonik-monitoring"
-  seq        = true
-  grafana    = true
-  prometheus = true
-  dashboard  = false
-}
-```
+> **_NOTE:_** You have th list of parameters and their type/default values in [parameters.md](parameters.md)
 
 # Deploy
 
-Position yourself in directory `infrastructure/armonik` and execute the following command to deploy ArmoniK:
+You will deploy :
+
+* ArmoniK
+* Monitoring tools as Seq to manage ArmoniK logs
+
+From the **root** of the repository, position yourself in directory `infrastructure/armonik` and execute:
 
 ```bash
-make all ARMONIK_PARAMETERS_FILE=armonik-global-parameters.tfvars \
-         STORAGE_PARAMETERS_FILE=storage-global-parameters.tfvars \
-         MONITORING_PARAMETERS_FILE=monitoring-global-parameters.tfvars 
+make all PARAMETERS_DIR=<parameters_dir>
 ```
 
 or:
@@ -328,23 +158,18 @@ or:
 make all
 ```
 
-After the deployment you can display the list of created resources in Kubernetes as follows:
-
-```bash
-kubectl get all -n $ARMONIK_NAMESPACE
-```
+After the deployment, an output file `generated/output.json` is generated containing the list of created EKS
+repositories.
 
 # Clean-up
 
-**If you want** to delete all ArmoniK resources deployed as services in Kubernetes, execute the command:
+**If you want** to delete all the deployments, execute the command:
 
 ```bash
-make destroy ARMONIK_PARAMETERS_FILE=armonik-global-parameters.tfvars \
-             STORAGE_PARAMETERS_FILE=storage-global-parameters.tfvars \
-             MONITORING_PARAMETERS_FILE=monitoring-global-parameters.tfvars
+make destroy PARAMETERS_DIR=<parameters_dir>
 ```
 
-or, if you have used the default configuration file:
+or:
 
 ```bash
 make destroy
@@ -355,3 +180,5 @@ make destroy
 ```bash
 make clean
 ```
+
+### [Return to ArmoniK deployments](../../../README.md#armonik-deployments)

@@ -26,6 +26,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_docker_image"></a> [docker\_image](#input\_docker\_image) | Docker image for Seq | <pre>object({<br>    image = string<br>    tag   = string<br>  })</pre> | <pre>{<br>  "image": "datalust/seq",<br>  "tag": "2021.4"<br>}</pre> | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace of ArmoniK monitoring | `string` | n/a | yes |
 | <a name="input_seq"></a> [seq](#input\_seq) | Parameters of Seq | <pre>object({<br>    replicas = number<br>    port     = list(object({<br>      name        = string<br>      port        = number<br>      target_port = number<br>      protocol    = string<br>    }))<br>  })</pre> | <pre>{<br>  "port": [<br>    {<br>      "name": "ingestion",<br>      "port": 5341,<br>      "protocol": "TCP",<br>      "target_port": 5341<br>    },<br>    {<br>      "name": "web",<br>      "port": 8080,<br>      "protocol": "TCP",<br>      "target_port": 80<br>    }<br>  ],<br>  "replicas": 1<br>}</pre> | no |
 
@@ -34,6 +35,6 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_seq"></a> [seq](#output\_seq) | Seq |
-| <a name="output_seq_url"></a> [seq\_url](#output\_seq\_url) | n/a |
+| <a name="output_seq_endpoints"></a> [seq\_endpoints](#output\_seq\_endpoints) | n/a |
 | <a name="output_seq_web_url"></a> [seq\_web\_url](#output\_seq\_web\_url) | n/a |
 <!-- END_TF_DOCS -->

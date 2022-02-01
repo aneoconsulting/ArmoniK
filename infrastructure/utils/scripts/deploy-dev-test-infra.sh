@@ -167,14 +167,14 @@ storage_configuration_file (){
     --shared-host $SHARED_STORAGE_HOST \
     --external-url $REDIS_URL \
     --external-kube-secret $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
-    $BASEDIR/../../armonik/storage-parameters.tfvars \
+    $BASEDIR/../../armonik/parameters/storage-parameters.tfvars \
     $BASEDIR/storage-parameters.tfvars.json
 }
 
 armonik_configuration_file (){
-  FILE=$BASEDIR/../../armonik/armonik-parameters.tfvars
+  FILE=$BASEDIR/../../armonik/parameters/armonik-parameters.tfvars
   if [ $ENV == "aws" ]; then
-    FILE=$BASEDIR/../../armonik/aws-armonik-parameters.tfvars
+    FILE=$BASEDIR/../../armonik/parameters/aws-armonik-parameters.tfvars
   fi
   python $BASEDIR/../../../tools/modify_parameters.py \
     $FILE \
@@ -182,9 +182,9 @@ armonik_configuration_file (){
 }
 
 monitoring_configuration_file (){
-  FILE=$BASEDIR/../../armonik/monitoring-parameters.tfvars
+  FILE=$BASEDIR/../../armonik/parameters/monitoring-parameters.tfvars
   if [ $ENV == "aws" ]; then
-    FILE=$BASEDIR/../../armonik/aws-monitoring-parameters.tfvars
+    FILE=$BASEDIR/../../armonik/parameters/aws-monitoring-parameters.tfvars
   fi
   python $BASEDIR/../../../tools/modify_parameters.py \
     $FILE \
@@ -208,7 +208,11 @@ deploy_armonik() {
   configuration_file ${SHARED_STORAGE_TYPE}
 
   cd $BASEDIR/../../armonik
-  execute terraform apply -var-file $BASEDIR/storage-parameters.tfvars.json -var-file $BASEDIR/armonik-parameters.tfvars.json -var-file $BASEDIR/monitoring-parameters.tfvars.json -auto-approve
+  execute terraform apply \
+      -var-file $BASEDIR/storage-parameters.tfvars.json \
+      -var-file $BASEDIR/armonik-parameters.tfvars.json \
+      -var-file $BASEDIR/monitoring-parameters.tfvars.json \
+      -auto-approve
   cd -
 }
 

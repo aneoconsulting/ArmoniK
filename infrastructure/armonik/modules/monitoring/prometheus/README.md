@@ -33,6 +33,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_docker_image"></a> [docker\_image](#input\_docker\_image) | Docker image for Prometheus | <pre>object({<br>    image = string<br>    tag   = string<br>  })</pre> | <pre>{<br>  "image": "prom/prometheus",<br>  "tag": "latest"<br>}</pre> | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Namespace of ArmoniK monitoring | `string` | n/a | yes |
 | <a name="input_prometheus"></a> [prometheus](#input\_prometheus) | Parameters of prometheus | <pre>object({<br>    replicas = number<br>    port     = object({<br>      name        = string<br>      port        = number<br>      target_port = number<br>      protocol    = string<br>    })<br>  })</pre> | <pre>{<br>  "port": {<br>    "name": "prometheus",<br>    "port": 9090,<br>    "protocol": "TCP",<br>    "target_port": 9090<br>  },<br>  "replicas": 1<br>}</pre> | no |
 

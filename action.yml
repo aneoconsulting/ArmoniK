@@ -85,10 +85,10 @@ runs:
       id: credentialsoutput
       shell: bash
       run: |
-        echo "::set-output name=credentials-ca-crt::${{ github.action_path }}/infrastructure/credentials/ca.crt"
-        echo "::set-output name=credentials-certificate-pfx::${{ github.action_path }}/infrastructure/credentials/certificate.pfx"
-        echo "::set-output name=credentials-redis::${{ github.action_path }}/infrastructure/credentials/redis-credentials.json"
-        echo "::set-output name=credentials-redis-ca-p7b::${{ github.action_path }}/infrastructure/credentials/chain.p7b"
+        echo "::set-output name=credentials-ca-crt::${{ github.action_path }}/infrastructure/security/certificates/ca.crt"
+        echo "::set-output name=credentials-certificate-pfx::${{ github.action_path }}/infrastructure/security/certificates/certificate.pfx"
+        echo "::set-output name=credentials-redis::${{ github.action_path }}/infrastructure/credentials/security/redis-credentials.json"
+        echo "::set-output name=credentials-redis-ca-p7b::${{ github.action_path }}/infrastructure/security/certificates/chain.p7b"
 
     - name: Deploy Onpremise Storage
       shell: bash
@@ -134,7 +134,7 @@ runs:
             --redis-kube-secret "redis-storage-secret" \
             --external-url $REDIS_URL \
             --external-kube-secret "external-redis-storage-secret" \
-            ${{ github.action_path }}/infrastructure/armonik/storage-parameters.tfvars \
+            ${{ github.action_path }}/infrastructure/armonik/parameters/storage-parameters.tfvars \
             ${{ github.action_path }}/infrastructure/armonik/storage-parameters.tfvars.json
 
         python ${{ github.action_path }}/tools/modify_parameters.py \
@@ -144,11 +144,11 @@ runs:
             --polling-agent-tag ${{ inputs.polling-agent-tag }} \
             --control-plane-image ${{ inputs.control-plane-image }} \
             --control-plane-tag ${{ inputs.control-plane-tag }} \
-            ${{ github.action_path }}/infrastructure/armonik/armonik-parameters.tfvars \
+            ${{ github.action_path }}/infrastructure/armonik/parameters/armonik-parameters.tfvars \
             ${{ github.action_path }}/infrastructure/armonik/armonik-parameters.tfvars.json
 
         python ${{ github.action_path }}/tools/modify_parameters.py \
-            ${{ github.action_path }}/infrastructure/armonik/monitoring-parameters.tfvars \
+            ${{ github.action_path }}/infrastructure/armonik/parameters/monitoring-parameters.tfvars \
             ${{ github.action_path }}/infrastructure/armonik/monitoring-parameters.tfvars.json
 
     - name: Deploy ArmoniK on single node
