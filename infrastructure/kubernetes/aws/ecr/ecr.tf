@@ -4,7 +4,7 @@ resource "aws_ecr_repository" "ecr" {
   name  = var.repositories[count.index].name
   encryption_configuration {
     encryption_type = "KMS"
-    kms_key         = (var.kms_key_id != "" ? var.kms_key_id : module.kms.selected.arn)
+    kms_key         = (var.kms_key_id != "" ? var.kms_key_id : module.kms.0.selected.arn)
   }
   tags  = merge(local.tags, { resource = "ECR" })
 }

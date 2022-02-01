@@ -1,10 +1,10 @@
-# Profile
+# AWS profile
 profile = "default"
 
 # Region
 region = "eu-west-3"
 
-# TAG
+# TAG (suffix)
 tag = ""
 
 # KMS to encrypt ECR repositories
@@ -28,17 +28,17 @@ repositories = [
     tag   = "5.16.3"
   },
   {
-    name  = "control-plane"
+    name  = "armonik-control-plane"
     image = "dockerhubaneo/armonik_control"
     tag   = "0.4.0"
   },
   {
-    name  = "polling-agent"
+    name  = "armonik-polling-agent"
     image = "dockerhubaneo/armonik_pollingagent"
     tag   = "0.4.0"
   },
   {
-    name  = "worker"
+    name  = "armonik-worker"
     image = "dockerhubaneo/armonik_worker_dll"
     tag   = "0.1.2-SNAPSHOT.4.cfda5d1"
   },

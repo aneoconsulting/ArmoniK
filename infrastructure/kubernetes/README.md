@@ -20,4 +20,4 @@ You can install a Kubernetes on [onpremise cluster](onpremise/cluster/README.md)
 
 # Amazon Web Services (AWS)
 
-You can install an Elastic Kubernetes Service (EKS) on AWS using [Terraform sources for EKS](aws/eks/README.md).
+You can install an Elastic Kubernetes Service (EKS) on AWS using [Terraform sources for EKS](aws/README.md).

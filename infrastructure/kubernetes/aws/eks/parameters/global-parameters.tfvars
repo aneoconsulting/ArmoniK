@@ -1,8 +1,8 @@
-# Profile
+# AWS profile
 profile = "default"
 
 # Region
 region = "eu-west-3"
 
-# TAG
+# TAG  (suffix)
 tag = ""

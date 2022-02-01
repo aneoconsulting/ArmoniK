@@ -44,3 +44,5 @@ To uninstall k3s on your local machine or a VM, use the following command:
 ```bash
 /usr/local/bin/k3s-uninstall.sh
 ```
+
+# [Return to the main page](../../../README.md#armonik-deployments)

@@ -16,15 +16,15 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 3.72.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 3.1.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.74.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.1.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_eks"></a> [eks](#module\_eks) | ./modules/eks | n/a |
-| <a name="module_kms"></a> [kms](#module\_kms) | ../../modules/aws/kms | n/a |
+| <a name="module_kms"></a> [kms](#module\_kms) | ../../../modules/aws/kms | n/a |
 | <a name="module_s3fs_bucket"></a> [s3fs\_bucket](#module\_s3fs\_bucket) | ./modules/s3 | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | ./modules/vpc | n/a |
 
@@ -39,7 +39,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_eks"></a> [eks](#input\_eks) | Parameters of AWS EKS | <pre>object({<br>    cluster_version                      = string<br>    cluster_endpoint_public_access       = bool<br>    cluster_endpoint_public_access_cidrs = list(string)<br>    cluster_log_retention_in_days        = number<br>  })</pre> | <pre>{<br>  "cluster_endpoint_public_access": true,<br>  "cluster_endpoint_public_access_cidrs": [<br>    "0.0.0.0/0"<br>  ],<br>  "cluster_log_retention_in_days": 30,<br>  "cluster_version": "1.21"<br>}</pre> | no |
+| <a name="input_eks"></a> [eks](#input\_eks) | Parameters of AWS EKS | <pre>object({<br>    cluster_version                      = string<br>    cluster_endpoint_public_access       = bool<br>    cluster_endpoint_public_access_cidrs = list(string)<br>    cluster_log_retention_in_days        = number<br>    docker_images                        = object({<br>      cluster_autoscaler = object({<br>        image = string<br>        tag   = string<br>      })<br>      instance_refresh   = object({<br>        image = string<br>        tag   = string<br>      })<br>    })<br>  })</pre> | <pre>{<br>  "cluster_endpoint_public_access": true,<br>  "cluster_endpoint_public_access_cidrs": [<br>    "0.0.0.0/0"<br>  ],<br>  "cluster_log_retention_in_days": 30,<br>  "cluster_version": "1.21",<br>  "docker_images": {<br>    "cluster_autoscaler": {<br>      "image": "k8s.gcr.io/autoscaling/cluster-autoscaler",<br>      "tag": "v1.21.0"<br>    },<br>    "instance_refresh": {<br>      "image": "amazon/aws-node-termination-handler",<br>      "tag": "v1.10.0"<br>    }<br>  }<br>}</pre> | no |
 | <a name="input_eks_worker_groups"></a> [eks\_worker\_groups](#input\_eks\_worker\_groups) | List of EKS worker node groups | `any` | <pre>[<br>  {<br>    "asg_desired_capacity": 0,<br>    "asg_max_size": 20,<br>    "asg_min_size": 0,<br>    "name": "worker-small-spot",<br>    "on_demand_base_capacity": 0,<br>    "override_instance_types": [<br>      "m5.xlarge",<br>      "m5d.xlarge",<br>      "m5a.xlarge"<br>    ],<br>    "spot_instance_pools": 0<br>  },<br>  {<br>    "asg_desired_capacity": 0,<br>    "asg_max_size": 20,<br>    "asg_min_size": 0,<br>    "name": "worker-2xmedium-spot",<br>    "on_demand_base_capacity": 0,<br>    "override_instance_types": [<br>      "m5.2xlarge",<br>      "m5d.2xlarge",<br>      "m5a.2xlarge"<br>    ],<br>    "spot_instance_pools": 0<br>  },<br>  {<br>    "asg_desired_capacity": 0,<br>    "asg_max_size": 20,<br>    "asg_min_size": 0,<br>    "name": "worker-4xmedium-spot",<br>    "on_demand_base_capacity": 0,<br>    "override_instance_types": [<br>      "m5.4xlarge",<br>      "m5d.4xlarge",<br>      "m5a.4xlarge"<br>    ],<br>    "spot_instance_pools": 0<br>  },<br>  {<br>    "asg_desired_capacity": 0,<br>    "asg_max_size": 20,<br>    "asg_min_size": 0,<br>    "name": "worker-8xmedium-spot",<br>    "on_demand_base_capacity": 0,<br>    "override_instance_types": [<br>      "m5.8xlarge",<br>      "m5d.8xlarge",<br>      "m5a.8xlarge"<br>    ],<br>    "spot_instance_pools": 0<br>  }<br>]</pre> | no |
 | <a name="input_encryption_keys"></a> [encryption\_keys](#input\_encryption\_keys) | Encryption keys ARN for EKS components | <pre>object({<br>    cluster_log_kms_key_id    = string<br>    cluster_encryption_config = string<br>    ebs_kms_key_id            = string<br>  })</pre> | <pre>{<br>  "cluster_encryption_config": "",<br>  "cluster_log_kms_key_id": "",<br>  "ebs_kms_key_id": ""<br>}</pre> | no |
 | <a name="input_profile"></a> [profile](#input\_profile) | Profile of AWS credentials to deploy Terraform sources | `string` | `"default"` | no |
@@ -52,8 +52,8 @@
 
 | Name | Description |
 |------|-------------|
-| <a name="output_eks"></a> [eks](#output\_eks) | n/a |
-| <a name="output_kms"></a> [kms](#output\_kms) | n/a |
-| <a name="output_s3_bucket_shared_storage"></a> [s3\_bucket\_shared\_storage](#output\_s3\_bucket\_shared\_storage) | n/a |
-| <a name="output_vpc"></a> [vpc](#output\_vpc) | n/a |
+| <a name="output_eks"></a> [eks](#output\_eks) | Amazon EKS |
+| <a name="output_kms"></a> [kms](#output\_kms) | Amazon KMS |
+| <a name="output_s3_bucket_shared_storage"></a> [s3\_bucket\_shared\_storage](#output\_s3\_bucket\_shared\_storage) | Amazon S3 bucket as shared storage |
+| <a name="output_vpc"></a> [vpc](#output\_vpc) | Amazon VPC for EKS |
 <!-- END_TF_DOCS -->

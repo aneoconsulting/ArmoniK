@@ -182,9 +182,9 @@ armonik_configuration_file (){
 }
 
 monitoring_configuration_file (){
-  FILE=$BASEDIR/../../armonik/aws-monitoring-parameters.tfvars
+  FILE=$BASEDIR/../../armonik/monitoring-parameters.tfvars
   if [ $ENV == "aws" ]; then
-    FILE=$BASEDIR/../../armonik/monitoring-parameters.tfvars
+    FILE=$BASEDIR/../../armonik/aws-monitoring-parameters.tfvars
   fi
   python $BASEDIR/../../../tools/modify_parameters.py \
     $FILE \
@@ -273,7 +273,7 @@ function main() {
       shift
       shift
       ;;
-    env)
+    -env)
       ENV="$2"
       shift
       shift

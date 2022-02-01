@@ -8,10 +8,11 @@ variable "namespace" {
 variable "redis" {
   description = "Parameters of Redis"
   type        = object({
-    replicas = number
-    port     = number
-    image    = string
-    tag      = string
-    secret   = string
+    replicas      = number
+    port          = number
+    image         = string
+    tag           = string
+    secret        = string
+    node_selector = any
   })
 }
