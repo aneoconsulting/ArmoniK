@@ -11,7 +11,7 @@ mongodb = {
   image         = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongodb"
   tag           = "4.4.11"
   secret        = "mongodb-storage-secret"
-  node_selector = { "node.kubernetes.io/lifecycle" = "normal" }
+  node_selector = { lifecycle = "OnDemand" }
 }
 
 # Parameters for Redis
@@ -21,7 +21,7 @@ redis = {
   image         = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/redis"
   tag           = "bullseye"
   secret        = "redis-storage-secret"
-  node_selector = { "node.kubernetes.io/lifecycle" = "normal" }
+  node_selector = { lifecycle = "OnDemand" }
 }
 
 # Parameters for ActiveMQ
@@ -37,6 +37,6 @@ activemq = {
   image         = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/activemq"
   tag           = "5.16.3"
   secret        = "activemq-storage-secret"
-  node_selector = { "node.kubernetes.io/lifecycle" = "normal" }
+  node_selector = { lifecycle = "OnDemand" }
 }
 

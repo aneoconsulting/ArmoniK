@@ -18,7 +18,7 @@ Hereafter you have instructions to deploy ArmoniK in Kubernetes.
 # Set environment variables
 
 You must set environment variables for deploying ArmoniK. The
-main [environment variables](../../utils/envvars-armonik.conf) are:
+main [environment variables](../utils/envvars-armonik.conf) are:
 
 ```buildoutcfg
 # Armonik namespace in the Kubernetes
@@ -58,7 +58,7 @@ export ARMONIK_MONGODB_SECRET_NAME=<You kubernetes secret for the MongoDB storag
 
 **Mandatory:** You must set these environment variables:
 
-From the **root** of the repository, source [envvars-armonik.conf](../../utils/envvars-armonik.conf):
+From the **root** of the repository, source [envvars-armonik.conf](../utils/envvars-armonik.conf):
 
 ```bash
    source infrastructure/utils/envvars-armonik.conf
@@ -87,8 +87,8 @@ create secrets for some storage.
 
 ## Redis client secret
 
-Example of certificates for Redis client are in [Redis certificates](../../security/certificates) and credentials of
-authentication are in [Redis credentials](../../security/credentials). Execute the following command to create the Redis
+Example of certificates for Redis client are in [Redis certificates](../security/certificates) and credentials of
+authentication are in [Redis credentials](../security/credentials). Execute the following command to create the Redis
 server secret in Kubernetes:
 
 ```bash
@@ -105,8 +105,8 @@ kubectl create secret generic $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
 
 ## ActiveMQ Client secret
 
-Example of certificates for ActiveMQ client are in [ActiveMQ certificates](../../security/certificates) and credentials
-of authentication are in [ActiveMQ credentials](../../security/credentials). Execute the following command to create the
+Example of certificates for ActiveMQ client are in [ActiveMQ certificates](../security/certificates) and credentials
+of authentication are in [ActiveMQ credentials](../security/credentials). Execute the following command to create the
 ActiveMQ server secret in Kubernetes:
 
 ```bash
@@ -118,8 +118,8 @@ kubectl create secret generic $ARMONIK_ACTIVEMQ_SECRET_NAME \
 
 ## MongoDB client secret
 
-Example of certificates for MongoDB client are in [MongoDB certificates](../../security/certificates) and credentials of
-authentication are in [MongoDB credentials](../../security/credentials). Execute the following command to create the
+Example of certificates for MongoDB client are in [MongoDB certificates](../security/certificates) and credentials of
+authentication are in [MongoDB credentials](../security/credentials). Execute the following command to create the
 MongoDB server secret in Kubernetes:
 
 ```bash
@@ -181,4 +181,4 @@ make destroy
 make clean
 ```
 
-### [Return to ArmoniK deployments](../../../README.md#armonik-deployments)
+### [Return to ArmoniK deployments](../README.md#armonik-deployments)

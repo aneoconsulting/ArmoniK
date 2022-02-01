@@ -93,12 +93,11 @@ eks_worker_groups = [
       "m5a.8xlarge"
     ]
     spot_instance_pools                      = 0
-    asg_min_size                             = 1
+    asg_min_size                             = 0
     asg_max_size                             = 20
-    asg_desired_capacity                     = 1
-    on_demand_base_capacity                  = 1
+    asg_desired_capacity                     = 0
+    on_demand_base_capacity                  = 0
     on_demand_percentage_above_base_capacity = 100
-    kubelet_extra_args                       = "--node-labels=node.kubernetes.io/lifecycle=normal"
-    k8s_labels                               = { "node.kubernetes.io/lifecycle" = "normal" }
+    kubelet_extra_args                       = "--node-labels=lifecycle=OnDemand"
   }
 ]
