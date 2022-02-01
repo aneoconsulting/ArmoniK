@@ -31,19 +31,6 @@ resource "kubernetes_deployment" "activemq" {
       }
       spec {
         node_selector = var.activemq.node_selector
-        affinity {
-          node_affinity {
-            required_during_scheduling_ignored_during_execution {
-              node_selector_term {
-                match_expressions {
-                  key      = "node.kubernetes.io/lifecycle"
-                  operator = "In"
-                  values   = ["normal"]
-                }
-              }
-            }
-          }
-        }
         container {
           name  = "activemq"
           image = "${var.activemq.image}:${var.activemq.tag}"
