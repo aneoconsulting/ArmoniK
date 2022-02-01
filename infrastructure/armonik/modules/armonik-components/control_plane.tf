@@ -80,10 +80,64 @@ resource "kubernetes_deployment" "control_plane" {
             }
           }
         }
+
+        container {
+          name              = "fluentbit"
+          image             = "fluent/fluent-bit:1.3.11"
+          image_pull_policy = "Always"
+
+          volume_mount {
+            name       = "varlog"
+            mount_path = "/var/log"
+          }
+          volume_mount {
+            name       = "varlibdockercontainers"
+            mount_path = "/var/lib/docker/containers"
+            read_only  = true
+          }
+          volume_mount {
+            name       = "fluentbit-configmap"
+            mount_path = "/fluent-bit/etc/"
+          }
+
+          env {
+            name  = "FLUENT_GELF_HOST"
+            value = "${var.seq_endpoints.host}"
+          }
+          env {
+            name  = "FLUENT_GELF_PORT"
+            value = "12201"
+          }
+          env {
+            name  = "FLUENT_GELF_PROTOCOL"
+            value = "UDP"
+          }
+        }
+
+        volume {
+          name = "varlog"
+          host_path {
+            path = "/var/log"
+          }
+        }
+        volume {
+          name = "varlibdockercontainers"
+          host_path {
+            path = "/var/lib/docker/containers"
+          }
+        }
+
         volume {
           name = "control-plane-configmap"
           config_map {
             name     = kubernetes_config_map.control_plane_config.metadata.0.name
+            optional = false
+          }
+        }
+        volume {
+          name = "fluentbit-configmap"
+          config_map {
+            name     = kubernetes_config_map.fluentbit_config.metadata.0.name
             optional = false
           }
         }
