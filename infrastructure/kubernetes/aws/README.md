@@ -71,6 +71,6 @@ needing to install, operate, and maintain your own Kubernetes control plane or w
 
 Follow the instructions presented in [Create Amazon ECR](ekr/README.md).
 
-# [Return to ArmoniK deployments](../../README.md#armonik-deployments)
+### [Return to ArmoniK deployments](../../README.md#armonik-deployments)
 
 

@@ -62,4 +62,4 @@ make destroy
 make clean
 ```
 
-# [Return to ArmoniK deployments](../../../README.md#armonik-deployments)
+### [Return to ArmoniK deployments](../../../README.md#armonik-deployments)
