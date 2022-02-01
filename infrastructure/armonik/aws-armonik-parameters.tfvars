@@ -8,9 +8,17 @@ logging_level = "Information"
 control_plane = {
   replicas          = 1
   image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/control-plane"
-  tag               = "0.3.1-dockercompose.4.ed1ecbe"
+  tag               = "0.4.0"
   image_pull_policy = "IfNotPresent"
   port              = 5001
+  limits            = {
+    cpu    = "1000m"
+    memory = "1024Mi"
+  }
+  requests          = {
+    cpu    = "100m"
+    memory = "128Mi"
+  }
 }
 
 # Parameters of the compute plane
@@ -23,7 +31,7 @@ compute_plane = {
   # ArmoniK polling agent
   polling_agent                    = {
     image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/polling-agent"
-    tag               = "0.3.1-dockercompose.4.ed1ecbe"
+    tag               = "0.4.0"
     image_pull_policy = "IfNotPresent"
     limits            = {
       cpu    = "100m"

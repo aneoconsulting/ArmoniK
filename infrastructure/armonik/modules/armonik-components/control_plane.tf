@@ -30,6 +30,16 @@ resource "kubernetes_deployment" "control_plane" {
           name              = "control-plane"
           image             = var.control_plane.tag != "" ? "${var.control_plane.image}:${var.control_plane.tag}" : var.control_plane.image
           image_pull_policy = var.control_plane.image_pull_policy
+          resources {
+            limits   = {
+              cpu    = var.control_plane.limits.cpu
+              memory = var.control_plane.limits.memory
+            }
+            requests = {
+              cpu    = var.control_plane.requests.cpu
+              memory = var.control_plane.requests.memory
+            }
+          }
           port {
             name           = "control-port"
             container_port = 80

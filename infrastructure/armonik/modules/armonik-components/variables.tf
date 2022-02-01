@@ -25,6 +25,14 @@ variable "control_plane" {
     tag               = string
     image_pull_policy = string
     port              = number
+    limits            = object({
+      cpu    = string
+      memory = string
+    })
+    requests          = object({
+      cpu    = string
+      memory = string
+    })
   })
 }
 

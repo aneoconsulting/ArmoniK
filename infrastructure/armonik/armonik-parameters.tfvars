@@ -11,6 +11,14 @@ control_plane = {
   tag               = "0.4.0"
   image_pull_policy = "IfNotPresent"
   port              = 5001
+  limits            = {
+    cpu    = "1000m"
+    memory = "1024Mi"
+  }
+  requests          = {
+    cpu    = "100m"
+    memory = "128Mi"
+  }
 }
 
 # Parameters of the compute plane

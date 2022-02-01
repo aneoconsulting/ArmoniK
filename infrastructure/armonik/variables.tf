@@ -152,6 +152,14 @@ variable "control_plane" {
     tag               = string
     image_pull_policy = string
     port              = number
+    limits            = object({
+      cpu    = string
+      memory = string
+    })
+    requests          = object({
+      cpu    = string
+      memory = string
+    })
   })
   default     = {
     replicas          = 1
@@ -159,6 +167,14 @@ variable "control_plane" {
     tag               = "0.0.4"
     image_pull_policy = "IfNotPresent"
     port              = 5001
+    limits            = {
+      cpu    = "1000m"
+      memory = "1024Mi"
+    }
+    requests          = {
+      cpu    = "100m"
+      memory = "128Mi"
+    }
   }
 }
 

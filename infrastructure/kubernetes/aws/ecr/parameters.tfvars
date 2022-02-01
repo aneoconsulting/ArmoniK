@@ -30,12 +30,12 @@ repositories = [
   {
     name  = "control-plane"
     image = "dockerhubaneo/armonik_control"
-    tag   = "0.3.1-dockercompose.4.ed1ecbe"
+    tag   = "0.4.0"
   },
   {
     name  = "polling-agent"
     image = "dockerhubaneo/armonik_pollingagent"
-    tag   = "0.3.1-dockercompose.4.ed1ecbe"
+    tag   = "0.4.0"
   },
   {
     name  = "worker"
