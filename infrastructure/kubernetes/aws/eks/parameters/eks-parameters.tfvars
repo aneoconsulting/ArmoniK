@@ -94,7 +94,7 @@ eks_worker_groups = [
     ]
     spot_instance_pools                      = 0
     asg_min_size                             = 0
-    asg_max_size                             = 20
+    asg_max_size                             = 1
     asg_desired_capacity                     = 0
     on_demand_base_capacity                  = 0
     on_demand_percentage_above_base_capacity = 100
