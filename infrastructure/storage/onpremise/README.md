@@ -94,7 +94,7 @@ kubectl create secret generic $ARMONIK_STORAGE_REDIS_SECRET_NAME \
 ## ActiveMQ server secret
 
 Example of certificates are in [ActiveMQ certificates](../../security/certificates) and credentials for authentication
-are in [ActiveMQ certificates](../../security/credentials). Execute the following command to create the ActiveMQ server
+are in [ActiveMQ credentials](../../security/credentials). Execute the following command to create the ActiveMQ server
 secret in Kubernetes:
 
 ```bash
