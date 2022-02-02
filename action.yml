@@ -46,29 +46,33 @@ outputs:
 runs:
   using: composite
   steps:
-    - if: ${{ inputs.docker-is-installed != 'true' }}
-      name: Install docker
-      shell: bash
-      run: |
-        sh tools/install/docker.sh
-
-    - uses: azure/setup-kubectl@v2.0
-      with:
-        version: latest
-
-    - uses: hashicorp/setup-terraform@v1
-
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
-        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
-
     - name: Install Dependencies
       shell: bash
       run: |
         sudo apt-get update
         sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq
         pip install python-hcl2
+
+    - if: ${{ inputs.docker-is-installed != 'true' }}
+      name: Install docker
+      shell: bash
+      run: |
+        sh tools/install/docker.sh
+
+    - name: Install kubectl
+      shell: bash
+      run: |
+        sh tools/install/kubectl.sh
+
+    - name: Install terraform
+      shell: bash
+      run: |
+        sh tools/install/terraform.sh
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
 
     - name: Install K3s
       shell: bash
