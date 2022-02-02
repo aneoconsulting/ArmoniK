@@ -1,13 +1,17 @@
 # Table of contents
 
-1. [Introduction](#introduction)
-2. [Software prerequisites](#software-prerequisites)
-3. [ArmoniK deployments](#armonik-deployments)
-    1. [Install infrastructure requirements](#install-infrastructure-requirements)
-        1. [Install Kubernetes](#install-kubernetes)
-        2. [Install storage](#install-storage)
-    2. [Install ArmoniK](#install-armonik)
-4. [Quick install](#quick-install)
+- [Table of contents](#table-of-contents)
+- [Introduction](#introduction)
+- [Software prerequisites](#software-prerequisites)
+- [ArmoniK deployments](#armonik-deployments)
+  - [Install infrastructure requirements](#install-infrastructure-requirements)
+    - [Install Kubernetes](#install-kubernetes)
+    - [Install storage](#install-storage)
+  - [Install ArmoniK](#install-armonik)
+- [Quick install](#quick-install)
+  - [On dev/test local machine](#on-devtest-local-machine)
+- [All in One command to deploy](#all-in-one-command-to-deploy)
+  - [On dev/test local machine](#on-devtest-local-machine-1)
 
 # Introduction
 
@@ -52,8 +56,8 @@ in [ArmoniK installation](armonik/README.md).
 You can follow instructions described in [Quick deploy ArmoniK on local machine](quick-deploy/localhost/README.md) to
 install ArmoniK and its infrastructure requirements upon your local machine.
 
+# All in One command to deploy
 
+## On dev/test local machine
 
-
-
-
+If you do not modify any default configuration you can directly take a script all-in-one to deploy Storage and Armonik in the same command. Please go the page : [All-In-One script page](quick-deploy/localhost/All-In-One.md)

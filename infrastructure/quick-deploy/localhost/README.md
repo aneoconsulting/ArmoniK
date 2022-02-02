@@ -1,15 +1,19 @@
 # Table of contents
 
-1. [Introduction](#introduction)
-2. [Prerequisites](#prerequisites)
-3. [Set environment variables](#set-environment-variables)
-4. [Prepare Kubernetes](#prepare-kubernetes)
-    1. [Install K3s](#install-k3s)
-    2. [Create namespaces and secrets](#create-namespaces-and-secrets)
-5. [Prepare input parameters](#prepare-input-parameters)
-6. [Deploy ArmoniK](#deploy-armonik)
-7. [Quick tests](#quick-tests)
-8. [Clean-up](#clean-up)
+- [Table of contents](#table-of-contents)
+- [Introduction](#introduction)
+- [Prerequisites](#prerequisites)
+- [Set environment variables](#set-environment-variables)
+- [Prepare Kubernetes](#prepare-kubernetes)
+  - [Install K3s](#install-k3s)
+  - [Create namespaces and secrets](#create-namespaces-and-secrets)
+- [Prepare input parameters (Optional)](#prepare-input-parameters-optional)
+- [Deploy ArmoniK](#deploy-armonik)
+- [Quick tests](#quick-tests)
+  - [Seq webserver](#seq-webserver)
+  - [Tests](#tests)
+- [Clean-up](#clean-up)
+    - [Return to the main page](#return-to-the-main-page)
 
 # Introduction
 
@@ -83,7 +87,7 @@ Form the **root** of the repository, execute the script `init_kube.sh`:
 tools/install/init_kube.sh
 ```
 
-# Prepare input parameters
+# Prepare input parameters (Optional)
 
 Before deploying ArmoniK on your local machine, You have to prepare Terraform input parameters. The list of required
 parameters are defined in [parameters.tfvars](parameters.tfvars), that You can edit or copy and modify the values of
@@ -182,7 +186,7 @@ cd infrastructure/quick-deploy/localhost
 and execute:
 
 ```bash
-make all PARAMETERS_FILE=parameters.tfvars 
+make all PARAMETERS_FILE=parameters.tfvars
 ```
 
 or:
@@ -257,7 +261,7 @@ export Grpc__Endpoint=http://192.168.1.13:5001
 Execute [symphony_like.sh](../../../tools/tests/symphony_like.sh) from the **root** repository:
 
 ```bash
-tools/tests/symphony_like.sh 
+tools/tests/symphony_like.sh
 ```
 
 Execute [datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh) from the **root** repository:
@@ -275,7 +279,7 @@ You can follow logs on Seq webserver:
 **If you want** to delete all resources, execute the command:
 
 ```bash
-make destroy PARAMETERS_FILE=parameters.tfvars 
+make destroy PARAMETERS_FILE=parameters.tfvars
 ```
 
 or:
