@@ -46,8 +46,11 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: docker-practice/actions-setup-docker@master
-      if: ${{ inputs.docker-is-installed != 'true' }}
+    - if: ${{ inputs.docker-is-installed != 'true' }}
+      name: Install docker
+      shell: bash
+      run: |
+        sh tools/install/docker.sh
 
     - uses: azure/setup-kubectl@v2.0
       with:
