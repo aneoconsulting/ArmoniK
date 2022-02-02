@@ -170,6 +170,7 @@ First, You must create the `host_path=/data` directory that will be shared with 
 
 ```bash
 sudo mkdir -p /data
+sudo chown -R $USER:$USER /data
 ```
 
 From the **root** of the repository, position yourself in directory:
