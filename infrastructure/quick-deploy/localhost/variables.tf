@@ -1,10 +1,4 @@
 # Global variables
-variable "namespace" {
-  description = "Namespace of ArmoniK resources"
-  type        = string
-  default     = "armonik"
-}
-
 variable "k8s_config_path" {
   description = "Path of the configuration file of K8s"
   type        = string
@@ -24,122 +18,48 @@ variable "logging_level" {
   default     = "Information"
 }
 
-# Use monitoring
-variable "monitoring" {
-  description = "Use monitoring tools"
+# Host path as shared storage
+variable "host_path" {
+  description = "Host path as shared storage"
+  type        = string
+  default     = "/data"
+}
+
+# Kubernetes namespaces
+variable "kubernetes_namespaces" {
+  description = "Kubernetes namespaces"
   type        = object({
-    namespace  = string
-    seq        = object({
-      image = string
-      tag   = string
-      use   = bool
-    })
-    grafana    = object({
-      image = string
-      tag   = string
-      use   = bool
-    })
-    prometheus = object({
-      image = string
-      tag   = string
-      use   = bool
-    })
+    storage    = string
+    monitoring = string
+    armonik    = string
   })
   default     = {
-    namespace  = "armonik-monitoring"
-    seq        = {
-      image = "datalust/seq"
-      tag   = "2021.4"
-      use   = true
-    }
-    grafana    = {
-      image = "grafana/grafana"
-      tag   = "latest"
-      use   = false
-    }
-    prometheus = {
-      image = "prom/prometheus"
-      tag   = "latest"
-      use   = false
-    }
+    storage    = "armonik-storage"
+    monitoring = "armonik-monitoring"
+    armonik    = "armonik"
   }
 }
 
-# Needed storage for each ArmoniK data type
-variable "storage" {
-  description = "Needed storage for each ArmoniK data type"
+# Kubernetes secrets
+variable "kubernetes_secrets" {
+  description = "Kubernetes secrets"
   type        = object({
-    object         = string
-    table          = string
-    queue          = string
-    lease_provider = string
-    shared         = string
-    external       = string
+    activemq_server = string
+    activemq_client = string
+    mongodb_server  = string
+    mongodb_client  = string
+    redis_server    = string
+    redis_client    = string
+    external_client = string
   })
   default     = {
-    object         = "Redis"
-    table          = "MongoDB"
-    queue          = "Amqp"
-    lease_provider = "MongoDB"
-    shared         = "HostPath"
-    external       = ""
-  }
-}
-
-# Endpoints and secrets of storage resources
-variable "storage_endpoint_url" {
-  description = "Endpoints and secrets of storage resources"
-  type        = object({
-    mongodb  = object({
-      host   = string
-      port   = string
-      secret = string
-    })
-    redis    = object({
-      url    = string
-      secret = string
-    })
-    activemq = object({
-      host   = string
-      port   = string
-      secret = string
-    })
-    shared   = object({
-      host   = string
-      secret = string
-      id     = string
-      path   = string
-    })
-    external = object({
-      url    = string
-      secret = string
-    })
-  })
-  default     = {
-    mongodb  = {
-      host   = ""
-      port   = ""
-      secret = ""
-    }
-    redis    = {
-      url    = ""
-      secret = ""
-    }
-    activemq = {
-      host   = ""
-      port   = ""
-      secret = ""
-    }
-    shared   = {
-      host   = ""
-      secret = ""
-      id     = ""
-      path   = "/data"
-    }
-    external = {
-      url    = ""
-      secret = ""
-    }
+    activemq_server = "activemq-storage-secret"
+    activemq_client = "activemq-storage-secret"
+    mongodb_server  = "mongodb-storage-secret"
+    mongodb_client  = "mongodb-storage-secret"
+    redis_server    = "redis-storage-secret"
+    redis_client    = "redis-storage-secret"
+    external_client = "external-storage-secret"
   }
 }
 
@@ -165,7 +85,7 @@ variable "control_plane" {
   default     = {
     replicas           = 1
     image              = "dockerhubaneo/armonik_control"
-    tag                = "0.0.4"
+    tag                = "0.4.0"
     image_pull_policy  = "IfNotPresent"
     port               = 5001
     limits             = {
@@ -228,7 +148,7 @@ variable "compute_plane" {
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.0.4"
+      tag               = "0.4.0"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "100m"
@@ -242,10 +162,12 @@ variable "compute_plane" {
     # ArmoniK workers
     worker                           = [
       {
-        name              = "compute"
+        name              = "worker"
         port              = 80
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.0.4"
+        # HTC Mock
+        #image             = "dockerhubaneo/armonik_worker_htcmock"
+        tag               = "0.1.2-SNAPSHOT.4.cfda5d1"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "920m"
@@ -260,9 +182,76 @@ variable "compute_plane" {
   }
 }
 
-# Working dir
-variable "working_dir" {
-  description = "Working directory"
-  type        = string
-  default     = ".."
+# Parameters for ActiveMQ
+variable "activemq" {
+  description = "Parameters of ActiveMQ"
+  type        = object({
+    replicas      = number
+    port          = list(object({
+      name        = string
+      port        = number
+      target_port = number
+      protocol    = string
+    }))
+    image         = string
+    tag           = string
+    secret        = string
+    node_selector = any
+  })
+  default     = {
+    replicas      = 1
+    port          = [
+      { name = "amqp", port = 5672, target_port = 5672, protocol = "TCP" },
+      { name = "dashboard", port = 8161, target_port = 8161, protocol = "TCP" },
+      { name = "openwire", port = 61616, target_port = 61616, protocol = "TCP" },
+      { name = "stomp", port = 61613, target_port = 61613, protocol = "TCP" },
+      { name = "mqtt", port = 1883, target_port = 1883, protocol = "TCP" }
+    ]
+    image         = "symptoma/activemq"
+    tag           = "5.16.3"
+    secret        = "activemq-storage-secret"
+    node_selector = {}
+  }
+}
+
+# MongoDB
+variable "mongodb" {
+  description = "Parameters of MongoDB"
+  type        = object({
+    replicas      = number
+    port          = number
+    image         = string
+    tag           = string
+    secret        = string
+    node_selector = any
+  })
+  default     = {
+    replicas      = 1
+    port          = 27017
+    image         = "mongo"
+    tag           = "4.4.11"
+    secret        = "mongodb-storage-secret"
+    node_selector = {}
+  }
+}
+
+# Parameters for Redis
+variable "redis" {
+  description = "Parameters of Redis"
+  type        = object({
+    replicas      = number
+    port          = number
+    image         = string
+    tag           = string
+    secret        = string
+    node_selector = any
+  })
+  default     = {
+    replicas      = 1
+    port          = 6379
+    image         = "redis"
+    tag           = "bullseye"
+    secret        = "redis-storage-secret"
+    node_selector = {}
+  }
 }

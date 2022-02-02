@@ -23,6 +23,7 @@ Added
 * AWS Elastic Container Registry (ECR)
 * Activate logs for EKS and VPC in CloudWatch
 * S3 as shared filesystem for worker containers
+* AWS Elasticache (Redis engine version 6.x)
 * Encryption at rest:
     * VPC flow log in cloudwatch log group
     * EKS cloudwatch log group
@@ -30,6 +31,7 @@ Added
     * EBS of EKS nodes
     * ECR
     * S3
+    * Elasticache (in transit too)
 
 ## [v2.2.0](https://github.com/aneoconsulting/armonik/tree/v2.2.0) (2022-01-17)
 
