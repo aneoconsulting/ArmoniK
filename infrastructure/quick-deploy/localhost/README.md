@@ -8,6 +8,7 @@
     2. [Create namespaces and secrets](#create-namespaces-and-secrets)
 5. [Prepare input parameters](#prepare-input-parameters)
 6. [Deploy ArmoniK](#deploy-armonik)
+7. [Clean-up](#clean-up)
 
 # Introduction
 
@@ -172,7 +173,7 @@ make all
 
 After the deployment, an output file `generated/output.json` is generated containing the list of created resources.
 
-## Clean-up
+# Clean-up
 
 **If you want** to delete all resources, execute the command:
 
