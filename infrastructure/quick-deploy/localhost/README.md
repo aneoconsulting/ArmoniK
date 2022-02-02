@@ -20,7 +20,7 @@ The following software or tool should be installed upon your local Linux machine
 * If You have Windows machine, You can install [WSL 2](../../kubernetes/onpremise/localhost/wsl2.md)
 * [Docker](https://docs.docker.com/engine/install/)
 * [JQ](https://stedolan.github.io/jq/download/)
-* [Kubectl](https://kubernetes.io/docs/tasks/tools/)
+* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 * [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
 # Set environment variables
