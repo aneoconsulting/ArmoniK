@@ -25,7 +25,10 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: docker-practice/actions-setup-docker@master
+    - name: Install docker
+      shell: bash
+      run: |
+        sh tools/install/docker.sh
 
     - name: Checkout
       uses: actions/checkout@v2
