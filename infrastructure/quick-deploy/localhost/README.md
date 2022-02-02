@@ -174,7 +174,7 @@ After the deployment, an output file `generated/output.json` is generated contai
 
 ## Clean-up
 
-**If you want** to delete all storage, execute the command:
+**If you want** to delete all resources, execute the command:
 
 ```bash
 make destroy PARAMETERS_FILE=parameters.tfvars 
