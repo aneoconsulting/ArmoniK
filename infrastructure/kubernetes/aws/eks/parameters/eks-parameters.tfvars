@@ -78,20 +78,7 @@ eks_worker_groups = [
   },
   {
     name                                     = "worker-on-demand"
-    override_instance_types                  = [
-      "m5.xlarge",
-      "m5d.xlarge",
-      "m5a.xlarge",
-      "m5.2xlarge",
-      "m5d.2xlarge",
-      "m5a.2xlarge",
-      "m5.4xlarge",
-      "m5d.4xlarge",
-      "m5a.4xlarge",
-      "m5.8xlarge",
-      "m5d.8xlarge",
-      "m5a.8xlarge"
-    ]
+    override_instance_types                  = ["m5.2xlarge"]
     spot_instance_pools                      = 0
     asg_min_size                             = 0
     asg_max_size                             = 1

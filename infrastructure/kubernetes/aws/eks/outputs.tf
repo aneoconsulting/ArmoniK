@@ -3,16 +3,16 @@ output "s3_bucket_shared_storage" {
   value       = {
     id        = module.s3fs_bucket.selected.s3_bucket_id
     host_path = var.s3fs_bucket.shared_host_path
-    arn       = module.s3fs_bucket.selected.s3_bucket_arn
   }
 }
 
 output "vpc" {
   description = "Amazon VPC for EKS"
   value       = {
-    name = module.vpc.selected.name
-    id   = module.vpc.selected.vpc_id
-    arn  = module.vpc.selected.vpc_arn
+    id                     = module.vpc.id
+    cidr_block             = module.vpc.cidr_block
+    pod_cidr_block_private = module.vpc.pod_cidr_block_private
+    private_subnet_ids     = module.vpc.private_subnet_ids
   }
 }
 
@@ -20,15 +20,6 @@ output "eks" {
   description = "Amazon EKS"
   value       = {
     name    = module.eks.eks_cluster.cluster_id
-    arn     = module.eks.eks_cluster.cluster_arn
     version = module.eks.eks_cluster.cluster_version
-  }
-}
-
-output "kms" {
-  description = "Amazon KMS"
-  value       = {
-    id  = module.kms.selected.key_id
-    arn = module.kms.selected.arn
   }
 }
