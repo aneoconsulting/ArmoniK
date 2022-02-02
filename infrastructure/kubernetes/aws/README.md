@@ -69,7 +69,7 @@ Follow the instructions presented in [Create Amazon ECR](ecr/README.md).
 **Amazon Elastic Kubernetes Service (EKS)** is a managed service that you can use to run Kubernetes on AWS cloud without
 needing to install, operate, and maintain your own Kubernetes control plane or worker nodes.
 
-Follow the instructions presented in [Create Amazon EKS](ekr/README.md).
+Follow the instructions presented in [Create Amazon EKS](eks/README.md).
 
 ### [Return to ArmoniK deployments](../../README.md#armonik-deployments)
 
