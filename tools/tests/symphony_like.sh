@@ -1,6 +1,8 @@
 #!/bin/bash
 
-cd ../../source/ArmoniK.Samples
+BASEDIR=$(dirname "$0")
+
+cd $BASEDIR/../../source/ArmoniK.Samples
 
 export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
 export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)

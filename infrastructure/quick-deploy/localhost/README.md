@@ -8,11 +8,24 @@
     2. [Create namespaces and secrets](#create-namespaces-and-secrets)
 5. [Prepare input parameters](#prepare-input-parameters)
 6. [Deploy ArmoniK](#deploy-armonik)
-7. [Clean-up](#clean-up)
+7. [Quick tests](#quick-tests)
+8. [Clean-up](#clean-up)
 
 # Introduction
 
 Hereafter, You have instructions to deploy ArmoniK on dev/test environment upon your local machine.
+
+The infrastructure is composed of:
+
+* Storage:
+    * ActiveMQ
+    * MongoDB
+    * Redis
+* Monitoring:
+    * Seq server for structured log data of ArmoniK.
+* ArmoniK:
+    * Control plane
+    * Compute plane: polling agent and workers
 
 # Prerequisites
 
@@ -156,10 +169,16 @@ each parameter. This parameter file contains four components:
 First, You must create the `host_path=/data` directory that will be shared with ArmoniK worker pods:
 
 ```bash
-mkdir -p /data
+sudo mkdir -p /data
 ```
 
-From the **root** of the repository, position yourself in directory `infrastructure/quick-deploy/localhost` and execute:
+From the **root** of the repository, position yourself in directory:
+
+```bash
+cd infrastructure/quick-deploy/localhost
+````
+
+and execute:
 
 ```bash
 make all PARAMETERS_FILE=parameters.tfvars 
@@ -171,7 +190,84 @@ or:
 make all
 ```
 
-After the deployment, an output file `generated/output.json` is generated containing the list of created resources.
+After the deployment, an output file `generated/output.json` is generated containing the list of created resources:
+
+```terraform
+armonik_deployment = {
+  "activemq"                  = {
+    "host" = "10.43.239.76"
+    "port" = "5672"
+    "url"  = "amqp://10.43.239.76:5672"
+  }
+  "armonik_control_plane_url" = "http://192.168.1.13:5001"
+  "mongodb"                   = {
+    "host" = "10.43.245.249"
+    "port" = "27017"
+    "url"  = "mongodb://10.43.245.249:27017"
+  }
+  "redis"                     = {
+    "host" = "10.43.116.202"
+    "port" = "6379"
+    "url"  = "10.43.116.202:6379"
+  }
+  "seq_web_url"               = "http://192.168.1.13:8080"
+}
+```
+
+# Quick tests
+
+## Seq webserver
+
+After the deployment, connect to the Seq webserver by using `seq_web_url`, retrieved from the Terraform outputs,
+example:
+
+```bash
+http://192.168.1.13:8080
+```
+
+or
+
+```bash
+http://localhost:8080
+```
+
+where `Username: admin` and `Password: admin`:
+
+![](images/seq_auth.png)
+
+## Tests
+
+You have two scripts for testing ArmoniK [symphony_like.sh](../../../tools/tests/symphony_like.sh)
+and [datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh). The following commands in these scripts allow to
+retrieve the endpoint URL of ArmoniK control plane:
+
+```bash
+export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
+export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+export Grpc__Endpoint=http://$CPIP:$CPPort
+```
+
+or You can replace them by the `armonik_control_plane_url` retrieved from Terraform outputs, example:
+
+```bash
+export Grpc__Endpoint=http://192.168.1.13:5001
+```
+
+Execute [symphony_like.sh](../../../tools/tests/symphony_like.sh) from the **root** repository:
+
+```bash
+tools/tests/symphony_like.sh 
+```
+
+Execute [datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh) from the **root** repository:
+
+```bash
+tools/tests/datasynapse_like.sh
+```
+
+You can follow logs on Seq webserver:
+
+![](images/seq.png)
 
 # Clean-up
 

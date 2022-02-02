@@ -65,7 +65,7 @@ module "armonik" {
   }
   storage_endpoint_url = {
     activemq = {
-      host   = module.activemq.url
+      host   = module.activemq.host
       port   = module.activemq.port
       secret = var.kubernetes_secrets.activemq_client
     }
