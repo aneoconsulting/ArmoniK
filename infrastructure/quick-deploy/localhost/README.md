@@ -170,7 +170,7 @@ or:
 make all
 ```
 
-After the deployment, an output file `generated/output.json` is generated containing the list of created storage.
+After the deployment, an output file `generated/output.json` is generated containing the list of created resources.
 
 ## Clean-up
 
