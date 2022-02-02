@@ -11,8 +11,10 @@ export Grpc__Endpoint=http://$CPIP:$CPPort
 cd Samples/GridServerLike/
 dotnet publish --self-contained -r linux-x64 DataSynapseLike.sln
 
-sudo mkdir -p /data
-sudo chown -R $USER:$USER /data
+if [ ! -d "/data" ]; then
+    sudo mkdir -p /data
+    sudo chown -R $USER:$USER /data
+fi
 cp packages/ArmoniK.Samples.GridServer.Client-v1.0.0.zip /data
 
 cd ArmoniK.Samples.GridServer.Client/

@@ -1,6 +1,6 @@
 # Changelog
 
-## [latest](https://github.com/aneoconsulting/armonik/tree/main) (2022-01-31)
+## [v2.3.0](https://github.com/aneoconsulting/armonik/tree/v2.3.0) (2022-02-01)
 
 Added
 -
@@ -9,15 +9,6 @@ Added
 * Support for amqp and amqp+ssl protocols
 * Add Authentication for MongoDB and encryption in transit (TLS)
 * Setup TLS for AMQP, Redis and MongoDB on prem storages
-
-changed
--
-
-* Automate configurations of Kubernetes Kubeadm and K3s onpremise cluster (simulation of onpremise cluster on AWS)
-
-Added
--
-
 * AWS Virtual Private Cloud (VPC)
 * AWS Elastic Kubernetes Service (EKS version 1.21)
 * AWS Elastic Container Registry (ECR)
@@ -32,6 +23,25 @@ Added
     * ECR
     * S3
     * Elasticache (in transit too)
+* New End to End tests mechanism for Symphony API
+* New SessionService to manage in multi thread several actives sessions
+* New script to deploy armonik on localhost with one script
+* New Version of nuget package for worker API agent 0.2.1
+* New Version of nuget package for armonik core 0.4.0
+
+Changed
+-
+
+* Automate configurations of Kubernetes Kubeadm and K3s onpremise cluster (simulation of onpremise cluster on AWS)
+
+Fixed
+-
+
+* Fix issue with multiple Creation of Service (Issue #64)
+* Issue with Multi Sessions opened
+* Priority check to subtasking. Transfer priority from client to server
+* Fix GridServer Service.Submit Signature to return the taskId
+* Fix GridServer Service.Execute Signature to return Tuple with TaskId and result object
 
 ## [v2.2.0](https://github.com/aneoconsulting/armonik/tree/v2.2.0) (2022-01-17)
 
@@ -199,7 +209,7 @@ Fixed
 * Fix and parse the responses of lambda
 
 Changed
-- 
+-
 
 * Display in realtime information about the executed sample
 
@@ -218,7 +228,7 @@ Fixed
 * Fix cancel task lambda and Python example
 
 Changed
-- 
+-
 
 * Get external IP address on local machine
 * Get URL endpoint of Kubernetes services on local machine
