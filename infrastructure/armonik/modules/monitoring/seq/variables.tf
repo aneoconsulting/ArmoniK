@@ -37,3 +37,10 @@ variable "seq" {
     ]
   }
 }
+
+# Working dir
+variable "working_dir" {
+  description = "Working directory"
+  type        = string
+  default     = ".."
+}

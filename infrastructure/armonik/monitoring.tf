@@ -33,16 +33,16 @@ module "prometheus" {
 
 locals {
   seq_endpoints = (var.monitoring.seq.use ? {
-    url  = module.seq.0.seq_endpoints.url
-    host = module.seq.0.seq_endpoints.host
-    port = module.seq.0.seq_endpoints.port
+    url  = module.seq.0.url
+    host = module.seq.0.host
+    port = module.seq.0.port
   } : {
     url  = ""
     host = ""
     port = ""
   })
 
-  seq_endpoint_url        = (var.monitoring.seq.use ? module.seq.0.seq_web_url : "")
+  seq_endpoint_url        = (var.monitoring.seq.use ? module.seq.0.web_url : "")
   grafana_endpoint_url    = (var.monitoring.grafana.use ? module.grafana.0.grafana_url : "")
   prometheus_endpoint_url = (var.monitoring.prometheus.use ? module.prometheus.0.prometheus_url : "")
 }

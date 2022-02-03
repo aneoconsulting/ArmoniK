@@ -1,16 +1,20 @@
 # Seq
-output "seq" {
-  value = kubernetes_service.seq
+output "url" {
+  description = "URL of Seq"
+  value = local.seq_url
 }
 
-output "seq_endpoints" {
-  value = {
-    url  = local.seq_url
-    host = local.seq_endpoints.ip
-    port = local.seq_endpoints.seq_port
-  }
+output "port" {
+  description = "Port of Seq"
+  value = local.seq_endpoints.seq_port
 }
 
-output "seq_web_url" {
+output "host" {
+  description = "Host of Seq"
+  value = local.seq_endpoints.ip
+}
+
+output "web_url" {
+  description = "Web URL of Seq"
   value = local.seq_web_url
 }

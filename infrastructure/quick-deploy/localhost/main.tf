@@ -49,7 +49,7 @@ module "redis" {
 # Seq
 module "seq" {
   count       = (var.deploy.monitoring ? 1 : 0)
-  source      = "../../monitoring/modules/seq"
+  source      = "../../armonik/modules/monitoring/seq"
   namespace   = var.kubernetes_namespaces.monitoring
   working_dir = "../.."
 }
