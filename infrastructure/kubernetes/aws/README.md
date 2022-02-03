@@ -71,6 +71,7 @@ needing to install, operate, and maintain your own Kubernetes control plane or w
 
 Follow the instructions presented in [Create Amazon EKS](eks/README.md).
 
-### [Return to ArmoniK deployments](../../README.md#armonik-deployments)
+### [Return to Quick install](../../quick-deploy/localhost/README.md)
+### [Return to the Main page](../../README.md)
 
 
