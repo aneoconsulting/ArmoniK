@@ -17,14 +17,14 @@ EOF
     Tag                kube.*
     Path               /var/log/containers/$${HOSTNAME}*.log
     Parser             docker
-    DB                 /var/log/flb_graylog.db
+    DB                 /var/log/flb_tail_input_$${HOSTNAME}.db
     DB.Sync            Normal
     Docker_Mode        On
     Buffer_Chunk_Size  512KB
     Buffer_Max_Size    5M
     Rotate_Wait        30
     Mem_Buf_Limit      30MB
-    Skip_Long_Lines    On
+    Skip_Long_Lines    Off
     Refresh_Interval   10
 EOF
 
