@@ -22,4 +22,5 @@ You can install a Kubernetes on [onpremise cluster](onpremise/cluster/README.md)
 
 You can install an Elastic Kubernetes Service (EKS) on AWS using [Deploy Amazon EKS](aws/README.md).
 
-### [Return to ArmoniK deployments](../README.md#armonik-deployments)
+### [Return to Quick install](../quick-deploy/localhost/README.md)
+### [Return to Main page](../README.md)

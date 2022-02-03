@@ -2,7 +2,7 @@
 data "external" "mongodb_node_ip" {
   depends_on  = [kubernetes_service.mongodb]
   program     = ["bash", "get_node_ip.sh", "mongodb", var.namespace]
-  working_dir = "../../utils/scripts"
+  working_dir = "${var.working_dir}/utils/scripts"
 }
 
 # Node names

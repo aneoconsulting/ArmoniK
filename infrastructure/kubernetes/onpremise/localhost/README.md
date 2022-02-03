@@ -21,23 +21,10 @@ distribution.
 Install K3s as follows:
 
 ```bash
-curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
+curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
 ```
 
-***Warning:*** If you want use host's Docker rather than containerd use `--docker` option:
-
-```bash
-curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644 --docker
-```
-
-After the K3s installation, you initialize the configuration file of Kubernetes:
-
-```bash
-mkdir -p ~/.kube
-cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-```
-
-# Uninstall Kubernetes 
+# Uninstall Kubernetes
 
 To uninstall k3s on your local machine or a VM, use the following command:
 
@@ -45,4 +32,5 @@ To uninstall k3s on your local machine or a VM, use the following command:
 /usr/local/bin/k3s-uninstall.sh
 ```
 
-### [Return to ArmoniK deployments](../../../README.md#armonik-deployments)
+### [Return to Quick install](../../../quick-deploy/localhost/README.md)
+### [Return to Main page](../../../README.md)

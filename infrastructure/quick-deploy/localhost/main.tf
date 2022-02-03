@@ -1,8 +1,10 @@
 # ActiveMQ
 module "activemq" {
-  source    = "../../storage/onpremise/modules/activemq"
-  namespace = var.kubernetes_namespaces.storage
-  activemq  = {
+  count       = (var.deploy.storage ? 1 : 0)
+  source      = "../../storage/onpremise/modules/activemq"
+  namespace   = var.kubernetes_namespaces.storage
+  working_dir = "../.."
+  activemq    = {
     replicas      = var.activemq.replicas
     port          = var.activemq.port
     image         = var.activemq.image
@@ -14,9 +16,11 @@ module "activemq" {
 
 # MongoDB
 module "mongodb" {
-  source    = "../../storage/onpremise/modules/mongodb"
-  namespace = var.kubernetes_namespaces.storage
-  mongodb   = {
+  count       = (var.deploy.storage ? 1 : 0)
+  source      = "../../storage/onpremise/modules/mongodb"
+  namespace   = var.kubernetes_namespaces.storage
+  working_dir = "../.."
+  mongodb     = {
     replicas      = var.mongodb.replicas
     port          = var.mongodb.port
     image         = var.mongodb.image
@@ -28,9 +32,11 @@ module "mongodb" {
 
 # Redis
 module "redis" {
-  source    = "../../storage/onpremise/modules/redis"
-  namespace = var.kubernetes_namespaces.storage
-  redis     = {
+  count       = (var.deploy.storage ? 1 : 0)
+  source      = "../../storage/onpremise/modules/redis"
+  namespace   = var.kubernetes_namespaces.storage
+  working_dir = "../.."
+  redis       = {
     replicas      = var.redis.replicas
     port          = var.redis.port
     image         = var.redis.image
@@ -42,21 +48,28 @@ module "redis" {
 
 # Seq
 module "seq" {
-  source    = "../../monitoring/modules/seq"
-  namespace = var.kubernetes_namespaces.monitoring
+  count       = (var.deploy.monitoring ? 1 : 0)
+  source      = "../../monitoring/modules/seq"
+  namespace   = var.kubernetes_namespaces.monitoring
+  working_dir = "../.."
 }
 
 # ArmoniK
 module "armonik" {
+  count                = (var.deploy.armonik ? 1 : 0)
   source               = "../../armonik/modules/armonik-components"
   namespace            = var.kubernetes_namespaces.armonik
   working_dir          = "../.."
   logging_level        = var.logging_level
-  seq_endpoints        = {
-    url  = module.seq.url
-    host = module.seq.host
-    port = module.seq.port
-  }
+  seq_endpoints        = (var.deploy.monitoring ? {
+    url  = module.seq.0.url
+    host = module.seq.0.host
+    port = module.seq.0.port
+  } : {
+    url  = var.seq_endpoints.url
+    host = var.seq_endpoints.host
+    port = var.seq_endpoints.port
+  })
   storage_adapters     = {
     object         = "Redis.ObjectStorage"
     table          = "MongoDB.TableStorage"
@@ -65,21 +78,21 @@ module "armonik" {
   }
   storage_endpoint_url = {
     activemq = {
-      host   = module.activemq.host
-      port   = module.activemq.port
+      host   = (var.deploy.storage ? module.activemq.0.host : var.storage_endpoint_url.activemq.host)
+      port   = (var.deploy.storage ? module.activemq.0.port : var.storage_endpoint_url.activemq.port)
       secret = var.kubernetes_secrets.activemq_client
     }
     external = {
-      url    = module.redis.url
+      url    = (var.deploy.storage ? module.redis.0.url : var.storage_endpoint_url.redis.url)
       secret = var.kubernetes_secrets.external_client
     }
     mongodb  = {
-      host   = module.mongodb.host
-      port   = module.mongodb.port
+      host   = (var.deploy.storage ? module.mongodb.0.host : var.storage_endpoint_url.mongodb.host)
+      port   = (var.deploy.storage ? module.mongodb.0.port : var.storage_endpoint_url.mongodb.port)
       secret = var.kubernetes_secrets.mongodb_client
     }
     redis    = {
-      url    = module.redis.url
+      url    = (var.deploy.storage ? module.redis.0.url : var.storage_endpoint_url.redis.url)
       secret = var.kubernetes_secrets.redis_client
     }
     shared   = {

@@ -28,11 +28,7 @@ variable "host_path" {
 # Kubernetes namespaces
 variable "kubernetes_namespaces" {
   description = "Kubernetes namespaces"
-  type        = object({
-    storage    = string
-    monitoring = string
-    armonik    = string
-  })
+  type        = any
   default     = {
     storage    = "armonik-storage"
     monitoring = "armonik-monitoring"
@@ -43,15 +39,7 @@ variable "kubernetes_namespaces" {
 # Kubernetes secrets
 variable "kubernetes_secrets" {
   description = "Kubernetes secrets"
-  type        = object({
-    activemq_server = string
-    activemq_client = string
-    mongodb_server  = string
-    mongodb_client  = string
-    redis_server    = string
-    redis_client    = string
-    external_client = string
-  })
+  type        = any
   default     = {
     activemq_server = "activemq-storage-secret"
     activemq_client = "activemq-storage-secret"
@@ -253,5 +241,50 @@ variable "redis" {
     tag           = "bullseye"
     secret        = "redis-storage-secret"
     node_selector = {}
+  }
+}
+
+# Deploy
+variable "deploy" {
+  description = "Resources to be deploy"
+  type        = any
+  default     = {
+    storage    = true
+    monitoring = true
+    armonik    = true
+  }
+}
+
+# Storage endpoint URLS
+variable "storage_endpoint_url" {
+  description = "Storage endpoint URLS"
+  type        = any
+  default     = {
+    activemq = {
+      url  = ""
+      host = ""
+      port = ""
+    }
+    mongodb  = {
+      url  = ""
+      host = ""
+      port = ""
+    }
+    redis    = {
+      url  = ""
+      host = ""
+      port = ""
+    }
+  }
+}
+
+# Seq endpoint URLS
+variable "seq_endpoints" {
+  description = "Seq endpoint URLS"
+  default     = {
+    url     = ""
+    host    = ""
+    port    = ""
+    web_url = ""
   }
 }

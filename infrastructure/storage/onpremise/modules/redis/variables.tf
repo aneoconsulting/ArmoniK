@@ -16,3 +16,10 @@ variable "redis" {
     node_selector = any
   })
 }
+
+# Working dir
+variable "working_dir" {
+  description = "Working directory"
+  type        = string
+  default     = "../.."
+}

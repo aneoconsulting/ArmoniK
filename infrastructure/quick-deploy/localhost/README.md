@@ -3,16 +3,14 @@
 - [Table of contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
-- [Set environment variables](#set-environment-variables)
-- [Prepare Kubernetes](#prepare-kubernetes)
-  - [Install K3s](#install-k3s)
-  - [Create namespaces and secrets](#create-namespaces-and-secrets)
+- [Install Kubernetes](#install-kubernetes)
 - [Prepare input parameters (Optional)](#prepare-input-parameters-optional)
 - [Deploy ArmoniK](#deploy-armonik)
+    - [Deploy all-in-one](#deploy-all-in-one)
+    - [Deploy step-by-step](#deploy-step-by-step)
 - [Quick tests](#quick-tests)
-  - [Seq webserver](#seq-webserver)
-  - [Tests](#tests)
-- [Clean-up](#clean-up)
+    - [Seq webserver](#seq-webserver)
+    - [Tests](#tests)
     - [Return to the main page](#return-to-the-main-page)
 
 # Introduction
@@ -41,51 +39,14 @@ The following software or tool should be installed upon your local Linux machine
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 * [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
-# Set environment variables
+# Install Kubernetes
 
-You have two list of environment variables to set upon your local machine:
+You must have a Kubernetes to install ArmoniK. If not, You can follow instructions in one of the following
+documentation:
 
-* environment variables for storage [envvars-storage.conf](../../utils/envvars-storage.conf)
-* environment variables for ArmoniK [envvars-armonik.conf](../../utils/envvars-armonik.conf)
-
-**Warning:** You can edit or copy these two files and modify values of the environment variables as You want.
-
-Form the **root** of the repository, source the two list of environment variables:
-
-```bash
-source infrastructure/utils/envvars-storage.conf
-source infrastructure/utils/envvars-armonik.conf
-```
-
-# Prepare Kubernetes
-
-## Install K3s
-
-To install [K3s Lightweight Kubernetes](https://rancher.com/docs/k3s/latest/en/), execute the following command:
-
-```bash
-curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
-```
-
-## Create namespaces and secrets
-
-The script [init_kube.sh](../../../tools/install/init_kube.sh) allows to prepare your Kubernetes before deploying
-ArmoniK. It contains a list of commands to create:
-
-* Kubernetes namespaces for:
-    * Storage
-    * Monitoring
-    * ArmoniK
-* Kubernetes secrets for:
-    * ActiveMQ
-    * MongoDB
-    * Redis
-
-Form the **root** of the repository, execute the script `init_kube.sh`:
-
-```bash
-tools/install/init_kube.sh
-```
+* [Install Kubernetes on dev/test local machine](../../kubernetes/onpremise/localhost/README.md)
+* [Install Kubernetes on onpremise cluster](../../kubernetes/onpremise/cluster/README.md)
+* [Install AWS EKS](../../kubernetes/aws/README.md)
 
 # Prepare input parameters (Optional)
 
@@ -170,12 +131,60 @@ each parameter. This parameter file contains four components:
 
 # Deploy ArmoniK
 
-First, You must create the `host_path=/data` directory that will be shared with ArmoniK worker pods:
+**First**, You must create the `host_path=/data` directory that will be shared with ArmoniK worker pods:
 
 ```bash
 sudo mkdir -p /data
 sudo chown -R $USER:$USER /data
 ```
+
+## Deploy all-in-one
+
+This method of deployment is interesting when all resources are deployed in the same Kubernetes.
+
+### 1. Set environment variables
+
+You have three list of environment variables to set upon your local machine:
+
+* environment variables for storage [envvars-storage.conf](../../utils/envvars-storage.conf)
+* environment variables for monitoring [envvars-monitoring.conf](../../utils/envvars-monitoring.conf)
+* environment variables for ArmoniK [envvars-armonik.conf](../../utils/envvars-armonik.conf)
+
+**Warning:** You can edit or copy these files and modify values of the environment variables as You want.
+
+Form the **root** of the repository, source the two list of environment variables:
+
+```bash
+source infrastructure/utils/envvars-storage.conf
+source infrastructure/utils/envvars-monitoring.conf
+source infrastructure/utils/envvars-armonik.conf
+```
+
+### 2. Create Kubernetes namespaces and secrets
+
+The scripts [init-kube-storage.sh](../../utils/scripts/init-kube-storage.sh)
+, [init-kube-monitoring.sh](../../utils/scripts/init-kube-monitoring.sh)
+and [init-kube-armonik.sh](../../utils/scripts/init-kube-armonik.sh) allow to prepare your Kubernetes before deploying
+ArmoniK. It contains a list of commands to create:
+
+* Kubernetes namespaces for:
+    * Storage
+    * Monitoring
+    * ArmoniK
+* Kubernetes secrets for:
+    * ActiveMQ
+    * MongoDB
+    * Redis
+
+Form the **root** of the repository, execute the scripts:
+
+```bash
+infrastructure/utils/scripts/init-kube-storage.sh
+infrastructure/utils/scripts/init-kube-monitoring.sh
+infrastructure/utils/scripts/init-kube-armonik.sh
+```
+
+### 3. Deploy
 
 From the **root** of the repository, position yourself in directory:
 
@@ -198,25 +207,288 @@ make all
 After the deployment, an output file `generated/output.json` is generated containing the list of created resources:
 
 ```terraform
-armonik_deployment = {
-  "activemq"                  = {
-    "host" = "10.43.239.76"
-    "port" = "5672"
-    "url"  = "amqp://10.43.239.76:5672"
-  }
+armonik_deployment   = tomap({
   "armonik_control_plane_url" = "http://192.168.1.13:5001"
-  "mongodb"                   = {
-    "host" = "10.43.245.249"
-    "port" = "27017"
-    "url"  = "mongodb://10.43.245.249:27017"
-  }
-  "redis"                     = {
-    "host" = "10.43.116.202"
-    "port" = "6379"
-    "url"  = "10.43.116.202:6379"
-  }
   "seq_web_url"               = "http://192.168.1.13:8080"
+})
+seq_endpoints        = tomap({
+  "host"    = "192.168.1.13"
+  "port"    = "5341"
+  "url"     = "http://192.168.1.13:5341"
+  "web_url" = "http://192.168.1.13:8080"
+})
+storage_endpoint_url = tomap({
+  "activemq" = {
+    "host" = "10.43.163.90"
+    "port" = "5672"
+    "url"  = "amqp://10.43.163.90:5672"
+  }
+  "mongodb"  = {
+    "host" = "10.43.238.208"
+    "port" = "27017"
+    "url"  = "mongodb://10.43.238.208:27017"
+  }
+  "redis"    = {
+    "host" = "10.43.133.187"
+    "port" = "6379"
+    "url"  = "10.43.133.187:6379"
+  }
+})
+```
+
+### 4. Clean-up
+
+**If you want** to delete all resources, execute the command:
+
+```bash
+make destroy PARAMETERS_FILE=parameters.tfvars
+```
+
+or:
+
+```bash
+make destroy
+```
+
+**If you want** to delete generated files too, execute the command:
+
+```bash
+make clean
+```
+
+## Deploy step-by-step
+
+This method of deployment is interesting for the case where each of storage, monitoring and ArmoniK are deployed in
+different infrastructure environments.
+
+### Deploy monitoring
+
+#### 1. Set environment variables
+
+You have a list of environment variables [envvars-monitoring.conf](../../utils/envvars-monitoring.conf) to set upon your
+local machine. You can edit or copy the file and modify values of the environment variables as You want.
+
+Form the **root** of the repository, source the list of environment variables:
+
+```bash
+source infrastructure/utils/envvars-monitoring.conf
+```
+
+#### 2. Create Kubernetes namespaces and secrets
+
+The script [init-kube-monitoring.sh](../../utils/scripts/init-kube-monitoring.sh) allows to prepare your Kubernetes
+before deploying monitoring tools.
+
+Form the **root** of the repository, execute the script:
+
+```bash
+infrastructure/utils/scripts/init-kube-monitoring.sh
+```
+
+#### 3. Deploy
+
+From the **root** of the repository, position yourself in directory:
+
+```bash
+cd infrastructure/quick-deploy/localhost
+````
+
+and execute:
+
+```bash
+make deploy-monitoring
+```
+
+After the deployment, an output file `generated/monitoring-output.json` is generated containing the list of created
+resources:
+
+```json
+{
+  "seq_endpoints": {
+    "host": "192.168.1.13",
+    "port": "5341",
+    "url": "http://192.168.1.13:5341",
+    "web_url": "http://192.168.1.13:8080"
+  }
 }
+```
+
+#### 4. Clean-up
+
+**If you want** to delete all monitoring resources, execute the command:
+
+```bash
+make destroy-monitoring
+```
+
+**If you want** to delete generated files too, execute the command:
+
+```bash
+make clean
+```
+
+### Deploy storage
+
+### 1. Set environment variables
+
+You have a list of environment variables [envvars-storage.conf](../../utils/envvars-storage.conf) to set upon your local
+machine. You can edit or copy the file and modify values of the environment variables as You want.
+
+Form the **root** of the repository, source the list of environment variables:
+
+```bash
+source infrastructure/utils/envvars-storage.conf
+```
+
+### 2. Create Kubernetes namespaces and secrets
+
+The script [init-kube-storage.sh](../../utils/scripts/init-kube-storage.sh) allows to prepare your Kubernetes before
+deploying Storage.
+
+Form the **root** of the repository, execute the script:
+
+```bash
+infrastructure/utils/scripts/init-kube-storage.sh
+```
+
+### 3. Deploy
+
+From the **root** of the repository, position yourself in directory:
+
+```bash
+cd infrastructure/quick-deploy/localhost
+````
+
+and execute:
+
+```bash
+make deploy-storage
+```
+
+After the deployment, an output file `generated/storage-output.json` is generated containing the list of created
+resources:
+
+```json
+{
+  "storage_endpoint_url": {
+    "activemq": {
+      "host": "10.43.57.240",
+      "port": "5672",
+      "url": "amqp://10.43.57.240:5672"
+    },
+    "mongodb": {
+      "host": "10.43.142.93",
+      "port": "27017",
+      "url": "mongodb://10.43.142.93:27017"
+    },
+    "redis": {
+      "host": "10.43.56.182",
+      "port": "6379",
+      "url": "10.43.56.182:6379"
+    }
+  }
+}
+```
+
+### 4. Clean-up
+
+**If you want** to delete storage resources, execute the command:
+
+```bash
+make destroy-storage
+```
+
+**If you want** to delete generated files too, execute the command:
+
+```bash
+make clean
+```
+
+### Deploy ArmoniK
+
+### 1. Set environment variables
+
+You have a list of environment variables [envvars-armonik.conf](../../utils/envvars-armonik.conf) to set upon your local
+machine. You can edit or copy the file and modify values of the environment variables as You want.
+
+Form the **root** of the repository, source the list of environment variables:
+
+```bash
+source infrastructure/utils/envvars-armonik.conf
+```
+
+### 2. Create Kubernetes namespaces and secrets
+
+The script [init-kube-armonik.sh](../../utils/scripts/init-kube-armonik.sh) allows to prepare your Kubernetes before
+deploying ArmoniK.
+
+Form the **root** of the repository, execute the script:
+
+```bash
+infrastructure/utils/scripts/init-kube-armonik.sh
+```
+
+### 3. Deploy
+
+From the **root** of the repository, position yourself in directory:
+
+```bash
+cd infrastructure/quick-deploy/localhost
+````
+
+and execute:
+
+```bash
+make deploy-armonik PARAMETERS_FILE=parameters.tfvars STORAGE_INPUT_FILE=<path-storage-endpoint-urls> MONITORING_INPUT_FILE=<path-monitoring-endpoint-urls>
+```
+
+where:
+
+* `<path-storage-endpoint-urls>` is the file generated after the storage deployment
+* `<path-monitoring-endpoint-urls>` is the file generated after the monitoring deployment
+
+for example:
+
+```bash
+make deploy-armonik PARAMETERS_FILE=parameters.tfvars STORAGE_INPUT_FILE=generated/storage-output.json MONITORING_INPUT_FILE=generated/monitoring-output.json
+```
+
+or :
+
+```bash
+make deploy-armonik
+```
+
+After the deployment of ArmoniK, an output file `generated/armonik-output.json` is generated containing the list of
+created resources:
+
+```json
+{
+  "armonik_deployment": {
+    "armonik_control_plane_url": "http://192.168.1.13:5001",
+    "seq_web_url": "http://192.168.1.13:8080"
+  }
+}
+```
+
+### 4. Clean-up
+
+**If you want** to delete ArmoniK resources, execute the command:
+
+```bash
+make destroy-armonik
+```
+
+**If you want** to delete Storage, Monitoring and ArmoniK resources, execute the command:
+
+```bash
+make destroy-all
+```
+
+**If you want** to delete generated files too, execute the command:
+
+```bash
+make clean
 ```
 
 # Quick tests
@@ -242,9 +514,13 @@ where `Username: admin` and `Password: admin`:
 
 ## Tests
 
-You have two scripts for testing ArmoniK [symphony_like.sh](../../../tools/tests/symphony_like.sh)
-and [datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh). The following commands in these scripts allow to
-retrieve the endpoint URL of ArmoniK control plane:
+You have three scripts for testing ArmoniK :
+
+* [symphony_like.sh](../../../tools/tests/symphony_like.sh)
+* [datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh)
+* [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh). T
+
+The following commands in these scripts allow to retrieve the endpoint URL of ArmoniK control plane:
 
 ```bash
 export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
@@ -270,37 +546,18 @@ Execute [datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh) from the
 tools/tests/datasynapse_like.sh
 ```
 
+Execute [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh) from the **root**
+repository:
+
+```bash
+tools/tests/symphony_endToendTests.sh
+```
+
 You can follow logs on Seq webserver:
 
 ![](images/seq.png)
 
-# Clean-up
-
-**If you want** to delete all resources, execute the command:
-
-```bash
-make destroy PARAMETERS_FILE=parameters.tfvars
-```
-
-or:
-
-```bash
-make destroy
-```
-
-**If you want** to delete generated files too, execute the command:
-
-```bash
-make clean
-```
-
-**If you want** to uninstall K3s, execute the command:
-
-```bash
-/usr/local/bin/k3s-uninstall.sh
-```
-
-### [Return to the main page](../../README.md)
+### [Return to the Main page](../../README.md)
 
 
 

@@ -2,7 +2,7 @@
 data "external" "activemq_node_ip" {
   depends_on  = [kubernetes_service.activemq]
   program     = ["bash", "get_node_ip.sh", "activemq", var.namespace]
-  working_dir = "../../utils/scripts"
+  working_dir = "${var.working_dir}/utils/scripts"
 }
 
 # Node names

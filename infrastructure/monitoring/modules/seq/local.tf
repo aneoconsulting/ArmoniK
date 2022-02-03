@@ -2,7 +2,7 @@
 data "external" "seq_node_ip" {
   depends_on  = [kubernetes_service.seq]
   program     = ["bash", "get_node_ip.sh", "seq", var.namespace]
-  working_dir = "../../utils/scripts"
+  working_dir = "${var.working_dir}/utils/scripts"
 }
 
 locals {

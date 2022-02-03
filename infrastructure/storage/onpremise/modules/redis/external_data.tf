@@ -2,7 +2,7 @@
 data "external" "redis_node_ip" {
   depends_on  = [kubernetes_service.redis]
   program     = ["bash", "get_node_ip.sh", "redis", var.namespace]
-  working_dir = "../../utils/scripts"
+  working_dir = "${var.working_dir}/utils/scripts"
 }
 
 # Node names
