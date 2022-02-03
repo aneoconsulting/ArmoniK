@@ -518,7 +518,7 @@ You have three scripts for testing ArmoniK :
 
 * [symphony_like.sh](../../../tools/tests/symphony_like.sh)
 * [datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh)
-* [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh). T
+* [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh). 
 
 The following commands in these scripts allow to retrieve the endpoint URL of ArmoniK control plane:
 
