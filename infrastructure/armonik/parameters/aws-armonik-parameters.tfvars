@@ -52,7 +52,7 @@ compute_plane = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
       # HTC Mock
       #image             = "dockerhubaneo/armonik_worker_htcmock"
-      tag               = "0.1.2-SNAPSHOT.4.cfda5d1"
+      tag               = "0.2.1"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "920m"
