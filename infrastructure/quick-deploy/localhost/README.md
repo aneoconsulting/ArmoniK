@@ -11,7 +11,7 @@
 - [Quick tests](#quick-tests)
     - [Seq webserver](#seq-webserver)
     - [Tests](#tests)
-    - [Return to the main page](#return-to-the-main-page)
+    - [Return to the main page](../../README.md)
 
 # Introduction
 
