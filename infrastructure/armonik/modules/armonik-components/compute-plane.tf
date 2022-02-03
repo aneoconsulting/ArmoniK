@@ -89,6 +89,36 @@ resource "kubernetes_deployment" "compute_plane" {
             }
           }
         }
+
+        container {
+          name              = "fluentbit"
+          image             = "fluent/fluent-bit:1.3.11"
+          image_pull_policy = "Always"
+
+          volume_mount {
+            name       = "varlog"
+            mount_path = "/var/log"
+          }
+          volume_mount {
+            name       = "varlibdockercontainers"
+            mount_path = "/var/lib/docker/containers"
+            read_only  = true
+          }
+          volume_mount {
+            name       = "fluentbit-configmap"
+            mount_path = "/fluent-bit/etc/"
+          }
+
+          env {
+            name  = "FLUENT_HTTPP_SEQ_HOST"
+            value = "${var.seq_endpoints.host}"
+          }
+          env {
+            name  = "FLUENT_HTTPP_SEQ_PORT"
+            value = "${var.seq_endpoints.port}"
+          }
+        }
+
         # Containers of worker
         dynamic container {
           iterator = worker
@@ -134,6 +164,26 @@ resource "kubernetes_deployment" "compute_plane" {
             }
           }
         }
+        volume {
+          name = "varlog"
+          host_path {
+            path = "/var/log"
+          }
+        }
+        volume {
+          name = "varlibdockercontainers"
+          host_path {
+            path = "/var/lib/docker/containers"
+          }
+        }
+        volume {
+          name = "fluentbit-configmap"
+          config_map {
+            name     = kubernetes_config_map.fluentbit_config.metadata.0.name
+            optional = false
+          }
+        }
+
         volume {
           name = "polling-agent-configmap"
           config_map {

@@ -26,12 +26,6 @@ locals {
         "Args": {
           "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact"
         }
-      },
-      {
-        "Name": "Seq",
-        "Args": {
-          "serverUrl": "${var.seq_endpoints.url}"
-        }
       }
     ],
     "Enrich": ["FromLogContext", "WithMachineName", "WithThreadId"],

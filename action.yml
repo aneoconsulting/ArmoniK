@@ -46,26 +46,28 @@ outputs:
 runs:
   using: composite
   steps:
-    - uses: docker-practice/actions-setup-docker@master
-      if: ${{ inputs.docker-is-installed != 'true' }}
-
-    - uses: azure/setup-kubectl@v2.0
-      with:
-        version: latest
-
-    - uses: hashicorp/setup-terraform@v1
-
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
-        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
-
     - name: Install Dependencies
       shell: bash
       run: |
         sudo apt-get update
-        sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq
+        sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq python3 python-is-python3 python3-pip
         pip install python-hcl2
+
+    - if: ${{ inputs.docker-is-installed != 'true' }}
+      name: Install docker
+      shell: bash
+      run: |
+        sh tools/install/docker.sh
+
+    - name: Install kubectl
+      shell: bash
+      run: |
+        sh tools/install/kubectl.sh
+
+    - name: Install terraform
+      shell: bash
+      run: |
+        sh tools/install/terraform.sh
 
     - name: Install K3s
       shell: bash
@@ -105,7 +107,7 @@ runs:
         set -ex
         cd ${{ github.action_path }}/infrastructure/storage/onpremise
         terraform output -json > tmp.json
-        sed -i '1d;$d' tmp.json
+        #sed -i '1d;$d' tmp.json
         cat tmp.json
         export ACTIVEMQ_HOST=$(cat tmp.json | jq -r '.activemq_endpoint_url.value.host')
         export ACTIVEMQ_PORT=$(cat tmp.json | jq -r '.activemq_endpoint_url.value.port')
