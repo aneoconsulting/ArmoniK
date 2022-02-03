@@ -110,16 +110,12 @@ resource "kubernetes_deployment" "compute_plane" {
           }
 
           env {
-            name  = "FLUENT_GELF_HOST"
+            name  = "FLUENT_HTTPP_SEQ_HOST"
             value = "${var.seq_endpoints.host}"
           }
           env {
-            name  = "FLUENT_GELF_PORT"
-            value = "12201"
-          }
-          env {
-            name  = "FLUENT_GELF_PROTOCOL"
-            value = "UDP"
+            name  = "FLUENT_HTTPP_SEQ_PORT"
+            value = "${var.seq_endpoints.port}"
           }
         }
 

@@ -8,7 +8,7 @@ locals {
     Parsers_File  parsers.conf
 @INCLUDE input-kubernetes.conf
 @INCLUDE filter-kubernetes.conf
-@INCLUDE output-gelf.conf
+@INCLUDE output-http-seq.conf
 EOF
 
   input_kubernetes = <<EOF
@@ -16,6 +16,7 @@ EOF
     Name               tail
     Tag                kube.*
     Path               /var/log/containers/$${HOSTNAME}*.log
+    Exclude_Path       /var/log/containers/$${HOSTNAME}*fluentbit*.log
     Parser             docker
     DB                 /var/log/flb_tail_input_$${HOSTNAME}.db
     DB.Sync            Normal
@@ -36,8 +37,9 @@ EOF
     Kube_CA_File        /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
     Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
     Kube_Tag_Prefix     kube.var.log.containers.
-    Merge_Log           Off
+    Merge_Log           On
     Merge_Log_Key       log
+    Merge_Parser        json
     Keep_Log            Off
     Annotations         On
     Labels              On
@@ -51,6 +53,32 @@ EOF
     Port                    $${FLUENT_GELF_PORT}
     Mode                    $${FLUENT_GELF_PROTOCOL}
     Gelf_Short_Message_Key  log
+EOF
+
+  output_http_seq = <<EOF
+[FILTER]
+    Name                    nest
+    Match                   kube.*
+    Operation               lift
+    Nested_under            kubernetes
+    Add_prefix              kubernetes_
+
+[FILTER]
+    Name                    nest
+    Match                   kube.*
+    Operation               lift
+    Nested_under            log
+
+[OUTPUT]
+    Name                    http
+    Match                   kube.*
+    Host                    $${FLUENT_HTTP_SEQ_HOST}
+    Port                    $${FLUENT_HTTP_SEQ_PORT}
+    URI                     /api/events/raw?clef
+    Header                  ContentType application/vnd.serilog.clef
+    Format                  json_lines
+    json_date_key           @t
+    json_date_format        iso8601
 EOF
 
   parsers = <<EOF
@@ -107,7 +135,7 @@ resource "kubernetes_config_map" "fluentbit_config" {
     "fluent-bit.conf" = local.fluentbit,
     "input-kubernetes.conf" = local.input_kubernetes,
     "filter-kubernetes.conf" = local.filter_kubernetes,
-    "output-gelf.conf" = local.output_gelf,
+    "output-http-seq.conf" = local.output_http_seq,
     "parsers.conf" = local.parsers
   }
 }
