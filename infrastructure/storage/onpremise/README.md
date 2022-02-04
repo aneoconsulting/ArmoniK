@@ -25,7 +25,7 @@ in [allowed storage resources](../../modules/needed-storage/storage_for_each_arm
 # Set environment variables
 
 You must set environment variables for deploying the storage resources. The
-main [environment variables](../../utils/envvars-storage.conf) are:
+main [environment variables](../../utils/scripts/envvars-storage.sh) are:
 
 ```buildoutcfg
 # Armonik storage namespace in the Kubernetes
@@ -53,10 +53,10 @@ export ARMONIK_STORAGE_MONGODB_SECRET_NAME=<You kubernetes secret for the MongoD
 
 **Mandatory:** You must set these environment variables:
 
-From the **root** of the repository, source [envvars-storage.conf](../../utils/envvars-storage.conf):
+From the **root** of the repository, source [envvars-storage.sh](../../utils/scripts/envvars-storage.sh):
 
 ```bash
-   source infrastructure/utils/envvars-storage.conf
+   source infrastructure/utils/scripts/envvars-storage.sh
 ```
 
 # Create a namespace for ArmoniK storage

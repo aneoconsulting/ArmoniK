@@ -298,8 +298,9 @@ function main() {
   done
 
   # source envvars
-  source $BASEDIR/../envvars-storage.conf
-  source $BASEDIR/../envvars-armonik.conf
+  source $BASEDIR/envvars-storage.sh
+  source $BASEDIR/envvars-monitoring.sh
+  source $BASEDIR/envvars-armonik.sh
 
   # Create Kubernetes secrets
   create_kube_secrets

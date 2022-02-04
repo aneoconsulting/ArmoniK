@@ -146,18 +146,18 @@ This method of deployment is interesting when all resources are deployed in the 
 
 You have three list of environment variables to set upon your local machine:
 
-* environment variables for storage [envvars-storage.conf](../../utils/envvars-storage.conf)
-* environment variables for monitoring [envvars-monitoring.conf](../../utils/envvars-monitoring.conf)
-* environment variables for ArmoniK [envvars-armonik.conf](../../utils/envvars-armonik.conf)
+* environment variables for storage [envvars-storage.sh](../../utils/scripts/envvars-storage.sh)
+* environment variables for monitoring [envvars-monitoring.sh](../../utils/scripts/envvars-monitoring.sh)
+* environment variables for ArmoniK [envvars-armonik.sh](../../utils/scripts/envvars-armonik.sh)
 
 **Warning:** You can edit or copy these files and modify values of the environment variables as You want.
 
 Form the **root** of the repository, source the two list of environment variables:
 
 ```bash
-source infrastructure/utils/envvars-storage.conf
-source infrastructure/utils/envvars-monitoring.conf
-source infrastructure/utils/envvars-armonik.conf
+source infrastructure/utils/scripts/envvars-storage.sh
+source infrastructure/utils/scripts/envvars-monitoring.sh
+source infrastructure/utils/scripts/envvars-armonik.sh
 ```
 
 ### 2. Create Kubernetes namespaces and secrets
@@ -265,13 +265,13 @@ different infrastructure environments.
 
 #### 1. Set environment variables
 
-You have a list of environment variables [envvars-monitoring.conf](../../utils/envvars-monitoring.conf) to set upon your
+You have a list of environment variables [envvars-monitoring.sh](../../utils/scripts/envvars-monitoring.sh) to set upon your
 local machine. You can edit or copy the file and modify values of the environment variables as You want.
 
 Form the **root** of the repository, source the list of environment variables:
 
 ```bash
-source infrastructure/utils/envvars-monitoring.conf
+source infrastructure/utils/scripts/envvars-monitoring.sh
 ```
 
 #### 2. Create Kubernetes namespaces and secrets
@@ -331,13 +331,13 @@ make clean
 
 ### 1. Set environment variables
 
-You have a list of environment variables [envvars-storage.conf](../../utils/envvars-storage.conf) to set upon your local
+You have a list of environment variables [envvars-storage.sh](../../utils/scripts/envvars-storage.sh) to set upon your local
 machine. You can edit or copy the file and modify values of the environment variables as You want.
 
 Form the **root** of the repository, source the list of environment variables:
 
 ```bash
-source infrastructure/utils/envvars-storage.conf
+source infrastructure/utils/scripts/envvars-storage.sh
 ```
 
 ### 2. Create Kubernetes namespaces and secrets
@@ -408,13 +408,13 @@ make clean
 
 ### 1. Set environment variables
 
-You have a list of environment variables [envvars-armonik.conf](../../utils/envvars-armonik.conf) to set upon your local
+You have a list of environment variables [envvars-armonik.sh](../../utils/scripts/envvars-armonik.sh) to set upon your local
 machine. You can edit or copy the file and modify values of the environment variables as You want.
 
 Form the **root** of the repository, source the list of environment variables:
 
 ```bash
-source infrastructure/utils/envvars-armonik.conf
+source infrastructure/utils/scripts/envvars-armonik.sh
 ```
 
 ### 2. Create Kubernetes namespaces and secrets

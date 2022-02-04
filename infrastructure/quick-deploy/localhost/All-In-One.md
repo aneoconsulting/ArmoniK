@@ -5,19 +5,20 @@
 - [Prerequisites](#prerequisites)
 - [Set environment variables](#set-environment-variables)
 - [Prepare Kubernetes](#prepare-kubernetes)
-  - [Install K3s](#install-k3s)
+    - [Install K3s](#install-k3s)
 - [Deploy Storage and ArmoniK in one command](#deploy-storage-and-armonik-in-one-command)
-  - [Show usage of script](#show-usage-of-script)
-  - [All in one command](#all-in-one-command)
+    - [Show usage of script](#show-usage-of-script)
+    - [All in one command](#all-in-one-command)
 - [Quick tests](#quick-tests)
-  - [Seq webserver](#seq-webserver)
-  - [Tests](#tests)
+    - [Seq webserver](#seq-webserver)
+    - [Tests](#tests)
 - [Clean-up](#clean-up)
     - [Return to the main page](#return-to-the-main-page)
 
 # Introduction
 
-Hereafter, You have instructions to do to deploy ArmoniK on dev/test environment upon your local machine with a simple deploy script
+Hereafter, You have instructions to do to deploy ArmoniK on dev/test environment upon your local machine with a simple
+deploy script
 
 The infrastructure is composed of:
 
@@ -45,16 +46,18 @@ The following software or tool should be installed upon your local Linux machine
 
 You have two list of environment variables to set upon your local machine:
 
-* environment variables for storage [envvars-storage.conf](../../utils/envvars-storage.conf)
-* environment variables for ArmoniK [envvars-armonik.conf](../../utils/envvars-armonik.conf)
+* environment variables for storage [envvars-storage.sh](../../utils/scripts/envvars-storage.sh)
+* environment variables for storage [envvars-monitoring.sh](../../utils/scripts/envvars-monitoring.sh)
+* environment variables for ArmoniK [envvars-armonik.sh](../../utils/scripts/envvars-armonik.sh)
 
 **Warning:** You can edit or copy these two files and modify values of the environment variables as You want.
 
 Form the **root** of the repository, source the two list of environment variables:
 
 ```bash
-source infrastructure/utils/envvars-storage.conf
-source infrastructure/utils/envvars-armonik.conf
+source infrastructure/utils/scripts/envvars-storage.sh
+source infrastructure/utils/scripts/envvars-monitoring.sh
+source infrastructure/utils/scripts/envvars-armonik.sh
 ```
 
 # Prepare Kubernetes
@@ -120,7 +123,8 @@ Usage: infrastructure/utils/scripts/deploy-dev-test-infra.sh [option...]
 
 ## All in one command
 
-Now you can choose options you want to deploy all (storage and armonik) or only one of them or redeploy all see below the serie of exemples :
+Now you can choose options you want to deploy all (storage and armonik) or only one of them or redeploy all see below
+the serie of exemples :
 
 To deploy for the first time :
 
@@ -203,7 +207,8 @@ Execute [tools/tests/datasynapse_like.sh](../../../tools/tests/datasynapse_like.
 tools/tests/datasynapse_like.sh
 ```
 
-Execute [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh) from the **root** repository:
+Execute [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh) from the **root**
+repository:
 
 ```bash
 tools/tests/symphony_endToendTests.sh

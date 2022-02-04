@@ -1,5 +1,5 @@
 pushd $(dirname "${BASH_SOURCE[0]}")
-pushd $(pwd -P)/../storage/onpremise
+pushd $(pwd -P)/../../storage/onpremise
 STORAGE_PATH=$(pwd -P)
 
 # Armonik storage namespace in the Kubernetes

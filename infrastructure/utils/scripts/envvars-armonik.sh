@@ -1,5 +1,5 @@
 pushd $(dirname "${BASH_SOURCE[0]}")
-pushd $(pwd -P)/../armonik
+pushd $(pwd -P)/../../armonik
 ARMONIK_PATH=$(pwd -P)
 # Armonik namespace in the Kubernetes
 export ARMONIK_NAMESPACE=armonik

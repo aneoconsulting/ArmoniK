@@ -17,15 +17,13 @@ Hereafter you have instructions to deploy ArmoniK in Kubernetes.
 
 # Set environment variables
 
-You must set environment variables for deploying ArmoniK. The
-main [environment variables](../utils/envvars-armonik.conf) are:
+You must set environment variables for deploying ArmoniK. The main are
+in [envvars-armonik.sh](../utils/scripts/envvars-armonik.sh)
+and [envvars-monitoring.sh](../utils/scripts/envvars-monitoring.sh):
 
 ```buildoutcfg
 # Armonik namespace in the Kubernetes
 export ARMONIK_NAMESPACE=<Your namespace in kubernetes>
-
-# Armonik monitoring namespace in the Kubernetes
-export ARMONIK_MONITORING_NAMESPACE=<Your namespace in kubernetes for monitoring ArmoniK>
 
 # Directory path of the Redis certificates
 export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=<Your directory path of the Redis certificates>
@@ -56,12 +54,18 @@ export ARMONIK_MONGODB_CERTIFICATES_DIRECTORY=<Your directory path of the MongoD
 export ARMONIK_MONGODB_SECRET_NAME=<You kubernetes secret for the MongoDB storage>
 ```
 
+```buildoutcfg
+# Armonik monitoring namespace in the Kubernetes
+export ARMONIK_MONITORING_NAMESPACE=<Your namespace in kubernetes for monitoring ArmoniK>
+```
+
 **Mandatory:** You must set these environment variables:
 
-From the **root** of the repository, source [envvars-armonik.conf](../utils/envvars-armonik.conf):
+From the **root** of the repository, source:
 
 ```bash
-   source infrastructure/utils/envvars-armonik.conf
+source infrastructure/utils/scripts/envvars-armonik.sh
+source infrastructure/utils/scripts/envvars-monitoring.sh
 ```
 
 # Create a namespace for ArmoniK
@@ -105,8 +109,8 @@ kubectl create secret generic $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
 
 ## ActiveMQ Client secret
 
-Example of certificates for ActiveMQ client are in [ActiveMQ certificates](../security/certificates) and credentials
-of authentication are in [ActiveMQ credentials](../security/credentials). Execute the following command to create the
+Example of certificates for ActiveMQ client are in [ActiveMQ certificates](../security/certificates) and credentials of
+authentication are in [ActiveMQ credentials](../security/credentials). Execute the following command to create the
 ActiveMQ server secret in Kubernetes:
 
 ```bash
