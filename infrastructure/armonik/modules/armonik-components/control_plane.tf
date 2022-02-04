@@ -51,10 +51,10 @@ resource "kubernetes_deployment" "control_plane" {
             name           = "control-port"
             container_port = 80
           }
-          volume_mount {
-            name       = "control-plane-configmap"
-            mount_path = "/app/appsettings.json"
-            sub_path   = "appsettings.json"
+          env_from {
+            config_map_ref {
+              name = kubernetes_config_map.core_config.metadata.0.name
+            }
           }
           dynamic volume_mount {
             for_each = (local.data_type.queue_amqp ? [1] : [])
@@ -122,13 +122,6 @@ resource "kubernetes_deployment" "control_plane" {
           name = "varlibdockercontainers"
           host_path {
             path = "/var/lib/docker/containers"
-          }
-        }
-        volume {
-          name = "control-plane-configmap"
-          config_map {
-            name     = kubernetes_config_map.control_plane_config.metadata.0.name
-            optional = false
           }
         }
         volume {
