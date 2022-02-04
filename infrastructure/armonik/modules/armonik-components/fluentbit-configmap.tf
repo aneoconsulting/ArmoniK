@@ -16,7 +16,7 @@ EOF
     Name               tail
     Tag                kube.*
     Path               /var/log/containers/$${HOSTNAME}*.log
-    Exclude_Path       /var/log/containers/$${HOSTNAME}*fluentbit*.log
+    Exclude_Path       /var/log/containers/$${HOSTNAME}*${var.fluent_bit.name}*.log
     Parser             docker
     DB                 /var/log/flb_tail_input_$${HOSTNAME}.db
     DB.Sync            Normal

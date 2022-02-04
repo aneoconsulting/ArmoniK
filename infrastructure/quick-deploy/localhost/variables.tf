@@ -22,10 +22,12 @@ variable "logging_level" {
 variable "fluent_bit" {
   description = "Parameters of Fluent bit"
   type        = object({
+    name  = string
     image = string
     tag   = string
   })
   default     = {
+    name  = "fluent-bit"
     image = "fluent/fluent-bit"
     tag   = "1.3.11"
   }

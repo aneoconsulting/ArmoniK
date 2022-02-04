@@ -32,6 +32,7 @@ variable "fluent_bit" {
     tag   = string
   })
   default     = {
+    name  = "fluent-bit"
     image = "fluent/fluent-bit"
     tag   = "1.3.11"
   }

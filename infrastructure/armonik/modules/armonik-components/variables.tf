@@ -24,6 +24,7 @@ variable "seq_endpoints" {
 variable "fluent_bit" {
   description = "Parameters of Fluent bit"
   type        = object({
+    name  = string
     image = string
     tag   = string
   })

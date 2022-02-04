@@ -6,6 +6,7 @@ logging_level = "Information"
 
 # Fluent-bit
 fluent_bit = {
+  name  = "fluent-bit"
   image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"
   tag   = "1.3.11"
 }
