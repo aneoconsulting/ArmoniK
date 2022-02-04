@@ -10,6 +10,7 @@ module "armonik" {
   storage_endpoint_url = var.storage_endpoint_url
   seq_endpoints        = local.seq_endpoints
   fluent_bit           = {
+    name  = var.fluent_bit.name
     image = var.fluent_bit.image
     tag   = var.fluent_bit.tag
   }
