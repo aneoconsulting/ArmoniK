@@ -1,20 +1,3 @@
-# Current account
-data "aws_caller_identity" "current" {}
-
-# Current AWS region
-data "aws_region" "current" {}
-
-locals {
-  account_id = data.aws_caller_identity.current.id
-  region     = data.aws_region.current.name
-  tags       = {
-    application = "ArmoniK"
-    resource    = "KMS"
-    created_by  = data.aws_caller_identity.current.arn
-    date        = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
-  }
-}
-
 # Key Management Service
 resource "aws_kms_key" "kms" {
   description              = "KMS to encrypt/decrypt data in ArmoniK"

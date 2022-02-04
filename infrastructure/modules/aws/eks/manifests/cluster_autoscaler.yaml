@@ -1,0 +1,22 @@
+extraArgs:
+  logtostderr: true
+  stderrthreshold: info
+  v: 4
+  aws-use-static-instance-list: true
+
+resources:
+  limits:
+    cpu: 3000m
+    memory: 3000Mi
+  requests:
+    cpu: 1000m
+    memory: 1000Mi
+
+nodeSelector:
+  grid/type: "Operator"
+
+tolerations:
+  - key: "grid/type"
+    operator: "Equal"
+    value: "Operator"
+    effect: "NoSchedule"
