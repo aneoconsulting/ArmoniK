@@ -18,6 +18,19 @@ variable "logging_level" {
   default     = "Information"
 }
 
+# Fluent-bit
+variable "fluent_bit" {
+  description = "Parameters of Fluent bit"
+  type        = object({
+    image = string
+    tag   = string
+  })
+  default     = {
+    image = "fluent/fluent-bit"
+    tag   = "1.3.11"
+  }
+}
+
 # Host path as shared storage
 variable "host_path" {
   description = "Host path as shared storage"

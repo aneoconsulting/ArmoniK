@@ -1,6 +1,6 @@
 # Envvars
 locals {
-  fluentbit = <<EOF
+  fluent_bit = <<EOF
 [SERVICE]
     Flush         1
     Log_Level     info
@@ -126,16 +126,16 @@ EOF
 }
 
 # configmap with all the variables
-resource "kubernetes_config_map" "fluentbit_config" {
+resource "kubernetes_config_map" "fluent_bit_config" {
   metadata {
-    name      = "fluentbit-configmap"
+    name      = "fluent-bit-configmap"
     namespace = var.namespace
   }
   data = {
-    "fluent-bit.conf" = local.fluentbit,
-    "input-kubernetes.conf" = local.input_kubernetes,
-    "filter-kubernetes.conf" = local.filter_kubernetes,
-    "output-http-seq.conf" = local.output_http_seq,
-    "parsers.conf" = local.parsers
+    "fluent-bit.conf"        = local.fluent_bit
+    "input-kubernetes.conf"  = local.input_kubernetes
+    "filter-kubernetes.conf" = local.filter_kubernetes
+    "output-http-seq.conf"   = local.output_http_seq
+    "parsers.conf"           = local.parsers
   }
 }

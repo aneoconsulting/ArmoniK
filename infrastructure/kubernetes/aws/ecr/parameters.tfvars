@@ -66,5 +66,10 @@ repositories = [
     name  = "aws-node-termination-handler"
     image = "amazon/aws-node-termination-handler"
     tag   = "v1.10.0"
+  },
+  {
+    name  = "fluent-bit"
+    image = "fluent/fluent-bit"
+    tag   = "1.3.11"
   }
 ]

@@ -61,6 +61,10 @@ module "armonik" {
   namespace            = var.kubernetes_namespaces.armonik
   working_dir          = "../.."
   logging_level        = var.logging_level
+  fluent_bit           = {
+    image = var.fluent_bit.image
+    tag   = var.fluent_bit.tag
+  }
   seq_endpoints        = (var.deploy.monitoring ? {
     url  = module.seq.0.url
     host = module.seq.0.host

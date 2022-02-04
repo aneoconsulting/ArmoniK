@@ -32,6 +32,7 @@ resource "kubernetes_deployment" "control_plane" {
             name = var.control_plane.image_pull_secrets
           }
         }
+        # Control plane container
         container {
           name              = "control-plane"
           image             = var.control_plane.tag != "" ? "${var.control_plane.image}:${var.control_plane.tag}" : var.control_plane.image
@@ -80,12 +81,11 @@ resource "kubernetes_deployment" "control_plane" {
             }
           }
         }
-
+        # Fluent bit container
         container {
-          name              = "fluentbit"
-          image             = "fluent/fluent-bit:1.3.11"
+          name              = "fluent-bit"
+          image             = "${var.fluent_bit.image}:${var.fluent_bit.tag}"
           image_pull_policy = "Always"
-
           volume_mount {
             name       = "varlog"
             mount_path = "/var/log"
@@ -96,20 +96,18 @@ resource "kubernetes_deployment" "control_plane" {
             read_only  = true
           }
           volume_mount {
-            name       = "fluentbit-configmap"
+            name       = "fluent-bit-configmap"
             mount_path = "/fluent-bit/etc/"
           }
-
           env {
             name  = "FLUENT_HTTP_SEQ_HOST"
-            value = "${var.seq_endpoints.host}"
+            value = var.seq_endpoints.host
           }
           env {
             name  = "FLUENT_HTTP_SEQ_PORT"
-            value = "${var.seq_endpoints.port}"
+            value = var.seq_endpoints.port
           }
         }
-
         volume {
           name = "varlog"
           host_path {
@@ -122,7 +120,6 @@ resource "kubernetes_deployment" "control_plane" {
             path = "/var/lib/docker/containers"
           }
         }
-
         volume {
           name = "control-plane-configmap"
           config_map {
@@ -131,9 +128,9 @@ resource "kubernetes_deployment" "control_plane" {
           }
         }
         volume {
-          name = "fluentbit-configmap"
+          name = "fluent-bit-configmap"
           config_map {
-            name     = kubernetes_config_map.fluentbit_config.metadata.0.name
+            name     = kubernetes_config_map.fluent_bit_config.metadata.0.name
             optional = false
           }
         }

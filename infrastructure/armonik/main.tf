@@ -9,4 +9,8 @@ module "armonik" {
   storage_adapters     = local.storage_adapters
   storage_endpoint_url = var.storage_endpoint_url
   seq_endpoints        = local.seq_endpoints
+  fluent_bit           = {
+    image = var.fluent_bit.image
+    tag   = var.fluent_bit.tag
+  }
 }

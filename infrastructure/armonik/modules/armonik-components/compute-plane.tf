@@ -36,6 +36,7 @@ resource "kubernetes_deployment" "compute_plane" {
             name = var.compute_plane.image_pull_secrets
           }
         }
+        # Polling agent container
         container {
           name              = "polling-agent"
           image             = var.compute_plane.polling_agent.tag != "" ? "${var.compute_plane.polling_agent.image}:${var.compute_plane.polling_agent.tag}" : var.compute_plane.polling_agent.image
@@ -89,12 +90,11 @@ resource "kubernetes_deployment" "compute_plane" {
             }
           }
         }
-
+        # Fluent-bit container
         container {
-          name              = "fluentbit"
-          image             = "fluent/fluent-bit:1.3.11"
+          name              = "fluent-bit"
+          image             = "${var.fluent_bit.image}:${var.fluent_bit.tag}"
           image_pull_policy = "Always"
-
           volume_mount {
             name       = "varlog"
             mount_path = "/var/log"
@@ -105,20 +105,18 @@ resource "kubernetes_deployment" "compute_plane" {
             read_only  = true
           }
           volume_mount {
-            name       = "fluentbit-configmap"
+            name       = "fluent-bit-configmap"
             mount_path = "/fluent-bit/etc/"
           }
-
           env {
             name  = "FLUENT_HTTP_SEQ_HOST"
-            value = "${var.seq_endpoints.host}"
+            value = var.seq_endpoints.host
           }
           env {
             name  = "FLUENT_HTTP_SEQ_PORT"
-            value = "${var.seq_endpoints.port}"
+            value = var.seq_endpoints.port
           }
         }
-
         # Containers of worker
         dynamic container {
           iterator = worker
@@ -177,13 +175,12 @@ resource "kubernetes_deployment" "compute_plane" {
           }
         }
         volume {
-          name = "fluentbit-configmap"
+          name = "fluent-bit-configmap"
           config_map {
-            name     = kubernetes_config_map.fluentbit_config.metadata.0.name
+            name     = kubernetes_config_map.fluent_bit_config.metadata.0.name
             optional = false
           }
         }
-
         volume {
           name = "polling-agent-configmap"
           config_map {

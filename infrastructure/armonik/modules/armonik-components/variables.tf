@@ -20,6 +20,15 @@ variable "seq_endpoints" {
   })
 }
 
+# Fluent-bit
+variable "fluent_bit" {
+  description = "Parameters of Fluent bit"
+  type        = object({
+    image = string
+    tag   = string
+  })
+}
+
 # Parameters of control plane
 variable "control_plane" {
   description = "Parameters of the control plane"
