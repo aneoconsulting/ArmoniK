@@ -8,6 +8,7 @@ logging_level = "Information"
 fluent_bit = {
   image = "fluent/fluent-bit"
   tag   = "1.3.11"
+  name  = "fluent-bit"
 }
 
 # Parameters of control plane

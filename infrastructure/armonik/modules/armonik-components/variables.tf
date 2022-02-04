@@ -26,6 +26,7 @@ variable "fluent_bit" {
   type        = object({
     image = string
     tag   = string
+    name  = string
   })
 }
 

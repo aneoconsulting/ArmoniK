@@ -92,7 +92,7 @@ resource "kubernetes_deployment" "compute_plane" {
         }
         # Fluent-bit container
         container {
-          name              = "fluent-bit"
+          name              = "${var.fluent_bit.name}"
           image             = "${var.fluent_bit.image}:${var.fluent_bit.tag}"
           image_pull_policy = "Always"
           volume_mount {
@@ -115,6 +115,10 @@ resource "kubernetes_deployment" "compute_plane" {
           env {
             name  = "FLUENT_HTTP_SEQ_PORT"
             value = var.seq_endpoints.port
+          }
+          env {
+            name  = "FLUENT_CONTAINER_NAME"
+            value = "${var.fluent_bit.name}"
           }
         }
         # Containers of worker

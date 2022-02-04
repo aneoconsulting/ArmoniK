@@ -30,10 +30,12 @@ variable "fluent_bit" {
   type        = object({
     image = string
     tag   = string
+    name  = string
   })
   default     = {
     image = "fluent/fluent-bit"
     tag   = "1.3.11"
+    name  = "fluent-bit"
   }
 }
 

@@ -12,5 +12,6 @@ module "armonik" {
   fluent_bit           = {
     image = var.fluent_bit.image
     tag   = var.fluent_bit.tag
+    name  = var.fluent_bit.name
   }
 }
