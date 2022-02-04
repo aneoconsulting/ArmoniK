@@ -6,6 +6,7 @@ logging_level = "Information"
 
 # Fluent-bit
 fluent_bit = {
+  name = "fluent-bit"
   image = "fluent/fluent-bit"
   tag   = "1.3.11"
   name  = "fluent-bit"
