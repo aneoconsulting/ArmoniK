@@ -101,11 +101,11 @@ resource "kubernetes_deployment" "control_plane" {
           }
 
           env {
-            name  = "FLUENT_HTTPP_SEQ_HOST"
+            name  = "FLUENT_HTTP_SEQ_HOST"
             value = "${var.seq_endpoints.host}"
           }
           env {
-            name  = "FLUENT_HTTPP_SEQ_PORT"
+            name  = "FLUENT_HTTP_SEQ_PORT"
             value = "${var.seq_endpoints.port}"
           }
         }
