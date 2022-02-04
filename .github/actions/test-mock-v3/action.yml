@@ -25,17 +25,17 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install docker
-      shell: bash
-      run: |
-        sh tools/install/docker.sh
-
     - name: Checkout
       uses: actions/checkout@v2
       with:
         ref: ${{ inputs.version }}
         submodules: true
         repository: aneoconsulting/ArmoniK
+
+    - name: Install docker
+      shell: bash
+      run: |
+        sh tools/install/docker.sh
 
     - name: Create HTC Mock V3 worker's docker image
       shell: bash
