@@ -27,6 +27,7 @@ variable "fluent_bit" {
     name  = string
     image = string
     tag   = string
+    name  = string
   })
 }
 

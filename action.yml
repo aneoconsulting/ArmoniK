@@ -57,16 +57,19 @@ runs:
       name: Install docker
       shell: bash
       run: |
+        cd ${{ github.action_path }}
         sh tools/install/docker.sh
 
     - name: Install kubectl
       shell: bash
       run: |
+        cd ${{ github.action_path }}
         sh tools/install/kubectl.sh
 
     - name: Install terraform
       shell: bash
       run: |
+        cd ${{ github.action_path }}
         sh tools/install/terraform.sh
 
     - name: Install K3s
@@ -80,9 +83,13 @@ runs:
       run: |
         cd ${{ github.action_path }}
         source infrastructure/utils/scripts/envvars-storage.sh
-        source infrastructure/utils/scripts/envvars-monitoring.sh
+        bash infrastructure/utils/scripts/init-kube-storage.sh
+
         source infrastructure/utils/scripts/envvars-armonik.sh
-        bash tools/install/init_kube.sh
+        bash infrastructure/utils/scripts/init-kube-armonik.sh
+
+        source infrastructure/utils/scripts/envvars-monitoring.sh
+        bash infrastructure/utils/scripts/init-kube-monitoring.sh
 
     - name: Set credentials output
       id: credentialsoutput

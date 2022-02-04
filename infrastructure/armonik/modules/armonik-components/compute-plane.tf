@@ -56,10 +56,10 @@ resource "kubernetes_deployment" "compute_plane" {
               memory = var.compute_plane.polling_agent.requests.memory
             }
           }
-          volume_mount {
-            name       = "polling-agent-configmap"
-            mount_path = "/app/appsettings.json"
-            sub_path   = "appsettings.json"
+          env_from {
+            config_map_ref {
+              name = kubernetes_config_map.core_config.metadata.0.name
+            }
           }
           volume_mount {
             name       = "cache-volume"
@@ -116,6 +116,10 @@ resource "kubernetes_deployment" "compute_plane" {
             name  = "FLUENT_HTTP_SEQ_PORT"
             value = var.seq_endpoints.port
           }
+          env {
+            name  = "FLUENT_CONTAINER_NAME"
+            value = var.fluent_bit.name
+          }
         }
         # Containers of worker
         dynamic container {
@@ -138,10 +142,10 @@ resource "kubernetes_deployment" "compute_plane" {
                 memory = worker.value.requests.memory
               }
             }
-            volume_mount {
-              name       = "worker-configmap"
-              mount_path = "/app/appsettings.json"
-              sub_path   = "appsettings.json"
+            env_from {
+              config_map_ref {
+                name = kubernetes_config_map.worker_config.metadata.0.name
+              }
             }
             volume_mount {
               name       = "cache-volume"
@@ -178,20 +182,6 @@ resource "kubernetes_deployment" "compute_plane" {
           name = "fluent-bit-configmap"
           config_map {
             name     = kubernetes_config_map.fluent_bit_config.metadata.0.name
-            optional = false
-          }
-        }
-        volume {
-          name = "polling-agent-configmap"
-          config_map {
-            name     = kubernetes_config_map.polling_agent_config.metadata.0.name
-            optional = false
-          }
-        }
-        volume {
-          name = "worker-configmap"
-          config_map {
-            name     = kubernetes_config_map.worker_config.metadata.0.name
             optional = false
           }
         }

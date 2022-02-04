@@ -1,66 +1,3 @@
-# Envvars
-locals {
-  worker_config = <<EOF
-{
-  "target_grpc_sockets_path": "/cache",
-  "target_data_path": "/data",
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft": "Information",
-      "Grpc": "Information",
-      "GridLib": "Information",
-      "Microsoft.Hosting.Lifetime": "Information"
-    }
-  },
-  "AllowedHosts": "*",
-  "Kestrel": {
-    "EndpointDefaults": {
-      "Protocols": "Http2"
-    }
-  },
-  "Serilog": {
-    "Using": ["Serilog.Sinks.Console"],
-    "MinimumLevel": "${var.logging_level}",
-    "WriteTo": [
-      {
-        "Name": "Console",
-        "Args": {
-          "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact"
-        }
-      }
-    ],
-    "Enrich": ["FromLogContext", "WithMachineName", "WithThreadId"],
-    "Destructure": [
-      {
-        "Name": "ToMaximumDepth",
-        "Args": { "maximumDestructuringDepth": 4 }
-      },
-      {
-        "Name": "ToMaximumStringLength",
-        "Args": { "maximumStringLength": 100 }
-      },
-      {
-        "Name": "ToMaximumCollectionCount",
-        "Args": { "maximumCollectionCount": 10 }
-      }
-    ],
-    "Properties": {
-      "Application": "ArmoniK.Compute.Worker"
-    }
-  },
-  "Redis": {
-    "EndpointUrl": "${var.storage_endpoint_url.external.url}",
-    "CredentialsPath": "/redis/redis_credentials",
-    "Timeout": 3000
-  },
-  "Grpc": {
-    "Endpoint": "${local.control_plane_url}"
-  }
-}
-EOF
-}
-
 # configmap with all the variables
 resource "kubernetes_config_map" "worker_config" {
   metadata {
@@ -68,11 +5,12 @@ resource "kubernetes_config_map" "worker_config" {
     namespace = var.namespace
   }
   data = {
-    "appsettings.json" = local.worker_config
+    target_grpc_sockets_path = "/cache"
+    target_data_path         = "/data"
+    Serilog__MinimumLevel    = "${var.logging_level}"
+    Redis__EndpointUrl       = "${var.storage_endpoint_url.external.url}"
+    Redis__CredentialsPath   = "/redis/redis_credentials"
+    Redis__Timeout           = "3000"
+    Grpc__Endpoint           = "${local.control_plane_url}"
   }
-}
-
-resource "local_file" "worker_config_file" {
-  content  = local.worker_config
-  filename = "./generated/configmaps/worker-config-appsettings.json"
 }
