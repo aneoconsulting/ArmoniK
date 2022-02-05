@@ -2,7 +2,7 @@
 
 cd ../../source/ArmoniK.Samples
 
-export Grpc__Endpoint="http://a9f6f7835167249d6a12eb0683f166b4-1750905909.eu-west-3.elb.amazonaws.com:5001"
+export Grpc__Endpoint="http://af4e597af1e8c4ad7b04e34b49e3606a-865747767.eu-west-3.elb.amazonaws.com:5001"
 cd Samples/SymphonyLike/
 dotnet publish --self-contained -r linux-x64 SymphonyLike.sln
 
