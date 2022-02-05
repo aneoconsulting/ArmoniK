@@ -8,7 +8,7 @@ host_path = "/data"
 control_plane = {
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
-  tag                = "0.4.0"
+  tag                = "0.4.1-SNAPSHOT.2.75ccd46"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -33,7 +33,7 @@ compute_plane = {
   # ArmoniK polling agent
   polling_agent                    = {
     image             = "dockerhubaneo/armonik_pollingagent"
-    tag               = "0.4.0"
+    tag               = "0.4.1-SNAPSHOT.2.75ccd46"
     image_pull_policy = "IfNotPresent"
     limits            = {
       cpu    = "100m"
@@ -52,7 +52,7 @@ compute_plane = {
       image             = "dockerhubaneo/armonik_worker_dll"
       # HTC Mock
       #image             = "dockerhubaneo/armonik_worker_htcmock"
-      tag               = "0.1.2-SNAPSHOT.4.cfda5d1"
+      tag               = "0.2.1"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "920m"
