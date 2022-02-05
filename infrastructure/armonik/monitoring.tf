@@ -1,12 +1,13 @@
 # Use Seq
 module "seq" {
-  source       = "./modules/monitoring/seq"
-  count        = (var.monitoring.seq.use ? 1 : 0)
-  namespace    = var.monitoring.namespace
-  docker_image = {
+  source        = "./modules/monitoring/seq"
+  count         = (var.monitoring.seq.use ? 1 : 0)
+  namespace     = var.monitoring.namespace
+  docker_image  = {
     image = var.monitoring.seq.image
     tag   = var.monitoring.seq.tag
   }
+  node_selector = var.monitoring.seq.node_selector
 }
 
 # Use Grafana

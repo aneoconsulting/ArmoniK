@@ -46,9 +46,10 @@ variable "monitoring" {
   type        = object({
     namespace  = string
     seq        = object({
-      image = string
-      tag   = string
-      use   = bool
+      image         = string
+      tag           = string
+      node_selector = any
+      use           = bool
     })
     grafana    = object({
       image = string
@@ -64,9 +65,10 @@ variable "monitoring" {
   default     = {
     namespace  = "armonik-monitoring"
     seq        = {
-      image = "datalust/seq"
-      tag   = "2021.4"
-      use   = true
+      image         = "datalust/seq"
+      tag           = "2021.4"
+      node_selector = {}
+      use           = true
     }
     grafana    = {
       image = "grafana/grafana"

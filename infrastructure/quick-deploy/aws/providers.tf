@@ -4,7 +4,7 @@ provider "aws" {
   profile                 = var.profile
 }
 
-/*provider "kubernetes" {
+provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.certificate_authority.0.data)
   token                  = module.eks.token
@@ -18,8 +18,9 @@ provider "helm" {
     cluster_ca_certificate = base64decode(module.eks.certificate_authority.0.data)
     token                  = module.eks.token
   }
-}*/
+}
 
+/*
 provider "kubernetes" {
   token    = module.eks.token
   host     = module.eks.cluster_endpoint
@@ -44,3 +45,4 @@ provider "helm" {
     }
   }
 }
+*/

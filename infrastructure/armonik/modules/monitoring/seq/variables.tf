@@ -21,8 +21,9 @@ variable "docker_image" {
 variable "seq" {
   description = "Parameters of Seq"
   type        = object({
-    replicas = number
-    port     = list(object({
+    replicas      = number
+    node_selector = any
+    port          = list(object({
       name        = string
       port        = number
       target_port = number
@@ -30,11 +31,12 @@ variable "seq" {
     }))
   })
   default     = {
-    replicas = 1
-    port     = [
+    replicas      = 1
+    port          = [
       { name = "ingestion", port = 5341, target_port = 5341, protocol = "TCP" },
       { name = "web", port = 8080, target_port = 80, protocol = "TCP" }
     ]
+    node_selector = {}
   }
 }
 
