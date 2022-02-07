@@ -5,6 +5,7 @@ monitoring = {
     image = "datalust/seq"
     tag   = "2021.4"
     use   = true
+    node_selector = {}
   }
   grafana    = {
     image = "grafana/grafana"

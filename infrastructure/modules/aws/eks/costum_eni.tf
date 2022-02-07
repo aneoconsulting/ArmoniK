@@ -8,7 +8,8 @@ resource "null_resource" "trigger_custom_cni" {
     }
   }
   depends_on = [
-    module.eks
+    module.eks,
+    null_resource.update_kubeconfig
   ]
 }
 
@@ -18,6 +19,7 @@ resource "helm_release" "eni_config" {
   namespace  = "default"
   repository = "${path.module}/charts"
   values     = [yamlencode(local.subnets)]
+  depends_on = [module.eks]
 }
 
 resource "null_resource" "change_cni_label" {
@@ -28,6 +30,7 @@ resource "null_resource" "change_cni_label" {
     }
   }
   depends_on = [
-    module.eks
+    module.eks,
+    null_resource.update_kubeconfig
   ]
 }

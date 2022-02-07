@@ -29,12 +29,6 @@ module "vpc_endpoints" {
         module.vpc.intra_route_table_ids, module.vpc.private_route_table_ids, module.vpc.public_route_table_ids
       ])
     }
-    elasticache          = {
-      service             = "elasticache"
-      private_dns_enabled = var.vpc.enable_private_subnet
-      subnet_ids          = var.vpc.enable_private_subnet ? matchkeys(module.vpc.private_subnets, tolist(module.vpc.private_subnets_cidr_blocks), var.vpc.private_subnets) : []
-      security_group_ids  = var.vpc.enable_private_subnet ? [module.vpc.default_security_group_id] : []
-    }
     ec2_autoscaling      = {
       service             = "autoscaling"
       private_dns_enabled = var.vpc.enable_private_subnet

@@ -41,7 +41,8 @@ resource "helm_release" "cluster_autoscaler" {
     value = "1"
   }*/
 
-  values = [file("${path.module}/manifests/cluster_autoscaler.yaml")]
+  values     = [file("${path.module}/manifests/cluster_autoscaler.yaml")]
+  depends_on = [module.eks]
 }
 
 # Workers Auto Scaling policy

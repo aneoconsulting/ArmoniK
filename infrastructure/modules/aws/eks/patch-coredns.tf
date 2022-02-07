@@ -11,6 +11,7 @@ resource "null_resource" "patch_coredns" {
     }
   }
   depends_on = [
-    module.eks
+    module.eks,
+    null_resource.update_kubeconfig
   ]
 }
