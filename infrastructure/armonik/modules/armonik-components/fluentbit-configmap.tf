@@ -3,7 +3,7 @@ locals {
   fluent_bit = <<EOF
 [SERVICE]
     Flush         1
-    Log_Level     info
+    Log_Level     error
     Daemon        off
     Parsers_File  parsers.conf
 @INCLUDE input-kubernetes.conf
@@ -68,6 +68,13 @@ EOF
     Match                   kube.*
     Operation               lift
     Nested_under            log
+
+[FILTER]
+    Name                    modify
+    Match                   kube.*
+    Condition               Key_exists log
+    Rename                  log @m
+    Add                     sourcetype renamelog
 
 [OUTPUT]
     Name                    http
