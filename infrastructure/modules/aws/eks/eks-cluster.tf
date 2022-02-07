@@ -24,6 +24,7 @@ module "eks" {
     "--cluster-name",
     var.name
   ]
+  manage_aws_auth                           = true
 
   # Cluster
   cluster_endpoint_private_access      = var.eks.enable_private_subnet
