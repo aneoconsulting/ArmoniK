@@ -29,7 +29,7 @@ resource "kubernetes_deployment" "seq" {
         }
       }
       spec {
-        node_selector = var.seq.node_selector
+        node_selector = var.node_selector
         container {
           name              = "seq"
           image             = "${var.docker_image.image}:${var.docker_image.tag}"
