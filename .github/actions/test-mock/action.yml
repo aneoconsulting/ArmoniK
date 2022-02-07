@@ -59,9 +59,6 @@ runs:
       shell: bash
       run: |
         set -ex
-        echo ${{ steps.deploy-infra.outputs.credentials-ca-crt }}
-        echo ${{ steps.deploy-infra.outputs.credentials-certificate-pfx }}
-        echo ${{ steps.deploy-infra.outputs.credentials-redis }}
         export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
         export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
         export Grpc__Endpoint=http://$CPIP:$CPPort
