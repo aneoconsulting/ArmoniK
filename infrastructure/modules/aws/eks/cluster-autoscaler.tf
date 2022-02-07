@@ -42,7 +42,10 @@ resource "helm_release" "cluster_autoscaler" {
   }*/
 
   values     = [file("${path.module}/manifests/cluster_autoscaler.yaml")]
-  depends_on = [module.eks]
+  depends_on = [
+    module.eks,
+    null_resource.update_kubeconfig
+  ]
 }
 
 # Workers Auto Scaling policy

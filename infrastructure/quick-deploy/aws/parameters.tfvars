@@ -148,6 +148,26 @@ eks = {
   }
 }
 
+# MQ parameters
+mq = {
+  name               = "armonik-mq"
+  engine_type        = "ActiveMQ"
+  engine_version     = "5.16.3"
+  host_instance_type = "mq.m5.large"
+  deployment_mode    = "SINGLE_INSTANCE" #"ACTIVE_STANDBY_MULTI_AZ"
+  storage_type       = "efs" #"ebs"
+  kms_key_id         = ""
+  user               = {
+    password = "MindTheGapOfPassword"
+    username = "ExampleUser"
+  }
+  vpc                = {
+    id          = ""
+    cidr_blocks = []
+    subnet_ids  = []
+  }
+}
+
 # EKS worker groups
 eks_worker_groups = [
   {

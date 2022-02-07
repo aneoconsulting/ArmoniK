@@ -2,7 +2,11 @@
 
 cd ../../source/ArmoniK.Samples
 
-export Grpc__Endpoint="http://35.88.68.211:32622"
+export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].hostname" --no-headers=true)
+export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+export Grpc__Endpoint=http://$CPIP:$CPPort
+export S3_BUCKET=$(aws s3api list-buckets | jq '.Buckets[0].Name')
+
 export Redis__EndpointUrl="34.221.12.201:32108"
 export Redis__SslHost="127.0.0.1"
 export Redis__Timeout=3000

@@ -64,6 +64,31 @@ module "elasticache" {
   depends_on  = [module.vpc]
 }
 
+# Amazon MQ
+module "mq" {
+  source     = "../../modules/aws/mq"
+  tags       = local.tags
+  name       = "${var.mq.name}-${local.tag}"
+  mq         = {
+    engine_type        = var.mq.engine_type
+    engine_version     = var.mq.engine_version
+    host_instance_type = var.mq.host_instance_type
+    deployment_mode    = var.mq.deployment_mode
+    storage_type       = var.mq.storage_type
+    kms_key_id         = (var.mq.kms_key_id != "" ? var.mq.kms_key_id : module.kms.selected.arn)
+    user               = {
+      password = var.mq.user.password
+      username = var.mq.user.username
+    }
+    vpc                = {
+      id          = module.vpc.id
+      cidr_blocks = concat([module.vpc.cidr_block], module.vpc.pod_cidr_block_private)
+      subnet_ids  = module.vpc.private_subnet_ids
+    }
+  }
+  depends_on = [module.vpc]
+}
+
 # AWS EKS
 module "eks" {
   source            = "../../modules/aws/eks"

@@ -178,6 +178,47 @@ variable "elasticache" {
   }
 }
 
+# MQ parameters
+variable "mq" {
+  description = "MQ Service parameters"
+  type        = object({
+    name               = string
+    engine_type        = string
+    engine_version     = string
+    host_instance_type = string
+    deployment_mode    = string
+    storage_type       = string
+    kms_key_id         = string
+    user               = object({
+      password = string
+      username = string
+    })
+    vpc                = object({
+      id          = string
+      cidr_blocks = list(string)
+      subnet_ids  = list(string)
+    })
+  })
+  default     = {
+    name               = "armonik-mq"
+    engine_type        = "ActiveMQ"
+    engine_version     = "5.16.3"
+    host_instance_type = "mq.m5.large"
+    deployment_mode    = "ACTIVE_STANDBY_MULTI_AZ" #"SINGLE_INSTANCE"
+    storage_type       = "efs" #"ebs"
+    kms_key_id         = ""
+    user               = {
+      password = ""
+      username = ""
+    }
+    vpc                = {
+      id          = ""
+      cidr_blocks = []
+      subnet_ids  = []
+    }
+  }
+}
+
 # AWS EKS
 variable "eks" {
   description = "Parameters of AWS EKS"

@@ -23,23 +23,22 @@ configuration=Debug
 TestDir=${BASEDIR}/../../source/ArmoniK.Extensions.Csharp/SymphonyApi/ArmoniK.DevelopmentKit.SymphonyApi.Tests/EndToEnd.Tests/
 cd ${TestDir}
 
-export Grpc__Endpoint="http://a2177a8fa610947a4b1a4de96db55a1b-966106038.eu-west-3.elb.amazonaws.com:5001"
+export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].hostname" --no-headers=true)
+export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+export Grpc__Endpoint=http://$CPIP:$CPPort
+export S3_BUCKET=$(aws s3api list-buckets | jq '.Buckets[0].Name')
 
 function build()
 {
     cd ${TestDir}
     dotnet publish --self-contained -c $configuration -r linux-x64 .
-    #scp -i ~/.ssh/cluster-key ../packages/ArmoniK.EndToEndTests-v1.0.0.zip ec2-user@54.213.147.130:/data
-    aws s3 cp p../packages/ArmoniK.EndToEndTests-v1.0.0.zip s3://s3fs-zd2w9
+    aws s3 cp ../packages/ArmoniK.EndToEndTests-v1.0.0.zip s3://$S3_BUCKET
     kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 }
 
 function execute()
 {
     cd ${TestDir}
-    #scp -i ~/.ssh/cluster-key ../packages/ArmoniK.EndToEndTests-v1.0.0.zip ec2-user@54.213.147.130:/data
-    aws s3 cp p../packages/ArmoniK.EndToEndTests-v1.0.0.zip s3://s3fs-zd2w9
-
     dotnet bin/${configuration}/net5.0/linux-x64/ArmoniK.EndToEndTests.dll
 }
 

@@ -1,7 +1,8 @@
 # Based on the official aws-node-termination-handler setup guide at https://github.com/aws/aws-node-termination-handler#infrastructure-setup
 resource "helm_release" "aws_node_termination_handler" {
   depends_on = [
-    module.eks
+    module.eks,
+    null_resource.update_kubeconfig
   ]
 
   name             = "aws-node-termination-handler"

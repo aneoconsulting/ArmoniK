@@ -3,6 +3,10 @@ output "eks_cluster" {
   value       = module.eks
 }
 
+output "arn" {
+  description = "ARN of EKS cluster"
+  value       = data.aws_eks_cluster.cluster.arn
+}
 output "cluster_endpoint" {
   description = "Endpoint for EKS control plane"
   value       = module.eks.cluster_endpoint

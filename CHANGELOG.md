@@ -12,9 +12,11 @@ Added
 * AWS Virtual Private Cloud (VPC)
 * AWS Elastic Kubernetes Service (EKS version 1.21)
 * AWS Elastic Container Registry (ECR)
-* Activate logs for EKS and VPC in CloudWatch
 * S3 as shared filesystem for worker containers
 * AWS Elasticache (Redis engine version 6.x)
+* Activate CloudWatch logs for :
+    * EKS
+    * VPC
 * Encryption at rest:
     * VPC flow log in cloudwatch log group
     * EKS cloudwatch log group
@@ -23,11 +25,11 @@ Added
     * ECR
     * S3
     * Elasticache (in transit too)
-* New End to End tests mechanism for Symphony API
+* New End-to-End tests mechanism for Symphony API
 * New SessionService to manage in multi thread several actives sessions
-* New script to deploy armonik on localhost with one script
+* New script to deploy ArmoniK on localhost with one script
 * New Version of nuget package for worker API agent 0.2.1
-* New Version of nuget package for armonik core 0.4.0
+* New Version of nuget package for ArmoniK core 0.4.0
 
 Changed
 -

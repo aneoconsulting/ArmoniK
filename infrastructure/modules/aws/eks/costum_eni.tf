@@ -19,7 +19,10 @@ resource "helm_release" "eni_config" {
   namespace  = "default"
   repository = "${path.module}/charts"
   values     = [yamlencode(local.subnets)]
-  depends_on = [module.eks]
+  depends_on = [
+    module.eks,
+    null_resource.update_kubeconfig
+  ]
 }
 
 resource "null_resource" "change_cni_label" {
