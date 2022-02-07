@@ -5,14 +5,14 @@ ARMONIK_PATH=$(pwd -P)
 export ARMONIK_NAMESPACE=armonik
 
 # Directory path of the Redis certificates
-export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_PATH/../security/certificates
+export ARMONIK_REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_PATH/../security/certificates/redis
 export ARMONIK_REDIS_CREDENTIALS_DIRECTORY=$ARMONIK_PATH/../security/credentials
 
 # Name of Redis secret
 export ARMONIK_REDIS_SECRET_NAME=redis-storage-secret
 
 # Directory path of the certificates for external Redis
-export ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_PATH/../security/certificates
+export ARMONIK_EXTERNAL_REDIS_CERTIFICATES_DIRECTORY=$ARMONIK_PATH/../security/certificates/redis
 export ARMONIK_EXTERNAL_REDIS_CREDENTIALS_DIRECTORY=$ARMONIK_PATH/../security/credentials
 
 # Name of secret of external Redis
@@ -20,14 +20,14 @@ export ARMONIK_EXTERNAL_REDIS_SECRET_NAME=external-redis-storage-secret
 
 # Directory path of the ActiveMQ credentials
 export ARMONIK_ACTIVEMQ_CREDENTIALS_DIRECTORY=$ARMONIK_PATH/../security/credentials
-export ARMONIK_ACTIVEMQ_CERTIFICATES_DIRECTORY=$ARMONIK_PATH/../security/certificates
+export ARMONIK_ACTIVEMQ_CERTIFICATES_DIRECTORY=$ARMONIK_PATH/../security/certificates/activemq
 
 # Name of ActiveMQ secret
 export ARMONIK_ACTIVEMQ_SECRET_NAME=activemq-storage-secret
 
 # Directory path of the MongoDB credentials
 export ARMONIK_MONGODB_CREDENTIALS_DIRECTORY=$ARMONIK_PATH/../security/credentials
-export ARMONIK_MONGODB_CERTIFICATES_DIRECTORY=$ARMONIK_PATH/../security/certificates
+export ARMONIK_MONGODB_CERTIFICATES_DIRECTORY=$ARMONIK_PATH/../security/certificates/mongodb
 
 # Name of MongoDB secret
 export ARMONIK_MONGODB_SECRET_NAME=mongodb-storage-secret

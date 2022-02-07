@@ -30,17 +30,11 @@ inputs:
     required: false
     default: 'false'
 outputs:
-  credentials-ca-crt:
-    description: "Random number"
-    value: ${{ steps.credentialsoutput.outputs.credentials-ca-crt }}
-  credentials-certificate-pfx:
-    description: "Random number"
-    value: ${{ steps.credentialsoutput.outputs.credentials-certificate-pfx }}
   credentials-redis:
-    description: "Random number"
+    description: "Path to Redis credentials file"
     value: ${{ steps.credentialsoutput.outputs.credentials-redis }}
   credentials-redis-ca-p7b:
-    description: "Random number"
+    description: "Path to Redis certificate chain"
     value: ${{ steps.credentialsoutput.outputs.credentials-redis-ca-p7b }}
 
 runs:
@@ -95,10 +89,8 @@ runs:
       id: credentialsoutput
       shell: bash
       run: |
-        echo "::set-output name=credentials-ca-crt::${{ github.action_path }}/infrastructure/security/certificates/ca.crt"
-        echo "::set-output name=credentials-certificate-pfx::${{ github.action_path }}/infrastructure/security/certificates/certificate.pfx"
         echo "::set-output name=credentials-redis::${{ github.action_path }}/infrastructure/security/credentials/redis-credentials.json"
-        echo "::set-output name=credentials-redis-ca-p7b::${{ github.action_path }}/infrastructure/security/certificates/chain.p7b"
+        echo "::set-output name=credentials-redis-ca-p7b::${{ github.action_path }}/infrastructure/security/certificates/redis/chain.p7b"
 
     - name: Deploy Onpremise Storage
       shell: bash
