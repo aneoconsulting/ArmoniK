@@ -143,35 +143,43 @@ variable "s3_bucket_fs" {
 variable "elasticache" {
   description = "Parameters of Elasticache"
   type        = object({
-    name             = string
-    engine           = string
-    engine_version   = string
-    node_type        = string
-    kms_key_id       = string
-    multi_az_enabled = bool
-    vpc              = object({
+    name                  = string
+    engine                = string
+    engine_version        = string
+    node_type             = string
+    encryption_keys       = object({
+      kms_key_id     = string
+      log_kms_key_id = string
+    })
+    log_retention_in_days = number
+    multi_az_enabled      = bool
+    vpc                   = object({
       id          = string
       cidr_blocks = list(string)
       subnet_ids  = list(string)
     })
-    cluster_mode     = object({
+    cluster_mode          = object({
       replicas_per_node_group = number
       num_node_groups         = number
     })
   })
   default     = {
-    name             = "armonik-elasticache"
-    engine           = "redis"
-    engine_version   = "6.x"
-    node_type        = "cache.r4.large"
-    kms_key_id       = ""
-    vpc              = {
+    name                  = "armonik-elasticache"
+    engine                = "redis"
+    engine_version        = "6.x"
+    node_type             = "cache.r4.large"
+    encryption_keys       = {
+      kms_key_id     = ""
+      log_kms_key_id = ""
+    }
+    log_retention_in_days = 30
+    vpc                   = {
       id          = ""
       cidr_blocks = []
       subnet_ids  = []
     }
-    multi_az_enabled = false
-    cluster_mode     = {
+    multi_az_enabled      = false
+    cluster_mode          = {
       replicas_per_node_group = 0
       num_node_groups         = 1 #Valid values are 0 to 5
     }
@@ -182,41 +190,51 @@ variable "elasticache" {
 variable "mq" {
   description = "MQ Service parameters"
   type        = object({
-    name               = string
-    engine_type        = string
-    engine_version     = string
-    host_instance_type = string
-    deployment_mode    = string
-    storage_type       = string
-    kms_key_id         = string
-    user               = object({
-      password = string
-      username = string
-    })
-    vpc                = object({
+    name                    = string
+    engine_type             = string
+    engine_version          = string
+    host_instance_type      = string
+    deployment_mode         = string
+    storage_type            = string
+    kms_key_id              = string
+    authentication_strategy = string
+    publicly_accessible     = bool
+    vpc                     = object({
       id          = string
       cidr_blocks = list(string)
       subnet_ids  = list(string)
     })
   })
   default     = {
-    name               = "armonik-mq"
-    engine_type        = "ActiveMQ"
-    engine_version     = "5.16.3"
-    host_instance_type = "mq.m5.large"
-    deployment_mode    = "ACTIVE_STANDBY_MULTI_AZ" #"SINGLE_INSTANCE"
-    storage_type       = "efs" #"ebs"
-    kms_key_id         = ""
-    user               = {
-      password = ""
-      username = ""
-    }
-    vpc                = {
+    name                    = "armonik-mq"
+    engine_type             = "ActiveMQ"
+    engine_version          = "5.16.3"
+    host_instance_type      = "mq.m5.large"
+    deployment_mode         = "ACTIVE_STANDBY_MULTI_AZ" #"SINGLE_INSTANCE"
+    storage_type            = "efs" #"ebs"
+    kms_key_id              = ""
+    authentication_strategy = "simple" #"ldap"
+    publicly_accessible     = false
+    vpc                     = {
       id          = ""
       cidr_blocks = []
       subnet_ids  = []
     }
   }
+}
+
+# MQ Credentials
+variable "mq_credentials" {
+  description = "Amazon MQ credentials"
+  type        = object({
+    password = string
+    username = string
+  })
+  default     = {
+    password = ""
+    username = ""
+  }
+  sensitive   = true
 }
 
 # AWS EKS
@@ -225,10 +243,12 @@ variable "eks" {
   type        = object({
     name                                 = string
     cluster_version                      = string
-    vpc_private_subnet_ids               = list(string)
-    vpc_id                               = string
-    pods_subnet_ids                      = list(string)
-    enable_private_subnet                = bool
+    vpc                                  = object({
+      private_subnet_ids = list(string)
+      id                 = string
+      pods_subnet_ids    = list(string)
+    })
+    cluster_endpoint_private_access      = bool # vpc.enable_private_subnet
     cluster_endpoint_public_access       = bool
     cluster_endpoint_public_access_cidrs = list(string)
     cluster_log_retention_in_days        = number
@@ -256,10 +276,12 @@ variable "eks" {
   default     = {
     name                                 = "armonik-eks"
     cluster_version                      = "1.21"
-    vpc_private_subnet_ids               = []
-    vpc_id                               = ""
-    pods_subnet_ids                      = []
-    enable_private_subnet                = true
+    vpc                                  = {
+      private_subnet_ids = []
+      id                 = ""
+      pods_subnet_ids    = []
+    }
+    cluster_endpoint_private_access      = true # vpc.enable_private_subnet
     cluster_endpoint_public_access       = true
     cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
     cluster_log_retention_in_days        = 30

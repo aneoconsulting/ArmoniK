@@ -14,9 +14,11 @@ Added
 * AWS Elastic Container Registry (ECR)
 * S3 as shared filesystem for worker containers
 * AWS Elasticache (Redis engine version 6.x)
+* Amazon MQ (ActiveMQ version 5.16.3)
 * Activate CloudWatch logs for :
     * EKS
     * VPC
+    * Amazon MQ
 * Encryption at rest:
     * VPC flow log in cloudwatch log group
     * EKS cloudwatch log group
@@ -25,6 +27,7 @@ Added
     * ECR
     * S3
     * Elasticache (in transit too)
+    * Amazon MQ
 * New End-to-End tests mechanism for Symphony API
 * New SessionService to manage in multi thread several actives sessions
 * New script to deploy ArmoniK on localhost with one script

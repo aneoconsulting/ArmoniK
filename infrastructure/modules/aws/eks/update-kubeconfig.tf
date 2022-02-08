@@ -4,7 +4,13 @@ resource "null_resource" "update_kubeconfig" {
     cluster_arn = module.eks.cluster_arn
   }
   provisioner "local-exec" {
-    command = "sed -i 's/: null/: []/g' ~/.kube/config && aws eks update-kubeconfig --region ${local.region} --name ${var.name}"
+    command = "mkdir -p ~/.kube && touch ~/.kube/config"
+  }
+  provisioner "local-exec" {
+    command = "sed -i 's/: null/: []/g' ~/.kube/config"
+  }
+  provisioner "local-exec" {
+    command = "aws eks update-kubeconfig --region ${local.region} --name ${var.name}"
   }
   provisioner "local-exec" {
     when    = destroy

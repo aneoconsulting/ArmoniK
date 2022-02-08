@@ -98,31 +98,61 @@ s3_bucket_fs = {
 
 # AWS Elasticache
 elasticache = {
-  name             = "armonik-elasticache"
-  engine           = "redis"
-  engine_version   = "6.x"
-  node_type        = "cache.r4.large"
-  kms_key_id       = ""
-  vpc              = {
+  name                  = "armonik-elasticache"
+  engine                = "redis"
+  engine_version        = "6.x"
+  node_type             = "cache.r4.large"
+  encryption_keys       = {
+    kms_key_id     = ""
+    log_kms_key_id = ""
+  }
+  log_retention_in_days = 30
+  vpc                   = {
     id          = ""
     cidr_blocks = []
     subnet_ids  = []
   }
-  multi_az_enabled = false
-  cluster_mode     = {
+  multi_az_enabled      = false
+  cluster_mode          = {
     replicas_per_node_group = 0
     num_node_groups         = 1 #Valid values are 0 to 5
   }
+}
+
+# MQ parameters
+mq = {
+  name                    = "armonik-mq"
+  engine_type             = "ActiveMQ"
+  engine_version          = "5.16.3"
+  host_instance_type      = "mq.m5.large"
+  deployment_mode         = "SINGLE_INSTANCE" #"ACTIVE_STANDBY_MULTI_AZ"
+  storage_type            = "efs" #"ebs"
+  kms_key_id              = ""
+  authentication_strategy = "simple" #"ldap"
+  publicly_accessible     = true
+  vpc                     = {
+    id          = ""
+    cidr_blocks = []
+    subnet_ids  = []
+  }
+}
+
+# MQ Credentials
+mq_credentials = {
+  password = "MindTheGapOfPassword"
+  username = "ExampleUser"
 }
 
 # AWS EKS
 eks = {
   name                                 = "armonik-eks"
   cluster_version                      = "1.21"
-  vpc_private_subnet_ids               = []
-  vpc_id                               = ""
-  pods_subnet_ids                      = []
-  enable_private_subnet                = true
+  vpc                                  = {
+    private_subnet_ids = []
+    id                 = ""
+    pods_subnet_ids    = []
+  }
+  cluster_endpoint_private_access      = true # vpc.enable_private_subnet
   cluster_endpoint_public_access       = true
   cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
   cluster_log_retention_in_days        = 30
@@ -145,26 +175,6 @@ eks = {
     name       = ""
     kms_key_id = ""
     host_path  = "/data"
-  }
-}
-
-# MQ parameters
-mq = {
-  name               = "armonik-mq"
-  engine_type        = "ActiveMQ"
-  engine_version     = "5.16.3"
-  host_instance_type = "mq.m5.large"
-  deployment_mode    = "SINGLE_INSTANCE" #"ACTIVE_STANDBY_MULTI_AZ"
-  storage_type       = "efs" #"ebs"
-  kms_key_id         = ""
-  user               = {
-    password = "MindTheGapOfPassword"
-    username = "ExampleUser"
-  }
-  vpc                = {
-    id          = ""
-    cidr_blocks = []
-    subnet_ids  = []
   }
 }
 

@@ -16,17 +16,19 @@ variable "name" {
 variable "mq" {
   description = "MQ Service parameters"
   type        = object({
-    engine_type        = string
-    engine_version     = string
-    host_instance_type = string
-    deployment_mode    = string
-    storage_type       = string
-    kms_key_id         = string
-    user               = object({
+    engine_type             = string
+    engine_version          = string
+    host_instance_type      = string
+    deployment_mode         = string
+    storage_type            = string
+    kms_key_id              = string
+    authentication_strategy = string
+    publicly_accessible     = bool
+    user                    = object({
       password = string
       username = string
     })
-    vpc                = object({
+    vpc                     = object({
       id          = string
       cidr_blocks = list(string)
       subnet_ids  = list(string)

@@ -26,7 +26,7 @@ module "eks" {
   ]
 
   # Cluster
-  cluster_endpoint_private_access      = var.eks.enable_private_subnet
+  cluster_endpoint_private_access      = var.eks.cluster_endpoint_private_access
   cluster_endpoint_public_access       = var.eks.cluster_endpoint_public_access
   cluster_endpoint_public_access_cidrs = var.eks.cluster_endpoint_public_access_cidrs
   cluster_enabled_log_types            = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
@@ -50,6 +50,13 @@ module "eks" {
       rolearn  = module.eks.worker_iam_role_arn
       username = "system:node:{{EC2PrivateDNSName}}"
       groups   = ["system:bootstrappers", "system:nodes"]
+    }
+  ]
+  map_users = [
+    {
+      userarn  = "arn:aws:iam::${data.aws_caller_identity.current.arn}:user/admin"
+      username = "admin"
+      groups   = ["system:masters", "system:bootstrappers", "system:nodes"]
     }
   ]
 
@@ -88,7 +95,6 @@ module "eks" {
     manage_cluster_iam_resources                       = true
     manage_worker_iam_resources                        = true
     map_accounts                                       = []
-    map_users                                          = []
     node_groups                                        = {}
     node_groups_defaults                               = {}
     openid_connect_audiences                           = []

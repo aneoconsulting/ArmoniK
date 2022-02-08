@@ -22,3 +22,8 @@ output "kms_key_id" {
   description = "ARN of KMS used for MQ"
   value       = aws_mq_broker.mq.encryption_options.0.kms_key_id
 }
+
+output "web_url" {
+  description = "The URL of the broker's ActiveMQ Web Console"
+  value       = aws_mq_broker.mq.instances.0.console_url
+}
