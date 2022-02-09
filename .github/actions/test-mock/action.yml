@@ -62,7 +62,7 @@ runs:
 
         set -ex
         $(kubectl get configmap -n armonik worker-configmap -o jsonpath="{.data}" | python -c 'import sys, json; y=json.loads(sys.stdin.read()); l = [f"export {k}={v}" for k,v in y.items()]; print("\n".join(l))')
-        export Redis__CaPath=${{ steps.deploy-infra.outputs.credentials-redis-ca-p7b }}
+        export Redis__CaPath=${{ steps.deploy-infra.outputs.credentials-redis-ca-pem }}
 
         cd source/ArmoniK.Samples/Samples/HtcMock/Client/src/
         dotnet build "ArmoniK.Samples.HtcMock.Client.csproj" -c Release

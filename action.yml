@@ -30,9 +30,9 @@ inputs:
     required: false
     default: 'false'
 outputs:
-  credentials-redis-ca-p7b:
+  credentials-redis-ca-pem:
     description: "Path to Redis certificate chain"
-    value: ${{ steps.credentialsoutput.outputs.credentials-redis-ca-p7b }}
+    value: ${{ steps.credentialsoutput.outputs.credentials-redis-ca-pem }}
 
 runs:
   using: composite
@@ -82,12 +82,6 @@ runs:
         source infrastructure/utils/scripts/envvars-monitoring.sh
         bash infrastructure/utils/scripts/init-kube-monitoring.sh
 
-    - name: Set credentials output
-      id: credentialsoutput
-      shell: bash
-      run: |
-        echo "::set-output name=credentials-redis-ca-p7b::${{ github.action_path }}/infrastructure/security/certificates/redis/chain.p7b"
-
     - name: Deploy Onpremise Storage
       shell: bash
       run: |
@@ -95,6 +89,14 @@ runs:
         cd ${{ github.action_path }}/infrastructure/storage/onpremise
         terraform init
         terraform apply -var-file parameters.tfvars -auto-approve
+
+    - name: Set credentials output
+      id: credentialsoutput
+      shell: bash
+      run: |
+        mkdir -p ${{ github.action_path }}/infrastructure/security/certificates/redis
+        kubectl get secrets -n armonik redis-client-certificates -o jsonpath="{.data.chain\.pem}" | base64 --decode > ${{ github.action_path }}/infrastructure/security/certificates/redis/chain.pem
+        echo "::set-output name=credentials-redis-ca-pem::${{ github.action_path }}/infrastructure/security/certificates/redis/chain.pem"
 
     - name: Create a configuration file for ArmoniK
       shell: bash
