@@ -51,11 +51,11 @@ resource "kubernetes_deployment" "mongodb" {
           }
           env {
             name  = "MONGO_INITDB_ROOT_USERNAME"
-            value = "tmpAdmin"
+            value = random_string.mongodb_admin_user.result
           }
           env {
             name  = "MONGO_INITDB_ROOT_PASSWORD"
-            value = "tmpPassword"
+            value = random_password.mongodb_admin_password.result
           }
           volume_mount {
             name       = "mongodb-secret-volume"

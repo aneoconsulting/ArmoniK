@@ -1,12 +1,68 @@
+resource "random_string" "mq_admin_user" {
+  length  = 8
+  special = false
+  number  = false
+}
+
+resource "random_password" "mq_admin_password" {
+  length  = 16
+  special = false
+}
+
+resource "random_string" "mq_application_user" {
+  length  = 8
+  special = false
+  number  = false
+}
+
+resource "random_password" "mq_application_password" {
+  length  = 16
+  special = false
+}
+
+resource "kubernetes_secret" "activemq_admin" {
+  metadata {
+    name      = "activemq-admin"
+    namespace = "armonik"
+  }
+
+  data = {
+    username = "${random_string.mq_admin_user.result}"
+    password = "${random_password.mq_admin_password.result}"
+  }
+
+  type = "kubernetes.io/basic-auth"
+}
+
+resource "kubernetes_secret" "activemq_user" {
+  metadata {
+    name      = "activemq-user"
+    namespace = "armonik"
+  }
+
+  data = {
+    username = "${random_string.mq_application_user.result}"
+    password = "${random_password.mq_application_password.result}"
+  }
+
+  type = "kubernetes.io/basic-auth"
+}
+
 # jetty.xml
 locals {
+  activemq_jetty_realm_properties = <<EOF
+# username: password ,[role-name]
+${random_string.mq_admin_user.result}:${random_password.mq_admin_password.result}, admin
+${random_string.mq_application_user.result}:${random_password.mq_application_password.result}, guest
+EOF
+
   activemq_jetty_xml = <<EOF
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="securityLoginService" class="org.eclipse.jetty.security.HashLoginService">
         <property name="name" value="ActiveMQRealm" />
-        <property name="config" value="/credentials/jetty-realm.properties" />
+        <property name="config" value="conf/jetty-realm.properties" />
     </bean>
 
     <bean id="securityConstraint" class="org.eclipse.jetty.util.security.Constraint">
@@ -386,6 +442,7 @@ resource "kubernetes_config_map" "activemq_configs" {
     "jetty.xml" = local.activemq_jetty_xml
     "activemq.xml" = local.activemq_xml
     "log4j.properties" = local.log4j_properties
+    "jetty-realm.properties" = local.activemq_jetty_realm_properties
   }
 }
 

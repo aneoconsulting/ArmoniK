@@ -1,5 +1,24 @@
 # Redis is deployed as a service in Kubernetes create-cluster
 
+resource "random_password" "redis_password" {
+  length  = 16
+  special = false
+}
+
+resource "kubernetes_secret" "redis_user" {
+  metadata {
+    name      = "redis-user"
+    namespace = "armonik"
+  }
+
+  data = {
+    username = ""
+    password = "${random_password.redis_password.result}"
+  }
+
+  type = "kubernetes.io/basic-auth"
+}
+
 # Kubernetes Redis deployment
 resource "kubernetes_deployment" "redis" {
   metadata {
@@ -41,7 +60,7 @@ resource "kubernetes_deployment" "redis" {
             "--tls-cert-file /certificates/cert_file",
             "--tls-key-file /certificates/key_file",
             "--tls-auth-clients no",
-            "--requirepass foobared"
+            "--requirepass ${random_password.redis_password.result}"
           ]
           port {
             container_port = var.redis.port

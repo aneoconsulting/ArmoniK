@@ -30,9 +30,6 @@ inputs:
     required: false
     default: 'false'
 outputs:
-  credentials-redis:
-    description: "Path to Redis credentials file"
-    value: ${{ steps.credentialsoutput.outputs.credentials-redis }}
   credentials-redis-ca-p7b:
     description: "Path to Redis certificate chain"
     value: ${{ steps.credentialsoutput.outputs.credentials-redis-ca-p7b }}
@@ -89,7 +86,6 @@ runs:
       id: credentialsoutput
       shell: bash
       run: |
-        echo "::set-output name=credentials-redis::${{ github.action_path }}/infrastructure/security/credentials/redis-credentials.json"
         echo "::set-output name=credentials-redis-ca-p7b::${{ github.action_path }}/infrastructure/security/certificates/redis/chain.p7b"
 
     - name: Deploy Onpremise Storage

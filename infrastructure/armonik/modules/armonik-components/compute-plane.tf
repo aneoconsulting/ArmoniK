@@ -61,6 +61,66 @@ resource "kubernetes_deployment" "compute_plane" {
               name = kubernetes_config_map.core_config.metadata.0.name
             }
           }
+          env {
+            name = "Amqp__User"
+            value_from {
+              secret_key_ref {
+                key      = "username"
+                name     = "activemq-user"
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "Amqp__Password"
+            value_from {
+              secret_key_ref {
+                key      = "password"
+                name     = "activemq-user"
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "Redis__User"
+            value_from {
+              secret_key_ref {
+                key      = "username"
+                name     = "redis-user"
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "Redis__Password"
+            value_from {
+              secret_key_ref {
+                key      = "password"
+                name     = "redis-user"
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "MongoDB__User"
+            value_from {
+              secret_key_ref {
+                key      = "username"
+                name     = "mongodb-user"
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "MongoDB__Password"
+            value_from {
+              secret_key_ref {
+                key      = "password"
+                name     = "mongodb-user"
+                optional = false
+              }
+            }
+          }
           volume_mount {
             name       = "cache-volume"
             mount_path = "/cache"
@@ -145,6 +205,26 @@ resource "kubernetes_deployment" "compute_plane" {
             env_from {
               config_map_ref {
                 name = kubernetes_config_map.worker_config.metadata.0.name
+              }
+            }
+            env {
+              name = "Redis__User"
+              value_from {
+                secret_key_ref {
+                  key      = "username"
+                  name     = "redis-user"
+                  optional = false
+                }
+              }
+            }
+            env {
+              name = "Redis__Password"
+              value_from {
+                secret_key_ref {
+                  key      = "password"
+                  name     = "redis-user"
+                  optional = false
+                }
               }
             }
             volume_mount {

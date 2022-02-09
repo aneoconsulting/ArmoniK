@@ -58,16 +58,10 @@ runs:
     - name: Test HTC Mock
       shell: bash
       run: |
-        set -ex
-        export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
-        export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
-        export Grpc__Endpoint=http://$CPIP:$CPPort
+        export Redis__Password=$(kubectl get secret -n armonik redis-user -o jsonpath="{.data.password}" | base64 --decode)
 
-        export ReIP=$(kubectl get svc redis -n armonik-storage -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
-        export RePort=$(kubectl get svc redis -n armonik-storage -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
-        export Redis__EndpointUrl=$ReIP:$RePort
-        export Redis__Timeout=3000
-        export Redis__CredentialsPath=${{ steps.deploy-infra.outputs.credentials-redis }}
+        set -ex
+        $(kubectl get configmap -n armonik worker-configmap -o jsonpath="{.data}" | python -c 'import sys, json; y=json.loads(sys.stdin.read()); l = [f"export {k}={v}" for k,v in y.items()]; print("\n".join(l))')
         export Redis__CaPath=${{ steps.deploy-infra.outputs.credentials-redis-ca-p7b }}
 
         cd source/ArmoniK.Samples/Samples/HtcMock/Client/src/

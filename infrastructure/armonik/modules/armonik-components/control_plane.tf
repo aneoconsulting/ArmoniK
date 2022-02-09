@@ -56,6 +56,66 @@ resource "kubernetes_deployment" "control_plane" {
               name = kubernetes_config_map.core_config.metadata.0.name
             }
           }
+          env {
+            name = "Amqp__User"
+            value_from {
+              secret_key_ref {
+                key      = "username"
+                name     = "activemq-user"
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "Amqp__Password"
+            value_from {
+              secret_key_ref {
+                key      = "password"
+                name     = "activemq-user"
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "Redis__User"
+            value_from {
+              secret_key_ref {
+                key      = "username"
+                name     = "redis-user"
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "Redis__Password"
+            value_from {
+              secret_key_ref {
+                key      = "password"
+                name     = "redis-user"
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "MongoDB__User"
+            value_from {
+              secret_key_ref {
+                key      = "username"
+                name     = "mongodb-user"
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "MongoDB__Password"
+            value_from {
+              secret_key_ref {
+                key      = "password"
+                name     = "mongodb-user"
+                optional = false
+              }
+            }
+          }
           dynamic volume_mount {
             for_each = (local.data_type.queue_amqp ? [1] : [])
             content {
