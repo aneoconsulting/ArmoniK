@@ -8,10 +8,10 @@ export TF_DATA_DIR?=$(GENERATED_DIR)
 export TF_LOG=INFO
 export TF_LOG_PATH=$(GENERATED_DIR)/terraform.log
 
-export TAG
+export TAG?=main
 export REGION?=eu-west-3
 export PROFILE?=default
-export TFSTATE_S3_BUCKET?=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[0].OutputValue' --output text)
+export TFSTATE_S3_BUCKET?=armonik-tfstate
 
 .PHONY: apply destroy
 

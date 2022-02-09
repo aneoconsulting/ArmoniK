@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export TAG
+export TAG?=main
 export REGION?=eu-west-3
 BACKEND?=generated
 YAML_SRC:=backend-resources.yaml
