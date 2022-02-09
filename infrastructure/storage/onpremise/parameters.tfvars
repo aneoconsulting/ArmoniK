@@ -22,6 +22,9 @@ mongodb = {
   credentials_admin_key_username = "username"
   credentials_admin_key_password = "password"
   credentials_admin_namespace    = "armonik"
+  certificates_server_secret     = "mongodb-server-certificates"
+  certificates_client_secret     = "mongodb-client-certificates"
+  certificates_client_namespace  = "armonik"
 }
 
 # Parameters for Redis
@@ -37,6 +40,9 @@ redis = {
   credentials_user_key_username  = "username"
   credentials_user_key_password  = "password"
   credentials_user_namespace     = "armonik"
+  certificates_server_secret     = "redis-server-certificates"
+  certificates_client_secret     = "redis-client-certificates"
+  certificates_client_namespace  = "armonik"
 }
 
 # Parameters for ActiveMQ
@@ -63,5 +69,8 @@ activemq = {
   credentials_admin_key_username = "username"
   credentials_admin_key_password = "password"
   credentials_admin_namespace    = "armonik"
+  certificates_server_secret     = "activemq-server-certificates"
+  certificates_client_secret     = "activemq-client-certificates"
+  certificates_client_namespace  = "armonik"
 }
 

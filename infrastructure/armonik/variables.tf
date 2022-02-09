@@ -48,42 +48,58 @@ variable "secrets"  {
     redis_username_key    = string
     redis_password_secret = string
     redis_password_key    = string
+    redis_certificate_secret = string
+    redis_certificate_file = string
 
     redisext_username_secret = string
     redisext_username_key    = string
     redisext_password_secret = string
     redisext_password_key    = string
+    redisext_certificate_secret = string
+    redisext_certificate_file = string
 
     mongodb_username_secret = string
     mongodb_username_key    = string
     mongodb_password_secret = string
     mongodb_password_key    = string
+    mongodb_certificate_secret = string
+    mongodb_certificate_file = string
 
     activemq_username_secret = string
     activemq_username_key    = string
     activemq_password_secret = string
     activemq_password_key    = string
+    activemq_certificate_secret = string
+    activemq_certificate_file = string
   })
   default     = {
     redis_username_secret = "redis-user"
     redis_username_key    = "username"
     redis_password_secret = "redis-user"
     redis_password_key    = "password"
+    redis_certificate_secret = "redis-client-certificates"
+    redis_certificate_file = "chain.pem"
 
     redisext_username_secret = "redis-user"
     redisext_username_key    = "username"
     redisext_password_secret = "redis-user"
     redisext_password_key    = "password"
+    redisext_certificate_secret = "redis-client-certificates"
+    redisext_certificate_file = "chain.pem"
 
     mongodb_username_secret = "mongodb-user"
     mongodb_username_key    = "username"
     mongodb_password_secret = "mongodb-user"
     mongodb_password_key    = "password"
+    mongodb_certificate_secret = "mongodb-client-certificates"
+    mongodb_certificate_file = "chain.pem"
 
     activemq_username_secret = "activemq-user"
     activemq_username_key    = "username"
     activemq_password_secret = "activemq-user"
     activemq_password_key    = "password"
+    activemq_certificate_secret = "activemq-client-certificates"
+    activemq_certificate_file = "chain.pem"
   }
 }
 

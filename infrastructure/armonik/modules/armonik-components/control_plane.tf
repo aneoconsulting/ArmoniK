@@ -196,7 +196,7 @@ resource "kubernetes_deployment" "control_plane" {
           content {
             name = "activemq-secret-volume"
             secret {
-              secret_name = var.storage_endpoint_url.activemq.secret
+              secret_name = var.secrets.activemq_certificate_secret
               optional    = false
             }
           }
@@ -206,7 +206,7 @@ resource "kubernetes_deployment" "control_plane" {
           content {
             name = "redis-secret-volume"
             secret {
-              secret_name = var.storage_endpoint_url.redis.secret
+              secret_name = var.secrets.redis_certificate_secret
               optional    = false
             }
           }
@@ -216,7 +216,7 @@ resource "kubernetes_deployment" "control_plane" {
           content {
             name = "mongodb-secret-volume"
             secret {
-              secret_name = var.storage_endpoint_url.mongodb.secret
+              secret_name = var.secrets.mongodb_certificate_secret
               optional    = false
             }
           }

@@ -44,6 +44,9 @@ variable "mongodb" {
     credentials_admin_key_username = string
     credentials_admin_key_password = string
     credentials_admin_namespace    = string
+    certificates_server_secret     = string
+    certificates_client_secret     = string
+    certificates_client_namespace  = string
   })
   default     = {
     replicas      = 1
@@ -62,6 +65,9 @@ variable "mongodb" {
     credentials_admin_key_username = "username"
     credentials_admin_key_password = "password"
     credentials_admin_namespace    = "armonik"
+    certificates_server_secret     = "mongodb-server-certificates"
+    certificates_client_secret     = "mongodb-client-certificates"
+    certificates_client_namespace  = "armonik"
   }
 }
 
@@ -80,6 +86,9 @@ variable "redis" {
     credentials_user_key_username  = string
     credentials_user_key_password  = string
     credentials_user_namespace     = string
+    certificates_server_secret     = string
+    certificates_client_secret     = string
+    certificates_client_namespace  = string
   })
   default     = {
     replicas      = 1
@@ -93,6 +102,9 @@ variable "redis" {
     credentials_user_key_username  = "username"
     credentials_user_key_password  = "password"
     credentials_user_namespace     = "armonik"
+    certificates_server_secret     = "redis-server-certificates"
+    certificates_client_secret     = "redis-client-certificates"
+    certificates_client_namespace  = "armonik"
   }
 }
 
@@ -121,6 +133,9 @@ variable "activemq" {
     credentials_admin_key_username = string
     credentials_admin_key_password = string
     credentials_admin_namespace    = string
+    certificates_server_secret     = string
+    certificates_client_secret     = string
+    certificates_client_namespace  = string
   })
   default     = {
     replicas      = 1
@@ -145,5 +160,8 @@ variable "activemq" {
     credentials_admin_key_username = "username"
     credentials_admin_key_password = "password"
     credentials_admin_namespace    = "armonik"
+    certificates_server_secret     = "activemq-server-certificates"
+    certificates_client_secret     = "activemq-client-certificates"
+    certificates_client_namespace  = "armonik"
   }
 }

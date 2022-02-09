@@ -29,6 +29,9 @@ variable "activemq" {
     credentials_admin_key_username = string
     credentials_admin_key_password = string
     credentials_admin_namespace    = string
+    certificates_server_secret     = string
+    certificates_client_secret     = string
+    certificates_client_namespace  = string
   })
 }
 

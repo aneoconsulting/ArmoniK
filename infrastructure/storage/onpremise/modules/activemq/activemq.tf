@@ -56,7 +56,7 @@ resource "kubernetes_deployment" "activemq" {
         volume {
           name = "activemq-storage-secret-volume"
           secret {
-            secret_name = var.activemq.secret
+            secret_name = kubernetes_secret.activemq_certificate.metadata.0.name
             optional    = false
           }
         }

@@ -20,6 +20,11 @@ resource "random_password" "mq_application_password" {
   special = false
 }
 
+resource "random_password" "mq_keystore_password" {
+  length  = 16
+  special = false
+}
+
 resource "kubernetes_secret" "activemq_admin" {
   metadata {
     name      = var.activemq.credentials_admin_secret
@@ -46,6 +51,105 @@ resource "kubernetes_secret" "activemq_user" {
   }
 
   type = var.activemq.credentials_user_type
+}
+
+#------------------------------------------------------------------------------
+# Certificate Authority
+#------------------------------------------------------------------------------
+resource "tls_private_key" "root_activemq" {
+  algorithm   = "RSA"
+  ecdsa_curve = "P384"
+  rsa_bits    = "4096"
+}
+
+resource "tls_self_signed_cert" "root_activemq" {
+  key_algorithm         = tls_private_key.root_activemq.algorithm
+  private_key_pem       = tls_private_key.root_activemq.private_key_pem
+  is_ca_certificate     = true
+  validity_period_hours = "168"
+
+  allowed_uses = [
+    "cert_signing",
+    "key_encipherment",
+    "digital_signature"
+  ]
+
+  subject {
+    organization = "ArmoniK activemq Root (NonTrusted)"
+    common_name  = "ArmoniK activemq Root (NonTrusted) Private Certificate Authority"
+    country      = "France"
+  }
+}
+
+#------------------------------------------------------------------------------
+# Certificate
+#------------------------------------------------------------------------------
+resource "tls_private_key" "activemq_private_key" {
+  algorithm   = "RSA"
+  ecdsa_curve = "P384"
+  rsa_bits    = "4096"
+}
+
+resource "tls_cert_request" "activemq_cert_request" {
+  key_algorithm   = tls_private_key.activemq_private_key.algorithm
+  private_key_pem = tls_private_key.activemq_private_key.private_key_pem
+
+  subject {
+    country      = "France"
+    common_name  = "127.0.0.1"
+    # organization = "127.0.0.1"
+  }
+}
+
+resource "tls_locally_signed_cert" "activemq_certificate" {
+  cert_request_pem   = tls_cert_request.activemq_cert_request.cert_request_pem
+  ca_key_algorithm   = tls_private_key.root_activemq.algorithm
+  ca_private_key_pem = tls_private_key.root_activemq.private_key_pem
+  ca_cert_pem        = tls_self_signed_cert.root_activemq.cert_pem
+
+  validity_period_hours = "168"
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+    "client_auth",
+    "any_extended",
+  ]
+}
+
+resource "pkcs12_from_pem" "activemq_certificate" {
+  password = random_password.mq_keystore_password.result
+  cert_pem = tls_locally_signed_cert.activemq_certificate.cert_pem
+  private_key_pem  = tls_private_key.activemq_private_key.private_key_pem
+  ca_pem = tls_self_signed_cert.root_activemq.cert_pem
+}
+
+resource "kubernetes_secret" "activemq_certificate" {
+  metadata {
+    name      = var.activemq.certificates_server_secret
+    namespace = var.namespace
+  }
+
+  data = {
+    "root.pem" = "${tls_self_signed_cert.root_activemq.cert_pem}"
+    "cert.pem" = "${tls_locally_signed_cert.activemq_certificate.cert_pem}"
+    "key.pem" = "${tls_private_key.activemq_private_key.private_key_pem}"
+  }
+  binary_data = {
+    "certificate.pfx" = "${pkcs12_from_pem.activemq_certificate.result}"
+  }
+}
+
+resource "kubernetes_secret" "activemq_certificate_client" {
+  metadata {
+    name      = var.activemq.certificates_client_secret
+    namespace = var.activemq.certificates_client_namespace
+  }
+
+  data = {
+    "chain.pem" = format("%s\n%s", tls_locally_signed_cert.activemq_certificate.cert_pem, tls_self_signed_cert.root_activemq.cert_pem)
+  }
 }
 
 # jetty.xml
@@ -339,7 +443,7 @@ EOF
 
         <sslContext>
             <sslContext keyStore="file:/credentials/certificate.pfx"
-                        keyStorePassword=""/>
+                        keyStorePassword="${random_password.mq_keystore_password.result}"/>
         </sslContext>
     </broker>
 
