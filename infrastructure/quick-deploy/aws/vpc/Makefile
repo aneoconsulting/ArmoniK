@@ -1,7 +1,7 @@
 CURRENT_DIR=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 PARAMETERS_FILE?=parameters.tfvars
-STATE_FILE=ecr-terraform.tfstate
+STATE_FILE=vpc-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/output.json
 
 export TF_DATA_DIR?=$(GENERATED_DIR)

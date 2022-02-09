@@ -10,7 +10,7 @@ resource "random_string" "random_resources" {
 
 locals {
   random_string = random_string.random_resources.result
-  tag           = var.tag != null && var.tag != "" ? "${var.tag}-${local.random_string}" : local.random_string
+  tag           = var.tag != null && var.tag != "" ? var.tag : local.random_string
   tags          = {
     application        = "ArmoniK"
     deployment_version = local.tag

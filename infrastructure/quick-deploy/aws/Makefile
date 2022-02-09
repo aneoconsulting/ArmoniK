@@ -1,17 +1,8 @@
-export TF_DATA_DIR?=generated
-export TF_LOG=TRACE
-export TF_LOG_PATH=generated/terraform.log
 export TAG
 export REGION?=eu-west-3
 export PROFILE?=default
 
 CURRENT_DIR=$(shell pwd)
-BACKEND?=generated/backend
-PARAMETERS_FILE?=parameters.tfvars
-PLAN_FILE=$(BACKEND)/terraform.tfplan
-STATE_FILE=$(BACKEND)/terraform.tfstate
-OUTPUT_FILE=generated/output.json
-
 
 .PHONY: plan apply destroy
 
@@ -30,11 +21,43 @@ destroy-s3-of-backend:
 ####################################
 # 			  AWS ECR 		       #
 ####################################
+
 deploy-ecr:
 	$(MAKE) -C $(CURRENT_DIR)/ecr deploy TAG=$(TAG) REGION=$(REGION) PROFILE=$(PROFILE)
 
 destroy-ecr:
 	$(MAKE) -C $(CURRENT_DIR)/ecr destroy TAG=$(TAG) REGION=$(REGION) PROFILE=$(PROFILE)
+
+####################################
+# 			  AWS VPC 		       #
+####################################
+
+deploy-vpc:
+	$(MAKE) -C $(CURRENT_DIR)/vpc deploy TAG=$(TAG) REGION=$(REGION) PROFILE=$(PROFILE)
+
+destroy-vpc:
+	$(MAKE) -C $(CURRENT_DIR)/vpc destroy TAG=$(TAG) REGION=$(REGION) PROFILE=$(PROFILE)
+
+####################################
+# 			   all		           #
+####################################
+
+deploy-all: deploy-s3-of-backend deploy-ecr deploy-vpc
+
+destroy-all: destroy-ecr destroy-vpc
+
+clean-all:
+	$(MAKE) -C $(CURRENT_DIR)/vpc clean
+	$(MAKE) -C $(CURRENT_DIR)/ecr clean
+
+
+
+
+
+
+
+
+
 
 init:
 	mkdir -p generated

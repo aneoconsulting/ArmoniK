@@ -110,34 +110,6 @@ Resources:
     Properties:
       AliasName: !Sub 'alias/armonik-kms-${BucketTag}'
       TargetKeyId: !Ref Key
-  ArmoniKTfstateEcrImages:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Sub
-        - 'armonik-ecr-images-tfstate-${BucketTag}-${RANDOM}'
-        - RANDOM: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
-      VersioningConfiguration:
-        Status: Enabled
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: 'aws:kms'
-              KMSMasterKeyID: !GetAtt 'Key.Arn'
-    DeletionPolicy: Delete
-  ArmoniKTfstateInfra:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Sub
-        - 'armonik-infra-tfstate-${BucketTag}-${RANDOM}'
-        - RANDOM: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
-      VersioningConfiguration:
-        Status: Enabled
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: 'aws:kms'
-              KMSMasterKeyID: !GetAtt 'Key.Arn'
-    DeletionPolicy: Delete
   ArmoniKTfstate:
     Type: 'AWS::S3::Bucket'
     Properties:
@@ -161,12 +133,6 @@ Outputs:
     Value: !GetAtt 'Key.Arn'
     Export:
       Name: !Sub '${AWS::StackName}-KeyArn'
-  ArmoniKEcrImagesTfstateBucketId:
-    Description: 'S3 bucket name for .tfstate of ArmoniK ECR images'
-    Value: !Ref ArmoniKTfstateEcrImages
-  ArmoniKInfraTfstateBucketId:
-    Description: 'S3 bucket name for .tfstate of ArmoniK Infrastructure'
-    Value: !Ref ArmoniKTfstateInfra
   ArmoniKTfstateBucketId:
-    Description: 'S3 bucket name for .tfstate of ArmoniK infrastructure'
+    Description: 'S3 bucket name for .tfstates of ArmoniK'
     Value: !Ref ArmoniKTfstate
