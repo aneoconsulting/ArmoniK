@@ -1,0 +1,172 @@
+---
+# This file is part of the ArmoniK project
+#
+# Copyright (C) ANEO, 2021-2021. All rights reserved.
+#   L. Ziane Khodja   <lzianekhodja@aneo.fr>
+#   J. Gurhem         <jgurhem@aneo.fr>
+#   D. Holczer        <dholczer@aneo.fr>
+#   D. Dubuc          <ddubuc@aneo.fr>
+#   W. Kirschenmann   <wkirschenmann@aneo.fr>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Security: KMS customer managed CMK for AWS services and S3 buckets for Terraform'
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: 'Tag needs to follow S3 naming rules.'
+        Parameters:
+          - BucketTag
+Parameters:
+  BucketTag:
+    Description: 'Recommended to suffix the different required buckets'
+    Type: String
+    Default: ''
+Resources:
+  Key:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Type: 'AWS::KMS::Key'
+    Properties:
+      KeySpec: SYMMETRIC_DEFAULT
+      KeyUsage: ENCRYPT_DECRYPT
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub '${AWS::AccountId}'
+            Action:
+              - kms:Encrypt*
+              - kms:Decrypt*
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:Describe*
+            Resource: '*'
+            Condition:
+              StringEquals:
+                kms:ViaService:
+                  - !Sub 'ec2.${AWS::Region}.amazonaws.com'
+                  - !Sub 's3.${AWS::Region}.amazonaws.com'
+                  - !Sub 'dynamodb.${AWS::Region}.amazonaws.com'
+                  - !Sub 'ecr.${AWS::Region}.amazonaws.com'
+                  - !Sub 'eks.${AWS::Region}.amazonaws.com'
+                  - !Sub 'elasticache.${AWS::Region}.amazonaws.com'
+                  - !Sub 'mq.${AWS::Region}.amazonaws.com'
+          - Effect: Allow
+            Principal:
+              Service: !Sub 'logs.${AWS::Region}.amazonaws.com'
+            Action:
+              - kms:Encrypt*
+              - kms:Decrypt*
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:Describe*
+            Resource: '*'
+            Condition:
+              ArnEquals:
+                kms:EncryptionContext:aws:logs:arn: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*:*'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling'
+            Action:
+              - kms:Encrypt*
+              - kms:Decrypt*
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:Describe*
+            Resource: '*'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling'
+            Action:
+              - kms:CreateGrant
+            Resource: '*'
+            Condition:
+              Bool:
+                kms:GrantIsForAWSResource: true
+  KeyAlias:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Type: 'AWS::KMS::Alias'
+    Properties:
+      AliasName: !Sub 'alias/armonik-kms-${BucketTag}'
+      TargetKeyId: !Ref Key
+  ArmoniKTfstateEcrImages:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub
+        - 'armonik-ecr-images-tfstate-${BucketTag}-${RANDOM}'
+        - RANDOM: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'aws:kms'
+              KMSMasterKeyID: !GetAtt 'Key.Arn'
+    DeletionPolicy: Delete
+  ArmoniKTfstateInfra:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub
+        - 'armonik-infra-tfstate-${BucketTag}-${RANDOM}'
+        - RANDOM: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'aws:kms'
+              KMSMasterKeyID: !GetAtt 'Key.Arn'
+    DeletionPolicy: Delete
+  ArmoniKTfstate:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub
+        - 'armonik-tfstate-${BucketTag}-${RANDOM}'
+        - RANDOM: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'aws:kms'
+              KMSMasterKeyID: !GetAtt 'Key.Arn'
+    DeletionPolicy: Delete
+Outputs:
+  StackName:
+    Description: 'Stack name.'
+    Value: !Sub '${AWS::StackName}'
+  KeyArn:
+    Description: 'Key ARN.'
+    Value: !GetAtt 'Key.Arn'
+    Export:
+      Name: !Sub '${AWS::StackName}-KeyArn'
+  ArmoniKEcrImagesTfstateBucketId:
+    Description: 'S3 bucket name for .tfstate of ArmoniK ECR images'
+    Value: !Ref ArmoniKTfstateEcrImages
+  ArmoniKInfraTfstateBucketId:
+    Description: 'S3 bucket name for .tfstate of ArmoniK Infrastructure'
+    Value: !Ref ArmoniKTfstateInfra
+  ArmoniKTfstateBucketId:
+    Description: 'S3 bucket name for .tfstate of ArmoniK infrastructure'
+    Value: !Ref ArmoniKTfstate

@@ -20,7 +20,7 @@ resource "aws_kms_alias" "kms_alias" {
 # KMS Policy
 data "aws_iam_policy_document" "kms_policy" {
   statement {
-    sid       = ""
+    sid       = "Enable IAM User Permissions"
     effect    = "Allow"
     principals {
       identifiers = ["arn:aws:iam::${local.account_id}:root"]
@@ -84,7 +84,8 @@ data "aws_iam_policy_document" "kms_policy" {
     effect    = "Allow"
     principals {
       identifiers = [
-        "arn:aws:iam::${local.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+        "arn:aws:iam::${local.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
+        "arn:aws:iam::${local.account_id}:root"
       ]
       type        = "AWS"
     }
@@ -102,7 +103,8 @@ data "aws_iam_policy_document" "kms_policy" {
     effect    = "Allow"
     principals {
       identifiers = [
-        "arn:aws:iam::${local.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+        "arn:aws:iam::${local.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
+        "arn:aws:iam::${local.account_id}:root"
       ]
       type        = "AWS"
     }
