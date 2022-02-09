@@ -34,6 +34,16 @@ variable "mongodb" {
     tag           = string
     secret        = string
     node_selector = any
+    credentials_user_secret        = string
+    credentials_user_type          = string
+    credentials_user_key_username  = string
+    credentials_user_key_password  = string
+    credentials_user_namespace     = string
+    credentials_admin_secret       = string
+    credentials_admin_type         = string
+    credentials_admin_key_username = string
+    credentials_admin_key_password = string
+    credentials_admin_namespace    = string
   })
   default     = {
     replicas      = 1
@@ -42,6 +52,16 @@ variable "mongodb" {
     tag           = "4.4.11"
     secret        = "mongodb-storage-secret"
     node_selector = {}
+    credentials_user_secret        = "mongodb-user"
+    credentials_user_type          = "kubernetes.io/basic-auth"
+    credentials_user_key_username  = "username"
+    credentials_user_key_password  = "password"
+    credentials_user_namespace     = "armonik"
+    credentials_admin_secret       = "mongodb-admin"
+    credentials_admin_type         = "kubernetes.io/basic-auth"
+    credentials_admin_key_username = "username"
+    credentials_admin_key_password = "password"
+    credentials_admin_namespace    = "armonik"
   }
 }
 
@@ -55,6 +75,11 @@ variable "redis" {
     tag           = string
     secret        = string
     node_selector = any
+    credentials_user_secret        = string
+    credentials_user_type          = string
+    credentials_user_key_username  = string
+    credentials_user_key_password  = string
+    credentials_user_namespace     = string
   })
   default     = {
     replicas      = 1
@@ -63,6 +88,11 @@ variable "redis" {
     tag           = "bullseye"
     secret        = "redis-storage-secret"
     node_selector = {}
+    credentials_user_secret        = "redis-user"
+    credentials_user_type          = "kubernetes.io/basic-auth"
+    credentials_user_key_username  = "username"
+    credentials_user_key_password  = "password"
+    credentials_user_namespace     = "armonik"
   }
 }
 
@@ -81,6 +111,16 @@ variable "activemq" {
     tag           = string
     secret        = string
     node_selector = any
+    credentials_user_secret        = string
+    credentials_user_type          = string
+    credentials_user_key_username  = string
+    credentials_user_key_password  = string
+    credentials_user_namespace     = string
+    credentials_admin_secret       = string
+    credentials_admin_type         = string
+    credentials_admin_key_username = string
+    credentials_admin_key_password = string
+    credentials_admin_namespace    = string
   })
   default     = {
     replicas      = 1
@@ -95,5 +135,15 @@ variable "activemq" {
     tag           = "5.16.3"
     secret        = "activemq-storage-secret"
     node_selector = {}
+    credentials_user_secret        = "activemq-user"
+    credentials_user_type          = "kubernetes.io/basic-auth"
+    credentials_user_key_username  = "username"
+    credentials_user_key_password  = "password"
+    credentials_user_namespace     = "armonik"
+    credentials_admin_secret       = "activemq-admin"
+    credentials_admin_type         = "kubernetes.io/basic-auth"
+    credentials_admin_key_username = "username"
+    credentials_admin_key_password = "password"
+    credentials_admin_namespace    = "armonik"
   }
 }

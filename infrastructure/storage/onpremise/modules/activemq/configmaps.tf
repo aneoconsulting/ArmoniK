@@ -22,30 +22,30 @@ resource "random_password" "mq_application_password" {
 
 resource "kubernetes_secret" "activemq_admin" {
   metadata {
-    name      = "activemq-admin"
-    namespace = "armonik"
+    name      = var.activemq.credentials_admin_secret
+    namespace = var.activemq.credentials_admin_namespace
   }
 
   data = {
-    username = "${random_string.mq_admin_user.result}"
-    password = "${random_password.mq_admin_password.result}"
+    "${var.activemq.credentials_admin_key_username}" = "${random_string.mq_admin_user.result}"
+    "${var.activemq.credentials_admin_key_password}" = "${random_password.mq_admin_password.result}"
   }
 
-  type = "kubernetes.io/basic-auth"
+  type = var.activemq.credentials_admin_type
 }
 
 resource "kubernetes_secret" "activemq_user" {
   metadata {
-    name      = "activemq-user"
-    namespace = "armonik"
+    name      = var.activemq.credentials_user_secret
+    namespace = var.activemq.credentials_user_namespace
   }
 
   data = {
-    username = "${random_string.mq_application_user.result}"
-    password = "${random_password.mq_application_password.result}"
+    "${var.activemq.credentials_user_key_username}" = "${random_string.mq_application_user.result}"
+    "${var.activemq.credentials_user_key_password}" = "${random_password.mq_application_password.result}"
   }
 
-  type = "kubernetes.io/basic-auth"
+  type = var.activemq.credentials_user_type
 }
 
 # jetty.xml

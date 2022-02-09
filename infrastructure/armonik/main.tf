@@ -15,4 +15,25 @@ module "armonik" {
     tag   = var.fluent_bit.tag
     name  = var.fluent_bit.name
   }
+  secrets = {
+    redis_username_secret = var.secrets.redis_username_secret
+    redis_username_key    = var.secrets.redis_username_key
+    redis_password_secret = var.secrets.redis_password_secret
+    redis_password_key    = var.secrets.redis_password_key
+
+    redisext_username_secret = var.secrets.redisext_username_secret
+    redisext_username_key    = var.secrets.redisext_username_key
+    redisext_password_secret = var.secrets.redisext_password_secret
+    redisext_password_key    = var.secrets.redisext_password_key
+
+    mongodb_username_secret = var.secrets.mongodb_username_secret
+    mongodb_username_key    = var.secrets.mongodb_username_key
+    mongodb_password_secret = var.secrets.mongodb_password_secret
+    mongodb_password_key    = var.secrets.mongodb_password_key
+
+    activemq_username_secret = var.secrets.activemq_username_secret
+    activemq_username_key    = var.secrets.activemq_username_key
+    activemq_password_secret = var.secrets.activemq_password_secret
+    activemq_password_key    = var.secrets.activemq_password_key
+  }
 }

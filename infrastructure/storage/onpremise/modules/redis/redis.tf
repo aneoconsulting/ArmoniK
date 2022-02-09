@@ -7,16 +7,16 @@ resource "random_password" "redis_password" {
 
 resource "kubernetes_secret" "redis_user" {
   metadata {
-    name      = "redis-user"
-    namespace = "armonik"
+    name      = var.redis.credentials_user_secret
+    namespace = var.redis.credentials_user_namespace
   }
 
   data = {
-    username = ""
-    password = "${random_password.redis_password.result}"
+    "${var.redis.credentials_user_key_username}" = ""
+    "${var.redis.credentials_user_key_password}" = "${random_password.redis_password.result}"
   }
 
-  type = "kubernetes.io/basic-auth"
+  type = var.redis.credentials_user_type
 }
 
 # Kubernetes Redis deployment

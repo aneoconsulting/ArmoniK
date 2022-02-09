@@ -12,6 +12,29 @@ fluent_bit = {
   name  = "fluent-bit"
 }
 
+# Secrets
+secrets = {
+  redis_username_secret = "redis-user"
+  redis_username_key    = "username"
+  redis_password_secret = "redis-user"
+  redis_password_key    = "password"
+
+  redisext_username_secret = "redis-user"
+  redisext_username_key    = "username"
+  redisext_password_secret = "redis-user"
+  redisext_password_key    = "password"
+
+  mongodb_username_secret = "mongodb-user"
+  mongodb_username_key    = "username"
+  mongodb_password_secret = "mongodb-user"
+  mongodb_password_key    = "password"
+
+  activemq_username_secret = "activemq-user"
+  activemq_username_key    = "username"
+  activemq_password_secret = "activemq-user"
+  activemq_password_key    = "password"
+}
+
 # Parameters of control plane
 control_plane = {
   replicas           = 1

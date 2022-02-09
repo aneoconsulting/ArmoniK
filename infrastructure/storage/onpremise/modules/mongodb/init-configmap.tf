@@ -22,30 +22,30 @@ resource "random_password" "mongodb_application_password" {
 
 resource "kubernetes_secret" "mongodb_admin" {
   metadata {
-    name      = "mongodb-admin"
-    namespace = "armonik"
+    name      = var.mongodb.credentials_admin_secret
+    namespace = var.mongodb.credentials_admin_namespace
   }
 
   data = {
-    username = "${random_string.mongodb_admin_user.result}"
-    password = "${random_password.mongodb_admin_password.result}"
+    "${var.mongodb.credentials_admin_key_username}" = "${random_string.mongodb_admin_user.result}"
+    "${var.mongodb.credentials_admin_key_password}" = "${random_password.mongodb_admin_password.result}"
   }
 
-  type = "kubernetes.io/basic-auth"
+  type = var.mongodb.credentials_admin_type
 }
 
 resource "kubernetes_secret" "mongodb_user" {
   metadata {
-    name      = "mongodb-user"
-    namespace = "armonik"
+    name      = var.mongodb.credentials_user_secret
+    namespace = var.mongodb.credentials_user_namespace
   }
 
   data = {
-    username = "${random_string.mongodb_application_user.result}"
-    password = "${random_password.mongodb_application_password.result}"
+    "${var.mongodb.credentials_user_key_username}" = "${random_string.mongodb_application_user.result}"
+    "${var.mongodb.credentials_user_key_password}" = "${random_password.mongodb_application_password.result}"
   }
 
-  type = "kubernetes.io/basic-auth"
+  type = var.mongodb.credentials_user_type
 }
 
 # Envvars

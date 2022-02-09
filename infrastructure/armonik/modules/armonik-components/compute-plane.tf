@@ -65,8 +65,8 @@ resource "kubernetes_deployment" "compute_plane" {
             name = "Amqp__User"
             value_from {
               secret_key_ref {
-                key      = "username"
-                name     = "activemq-user"
+                key      = var.secrets.activemq_username_key
+                name     = var.secrets.activemq_username_secret
                 optional = false
               }
             }
@@ -75,8 +75,8 @@ resource "kubernetes_deployment" "compute_plane" {
             name = "Amqp__Password"
             value_from {
               secret_key_ref {
-                key      = "password"
-                name     = "activemq-user"
+                key      = var.secrets.activemq_password_key
+                name     = var.secrets.activemq_password_secret
                 optional = false
               }
             }
@@ -85,8 +85,8 @@ resource "kubernetes_deployment" "compute_plane" {
             name = "Redis__User"
             value_from {
               secret_key_ref {
-                key      = "username"
-                name     = "redis-user"
+                key      = var.secrets.redis_username_key
+                name     = var.secrets.redis_username_secret
                 optional = false
               }
             }
@@ -95,8 +95,8 @@ resource "kubernetes_deployment" "compute_plane" {
             name = "Redis__Password"
             value_from {
               secret_key_ref {
-                key      = "password"
-                name     = "redis-user"
+                key      = var.secrets.redis_password_key
+                name     = var.secrets.redis_password_secret
                 optional = false
               }
             }
@@ -105,8 +105,8 @@ resource "kubernetes_deployment" "compute_plane" {
             name = "MongoDB__User"
             value_from {
               secret_key_ref {
-                key      = "username"
-                name     = "mongodb-user"
+                key      = var.secrets.mongodb_username_key
+                name     = var.secrets.mongodb_username_secret
                 optional = false
               }
             }
@@ -115,8 +115,8 @@ resource "kubernetes_deployment" "compute_plane" {
             name = "MongoDB__Password"
             value_from {
               secret_key_ref {
-                key      = "password"
-                name     = "mongodb-user"
+                key      = var.secrets.mongodb_password_key
+                name     = var.secrets.mongodb_username_secret
                 optional = false
               }
             }
@@ -211,8 +211,8 @@ resource "kubernetes_deployment" "compute_plane" {
               name = "Redis__User"
               value_from {
                 secret_key_ref {
-                  key      = "username"
-                  name     = "redis-user"
+                  key      = var.secrets.redisext_username_key
+                  name     = var.secrets.redisext_username_secret
                   optional = false
                 }
               }
@@ -221,8 +221,8 @@ resource "kubernetes_deployment" "compute_plane" {
               name = "Redis__Password"
               value_from {
                 secret_key_ref {
-                  key      = "password"
-                  name     = "redis-user"
+                  key      = var.secrets.redisext_password_key
+                  name     = var.secrets.redisext_password_secret
                   optional = false
                 }
               }

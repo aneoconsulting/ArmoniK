@@ -40,6 +40,53 @@ variable "fluent_bit" {
   }
 }
 
+# Secrets
+variable "secrets"  {
+  description = "Secrets parameters to retrieve storage credentials"
+  type        = object({
+    redis_username_secret = string
+    redis_username_key    = string
+    redis_password_secret = string
+    redis_password_key    = string
+
+    redisext_username_secret = string
+    redisext_username_key    = string
+    redisext_password_secret = string
+    redisext_password_key    = string
+
+    mongodb_username_secret = string
+    mongodb_username_key    = string
+    mongodb_password_secret = string
+    mongodb_password_key    = string
+
+    activemq_username_secret = string
+    activemq_username_key    = string
+    activemq_password_secret = string
+    activemq_password_key    = string
+  })
+  default     = {
+    redis_username_secret = "redis-user"
+    redis_username_key    = "username"
+    redis_password_secret = "redis-user"
+    redis_password_key    = "password"
+
+    redisext_username_secret = "redis-user"
+    redisext_username_key    = "username"
+    redisext_password_secret = "redis-user"
+    redisext_password_key    = "password"
+
+    mongodb_username_secret = "mongodb-user"
+    mongodb_username_key    = "username"
+    mongodb_password_secret = "mongodb-user"
+    mongodb_password_key    = "password"
+
+    activemq_username_secret = "activemq-user"
+    activemq_username_key    = "username"
+    activemq_password_secret = "activemq-user"
+    activemq_password_key    = "password"
+  }
+}
+
 # Use monitoring
 variable "monitoring" {
   description = "Use monitoring tools"
