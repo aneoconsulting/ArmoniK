@@ -84,7 +84,9 @@ resource "null_resource" "enable_logs" {
     command = "aws elasticache modify-replication-group --replication-group-id ${aws_elasticache_replication_group.elasticache.id} --apply-immediately --log-delivery-configurations '[{\"LogType\":\"slow-log\",\"DestinationType\":\"cloudwatch-logs\",\"DestinationDetails\":{\"CloudWatchLogsDetails\":{\"LogGroup\":\"${aws_cloudwatch_log_group.slow_log.name}\"}},\"LogFormat\":\"json\",\"Enabled\":true},{\"LogType\":\"engine-log\",\"DestinationType\":\"cloudwatch-logs\",\"DestinationDetails\":{\"CloudWatchLogsDetails\":{\"LogGroup\":\"${aws_cloudwatch_log_group.engine_log.name}\"}},\"LogFormat\":\"json\",\"Enabled\":true}]'"
   }
   depends_on = [
-    aws_elasticache_replication_group.elasticache
+    aws_elasticache_replication_group.elasticache,
+    aws_cloudwatch_log_group.engine_log,
+    aws_cloudwatch_log_group.slow_log
   ]
 }
 

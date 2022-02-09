@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "kms_policy" {
     sid       = "Supported resources"
     effect    = "Allow"
     principals {
-      identifiers = [local.account_id]
+      identifiers = ["arn:aws:iam::${local.account_id}:root"]
       type        = "AWS"
     }
     actions   = [
@@ -49,15 +49,11 @@ data "aws_iam_policy_document" "kms_policy" {
       values   = [
         "ec2.${local.region}.amazonaws.com",
         "s3.${local.region}.amazonaws.com",
-        "sqs.${local.region}.amazonaws.com",
         "dynamodb.${local.region}.amazonaws.com",
         "ecr.${local.region}.amazonaws.com",
         "eks.${local.region}.amazonaws.com",
         "elasticache.${local.region}.amazonaws.com",
-        "dax.${local.region}.amazonaws.com",
-        "elasticfilesystem.${local.region}.amazonaws.com",
         "mq.${local.region}.amazonaws.com",
-        "rds.${local.region}.amazonaws.com"
       ]
       variable = "kms:ViaService"
     }
