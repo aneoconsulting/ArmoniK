@@ -95,7 +95,9 @@ Resources:
     UpdateReplacePolicy: Retain
     Type: 'AWS::KMS::Alias'
     Properties:
-      AliasName: !Sub 'alias/armonik-kms-${Tag}'
+      AliasName: !Sub
+        - 'alias/armonik-kms-${Tag}-${RANDOM}'
+        - RANDOM: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
       TargetKeyId: !Ref Key
   ArmoniKTfstate:
     Type: 'AWS::S3::Bucket'
