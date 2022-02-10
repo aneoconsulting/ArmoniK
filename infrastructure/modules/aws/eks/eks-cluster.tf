@@ -6,8 +6,8 @@ module "eks" {
   cluster_version = var.eks.cluster_version
 
   # VPC
-  subnets = var.eks.vpc_private_subnet_ids
-  vpc_id  = var.eks.vpc_id
+  subnets = var.vpc.private_subnet_ids
+  vpc_id  = var.vpc.id
 
   # KUBECONFIG
   kubeconfig_name                           = "kubeconfig-${var.name}"

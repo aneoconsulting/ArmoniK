@@ -5,12 +5,21 @@ profile = "default"
 region = "eu-west-3"
 
 # TAG
-tag = ""
+tag = "main"
 
 # S3 as shared storage
-s3_bucket_fs = {
+s3_fs = {
   name       = "armonik-s3fs"
   kms_key_id = ""
+}
+
+# VPC info
+vpc         = {
+  id                     = ""
+  cidr_block             = ""
+  private_subnet_ids     = []
+  pod_cidr_block_private = []
+  pods_subnet_ids        = []
 }
 
 # AWS Elasticache
@@ -24,11 +33,6 @@ elasticache = {
     log_kms_key_id = ""
   }
   log_retention_in_days = 30
-  vpc                   = {
-    id          = ""
-    cidr_blocks = []
-    subnet_ids  = []
-  }
   multi_az_enabled      = false
   cluster_mode          = {
     replicas_per_node_group = 0
@@ -47,11 +51,6 @@ mq = {
   kms_key_id              = ""
   authentication_strategy = "simple" #"ldap"
   publicly_accessible     = false
-  vpc                     = {
-    id          = ""
-    cidr_blocks = []
-    subnet_ids  = []
-  }
 }
 
 # MQ Credentials

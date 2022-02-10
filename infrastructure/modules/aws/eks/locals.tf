@@ -12,7 +12,7 @@ locals {
   # Custom ENI
   subnets = {
     subnets = [
-    for index, id in var.eks.pods_subnet_ids : {
+    for index, id in var.vpc.pods_subnet_ids : {
       subnet_id          = id
       az_name            = element(data.aws_availability_zones.available.names, index)
       security_group_ids = [module.eks.worker_security_group_id]
@@ -31,8 +31,8 @@ locals {
       sudo yum update -y
       sudo amazon-linux-extras install -y epel
       sudo yum install -y s3fs-fuse
-      sudo mkdir -p ${var.eks.s3_fs.host_path}
-      sudo s3fs ${var.eks.s3_fs.name} ${var.eks.s3_fs.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${local.region}.amazonaws.com"
+      sudo mkdir -p ${var.s3_fs.host_path}
+      sudo s3fs ${var.s3_fs.name} ${var.s3_fs.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${local.region}.amazonaws.com"
     EOT
     "tags"                     = [
       {
@@ -75,8 +75,8 @@ locals {
         sudo yum update -y
         sudo amazon-linux-extras install -y epel
         sudo yum install -y s3fs-fuse
-        sudo mkdir -p ${var.eks.s3_fs.host_path}
-        sudo s3fs ${var.eks.s3_fs.name} ${var.eks.s3_fs.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${local.region}.amazonaws.com"
+        sudo mkdir -p ${var.s3_fs.host_path}
+        sudo s3fs ${var.s3_fs.name} ${var.s3_fs.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${local.region}.amazonaws.com"
       EOT
     }
   ])

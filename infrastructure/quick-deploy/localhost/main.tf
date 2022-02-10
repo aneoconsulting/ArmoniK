@@ -83,8 +83,8 @@ module "armonik" {
   }
   storage_endpoint_url = {
     activemq = {
-      host   = (var.deploy.storage ? module.activemq.0.host : var.storage_endpoint_url.activemq.host)
-      port   = (var.deploy.storage ? module.activemq.0.port : var.storage_endpoint_url.activemq.port)
+      host   = "b-c5b7d5be-ecf0-4ac9-8c09-25a4b4e37a25-1.mq.eu-west-3.amazonaws.com"#(var.deploy.storage ? module.activemq.0.host : var.storage_endpoint_url.activemq.host)
+      port   = 5671#(var.deploy.storage ? module.activemq.0.port : var.storage_endpoint_url.activemq.port)
       secret = var.kubernetes_secrets.activemq_client
     }
     external = {
@@ -97,7 +97,7 @@ module "armonik" {
       secret = var.kubernetes_secrets.mongodb_client
     }
     redis    = {
-      url    = (var.deploy.storage ? module.redis.0.url : var.storage_endpoint_url.redis.url)
+      url    = "master.armonik-elasticache-main.qglz2t.euw3.cache.amazonaws.com:6379"#(var.deploy.storage ? module.redis.0.url : var.storage_endpoint_url.redis.url)
       secret = var.kubernetes_secrets.redis_client
     }
     shared   = {

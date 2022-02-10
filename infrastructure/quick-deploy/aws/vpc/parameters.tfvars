@@ -5,7 +5,7 @@ profile = "default"
 region = "eu-west-3"
 
 # TAG
-tag = ""
+tag = "main"
 
 # VPC
 vpc = {

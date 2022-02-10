@@ -19,11 +19,12 @@ output "storage_endpoint_url" {
       port = ""
     }
     shared   = {
-      host   = ""
-      secret = ""
-      id     = module.s3_bucket_fs.s3_bucket_name
+      host       = ""
+      secret     = ""
+      kms_key_id = module.s3_fs.kms_key_id
+      name       = module.s3_fs.s3_bucket_name
       # Path to external shared storage from which worker containers upload .dll
-      path   = "/data"
+      host_path  = "/data"
     }
   }
 }

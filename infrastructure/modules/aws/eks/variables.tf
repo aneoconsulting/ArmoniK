@@ -12,14 +12,31 @@ variable "name" {
   default     = "armonik-eks"
 }
 
+# VPC infos
+variable "vpc" {
+  description = "AWS VPC info"
+  type        = object({
+    id                 = string
+    private_subnet_ids = list(string)
+    pods_subnet_ids    = list(string)
+  })
+}
+
+# Shared storage info
+variable "s3_fs" {
+  description = "S3 bucket used as shared storage"
+  type        = object({
+    name       = string
+    kms_key_id = string
+    host_path  = string
+  })
+}
+
 # EKS
 variable "eks" {
   description = "Parameters of AWS EKS"
   type        = object({
     cluster_version                      = string
-    vpc_private_subnet_ids               = list(string)
-    vpc_id                               = string
-    pods_subnet_ids                      = list(string)
     cluster_endpoint_private_access      = bool
     cluster_endpoint_public_access       = bool
     cluster_endpoint_public_access_cidrs = list(string)
@@ -38,11 +55,6 @@ variable "eks" {
       cluster_log_kms_key_id    = string
       cluster_encryption_config = string
       ebs_kms_key_id            = string
-    })
-    s3_fs                                = object({
-      name       = string
-      kms_key_id = string
-      host_path  = string
     })
   })
 }

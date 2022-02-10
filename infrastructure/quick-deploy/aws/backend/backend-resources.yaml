@@ -1,25 +1,4 @@
 ---
-# This file is part of the ArmoniK project
-#
-# Copyright (C) ANEO, 2021-2021. All rights reserved.
-#   L. Ziane Khodja   <lzianekhodja@aneo.fr>
-#   J. Gurhem         <jgurhem@aneo.fr>
-#   D. Holczer        <dholczer@aneo.fr>
-#   D. Dubuc          <ddubuc@aneo.fr>
-#   W. Kirschenmann   <wkirschenmann@aneo.fr>
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published
-# by the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Security: KMS customer managed CMK for AWS services and S3 buckets for Terraform'
@@ -29,10 +8,18 @@ Metadata:
       - Label:
           default: 'Tag needs to follow S3 naming rules.'
         Parameters:
-          - BucketTag
+          - Tag
+      - Label:
+          default: 'Name of S3 bucket'
+        Parameters:
+          - BucketName
 Parameters:
-  BucketTag:
+  Tag:
     Description: 'Recommended to suffix the different required buckets'
+    Type: String
+    Default: ''
+  BucketName:
+    Description: 'Recommended to name S3 bucket'
     Type: String
     Default: ''
 Resources:
@@ -108,13 +95,13 @@ Resources:
     UpdateReplacePolicy: Retain
     Type: 'AWS::KMS::Alias'
     Properties:
-      AliasName: !Sub 'alias/armonik-kms-${BucketTag}'
+      AliasName: !Sub 'alias/armonik-kms-${Tag}'
       TargetKeyId: !Ref Key
   ArmoniKTfstate:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Sub
-        - 'armonik-tfstate-${BucketTag}-${RANDOM}'
+        - '${BucketName}-${Tag}'
         - RANDOM: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
       VersioningConfiguration:
         Status: Enabled

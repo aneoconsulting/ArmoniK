@@ -5,13 +5,10 @@ STATE_FILE=vpc-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/output.json
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
-export TF_LOG=INFO
-export TF_LOG_PATH=$(GENERATED_DIR)/terraform.log
-
 export TAG?=main
 export REGION?=eu-west-3
 export PROFILE?=default
-export TFSTATE_S3_BUCKET?=armonik-tfstate
+export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(TAG)
 
 .PHONY: apply destroy
 
@@ -22,7 +19,7 @@ init:
 	mkdir -p generated
 	touch generated/terraform.log
 	terraform init \
-		-backend-config 'bucket=$(TFSTATE_S3_BUCKET)' \
+		-backend-config 'bucket=$(TFSTATE_BUCKET_NAME)' \
 		-backend-config 'region=$(REGION)' \
 		-backend-config 'key=$(STATE_FILE)' \
 		-backend-config 'profile=$(PROFILE)'
@@ -37,7 +34,9 @@ apply:
 		-auto-approve
 
 output:
-	@terraform output -state=$(STATE_FILE) -json > $(OUTPUT_FILE)
+	@echo -n "{\"vpc\":" > $(OUTPUT_FILE)
+	@terraform output -state=$(STATE_FILE) -json vpc >> $(OUTPUT_FILE)
+	@echo -n "}" >> $(OUTPUT_FILE)
 	@echo "\nOUTPUT FILE: $(CURRENT_DIR)/$(OUTPUT_FILE)"
 
 destroy:

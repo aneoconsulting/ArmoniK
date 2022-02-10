@@ -20,7 +20,7 @@ variable "tag" {
 }
 
 # S3 as shared storage
-variable "s3_bucket_fs" {
+variable "s3_fs" {
   description = "AWS S3 bucket as shared storage"
   type        = object({
     name       = string
@@ -29,6 +29,25 @@ variable "s3_bucket_fs" {
   default     = {
     name       = "armonik-s3fs"
     kms_key_id = ""
+  }
+}
+
+# VPC infos
+variable "vpc" {
+  description = "AWS VPC info"
+  type        = object({
+    id                     = string
+    cidr_block             = string
+    private_subnet_ids     = list(string)
+    pod_cidr_block_private = list(string)
+    pods_subnet_ids        = list(string)
+  })
+  default     = {
+    id                     = ""
+    cidr_block             = ""
+    private_subnet_ids     = []
+    pod_cidr_block_private = []
+    pods_subnet_ids        = []
   }
 }
 
@@ -46,11 +65,6 @@ variable "elasticache" {
     })
     log_retention_in_days = number
     multi_az_enabled      = bool
-    vpc                   = object({
-      id          = string
-      cidr_blocks = list(string)
-      subnet_ids  = list(string)
-    })
     cluster_mode          = object({
       replicas_per_node_group = number
       num_node_groups         = number
@@ -66,11 +80,6 @@ variable "elasticache" {
       log_kms_key_id = ""
     }
     log_retention_in_days = 30
-    vpc                   = {
-      id          = ""
-      cidr_blocks = []
-      subnet_ids  = []
-    }
     multi_az_enabled      = false
     cluster_mode          = {
       replicas_per_node_group = 0
@@ -92,11 +101,6 @@ variable "mq" {
     kms_key_id              = string
     authentication_strategy = string
     publicly_accessible     = bool
-    vpc                     = object({
-      id          = string
-      cidr_blocks = list(string)
-      subnet_ids  = list(string)
-    })
   })
   default     = {
     name                    = "armonik-mq"
@@ -108,11 +112,6 @@ variable "mq" {
     kms_key_id              = ""
     authentication_strategy = "simple" #"ldap"
     publicly_accessible     = false
-    vpc                     = {
-      id          = ""
-      cidr_blocks = []
-      subnet_ids  = []
-    }
   }
 }
 

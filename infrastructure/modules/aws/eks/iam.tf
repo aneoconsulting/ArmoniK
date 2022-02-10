@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "decrypt_object_document" {
     ]
     effect    = "Allow"
     resources = [
-      var.eks.s3_fs.kms_key_id
+      var.s3_fs.kms_key_id
     ]
   }
 }

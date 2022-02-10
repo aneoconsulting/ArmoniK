@@ -5,7 +5,7 @@ profile = "default"
 region = "eu-west-3"
 
 # TAG
-tag = ""
+tag = "main"
 
 # List of ECR repositories to create
 ecr = {

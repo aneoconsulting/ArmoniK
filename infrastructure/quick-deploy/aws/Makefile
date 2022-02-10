@@ -1,10 +1,12 @@
-export TAG?=main
-export REGION?=eu-west-3
-export PROFILE?=default
-#export TFSTATE_S3_BUCKET?=$(shell aws cloudformation describe-stacks --stack-name $(TAG) --region $(REGION) --query 'Stacks[0].Outputs[0].OutputValue' --output text)
-export TFSTATE_S3_BUCKET
+export ARMONIK_TAG?=main
+export ARMONIK_REGION?=eu-west-3
+export ARMONIK_PROFILE?=default
+export ARMONIK_BUCKET_NAME?=armonik-tfstate
+export TFSTATE_BUCKET_NAME="$(ARMONIK_BUCKET_NAME)-$(ARMONIK_TAG)"
 
 CURRENT_DIR=$(shell pwd)
+VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/vpc/generated/output.json
+STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/storage/generated/output.json
 
 .PHONY: plan apply destroy
 
@@ -15,52 +17,108 @@ all: init plan apply output
 ####################################
 
 deploy-s3-of-backend:
-	$(MAKE) -C $(CURRENT_DIR)/backend deploy TAG=$(TAG) REGION=$(REGION) TFSTATE_S3_BUCKET=$(TFSTATE_S3_BUCKET)
+	$(MAKE) -C $(CURRENT_DIR)/backend deploy \
+		TAG=$(ARMONIK_TAG) \
+		REGION=$(ARMONIK_REGION) \
+		BUCKET_NAME=$(ARMONIK_BUCKET_NAME)
 
 destroy-s3-of-backend:
-	$(MAKE) -C $(CURRENT_DIR)/backend destroy TAG=$(TAG) REGION=$(REGION) TFSTATE_S3_BUCKET=$(TFSTATE_S3_BUCKET)
+	$(MAKE) -C $(CURRENT_DIR)/backend destroy \
+		TAG=$(ARMONIK_TAG) \
+		REGION=$(ARMONIK_REGION) \
+		BUCKET_NAME=$(ARMONIK_BUCKET_NAME)
 
 ####################################
 #            AWS ECR               #
 ####################################
 
 deploy-ecr:
-	$(MAKE) -C $(CURRENT_DIR)/ecr deploy TAG=$(TAG) REGION=$(REGION) PROFILE=$(PROFILE) TFSTATE_S3_BUCKET=$(TFSTATE_S3_BUCKET)
+	$(MAKE) -C $(CURRENT_DIR)/ecr deploy \
+		TAG=$(ARMONIK_TAG) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 destroy-ecr:
-	$(MAKE) -C $(CURRENT_DIR)/ecr destroy TAG=$(TAG) REGION=$(REGION) PROFILE=$(PROFILE) TFSTATE_S3_BUCKET=$(TFSTATE_S3_BUCKET)
+	$(MAKE) -C $(CURRENT_DIR)/ecr destroy \
+		TAG=$(ARMONIK_TAG) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 ####################################
 #             AWS VPC              #
 ####################################
 
 deploy-vpc:
-	$(MAKE) -C $(CURRENT_DIR)/vpc deploy TAG=$(TAG) REGION=$(REGION) PROFILE=$(PROFILE) TFSTATE_S3_BUCKET=$(TFSTATE_S3_BUCKET)
+	$(MAKE) -C $(CURRENT_DIR)/vpc deploy \
+		TAG=$(ARMONIK_TAG) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 destroy-vpc:
-	$(MAKE) -C $(CURRENT_DIR)/vpc destroy TAG=$(TAG) REGION=$(REGION) PROFILE=$(PROFILE) TFSTATE_S3_BUCKET=$(TFSTATE_S3_BUCKET)
+	$(MAKE) -C $(CURRENT_DIR)/vpc destroy \
+		TAG=$(ARMONIK_TAG) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 ####################################
 #           AWS Storage            #
 ####################################
 
 deploy-aws-storage:
-	$(MAKE) -C $(CURRENT_DIR)/storage deploy TAG=$(TAG) REGION=$(REGION) PROFILE=$(PROFILE) TFSTATE_S3_BUCKET=$(TFSTATE_S3_BUCKET)
+	$(MAKE) -C $(CURRENT_DIR)/storage deploy \
+		TAG=$(ARMONIK_TAG) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 destroy-aws-storage:
-	$(MAKE) -C $(CURRENT_DIR)/storage destroy TAG=$(TAG) REGION=$(REGION) PROFILE=$(PROFILE) TFSTATE_S3_BUCKET=$(TFSTATE_S3_BUCKET)
+	$(MAKE) -C $(CURRENT_DIR)/storage destroy \
+		TAG=$(ARMONIK_TAG) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+
+####################################
+#             AWS EKS              #
+####################################
+
+deploy-eks:
+	$(MAKE) -C $(CURRENT_DIR)/eks deploy \
+		TAG=$(ARMONIK_TAG) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
+		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+
+destroy-eks:
+	$(MAKE) -C $(CURRENT_DIR)/eks destroy \
+		TAG=$(ARMONIK_TAG) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
+		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 ####################################
 #               All                #
 ####################################
 
-deploy-all: deploy-s3-of-backend deploy-ecr deploy-vpc deploy-aws-storage
+deploy-all: deploy-ecr deploy-vpc deploy-aws-storage deploy-eks
 
-destroy-all: destroy-ecr destroy-vpc destroy-aws-storage
+destroy-all: destroy-eks destroy-aws-storage destroy-vpc destroy-ecr
 
 clean-all:
 	$(MAKE) -C $(CURRENT_DIR)/vpc clean
 	$(MAKE) -C $(CURRENT_DIR)/ecr clean
+	$(MAKE) -C $(CURRENT_DIR)/storage clean
+	$(MAKE) -C $(CURRENT_DIR)/eks clean
 
 
 
