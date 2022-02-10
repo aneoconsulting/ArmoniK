@@ -75,7 +75,7 @@ resource "kubernetes_deployment" "seq" {
               port = 80
             }
 
-            initial_delay_seconds = 1
+            initial_delay_seconds = 3
             period_seconds        = 1
             timeout_seconds       = 2
           }
