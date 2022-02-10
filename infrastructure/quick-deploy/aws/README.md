@@ -99,10 +99,10 @@ export ARMONIK_BUCKET_NAME=armonik-tfstate
 
 where:
 
-- **ARMONIK_PROFILE**: defines your AWS profile which has credentials to deploy in AWS Cloud
-- **ARMONIK_REGION**: presents the region where all resources will be created
-- **ARMONIK_TAG**: will be used as suffix to the name of all resources
-- **ARMONIK_BUCKET_NAME**: is the name of S3 bucket in which `.tfsate` will be safely stored
+- `ARMONIK_PROFILE`: defines your AWS profile which has credentials to deploy in AWS Cloud
+- `ARMONIK_REGION`: presents the region where all resources will be created
+- `ARMONIK_TAG`: will be used as suffix to the name of all resources
+- `ARMONIK_BUCKET_NAME`: is the name of S3 bucket in which `.tfsate` will be safely stored
 
 You can source these environment variables form the file [envvars.conf](./envvars.conf). You can modify the values of
 each variable. From the **root** of the repository, position yourself in directory `infrastructure/quick-deploy/aws`
@@ -147,8 +147,8 @@ Execute the following command to create the VPC:
 make deploy-vpc
 ```
 
-The VPC deployment generate an output file `vpc/generated/output.json` that contains
-information needed for the deployments of storage and Kubernetes.
+The VPC deployment generate an output file `vpc/generated/output.json` that contains information needed for the
+deployments of storage and Kubernetes.
 
 ## AWS storage
 
@@ -169,8 +169,8 @@ make deploy-aws-storage VPC_PARAMETERS_FILE=<path-to-vpc-parameters>
 where `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/output.json`
 containing the information about the VPC previously created.
 
-The storage deployment generate an output file `storage/generated/output.json` that
-contains information needed for ArmoniK.
+The storage deployment generate an output file `storage/generated/output.json` that contains information needed for
+ArmoniK.
 
 ## AWS EKS
 
