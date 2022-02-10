@@ -10,9 +10,9 @@ module "vpc" {
   secondary_cidr_blocks                           = var.vpc.pod_cidr_block_private
   azs                                             = data.aws_availability_zones.available.names
   private_subnets                                 = concat(var.vpc.private_subnets, var.vpc.pod_cidr_block_private)
-  public_subnets                                  = var.vpc.public_subnets
-  enable_nat_gateway                              = var.vpc.enable_nat_gateway
-  single_nat_gateway                              = var.vpc.single_nat_gateway
+  #public_subnets                                  = var.vpc.public_subnets
+  enable_nat_gateway                              = !var.vpc.enable_nat_gateway
+  single_nat_gateway                              = !var.vpc.single_nat_gateway
   # required for private endpoint
   enable_dns_hostnames                            = true
   enable_dns_support                              = true
