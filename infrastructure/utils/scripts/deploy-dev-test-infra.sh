@@ -150,17 +150,16 @@ endpoint_urls() {
 # create configuration file
 storage_configuration_file (){
   python $BASEDIR/../../../tools/modify_parameters.py \
-    --storage-object "Redis" \
-    --storage-table "MongoDB" \
-    --storage-queue "Amqp" \
-    --storage-lease-provider "MongoDB" \
-    --storage-shared-type $SHARED_STORAGE_TYPE \
-    --mongodb-host $MONGODB_HOST \
-    --mongodb-port $MONGODB_PORT \
-    --activemq-host $ACTIVEMQ_HOST \
-    --activemq-port $ACTIVEMQ_PORT \
-    --redis-url $REDIS_URL \
-    --shared-host $SHARED_STORAGE_HOST \
+    -kv storage.object=Redis \
+    -kv storage.table=MongoDB \
+    -kv storage.queue=Amqp \
+    -kv storage.shared=$SHARED_STORAGE_TYPE \
+    -kv storage_endpoint_url.mongodb.host=$MONGODB_HOST \
+    -kv storage_endpoint_url.mongodb.port=$MONGODB_PORT \
+    -kv storage_endpoint_url.activemq.host=$ACTIVEMQ_HOST \
+    -kv storage_endpoint_url.activemq.port=$ACTIVEMQ_PORT \
+    -kv storage_endpoint_url.redis.url=$REDIS_URL \
+    -kv storage_endpoint_url.shared.host=$SHARED_STORAGE_HOST \
     $BASEDIR/../../armonik/parameters/storage-parameters.tfvars \
     $BASEDIR/storage-parameters.tfvars.json
 }
