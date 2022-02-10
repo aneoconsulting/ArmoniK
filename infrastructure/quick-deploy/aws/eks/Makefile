@@ -19,7 +19,6 @@ deploy: init apply output
 
 init:
 	mkdir -p generated
-	touch generated/terraform.log
 	terraform init \
 		-backend-config 'bucket=$(TFSTATE_BUCKET_NAME)' \
 		-backend-config 'region=$(REGION)' \

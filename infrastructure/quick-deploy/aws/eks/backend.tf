@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    key                  = "terraform.tfstate"
+    key                  = "eks-terraform.tfstate"
     region               = var.region
     profile              = var.profile
     encrypt              = true
