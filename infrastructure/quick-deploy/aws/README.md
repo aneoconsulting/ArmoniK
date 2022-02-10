@@ -147,7 +147,7 @@ Execute the following command to create the VPC:
 make deploy-vpc
 ```
 
-The VPC deployment generate an output file [vpc/generated/output.json](vpc/generated/output.json) that contains
+The VPC deployment generate an output file `vpc/generated/output.json` that contains
 information needed for the deployments of storage and Kubernetes.
 
 ## AWS storage
@@ -166,10 +166,10 @@ Execute the following command to create the storage:
 make deploy-aws-storage VPC_PARAMETERS_FILE=<path-to-vpc-parameters>
 ```
 
-where `<path-to-vpc-parameters>` is the **absolute** path to file [vpc/generated/output.json](vpc/generated/output.json)
+where `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/output.json`
 containing the information about the VPC previously created.
 
-The storage deployment generate an output file [storage/generated/output.json](storage/generated/output.json) that
+The storage deployment generate an output file `storage/generated/output.json` that
 contains information needed for ArmoniK.
 
 ## AWS EKS
@@ -183,12 +183,11 @@ Execute the following command to create the EKS:
 make deploy-eks VPC_PARAMETERS_FILE=<path-to-vpc-parameters> STORAGE_PARAMETERS_FILE=<path-to-storage-parameters>
 ```
 
-where `<path-to-vpc-parameters>` is the **absolute** path to file [vpc/generated/output.json](vpc/generated/output.json)
-and `<path-to-storage-parameters>` is the **absolute** path to
-file [storage/generated/output.json](storage/generated/output.json)
-containing the information about the VPC and storage previously created.
+where `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/output.json`
+and `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/output.json` containing the
+information about the VPC and storage previously created.
 
-The EKS deployment generate an output file [eks/generated/output.json](eks/generated/output.json).
+The EKS deployment generate an output file `eks/generated/output.json`.
 
 ### [Return to the Main page](../../README.md)
 
