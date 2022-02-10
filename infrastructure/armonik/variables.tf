@@ -51,13 +51,6 @@ variable "secrets"  {
     redis_certificate_secret = string
     redis_certificate_file = string
 
-    redisext_username_secret = string
-    redisext_username_key    = string
-    redisext_password_secret = string
-    redisext_password_key    = string
-    redisext_certificate_secret = string
-    redisext_certificate_file = string
-
     mongodb_username_secret = string
     mongodb_username_key    = string
     mongodb_password_secret = string
@@ -79,13 +72,6 @@ variable "secrets"  {
     redis_password_key    = "password"
     redis_certificate_secret = "redis-client-certificates"
     redis_certificate_file = "chain.pem"
-
-    redisext_username_secret = "redis-user"
-    redisext_username_key    = "username"
-    redisext_password_secret = "redis-user"
-    redisext_password_key    = "password"
-    redisext_certificate_secret = "redis-client-certificates"
-    redisext_certificate_file = "chain.pem"
 
     mongodb_username_secret = "mongodb-user"
     mongodb_username_key    = "username"
@@ -153,7 +139,6 @@ variable "storage" {
     queue          = string
     lease_provider = string
     shared         = string
-    external       = string
   })
   default     = {
     object         = "Redis"
@@ -161,7 +146,6 @@ variable "storage" {
     queue          = "Amqp"
     lease_provider = "MongoDB"
     shared         = "HostPath"
-    external       = ""
   }
 }
 
@@ -189,10 +173,6 @@ variable "storage_endpoint_url" {
       id     = string
       path   = string
     })
-    external = object({
-      url    = string
-      secret = string
-    })
   })
   default     = {
     mongodb  = {
@@ -214,10 +194,6 @@ variable "storage_endpoint_url" {
       secret = ""
       id     = ""
       path   = "/data"
-    }
-    external = {
-      url    = ""
-      secret = ""
     }
   }
 }

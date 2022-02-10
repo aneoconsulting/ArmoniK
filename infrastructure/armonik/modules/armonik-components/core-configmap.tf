@@ -15,7 +15,7 @@ resource "kubernetes_config_map" "core_config" {
     target_grpc_sockets_path                   = "/cache"
     target_data_path                           = "/data"
     Serilog__MinimumLevel                      = "${var.logging_level}"
-    Redis__EndpointUrl                         = "${var.storage_endpoint_url.external.url}"
+    Redis__EndpointUrl                         = "${var.storage_endpoint_url.redis.url}"
     Redis__CaPath                              = "/redis/${var.secrets.redis_certificate_file}"
     Redis__Timeout                             = "3000"
     Redis__InstanceName                        = "ArmoniKRedis"

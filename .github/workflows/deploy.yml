@@ -35,16 +35,6 @@ jobs:
         with:
           version: ${{ github.ref }}
 
-  htcMock:
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/test-mock
-        name: Test with htc mock
-        with:
-          version: ${{ github.ref }}
-
   htcMockV3:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"

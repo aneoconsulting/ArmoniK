@@ -154,19 +154,13 @@ storage_configuration_file (){
     --storage-table "MongoDB" \
     --storage-queue "Amqp" \
     --storage-lease-provider "MongoDB" \
-    --storage-external "Redis" \
     --storage-shared-type $SHARED_STORAGE_TYPE \
     --mongodb-host $MONGODB_HOST \
     --mongodb-port $MONGODB_PORT \
-    --mongodb-kube-secret $ARMONIK_MONGODB_SECRET_NAME \
     --activemq-host $ACTIVEMQ_HOST \
     --activemq-port $ACTIVEMQ_PORT \
-    --activemq-kube-secret $ARMONIK_ACTIVEMQ_SECRET_NAME \
     --redis-url $REDIS_URL \
-    --redis-kube-secret $ARMONIK_REDIS_SECRET_NAME \
     --shared-host $SHARED_STORAGE_HOST \
-    --external-url $REDIS_URL \
-    --external-kube-secret $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
     $BASEDIR/../../armonik/parameters/storage-parameters.tfvars \
     $BASEDIR/storage-parameters.tfvars.json
 }

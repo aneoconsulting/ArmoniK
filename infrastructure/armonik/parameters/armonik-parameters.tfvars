@@ -21,13 +21,6 @@ secrets = {
   redis_certificate_secret = "redis-client-certificates"
   redis_certificate_file = "chain.pem"
 
-  redisext_username_secret = "redis-user"
-  redisext_username_key    = "username"
-  redisext_password_secret = "redis-user"
-  redisext_password_key    = "password"
-  redisext_certificate_secret = "redis-client-certificates"
-  redisext_certificate_file = "chain.pem"
-
   mongodb_username_secret = "mongodb-user"
   mongodb_username_key    = "username"
   mongodb_password_secret = "mongodb-user"

@@ -32,8 +32,4 @@ storage_endpoint_url = {
     # Path to external shared storage from which worker containers upload .dll
     path   = "/data"
   }
-  external = {
-    url    = "192.168.1.13:32041"
-    secret = "external-redis-storage-secret"
-  }
 }

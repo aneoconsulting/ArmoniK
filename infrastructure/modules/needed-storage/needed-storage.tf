@@ -6,7 +6,6 @@ locals {
     queue          = [for resource_name in local.allowed_storage.queue : lower(resource_name)]
     lease_provider = [for resource_name in local.allowed_storage.lease_provider : lower(resource_name)]
     shared         = [for resource_name in local.allowed_storage.shared : lower(resource_name)]
-    external       = [for resource_name in local.allowed_storage.external : lower(resource_name)]
   }
 
   lower_list_adapted_storage = [for resource_name in local.list_adapted_storage : lower(resource_name)]
@@ -18,7 +17,6 @@ locals {
     queue          = var.storage.queue == "" ? "" : (contains(local.lower_allowed_storage.queue, lower(var.storage.queue)) ? lower(var.storage.queue) : "Amqp")
     lease_provider = var.storage.lease_provider == "" ? "" : (contains(local.lower_allowed_storage.lease_provider, lower(var.storage.lease_provider)) ? lower(var.storage.lease_provider) : "mongodb")
     shared         = var.storage.shared == "" ? "" : (contains(local.lower_allowed_storage.shared, lower(var.storage.shared)) ? lower(var.storage.shared) : "HostPath")
-    external       = var.storage.external == "" ? "" : (contains(local.lower_allowed_storage.external, lower(var.storage.external)) ? lower(var.storage.external) : "redis")
   }, [for resource_name in var.storage : (contains(local.lower_list_adapted_storage, lower(resource_name)) ? lower(resource_name) : "")]))
 
   # List of resources to deploy
@@ -28,6 +26,5 @@ locals {
     local.needed_storage.queue,
     local.needed_storage.lease_provider,
     local.needed_storage.shared,
-    local.needed_storage.external
   ]), distinct(local.needed_storage))))
 }

@@ -41,13 +41,6 @@ variable "secrets"  {
     redis_certificate_secret = string
     redis_certificate_file = string
 
-    redisext_username_secret = string
-    redisext_username_key    = string
-    redisext_password_secret = string
-    redisext_password_key    = string
-    redisext_certificate_secret = string
-    redisext_certificate_file = string
-
     mongodb_username_secret = string
     mongodb_username_key    = string
     mongodb_password_secret = string
@@ -149,10 +142,6 @@ variable "storage_endpoint_url" {
       secret = string
       path   = string
     })
-    external = object({
-      url    = string
-      secret = string
-    })
   })
 }
 
@@ -177,7 +166,6 @@ variable "storage" {
       queue          = string
       lease_provider = string
       shared         = string
-      external       = string
     })
     list      = list(string)
   })

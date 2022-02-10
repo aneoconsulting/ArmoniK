@@ -207,26 +207,6 @@ resource "kubernetes_deployment" "compute_plane" {
                 name = kubernetes_config_map.worker_config.metadata.0.name
               }
             }
-            env {
-              name = "Redis__User"
-              value_from {
-                secret_key_ref {
-                  key      = var.secrets.redisext_username_key
-                  name     = var.secrets.redisext_username_secret
-                  optional = false
-                }
-              }
-            }
-            env {
-              name = "Redis__Password"
-              value_from {
-                secret_key_ref {
-                  key      = var.secrets.redisext_password_key
-                  name     = var.secrets.redisext_password_secret
-                  optional = false
-                }
-              }
-            }
             volume_mount {
               name       = "cache-volume"
               mount_path = "/cache"
@@ -235,14 +215,6 @@ resource "kubernetes_deployment" "compute_plane" {
               name       = "shared-volume"
               mount_path = "/data"
               read_only  = true
-            }
-            dynamic volume_mount {
-              for_each = (local.data_type.external_redis ? [1] : [])
-              content {
-                name       = "external-redis-secret-volume"
-                mount_path = "/redis"
-                read_only  = true
-              }
             }
           }
         }
@@ -316,16 +288,6 @@ resource "kubernetes_deployment" "compute_plane" {
             name = "mongodb-secret-volume"
             secret {
               secret_name = var.secrets.mongodb_certificate_secret
-              optional    = false
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (local.data_type.external_redis ? [1] : [])
-          content {
-            name = "external-redis-secret-volume"
-            secret {
-              secret_name = var.secrets.redisext_certificate_secret
               optional    = false
             }
           }

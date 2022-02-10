@@ -23,13 +23,6 @@ module "armonik" {
     redis_certificate_secret = var.secrets.redis_certificate_secret
     redis_certificate_file = var.secrets.redis_certificate_file
 
-    redisext_username_secret = var.secrets.redisext_username_secret
-    redisext_username_key    = var.secrets.redisext_username_key
-    redisext_password_secret = var.secrets.redisext_password_secret
-    redisext_password_key    = var.secrets.redisext_password_key
-    redisext_certificate_secret = var.secrets.redisext_certificate_secret
-    redisext_certificate_file = var.secrets.redisext_certificate_file
-
     mongodb_username_secret = var.secrets.mongodb_username_secret
     mongodb_username_key    = var.secrets.mongodb_username_key
     mongodb_password_secret = var.secrets.mongodb_password_secret

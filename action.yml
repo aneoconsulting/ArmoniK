@@ -29,10 +29,6 @@ inputs:
     description: 'Is docker installed ?'
     required: false
     default: 'false'
-outputs:
-  credentials-redis-ca-pem:
-    description: "Path to Redis certificate chain"
-    value: ${{ steps.credentialsoutput.outputs.credentials-redis-ca-pem }}
 
 runs:
   using: composite
@@ -90,14 +86,6 @@ runs:
         terraform init
         terraform apply -var-file parameters.tfvars -auto-approve
 
-    - name: Set credentials output
-      id: credentialsoutput
-      shell: bash
-      run: |
-        mkdir -p ${{ github.action_path }}/infrastructure/security/certificates/redis
-        kubectl get secrets -n armonik redis-client-certificates -o jsonpath="{.data.chain\.pem}" | base64 --decode > ${{ github.action_path }}/infrastructure/security/certificates/redis/chain.pem
-        echo "::set-output name=credentials-redis-ca-pem::${{ github.action_path }}/infrastructure/security/certificates/redis/chain.pem"
-
     - name: Create a configuration file for ArmoniK
       shell: bash
       run: |
@@ -122,18 +110,12 @@ runs:
             --storage-table "MongoDB" \
             --storage-queue "Amqp" \
             --storage-lease-provider "MongoDB" \
-            --storage-external "Redis" \
             --storage-shared-type "HostPath" \
             --mongodb-host $MONGODB_HOST \
             --mongodb-port $MONGODB_PORT \
-            --mongodb-kube-secret "mongodb-storage-secret" \
             --activemq-host $ACTIVEMQ_HOST \
             --activemq-port $ACTIVEMQ_PORT \
-            --activemq-kube-secret "activemq-storage-secret" \
             --redis-url $REDIS_URL \
-            --redis-kube-secret "redis-storage-secret" \
-            --external-url $REDIS_URL \
-            --external-kube-secret "external-redis-storage-secret" \
             ${{ github.action_path }}/infrastructure/armonik/parameters/storage-parameters.tfvars \
             ${{ github.action_path }}/infrastructure/armonik/storage-parameters.tfvars.json
 

@@ -9,6 +9,5 @@ locals {
     shared_host_path       = (var.storage.data_type.shared == "hostpath")
     shared_nfs             = (var.storage.data_type.shared == "nfs")
     shared_aws_ebs         = (var.storage.data_type.shared == "aws_ebs")
-    external_redis         = (var.storage.data_type.external == "redis" && contains(var.storage.list, "redis"))
   }
 }
