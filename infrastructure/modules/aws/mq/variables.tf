@@ -19,6 +19,7 @@ variable "mq" {
     engine_type             = string
     engine_version          = string
     host_instance_type      = string
+    apply_immediately       = bool
     deployment_mode         = string
     storage_type            = string
     kms_key_id              = string

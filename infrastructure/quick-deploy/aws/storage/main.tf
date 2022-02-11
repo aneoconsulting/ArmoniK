@@ -1,5 +1,6 @@
 # AWS KMS
 module "kms" {
+  count  = (var.s3_fs.kms_key_id != "" && var.elasticache.encryption_keys.kms_key_id != "" && var.elasticache.encryption_keys.log_kms_key_id != "" && var.mq.kms_key_id != "" ? 0 : 1)
   source = "../../../modules/aws/kms"
   name   = "armonik-kms-storage-${local.tag}-${local.random_string}"
   tags   = local.tags
@@ -7,10 +8,22 @@ module "kms" {
 
 # AWS S3 as shared storage
 module "s3_fs" {
-  source     = "../../../modules/aws/s3"
-  tags       = local.tags
-  name       = "${var.s3_fs.name}-${local.tag}"
-  kms_key_id = (var.s3_fs.kms_key_id != "" ? var.s3_fs.kms_key_id : module.kms.selected.arn)
+  source = "../../../modules/aws/s3"
+  tags   = local.tags
+  name   = "${var.s3_fs.name}-${local.tag}"
+  s3     = {
+    policy                                = var.s3_fs.policy
+    attach_policy                         = var.s3_fs.attach_policy
+    attach_deny_insecure_transport_policy = var.s3_fs.attach_deny_insecure_transport_policy
+    attach_require_latest_tls_policy      = var.s3_fs.attach_require_latest_tls_policy
+    attach_public_policy                  = var.s3_fs.attach_public_policy
+    block_public_acls                     = var.s3_fs.attach_public_policy
+    block_public_policy                   = var.s3_fs.block_public_acls
+    ignore_public_acls                    = var.s3_fs.block_public_policy
+    restrict_public_buckets               = var.s3_fs.restrict_public_buckets
+    kms_key_id                            = (var.s3_fs.kms_key_id != "" ? var.s3_fs.kms_key_id : module.kms.0.selected.arn)
+    sse_algorithm                         = (var.s3_fs.kms_key_id != "" ? var.s3_fs.sse_algorithm : "aws:kms")
+  }
 }
 
 # AWS Elasticache
@@ -18,25 +31,26 @@ module "elasticache" {
   source      = "../../../modules/aws/elasticache"
   tags        = local.tags
   name        = "${var.elasticache.name}-${local.tag}"
+  vpc         = {
+    id          = var.vpc.id
+    cidr_blocks = concat([var.vpc.cidr_block], var.vpc.pod_cidr_block_private)
+    subnet_ids  = var.vpc.private_subnet_ids
+  }
   elasticache = {
-    engine                = var.elasticache.engine
-    engine_version        = var.elasticache.engine_version
-    node_type             = var.elasticache.node_type
-    encryption_keys       = {
-      kms_key_id     = (var.elasticache.encryption_keys.kms_key_id != "" ? var.elasticache.encryption_keys.kms_key_id : module.kms.selected.arn)
-      log_kms_key_id = (var.elasticache.encryption_keys.log_kms_key_id != "" ? var.elasticache.encryption_keys.log_kms_key_id : module.kms.selected.arn)
+    engine                      = var.elasticache.engine
+    engine_version              = var.elasticache.engine_version
+    node_type                   = var.elasticache.node_type
+    apply_immediately           = var.elasticache.apply_immediately
+    multi_az_enabled            = var.elasticache.multi_az_enabled
+    automatic_failover_enabled  = var.elasticache.automatic_failover_enabled
+    num_cache_clusters          = var.elasticache.num_cache_clusters
+    preferred_cache_cluster_azs = var.elasticache.preferred_cache_cluster_azs
+    data_tiering_enabled        = var.elasticache.data_tiering_enabled
+    log_retention_in_days       = var.elasticache.log_retention_in_days
+    encryption_keys             = {
+      kms_key_id     = (var.elasticache.encryption_keys.kms_key_id != "" ? var.elasticache.encryption_keys.kms_key_id : module.kms.0.selected.arn)
+      log_kms_key_id = (var.elasticache.encryption_keys.log_kms_key_id != "" ? var.elasticache.encryption_keys.log_kms_key_id : module.kms.0.selected.arn)
     }
-    log_retention_in_days = var.elasticache.log_retention_in_days
-    vpc                   = {
-      id          = var.vpc.id
-      cidr_blocks = concat([var.vpc.cidr_block], var.vpc.pod_cidr_block_private)
-      subnet_ids  = var.vpc.private_subnet_ids
-    }
-    cluster_mode          = {
-      replicas_per_node_group = var.elasticache.cluster_mode.replicas_per_node_group
-      num_node_groups         = var.elasticache.cluster_mode.num_node_groups
-    }
-    multi_az_enabled      = var.elasticache.multi_az_enabled
   }
 }
 
@@ -49,9 +63,10 @@ module "mq" {
     engine_type             = var.mq.engine_type
     engine_version          = var.mq.engine_version
     host_instance_type      = var.mq.host_instance_type
+    apply_immediately       = var.mq.apply_immediately
     deployment_mode         = var.mq.deployment_mode
     storage_type            = var.mq.storage_type
-    kms_key_id              = (var.mq.kms_key_id != "" ? var.mq.kms_key_id : module.kms.selected.arn)
+    kms_key_id              = (var.mq.kms_key_id != "" ? var.mq.kms_key_id : module.kms.0.selected.arn)
     authentication_strategy = var.mq.authentication_strategy
     publicly_accessible     = var.mq.publicly_accessible
     user                    = {
