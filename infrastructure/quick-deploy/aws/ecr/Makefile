@@ -29,6 +29,7 @@ apply:
 		-var 'region=$(REGION)' \
 		-var 'tag=$(TAG)' \
 		-var 'profile=$(PROFILE)' \
+		-parallelism 1 \
 		-state $(STATE_FILE) \
 		-auto-approve
 
