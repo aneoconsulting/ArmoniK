@@ -38,7 +38,7 @@ output:
 	@echo -n "{\"storage_endpoint_url\":" > $(OUTPUT_FILE)
 	@terraform output -state=$(STATE_FILE) -json storage_endpoint_url >> $(OUTPUT_FILE)
 	@echo -n "}" >> $(OUTPUT_FILE)
-	@echo "\nOUTPUT FILE: $(CURRENT_DIR)/$(OUTPUT_FILE)"
+	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 
 destroy:
 	terraform destroy \
