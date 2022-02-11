@@ -1,7 +1,6 @@
 provider "aws" {
-  region                  = var.region
-  shared_credentials_file = pathexpand(".aws/credentials")
-  profile                 = var.profile
+  region  = var.region
+  profile = var.profile
 }
 
 provider "kubernetes" {

@@ -24,17 +24,16 @@ locals {
   eks_worker_group = concat([
   for index in range(0, length(var.eks_worker_groups)) :
   merge(var.eks_worker_groups[index], {
-    "spot_allocation_strategy" = "capacity-optimized"
-    "root_encrypted"           = true
-    "root_kms_key_id"          = var.eks.encryption_keys.ebs_kms_key_id
-    additional_userdata        = <<-EOT
+    root_encrypted      = true
+    root_kms_key_id     = var.eks.encryption_keys.ebs_kms_key_id
+    additional_userdata = <<-EOT
       sudo yum update -y
       sudo amazon-linux-extras install -y epel
       sudo yum install -y s3fs-fuse
       sudo mkdir -p ${var.s3_fs.host_path}
       sudo s3fs ${var.s3_fs.name} ${var.s3_fs.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${local.region}.amazonaws.com"
     EOT
-    "tags"                     = [
+    tags                = [
       {
         key                 = "k8s.io/cluster-autoscaler/enabled"
         propagate_at_launch = true
@@ -60,6 +59,7 @@ locals {
   ], [
     {
       name                                     = "operational-worker-ondemand"
+      spot_allocation_strategy                 = "capacity-optimized"
       override_instance_types                  = ["m5.xlarge", "m5d.xlarge"]
       spot_instance_pools                      = 0
       asg_min_size                             = 1
@@ -67,7 +67,6 @@ locals {
       asg_desired_capacity                     = 1
       on_demand_base_capacity                  = 1
       on_demand_percentage_above_base_capacity = 100
-      spot_allocation_strategy                 = "capacity-optimized"
       kubelet_extra_args                       = "--node-labels=grid/type=Operator --register-with-taints=grid/type=Operator:NoSchedule"
       root_encrypted                           = true
       root_kms_key_id                          = var.eks.encryption_keys.ebs_kms_key_id

@@ -1,15 +1,11 @@
 # Based on the official aws-node-termination-handler setup guide at https://github.com/aws/aws-node-termination-handler#infrastructure-setup
 resource "helm_release" "aws_node_termination_handler" {
-  depends_on = [
-    module.eks,
-    null_resource.update_kubeconfig
-  ]
-
-  name             = "aws-node-termination-handler"
+  name             = "armonik-aws-node-termination-handler"
   namespace        = "kube-system"
-  repository       = "https://aws.github.io/eks-charts"
   chart            = "aws-node-termination-handler"
-  version          = "0.15.0"
+  #repository       = "https://aws.github.io/eks-charts"
+  repository       = "${path.module}/charts"
+  version          = "0.17.0"
   create_namespace = true
 
   set {
@@ -37,7 +33,6 @@ resource "helm_release" "aws_node_termination_handler" {
     name  = "image.repository"
     value = var.eks.docker_images.instance_refresh.image
   }
-
   set {
     name  = "image.tag"
     value = var.eks.docker_images.instance_refresh.tag
@@ -51,6 +46,10 @@ resource "helm_release" "aws_node_termination_handler" {
     name  = "queueURL"
     value = module.aws_node_termination_handler_sqs.sqs_queue_id
   }*/
+  depends_on = [
+    module.eks,
+    null_resource.update_kubeconfig
+  ]
 }
 
 module "aws_node_termination_handler_role" {

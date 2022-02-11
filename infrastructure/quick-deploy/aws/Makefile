@@ -107,6 +107,10 @@ destroy-eks:
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 ####################################
+#        Onpremise storage         #
+####################################
+
+####################################
 #               All                #
 ####################################
 
@@ -115,48 +119,7 @@ deploy-all: deploy-ecr deploy-vpc deploy-aws-storage deploy-eks
 destroy-all: destroy-eks destroy-aws-storage destroy-vpc destroy-ecr
 
 clean-all:
-	$(MAKE) -C $(CURRENT_DIR)/vpc clean
 	$(MAKE) -C $(CURRENT_DIR)/ecr clean
+	$(MAKE) -C $(CURRENT_DIR)/vpc clean
 	$(MAKE) -C $(CURRENT_DIR)/storage clean
 	$(MAKE) -C $(CURRENT_DIR)/eks clean
-
-
-
-
-
-
-
-
-
-
-init:
-	mkdir -p generated
-	touch generated/terraform.log
-	terraform init
-
-plan:
-	terraform plan \
-		-var-file $(PARAMETERS_FILE) \
-		-out $(PLAN_FILE)
-
-apply:
-	terraform apply \
-		-var-file $(PARAMETERS_FILE) \
-		-state $(STATE_FILE) \
-		-auto-approve
-
-output:
-	@terraform output -state=$(STATE_FILE) -json > $(OUTPUT_FILE)
-	@echo "\nOUTPUT FILE: $(CURRENT_DIR)/$(OUTPUT_FILE)"
-
-destroy:
-	terraform destroy \
-		-var-file $(PARAMETERS_FILE) \
-		-state $(STATE_FILE) \
-		-auto-approve
-
-clean:
-	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform
-
-docs:
-	terraform-docs markdown table --output-file parameters.md --output-mode inject $(CURRENT_DIR)

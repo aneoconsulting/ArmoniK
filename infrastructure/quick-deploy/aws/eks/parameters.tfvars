@@ -33,12 +33,12 @@ eks = {
   cluster_log_retention_in_days        = 30
   docker_images                        = {
     cluster_autoscaler = {
-      image = "k8s.gcr.io/autoscaling/cluster-autoscaler"
-      tag   = "v1.21.0"
+      image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/cluster-autoscaler"
+      tag   = "v1.23.0"
     }
     instance_refresh   = {
-      image = "amazon/aws-node-termination-handler"
-      tag   = "v1.10.0"
+      image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-node-termination-handler"
+      tag   = "v1.15.0"
     }
   }
   encryption_keys                      = {
@@ -51,39 +51,63 @@ eks = {
 # EKS worker groups
 eks_worker_groups = [
   {
-    name                    = "worker-small-spot"
-    override_instance_types = ["m5.xlarge", "m5d.xlarge", "m5a.xlarge"]
-    spot_instance_pools     = 0
-    asg_min_size            = 0
-    asg_max_size            = 20
-    asg_desired_capacity    = 0
-    on_demand_base_capacity = 0
+    name                                     = "worker-small-spot"
+    spot_allocation_strategy                 = "capacity-optimized"
+    override_instance_types                  = ["m5.xlarge", "m5d.xlarge", "m5a.xlarge"]
+    spot_instance_pools                      = 0
+    asg_min_size                             = 0
+    asg_max_size                             = 20
+    asg_desired_capacity                     = 0
+    on_demand_base_capacity                  = 0
+    on_demand_percentage_above_base_capacity = 0
+    tags                                     = []
   },
   {
-    name                    = "worker-2xmedium-spot"
-    override_instance_types = ["m5.2xlarge", "m5d.2xlarge", "m5a.2xlarge"]
-    spot_instance_pools     = 0
-    asg_min_size            = 0
-    asg_max_size            = 20
-    asg_desired_capacity    = 0
-    on_demand_base_capacity = 0
+    name                                     = "worker-2xmedium-spot"
+    spot_allocation_strategy                 = "capacity-optimized"
+    override_instance_types                  = ["m5.2xlarge", "m5d.2xlarge", "m5a.2xlarge"]
+    spot_instance_pools                      = 0
+    asg_min_size                             = 0
+    asg_max_size                             = 20
+    asg_desired_capacity                     = 0
+    on_demand_base_capacity                  = 0
+    on_demand_percentage_above_base_capacity = 0
+    tags                                     = []
   },
   {
-    name                    = "worker-4xmedium-spot"
-    override_instance_types = ["m5.4xlarge", "m5d.4xlarge", "m5a.4xlarge"]
-    spot_instance_pools     = 0
-    asg_min_size            = 0
-    asg_max_size            = 20
-    asg_desired_capacity    = 0
-    on_demand_base_capacity = 0
+    name                                     = "worker-4xmedium-spot"
+    spot_allocation_strategy                 = "capacity-optimized"
+    override_instance_types                  = ["m5.4xlarge", "m5d.4xlarge", "m5a.4xlarge"]
+    spot_instance_pools                      = 0
+    asg_min_size                             = 0
+    asg_max_size                             = 20
+    asg_desired_capacity                     = 0
+    on_demand_base_capacity                  = 0
+    on_demand_percentage_above_base_capacity = 0
+    tags                                     = []
   },
   {
-    name                    = "worker-8xmedium-spot"
-    override_instance_types = ["m5.8xlarge", "m5d.8xlarge", "m5a.8xlarge"]
-    spot_instance_pools     = 0
-    asg_min_size            = 0
-    asg_max_size            = 20
-    asg_desired_capacity    = 0
-    on_demand_base_capacity = 0
+    name                                     = "worker-8xmedium-spot"
+    spot_allocation_strategy                 = "capacity-optimized"
+    override_instance_types                  = ["m5.8xlarge", "m5d.8xlarge", "m5a.8xlarge"]
+    spot_instance_pools                      = 0
+    asg_min_size                             = 0
+    asg_max_size                             = 20
+    asg_desired_capacity                     = 0
+    on_demand_base_capacity                  = 0
+    on_demand_percentage_above_base_capacity = 0
+    tags                                     = []
+  },
+  {
+    name                                     = "worker-small-ondemand"
+    spot_allocation_strategy                 = "capacity-optimized"
+    override_instance_types                  = ["m5.xlarge", "m5d.xlarge", "m5a.xlarge"]
+    spot_instance_pools                      = 0
+    asg_min_size                             = 0
+    asg_max_size                             = 20
+    asg_desired_capacity                     = 0
+    on_demand_base_capacity                  = 0
+    on_demand_percentage_above_base_capacity = 100
+    kubelet_extra_args                       = "--node-labels=lifecycle=OnDemand"
   }
 ]
