@@ -59,12 +59,12 @@ ecr = {
     {
       name  = "cluster-autoscaler"
       image = "k8s.gcr.io/autoscaling/cluster-autoscaler"
-      tag   = "v1.21.0"
+      tag   = "v1.23.0"
     },
     {
       name  = "aws-node-termination-handler"
-      image = "amazon/aws-node-termination-handler"
-      tag   = "v1.10.0"
+      image = "public.ecr.aws/aws-ec2/aws-node-termination-handler"
+      tag   = "v1.15.0"
     },
     {
       name  = "fluent-bit"
