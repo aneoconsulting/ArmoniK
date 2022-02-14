@@ -38,7 +38,7 @@ runs:
       run: |
         sudo apt-get update
         sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq python3 python-is-python3 python3-pip
-        pip install python-hcl2
+        pip install python-hcl2 jsonpath-ng
 
     - if: ${{ inputs.docker-is-installed != 'true' }}
       name: Install docker
@@ -106,26 +106,26 @@ runs:
         echo $REDIS_URL
 
         python ${{ github.action_path }}/tools/modify_parameters.py \
-            --storage-object "Redis" \
-            --storage-table "MongoDB" \
-            --storage-queue "Amqp" \
-            --storage-lease-provider "MongoDB" \
-            --storage-shared-type "HostPath" \
-            --mongodb-host $MONGODB_HOST \
-            --mongodb-port $MONGODB_PORT \
-            --activemq-host $ACTIVEMQ_HOST \
-            --activemq-port $ACTIVEMQ_PORT \
-            --redis-url $REDIS_URL \
+            -kv storage.object=Redis \
+            -kv storage.table=MongoDB \
+            -kv storage.queue=Amqp \
+            -kv storage.shared=HostPath \
+            -kv storage_endpoint_url.mongodb.host=$MONGODB_HOST \
+            -kv storage_endpoint_url.mongodb.port=$MONGODB_PORT \
+            -kv storage_endpoint_url.activemq.host=$ACTIVEMQ_HOST \
+            -kv storage_endpoint_url.activemq.port=$ACTIVEMQ_PORT \
+            -kv storage_endpoint_url.redis.url=$REDIS_URL \
             ${{ github.action_path }}/infrastructure/armonik/parameters/storage-parameters.tfvars \
             ${{ github.action_path }}/infrastructure/armonik/storage-parameters.tfvars.json
 
         python ${{ github.action_path }}/tools/modify_parameters.py \
-            --worker-image ${{ inputs.worker-image }} \
-            --worker-tag ${{ inputs.worker-tag }} \
-            --polling-agent-image ${{ inputs.polling-agent-image }} \
-            --polling-agent-tag ${{ inputs.polling-agent-tag }} \
-            --control-plane-image ${{ inputs.control-plane-image }} \
-            --control-plane-tag ${{ inputs.control-plane-tag }} \
+            -kv "compute_plane.worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane.worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv compute_plane.image=${{ inputs.polling-agent-image }} \
+            -kv compute_plane.tag=${{ inputs.polling-agent-tag }} \
+            -kv control_plane.image=${{ inputs.control-plane-image }} \
+            -kv control_plane.tag=${{ inputs.control-plane-tag }} \
+            -kv logging_level=Verbose \
             ${{ github.action_path }}/infrastructure/armonik/parameters/armonik-parameters.tfvars \
             ${{ github.action_path }}/infrastructure/armonik/armonik-parameters.tfvars.json
 

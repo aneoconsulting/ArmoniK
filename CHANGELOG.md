@@ -1,5 +1,28 @@
 # Changelog
 
+## [latest](https://github.com/aneoconsulting/armonik/tree/main) (2022-02-15)
+
+Removed
+-
+
+* Support for external Redis and Htc Mock v1
+
+Added
+-
+
+* Add liveness, readiness and startup probes for seq
+
+Changed
+-
+
+* FluentBit is used to tail logs and send them to seq instead of sending them directly from logger
+* Use environment variables instead of configmaps to configure applications in ArmoniK images
+* Terraform is used to generate self-signed certificates for ActiveMQ, MongoDB and Redis
+* Terraform is used to generate users and passwords for ActiveMQ, MongoDB and Redis
+* Certificates and credentials are stored as kubernetes secrets
+* ArmoniK expects those secrets as input
+
+
 ## [v2.3.0](https://github.com/aneoconsulting/armonik/tree/v2.3.0) (2022-02-01)
 
 Added
