@@ -1,8 +1,3 @@
-output "elasticache" {
-  description = "AWS Elasticache object"
-  value       = aws_elasticache_replication_group.elasticache
-}
-
 # Redis
 output "redis_endpoint_url" {
   description = "AWS Elasticahe (Redis) endpoint urls"
