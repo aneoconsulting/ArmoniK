@@ -297,7 +297,7 @@ variable "compute_plane" {
     # ArmoniK workers
     worker                           = [
       {
-        name              = "compute"
+        name              = "worker"
         port              = 80
         image             = "dockerhubaneo/armonik_worker_dll"
         tag               = "0.0.4"
