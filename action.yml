@@ -146,6 +146,7 @@ runs:
                         -var-file=storage-parameters.tfvars.json \
                         -var-file=monitoring-parameters.tfvars.json \
                         -auto-approve
+
     - name: Copy logs
       if: always()
       shell: bash

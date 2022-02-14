@@ -32,7 +32,6 @@ nuget_cache=$(dotnet nuget locals global-packages --list | awk '{ print $2 }')
 if [ ! -d "/data" ]; then
     echo  "Need to create Data folder for application"
     sudo mkdir -p /data
-    sudo chmod -R 777 /data
     sudo chown -R $USER:$USER /data
 fi
 

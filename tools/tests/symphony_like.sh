@@ -17,7 +17,6 @@ dotnet publish -c Debug --self-contained -r linux-x64 SymphonyLike.sln
 if [ ! -d "/data" ]; then
   echo  "Need to create Data folder for application"
   sudo mkdir -p /data
-  sudo chmod -R 777 /data
   sudo chown -R $USER:$USER /data
 fi
 
