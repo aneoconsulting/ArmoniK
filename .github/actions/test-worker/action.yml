@@ -54,7 +54,6 @@ runs:
       shell: bash
       run: |
         set -ex
-        echo "********* USER=$USER ************"
         sudo mkdir -p /data
         sudo chown -R $USER:$USER /data
 
