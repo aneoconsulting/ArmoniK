@@ -56,6 +56,66 @@ resource "kubernetes_deployment" "control_plane" {
               name = kubernetes_config_map.core_config.metadata.0.name
             }
           }
+          env {
+            name = "Amqp__User"
+            value_from {
+              secret_key_ref {
+                key      = var.secrets.activemq_username_key
+                name     = var.secrets.activemq_username_secret
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "Amqp__Password"
+            value_from {
+              secret_key_ref {
+                key      = var.secrets.activemq_password_key
+                name     = var.secrets.activemq_password_secret
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "Redis__User"
+            value_from {
+              secret_key_ref {
+                key      = var.secrets.redis_username_key
+                name     = var.secrets.redis_username_secret
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "Redis__Password"
+            value_from {
+              secret_key_ref {
+                key      = var.secrets.redis_password_key
+                name     = var.secrets.redis_password_secret
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "MongoDB__User"
+            value_from {
+              secret_key_ref {
+                key      = var.secrets.mongodb_username_key
+                name     = var.secrets.mongodb_username_secret
+                optional = false
+              }
+            }
+          }
+          env {
+            name = "MongoDB__Password"
+            value_from {
+              secret_key_ref {
+                key      = var.secrets.mongodb_password_key
+                name     = var.secrets.mongodb_username_secret
+                optional = false
+              }
+            }
+          }
           dynamic volume_mount {
             for_each = (local.data_type.queue_amqp ? [1] : [])
             content {
@@ -136,7 +196,7 @@ resource "kubernetes_deployment" "control_plane" {
           content {
             name = "activemq-secret-volume"
             secret {
-              secret_name = var.storage_endpoint_url.activemq.secret
+              secret_name = var.secrets.activemq_certificate_secret
               optional    = false
             }
           }
@@ -146,7 +206,7 @@ resource "kubernetes_deployment" "control_plane" {
           content {
             name = "redis-secret-volume"
             secret {
-              secret_name = var.storage_endpoint_url.redis.secret
+              secret_name = var.secrets.redis_certificate_secret
               optional    = false
             }
           }
@@ -156,7 +216,7 @@ resource "kubernetes_deployment" "control_plane" {
           content {
             name = "mongodb-secret-volume"
             secret {
-              secret_name = var.storage_endpoint_url.mongodb.secret
+              secret_name = var.secrets.mongodb_certificate_secret
               optional    = false
             }
           }

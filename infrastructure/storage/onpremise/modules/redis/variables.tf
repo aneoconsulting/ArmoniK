@@ -14,6 +14,14 @@ variable "redis" {
     tag           = string
     secret        = string
     node_selector = any
+    credentials_user_secret        = string
+    credentials_user_type          = string
+    credentials_user_key_username  = string
+    credentials_user_key_password  = string
+    credentials_user_namespace     = string
+    certificates_server_secret     = string
+    certificates_client_secret     = string
+    certificates_client_namespace  = string
   })
 }
 

@@ -150,23 +150,16 @@ endpoint_urls() {
 # create configuration file
 storage_configuration_file (){
   python $BASEDIR/../../../tools/modify_parameters.py \
-    --storage-object "Redis" \
-    --storage-table "MongoDB" \
-    --storage-queue "Amqp" \
-    --storage-lease-provider "MongoDB" \
-    --storage-external "Redis" \
-    --storage-shared-type $SHARED_STORAGE_TYPE \
-    --mongodb-host $MONGODB_HOST \
-    --mongodb-port $MONGODB_PORT \
-    --mongodb-kube-secret $ARMONIK_MONGODB_SECRET_NAME \
-    --activemq-host $ACTIVEMQ_HOST \
-    --activemq-port $ACTIVEMQ_PORT \
-    --activemq-kube-secret $ARMONIK_ACTIVEMQ_SECRET_NAME \
-    --redis-url $REDIS_URL \
-    --redis-kube-secret $ARMONIK_REDIS_SECRET_NAME \
-    --shared-host $SHARED_STORAGE_HOST \
-    --external-url $REDIS_URL \
-    --external-kube-secret $ARMONIK_EXTERNAL_REDIS_SECRET_NAME \
+    -kv storage.object=Redis \
+    -kv storage.table=MongoDB \
+    -kv storage.queue=Amqp \
+    -kv storage.shared=$SHARED_STORAGE_TYPE \
+    -kv storage_endpoint_url.mongodb.host=$MONGODB_HOST \
+    -kv storage_endpoint_url.mongodb.port=$MONGODB_PORT \
+    -kv storage_endpoint_url.activemq.host=$ACTIVEMQ_HOST \
+    -kv storage_endpoint_url.activemq.port=$ACTIVEMQ_PORT \
+    -kv storage_endpoint_url.redis.url=$REDIS_URL \
+    -kv storage_endpoint_url.shared.host=$SHARED_STORAGE_HOST \
     $BASEDIR/../../armonik/parameters/storage-parameters.tfvars \
     $BASEDIR/storage-parameters.tfvars.json
 }
@@ -231,8 +224,10 @@ function terraform_init_armonik() {
 }
 
 create_kube_secrets() {
-  cd $BASEDIR/../../../tools/install
-  bash init_kube.sh
+  cd $BASEDIR
+  bash init-kube-storage.sh
+  bash init-kube-armonik.sh
+  bash init-kube-monitoring.sh
   cd -
 }
 

@@ -8,5 +8,9 @@ terraform {
       source  = "hashicorp/local"
       version = ">= 2.1.0"
     }
+    pkcs12 = {
+      source = "chilicat/pkcs12"
+      version = "0.0.7"
+    }
   }
 }

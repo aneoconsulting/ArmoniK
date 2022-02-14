@@ -12,11 +12,35 @@ fluent_bit = {
   name  = "fluent-bit"
 }
 
+# Secrets
+secrets = {
+  redis_username_secret = "redis-user"
+  redis_username_key    = "username"
+  redis_password_secret = "redis-user"
+  redis_password_key    = "password"
+  redis_certificate_secret = "redis-client-certificates"
+  redis_certificate_file = "chain.pem"
+
+  mongodb_username_secret = "mongodb-user"
+  mongodb_username_key    = "username"
+  mongodb_password_secret = "mongodb-user"
+  mongodb_password_key    = "password"
+  mongodb_certificate_secret = "mongodb-client-certificates"
+  mongodb_certificate_file = "chain.pem"
+
+  activemq_username_secret = "activemq-user"
+  activemq_username_key    = "username"
+  activemq_password_secret = "activemq-user"
+  activemq_password_key    = "password"
+  activemq_certificate_secret = "activemq-client-certificates"
+  activemq_certificate_file = "chain.pem"
+}
+
 # Parameters of control plane
 control_plane = {
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
-  tag                = "0.4.1-SNAPSHOT.2.75ccd46"
+  tag                = "0.4.1-trypemfiles.5.cc68029"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -41,7 +65,7 @@ compute_plane = {
   # ArmoniK polling agent
   polling_agent                    = {
     image             = "dockerhubaneo/armonik_pollingagent"
-    tag               = "0.4.1-SNAPSHOT.2.75ccd46"
+    tag               = "0.4.1-trypemfiles.5.cc68029"
     image_pull_policy = "IfNotPresent"
     limits            = {
       cpu    = "100m"
@@ -60,7 +84,7 @@ compute_plane = {
       image             = "dockerhubaneo/armonik_worker_dll"
       # HTC Mock
       #image             = "dockerhubaneo/armonik_worker_htcmock"
-      tag               = "0.2.1"
+      tag               = "0.3.4"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "920m"

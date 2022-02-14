@@ -29,13 +29,6 @@ inputs:
     description: 'Is docker installed ?'
     required: false
     default: 'false'
-outputs:
-  credentials-redis:
-    description: "Path to Redis credentials file"
-    value: ${{ steps.credentialsoutput.outputs.credentials-redis }}
-  credentials-redis-ca-p7b:
-    description: "Path to Redis certificate chain"
-    value: ${{ steps.credentialsoutput.outputs.credentials-redis-ca-p7b }}
 
 runs:
   using: composite
@@ -45,7 +38,7 @@ runs:
       run: |
         sudo apt-get update
         sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq python3 python-is-python3 python3-pip
-        pip install python-hcl2
+        pip install python-hcl2 jsonpath-ng
 
     - if: ${{ inputs.docker-is-installed != 'true' }}
       name: Install docker
@@ -85,13 +78,6 @@ runs:
         source infrastructure/utils/scripts/envvars-monitoring.sh
         bash infrastructure/utils/scripts/init-kube-monitoring.sh
 
-    - name: Set credentials output
-      id: credentialsoutput
-      shell: bash
-      run: |
-        echo "::set-output name=credentials-redis::${{ github.action_path }}/infrastructure/security/credentials/redis-credentials.json"
-        echo "::set-output name=credentials-redis-ca-p7b::${{ github.action_path }}/infrastructure/security/certificates/redis/chain.p7b"
-
     - name: Deploy Onpremise Storage
       shell: bash
       run: |
@@ -120,32 +106,26 @@ runs:
         echo $REDIS_URL
 
         python ${{ github.action_path }}/tools/modify_parameters.py \
-            --storage-object "Redis" \
-            --storage-table "MongoDB" \
-            --storage-queue "Amqp" \
-            --storage-lease-provider "MongoDB" \
-            --storage-external "Redis" \
-            --storage-shared-type "HostPath" \
-            --mongodb-host $MONGODB_HOST \
-            --mongodb-port $MONGODB_PORT \
-            --mongodb-kube-secret "mongodb-storage-secret" \
-            --activemq-host $ACTIVEMQ_HOST \
-            --activemq-port $ACTIVEMQ_PORT \
-            --activemq-kube-secret "activemq-storage-secret" \
-            --redis-url $REDIS_URL \
-            --redis-kube-secret "redis-storage-secret" \
-            --external-url $REDIS_URL \
-            --external-kube-secret "external-redis-storage-secret" \
+            -kv storage.object=Redis \
+            -kv storage.table=MongoDB \
+            -kv storage.queue=Amqp \
+            -kv storage.shared=HostPath \
+            -kv storage_endpoint_url.mongodb.host=$MONGODB_HOST \
+            -kv storage_endpoint_url.mongodb.port=$MONGODB_PORT \
+            -kv storage_endpoint_url.activemq.host=$ACTIVEMQ_HOST \
+            -kv storage_endpoint_url.activemq.port=$ACTIVEMQ_PORT \
+            -kv storage_endpoint_url.redis.url=$REDIS_URL \
             ${{ github.action_path }}/infrastructure/armonik/parameters/storage-parameters.tfvars \
             ${{ github.action_path }}/infrastructure/armonik/storage-parameters.tfvars.json
 
         python ${{ github.action_path }}/tools/modify_parameters.py \
-            --worker-image ${{ inputs.worker-image }} \
-            --worker-tag ${{ inputs.worker-tag }} \
-            --polling-agent-image ${{ inputs.polling-agent-image }} \
-            --polling-agent-tag ${{ inputs.polling-agent-tag }} \
-            --control-plane-image ${{ inputs.control-plane-image }} \
-            --control-plane-tag ${{ inputs.control-plane-tag }} \
+            -kv "compute_plane.worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane.worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv compute_plane.image=${{ inputs.polling-agent-image }} \
+            -kv compute_plane.tag=${{ inputs.polling-agent-tag }} \
+            -kv control_plane.image=${{ inputs.control-plane-image }} \
+            -kv control_plane.tag=${{ inputs.control-plane-tag }} \
+            -kv logging_level=Verbose \
             ${{ github.action_path }}/infrastructure/armonik/parameters/armonik-parameters.tfvars \
             ${{ github.action_path }}/infrastructure/armonik/armonik-parameters.tfvars.json
 
@@ -166,3 +146,20 @@ runs:
                         -var-file=storage-parameters.tfvars.json \
                         -var-file=monitoring-parameters.tfvars.json \
                         -auto-approve
+    - name: Copy logs
+      if: always()
+      shell: bash
+      run: |
+        set -e
+        mkdir -p /tmp/armoniklogs
+        sudo cp -rL /var/log/pods/armonik* /tmp/armoniklogs
+        sudo chown $USER -R /tmp/armoniklogs
+        find /tmp/armoniklogs -name "*.log"
+
+    - name: Store logs
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: Logs ArmoniK - ${{ github.job }}
+        path: /tmp/armoniklogs/**/*.log
+        retention-days: 5

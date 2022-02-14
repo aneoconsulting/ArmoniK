@@ -1,12 +1,172 @@
+resource "random_string" "mq_admin_user" {
+  length  = 8
+  special = false
+  number  = false
+}
+
+resource "random_password" "mq_admin_password" {
+  length  = 16
+  special = false
+}
+
+resource "random_string" "mq_application_user" {
+  length  = 8
+  special = false
+  number  = false
+}
+
+resource "random_password" "mq_application_password" {
+  length  = 16
+  special = false
+}
+
+resource "random_password" "mq_keystore_password" {
+  length  = 16
+  special = false
+}
+
+resource "kubernetes_secret" "activemq_admin" {
+  metadata {
+    name      = var.activemq.credentials_admin_secret
+    namespace = var.activemq.credentials_admin_namespace
+  }
+
+  data = {
+    "${var.activemq.credentials_admin_key_username}" = "${random_string.mq_admin_user.result}"
+    "${var.activemq.credentials_admin_key_password}" = "${random_password.mq_admin_password.result}"
+  }
+
+  type = var.activemq.credentials_admin_type
+}
+
+resource "kubernetes_secret" "activemq_user" {
+  metadata {
+    name      = var.activemq.credentials_user_secret
+    namespace = var.activemq.credentials_user_namespace
+  }
+
+  data = {
+    "${var.activemq.credentials_user_key_username}" = "${random_string.mq_application_user.result}"
+    "${var.activemq.credentials_user_key_password}" = "${random_password.mq_application_password.result}"
+  }
+
+  type = var.activemq.credentials_user_type
+}
+
+#------------------------------------------------------------------------------
+# Certificate Authority
+#------------------------------------------------------------------------------
+resource "tls_private_key" "root_activemq" {
+  algorithm   = "RSA"
+  ecdsa_curve = "P384"
+  rsa_bits    = "4096"
+}
+
+resource "tls_self_signed_cert" "root_activemq" {
+  key_algorithm         = tls_private_key.root_activemq.algorithm
+  private_key_pem       = tls_private_key.root_activemq.private_key_pem
+  is_ca_certificate     = true
+  validity_period_hours = "168"
+
+  allowed_uses = [
+    "cert_signing",
+    "key_encipherment",
+    "digital_signature"
+  ]
+
+  subject {
+    organization = "ArmoniK activemq Root (NonTrusted)"
+    common_name  = "ArmoniK activemq Root (NonTrusted) Private Certificate Authority"
+    country      = "France"
+  }
+}
+
+#------------------------------------------------------------------------------
+# Certificate
+#------------------------------------------------------------------------------
+resource "tls_private_key" "activemq_private_key" {
+  algorithm   = "RSA"
+  ecdsa_curve = "P384"
+  rsa_bits    = "4096"
+}
+
+resource "tls_cert_request" "activemq_cert_request" {
+  key_algorithm   = tls_private_key.activemq_private_key.algorithm
+  private_key_pem = tls_private_key.activemq_private_key.private_key_pem
+
+  subject {
+    country      = "France"
+    common_name  = "127.0.0.1"
+    # organization = "127.0.0.1"
+  }
+}
+
+resource "tls_locally_signed_cert" "activemq_certificate" {
+  cert_request_pem   = tls_cert_request.activemq_cert_request.cert_request_pem
+  ca_key_algorithm   = tls_private_key.root_activemq.algorithm
+  ca_private_key_pem = tls_private_key.root_activemq.private_key_pem
+  ca_cert_pem        = tls_self_signed_cert.root_activemq.cert_pem
+
+  validity_period_hours = "168"
+
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+    "client_auth",
+    "any_extended",
+  ]
+}
+
+resource "pkcs12_from_pem" "activemq_certificate" {
+  password = random_password.mq_keystore_password.result
+  cert_pem = tls_locally_signed_cert.activemq_certificate.cert_pem
+  private_key_pem  = tls_private_key.activemq_private_key.private_key_pem
+  ca_pem = tls_self_signed_cert.root_activemq.cert_pem
+}
+
+resource "kubernetes_secret" "activemq_certificate" {
+  metadata {
+    name      = var.activemq.certificates_server_secret
+    namespace = var.namespace
+  }
+
+  data = {
+    "root.pem" = "${tls_self_signed_cert.root_activemq.cert_pem}"
+    "cert.pem" = "${tls_locally_signed_cert.activemq_certificate.cert_pem}"
+    "key.pem" = "${tls_private_key.activemq_private_key.private_key_pem}"
+  }
+  binary_data = {
+    "certificate.pfx" = "${pkcs12_from_pem.activemq_certificate.result}"
+  }
+}
+
+resource "kubernetes_secret" "activemq_certificate_client" {
+  metadata {
+    name      = var.activemq.certificates_client_secret
+    namespace = var.activemq.certificates_client_namespace
+  }
+
+  data = {
+    "chain.pem" = format("%s\n%s", tls_locally_signed_cert.activemq_certificate.cert_pem, tls_self_signed_cert.root_activemq.cert_pem)
+  }
+}
+
 # jetty.xml
 locals {
+  activemq_jetty_realm_properties = <<EOF
+# username: password ,[role-name]
+${random_string.mq_admin_user.result}:${random_password.mq_admin_password.result}, admin
+${random_string.mq_application_user.result}:${random_password.mq_application_password.result}, guest
+EOF
+
   activemq_jetty_xml = <<EOF
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="securityLoginService" class="org.eclipse.jetty.security.HashLoginService">
         <property name="name" value="ActiveMQRealm" />
-        <property name="config" value="/credentials/jetty-realm.properties" />
+        <property name="config" value="conf/jetty-realm.properties" />
     </bean>
 
     <bean id="securityConstraint" class="org.eclipse.jetty.util.security.Constraint">
@@ -283,7 +443,7 @@ EOF
 
         <sslContext>
             <sslContext keyStore="file:/credentials/certificate.pfx"
-                        keyStorePassword=""/>
+                        keyStorePassword="${random_password.mq_keystore_password.result}"/>
         </sslContext>
     </broker>
 
@@ -386,6 +546,7 @@ resource "kubernetes_config_map" "activemq_configs" {
     "jetty.xml" = local.activemq_jetty_xml
     "activemq.xml" = local.activemq_xml
     "log4j.properties" = local.log4j_properties
+    "jetty-realm.properties" = local.activemq_jetty_realm_properties
   }
 }
 

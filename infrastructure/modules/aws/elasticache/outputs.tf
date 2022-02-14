@@ -1,4 +1,4 @@
-# Redis
+ # Redis
 output "redis_endpoint_url" {
   description = "AWS Elasticahe (Redis) endpoint urls"
   value       = {

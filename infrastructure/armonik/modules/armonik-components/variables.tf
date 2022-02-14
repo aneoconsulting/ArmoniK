@@ -27,7 +27,33 @@ variable "fluent_bit" {
     name  = string
     image = string
     tag   = string
-    name  = string
+  })
+}
+
+# Secrets
+variable "secrets"  {
+  description = "Secrets parameters to retrieve storage credentials"
+  type        = object({
+    redis_username_secret = string
+    redis_username_key    = string
+    redis_password_secret = string
+    redis_password_key    = string
+    redis_certificate_secret = string
+    redis_certificate_file = string
+
+    mongodb_username_secret = string
+    mongodb_username_key    = string
+    mongodb_password_secret = string
+    mongodb_password_key    = string
+    mongodb_certificate_secret = string
+    mongodb_certificate_file = string
+
+    activemq_username_secret = string
+    activemq_username_key    = string
+    activemq_password_secret = string
+    activemq_password_key    = string
+    activemq_certificate_secret = string
+    activemq_certificate_file = string
   })
 }
 
@@ -116,10 +142,6 @@ variable "storage_endpoint_url" {
       secret = string
       path   = string
     })
-    external = object({
-      url    = string
-      secret = string
-    })
   })
 }
 
@@ -144,7 +166,6 @@ variable "storage" {
       queue          = string
       lease_provider = string
       shared         = string
-      external       = string
     })
     list      = list(string)
   })

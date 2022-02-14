@@ -66,3 +66,21 @@ runs:
         cd source/ArmoniK.Samples/Samples/HtcMockV3/Client/src/
         dotnet build "ArmoniK.Samples.HtcMock.Client.csproj" -c Release
         dotnet bin/Release/net5.0/ArmoniK.Samples.HtcMock.Client.dll
+
+    - name: Copy logs
+      if: always()
+      shell: bash
+      run: |
+        set -e
+        mkdir -p /tmp/armoniklogs
+        sudo cp -rL /var/log/pods/armonik_* /tmp/armoniklogs
+        sudo chown $USER -R /tmp/armoniklogs
+        find /tmp/armoniklogs -name "*.log"
+
+    - name: Store logs
+      uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: Logs Mock v3
+        path: /tmp/armoniklogs/**/*.log
+        retention-days: 5
