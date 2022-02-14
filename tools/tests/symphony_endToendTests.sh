@@ -26,13 +26,22 @@ cd ${TestDir}
 export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
 export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
 export Grpc__Endpoint=http://$CPIP:$CPPort
+nuget_cache=$(dotnet nuget locals global-packages --list | awk '{ print $2 }')
 
 function build()
 {
     cd ${TestDir}
-    dotnet publish --self-contained -c $configuration -r linux-x64 .
+    echo rm -rf ${nuget_cache}/armonik.*
+    rm -rf $(dotnet nuget locals global-packages --list | awk '{ print $2 }')/armonik.*
+
+    dotnet publish --self-contained -c $configuration -r linux-x64 -f net5.0 .
+}
+
+function deploy()
+{
     cp -v ../packages/ArmoniK.EndToEndTests-v1.0.0.zip /data
     kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
+    
 }
 
 function execute()
@@ -70,6 +79,7 @@ function main()
     echo "Nb Arguments : $#"
     if [[ $# == 0 ]]; then
         build
+	deploy
         execute
         exit 0
     fi
