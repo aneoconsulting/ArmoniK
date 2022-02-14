@@ -51,7 +51,7 @@ runs:
         worker-tag: ${{ inputs.worker-tag }}
 
     - name: Create directory /data
-      shell: bahs
+      shell: bash
       run: |
         set -ex
         echo "********* USER=$USER ************"
