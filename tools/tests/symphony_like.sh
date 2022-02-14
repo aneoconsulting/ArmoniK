@@ -15,8 +15,10 @@ rm -rf $(dotnet nuget locals global-packages --list | awk '{ print $2 }')/armoni
 dotnet publish -c Debug --self-contained -r linux-x64 SymphonyLike.sln
 
 if [ ! -d "/data" ]; then
-sudo mkdir -p /data
-sudo chown -R $USER:$USER /data
+  echo  "Need to create Data folder for application"
+  sudo mkdir -p /data
+  sudo chmod -R 755 /data
+  sudo chown -R $USER:$USER /data
 fi
 
 cp packages/ArmoniK.Samples.SymphonyPackage-v1.0.0.zip /data

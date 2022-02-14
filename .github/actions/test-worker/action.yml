@@ -82,19 +82,3 @@ runs:
         path: /tmp/armoniklogs/**/*.log
         retention-days: 5
 
-    # - name: Destroy Onpremise Storage
-    #  shell: bash
-    #   run: |
-    #     set -ex
-    #     cd infrastructure/storage/onpremise/
-    #     terraform destroy -var-file=global-parameters.tfvars -auto-approve
-    #     make clean
-
-    # - name: Destroy Onpremise ArmoniK
-    #  shell: bash
-    #   run: |
-    #     set -ex
-    #     cd infrastructure/armonik/
-    #     terraform destroy -var-file=global-parameters.tfvars.json -auto-approve
-    #     make clean
-
