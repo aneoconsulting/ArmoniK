@@ -84,7 +84,7 @@ compute_plane = {
       image             = "dockerhubaneo/armonik_worker_dll"
       # HTC Mock
       #image             = "dockerhubaneo/armonik_worker_htcmock"
-      tag               = "0.3.4"
+      tag               = "0.4.0"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "920m"
