@@ -59,6 +59,16 @@ module "mq" {
   source = "../../../modules/aws/mq"
   tags   = local.tags
   name   = "${var.mq.name}-${local.tag}"
+  vpc    = {
+    id          = var.vpc.id
+    cidr_blocks = concat([var.vpc.cidr_block], var.vpc.pod_cidr_block_private)
+    subnet_ids  = var.vpc.private_subnet_ids
+  }
+  user   = {
+    password   = var.mq_credentials.password
+    username   = var.mq_credentials.username
+    kms_key_id = (var.mq_credentials.kms_key_id != "" ? var.mq_credentials.kms_key_id : module.kms.0.selected.arn)
+  }
   mq     = {
     engine_type             = var.mq.engine_type
     engine_version          = var.mq.engine_version
@@ -66,17 +76,8 @@ module "mq" {
     apply_immediately       = var.mq.apply_immediately
     deployment_mode         = var.mq.deployment_mode
     storage_type            = var.mq.storage_type
-    kms_key_id              = (var.mq.kms_key_id != "" ? var.mq.kms_key_id : module.kms.0.selected.arn)
     authentication_strategy = var.mq.authentication_strategy
     publicly_accessible     = var.mq.publicly_accessible
-    user                    = {
-      password = var.mq_credentials.password
-      username = var.mq_credentials.username
-    }
-    vpc                     = {
-      id          = var.vpc.id
-      cidr_blocks = concat([var.vpc.cidr_block], var.vpc.pod_cidr_block_private)
-      subnet_ids  = var.vpc.private_subnet_ids
-    }
+    kms_key_id              = (var.mq.kms_key_id != "" ? var.mq.kms_key_id : module.kms.0.selected.arn)
   }
 }

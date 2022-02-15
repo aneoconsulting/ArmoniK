@@ -23,8 +23,8 @@ resource "aws_mq_broker" "mq" {
     general = true
   }
   user {
-    password       = var.mq.user.password
-    username       = var.mq.user.username
+    password       = module.creds.password
+    username       = module.creds.username
     console_access = true
     groups         = []
   }
@@ -54,13 +54,13 @@ DATA
 resource "aws_security_group" "mq" {
   name        = "${var.name}-sg"
   description = "Allow Amazon MQ inbound traffic on port 5672"
-  vpc_id      = var.mq.vpc.id
+  vpc_id      = var.vpc.id
   ingress {
     description = "tcp from Amazon MQ"
     from_port   = 5671
     to_port     = 5671
     protocol    = "tcp"
-    cidr_blocks = var.mq.vpc.cidr_blocks
+    cidr_blocks = var.vpc.cidr_blocks
   }
   ingress {
     description = "Web console for Amazon MQ"

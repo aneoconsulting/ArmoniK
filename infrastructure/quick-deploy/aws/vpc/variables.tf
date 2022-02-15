@@ -19,6 +19,13 @@ variable "tag" {
   default     = ""
 }
 
+# AWS TAGs
+variable "tags" {
+  description = "Tags for AWS resources"
+  type        = any
+  default     = {}
+}
+
 # VPC
 variable "vpc" {
   description = "Parameters of AWS VPC"

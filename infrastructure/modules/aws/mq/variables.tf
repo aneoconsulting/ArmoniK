@@ -1,3 +1,10 @@
+# Region
+variable "region" {
+  description = "AWS region where the infrastructure will be deployed"
+  type        = string
+  default     = "eu-west-3"
+}
+
 # Tags
 variable "tags" {
   description = "Tags for resource"
@@ -12,6 +19,26 @@ variable "name" {
   default     = "armonik-mq"
 }
 
+# VPC infos
+variable "vpc" {
+  description = "AWS VPC info"
+  type        = object({
+    id          = string
+    cidr_blocks = list(string)
+    subnet_ids  = list(string)
+  })
+}
+
+# User credentials
+variable "user" {
+  description = "User credentials"
+  type        = object({
+    password   = string
+    username   = string
+    kms_key_id = string # with which the credentials are encrypted
+  })
+}
+
 # MQ parameters
 variable "mq" {
   description = "MQ Service parameters"
@@ -22,17 +49,8 @@ variable "mq" {
     apply_immediately       = bool
     deployment_mode         = string
     storage_type            = string
-    kms_key_id              = string
     authentication_strategy = string
     publicly_accessible     = bool
-    user                    = object({
-      password = string
-      username = string
-    })
-    vpc                     = object({
-      id          = string
-      cidr_blocks = list(string)
-      subnet_ids  = list(string)
-    })
+    kms_key_id              = string
   })
 }

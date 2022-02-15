@@ -2,6 +2,7 @@ export ARMONIK_TAG?=main
 export ARMONIK_REGION?=eu-west-3
 export ARMONIK_PROFILE?=default
 export ARMONIK_BUCKET_NAME?=armonik-tfstate
+export ARMONIK_KUBERNETES_NAMESPACE?=armonik
 export TFSTATE_BUCKET_NAME="$(ARMONIK_BUCKET_NAME)-$(ARMONIK_TAG)"
 
 CURRENT_DIR=$(shell pwd)
@@ -107,19 +108,67 @@ destroy-eks:
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 ####################################
-#        Onpremise storage         #
+#       Kubernetes namespacs       #
+####################################
+
+create-namespace:
+	kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+
+delete-namespace:
+	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+
+####################################
+#        Onpremise Storage         #
+####################################
+
+deploy-onpremise-storage:
+	$(MAKE) -C $(CURRENT_DIR)/onpremise-storage deploy \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+
+destroy-onpremise-storage:
+	$(MAKE) -C $(CURRENT_DIR)/onpremise-storage destroy \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+
+####################################
+#           Monitoring             #
+####################################
+
+deploy-monitoring:
+	$(MAKE) -C $(CURRENT_DIR)/monitoring deploy \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+
+destroy-monitoring:
+	$(MAKE) -C $(CURRENT_DIR)/monitoring destroy \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+
+####################################
+#             ArmoniK              #
 ####################################
 
 ####################################
 #               All                #
 ####################################
 
-deploy-all: deploy-ecr deploy-vpc deploy-aws-storage deploy-eks
+deploy-all:
 
-destroy-all: destroy-eks destroy-aws-storage destroy-vpc destroy-ecr
+destroy-all:
 
 clean-all:
 	$(MAKE) -C $(CURRENT_DIR)/ecr clean
 	$(MAKE) -C $(CURRENT_DIR)/vpc clean
 	$(MAKE) -C $(CURRENT_DIR)/storage clean
 	$(MAKE) -C $(CURRENT_DIR)/eks clean
+	$(MAKE) -C $(CURRENT_DIR)/onpremise-storage clean
+	$(MAKE) -C $(CURRENT_DIR)/monitoring clean

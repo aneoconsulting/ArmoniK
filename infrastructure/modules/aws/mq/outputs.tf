@@ -1,8 +1,3 @@
-output "mq" {
-  description = "AWS MQ object"
-  value       = aws_mq_broker.mq
-}
-
 # MQ
 output "activemq_endpoint_url" {
   description = "AWS MQ (ActiveMQ) endpoint urls"
@@ -26,4 +21,12 @@ output "kms_key_id" {
 output "web_url" {
   description = "The URL of the broker's ActiveMQ Web Console"
   value       = aws_mq_broker.mq.instances.0.console_url
+}
+
+output "creds" {
+  description = "User credentials in encrypted file"
+  value       = {
+    file       = module.creds.encrypted_file
+    kms_key_id = module.creds.kms_key_id
+  }
 }

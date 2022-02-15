@@ -33,7 +33,8 @@ elasticache = {
   multi_az_enabled            = false
   automatic_failover_enabled  = true
   num_cache_clusters          = 2
-  preferred_cache_cluster_azs = [] # The order of the availability zones in the list is considered. The first item in the list will be the primary node
+  preferred_cache_cluster_azs = []
+  # The order of the availability zones in the list is considered. The first item in the list will be the primary node
   data_tiering_enabled        = false # This parameter must be set to true when using r6gd nodes.
   log_retention_in_days       = 30
   encryption_keys             = {
@@ -58,6 +59,7 @@ mq = {
 
 # MQ Credentials
 mq_credentials = {
-  password = "MindTheGapOfPassword"
-  username = "ExampleUser"
+  password   = ""
+  username   = ""
+  kms_key_id = "" # with which the credentials are encrypted
 }

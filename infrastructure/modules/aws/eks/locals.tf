@@ -48,11 +48,6 @@ locals {
         key                 = "aws-node-termination-handler/managed"
         value               = true
         propagate_at_launch = true
-      },
-      {
-        key                 = "lifecycle=OnDemand"
-        value               = true
-        propagate_at_launch = true
       }
     ]
   })

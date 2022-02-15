@@ -19,6 +19,13 @@ variable "tag" {
   default     = ""
 }
 
+# AWS TAGs
+variable "tags" {
+  description = "Tags for AWS resources"
+  type        = any
+  default     = {}
+}
+
 # List of ECR repositories to create
 variable "ecr" {
   description = "List of ECR repositories to create"

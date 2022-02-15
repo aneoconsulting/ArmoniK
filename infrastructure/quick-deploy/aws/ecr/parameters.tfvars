@@ -29,17 +29,17 @@ ecr = {
     {
       name  = "armonik-control-plane"
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.4.1-SNAPSHOT.2.75ccd46"
+      tag   = "0.4.1-trypemfiles.5.cc68029"
     },
     {
       name  = "armonik-polling-agent"
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.4.1-SNAPSHOT.2.75ccd46"
+      tag   = "0.4.1-trypemfiles.5.cc68029"
     },
     {
       name  = "armonik-worker"
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.2.1"
+      tag   = "0.3.4"
     },
     {
       name  = "seq"

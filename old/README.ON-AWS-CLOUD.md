@@ -68,12 +68,12 @@ ARMONIK_DOCKER_REGISTRY=<Your Docker registry>
 **Mandatory:** To set these environment variables:
 1. Copy the [template file for AWS](configure/onpremise-aws-config.conf) and modify the values of variables if needed:
 ```bash
-cp configure/aws-config.conf ./envvars.conf
+cp configure/aws-config.conf ./envvars.sh
 ```
 
 2. Source the file of configuration:
 ```bash
-source ./envvars.conf
+source ./envvars.sh
 ```
 
 ## ECR authentication <a name="ecr-authentication"></a>

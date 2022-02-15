@@ -19,6 +19,13 @@ variable "tag" {
   default     = ""
 }
 
+# AWS TAGs
+variable "tags" {
+  description = "Tags for AWS resources"
+  type        = any
+  default     = {}
+}
+
 # VPC infos
 variable "vpc" {
   description = "AWS VPC info"
@@ -100,7 +107,8 @@ variable "elasticache" {
     multi_az_enabled            = false
     automatic_failover_enabled  = true
     num_cache_clusters          = 2
-    preferred_cache_cluster_azs = [] # The order of the availability zones in the list is considered. The first item in the list will be the primary node
+    preferred_cache_cluster_azs = []
+    # The order of the availability zones in the list is considered. The first item in the list will be the primary node
     data_tiering_enabled        = false # This parameter must be set to true when using r6gd nodes.
     log_retention_in_days       = 30
     encryption_keys             = {
@@ -144,12 +152,13 @@ variable "mq" {
 variable "mq_credentials" {
   description = "Amazon MQ credentials"
   type        = object({
-    password = string
-    username = string
+    password   = string
+    username   = string
+    kms_key_id = string
   })
   default     = {
-    password = ""
-    username = ""
+    password   = ""
+    username   = ""
+    kms_key_id = "" # with which the credentials are encrypted
   }
-  sensitive   = true
 }
