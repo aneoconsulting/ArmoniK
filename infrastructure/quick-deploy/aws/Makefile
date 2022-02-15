@@ -8,6 +8,7 @@ export TFSTATE_BUCKET_NAME="$(ARMONIK_BUCKET_NAME)-$(ARMONIK_TAG)"
 CURRENT_DIR=$(shell pwd)
 VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/vpc/generated/output.json
 STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/storage/generated/output.json
+MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/monitoring/generated/output.json
 
 .PHONY: plan apply destroy
 
@@ -66,26 +67,6 @@ destroy-vpc:
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 ####################################
-#           AWS Storage            #
-####################################
-
-deploy-aws-storage:
-	$(MAKE) -C $(CURRENT_DIR)/storage deploy \
-		TAG=$(ARMONIK_TAG) \
-		REGION=$(ARMONIK_REGION) \
-		PROFILE=$(ARMONIK_PROFILE) \
-		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
-		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
-
-destroy-aws-storage:
-	$(MAKE) -C $(CURRENT_DIR)/storage destroy \
-		TAG=$(ARMONIK_TAG) \
-		REGION=$(ARMONIK_REGION) \
-		PROFILE=$(ARMONIK_PROFILE) \
-		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
-		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
-
-####################################
 #             AWS EKS              #
 ####################################
 
@@ -95,7 +76,6 @@ deploy-eks:
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
-		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 destroy-eks:
@@ -104,7 +84,6 @@ destroy-eks:
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
-		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 ####################################
@@ -118,21 +97,25 @@ delete-namespace:
 	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
 
 ####################################
-#        Onpremise Storage         #
+#           AWS Storage            #
 ####################################
 
-deploy-onpremise-storage:
-	$(MAKE) -C $(CURRENT_DIR)/onpremise-storage deploy \
+deploy-aws-storage:
+	$(MAKE) -C $(CURRENT_DIR)/storage deploy \
+		TAG=$(ARMONIK_TAG) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
-destroy-onpremise-storage:
-	$(MAKE) -C $(CURRENT_DIR)/onpremise-storage destroy \
+destroy-aws-storage:
+	$(MAKE) -C $(CURRENT_DIR)/storage destroy \
+		TAG=$(ARMONIK_TAG) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 ####################################
@@ -157,6 +140,24 @@ destroy-monitoring:
 #             ArmoniK              #
 ####################################
 
+deploy-armonik:
+	$(MAKE) -C $(CURRENT_DIR)/armonik deploy \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
+		MONITORING_PARAMETERS_FILE=$(MONITORING_PARAMETERS_FILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+
+destroy-armonik:
+	$(MAKE) -C $(CURRENT_DIR)/armonik destroy \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
+		MONITORING_PARAMETERS_FILE=$(MONITORING_PARAMETERS_FILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+
 ####################################
 #               All                #
 ####################################
@@ -168,7 +169,7 @@ destroy-all:
 clean-all:
 	$(MAKE) -C $(CURRENT_DIR)/ecr clean
 	$(MAKE) -C $(CURRENT_DIR)/vpc clean
-	$(MAKE) -C $(CURRENT_DIR)/storage clean
 	$(MAKE) -C $(CURRENT_DIR)/eks clean
-	$(MAKE) -C $(CURRENT_DIR)/onpremise-storage clean
+	$(MAKE) -C $(CURRENT_DIR)/storage clean
 	$(MAKE) -C $(CURRENT_DIR)/monitoring clean
+	$(MAKE) -C $(CURRENT_DIR)/armonik clean

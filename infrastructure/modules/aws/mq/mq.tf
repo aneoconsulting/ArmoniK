@@ -23,8 +23,8 @@ resource "aws_mq_broker" "mq" {
     general = true
   }
   user {
-    password       = module.creds.password
-    username       = module.creds.username
+    password       = local.password
+    username       = local.username
     console_access = true
     groups         = []
   }

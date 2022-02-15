@@ -1,6 +1,6 @@
 # MongoDB
 module "mongodb" {
-  source      = "../../../modules/onpremise-storage/mongodb"
+  source      = "../../modules/onpremise-storage/mongodb"
   namespace   = var.namespace
   working_dir = "${path.root}/../../.."
   mongodb     = {

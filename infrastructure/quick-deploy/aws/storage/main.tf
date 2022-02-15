@@ -56,20 +56,20 @@ module "elasticache" {
 
 # Amazon MQ
 module "mq" {
-  source = "../../../modules/aws/mq"
-  tags   = local.tags
-  name   = "${var.mq.name}-${local.tag}"
-  vpc    = {
+  source    = "../../../modules/aws/mq"
+  tags      = local.tags
+  name      = "${var.mq.name}-${local.tag}"
+  namespace = var.namespace
+  vpc       = {
     id          = var.vpc.id
     cidr_blocks = concat([var.vpc.cidr_block], var.vpc.pod_cidr_block_private)
     subnet_ids  = var.vpc.private_subnet_ids
   }
-  user   = {
+  user      = {
     password   = var.mq_credentials.password
     username   = var.mq_credentials.username
-    kms_key_id = (var.mq_credentials.kms_key_id != "" ? var.mq_credentials.kms_key_id : module.kms.0.selected.arn)
   }
-  mq     = {
+  mq        = {
     engine_type             = var.mq.engine_type
     engine_version          = var.mq.engine_version
     host_instance_type      = var.mq.host_instance_type
@@ -79,5 +79,17 @@ module "mq" {
     authentication_strategy = var.mq.authentication_strategy
     publicly_accessible     = var.mq.publicly_accessible
     kms_key_id              = (var.mq.kms_key_id != "" ? var.mq.kms_key_id : module.kms.0.selected.arn)
+  }
+}
+
+# MongoDB
+module "mongodb" {
+  source      = "../../../modules/onpremise-storage/mongodb"
+  namespace   = var.namespace
+  working_dir = "${path.root}/../../.."
+  mongodb     = {
+    image         = var.mongodb.image
+    tag           = var.mongodb.tag
+    node_selector = var.mongodb.node_selector
   }
 }

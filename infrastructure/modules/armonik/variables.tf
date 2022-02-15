@@ -1,43 +1,32 @@
-# Profile
-variable "profile" {
-  description = "Profile of AWS credentials to deploy Terraform sources"
-  type        = string
-  default     = "default"
-}
-
 # Region
 variable "region" {
   description = "AWS region where the infrastructure will be deployed"
   type        = string
-  default     = "eu-west-3"
 }
 
-# Kubeconfig path
-variable "k8s_config_path" {
-  description = "Path of the configuration file of K8s"
-  type        = string
-  default     = "~/.kube/config"
-}
-
-# Kubeconfig context
-variable "k8s_config_context" {
-  description = "Context of K8s"
-  type        = string
-  default     = "default"
-}
-
-# Kubernetes namespace
+#Global variables
 variable "namespace" {
-  description = "Kubernetes namespace for ArmoniK"
+  description = "Namespace of ArmoniK resources"
   type        = string
-  default     = "armonik"
 }
 
 # Logging level
 variable "logging_level" {
   description = "Logging level in ArmoniK"
   type        = string
-  default     = "Information"
+}
+
+# Working dir
+variable "working_dir" {
+  description = "Working directory"
+  type        = string
+  default     = ".."
+}
+
+# List of needed storage
+variable "storage_endpoint_url" {
+  description = "List of storage needed by ArmoniK"
+  type        = any
 }
 
 # Fluent-bit
@@ -49,16 +38,14 @@ variable "fluent_bit" {
   })
 }
 
-# Monitoring
-variable "monitoring" {
-  description = "Endpoint URL of monitoring"
-  type        = any
-}
-
-# List of needed storage
-variable "storage_endpoint_url" {
-  description = "List of storage needed by ArmoniK"
-  type        = any
+# use Seq
+variable "seq_endpoints" {
+  description = "Endpoint URL of Seq"
+  type        = object({
+    url  = string
+    host = string
+    port = string
+  })
 }
 
 # Parameters of control plane
@@ -122,3 +109,4 @@ variable "compute_plane" {
     }))
   })
 }
+

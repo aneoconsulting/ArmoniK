@@ -12,6 +12,12 @@ variable "tags" {
   default     = {}
 }
 
+# Kubernetes namespace
+variable "namespace" {
+  description = "Kubernetes namespace for ArmoniK"
+  type = string
+}
+
 # MQ name
 variable "name" {
   description = "AWS MQ service name"
@@ -35,7 +41,6 @@ variable "user" {
   type        = object({
     password   = string
     username   = string
-    kms_key_id = string # with which the credentials are encrypted
   })
 }
 

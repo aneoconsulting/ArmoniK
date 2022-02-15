@@ -23,10 +23,11 @@ output "web_url" {
   value       = aws_mq_broker.mq.instances.0.console_url
 }
 
-output "creds" {
-  description = "User credentials in encrypted file"
+output "user_credentials" {
+  description = "User credentials of ActiveMQ"
   value       = {
-    file       = module.creds.encrypted_file
-    kms_key_id = module.creds.kms_key_id
+    secret       = kubernetes_secret.activemq_user.metadata[0].name
+    username_key = "username"
+    password_key = "password"
   }
 }

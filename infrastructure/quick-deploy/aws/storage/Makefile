@@ -8,6 +8,7 @@ export TF_DATA_DIR?=$(GENERATED_DIR)
 export TAG?=main
 export REGION?=eu-west-3
 export PROFILE?=default
+export NAMESPACE?=armonik
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(TAG)
 export VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/../vpc/generated/output.json
 
@@ -31,6 +32,7 @@ apply:
 		-var 'region=$(REGION)' \
 		-var 'tag=$(TAG)' \
 		-var 'profile=$(PROFILE)' \
+		-var 'namespace=$(NAMESPACE)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 
@@ -47,6 +49,7 @@ destroy:
 		-var 'region=$(REGION)' \
 		-var 'tag=$(TAG)' \
 		-var 'profile=$(PROFILE)' \
+		-var 'namespace=$(NAMESPACE)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 

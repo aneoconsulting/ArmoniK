@@ -39,7 +39,7 @@ ecr = {
     {
       name  = "armonik-worker"
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.3.4"
+      tag   = "0.4.0"
     },
     {
       name  = "seq"

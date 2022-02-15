@@ -9,6 +9,8 @@ export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(TAG)
+export MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/../monitoring/generated/output.json
+export STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/../storage/generated/output.json
 
 .PHONY: apply destroy
 
@@ -26,6 +28,8 @@ init:
 apply:
 	terraform apply \
 		-var-file $(PARAMETERS_FILE) \
+		-var-file $(MONITORING_PARAMETERS_FILE) \
+		-var-file $(STORAGE_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
@@ -41,6 +45,8 @@ output:
 destroy:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
+		-var-file $(MONITORING_PARAMETERS_FILE) \
+		-var-file $(STORAGE_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \

@@ -7,6 +7,12 @@ region = "eu-west-3"
 # TAG
 tag = "main"
 
+# AWS TAGs
+tags = {}
+
+# Kubernetes namespace
+namespace = "armonik"
+
 # S3 as shared storage
 s3_fs = {
   name                                  = "armonik-s3fs"
@@ -59,7 +65,13 @@ mq = {
 
 # MQ Credentials
 mq_credentials = {
-  password   = ""
-  username   = ""
-  kms_key_id = "" # with which the credentials are encrypted
+  password = ""
+  username = ""
+}
+
+# Parameters for MongoDB
+mongodb = {
+  image         = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongodb"
+  tag           = "4.4.11"
+  node_selector = { lifecycle = "OnDemand" }
 }

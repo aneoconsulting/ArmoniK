@@ -12,4 +12,6 @@ locals {
     var.vpc.subnet_ids[0],
     var.vpc.subnet_ids[1]
   ])
+  username   = (var.user.username != "" ? var.user.username : random_string.user.result)
+  password   = (var.user.password != "" ? var.user.password : random_password.password.result)
 }

@@ -26,6 +26,27 @@ variable "tags" {
   default     = {}
 }
 
+# Kubeconfig path
+variable "k8s_config_path" {
+  description = "Path of the configuration file of K8s"
+  type        = string
+  default     = "~/.kube/config"
+}
+
+# Kubeconfig context
+variable "k8s_config_context" {
+  description = "Context of K8s"
+  type        = string
+  default     = "default"
+}
+
+# Kubernetes namespace
+variable "namespace" {
+  description = "Kubernetes namespace for ArmoniK"
+  type        = string
+  default     = "armonik"
+}
+
 # VPC infos
 variable "vpc" {
   description = "AWS VPC info"
@@ -152,13 +173,21 @@ variable "mq" {
 variable "mq_credentials" {
   description = "Amazon MQ credentials"
   type        = object({
-    password   = string
-    username   = string
-    kms_key_id = string
+    password = string
+    username = string
   })
   default     = {
-    password   = ""
-    username   = ""
-    kms_key_id = "" # with which the credentials are encrypted
+    password = ""
+    username = ""
   }
+}
+
+# Parameters for MongoDB
+variable "mongodb" {
+  description = "Parameters of MongoDB"
+  type        = object({
+    image         = string
+    tag           = string
+    node_selector = any
+  })
 }
