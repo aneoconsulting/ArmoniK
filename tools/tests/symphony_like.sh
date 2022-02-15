@@ -15,8 +15,10 @@ rm -rf $(dotnet nuget locals global-packages --list | awk '{ print $2 }')/armoni
 dotnet publish -c Debug --self-contained -r linux-x64 SymphonyLike.sln
 
 if [ ! -d "/data" ]; then
-  echo  "Need to create Data folder for application"
+  echo "Need to create Data folder for application"
   sudo mkdir -p /data
+fi
+if [ ! -w "/data" ]; then
   sudo chown -R $USER:$USER /data
 fi
 

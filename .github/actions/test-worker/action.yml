@@ -50,7 +50,7 @@ runs:
         worker-image: ${{ inputs.worker-image }}
         worker-tag: ${{ inputs.worker-tag }}
 
-    - name: Create directory /data
+    - name: Create data disk
       shell: bash
       run: |
         set -ex

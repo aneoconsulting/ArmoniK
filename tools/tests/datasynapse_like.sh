@@ -32,7 +32,9 @@ nuget_cache=$(dotnet nuget locals global-packages --list | awk '{ print $2 }')
 if [ ! -d "/data" ]; then
     echo  "Need to create Data folder for application"
     sudo mkdir -p /data
-    sudo chown -R $USER:$USER /data
+fi
+if [ ! -w "/data" ]; then
+  sudo chown -R $USER:$USER /data
 fi
 
 function build()
@@ -40,7 +42,7 @@ function build()
     cd ${TestDir}
     echo rm -rf ${nuget_cache}/armonik.*
     rm -rf $(dotnet nuget locals global-packages --list | awk '{ print $2 }')/armonik.*
-    find \( -iname obj -o -iname bin \) -exec rm -rf {} + 
+    find \( -iname obj -o -iname bin \) -exec rm -rf {} +
 
     dotnet publish --self-contained -c Debug -r linux-x64 .
 }
