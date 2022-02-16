@@ -26,13 +26,6 @@ locals {
   merge(var.eks_worker_groups[index], {
     root_encrypted      = true
     root_kms_key_id     = var.eks.encryption_keys.ebs_kms_key_id
-    additional_userdata = <<-EOT
-      sudo yum update -y
-      sudo amazon-linux-extras install -y epel
-      sudo yum install -y s3fs-fuse
-      sudo mkdir -p ${var.s3_fs.host_path}
-      sudo s3fs ${var.s3_fs.name} ${var.s3_fs.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${local.region}.amazonaws.com"
-    EOT
     tags                = [
       {
         key                 = "k8s.io/cluster-autoscaler/enabled"
@@ -65,13 +58,6 @@ locals {
       kubelet_extra_args                       = "--node-labels=grid/type=Operator --register-with-taints=grid/type=Operator:NoSchedule"
       root_encrypted                           = true
       root_kms_key_id                          = var.eks.encryption_keys.ebs_kms_key_id
-      additional_userdata                      = <<-EOT
-        sudo yum update -y
-        sudo amazon-linux-extras install -y epel
-        sudo yum install -y s3fs-fuse
-        sudo mkdir -p ${var.s3_fs.host_path}
-        sudo s3fs ${var.s3_fs.name} ${var.s3_fs.host_path} -o iam_role="auto" -o use_path_request_style -o url="https://s3-${local.region}.amazonaws.com"
-      EOT
     }
   ])
 }
