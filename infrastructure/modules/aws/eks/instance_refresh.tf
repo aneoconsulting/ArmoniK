@@ -52,6 +52,13 @@ resource "helm_release" "aws_node_termination_handler" {
   ]
 }
 
+resource "random_string" "random_resources" {
+  length  = 5
+  special = false
+  upper   = false
+  number  = true
+}
+
 module "aws_node_termination_handler_role" {
   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version                       = "4.1.0"
@@ -65,7 +72,7 @@ module "aws_node_termination_handler_role" {
 }
 
 resource "aws_iam_policy" "aws_node_termination_handler" {
-  name   = "${var.name}-aws-node-termination-handler"
+  name   = "${var.name}-aws-node-termination-handler-${random_string.random_resources.result}"
   policy = data.aws_iam_policy_document.aws_node_termination_handler.json
 }
 
