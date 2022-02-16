@@ -1,10 +1,4 @@
-# Region
-variable "region" {
-  description = "AWS region where the infrastructure will be deployed"
-  type        = string
-}
-
-#Global variables
+# Global variables
 variable "namespace" {
   description = "Namespace of ArmoniK resources"
   type        = string

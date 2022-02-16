@@ -2,7 +2,7 @@ CURRENT_DIR=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 PARAMETERS_FILE?=parameters.tfvars
 STATE_FILE=storage-terraform.tfstate
-OUTPUT_FILE=$(GENERATED_DIR)/output.json
+OUTPUT_FILE=$(GENERATED_DIR)/storage-output.json
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export TAG?=main
@@ -10,7 +10,8 @@ export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(TAG)
-export VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/../vpc/generated/output.json
+export VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/../vpc/generated/vpc-output.json
+export EKS_PARAMETERS_FILE?=$(CURRENT_DIR)/../eks/generated/eks-output.json
 
 .PHONY: apply destroy
 
@@ -29,6 +30,7 @@ apply:
 	terraform apply \
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(VPC_PARAMETERS_FILE) \
+		-var-file $(EKS_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'tag=$(TAG)' \
 		-var 'profile=$(PROFILE)' \
@@ -46,6 +48,7 @@ destroy:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(VPC_PARAMETERS_FILE) \
+		-var-file $(EKS_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'tag=$(TAG)' \
 		-var 'profile=$(PROFILE)' \

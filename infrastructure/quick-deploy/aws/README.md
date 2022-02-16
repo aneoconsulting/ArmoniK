@@ -12,6 +12,9 @@
     - [AWS VPC](#aws-vpc)
     - [AWS EKS](#aws-eks)
     - [AWS storage](#aws-storage)
+    - [Monitoring](#monitoring)
+- [Deploy ArmoniK](#deploy-armonik)
+- [Clean-up](#clean-up)
 
 # Introduction
 
@@ -135,6 +138,8 @@ Execute the following command to create the ECR and push the list of container i
 make deploy-ecr
 ```
 
+The list of created ECR repositories are in `ecr/generated/ecr-output.json`.
+
 ## AWS VPC
 
 You need to create an AWS Virtual Private Cloud (VPC) that provides an isolated virtual network environment. The
@@ -146,7 +151,7 @@ Execute the following command to create the VPC:
 make deploy-vpc
 ```
 
-The VPC deployment generate an output file `vpc/generated/output.json` that contains information needed for the
+The VPC deployment generates an output file `vpc/generated/vpc-output.json` that contains information needed for the
 deployments of storage and Kubernetes.
 
 ## AWS EKS
@@ -160,10 +165,10 @@ Execute the following command to create the EKS:
 make deploy-eks VPC_PARAMETERS_FILE=<path-to-vpc-parameters>
 ```
 
-where `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/output.json` containing the information
-about the VPC previously created.
+where `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/vpc-output.json` containing the
+information about the VPC previously created.
 
-The EKS deployment generate an output file `eks/generated/output.json`.
+The EKS deployment generates an output file `eks/generated/eks-output.json`.
 
 ## AWS storage
 
@@ -171,11 +176,13 @@ You need to create AWS storage for ArmoniK which are:
 
 * AWS Elasticache with Redis engine
 * Amazon MQ with ActiveMQ broker engine
-* S3 bucket to upload `.dll` for ArmoniK workers
+* Amazon S3 bucket to upload `.dll` for ArmoniK workers
+* MongoDB as a Kubernetes service
 
 The parameters of each storage are defined in [storage/parameters.tfvars](storage/parameters.tfvars).
 
-First, you create a Kubernetes namespace for ArmoniK with name set in environment variable`ARMONIK_KUBERNETES_NAMESPACE`:
+First, you create a Kubernetes namespace for ArmoniK with the name set in the environment
+variable`ARMONIK_KUBERNETES_NAMESPACE`:
 
 ```bash
 make create-namespace
@@ -184,14 +191,96 @@ make create-namespace
 Then, execute the following command to create the storage:
 
 ```bash
-make deploy-aws-storage VPC_PARAMETERS_FILE=<path-to-vpc-parameters>
+make deploy-aws-storage VPC_PARAMETERS_FILE=<path-to-vpc-parameters> EKS_PARAMETERS_FILE=<path-to-eks-parameters>
 ```
 
-where `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/output.json`
-containing the information about the VPC previously created.
+where `<path-to-vpc-parameters>` and `<path-to-eks-parameters>` are the **absolute** paths to
+files `vpc/generated/vpc-output.json` and `eks/generated/eks-output.json`, respectively, containing the information
+about the VPC and EKS previously created.
 
-The storage deployment generate an output file `storage/generated/output.json` that contains information needed for
-ArmoniK.
+The storage deployment generates an output file `storage/generated/storage-output.json` that contains information needed
+for ArmoniK.
+
+## Monitoring
+
+You deploy the following resources for monitoring ArmoniK :
+
+* Seq to collect the ArmoniK application logs
+* Grafana
+* Prometheus
+
+The parameters of each monitoring resources are defined in [monitoring/parameters.tfvars](monitoring/parameters.tfvars).
+
+Execute the following command to create the storage:
+
+```bash
+make deploy-monitoring
+```
+
+The monitoring deployment generates an output file `monitoring/generated/monitoring-output.json` that contains
+information needed for ArmoniK.
+
+# Deploy ArmoniK
+
+After deploying the infrastructure, You can install ArmoniK in AWS EKS. The installation deploys:
+
+* ArmoniK control plane
+* ArmoniK compute plane
+
+Execute the following command to deploy ArmoniK:
+
+```bash
+make deploy-armonik STORAGE_PARAMETERS_FILE=<path-to-storage-parameters> MONITORING_PARAMETERS_FILE=<path-to-monitoring-parameters>
+```
+
+where `<path-to-storage-parameters>` and `<path-to-monitoring-parameters>` are the **absolute** paths to
+files `storage/generated/storage-output.json` and `monitoring/generated/monitoring-output.json`, respectively,
+containing the information about storage and monitoring tools previously created.
+
+The ArmoniK deployment generates an output file `armonik/generated/armonik-output.json` that contains the endpoint URL
+of ArmoniK control plane.
+
+**Warning:** To deploy infrastructure and ArmoniK in all-in-one command:
+
+```bash
+make deploy-all
+```
+
+# Clean-up
+
+To delete all resources created in AWS, You can execute the following all-in-one command:
+
+```bash
+make destroy-all
+```
+
+or execute the following commands in this order:
+
+```bash
+make destroy-armonik 
+make destroy-monitoring 
+make destroy-aws-storage 
+make destroy-eks 
+make destroy-vpc 
+make destroy-ecr
+```
+
+To clean-up and delete all generated files, You execute:
+
+```bash
+make clean-all
+```
+
+or:
+
+```bash
+make clean-armonik 
+make clean-monitoring 
+make clean-aws-storage 
+make clean-eks 
+make clean-vpc 
+make clean-ecr
+```
 
 ### [Return to the Main page](../../README.md)
 

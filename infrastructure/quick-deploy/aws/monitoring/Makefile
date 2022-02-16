@@ -2,7 +2,7 @@ CURRENT_DIR=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 PARAMETERS_FILE?=parameters.tfvars
 STATE_FILE=monitoring-terraform.tfstate
-OUTPUT_FILE=$(GENERATED_DIR)/output.json
+OUTPUT_FILE=$(GENERATED_DIR)/monitoring-output.json
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export REGION?=eu-west-3

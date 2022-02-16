@@ -9,10 +9,10 @@ resource "kubernetes_config_map" "worker_config" {
     target_data_path           = "/data"
     Serilog__MinimumLevel      = var.logging_level
     Grpc__Endpoint             = local.control_plane_url
-    S3Storage__ServiceURL      = "https://s3.${var.region}.amazonaws.com"
-    S3Storage__AccessKeyId     = ""
-    S3Storage__SecretAccessKey = ""
+    S3Storage__ServiceURL      = var.storage_endpoint_url.shared.service_url
+    S3Storage__AccessKeyId     = var.storage_endpoint_url.shared.access_key_id
+    S3Storage__SecretAccessKey = var.storage_endpoint_url.shared.secret_access_key
     S3Storage__BucketName      = var.storage_endpoint_url.shared.name
-    FileStorageType            = "S3"
+    FileStorageType            = var.storage_endpoint_url.shared.file_storage_type
   }
 }

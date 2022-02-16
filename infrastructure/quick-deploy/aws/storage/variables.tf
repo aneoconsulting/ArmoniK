@@ -26,6 +26,12 @@ variable "tags" {
   default     = {}
 }
 
+# EKS infos
+variable "eks" {
+  description = "EKS cluster infos"
+  type        = any
+}
+
 # Kubeconfig path
 variable "k8s_config_path" {
   description = "Path of the configuration file of K8s"
