@@ -1,7 +1,7 @@
 # Agent permissions
 data "aws_iam_policy_document" "worker_assume_role_agent_permissions_document" {
   statement {
-    sid       = ""
+    sid       = "Full access to resources"
     effect    = "Allow"
     actions   = [
       "sqs:*",
@@ -71,5 +71,12 @@ resource "aws_iam_policy" "decrypt_object_policy" {
 
 resource "aws_iam_role_policy_attachment" "decrypt_object_attachment" {
   policy_arn = aws_iam_policy.decrypt_object_policy.arn
+  role       = module.eks.worker_iam_role_name
+}
+
+# Full access S3 bucket
+resource "aws_iam_role_policy_attachment" "s3_full_access" {
+  name       = "s3-full-access"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
   role       = module.eks.worker_iam_role_name
 }
