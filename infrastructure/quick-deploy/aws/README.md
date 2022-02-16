@@ -10,8 +10,8 @@
 - [Deploy infrastructure](#deploy-infrastructure)
     - [AWS ECR](#aws-ecr)
     - [AWS VPC](#aws-vpc)
-    - [AWS storage](#aws-storage)
     - [AWS EKS](#aws-eks)
+    - [AWS storage](#aws-storage)
 
 # Introduction
 
@@ -149,6 +149,22 @@ make deploy-vpc
 The VPC deployment generate an output file `vpc/generated/output.json` that contains information needed for the
 deployments of storage and Kubernetes.
 
+## AWS EKS
+
+You need to create an AWS Elastic Kubernetes Service (EKS). The parameters of EKS to be created are defined
+in [eks/parameters.tfvars](eks/parameters.tfvars).
+
+Execute the following command to create the EKS:
+
+```bash
+make deploy-eks VPC_PARAMETERS_FILE=<path-to-vpc-parameters>
+```
+
+where `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/output.json` containing the information
+about the VPC previously created.
+
+The EKS deployment generate an output file `eks/generated/output.json`.
+
 ## AWS storage
 
 You need to create AWS storage for ArmoniK which are:
@@ -159,7 +175,13 @@ You need to create AWS storage for ArmoniK which are:
 
 The parameters of each storage are defined in [storage/parameters.tfvars](storage/parameters.tfvars).
 
-Execute the following command to create the storage:
+First, you create a Kubernetes namespace for ArmoniK with name set in environment variable`ARMONIK_KUBERNETES_NAMESPACE`:
+
+```bash
+make create-namespace
+```
+
+Then, execute the following command to create the storage:
 
 ```bash
 make deploy-aws-storage VPC_PARAMETERS_FILE=<path-to-vpc-parameters>
@@ -170,23 +192,6 @@ containing the information about the VPC previously created.
 
 The storage deployment generate an output file `storage/generated/output.json` that contains information needed for
 ArmoniK.
-
-## AWS EKS
-
-You need to create an AWS Elastic Kubernetes Service (EKS). The parameters of EKS to be created are defined
-in [eks/parameters.tfvars](eks/parameters.tfvars).
-
-Execute the following command to create the EKS:
-
-```bash
-make deploy-eks VPC_PARAMETERS_FILE=<path-to-vpc-parameters> STORAGE_PARAMETERS_FILE=<path-to-storage-parameters>
-```
-
-where `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/output.json`
-and `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/output.json` containing the
-information about the VPC and storage previously created.
-
-The EKS deployment generate an output file `eks/generated/output.json`.
 
 ### [Return to the Main page](../../README.md)
 
