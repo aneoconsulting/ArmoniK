@@ -38,7 +38,7 @@ output "storage_endpoint_url" {
       url                = module.mongodb.url
       host               = module.mongodb.host
       port               = module.mongodb.port
-      allow_insecure_tls = false
+      allow_insecure_tls = true
       certificates       = {
         secret      = module.mongodb.user_certificate.secret
         ca_filename = module.mongodb.user_certificate.ca_filename
