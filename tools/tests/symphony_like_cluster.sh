@@ -5,7 +5,7 @@ cd ../../source/ArmoniK.Samples
 export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].hostname" --no-headers=true)
 export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
 export Grpc__Endpoint=http://$CPIP:$CPPort
-export S3_BUCKET=$(aws s3api list-buckets | jq -r '.Buckets[0].Name')
+export S3_BUCKET=$(aws s3api list-buckets --output json | jq -r '.Buckets[0].Name')
 
 cd Samples/SymphonyLike/
 dotnet publish --self-contained -r linux-x64 SymphonyLike.sln
