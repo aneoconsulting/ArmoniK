@@ -1,7 +1,6 @@
 module "armonik" {
   source               = "../../../modules/armonik"
   working_dir = "${path.root}/../../.."
-  region               = var.region
   namespace            = var.namespace
   logging_level        = var.logging_level
   fluent_bit           = {

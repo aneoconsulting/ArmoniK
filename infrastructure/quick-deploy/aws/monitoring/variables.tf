@@ -57,10 +57,14 @@ variable "monitoring" {
       use          = bool
     })
     prometheus = object({
-      image        = string
-      tag          = string
-      service_type = string
-      use          = bool
+      image         = string
+      tag           = string
+      service_type  = string
+      use           = bool
+      node_exporter = object({
+        image = string
+        tag   = string
+      })
     })
   })
 }

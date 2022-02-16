@@ -8,12 +8,24 @@ variable "namespace" {
 variable "docker_image" {
   description = "Docker image for Prometheus"
   type        = object({
-    image = string
-    tag   = string
+    prometheus    = object({
+      image = string
+      tag   = string
+    })
+    node_exporter = object({
+      image = string
+      tag   = string
+    })
   })
   default     = {
-    image = "prom/prometheus"
-    tag   = "latest"
+    prometheus    = {
+      image = "prom/prometheus"
+      tag   = "latest"
+    }
+    node_exporter = {
+      image = "prom/node-exporter"
+      tag   = "latest"
+    }
   }
 }
 

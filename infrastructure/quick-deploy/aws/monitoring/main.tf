@@ -34,8 +34,14 @@ module "prometheus" {
   service_type  = var.monitoring.prometheus.service_type
   node_selector = var.node_selector
   docker_image  = {
-    image = var.monitoring.prometheus.image
-    tag   = var.monitoring.prometheus.tag
+    prometheus    = {
+      image = var.monitoring.prometheus.image
+      tag   = var.monitoring.prometheus.tag
+    }
+    node_exporter = {
+      image = var.monitoring.prometheus.node_exporter.image
+      tag   = var.monitoring.prometheus.node_exporter.tag
+    }
   }
   working_dir   = "${path.root}/../../.."
 }

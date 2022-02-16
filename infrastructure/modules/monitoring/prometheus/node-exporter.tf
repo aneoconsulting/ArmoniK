@@ -19,24 +19,34 @@ resource "kubernetes_daemonset" "nodeexporter" {
     }
     template {
       metadata {
-        name      = "nodeexporter"
-        labels    = {
+        name        = "nodeexporter"
+        labels      = {
           app     = "armonik"
           type    = "monitoring"
           service = "nodeexporter"
         }
         annotations = {
           "prometheus.io/scrape" = "true"
-          "prometheus.io/port" = "9100"
-          "prometheus.io/input" = "nodeexporter"
+          "prometheus.io/port"   = "9100"
+          "prometheus.io/input"  = "nodeexporter"
         }
       }
       spec {
+        node_selector = var.node_selector
+        dynamic toleration {
+          for_each = (var.node_selector != {} ? [1] : [])
+          content {
+            key      = keys(var.node_selector)[0]
+            operator = "Equal"
+            value    = values(var.node_selector)[0]
+            effect   = "NoSchedule"
+          }
+        }
         container {
           name              = "nodeexporter"
-          image             = "prom/node-exporter:latest"
+          image             = "${var.docker_image.node_exporter.image}:${var.docker_image.node_exporter.tag}"
           image_pull_policy = "IfNotPresent"
-          args = [
+          args              = [
             "--path.procfs",
             "/host/proc",
             "--path.sysfs",

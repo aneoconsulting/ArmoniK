@@ -31,9 +31,13 @@ monitoring = {
     use          = true
   }
   prometheus = {
-    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus"
-    tag          = "latest"
-    service_type = "ClusterIP"
-    use          = true
+    image         = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus"
+    tag           = "latest"
+    service_type  = "ClusterIP"
+    use           = true
+    node_exporter = {
+      image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/node-exporter"
+      tag   = "latest"
+    }
   }
 }

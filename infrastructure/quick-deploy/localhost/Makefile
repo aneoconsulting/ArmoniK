@@ -1,196 +1,81 @@
-export TF_DATA_DIR?=generated
-export TF_LOG=TRACE
-export TF_LOG_PATH=generated/terraform.log
-
-export ARMONIK_STORAGE_NAMESPACE?=armonik-storage
-export ARMONIK_MONITORING_NAMESPACE?=monitoring-storage
-export ARMONIK_NAMESPACE?=armonik
-
-export ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME?=activemq-storage-secret
-export ARMONIK_ACTIVEMQ_SECRET_NAME?=activemq-storage-secret
-export ARMONIK_STORAGE_MONGODB_SECRET_NAME?=mongodb-storage-secret
-export ARMONIK_MONGODB_SECRET_NAME?=mongodb-storage-secret
-export ARMONIK_STORAGE_REDIS_SECRET_NAME?=redis-storage-secret
-export ARMONIK_REDIS_SECRET_NAME?=redis-storage-secret
-export $ARMONIK_EXTERNAL_REDIS_SECRET_NAME?=external-storage-secret
+export ARMONIK_KUBERNETES_NAMESPACE?=armonik
+export ARMONIK_SHARED_HOST_PATH?=/data
+export ARMONIK_FILE_STORAGE_FILE?=HostPath
+export ARMONIK_FILE_SERVER_IP?=""
 
 CURRENT_DIR=$(shell pwd)
-BACKEND?=generated/backend
-PARAMETERS_FILE?=parameters.tfvars
+STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/storage/generated/storage-output.json
+MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/monitoring/generated/monitoring-output.json
 
-PLAN_FILE=$(BACKEND)/terraform.tfplan
-STORAGE_PLAN_FILE=$(BACKEND)/storage-terraform.tfplan
-MONITORING_PLAN_FILE=$(BACKEND)/monitoring-terraform.tfplan
-ARMONIK_PLAN_FILE=$(BACKEND)/armonik-terraform.tfplan
+####################################
+#       Kubernetes namespace       #
+####################################
 
-STATE_FILE=$(BACKEND)/terraform.tfstate
-STORAGE_STATE_FILE=$(BACKEND)/storage-terraform.tfstate
-MONITORING_STATE_FILE=$(BACKEND)/monitoring-terraform.tfstate
-ARMONIK_STATE_FILE=$(BACKEND)/armonik-terraform.tfstate
+create-namespace:
+	kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
 
-STORAGE_INPUT_FILE?=generated/storage-output.json
-MONITORING_INPUT_FILE?=generated/monitoring-output.json
+delete-namespace:
+	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
 
-OUTPUT_FILE=generated/output.json
-STORAGE_OUTPUT_FILE=generated/storage-output.json
-MONITORING_OUTPUT_FILE=generated/monitoring-output.json
-ARMONIK_OUTPUT_FILE=generated/armonik-output.json
+####################################
+#            Storage               #
+####################################
 
+deploy-storage:
+	$(MAKE) -C $(CURRENT_DIR)/storage deploy \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		SHARED_HOST_PATH=$(ARMONIK_SHARED_HOST_PATH) \
+		FILE_STORAGE_FILE=$(ARMONIK_FILE_STORAGE_FILE) \
+		FILE_SERVER_IP=$(ARMONIK_FILE_SERVER_IP)
 
-.PHONY: plan apply destroy
+destroy-storage:
+	$(MAKE) -C $(CURRENT_DIR)/storage destroy \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		SHARED_HOST_PATH=$(ARMONIK_SHARED_HOST_PATH) \
+		FILE_STORAGE_FILE=$(ARMONIK_FILE_STORAGE_FILE) \
+		FILE_SERVER_IP=$(ARMONIK_FILE_SERVER_IP)
 
-all: init plan apply output
+clean-storage:
+	$(MAKE) -C $(CURRENT_DIR)/storage clean
 
-deploy-storage: init storage-plan storage-apply storage-output
+####################################
+#           AWS Storage            #
+####################################
 
-destroy-storage: init storage-destroy
+deploy-monitoring:
+	$(MAKE) -C $(CURRENT_DIR)/monitoring deploy \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE)
 
-deploy-monitoring: init monitoring-plan monitoring-apply monitoring-output
+destroy-monitoring:
+	$(MAKE) -C $(CURRENT_DIR)/monitoring destroy \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE)
 
-destroy-monitoring: init monitoring-destroy
+clean-monitoring:
+	$(MAKE) -C $(CURRENT_DIR)/monitoring clean
 
-deploy-armonik: init armonik-plan armonik-apply armonik-output
+####################################
+#             ArmoniK              #
+####################################
 
-destroy-armonik: init armonik-destroy
+deploy-armonik:
+	$(MAKE) -C $(CURRENT_DIR)/armonik deploy \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
+		MONITORING_PARAMETERS_FILE=$(MONITORING_PARAMETERS_FILE)
 
-destroy-all: armonik-destroy monitoring-destroy storage-destroy
+destroy-armonik:
+	$(MAKE) -C $(CURRENT_DIR)/armonik destroy \
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
+		MONITORING_PARAMETERS_FILE=$(MONITORING_PARAMETERS_FILE)
 
-init:
-	mkdir -p generated
-	touch generated/terraform.log
-	terraform init
+clean-armonik:
+	$(MAKE) -C $(CURRENT_DIR)/armonik clean
 
-plan:
-	terraform plan \
-		-var-file $(PARAMETERS_FILE) \
-		-var 'deploy={"storage":"true","monitoring":"true","armonik":"true"}' \
-		-var 'kubernetes_namespaces={"storage":"$(ARMONIK_STORAGE_NAMESPACE)","monitoring":"$(ARMONIK_MONITORING_NAMESPACE)","armonik":"$(ARMONIK_NAMESPACE)"}' \
-		-var 'kubernetes_secrets={"activemq_server":"$(ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME)","activemq_client":"$(ARMONIK_ACTIVEMQ_SECRET_NAME)","mongodb_server":"$(ARMONIK_STORAGE_MONGODB_SECRET_NAME)","mongodb_client":"$(ARMONIK_MONGODB_SECRET_NAME)","redis_server":"$(ARMONIK_STORAGE_REDIS_SECRET_NAME)","redis_client":"$(ARMONIK_REDIS_SECRET_NAME)","external_client":"$(ARMONIK_EXTERNAL_REDIS_SECRET_NAME)"}' \
-		-out $(PLAN_FILE)
+####################################
+#               All                #
+####################################
 
-apply:
-	terraform apply \
-		-var-file $(PARAMETERS_FILE) \
-		-var 'deploy={"storage":"true","monitoring":"true","armonik":"true"}' \
-		-var 'kubernetes_namespaces={"storage":"$(ARMONIK_STORAGE_NAMESPACE)","monitoring":"$(ARMONIK_MONITORING_NAMESPACE)","armonik":"$(ARMONIK_NAMESPACE)"}' \
-		-var 'kubernetes_secrets={"activemq_server":"$(ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME)","activemq_client":"$(ARMONIK_ACTIVEMQ_SECRET_NAME)","mongodb_server":"$(ARMONIK_STORAGE_MONGODB_SECRET_NAME)","mongodb_client":"$(ARMONIK_MONGODB_SECRET_NAME)","redis_server":"$(ARMONIK_STORAGE_REDIS_SECRET_NAME)","redis_client":"$(ARMONIK_REDIS_SECRET_NAME)","external_client":"$(ARMONIK_EXTERNAL_REDIS_SECRET_NAME)"}' \
-		-state $(STATE_FILE) \
-		-auto-approve
-
-output:
-	@terraform output -state=$(STATE_FILE) -json > $(OUTPUT_FILE)
-	@echo "\nOUTPUT FILE: $(CURRENT_DIR)/$(OUTPUT_FILE)"
-
-destroy:
-	terraform destroy \
-		-var-file $(PARAMETERS_FILE) \
-		-var 'deploy={"storage":"true","monitoring":"true","armonik":"true"}' \
-		-var 'kubernetes_namespaces={"storage":"$(ARMONIK_STORAGE_NAMESPACE)","monitoring":"$(ARMONIK_MONITORING_NAMESPACE)","armonik":"$(ARMONIK_NAMESPACE)"}' \
-		-var 'kubernetes_secrets={"activemq_server":"$(ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME)","activemq_client":"$(ARMONIK_ACTIVEMQ_SECRET_NAME)","mongodb_server":"$(ARMONIK_STORAGE_MONGODB_SECRET_NAME)","mongodb_client":"$(ARMONIK_MONGODB_SECRET_NAME)","redis_server":"$(ARMONIK_STORAGE_REDIS_SECRET_NAME)","redis_client":"$(ARMONIK_REDIS_SECRET_NAME)","external_client":"$(ARMONIK_EXTERNAL_REDIS_SECRET_NAME)"}' \
-		-state $(STATE_FILE) \
-		-auto-approve
-
-storage-plan:
-	terraform plan \
-		-var-file $(PARAMETERS_FILE) \
-		-var 'deploy={"storage":"true","monitoring":"false","armonik":"false"}' \
-		-var 'kubernetes_namespaces={"storage":"$(ARMONIK_STORAGE_NAMESPACE)"}' \
-		-var 'kubernetes_secrets={"activemq_server":"$(ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME)","mongodb_server":"$(ARMONIK_STORAGE_MONGODB_SECRET_NAME)","redis_server":"$(ARMONIK_STORAGE_REDIS_SECRET_NAME)"}' \
-		-out $(STORAGE_PLAN_FILE)
-
-storage-apply:
-	terraform apply \
-		-state $(STORAGE_STATE_FILE) \
-		-var-file $(PARAMETERS_FILE) \
-		-var 'deploy={"storage":"true","monitoring":"false","armonik":"false"}' \
-		-var 'kubernetes_namespaces={"storage":"$(ARMONIK_STORAGE_NAMESPACE)"}' \
-		-var 'kubernetes_secrets={"activemq_server":"$(ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME)","mongodb_server":"$(ARMONIK_STORAGE_MONGODB_SECRET_NAME)","redis_server":"$(ARMONIK_STORAGE_REDIS_SECRET_NAME)"}' \
-		-auto-approve
-
-storage-output:
-	@echo -n "{\"storage_endpoint_url\":" > $(STORAGE_OUTPUT_FILE)
-	@terraform output -state=$(STORAGE_STATE_FILE) -json storage_endpoint_url >> $(STORAGE_OUTPUT_FILE)
-	@echo -n "}" >> $(STORAGE_OUTPUT_FILE)
-	@echo "\nOUTPUT FILE: $(CURRENT_DIR)/$(STORAGE_OUTPUT_FILE)"
-
-storage-destroy:
-	terraform destroy \
-		-state $(STORAGE_STATE_FILE) \
-		-var-file $(PARAMETERS_FILE) \
-		-var 'deploy={"storage":"true","monitoring":"false","armonik":"false"}' \
-		-var 'kubernetes_namespaces={"storage":"$(ARMONIK_STORAGE_NAMESPACE)"}' \
-		-var 'kubernetes_secrets={"activemq_server":"$(ARMONIK_STORAGE_ACTIVEMQ_SECRET_NAME)","mongodb_server":"$(ARMONIK_STORAGE_MONGODB_SECRET_NAME)","redis_server":"$(ARMONIK_STORAGE_REDIS_SECRET_NAME)"}' \
-		-auto-approve
-
-monitoring-plan:
-	terraform plan \
-		-var-file $(PARAMETERS_FILE) \
-		-var 'deploy={"storage":"false","monitoring":"true","armonik":"false"}' \
-		-var 'kubernetes_namespaces={"monitoring":"$(ARMONIK_MONITORING_NAMESPACE)"}' \
-		-out $(MONITORING_PLAN_FILE)
-
-monitoring-apply:
-	terraform apply \
-		-state $(MONITORING_STATE_FILE) \
-		-var-file $(PARAMETERS_FILE) \
-		-var 'deploy={"storage":"false","monitoring":"true","armonik":"false"}' \
-		-var 'kubernetes_namespaces={"monitoring":"$(ARMONIK_MONITORING_NAMESPACE)"}' \
-		-auto-approve
-
-monitoring-output:
-	@echo -n "{\"seq_endpoints\":" > $(MONITORING_OUTPUT_FILE)
-	@terraform output -state=$(MONITORING_STATE_FILE) -json seq_endpoints >> $(MONITORING_OUTPUT_FILE)
-	@echo -n "}" >> $(MONITORING_OUTPUT_FILE)
-	@echo "\nOUTPUT FILE: $(CURRENT_DIR)/$(MONITORING_OUTPUT_FILE)"
-
-monitoring-destroy:
-	terraform destroy \
-		-state $(MONITORING_STATE_FILE) \
-		-var-file $(PARAMETERS_FILE) \
-		-var 'deploy={"storage":"false","monitoring":"true","armonik":"false"}' \
-		-var 'kubernetes_namespaces={"monitoring":"$(ARMONIK_MONITORING_NAMESPACE)"}' \
-		-auto-approve
-
-armonik-plan:
-	terraform plan \
-		-var-file $(PARAMETERS_FILE) \
-		-var-file $(STORAGE_INPUT_FILE) \
-		-var-file $(MONITORING_INPUT_FILE) \
-		-var 'deploy={"storage":"false","monitoring":"false","armonik":"true"}' \
-		-var 'kubernetes_namespaces={"armonik":"$(ARMONIK_NAMESPACE)"}' \
-		-var 'kubernetes_secrets={"activemq_client":"$(ARMONIK_ACTIVEMQ_SECRET_NAME)","mongodb_client":"$(ARMONIK_MONGODB_SECRET_NAME)","redis_client":"$(ARMONIK_REDIS_SECRET_NAME)","external_client":"$(ARMONIK_EXTERNAL_REDIS_SECRET_NAME)"}' \
-		-out $(ARMONIK_PLAN_FILE)
-
-armonik-apply:
-	terraform apply \
-		-state $(ARMONIK_STATE_FILE) \
-		-var-file $(PARAMETERS_FILE) \
-		-var-file $(STORAGE_INPUT_FILE) \
-		-var-file $(MONITORING_INPUT_FILE) \
-		-var 'deploy={"storage":"false","monitoring":"false","armonik":"true"}' \
-		-var 'kubernetes_namespaces={"armonik":"$(ARMONIK_NAMESPACE)"}' \
-		-var 'kubernetes_secrets={"activemq_client":"$(ARMONIK_ACTIVEMQ_SECRET_NAME)","mongodb_client":"$(ARMONIK_MONGODB_SECRET_NAME)","redis_client":"$(ARMONIK_REDIS_SECRET_NAME)","external_client":"$(ARMONIK_EXTERNAL_REDIS_SECRET_NAME)"}' \
-		-auto-approve
-
-armonik-output:
-	@echo -n "{\"armonik_deployment\":" > $(ARMONIK_OUTPUT_FILE)
-	@terraform output -state=$(ARMONIK_STATE_FILE) -json armonik_deployment >> $(ARMONIK_OUTPUT_FILE)
-	@echo -n "}" >> $(ARMONIK_OUTPUT_FILE)
-	@echo "\nOUTPUT FILE: $(CURRENT_DIR)/$(ARMONIK_OUTPUT_FILE)"
-
-armonik-destroy:
-	terraform destroy \
-		-state $(ARMONIK_STATE_FILE) \
-		-var-file $(PARAMETERS_FILE) \
-		-var-file $(STORAGE_INPUT_FILE) \
-		-var-file $(MONITORING_INPUT_FILE) \
-		-var 'deploy={"storage":"false","monitoring":"false","armonik":"true"}' \
-		-var 'kubernetes_namespaces={"armonik":"$(ARMONIK_NAMESPACE)"}' \
-		-var 'kubernetes_secrets={"activemq_client":"$(ARMONIK_ACTIVEMQ_SECRET_NAME)","mongodb_client":"$(ARMONIK_MONGODB_SECRET_NAME)","redis_client":"$(ARMONIK_REDIS_SECRET_NAME)","external_client":"$(ARMONIK_EXTERNAL_REDIS_SECRET_NAME)"}' \
-		-auto-approve
-
-clean:
-	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform
-
-docs:
-	terraform-docs markdown table --output-file parameters.md --output-mode inject $(CURRENT_DIR)
+deploy-all: deploy-storage deploy-monitoring deploy-armonik
+destroy-all: destroy-armonik destroy-monitoring destroy-storage
+clean-all: clean-armonik clean-monitoring clean-storage

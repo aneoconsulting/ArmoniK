@@ -70,6 +70,11 @@ ecr = {
       name  = "fluent-bit"
       image = "fluent/fluent-bit"
       tag   = "1.3.11"
+    },
+    {
+      name  = "node-exporter"
+      image = "prom/node-exporter:latest"
+      tag   = "latest"
     }
   ]
 }
