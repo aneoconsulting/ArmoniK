@@ -229,10 +229,13 @@ resource "kubernetes_deployment" "compute_plane" {
               name       = "cache-volume"
               mount_path = "/cache"
             }
-            volume_mount {
-              name       = "shared-volume"
-              mount_path = "/data"
-              read_only  = true
+            dynamic volume_mount {
+              for_each = (local.file_storage_type == "FS" ? [1] : [])
+              content {
+                name       = "shared-volume"
+                mount_path = "/data"
+                read_only  = true
+              }
             }
           }
         }
@@ -259,9 +262,26 @@ resource "kubernetes_deployment" "compute_plane" {
           name = "cache-volume"
           empty_dir {}
         }
-        volume {
-          name = "shared-volume"
-          empty_dir {}
+        dynamic volume {
+          for_each = (local.lower_file_storage_type == "nfs" ? [1] : [])
+          content {
+            name = "shared-volume"
+            nfs {
+              path      = var.storage_endpoint_url.shared.host_path
+              server    = var.storage_endpoint_url.shared.file_server_ip
+              read_only = true
+            }
+          }
+        }
+        dynamic volume {
+          for_each = (local.lower_file_storage_type == "hostpath" ? [1] : [])
+          content {
+            name = "shared-volume"
+            host_path {
+              path = var.storage_endpoint_url.shared.host_path
+              type = "Directory"
+            }
+          }
         }
         dynamic volume {
           for_each = (var.storage_endpoint_url.activemq.certificates.secret != "" ? [1] : [])
