@@ -142,6 +142,8 @@ After deploying the storage and monitoring, You can install ArmoniK . The instal
 * ArmoniK control plane
 * ArmoniK compute plane
 
+The parameters of ArmoniK are defined in [armonik/parameters.tfvars](armonik/parameters.tfvars).
+
 Execute the following command to deploy ArmoniK:
 
 ```bash
@@ -160,6 +162,72 @@ of ArmoniK control plane.
 ```bash
 make deploy-all
 ```
+
+# Quick tests
+
+## Seq webserver
+
+After the deployment, connect to the Seq webserver by using `seq.web_url`, retrieved from the Terraform
+outputs `monitoring/generated/monitoring-output.json`, example:
+
+```bash
+http://192.168.1.13:8080
+```
+
+or
+
+```bash
+http://localhost:8080
+```
+
+where `Username: admin` and `Password: admin`:
+
+![](images/seq_auth.png)
+
+## Tests
+
+You have three scripts for testing ArmoniK :
+
+* [tools/tests/symphony_like.sh](../../../tools/tests/symphony_like.sh)
+* [tools/tests/datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh)
+* [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh).
+
+The following commands in these scripts allow to retrieve the endpoint URL of ArmoniK control plane:
+
+```bash
+export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
+export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+export Grpc__Endpoint=http://$CPIP:$CPPort
+```
+
+or You can replace them by the `armonik_control_plane_url` retrieved from Terraform outputs, example:
+
+```bash
+export Grpc__Endpoint=http://192.168.1.13:5001
+```
+
+Execute [tools/tests/symphony_like.sh](../../../tools/tests/symphony_like.sh) from the **root** repository:
+
+```bash
+tools/tests/symphony_like.sh
+```
+
+Execute [tools/tests/datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh) from the **root** repository:
+
+```bash
+tools/tests/datasynapse_like.sh
+```
+
+Execute [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh) from the **root**
+repository:
+
+```bash
+tools/tests/symphony_endToendTests.sh
+```
+
+You can follow logs on Seq webserver:
+
+![](images/seq.png)
 
 # Clean-up
 
@@ -189,74 +257,7 @@ or:
 make clean-armonik 
 make clean-monitoring 
 make clean-aws-storage 
-```
-
-
-# Quick tests
-
-## Seq webserver
-
-After the deployment, connect to the Seq webserver by using `seq.web_url`, retrieved from the Terraform outputs `monitoring/generated/monitoring-output.json`,
-example:
-
-```bash
-http://192.168.1.13:8080
-```
-
-or
-
-```bash
-http://localhost:8080
-```
-
-where `Username: admin` and `Password: admin`:
-
-![](images/seq_auth.png)
-
-## Tests
-
-You have three scripts for testing ArmoniK :
-
-* [symphony_like.sh](../../../tools/tests/symphony_like.sh)
-* [datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh)
-* [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh).
-
-The following commands in these scripts allow to retrieve the endpoint URL of ArmoniK control plane:
-
-```bash
-export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
-export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
-export Grpc__Endpoint=http://$CPIP:$CPPort
-```
-
-or You can replace them by the `armonik_control_plane_url` retrieved from Terraform outputs, example:
-
-```bash
-export Grpc__Endpoint=http://192.168.1.13:5001
-```
-
-Execute [symphony_like.sh](../../../tools/tests/symphony_like.sh) from the **root** repository:
-
-```bash
-tools/tests/symphony_like.sh
-```
-
-Execute [datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh) from the **root** repository:
-
-```bash
-tools/tests/datasynapse_like.sh
-```
-
-Execute [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh) from the **root**
-repository:
-
-```bash
-tools/tests/symphony_endToendTests.sh
-```
-
-You can follow logs on Seq webserver:
-
-![](images/seq.png)
+``` 
 
 ### [Return to the Main page](../../README.md)
 
