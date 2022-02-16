@@ -73,7 +73,7 @@ ecr = {
     },
     {
       name  = "node-exporter"
-      image = "prom/node-exporter:latest"
+      image = "prom/node-exporter"
       tag   = "latest"
     }
   ]
