@@ -8,9 +8,9 @@ variable "namespace" {
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type        = object({
-    image                      = string
-    tag                        = string
-    node_selector              = any
+    image         = string
+    tag           = string
+    node_selector = any
   })
 }
 
@@ -18,5 +18,5 @@ variable "mongodb" {
 variable "working_dir" {
   description = "Working directory"
   type        = string
-  default     = "../../utils/scripts"
+  default     = "../.."
 }

@@ -44,3 +44,9 @@ resource "aws_iam_role_policy_attachment" "workers_xray_attach" {
   policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
   role       = module.eks.worker_iam_role_name
 }
+
+# Full access S3 bucket
+resource "aws_iam_role_policy_attachment" "s3_full_access" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+  role       = module.eks.worker_iam_role_name
+}

@@ -11,10 +11,6 @@ STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/storage/generated/storage-output.json
 MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/monitoring/generated/monitoring-output.json
 EKS_PARAMETERS_FILE?=$(CURRENT_DIR)/eks/generated/eks-output.json
 
-.PHONY: plan apply destroy
-
-all: init plan apply output
-
 ####################################
 # KSM and S3 buckets for TF states #
 ####################################
@@ -97,7 +93,7 @@ clean-eks:
 	$(MAKE) -C $(CURRENT_DIR)/eks clean
 
 ####################################
-#       Kubernetes namespacs       #
+#       Kubernetes namespace       #
 ####################################
 
 create-namespace:

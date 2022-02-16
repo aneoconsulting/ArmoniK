@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "decrypt_object_document" {
     ]
     effect    = "Allow"
     resources = [
-      var.s3_fs.kms_key_id
+      local.s3_fs_kms_key_id
     ]
   }
 }
@@ -24,11 +24,5 @@ resource "aws_iam_policy" "decrypt_object_policy" {
 
 resource "aws_iam_role_policy_attachment" "decrypt_object_attachment" {
   policy_arn = aws_iam_policy.decrypt_object_policy.arn
-  role       = var.eks.worker_iam_role_name
-}
-
-# Full access S3 bucket
-resource "aws_iam_role_policy_attachment" "s3_full_access" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
   role       = var.eks.worker_iam_role_name
 }

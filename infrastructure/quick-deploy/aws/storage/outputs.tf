@@ -24,14 +24,14 @@ output "storage_endpoint_url" {
       port         = module.elasticache.redis_endpoint_url.port
       timeout      = 3000
       ssl_host     = ""
-      certificates = {
-        secret      = ""
-        ca_filename = ""
-      }
       credentials  = {
         secret       = ""
         username_key = ""
         password_key = ""
+      }
+      certificates = {
+        secret      = ""
+        ca_filename = ""
       }
     }
     mongodb  = {
@@ -39,14 +39,14 @@ output "storage_endpoint_url" {
       host               = module.mongodb.host
       port               = module.mongodb.port
       allow_insecure_tls = true
-      certificates       = {
-        secret      = module.mongodb.user_certificate.secret
-        ca_filename = module.mongodb.user_certificate.ca_filename
-      }
       credentials        = {
         secret       = module.mongodb.user_credentials.secret
         username_key = module.mongodb.user_credentials.username_key
         password_key = module.mongodb.user_credentials.password_key
+      }
+      certificates       = {
+        secret      = module.mongodb.user_certificate.secret
+        ca_filename = module.mongodb.user_certificate.ca_filename
       }
     }
     shared   = {
