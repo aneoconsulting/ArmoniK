@@ -47,7 +47,7 @@ The infrastructure is composed of:
 The following software or tool should be installed upon your local Linux machine or VM from which you deploy the
 infrastructure:
 
-* If You have Windows machine, You can install [WSL 2](../../kubernetes/onpremise/localhost/wsl2.md)
+* If You have Windows machine, You can install [WSL 2](../../kubernetes/localhost/wsl2.md)
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) version 2
 * [Docker](https://docs.docker.com/engine/install/)
 * [JQ](https://stedolan.github.io/jq/download/)

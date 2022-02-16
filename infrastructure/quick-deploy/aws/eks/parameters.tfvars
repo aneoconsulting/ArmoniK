@@ -105,7 +105,6 @@ eks_worker_groups = [
     asg_desired_capacity                     = 0
     on_demand_base_capacity                  = 0
     on_demand_percentage_above_base_capacity = 100
-    #kubelet_extra_args                       = "--node-labels=lifecycle=OnDemand --register-with-taints=lifecycle=OnDemand:NoSchedule"
-    kubelet_extra_args                       = "--node-labels=lifecycle=OnDemand"
+    kubelet_extra_args                       = "--node-labels=lifecycle=OnDemand --register-with-taints=lifecycle=OnDemand:NoSchedule"
   }
 ]

@@ -11,16 +11,19 @@ Hereafter you have instructions ton install Kubernetes on localhost, onpremise c
 
 # Localhost
 
-You can install a Kubernetes for a development and testing environment
-on [a local machine or a VM](onpremise/localhost/README.md).
+You can install a Kubernetes for a development and testing environment on [a local machine or a VM](localhost/README.md)
+.
 
 # Onpremise cluster
 
-You can install a Kubernetes on [onpremise cluster](onpremise/cluster/README.md).
+You can install a Kubernetes on [onpremise cluster](cluster/README.md).
 
 # Amazon Web Services (AWS)
 
-You can install an Elastic Kubernetes Service (EKS) on AWS using [Deploy Amazon EKS](aws/README.md).
+You can install an Elastic Kubernetes Service (EKS) on AWS using [Deploy Amazon EKS](../quick-deploy/aws/README.md).
 
-### [Return to Quick install](../quick-deploy/localhost/README.md)
+### [Return to Quick install on localhost](../quick-deploy/localhost/README.md)
+
+### [Return to Quick install on AWS](../quick-deploy/aws/README.md)
+
 ### [Return to Main page](../README.md)

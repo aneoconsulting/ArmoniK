@@ -57,85 +57,85 @@ resource "kubernetes_deployment" "control_plane" {
             }
           }
           dynamic env {
-            for_each = (var.storage_endpoint_url.activemq.credentials.secret != "" ? [1] : [])
+            for_each = (local.activemq_credentials_secret != "" ? [1] : [])
             content {
               name = "Amqp__User"
               value_from {
                 secret_key_ref {
-                  key      = var.storage_endpoint_url.activemq.credentials.username_key
-                  name     = var.storage_endpoint_url.activemq.credentials.secret
+                  key      = local.activemq_credentials_username_key
+                  name     = local.activemq_credentials_secret
                   optional = false
                 }
               }
             }
           }
           dynamic env {
-            for_each = (var.storage_endpoint_url.activemq.credentials.secret != "" ? [1] : [])
+            for_each = (local.activemq_credentials_secret != "" ? [1] : [])
             content {
               name = "Amqp__Password"
               value_from {
                 secret_key_ref {
-                  key      = var.storage_endpoint_url.activemq.credentials.password_key
-                  name     = var.storage_endpoint_url.activemq.credentials.secret
+                  key      = local.activemq_credentials_password_key
+                  name     = local.activemq_credentials_secret
                   optional = false
                 }
               }
             }
           }
           dynamic env {
-            for_each = (var.storage_endpoint_url.redis.credentials.secret != "" ? [1] : [])
+            for_each = (local.redis_credentials_secret != "" ? [1] : [])
             content {
               name = "Redis__User"
               value_from {
                 secret_key_ref {
-                  key      = var.storage_endpoint_url.redis.credentials.username_key
-                  name     = var.storage_endpoint_url.redis.credentials.secret
+                  key      = local.redis_credentials_username_key
+                  name     = local.redis_credentials_secret
                   optional = false
                 }
               }
             }
           }
           dynamic env {
-            for_each = (var.storage_endpoint_url.redis.credentials.secret != "" ? [1] : [])
+            for_each = (local.redis_credentials_secret != "" ? [1] : [])
             content {
               name = "Redis__Password"
               value_from {
                 secret_key_ref {
-                  key      = var.storage_endpoint_url.redis.credentials.password_key
-                  name     = var.storage_endpoint_url.redis.credentials.secret
+                  key      = local.redis_credentials_password_key
+                  name     = local.redis_credentials_secret
                   optional = false
                 }
               }
             }
           }
           dynamic env {
-            for_each = (var.storage_endpoint_url.mongodb.credentials.secret != "" ? [1] : [])
+            for_each = (local.mongodb_credentials_secret != "" ? [1] : [])
             content {
               name = "MongoDB__User"
               value_from {
                 secret_key_ref {
-                  key      = var.storage_endpoint_url.mongodb.credentials.username_key
-                  name     = var.storage_endpoint_url.mongodb.credentials.secret
+                  key      = local.mongodb_credentials_username_key
+                  name     = local.mongodb_credentials_secret
                   optional = false
                 }
               }
             }
           }
           dynamic env {
-            for_each = (var.storage_endpoint_url.mongodb.credentials.secret != "" ? [1] : [])
+            for_each = (local.mongodb_credentials_secret != "" ? [1] : [])
             content {
               name = "MongoDB__Password"
               value_from {
                 secret_key_ref {
-                  key      = var.storage_endpoint_url.mongodb.credentials.password_key
-                  name     = var.storage_endpoint_url.mongodb.credentials.secret
+                  key      = local.mongodb_credentials_password_key
+                  name     = local.mongodb_credentials_secret
                   optional = false
                 }
               }
             }
           }
           dynamic volume_mount {
-            for_each = (var.storage_endpoint_url.activemq.certificates.secret != "" ? [1] : [])
+            for_each = (local.activemq_certificates_secret != "" ? [1] : [])
             content {
               name       = "activemq-secret-volume"
               mount_path = "/amqp"
@@ -143,7 +143,7 @@ resource "kubernetes_deployment" "control_plane" {
             }
           }
           dynamic volume_mount {
-            for_each = (var.storage_endpoint_url.redis.certificates.secret != "" ? [1] : [])
+            for_each = (local.redis_certificates_secret != "" ? [1] : [])
             content {
               name       = "redis-secret-volume"
               mount_path = "/redis"
@@ -151,7 +151,7 @@ resource "kubernetes_deployment" "control_plane" {
             }
           }
           dynamic volume_mount {
-            for_each = (var.storage_endpoint_url.mongodb.certificates.secret != "" ? [1] : [])
+            for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
             content {
               name       = "mongodb-secret-volume"
               mount_path = "/mongodb"
@@ -210,31 +210,31 @@ resource "kubernetes_deployment" "control_plane" {
           }
         }
         dynamic volume {
-          for_each = (var.storage_endpoint_url.activemq.certificates.secret != "" ? [1] : [])
+          for_each = (local.activemq_certificates_secret != "" ? [1] : [])
           content {
             name = "activemq-secret-volume"
             secret {
-              secret_name = var.storage_endpoint_url.activemq.certificates.secret
+              secret_name = local.activemq_certificates_secret
               optional    = false
             }
           }
         }
         dynamic volume {
-          for_each = (var.storage_endpoint_url.redis.certificates.secret != "" ? [1] : [])
+          for_each = (local.redis_certificates_secret != "" ? [1] : [])
           content {
             name = "redis-secret-volume"
             secret {
-              secret_name = var.storage_endpoint_url.redis.certificates.secret
+              secret_name = local.redis_certificates_secret
               optional    = false
             }
           }
         }
         dynamic volume {
-          for_each = (var.storage_endpoint_url.mongodb.certificates.secret != "" ? [1] : [])
+          for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
           content {
             name = "mongodb-secret-volume"
             secret {
-              secret_name = var.storage_endpoint_url.mongodb.certificates.secret
+              secret_name = local.mongodb_certificates_secret
               optional    = false
             }
           }

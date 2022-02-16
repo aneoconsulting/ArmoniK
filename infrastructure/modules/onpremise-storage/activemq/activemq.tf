@@ -31,11 +31,14 @@ resource "kubernetes_deployment" "activemq" {
       }
       spec {
         node_selector = var.activemq.node_selector
-        toleration {
-          key      = keys(var.activemq.node_selector)[0]
-          operator = "Equal"
-          value    = values(var.activemq.node_selector)[0]
-          effect   = "NoSchedule"
+        dynamic toleration {
+          for_each = (var.activemq.node_selector != {} ? [1] : [])
+          content {
+            key      = keys(var.activemq.node_selector)[0]
+            operator = "Equal"
+            value    = values(var.activemq.node_selector)[0]
+            effect   = "NoSchedule"
+          }
         }
         container {
           name  = "activemq"
