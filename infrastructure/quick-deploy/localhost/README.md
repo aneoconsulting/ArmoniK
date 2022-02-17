@@ -52,6 +52,10 @@ following documentation [Install Kubernetes on dev/test local machine](docs/k3s.
 
 From the **root** of the repository, position yourself in directory `infrastructure/quick-deploy/localhost`.
 
+```bash
+cd infrastructure/quick-deploy/localhost
+```
+
 You need to set a list of environment variables [envvars.sh](envvars.sh) :
 
 ```bash
