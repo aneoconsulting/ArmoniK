@@ -1,9 +1,9 @@
-export ARMONIK_TAG?=main
+export ARMONIK_SUFFIX?=main
 export ARMONIK_REGION?=eu-west-3
 export ARMONIK_PROFILE?=default
 export ARMONIK_BUCKET_NAME?=armonik-tfstate
 export ARMONIK_KUBERNETES_NAMESPACE?=armonik
-export TFSTATE_BUCKET_NAME="$(ARMONIK_BUCKET_NAME)-$(ARMONIK_TAG)"
+export TFSTATE_BUCKET_NAME="$(ARMONIK_BUCKET_NAME)-$(ARMONIK_SUFFIX)"
 
 CURRENT_DIR=$(shell pwd)
 VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/vpc/generated/vpc-output.json
@@ -17,13 +17,13 @@ EKS_PARAMETERS_FILE?=$(CURRENT_DIR)/eks/generated/eks-output.json
 
 deploy-s3-of-backend:
 	$(MAKE) -C $(CURRENT_DIR)/backend deploy \
-		TAG=$(ARMONIK_TAG) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		BUCKET_NAME=$(ARMONIK_BUCKET_NAME)
 
 destroy-s3-of-backend:
 	$(MAKE) -C $(CURRENT_DIR)/backend destroy \
-		TAG=$(ARMONIK_TAG) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		BUCKET_NAME=$(ARMONIK_BUCKET_NAME)
 
@@ -33,14 +33,14 @@ destroy-s3-of-backend:
 
 deploy-ecr:
 	$(MAKE) -C $(CURRENT_DIR)/ecr deploy \
-		TAG=$(ARMONIK_TAG) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 destroy-ecr:
 	$(MAKE) -C $(CURRENT_DIR)/ecr destroy \
-		TAG=$(ARMONIK_TAG) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
@@ -54,14 +54,14 @@ clean-ecr:
 
 deploy-vpc:
 	$(MAKE) -C $(CURRENT_DIR)/vpc deploy \
-		TAG=$(ARMONIK_TAG) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 destroy-vpc:
 	$(MAKE) -C $(CURRENT_DIR)/vpc destroy \
-		TAG=$(ARMONIK_TAG) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
@@ -75,7 +75,7 @@ clean-vpc:
 
 deploy-eks:
 	$(MAKE) -C $(CURRENT_DIR)/eks deploy \
-		TAG=$(ARMONIK_TAG) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
@@ -83,7 +83,7 @@ deploy-eks:
 
 destroy-eks:
 	$(MAKE) -C $(CURRENT_DIR)/eks destroy \
-		TAG=$(ARMONIK_TAG) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
@@ -108,7 +108,7 @@ delete-namespace:
 
 deploy-aws-storage:
 	$(MAKE) -C $(CURRENT_DIR)/storage deploy \
-		TAG=$(ARMONIK_TAG) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
@@ -118,7 +118,7 @@ deploy-aws-storage:
 
 destroy-aws-storage:
 	$(MAKE) -C $(CURRENT_DIR)/storage destroy \
-		TAG=$(ARMONIK_TAG) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \

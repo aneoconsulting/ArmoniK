@@ -2,7 +2,7 @@
 module "kms" {
   count  = (var.vpc.flow_log_cloudwatch_log_group_kms_key_id == "" ? 1 : 0)
   source = "../../../modules/aws/kms"
-  name   = "armonik-kms-vpc-${local.tag}-${local.random_string}"
+  name   = "armonik-kms-vpc-${local.suffix}-${local.random_string}"
   tags   = local.tags
 }
 
@@ -10,7 +10,7 @@ module "kms" {
 module "vpc" {
   source = "../../../modules/aws/vpc"
   tags   = local.tags
-  name   = "${var.vpc.name}-${local.tag}"
+  name   = "${var.vpc.name}-${local.suffix}"
   vpc    = {
     cluster_name                                    = local.cluster_name
     private_subnets                                 = var.vpc.cidr_block_private

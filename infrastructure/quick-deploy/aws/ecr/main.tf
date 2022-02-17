@@ -2,7 +2,7 @@
 module "kms" {
   count  = (var.ecr.kms_key_id == "" ? 1 : 0)
   source = "../../../modules/aws/kms"
-  name   = "armonik-kms-ecr-${local.tag}-${local.random_string}"
+  name   = "armonik-kms-ecr-${local.suffix}-${local.random_string}"
   tags   = local.tags
 }
 

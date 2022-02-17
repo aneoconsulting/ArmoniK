@@ -8,7 +8,7 @@ export TF_DATA_DIR?=$(GENERATED_DIR)
 export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
-export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(TAG)
+export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 
 .PHONY: apply destroy
 

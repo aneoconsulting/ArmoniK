@@ -5,7 +5,7 @@ STATE_FILE=eks-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/eks-output.json
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
-export TAG?=main
+export SUFFIX?=main
 export REGION?=eu-west-3
 export PROFILE?=default
 export TFSTATE_BUCKET_NAME?=armonik-tfstate
@@ -29,7 +29,7 @@ apply:
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(VPC_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
-		-var 'tag=$(TAG)' \
+		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
 		-state $(STATE_FILE) \
 		-auto-approve
@@ -45,7 +45,7 @@ destroy:
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(VPC_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
-		-var 'tag=$(TAG)' \
+		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
 		-state $(STATE_FILE) \
 		-auto-approve

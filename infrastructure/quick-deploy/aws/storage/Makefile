@@ -5,11 +5,11 @@ STATE_FILE=storage-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/storage-output.json
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
-export TAG?=main
+export SUFFIX?=main
 export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
-export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(TAG)
+export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 export VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/../vpc/generated/vpc-output.json
 export EKS_PARAMETERS_FILE?=$(CURRENT_DIR)/../eks/generated/eks-output.json
 
@@ -32,7 +32,7 @@ apply:
 		-var-file $(VPC_PARAMETERS_FILE) \
 		-var-file $(EKS_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
-		-var 'tag=$(TAG)' \
+		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
 		-state $(STATE_FILE) \
@@ -50,7 +50,7 @@ destroy:
 		-var-file $(VPC_PARAMETERS_FILE) \
 		-var-file $(EKS_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
-		-var 'tag=$(TAG)' \
+		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
 		-state $(STATE_FILE) \

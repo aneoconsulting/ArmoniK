@@ -5,10 +5,10 @@ STATE_FILE=ecr-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/ecr-output.json
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
-export TAG?=main
+export SUFFIX?=main
 export REGION?=eu-west-3
 export PROFILE?=default
-export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(TAG)
+export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 
 .PHONY: apply destroy
 
@@ -27,7 +27,7 @@ apply:
 	terraform apply \
 		-var-file $(PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
-		-var 'tag=$(TAG)' \
+		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
 		-parallelism 1 \
 		-state $(STATE_FILE) \
@@ -43,7 +43,7 @@ destroy:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
-		-var 'tag=$(TAG)' \
+		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
 		-state $(STATE_FILE) \
 		-auto-approve

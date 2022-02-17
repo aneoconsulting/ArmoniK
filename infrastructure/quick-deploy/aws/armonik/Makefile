@@ -8,7 +8,8 @@ export TF_DATA_DIR?=$(GENERATED_DIR)
 export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
-export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(TAG)
+export SUFFIX?=main
+export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 export MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/../monitoring/generated/monitoring-output.json
 export STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/../storage/generated/storage-output.json
 
@@ -33,6 +34,7 @@ apply:
 		-var 'region=$(REGION)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
+		-var
 		-state $(STATE_FILE) \
 		-auto-approve
 

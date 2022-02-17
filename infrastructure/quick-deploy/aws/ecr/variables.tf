@@ -12,9 +12,9 @@ variable "region" {
   default     = "eu-west-3"
 }
 
-# TAG
-variable "tag" {
-  description = "Tag to prefix the AWS resources"
+# SUFFIX
+variable "suffix" {
+  description = "To suffix the AWS resources"
   type        = string
   default     = ""
 }

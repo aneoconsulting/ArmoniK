@@ -105,7 +105,7 @@ source envvars.sh
 ```bash
 export ARMONIK_PROFILE=default
 export ARMONIK_REGION=eu-west-3
-export ARMONIK_TAG=main
+export ARMONIK_SUFFIX=main
 export ARMONIK_BUCKET_NAME=armonik-tfstate
 export ARMONIK_KUBERNETES_NAMESPACE=armonik
 ```
@@ -114,7 +114,7 @@ where:
 
 - `ARMONIK_PROFILE`: defines your AWS profile which has credentials to deploy in AWS Cloud
 - `ARMONIK_REGION`: presents the region where all resources will be created
-- `ARMONIK_TAG`: will be used as suffix to the name of all resources
+- `ARMONIK_SUFFIX`: will be used as suffix to the name of all resources
 - `ARMONIK_BUCKET_NAME`: is the name of S3 bucket in which `.tfsate` will be safely stored
 - `ARMONIK_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for ArmoniK
 
