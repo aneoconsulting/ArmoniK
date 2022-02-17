@@ -146,6 +146,12 @@ The parameters of ArmoniK are defined in [armonik/parameters.tfvars](armonik/par
 Execute the following command to deploy ArmoniK:
 
 ```bash
+make deploy-armonik
+```
+
+**or:**
+
+```bash
 make deploy-armonik \
   STORAGE_PARAMETERS_FILE=<path-to-storage-parameters> \
   MONITORING_PARAMETERS_FILE=<path-to-monitoring-parameters>
