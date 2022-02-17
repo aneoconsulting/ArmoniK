@@ -199,6 +199,8 @@ where `Username: admin` and `Password: admin`:
 
 ## Tests
 
+### Scripts of tests
+
 You have three scripts for testing ArmoniK :
 
 * [tools/tests/symphony_like.sh](../../../tools/tests/symphony_like.sh)
@@ -220,24 +222,37 @@ outputs `armonik/generated/armonik-output.json`, example:
 export Grpc__Endpoint=http://192.168.1.13:5001
 ```
 
-Execute [tools/tests/symphony_like.sh](../../../tools/tests/symphony_like.sh) from the **root** repository:
+### Launch tests
+
+Before executing the tests, You must download source codes of Samples from the **root** repository:
 
 ```bash
-tools/tests/symphony_like.sh
+git submodule update --init --recursive
 ```
 
-Execute [tools/tests/datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh) from the **root** repository:
+**and:**
 
 ```bash
-tools/tests/datasynapse_like.sh
+git clone https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp.git source/ArmoniK.Extensions.Csharp
 ```
 
-Execute [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh) from the **root**
-repository:
+**then:**
 
-```bash
-tools/tests/symphony_endToendTests.sh
-```
+- Execute [tools/tests/symphony_like.sh](../../../tools/tests/symphony_like.sh) from the **root** repository:
+  ```bash
+  tools/tests/symphony_like.sh
+  ```
+
+- Execute [tools/tests/datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh) from the **root** repository:
+  ```bash
+  tools/tests/datasynapse_like.sh
+  ```
+
+- Execute [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh) from the **root**
+  repository:
+  ```bash
+  tools/tests/symphony_endToendTests.sh
+  ```
 
 You can follow logs on Seq webserver:
 
