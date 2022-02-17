@@ -50,6 +50,8 @@ following documentation [Install Kubernetes on dev/test local machine](docs/k3s.
 
 # Set environment variables
 
+From the **root** of the repository, position yourself in directory `infrastructure/quick-deploy/localhost`.
+
 You need to set a list of environment variables [envvars.sh](envvars.sh) :
 
 ```bash
@@ -68,7 +70,7 @@ export ARMONIK_FILE_SERVER_IP=""
 where:
 
 - `ARMONIK_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for ArmoniK
-- `ARMONIK_SHARED_HOST_PATH`: is the filesystem on your local machine shared with workers of ArmoniK 
+- `ARMONIK_SHARED_HOST_PATH`: is the filesystem on your local machine shared with workers of ArmoniK
 - `ARMONIK_FILE_STORAGE_FILE`: is the type of the filesystem which can be one of `HostPath` or `NFS`
 - `ARMONIK_FILE_SERVER_IP`: is the IP of the network filesystem if `ARMONIK_SHARED_HOST_PATH=NFS`
 
