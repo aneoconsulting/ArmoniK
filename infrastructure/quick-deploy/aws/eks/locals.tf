@@ -19,3 +19,16 @@ locals {
     date               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
   })
 }
+
+# Empty Kubeconfig
+resource "null_resource" "empty_kubeconfig" {
+  provisioner "local-exec" {
+    command = "mkdir -p ${pathexpand("~/.kube")}"
+  }
+  provisioner "local-exec" {
+    command = "touch ${pathexpand("~/.kube/config")}"
+  }
+  provisioner "local-exec" {
+    command = "sed -i 's/: null/: []/g' ${pathexpand("~/.kube/config")}"
+  }
+}
