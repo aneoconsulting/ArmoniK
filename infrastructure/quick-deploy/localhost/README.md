@@ -179,8 +179,8 @@ make deploy-all
 
 # Script all-in-one
 
-In addition to above instructions explaining how to deploy ArmoniK and its needed resources, You can use a bash
-script [deploy-dev-test-infra.sh](../../utils/scripts/deploy-dev-test-infra.sh) to automate the deployment on your local
+In addition to above instructions explaining how to deploy ArmoniK and its needed resources, You can use a script
+bash [deploy-dev-test-infra.sh](../../utils/scripts/deploy-dev-test-infra.sh) to automate the deployment on your local
 machine.
 
 You can find the usage of this script in [Script all-in-one](../../docs/all-in-one-deploy.md).

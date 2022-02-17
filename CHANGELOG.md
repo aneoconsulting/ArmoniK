@@ -14,6 +14,7 @@ Added
 * Add liveness, readiness and startup probes for seq
 * Add source codes of ArmoniK deployment on local machine in quick-deploy/
 * Add source codes of ArmoniK deployment on AWS in quick-deploy/
+* Add a script bash to deploy ArmoniK in all-in-one commands
 
 Changed
 -
