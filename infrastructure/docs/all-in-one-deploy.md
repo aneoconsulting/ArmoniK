@@ -3,7 +3,7 @@
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
 - [Install Kubernetes](#install-kubernetes)
-- [Script all-in-one](#script-all-in-one)
+- [Script bash all-in-one](#script-bash-all-in-one)
 
 # Introduction
 
@@ -42,7 +42,7 @@ The following software or tool should be installed upon your local Linux machine
 You must have a Kubernetes on your local machine to install ArmoniK. If not, You can follow instructions in one of the
 following documentation [Install Kubernetes on dev/test local machine](../quick-deploy/localhost/docs/k3s.md).
 
-# Script all-in-one
+# Script bash all-in-one
 
 From the **root** of the repository, position yourself in directory `infrastructure/utils/scripts/`:
 
