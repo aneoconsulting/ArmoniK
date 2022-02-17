@@ -182,7 +182,7 @@ In addition to above instructions explaining how to deploy ArmoniK and its neede
 bash [deploy-dev-test-infra.sh](../../utils/scripts/deploy-dev-test-infra.sh) to automate the deployment on your local
 machine.
 
-You can find the usage of this script in [Script all-in-one](../../docs/all-in-one-deploy.md).
+You can find the usage of this script in [Script bash all-in-one](../../docs/all-in-one-deploy.md).
 
 # Quick tests
 
