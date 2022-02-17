@@ -68,9 +68,9 @@ export ARMONIK_FILE_SERVER_IP=""
 where:
 
 - `ARMONIK_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for ArmoniK
-- `ARMONIK_SHARED_HOST_PATH`: is the shared filesystem with workers of ArmoniK
-- `ARMONIK_FILE_STORAGE_FILE`: is the type of the filesystem which can be one of `HostPath`, `NFS` or `S3`
-- `ARMONIK_FILE_SERVER_IP`: is the IP of the network filesystem
+- `ARMONIK_SHARED_HOST_PATH`: is the filesystem on your local machine shared with workers of ArmoniK 
+- `ARMONIK_FILE_STORAGE_FILE`: is the type of the filesystem which can be one of `HostPath` or `NFS`
+- `ARMONIK_FILE_SERVER_IP`: is the IP of the network filesystem if `ARMONIK_SHARED_HOST_PATH=NFS`
 
 # Deploy
 
@@ -84,7 +84,7 @@ sudo chown -R $USER:$USER /data
 
 ## Kubernetes namespace
 
-First, you create a Kubernetes namespace for ArmoniK with the name set in the environment
+You create a Kubernetes namespace for ArmoniK with the name set in the environment
 variable`ARMONIK_KUBERNETES_NAMESPACE`:
 
 ```bash
@@ -141,14 +141,17 @@ The parameters of ArmoniK are defined in [armonik/parameters.tfvars](armonik/par
 Execute the following command to deploy ArmoniK:
 
 ```bash
-make deploy-armonik STORAGE_PARAMETERS_FILE=<path-to-storage-parameters> MONITORING_PARAMETERS_FILE=<path-to-monitoring-parameters>
+make deploy-armonik \
+  STORAGE_PARAMETERS_FILE=<path-to-storage-parameters> \
+  MONITORING_PARAMETERS_FILE=<path-to-monitoring-parameters>
 ```
 
 where:
 
 - `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json`
 - `<path-to-monitoring-parameters>` is the **absolute** path to file `monitoring/generated/monitoring-output.json`
-  These files are input information for ArmoniK about storage and monitoring tools previously created.
+
+These files are input information for ArmoniK about storage and monitoring tools previously created.
 
 The ArmoniK deployment generates an output file `armonik/generated/armonik-output.json` which contains the endpoint URL
 of ArmoniK control plane.
