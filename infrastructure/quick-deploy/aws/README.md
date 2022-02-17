@@ -88,7 +88,19 @@ the output of this command should be as follows:
 
 # Set environment variables
 
-You need to set a list of environment variables :
+From the **root** of the repository, position yourself in directory `infrastructure/quick-deploy/aws`.
+
+```bash
+cd infrastructure/quick-deploy/aws
+```
+
+You need to set a list of environment variables [envvars.sh](envvars.sh) :
+
+```bash
+source envvars.sh
+```
+
+**or:**
 
 ```bash
 export ARMONIK_PROFILE=default
@@ -105,14 +117,6 @@ where:
 - `ARMONIK_TAG`: will be used as suffix to the name of all resources
 - `ARMONIK_BUCKET_NAME`: is the name of S3 bucket in which `.tfsate` will be safely stored
 - `ARMONIK_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for ArmoniK
-
-You can source these environment variables form the file [envvars.sh](./envvars.sh). You can modify the values of each
-variable. From the **root** of the repository, position yourself in directory `infrastructure/quick-deploy/aws`
-and:
-
-```bash
-source envvars.sh
-```
 
 # Prepare backend for Terraform
 
