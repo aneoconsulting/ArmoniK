@@ -9,8 +9,7 @@
     - [Storage](#storage)
     - [Monitoring](#monitoring)
     - [ArmoniK](#armonik)
-    - [All-in-one deploy](#all-in-one-deploy)
-- [Script all-in-one](#script-all-in-one)
+- [Script bash all-in-one](#script-bash-all-in-one)
 - [Quick tests](#quick-tests)
     - [Seq webserver](#seq-webserver)
     - [Tests](#tests)
@@ -168,7 +167,7 @@ These files are input information for ArmoniK about storage and monitoring tools
 The ArmoniK deployment generates an output file `armonik/generated/armonik-output.json` which contains the endpoint URL
 of ArmoniK control plane.
 
-## All-in-one deploy
+### All-in-one deploy
 
 All commands described above can be executed with one command. To deploy infrastructure and ArmoniK in all-in-one
 command, You execute:
@@ -177,7 +176,7 @@ command, You execute:
 make deploy-all
 ```
 
-# Script all-in-one
+# Script bash all-in-one
 
 In addition to above instructions explaining how to deploy ArmoniK and its needed resources, You can use a script
 bash [deploy-dev-test-infra.sh](../../utils/scripts/deploy-dev-test-infra.sh) to automate the deployment on your local
