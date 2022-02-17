@@ -65,87 +65,48 @@ runs:
         cd ${{ github.action_path }}
         bash tools/install/k3s.sh
 
-    - name: Init Kube secret
+    - name: Set environement variables
       shell: bash
       run: |
+        set -ex
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        source envvars.sh
+
+    - name: Create shared host path directory
+      shell: bash
+      run: |
+        set -ex
         cd ${{ github.action_path }}
-        source infrastructure/utils/scripts/envvars-storage.sh
-        bash infrastructure/utils/scripts/init-kube-storage.sh
+        sudo mkdir -p /data
+        sudo chown -R $USER:$USER /data
 
-        source infrastructure/utils/scripts/envvars-armonik.sh
-        bash infrastructure/utils/scripts/init-kube-armonik.sh
-
-        source infrastructure/utils/scripts/envvars-monitoring.sh
-        bash infrastructure/utils/scripts/init-kube-monitoring.sh
-
-    - name: Deploy Onpremise Storage
+    - name: Create Kubernetes namespace
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/storage/onpremise
-        terraform init
-        terraform apply -var-file parameters.tfvars -auto-approve
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        make create-namespace
 
-    - name: Create a configuration file for ArmoniK
+    - name: Deploy storage
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/storage/onpremise
-        terraform output -json > tmp.json
-        #sed -i '1d;$d' tmp.json
-        cat tmp.json
-        export ACTIVEMQ_HOST=$(cat tmp.json | jq -r '.activemq_endpoint_url.value.host')
-        export ACTIVEMQ_PORT=$(cat tmp.json | jq -r '.activemq_endpoint_url.value.port')
-        export MONGODB_HOST=$(cat tmp.json | jq -r '.mongodb_endpoint_url.value.host')
-        export MONGODB_PORT=$(cat tmp.json | jq -r '.mongodb_endpoint_url.value.port')
-        export REDIS_URL=$(cat tmp.json | jq -r '.redis_endpoint_url.value.url')
-        echo $ACTIVEMQ_HOST
-        echo $ACTIVEMQ_PORT
-        echo $MONGODB_HOST
-        echo $MONGODB_PORT
-        echo $REDIS_URL
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        make deploy-storage
 
-        python ${{ github.action_path }}/tools/modify_parameters.py \
-            -kv storage.object=Redis \
-            -kv storage.table=MongoDB \
-            -kv storage.queue=Amqp \
-            -kv storage.shared=HostPath \
-            -kv storage_endpoint_url.mongodb.host=$MONGODB_HOST \
-            -kv storage_endpoint_url.mongodb.port=$MONGODB_PORT \
-            -kv storage_endpoint_url.activemq.host=$ACTIVEMQ_HOST \
-            -kv storage_endpoint_url.activemq.port=$ACTIVEMQ_PORT \
-            -kv storage_endpoint_url.redis.url=$REDIS_URL \
-            ${{ github.action_path }}/infrastructure/armonik/parameters/storage-parameters.tfvars \
-            ${{ github.action_path }}/infrastructure/armonik/storage-parameters.tfvars.json
-
-        python ${{ github.action_path }}/tools/modify_parameters.py \
-            -kv "compute_plane.worker[*].image=${{ inputs.worker-image }}" \
-            -kv "compute_plane.worker[*].tag=${{ inputs.worker-tag }}" \
-            -kv compute_plane.image=${{ inputs.polling-agent-image }} \
-            -kv compute_plane.tag=${{ inputs.polling-agent-tag }} \
-            -kv control_plane.image=${{ inputs.control-plane-image }} \
-            -kv control_plane.tag=${{ inputs.control-plane-tag }} \
-            -kv logging_level=Verbose \
-            ${{ github.action_path }}/infrastructure/armonik/parameters/armonik-parameters.tfvars \
-            ${{ github.action_path }}/infrastructure/armonik/armonik-parameters.tfvars.json
-
-        python ${{ github.action_path }}/tools/modify_parameters.py \
-            ${{ github.action_path }}/infrastructure/armonik/parameters/monitoring-parameters.tfvars \
-            ${{ github.action_path }}/infrastructure/armonik/monitoring-parameters.tfvars.json
-
-    - name: Deploy ArmoniK on single node
+    - name: Deploy monitoring
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/armonik/
-        cat armonik-parameters.tfvars.json
-        cat storage-parameters.tfvars.json
-        cat monitoring-parameters.tfvars.json
-        terraform init
-        terraform apply -var-file=armonik-parameters.tfvars.json \
-                        -var-file=storage-parameters.tfvars.json \
-                        -var-file=monitoring-parameters.tfvars.json \
-                        -auto-approve
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        make deploy-monitoring
+
+    - name: Deploy ArmoniK
+      shell: bash
+      run: |
+        set -ex
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        make deploy-armonik
 
     - name: Copy logs
       if: always()
