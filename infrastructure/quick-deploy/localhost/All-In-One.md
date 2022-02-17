@@ -36,7 +36,7 @@ The infrastructure is composed of:
 
 The following software or tool should be installed upon your local Linux machine:
 
-* If You have Windows machine, You have to install [WSL 2](../../kubernetes/localhost/wsl2.md)
+* If You have Windows machine, You have to install [WSL 2](../../docs/kubernetes/localhost/wsl2.md)
 * [Docker](https://docs.docker.com/engine/install/)
 * [JQ](https://stedolan.github.io/jq/download/)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)

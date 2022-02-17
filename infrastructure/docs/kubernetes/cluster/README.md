@@ -22,8 +22,8 @@ The instructions to install K3s on a cluster are presented in [K3s on a cluster]
 
 The instructions to install kubeadm on a cluster are presented in [Kubeadm on a cluster](kubeadm-cluster/README.md)
 
-### [Return to Quick install on localhost](../../quick-deploy/localhost/README.md)
+### [Return to Quick install on localhost](../../../quick-deploy/localhost/README.md)
 
-### [Return to Quick install on AWS](../../quick-deploy/aws/README.md)
+### [Return to Quick install on AWS](../../../quick-deploy/aws/README.md)
 
-### [Return to Main page](../../README.md)
+### [Return to Main page](../../../README.md)

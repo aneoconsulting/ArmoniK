@@ -114,8 +114,8 @@ To delete all resources of the cluster created on AWS, execute the command:
 make destroy
 ```
 
-### [Return to Quick install on localhost](../../../quick-deploy/localhost/README.md)
+### [Return to Quick install on localhost](../../../../quick-deploy/localhost/README.md)
 
-### [Return to Quick install on AWS](../../../quick-deploy/aws/README.md)
+### [Return to Quick install on AWS](../../../../quick-deploy/aws/README.md)
 
-### [Return to Main page](../../../README.md)
+### [Return to Main page](../../../../README.md)
