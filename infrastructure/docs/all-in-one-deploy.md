@@ -56,11 +56,11 @@ cd infrastructure/utils/scripts
   ```
 - To deploy for the first time all infrastructure:
   ```bash
-  ./deploy-dev-test-infra.sh -m depploy-all
+  ./deploy-dev-test-infra.sh -m deploy-all
   ```
 - To redeploy all infrastructure:
   ```bash
-  ./deploy-dev-test-infra.sh -m redepploy-all
+  ./deploy-dev-test-infra.sh -m redeploy-all
   ```
 - To destroy all infrastructure:
   ```bash
