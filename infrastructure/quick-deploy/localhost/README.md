@@ -78,8 +78,7 @@ where:
 see [storage/parameters.tfvars](storage/parameters.tfvars)):
 
 ```bash
-sudo mkdir -p /data
-sudo chown -R $USER:$USER /data
+sudo mkdir -p /data && sudo chown -R $USER:$USER /data
 ```
 
 ## Kubernetes namespace
