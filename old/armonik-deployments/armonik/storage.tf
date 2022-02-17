@@ -1,6 +1,6 @@
 # Needed storage
 module "storage" {
-  source  = "../modules/needed-storage"
+  source  = "../../../infrastructure/modules/needed-storage"
   storage = var.storage
 }
 

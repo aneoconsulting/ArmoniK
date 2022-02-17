@@ -18,4 +18,4 @@ in [Onpremise ArmoniK storage](onpremise/README.md).
 To install AWS managed storage services (Elasticache, AmazonMQ, DynamoDB, ...), you can follow the instructions
 in [AWS ArmoniK storage](aws/README.md).
 
-### [Return to ArmoniK deployments](../README.md#armonik-deployments)
+### [Return to ArmoniK deployments](../../../infrastructure/README.md#armonik-deployments)

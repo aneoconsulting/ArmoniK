@@ -1,6 +1,6 @@
 # Use Seq
 module "seq" {
-  source        = "./modules/monitoring/seq"
+  source        = "modules/monitoring/seq"
   count         = (var.monitoring.seq.use ? 1 : 0)
   namespace     = var.monitoring.namespace
   docker_image  = {
@@ -12,7 +12,7 @@ module "seq" {
 
 # Use Grafana
 module "grafana" {
-  source       = "./modules/monitoring/grafana"
+  source       = "modules/monitoring/grafana"
   count        = (var.monitoring.grafana.use ? 1 : 0)
   namespace    = var.monitoring.namespace
   docker_image = {
@@ -23,7 +23,7 @@ module "grafana" {
 
 # Use Prometheus
 module "prometheus" {
-  source       = "./modules/monitoring/prometheus"
+  source       = "modules/monitoring/prometheus"
   count        = (var.monitoring.prometheus.use ? 1 : 0)
   namespace    = var.monitoring.namespace
   docker_image = {

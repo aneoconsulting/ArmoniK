@@ -20,7 +20,7 @@ Hereafter you have instructions to create onpremise storage resources, as Kubern
 # Allowed storage resources
 
 To date, the storage resources allowed for each type of ArmoniK data are defined
-in [allowed storage resources](../../modules/needed-storage/storage_for_each_armonik_data.tf).
+in [allowed storage resources](../../../../infrastructure/modules/needed-storage/storage_for_each_armonik_data.tf).
 
 # Set environment variables
 
@@ -159,4 +159,4 @@ make destroy
 make clean
 ```
 
-### [Return to ArmoniK deployments](../../README.md#armonik-deployments)
+### [Return to ArmoniK deployments](../../../../infrastructure/README.md#armonik-deployments)
