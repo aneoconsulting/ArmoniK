@@ -1,6 +1,5 @@
 # Table of contents
 
-- [Table of contents](#table-of-contents)
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
 - [Install Kubernetes](#install-kubernetes)
@@ -10,6 +9,7 @@
     - [Storage](#storage)
     - [Monitoring](#monitoring)
     - [ArmoniK](#armonik)
+    - [All-in-one deploy](#all-in-one-deploy)
 - [Quick tests](#quick-tests)
     - [Seq webserver](#seq-webserver)
     - [Tests](#tests)
@@ -37,7 +37,7 @@ The infrastructure is composed of:
 
 The following software or tool should be installed upon your local Linux machine:
 
-* If You have Windows machine, You can install [WSL 2](../../kubernetes/localhost/wsl2.md)
+* If You have Windows machine, You can install [WSL 2](docs/wsl2.md)
 * [Docker](https://docs.docker.com/engine/install/)
 * [JQ](https://stedolan.github.io/jq/download/)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
@@ -46,15 +46,17 @@ The following software or tool should be installed upon your local Linux machine
 # Install Kubernetes
 
 You must have a Kubernetes to install ArmoniK. If not, You can follow instructions in one of the following
-documentation:
-
-* [Install Kubernetes on dev/test local machine](../../kubernetes/localhost/README.md)
-* [Install Kubernetes on onpremise cluster](../../kubernetes/cluster/README.md)
-* [Install AWS EKS](../aws/README.md)
+documentation [Install Kubernetes on dev/test local machine](docs/k3s.md).
 
 # Set environment variables
 
-You need to set a list of environment variables :
+You need to set a list of environment variables [envvars.sh](envvars.sh) :
+
+```bash
+source envvars.sh
+```
+
+**or:**
 
 ```bash
 export ARMONIK_KUBERNETES_NAMESPACE=armonik
@@ -70,17 +72,9 @@ where:
 - `ARMONIK_FILE_STORAGE_FILE`: is the type of the filesystem which can be one of `HostPath`, `NFS` or `S3`
 - `ARMONIK_FILE_SERVER_IP`: is the IP of the network filesystem
 
-You can source these environment variables form the file [envvars.sh](./envvars.sh). You can modify the values of each
-variable. From the **root** of the repository, position yourself in directory `infrastructure/quick-deploy/localhost`
-and:
-
-```bash
-source envvars.sh
-```
-
 # Deploy
 
-**First**, You must create the `host_path=/data` directory that will be shared with ArmoniK worker pods (
+**First**, You must create the `host_path=/data` directory which will be shared with ArmoniK worker pods (
 see [storage/parameters.tfvars](storage/parameters.tfvars)):
 
 ```bash
@@ -101,20 +95,20 @@ make create-namespace
 
 You need to create storage for ArmoniK which are:
 
-* Redis
 * ActiveMQ broker
 * MongoDB
+* Redis
 
 The parameters of each storage are defined in [storage/parameters.tfvars](storage/parameters.tfvars).
 
 Execute the following command to create the storage:
 
 ```bash
-make deploy-aws-storage
+make deploy-storage
 ```
 
-The storage deployment generates an output file `storage/generated/storage-output.json` that contains information needed
-for ArmoniK.
+The storage deployment generates an output file `storage/generated/storage-output.json` which contains information
+needed for ArmoniK.
 
 ## Monitoring
 
@@ -126,18 +120,18 @@ You deploy the following resources for monitoring ArmoniK :
 
 The parameters of each monitoring resources are defined in [monitoring/parameters.tfvars](monitoring/parameters.tfvars).
 
-Execute the following command to create the storage:
+Execute the following command to create the monitoring tools:
 
 ```bash
 make deploy-monitoring
 ```
 
-The monitoring deployment generates an output file `monitoring/generated/monitoring-output.json` that contains
+The monitoring deployment generates an output file `monitoring/generated/monitoring-output.json` which contains
 information needed for ArmoniK.
 
 ## ArmoniK
 
-After deploying the storage and monitoring, You can install ArmoniK . The installation deploys:
+After deploying the storage and monitoring tools, You can install ArmoniK. The installation deploys:
 
 * ArmoniK control plane
 * ArmoniK compute plane
@@ -150,14 +144,19 @@ Execute the following command to deploy ArmoniK:
 make deploy-armonik STORAGE_PARAMETERS_FILE=<path-to-storage-parameters> MONITORING_PARAMETERS_FILE=<path-to-monitoring-parameters>
 ```
 
-where `<path-to-storage-parameters>` and `<path-to-monitoring-parameters>` are the **absolute** paths to
-files `storage/generated/storage-output.json` and `monitoring/generated/monitoring-output.json`, respectively,
-containing the information about storage and monitoring tools previously created.
+where:
 
-The ArmoniK deployment generates an output file `armonik/generated/armonik-output.json` that contains the endpoint URL
+- `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json`
+- `<path-to-monitoring-parameters>` is the **absolute** path to file `monitoring/generated/monitoring-output.json`
+  These files are input information for ArmoniK about storage and monitoring tools previously created.
+
+The ArmoniK deployment generates an output file `armonik/generated/armonik-output.json` which contains the endpoint URL
 of ArmoniK control plane.
 
-**Warning:** To deploy infrastructure and ArmoniK in all-in-one command:
+## All-in-one deploy
+
+All commands described above can be executed with one command. To deploy infrastructure and ArmoniK in all-in-one
+command, You execute:
 
 ```bash
 make deploy-all
@@ -167,14 +166,14 @@ make deploy-all
 
 ## Seq webserver
 
-After the deployment, connect to the Seq webserver by using `seq.web_url`, retrieved from the Terraform
+After the deployment, connect to the Seq webserver by using `seq.web_url` retrieved from the Terraform
 outputs `monitoring/generated/monitoring-output.json`, example:
 
 ```bash
 http://192.168.1.13:8080
 ```
 
-or
+or:
 
 ```bash
 http://localhost:8080
@@ -200,7 +199,8 @@ export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT
 export Grpc__Endpoint=http://$CPIP:$CPPort
 ```
 
-or You can replace them by the `armonik_control_plane_url` retrieved from Terraform outputs, example:
+or You can replace them by the `armonik.control_plane_url` retrieved from Terraform
+outputs `armonik/generated/armonik-output.json`, example:
 
 ```bash
 export Grpc__Endpoint=http://192.168.1.13:5001
@@ -259,7 +259,9 @@ make clean-monitoring
 make clean-aws-storage 
 ``` 
 
-### [Return to the Main page](../../README.md)
+### [Return to the infrastructure main page](../../README.md)
+
+### [Return to the project main page](../../../README.md)
 
 
 

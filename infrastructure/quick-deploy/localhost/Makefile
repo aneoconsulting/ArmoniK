@@ -76,6 +76,6 @@ clean-armonik:
 #               All                #
 ####################################
 
-deploy-all: deploy-storage deploy-monitoring deploy-armonik
+deploy-all: create-namespace deploy-storage deploy-monitoring deploy-armonik
 destroy-all: destroy-armonik destroy-monitoring destroy-storage
 clean-all: clean-armonik clean-monitoring clean-storage
