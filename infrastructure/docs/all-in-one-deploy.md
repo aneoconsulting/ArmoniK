@@ -47,7 +47,7 @@ following documentation [Install Kubernetes on dev/test local machine](../quick-
 From the **root** of the repository, position yourself in directory `infrastructure/utils/scripts/`:
 
 ```bash
-cd `infrastructure/utils/scripts
+cd infrastructure/utils/scripts
 ```
 
 - To see the usage command:
