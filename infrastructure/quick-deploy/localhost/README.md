@@ -10,6 +10,7 @@
     - [Monitoring](#monitoring)
     - [ArmoniK](#armonik)
     - [All-in-one deploy](#all-in-one-deploy)
+- [Script all-in-one](#script-all-in-one)
 - [Quick tests](#quick-tests)
     - [Seq webserver](#seq-webserver)
     - [Tests](#tests)
@@ -175,6 +176,14 @@ command, You execute:
 ```bash
 make deploy-all
 ```
+
+# Script all-in-one
+
+In addition to above instructions explaining how to deploy ArmoniK and its needed resources, You can use a bash
+script [deploy-dev-test-infra.sh](../../utils/scripts/deploy-dev-test-infra.sh) to automate the deployment on your local
+machine.
+
+You can find the usage of this script in [Script all-in-one](../../docs/all-in-one-deploy.md).
 
 # Quick tests
 

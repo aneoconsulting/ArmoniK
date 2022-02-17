@@ -6,9 +6,11 @@ BASEDIR=$(pwd -P)
 popd
 
 export MODE=""
-export SERVER_NFS_IP=$(hostname -I | awk '{print $1}')
+export HOST_PATH="/data"
+export SERVER_NFS_IP=""
 export SHARED_STORAGE_TYPE="HostPath"
-export ENV="onpremise"
+export SOURCE_CODES_LOCALHOST_DIR=$BASEDIR/../../quick-deploy/localhost
+export MODIFY_PARAMETERS_SCRIPT=$BASEDIR/../../../tools/modify_parameters.py
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -68,17 +70,21 @@ usage() {
   echo "   -m, --mode <Possible options below>"
   cat <<-EOF
   Where --mode should be :
-        destroy-all         : To destroy all storage and armonik in the same command
-        destroy-armonik     : To destroy Armonik deployment only
-        destroy-storage     : To destroy storage deployment only
         deploy-storage      : To deploy Storage independently on master machine. Available (Cluster or single node)
-        deploy-armonik      : To deploy armonik
-        deploy-all          : To deploy both Storage and Armonik
+        deploy-monitoring   : To deploy monitoring independently on master machine. Available (Cluster or single node)
+        deploy-armonik      : To deploy ArmoniK on master machine. Available (Cluster or single node)
+        deploy-all          : To deploy Storage, Monitoring and ArmoniK
         redeploy-storage    : To REdeploy storage
-        redeploy-armonik    : To REdeploy armonik
-        redeploy-all        : To REdeploy both storage and armonik
-
+        redeploy-monitoring : To REdeploy monitoring
+        redeploy-armonik    : To REdeploy ArmoniK
+        redeploy-all        : To REdeploy storage, monitoring and ArmoniK
+        destroy-storage     : To destroy storage deployment only
+        destroy-monitoring  : To destroy monitoring deployment only
+        destroy-armonik     : To destroy Armonik deployment only
+        destroy-all         : To destroy all storage, monitoring and ArmoniK in the same command
 EOF
+  echo "   -p, --host-path <HOST_PATH>"
+  echo
   echo "   -ip, --nfs-server-ip <SERVER_NFS_IP>"
   echo
   echo "   -s, --shared-storage-type <SHARED_STORAGE_TYPE>"
@@ -87,148 +93,119 @@ EOF
   Where --shared-storage-type should be :
         HostPath            : Use in localhost
         NFS                 : Use a NFS server
-        AWS_EBS             : Use an AWS Elastic Block Store
-EOF
-  echo
-  echo "   -env, --environment <COMPUTE_ENVIRONMENT>"
-  cat <<-EOF
-  Where --mode should be :
-        onpremise           : ArmoniK is deployed on localhost or onpremise cluster
-        aws                 : ArmoniK is deployed on AWS cloud
 EOF
   echo
   exit 1
 }
 
-# Clean
-destroy_storage() {
-  terraform_init_storage
-  cd $BASEDIR/../../storage/onpremise
-  execute terraform destroy -auto-approve
-  execute make clean
-  # execute kubectl delete namespace $ARMONIK_STORAGE_NAMESPACE
-  cd -
+# Set environment variables
+set_envvars() {
+  cd $SOURCE_CODES_LOCALHOST_DIR
+  source envvars.sh
 }
 
-destroy_armonik() {
-  terraform_init_armonik
-  cd $BASEDIR/../../armonik
-  execute terraform destroy -auto-approve
-  execute make clean
-  # execute kubectl delete namespace $ARMONIK_NAMESPACE
-  cd -
-}
-
-# deploy storage
-deploy_storage() {
-  terraform_init_storage
-  cd $BASEDIR/../../storage/onpremise
-  if [ $ENV == "onpremise" ]; then
-    execute terraform apply -var-file=parameters.tfvars -auto-approve
-  elif [ $ENV == "aws" ]; then
-    execute terraform apply -var-file=aws-parameters.tfvars -auto-approve
-  else
-    echo "Environment $ENV is unknown ! Possible values: -env=<\"onpremise\" | \"aws\">."
-    exit 1
+# Create shared storage
+create_host_path() {
+  STORAGE_TYPE=$(echo "$SHARED_STORAGE_TYPE" | awk '{print tolower($0)}')
+  if [ $STORAGE_TYPE == "hostpath" ]; then
+    sudo mkdir -p $HOST_PATH
+    sudo chown -R $USER:$USER $HOST_PATH
   fi
-  cd -
 }
 
-# storage endpoint urls
-endpoint_urls() {
-  pushd $BASEDIR/../../storage/onpremise >/dev/null 2>&1
-  export ACTIVEMQ_HOST=$(terraform output -json activemq_endpoint_url | jq -r '.host')
-  export ACTIVEMQ_PORT=$(terraform output -json activemq_endpoint_url | jq -r '.port')
-  export MONGODB_HOST=$(terraform output -json mongodb_endpoint_url | jq -r '.host')
-  export MONGODB_PORT=$(terraform output -json mongodb_endpoint_url | jq -r '.port')
-  export REDIS_URL=$(terraform output -json redis_endpoint_url | jq -r '.url')
-  export SHARED_STORAGE_HOST=${1:-""}
-  execute echo "Get Hostname for Shared Storage: \"${SHARED_STORAGE_HOST}\""
-  popd >/dev/null 2>&1
+# Create Kubernetes namespace
+create_kubernetes_namespace() {
+  cd $SOURCE_CODES_LOCALHOST_DIR
+  make create-namespace
 }
 
-# create configuration file
-storage_configuration_file (){
-  python $BASEDIR/../../../tools/modify_parameters.py \
-    -kv storage.object=Redis \
-    -kv storage.table=MongoDB \
-    -kv storage.queue=Amqp \
-    -kv storage.shared=$SHARED_STORAGE_TYPE \
-    -kv storage_endpoint_url.mongodb.host=$MONGODB_HOST \
-    -kv storage_endpoint_url.mongodb.port=$MONGODB_PORT \
-    -kv storage_endpoint_url.activemq.host=$ACTIVEMQ_HOST \
-    -kv storage_endpoint_url.activemq.port=$ACTIVEMQ_PORT \
-    -kv storage_endpoint_url.redis.url=$REDIS_URL \
-    -kv storage_endpoint_url.shared.host=$SHARED_STORAGE_HOST \
-    $BASEDIR/../../armonik/parameters/storage-parameters.tfvars \
+# Prepare storage parameters
+prepare_storage_parameters() {
+  STORAGE_TYPE=$(echo "$SHARED_STORAGE_TYPE" | awk '{print tolower($0)}')
+  python $MODIFY_PARAMETERS_SCRIPT \
+    -kv shared_storage.file_storage_type=$STORAGE_TYPE \
+    -kv shared_storage.file_server_ip=$SERVER_NFS_IP \
+    -kv shared_storage.host_path=$HOST_PATH \
+    $SOURCE_CODES_LOCALHOST_DIR/storage/parameters.tfvars \
     $BASEDIR/storage-parameters.tfvars.json
 }
 
-armonik_configuration_file (){
-  FILE=$BASEDIR/../../armonik/parameters/armonik-parameters.tfvars
-  if [ $ENV == "aws" ]; then
-    FILE=$BASEDIR/../../armonik/parameters/aws-armonik-parameters.tfvars
-  fi
-  python $BASEDIR/../../../tools/modify_parameters.py \
-    $FILE \
-    $BASEDIR/armonik-parameters.tfvars.json
+# Deploy storage
+deploy_storage() {
+  cd $SOURCE_CODES_LOCALHOST_DIR
+  make deploy-storage PARAMETERS_FILE=$BASEDIR/storage-parameters.tfvars.json
 }
 
-monitoring_configuration_file (){
-  FILE=$BASEDIR/../../armonik/parameters/monitoring-parameters.tfvars
-  if [ $ENV == "aws" ]; then
-    FILE=$BASEDIR/../../armonik/parameters/aws-monitoring-parameters.tfvars
-  fi
-  python $BASEDIR/../../../tools/modify_parameters.py \
-    $FILE \
-    $BASEDIR/monitoring-parameters.tfvars.json
+# Deploy monitoring
+deploy_monitoring() {
+  cd $SOURCE_CODES_LOCALHOST_DIR
+  make deploy-monitoring
 }
 
-configuration_file() {
-  storage_configuration_file
-  armonik_configuration_file
-  monitoring_configuration_file
-}
-
-# deploy armonik
+# Deploy ArmoniK
 deploy_armonik() {
-  terraform_init_armonik
-  # install hcl2
-  execute pip install python-hcl2
-  execute echo "Get Optional IP for Shared Storage: \"${SERVER_NFS_IP}\""
-  endpoint_urls $SERVER_NFS_IP
-
-  configuration_file ${SHARED_STORAGE_TYPE}
-
-  cd $BASEDIR/../../armonik
-  execute terraform apply \
-      -var-file $BASEDIR/storage-parameters.tfvars.json \
-      -var-file $BASEDIR/armonik-parameters.tfvars.json \
-      -var-file $BASEDIR/monitoring-parameters.tfvars.json \
-      -auto-approve
-  cd -
+  cd $SOURCE_CODES_LOCALHOST_DIR
+  make deploy-armonik
 }
 
-function terraform_init_storage() {
-  pushd $BASEDIR/../../storage/onpremise >/dev/null 2>&1
-  execute echo "change to directory : $(pwd -P)"
-  execute terraform init
-  popd >/dev/null 2>&1
+# Deploy storage, monitoring and ArmoniK
+deploy_all() {
+  deploy_storage
+  deploy_monitoring
+  deploy_armonik
 }
 
-function terraform_init_armonik() {
-  pushd $BASEDIR/../../armonik >/dev/null 2>&1
-  execute echo "change to directory : $(pwd -P)"
-  execute terraform init
-  popd >/dev/null 2>&1
+# Redeploy storage
+redeploy_storage() {
+  cd $SOURCE_CODES_LOCALHOST_DIR
+  make destroy-storage
+  make deploy-storage PARAMETERS_FILE=$BASEDIR/storage-parameters.tfvars.json
 }
 
-create_kube_secrets() {
-  cd $BASEDIR
-  bash init-kube-storage.sh
-  bash init-kube-armonik.sh
-  bash init-kube-monitoring.sh
-  cd -
+# Redeploy monitoring
+redeploy_monitoring() {
+  cd $SOURCE_CODES_LOCALHOST_DIR
+  make destroy-monitoring
+  make deploy-monitoring
+}
+
+# Redeploy ArmoniK
+redeploy_armonik() {
+  cd $SOURCE_CODES_LOCALHOST_DIR
+  make destroy-armonik
+  make deploy-armonik
+}
+
+# Redeploy storage, monitoring and ArmoniK
+redeploy_all() {
+  redeploy_storage
+  redeploy_monitoring
+  redeploy_armonik
+}
+
+# Destroy storage
+destroy_storage() {
+  cd $SOURCE_CODES_LOCALHOST_DIR
+  make destroy-storage PARAMETERS_FILE=$BASEDIR/storage-parameters.tfvars.json
+}
+
+# Destroy monitoring
+destroy_monitoring() {
+  cd $SOURCE_CODES_LOCALHOST_DIR
+  make destroy-monitoring
+}
+
+# Destroy ArmoniK
+destroy_armonik() {
+  cd $SOURCE_CODES_LOCALHOST_DIR
+  make destroy-armonik
+}
+
+# Destroy storage, monitoring and ArmoniK
+destroy_all() {
+  destroy_armonik
+  destroy_monitoring
+  destroy_storage
 }
 
 # Main
@@ -272,13 +249,13 @@ function main() {
       shift
       shift
       ;;
-    -env)
-      ENV="$2"
+    -p)
+      HOST_PATH="$2"
       shift
       shift
       ;;
-    --envirnment)
-      ENV="$2"
+    --host-path)
+      HOST_PATH="$2"
       shift
       shift
       ;;
@@ -292,43 +269,46 @@ function main() {
     esac
   done
 
-  # source envvars
-  source $BASEDIR/envvars-storage.sh
-  source $BASEDIR/envvars-monitoring.sh
-  source $BASEDIR/envvars-armonik.sh
+  # Set environment variables
+  set_envvars
 
-  # Create Kubernetes secrets
-  create_kube_secrets
+  # Create shared storage
+  create_host_path
+
+  # Create Kubernetes namespace
+  create_kubernetes_namespace
+
+  # Prepare storage parameters
+  prepare_storage_parameters
 
   # Manage infra
   if [ -z $MODE ]; then
     usage
     exit
-  elif [ $MODE == "destroy-armonik" ]; then
-    destroy_armonik
-  elif [ $MODE == "destroy-storage" ]; then
-    destroy_storage
-  elif [ $MODE == "destroy-all" ]; then
-    destroy_storage
-    destroy_armonik
   elif [ $MODE == "deploy-storage" ]; then
     deploy_storage
+  elif [ $MODE == "deploy-monitoring" ]; then
+    deploy_monitoring
   elif [ $MODE == "deploy-armonik" ]; then
     deploy_armonik
   elif [ $MODE == "deploy-all" ]; then
-    deploy_storage
-    deploy_armonik
-  elif [[ $MODE == "redeploy-storage" ]]; then
+    deploy_all
+  elif [ $MODE == "redeploy-storage" ]; then
+    redeploy_storage
+  elif [ $MODE == "redeploy-monitoring" ]; then
+    redeploy_monitoring
+  elif [ $MODE == "redeploy-armonik" ]; then
+    redeploy_armonik
+  elif [ $MODE == "redeploy-all" ]; then
+    redeploy_all
+  elif [ $MODE == "destroy-storage" ]; then
     destroy_storage
-    deploy_storage
-  elif [[ $MODE == "redeploy-armonik" ]]; then
+  elif [ $MODE == "destroy-monitoring" ]; then
+    destroy_monitoring
+  elif [ $MODE == "destroy-armonik" ]; then
     destroy_armonik
-    deploy_armonik
-  elif [[ $MODE == "redeploy-all" ]]; then
-    destroy_storage
-    destroy_armonik
-    deploy_storage
-    deploy_armonik
+  elif [ $MODE == "destroy-all" ]; then
+    destroy_all
   else
     echo -e "\n${RED}$0 $@ where [ $MODE ] is not a correct Mode${NC}\n"
     usage

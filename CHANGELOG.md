@@ -6,11 +6,14 @@ Removed
 -
 
 * Support for external Redis and Htc Mock v1
+* Old deployments of storage and ArmoniK
 
 Added
 -
 
 * Add liveness, readiness and startup probes for seq
+* Add source codes of ArmoniK deployment on local machine in quick-deploy/
+* Add source codes of ArmoniK deployment on AWS in quick-deploy/
 
 Changed
 -
