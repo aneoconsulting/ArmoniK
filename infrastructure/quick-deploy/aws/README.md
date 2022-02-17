@@ -182,6 +182,8 @@ where:
 
 The EKS deployment generates an output file `eks/generated/eks-output.json`.
 
+### Create Kubernetes namespace
+
 After the EKS deployment, You create a Kubernetes namespace for ArmoniK with the name set in the environment
 variable`ARMONIK_KUBERNETES_NAMESPACE`:
 
