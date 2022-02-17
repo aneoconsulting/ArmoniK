@@ -182,6 +182,13 @@ where:
 
 The EKS deployment generates an output file `eks/generated/eks-output.json`.
 
+After the EKS deployment, You create a Kubernetes namespace for ArmoniK with the name set in the environment
+variable`ARMONIK_KUBERNETES_NAMESPACE`:
+
+```bash
+make create-namespace
+```
+
 ## AWS storage
 
 You need to create AWS storage for ArmoniK which are:
@@ -193,14 +200,7 @@ You need to create AWS storage for ArmoniK which are:
 
 The parameters of each storage are defined in [storage/parameters.tfvars](storage/parameters.tfvars).
 
-First, you create a Kubernetes namespace for ArmoniK with the name set in the environment
-variable`ARMONIK_KUBERNETES_NAMESPACE`:
-
-```bash
-make create-namespace
-```
-
-Then, execute the following command to create the storage:
+Execute the following command to create the storage:
 
 ```bash
 make deploy-aws-storage

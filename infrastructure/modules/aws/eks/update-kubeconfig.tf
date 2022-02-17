@@ -4,7 +4,10 @@ resource "null_resource" "update_kubeconfig" {
     cluster_arn = module.eks.cluster_arn
   }
   provisioner "local-exec" {
-    command = "mkdir -p ~/.kube && touch ~/.kube/config"
+    command = "mkdir -p ~/.kube"
+  }
+  provisioner "local-exec" {
+    command = "touch ~/.kube/config"
   }
   provisioner "local-exec" {
     command = "sed -i 's/: null/: []/g' ~/.kube/config"
