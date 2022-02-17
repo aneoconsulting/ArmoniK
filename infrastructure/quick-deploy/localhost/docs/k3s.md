@@ -32,8 +32,8 @@ To uninstall k3s on your local machine or a VM, use the following command:
 /usr/local/bin/k3s-uninstall.sh
 ```
 
-### [Return to Quick install on localhost](../../quick-deploy/localhost/README.md)
+### [Return to quick deploy ArmoniK on local machine](../README.md#prerequisites)
 
-### [Return to Quick install on AWS](../../quick-deploy/aws/README.md)
+### [Return to the infrastructure main page](../../../README.md)
 
-### [Return to Main page](../../README.md)
+### [Return to the project main page](../../../../README.md)

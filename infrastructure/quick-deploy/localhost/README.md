@@ -45,8 +45,8 @@ The following software or tool should be installed upon your local Linux machine
 
 # Install Kubernetes
 
-You must have a Kubernetes to install ArmoniK. If not, You can follow instructions in one of the following
-documentation [Install Kubernetes on dev/test local machine](docs/k3s.md).
+You must have a Kubernetes on your local machine to install ArmoniK. If not, You can follow instructions in one of the
+following documentation [Install Kubernetes on dev/test local machine](docs/k3s.md).
 
 # Set environment variables
 
