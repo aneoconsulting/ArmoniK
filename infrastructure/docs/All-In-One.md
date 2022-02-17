@@ -46,9 +46,9 @@ The following software or tool should be installed upon your local Linux machine
 
 You have two list of environment variables to set upon your local machine:
 
-* environment variables for storage [envvars-storage.sh](../../utils/scripts/envvars-storage.sh)
-* environment variables for storage [envvars-monitoring.sh](../../utils/scripts/envvars-monitoring.sh)
-* environment variables for ArmoniK [envvars-armonik.sh](../../utils/scripts/envvars-armonik.sh)
+* environment variables for storage [envvars-storage.sh](../utils/scripts/envvars-storage.sh)
+* environment variables for storage [envvars-monitoring.sh](../utils/scripts/envvars-monitoring.sh)
+* environment variables for ArmoniK [envvars-armonik.sh](../utils/scripts/envvars-armonik.sh)
 
 **Warning:** You can edit or copy these two files and modify values of the environment variables as You want.
 
@@ -175,12 +175,12 @@ http://localhost:8080
 
 where `Username: admin` and `Password: admin`:
 
-![](images/seq_auth.png)
+![](../quick-deploy/localhost/images/seq_auth.png)
 
 ## Tests
 
-You have two scripts for testing ArmoniK [symphony_like.sh](../../../tools/tests/symphony_like.sh)
-and [datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh). The following commands in these scripts allow to
+You have two scripts for testing ArmoniK [symphony_like.sh](../../tools/tests/symphony_like.sh)
+and [datasynapse_like.sh](../../tools/tests/datasynapse_like.sh). The following commands in these scripts allow to
 retrieve the endpoint URL of ArmoniK control plane:
 
 ```bash
@@ -195,19 +195,19 @@ or You can replace them by the `armonik_control_plane_url` retrieved from Terraf
 export Grpc__Endpoint=http://192.168.1.13:5001
 ```
 
-Execute [tools/tests/symphony_like.sh](../../../tools/tests/symphony_like.sh) from the **root** repository:
+Execute [tools/tests/symphony_like.sh](../../tools/tests/symphony_like.sh) from the **root** repository:
 
 ```bash
 tools/tests/symphony_like.sh
 ```
 
-Execute [tools/tests/datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh) from the **root** repository:
+Execute [tools/tests/datasynapse_like.sh](../../tools/tests/datasynapse_like.sh) from the **root** repository:
 
 ```bash
 tools/tests/datasynapse_like.sh
 ```
 
-Execute [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh) from the **root**
+Execute [tools/tests/symphony_endToendTests.sh](../../tools/tests/symphony_endToendTests.sh) from the **root**
 repository:
 
 ```bash
@@ -216,7 +216,7 @@ tools/tests/symphony_endToendTests.sh
 
 You can follow logs on Seq webserver:
 
-![](images/seq.png)
+![](../quick-deploy/localhost/images/seq.png)
 
 # Clean-up
 
@@ -233,4 +233,4 @@ infrastructure/utils/scripts/deploy-dev-test-infra.sh -m destroy-all
 /usr/local/bin/k3s-uninstall.sh
 ```
 
-### [Return to the main page](../../README.md)
+### [Return to the main page](../README.md)
