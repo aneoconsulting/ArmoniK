@@ -112,6 +112,12 @@ If you want to destroy each resource independently:
   ./deploy-dev-test-infra.sh -m destroy-armonik
   ```
 
+If You want to deploy on specific Kubernetes namespace, You execute the following command:
+
+```bash
+./deploy-dev-test-infra.sh -m deploy-all --namespace <NAMESPACE>
+```
+
 If the `host_path` for shared storage for ArmoniK workers is not `/data`, You can deploy the infrastructure as follows:
 
 ```bash

@@ -6,11 +6,17 @@ BASEDIR=$(pwd -P)
 popd
 
 export MODE=""
+export NAMEPSACE="armonik"
 export HOST_PATH="/data"
 export SERVER_NFS_IP=""
 export SHARED_STORAGE_TYPE="HostPath"
 export SOURCE_CODES_LOCALHOST_DIR=$BASEDIR/../../quick-deploy/localhost
 export MODIFY_PARAMETERS_SCRIPT=$BASEDIR/../../../tools/modify_parameters.py
+
+export ARMONIK_KUBERNETES_NAMESPACE=$NAMEPSACE
+export ARMONIK_SHARED_HOST_PATH=$HOST_PATH
+export ARMONIK_FILE_STORAGE_FILE=$SHARED_STORAGE_TYPE
+export ARMONIK_FILE_SERVER_IP=$SERVER_NFS_IP
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -83,6 +89,8 @@ usage() {
         destroy-armonik     : To destroy Armonik deployment only
         destroy-all         : To destroy all storage, monitoring and ArmoniK in the same command
 EOF
+  echo "   -n, --namespace <NAMESPACE>"
+  echo
   echo "   -p, --host-path <HOST_PATH>"
   echo
   echo "   -ip, --nfs-server-ip <SERVER_NFS_IP>"
@@ -256,6 +264,16 @@ function main() {
       ;;
     --host-path)
       HOST_PATH="$2"
+      shift
+      shift
+      ;;
+    -n)
+      NAMESPACE="$2"
+      shift
+      shift
+      ;;
+    --namespace)
+      NAMESPACE="$2"
       shift
       shift
       ;;
