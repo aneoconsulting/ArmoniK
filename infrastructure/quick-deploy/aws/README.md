@@ -166,11 +166,19 @@ in [eks/parameters.tfvars](eks/parameters.tfvars).
 Execute the following command to create the EKS:
 
 ```bash
+make deploy-eks
+```
+
+**or:**
+
+```bash
 make deploy-eks VPC_PARAMETERS_FILE=<path-to-vpc-parameters>
 ```
 
-where `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/vpc-output.json` containing the
-information about the VPC previously created.
+where:
+
+- `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/vpc-output.json` containing the information
+  about the VPC previously created.
 
 The EKS deployment generates an output file `eks/generated/eks-output.json`.
 
@@ -195,12 +203,22 @@ make create-namespace
 Then, execute the following command to create the storage:
 
 ```bash
+make deploy-aws-storage
+```
+
+**or:**
+
+```bash
 make deploy-aws-storage VPC_PARAMETERS_FILE=<path-to-vpc-parameters> EKS_PARAMETERS_FILE=<path-to-eks-parameters>
 ```
 
-where `<path-to-vpc-parameters>` and `<path-to-eks-parameters>` are the **absolute** paths to
-files `vpc/generated/vpc-output.json` and `eks/generated/eks-output.json`, respectively, containing the information
-about the VPC and EKS previously created.
+where:
+
+- `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/vpc-output.json`
+- `<path-to-eks-parameters>` is the **absolute** path to file `eks/generated/eks-output.json`
+
+These files are input information for storage deployment about containing the information about the VPC and EKS
+previously created.
 
 The storage deployment generates an output file `storage/generated/storage-output.json` that contains information needed
 for ArmoniK.
@@ -234,17 +252,30 @@ After deploying the infrastructure, You can install ArmoniK in AWS EKS. The inst
 Execute the following command to deploy ArmoniK:
 
 ```bash
+make deploy-armonik 
+```
+
+**or:**
+
+```bash
 make deploy-armonik STORAGE_PARAMETERS_FILE=<path-to-storage-parameters> MONITORING_PARAMETERS_FILE=<path-to-monitoring-parameters>
 ```
 
-where `<path-to-storage-parameters>` and `<path-to-monitoring-parameters>` are the **absolute** paths to
-files `storage/generated/storage-output.json` and `monitoring/generated/monitoring-output.json`, respectively,
-containing the information about storage and monitoring tools previously created.
+where:
+
+- `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json`
+- `<path-to-monitoring-parameters>` is the **absolute** path to file `monitoring/generated/monitoring-output.json`
+
+These files are input information for ArmoniK about containing the information about storage and monitoring tools
+previously created.
 
 The ArmoniK deployment generates an output file `armonik/generated/armonik-output.json` that contains the endpoint URL
 of ArmoniK control plane.
 
-**Warning:** To deploy infrastructure and ArmoniK in all-in-one command:
+### All-in-one deploy
+
+All commands described above can be executed with one command. To deploy infrastructure and ArmoniK in all-in-one
+command, You execute:
 
 ```bash
 make deploy-all
@@ -286,7 +317,9 @@ make clean-vpc
 make clean-ecr
 ```
 
-### [Return to the Main page](../../README.md)
+### [Return to the infrastructure main page](../../README.md)
+
+### [Return to the project main page](../../../README.md)
 
 
 
