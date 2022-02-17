@@ -5,18 +5,13 @@ pushd $BASEDIR
 BASEDIR=$(pwd -P)
 popd
 
-export MODE=""
-export NAMEPSACE="armonik"
-export HOST_PATH="/data"
-export SERVER_NFS_IP=""
-export SHARED_STORAGE_TYPE="HostPath"
-export SOURCE_CODES_LOCALHOST_DIR=$BASEDIR/../../quick-deploy/localhost
-export MODIFY_PARAMETERS_SCRIPT=$BASEDIR/../../../tools/modify_parameters.py
-
-export ARMONIK_KUBERNETES_NAMESPACE=$NAMEPSACE
-export ARMONIK_SHARED_HOST_PATH=$HOST_PATH
-export ARMONIK_FILE_STORAGE_FILE=$SHARED_STORAGE_TYPE
-export ARMONIK_FILE_SERVER_IP=$SERVER_NFS_IP
+MODE=""
+NAMESPACE="armonik"
+HOST_PATH="/data"
+SERVER_NFS_IP=""
+SHARED_STORAGE_TYPE="HostPath"
+SOURCE_CODES_LOCALHOST_DIR=$BASEDIR/../../quick-deploy/localhost
+MODIFY_PARAMETERS_SCRIPT=$BASEDIR/../../../tools/modify_parameters.py
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -108,8 +103,10 @@ EOF
 
 # Set environment variables
 set_envvars() {
-  cd $SOURCE_CODES_LOCALHOST_DIR
-  source envvars.sh
+  export ARMONIK_KUBERNETES_NAMESPACE=$NAMESPACE
+  export ARMONIK_SHARED_HOST_PATH=$HOST_PATH
+  export ARMONIK_FILE_STORAGE_FILE=$SHARED_STORAGE_TYPE
+  export ARMONIK_FILE_SERVER_IP=$SERVER_NFS_IP
 }
 
 # Create shared storage
