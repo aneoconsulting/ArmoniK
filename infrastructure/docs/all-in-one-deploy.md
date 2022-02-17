@@ -52,76 +52,76 @@ cd infrastructure/utils/scripts
 
 - To see the usage command:
   ```bash
-  deploy-dev-test-infra.sh -h
+  ./deploy-dev-test-infra.sh -h
   ```
 - To deploy for the first time all infrastructure:
   ```bash
-  deploy-dev-test-infra.sh -m depploy-all
+  ./deploy-dev-test-infra.sh -m depploy-all
   ```
 - To redeploy all infrastructure:
   ```bash
-  deploy-dev-test-infra.sh -m redepploy-all
+  ./deploy-dev-test-infra.sh -m redepploy-all
   ```
 - To destroy all infrastructure:
   ```bash
-  deploy-dev-test-infra.sh -m destroy-all
+  ./deploy-dev-test-infra.sh -m destroy-all
   ```
 
 If you want to deploy each resource independently:
 
 - To deploy storage:
   ```bash
-  deploy-dev-test-infra.sh -m deploy-storage
+  ./deploy-dev-test-infra.sh -m deploy-storage
   ```
 - To deploy monitoring:
   ```bash
-  deploy-dev-test-infra.sh -m deploy-monitoring
+  ./deploy-dev-test-infra.sh -m deploy-monitoring
   ```
 - To deploy armonik:
   ```bash
-  deploy-dev-test-infra.sh -m deploy-armonik
+  ./deploy-dev-test-infra.sh -m deploy-armonik
   ```
 
 If you want to redeploy each resource independently:
 
 - To redeploy storage:
   ```bash
-  deploy-dev-test-infra.sh -m redeploy-storage
+  ./deploy-dev-test-infra.sh -m redeploy-storage
   ```
 - To redeploy monitoring:
   ```bash
-  deploy-dev-test-infra.sh -m redeploy-monitoring
+  ./deploy-dev-test-infra.sh -m redeploy-monitoring
   ```
 - To redeploy armonik:
   ```bash
-  deploy-dev-test-infra.sh -m redeploy-armonik
+  ./deploy-dev-test-infra.sh -m redeploy-armonik
   ```
 
 If you want to destroy each resource independently:
 
 - To destroy storage:
   ```bash
-  deploy-dev-test-infra.sh -m destroy-storage
+  ./deploy-dev-test-infra.sh -m destroy-storage
   ```
 - To destroy monitoring:
   ```bash
-  deploy-dev-test-infra.sh -m destroy-monitoring
+  ./deploy-dev-test-infra.sh -m destroy-monitoring
   ```
 - To destroy armonik:
   ```bash
-  deploy-dev-test-infra.sh -m destroy-armonik
+  ./deploy-dev-test-infra.sh -m destroy-armonik
   ```
 
 If the `host_path` for shared storage for ArmoniK workers is not `/data`, You can deploy the infrastructure as follows:
 
 ```bash
-deploy-dev-test-infra.sh -m deploy-all --host-path <HOST_PATH>
+./deploy-dev-test-infra.sh -m deploy-all --host-path <HOST_PATH>
 ```
 
 If you have a NFS filesystem as shared storage for ArmoniK workers, You deploy the infrastructure as follows:
 
 ```bash
-deploy-dev-test-infra.sh \
+./deploy-dev-test-infra.sh \
   -m deploy-all \
   --host-path <HOST_PATH> \
   --nfs-server-ip <SERVER_NFS_IP> \
