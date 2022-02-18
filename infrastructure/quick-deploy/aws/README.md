@@ -155,7 +155,7 @@ Execute the following command to create the VPC:
 make deploy-vpc
 ```
 
-The VPC deployment generates an output file `vpc/generated/vpc-output.json` that contains information needed for the
+The VPC deployment generates an output file `vpc/generated/vpc-output.json` which contains information needed for the
 deployments of storage and Kubernetes.
 
 ## AWS EKS
@@ -211,7 +211,9 @@ make deploy-aws-storage
 **or:**
 
 ```bash
-make deploy-aws-storage VPC_PARAMETERS_FILE=<path-to-vpc-parameters> EKS_PARAMETERS_FILE=<path-to-eks-parameters>
+make deploy-aws-storage \
+  VPC_PARAMETERS_FILE=<path-to-vpc-parameters> \
+  EKS_PARAMETERS_FILE=<path-to-eks-parameters>
 ```
 
 where:
@@ -219,11 +221,11 @@ where:
 - `<path-to-vpc-parameters>` is the **absolute** path to file `vpc/generated/vpc-output.json`
 - `<path-to-eks-parameters>` is the **absolute** path to file `eks/generated/eks-output.json`
 
-These files are input information for storage deployment about containing the information about the VPC and EKS
-previously created.
+These files are input information for storage deployment containing the information about the VPC and EKS previously
+created.
 
-The storage deployment generates an output file `storage/generated/storage-output.json` that contains information needed
-for ArmoniK.
+The storage deployment generates an output file `storage/generated/storage-output.json` which contains information
+needed for ArmoniK.
 
 ## Monitoring
 
@@ -235,11 +237,22 @@ You deploy the following resources for monitoring ArmoniK :
 
 The parameters of each monitoring resources are defined in [monitoring/parameters.tfvars](monitoring/parameters.tfvars).
 
-Execute the following command to create the storage:
+Execute the following command to create the monitoring tools:
 
 ```bash
-make deploy-monitoring
+make deploy-monitoring 
 ```
+
+**or:**
+
+```bash
+make deploy-monitoring EKS_PARAMETERS_FILE=<path-to-eks-parameters>
+```
+
+where:
+
+- `<path-to-eks-parameters>` is the **absolute** path to file `eks/generated/eks-output.json` containing the information
+  about the VPC previously created.
 
 The monitoring deployment generates an output file `monitoring/generated/monitoring-output.json` that contains
 information needed for ArmoniK.
@@ -260,7 +273,9 @@ make deploy-armonik
 **or:**
 
 ```bash
-make deploy-armonik STORAGE_PARAMETERS_FILE=<path-to-storage-parameters> MONITORING_PARAMETERS_FILE=<path-to-monitoring-parameters>
+make deploy-armonik \
+  STORAGE_PARAMETERS_FILE=<path-to-storage-parameters> \
+  MONITORING_PARAMETERS_FILE=<path-to-monitoring-parameters>
 ```
 
 where:
@@ -268,8 +283,8 @@ where:
 - `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json`
 - `<path-to-monitoring-parameters>` is the **absolute** path to file `monitoring/generated/monitoring-output.json`
 
-These files are input information for ArmoniK about containing the information about storage and monitoring tools
-previously created.
+These files are input information for ArmoniK containing the information about storage and monitoring tools previously
+created.
 
 The ArmoniK deployment generates an output file `armonik/generated/armonik-output.json` that contains the endpoint URL
 of ArmoniK control plane.

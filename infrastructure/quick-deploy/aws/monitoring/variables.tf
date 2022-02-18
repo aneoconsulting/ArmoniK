@@ -26,6 +26,20 @@ variable "k8s_config_context" {
   default     = "default"
 }
 
+# SUFFIX
+variable "suffix" {
+  description = "To suffix the AWS resources"
+  type        = string
+  default     = ""
+}
+
+# AWS TAGs
+variable "tags" {
+  description = "Tags for AWS resources"
+  type        = any
+  default     = {}
+}
+
 # Kubernetes namespace
 variable "namespace" {
   description = "Kubernetes namespace for ArmoniK"
@@ -38,6 +52,12 @@ variable "node_selector" {
   description = "Node selector for Seq"
   type        = any
   default     = {}
+}
+
+# EKS info
+variable "eks" {
+  description = "EKS info"
+  type        = any
 }
 
 # Monitoring infos
@@ -62,6 +82,18 @@ variable "monitoring" {
       service_type  = string
       use           = bool
       node_exporter = object({
+        image = string
+        tag   = string
+      })
+    })
+    cloudwatch = object({
+      use                       = bool
+      fluent_bit_http_port      = number
+      fluent_bit_read_from_head = bool
+      ci_version                = string
+      kms_key_id                = string
+      retention_in_days         = number
+      fluent_bit                = object({
         image = string
         tag   = string
       })

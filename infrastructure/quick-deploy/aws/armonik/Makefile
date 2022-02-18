@@ -34,7 +34,6 @@ apply:
 		-var 'region=$(REGION)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
-		-var
 		-state $(STATE_FILE) \
 		-auto-approve
 

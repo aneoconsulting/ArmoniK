@@ -72,6 +72,11 @@ ecr = {
       tag   = "1.3.11"
     },
     {
+      name  = "aws-for-fluent-bit"
+      image = "amazon/aws-for-fluent-bit"
+      tag   = "2.10.0" #"2.22.0"
+    },
+    {
       name  = "node-exporter"
       image = "prom/node-exporter"
       tag   = "latest"

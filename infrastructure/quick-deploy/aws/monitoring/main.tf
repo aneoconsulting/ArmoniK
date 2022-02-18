@@ -45,3 +45,35 @@ module "prometheus" {
   }
   working_dir   = "${path.root}/../../.."
 }
+
+# KMS key for cloudwatch
+module "kms" {
+  count  = (var.monitoring.cloudwatch.kms_key_id == "" ? 1 : 0)
+  source = "../../../modules/aws/kms"
+  name   = "armonik-kms-application-logs-${local.suffix}-${local.random_string}"
+  tags   = local.tags
+}
+
+# Fluent-bit for CloudWatch
+module "fluent_bit_cloudwatch" {
+  count                = (var.monitoring.cloudwatch.use ? 1 : 0)
+  source               = "../../../modules/monitoring/fluent-bit-cloudwatch"
+  namespace            = var.namespace
+  node_selector        = var.node_selector
+  ci_version           = var.monitoring.cloudwatch.ci_version
+  cluster_info         = {
+    cluster_name              = local.cluster_name
+    log_region                = var.region
+    fluent_bit_http_port      = var.monitoring.cloudwatch.fluent_bit_http_port
+    fluent_bit_read_from_head = var.monitoring.cloudwatch.fluent_bit_read_from_head
+  }
+  fluent_bit           = {
+    image = var.monitoring.cloudwatch.fluent_bit.image
+    tag   = var.monitoring.cloudwatch.fluent_bit.tag
+  }
+  cloudwatch_log_group = {
+    kms_key_id        = (var.monitoring.cloudwatch.kms_key_id != "" ? var.monitoring.cloudwatch.kms_key_id : module.kms.0.selected.arn)
+    retention_in_days = var.monitoring.cloudwatch.retention_in_days
+    tags              = local.tags
+  }
+}

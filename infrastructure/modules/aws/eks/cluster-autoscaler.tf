@@ -1,6 +1,6 @@
 # A component that automatically adjusts the size of a Kubernetes Cluster so that all pods have a place to run and there are no unneeded nodes
 resource "helm_release" "cluster_autoscaler" {
-  name       = "armonik-cluster-autoscaler"
+  name       = "armonik"
   namespace  = "kube-system"
   chart      = "cluster-autoscaler"
   #repository = "https://kubernetes.github.io/autoscaler"

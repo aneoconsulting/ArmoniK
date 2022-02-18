@@ -1,0 +1,38 @@
+# Service account and role for Fluent-bit
+resource "kubernetes_service_account" "fluent_bit" {
+  metadata {
+    name      = "fluent-bit-cloudwatch"
+    namespace = var.namespace
+  }
+}
+
+resource "kubernetes_cluster_role" "fluent_bit_role" {
+  metadata {
+    name = "fluent-bit-cloudwatch-role"
+  }
+  rule {
+    non_resource_urls = ["/metrics"]
+    verbs             = ["get"]
+  }
+  rule {
+    api_groups = [""]
+    resources  = ["namespaces", "pods", "pods/logs"]
+    verbs      = ["get", "list", "watch"]
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "fluent_bit_role_binding" {
+  metadata {
+    name = "fluent-bit-cloudwatch-role-binding"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role.fluent_bit_role.metadata.0.name
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.fluent_bit.metadata.0.name
+    namespace = kubernetes_service_account.fluent_bit.metadata.0.namespace
+  }
+}

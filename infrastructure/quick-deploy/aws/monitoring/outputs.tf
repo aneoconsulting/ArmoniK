@@ -17,5 +17,10 @@ output "monitoring" {
       port = module.prometheus.0.port
       url  = module.prometheus.0.url
     } : {})
+    cloudwatch = (var.monitoring.cloudwatch.use ? {
+      application_logs = module.fluent_bit_cloudwatch.0.application_cloudwatch_log_group
+      dataplane_logs   = module.fluent_bit_cloudwatch.0.dataplane_cloudwatch_log_group
+      host_logs        = module.fluent_bit_cloudwatch.0.host_cloudwatch_log_group
+    } : {})
   }
 }

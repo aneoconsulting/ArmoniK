@@ -65,14 +65,16 @@ resource "aws_elasticache_subnet_group" "elasticache" {
 
 # Enable cloudwatch logs
 # Slow log and engine log not yet available in Terraform
-resource "aws_cloudwatch_log_group" "slow_log" {
+module "slow_log" {
+  source            = "../cloudwatch-log-group"
   name              = "/aws/elasticache/${var.name}-slow-log"
   kms_key_id        = var.elasticache.encryption_keys.log_kms_key_id
   retention_in_days = var.elasticache.log_retention_in_days
   tags              = local.tags
 }
 
-resource "aws_cloudwatch_log_group" "engine_log" {
+module "engine_log" {
+  source            = "../cloudwatch-log-group"
   name              = "/aws/elasticache/${var.name}-engine-log"
   kms_key_id        = var.elasticache.encryption_keys.log_kms_key_id
   retention_in_days = var.elasticache.log_retention_in_days
@@ -81,12 +83,12 @@ resource "aws_cloudwatch_log_group" "engine_log" {
 
 resource "null_resource" "enable_logs" {
   provisioner "local-exec" {
-    command = "aws elasticache modify-replication-group --replication-group-id ${aws_elasticache_replication_group.elasticache.id} --apply-immediately --log-delivery-configurations '[{\"LogType\":\"slow-log\",\"DestinationType\":\"cloudwatch-logs\",\"DestinationDetails\":{\"CloudWatchLogsDetails\":{\"LogGroup\":\"${aws_cloudwatch_log_group.slow_log.name}\"}},\"LogFormat\":\"json\",\"Enabled\":true},{\"LogType\":\"engine-log\",\"DestinationType\":\"cloudwatch-logs\",\"DestinationDetails\":{\"CloudWatchLogsDetails\":{\"LogGroup\":\"${aws_cloudwatch_log_group.engine_log.name}\"}},\"LogFormat\":\"json\",\"Enabled\":true}]'"
+    command = "aws elasticache modify-replication-group --replication-group-id ${aws_elasticache_replication_group.elasticache.id} --apply-immediately --log-delivery-configurations '[{\"LogType\":\"slow-log\",\"DestinationType\":\"cloudwatch-logs\",\"DestinationDetails\":{\"CloudWatchLogsDetails\":{\"LogGroup\":\"${module.slow_log.name}\"}},\"LogFormat\":\"json\",\"Enabled\":true},{\"LogType\":\"engine-log\",\"DestinationType\":\"cloudwatch-logs\",\"DestinationDetails\":{\"CloudWatchLogsDetails\":{\"LogGroup\":\"${module.engine_log.name}\"}},\"LogFormat\":\"json\",\"Enabled\":true}]'"
   }
   depends_on = [
     aws_elasticache_replication_group.elasticache,
-    aws_cloudwatch_log_group.engine_log,
-    aws_cloudwatch_log_group.slow_log
+    module.engine_log,
+    module.slow_log
   ]
 }
 
