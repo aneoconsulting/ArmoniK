@@ -28,7 +28,6 @@ resource "kubernetes_deployment" "mongodb" {
         }
       }
       spec {
-        node_selector = var.mongodb.node_selector
         dynamic toleration {
           for_each = (var.mongodb.node_selector != {} ? [1] : [])
           content {
