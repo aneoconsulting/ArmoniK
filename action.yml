@@ -65,7 +65,7 @@ runs:
         cd ${{ github.action_path }}
         bash tools/install/k3s.sh
 
-    - name: Set environement variables
+    - name: Set environment variables
       shell: bash
       run: |
         set -ex
