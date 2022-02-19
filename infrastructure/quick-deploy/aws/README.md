@@ -308,7 +308,7 @@ To delete all resources created in AWS, You can execute the following all-in-one
 make destroy-all
 ```
 
-or execute the following commands in this order:
+**or:** execute the following commands in this order:
 
 ```bash
 make destroy-armonik 
@@ -325,7 +325,7 @@ To clean-up and delete all generated files, You execute:
 make clean-all
 ```
 
-or:
+**or:**
 
 ```bash
 make clean-armonik 
