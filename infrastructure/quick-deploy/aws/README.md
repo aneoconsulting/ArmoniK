@@ -33,6 +33,8 @@ The infrastructure is composed of:
     * Onpremise MongoDB
 * Monitoring:
     * Seq server for structured log data of ArmoniK
+    * Grafana
+    * Prometheus
     * AWS CloudWatch
 * ArmoniK:
     * Control plane
