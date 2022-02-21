@@ -59,6 +59,12 @@ variable "eks" {
   })
 }
 
+# Operational node groups for EKS
+variable "eks_operational_worker_groups" {
+  description = "List of EKS operational node groups"
+  type        = any
+}
+
 # Worker node groups
 variable "eks_worker_groups" {
   description = "List of EKS worker node groups"

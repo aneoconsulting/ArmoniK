@@ -111,70 +111,14 @@ variable "eks" {
   }
 }
 
+# Operational node groups for EKS
+variable "eks_operational_worker_groups" {
+  description = "List of EKS operational node groups"
+  type        = any
+}
+
 # EKS worker groups
 variable "eks_worker_groups" {
   description = "List of EKS worker node groups"
   type        = any
-  default     = [
-    {
-      name                                     = "worker-small-spot"
-      spot_allocation_strategy                 = "capacity-optimized"
-      override_instance_types                  = ["m5.xlarge", "m5d.xlarge", "m5a.xlarge"]
-      spot_instance_pools                      = 0
-      asg_min_size                             = 0
-      asg_max_size                             = 20
-      asg_desired_capacity                     = 0
-      on_demand_base_capacity                  = 0
-      on_demand_percentage_above_base_capacity = 0
-      tags                                     = []
-    },
-    {
-      name                                     = "worker-2xmedium-spot"
-      spot_allocation_strategy                 = "capacity-optimized"
-      override_instance_types                  = ["m5.2xlarge", "m5d.2xlarge", "m5a.2xlarge"]
-      spot_instance_pools                      = 0
-      asg_min_size                             = 0
-      asg_max_size                             = 20
-      asg_desired_capacity                     = 0
-      on_demand_base_capacity                  = 0
-      on_demand_percentage_above_base_capacity = 0
-      tags                                     = []
-    },
-    {
-      name                                     = "worker-4xmedium-spot"
-      spot_allocation_strategy                 = "capacity-optimized"
-      override_instance_types                  = ["m5.4xlarge", "m5d.4xlarge", "m5a.4xlarge"]
-      spot_instance_pools                      = 0
-      asg_min_size                             = 0
-      asg_max_size                             = 20
-      asg_desired_capacity                     = 0
-      on_demand_base_capacity                  = 0
-      on_demand_percentage_above_base_capacity = 0
-      tags                                     = []
-    },
-    {
-      name                                     = "worker-8xmedium-spot"
-      spot_allocation_strategy                 = "capacity-optimized"
-      override_instance_types                  = ["m5.8xlarge", "m5d.8xlarge", "m5a.8xlarge"]
-      spot_instance_pools                      = 0
-      asg_min_size                             = 0
-      asg_max_size                             = 20
-      asg_desired_capacity                     = 0
-      on_demand_base_capacity                  = 0
-      on_demand_percentage_above_base_capacity = 0
-      tags                                     = []
-    },
-    {
-      name                                     = "worker-small-ondemand"
-      spot_allocation_strategy                 = "capacity-optimized"
-      override_instance_types                  = ["m5.xlarge", "m5d.xlarge", "m5a.xlarge"]
-      spot_instance_pools                      = 0
-      asg_min_size                             = 0
-      asg_max_size                             = 20
-      asg_desired_capacity                     = 0
-      on_demand_base_capacity                  = 0
-      on_demand_percentage_above_base_capacity = 100
-      kubelet_extra_args                       = "--node-labels=lifecycle=OnDemand"
-    }
-  ]
 }
