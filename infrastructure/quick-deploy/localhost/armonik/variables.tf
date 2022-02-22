@@ -26,24 +26,15 @@ variable "logging_level" {
   default     = "Information"
 }
 
-# Fluent-bit
-variable "fluent_bit" {
-  description = "Parameters of Fluent bit"
-  type        = object({
-    image = string
-    tag   = string
-  })
+# List of needed storage
+variable "storage_endpoint_url" {
+  description = "List of storage needed by ArmoniK"
+  type        = any
 }
 
 # Monitoring
 variable "monitoring" {
   description = "Endpoint URL of monitoring"
-  type        = any
-}
-
-# List of needed storage
-variable "storage_endpoint_url" {
-  description = "List of storage needed by ArmoniK"
   type        = any
 }
 
