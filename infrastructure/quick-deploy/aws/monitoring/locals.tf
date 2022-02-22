@@ -16,7 +16,7 @@ locals {
     deployment_version = local.suffix
     created_by         = data.aws_caller_identity.current.arn
     date               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
-    resource           = "application"
+    resource           = "monitoring"
   })
 
   # Seq
@@ -38,6 +38,12 @@ locals {
   prometheus_service_type        = lookup(lookup(var.monitoring, "prometheus", {}), "service_type", "ClusterIP")
   prometheus_node_exporter_image = lookup(lookup(lookup(var.monitoring, "prometheus", {}), "node_exporter", {}), "image", "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/node-exporter")
   prometheus_node_exporter_tag   = lookup(lookup(lookup(var.monitoring, "prometheus", {}), "node_exporter", {}), "tag", "latest")
+
+  # CloudWatch
+  cloudwatch_use               = tobool(lookup(lookup(var.monitoring, "cloudwatch", {}), "use", false))
+  cloudwatch_ci_version        = lookup(lookup(var.monitoring, "cloudwatch", {}), "ci_version", "k8s/1.3.8")
+  cloudwatch_kms_key_id        = lookup(lookup(var.monitoring, "cloudwatch", {}), "kms_key_id", "")
+  cloudwatch_retention_in_days = tonumber(lookup(lookup(var.monitoring, "cloudwatch", {}), "retention_in_days", 30))
 
   # Fluent-bit
   fluent_bit_image          = lookup(lookup(var.monitoring, "fluent_bit", {}), "image", "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit")

@@ -40,23 +40,18 @@ monitoring = {
       tag   = "latest"
     }
   }
+  cloudwatch = {
+    use               = true
+    ci_version        = "k8s/1.3.8"
+    kms_key_id        = ""
+    retention_in_days = 30
+  }
   fluent_bit = {
     image          = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"
-    tag            = "1.5.0"
+    #"125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-for-fluent-bit"#
+    tag            = "1.5.0"#"2.10.0"
     is_daemonset   = false
     http_port      = 2020 # 0 or 2020
     read_from_head = true
   }
-  /*cloudwatch = {
-    use                       = true
-    fluent_bit_http_port      = 2020 # 0 or 2020
-    fluent_bit_read_from_head = false
-    ci_version                = "k8s/1.3.8"
-    kms_key_id                = ""
-    retention_in_days         = 30
-    fluent_bit                = {
-      image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-for-fluent-bit"
-      tag   = "2.10.0"
-    }
-  }*/
 }

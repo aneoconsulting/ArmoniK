@@ -86,6 +86,12 @@ variable "monitoring" {
         tag   = string
       })
     })
+    cloudwatch = object({
+      use               = bool
+      ci_version        = string
+      kms_key_id        = string
+      retention_in_days = number
+    })
     fluent_bit = object({
       image          = string
       tag            = string
@@ -93,17 +99,5 @@ variable "monitoring" {
       http_port      = number
       read_from_head = string
     })
-    /*cloudwatch = object({
-      use                       = bool
-      fluent_bit_http_port      = number
-      fluent_bit_read_from_head = bool
-      ci_version                = string
-      kms_key_id                = string
-      retention_in_days         = number
-      fluent_bit                = object({
-        image = string
-        tag   = string
-      })
-    })*/
   })
 }

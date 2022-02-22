@@ -15,7 +15,6 @@ EOF
 @INCLUDE input-kubernetes.conf
 @INCLUDE filter-kubernetes.conf
 @INCLUDE output-http-seq.conf
-@INCLUDE output-cloudwatch.conf
 EOF
 
   input_kubernetes = <<EOF
@@ -85,17 +84,6 @@ EOF
     json_date_format        iso8601
 EOF
 
-  output_cloudwatch = <<EOF
-[OUTPUT]
-    Name                cloudwatch_logs
-    Match               application.*
-    region              $${AWS_REGION}
-    log_group_name      $${APPLICATION_CLOUDWATCH_LOG_GROUP}
-    log_stream_prefix   $${HOSTNAME}-
-    auto_create_group   $${APPLICATION_CLOUDWATCH_AUTO_CREATE_LOG_GROUP}
-    extra_user_agent    container-insights
-EOF
-
   parsers = <<EOF
 [PARSER]
     Name   apache
@@ -157,7 +145,7 @@ resource "kubernetes_config_map" "fluent_bit_config" {
     "input-kubernetes.conf"  = local.input_kubernetes
     "filter-kubernetes.conf" = local.filter_kubernetes
     "output-http-seq.conf"   = (local.seq_use ? local.output_http_seq : local.empty_file)
-    "output-cloudwatch.conf" = (local.cloudwatch_use ? local.output_cloudwatch : local.empty_file)
     "parsers.conf"           = local.parsers
   }
 }
+

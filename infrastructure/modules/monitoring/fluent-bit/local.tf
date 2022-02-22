@@ -15,8 +15,8 @@ locals {
   seq_use  = tobool(lookup(var.seq, "use", false))
 
   # CloudWatch
-  cloudwatch_cluster_name = lookup(var.cloudwatch, "cluster_name", "")
-  cloudwatch_region       = lookup(var.cloudwatch, "region", "")
-  cloudwatch_ci_version   = lookup(var.cloudwatch, "ci_version", "")
-  cloudwatch_use          = tobool(lookup(var.cloudwatch, "use", false))
+  cloudwatch_name       = lookup(var.cloudwatch, "name", "")
+  cloudwatch_region     = lookup(var.cloudwatch, "region", "")
+  cloudwatch_ci_version = lookup(var.cloudwatch, "ci_version", "k8s/1.3.8")
+  cloudwatch_use        = tobool(lookup(var.cloudwatch, "use", false))
 }

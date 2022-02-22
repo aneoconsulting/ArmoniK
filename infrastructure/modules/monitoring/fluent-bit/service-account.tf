@@ -1,6 +1,6 @@
 # Service account and role for Fluent-bit
 resource "kubernetes_service_account" "fluent_bit" {
-  count = (var.fluent_bit.is_daemonset ? 1 : 0)
+  count = (local.fluent_bit_is_daemonset ? 1 : 0)
   metadata {
     name      = "fluent-bit"
     namespace = var.namespace
@@ -8,7 +8,7 @@ resource "kubernetes_service_account" "fluent_bit" {
 }
 
 resource "kubernetes_cluster_role" "fluent_bit_role" {
-  count = (var.fluent_bit.is_daemonset ? 1 : 0)
+  count = (local.fluent_bit_is_daemonset ? 1 : 0)
   metadata {
     name = "fluent-bit-role"
   }
@@ -24,7 +24,7 @@ resource "kubernetes_cluster_role" "fluent_bit_role" {
 }
 
 resource "kubernetes_cluster_role_binding" "fluent_bit_role_binding" {
-  count = (var.fluent_bit.is_daemonset ? 1 : 0)
+  count = (local.fluent_bit_is_daemonset ? 1 : 0)
   metadata {
     name = "fluent-bit-role-binding"
   }

@@ -12,10 +12,9 @@ resource "kubernetes_config_map" "fluent_bit_envvars_config" {
     HTTP_PORT                                    = local.fluent_bit_http_port
     READ_FROM_HEAD                               = local.fluent_bit_read_from_head
     READ_FROM_TAIL                               = local.fluent_bit_read_from_tail
-    CLUSTER_NAME                                 = local.cloudwatch_cluster_name
     AWS_REGION                                   = local.cloudwatch_region
+    APPLICATION_CLOUDWATCH_LOG_GROUP             = local.cloudwatch_name
+    APPLICATION_CLOUDWATCH_AUTO_CREATE_LOG_GROUP = (local.cloudwatch_name == "" && local.cloudwatch_use ? "On" : "Off")
     CI_VERSION                                   = local.cloudwatch_ci_version
-    APPLICATION_CLOUDWATCH_LOG_GROUP             = ""
-    APPLICATION_CLOUDWATCH_AUTO_CREATE_LOG_GROUP = false
   }
 }
