@@ -23,23 +23,10 @@ variable "storage_endpoint_url" {
   type        = any
 }
 
-# Fluent-bit
-variable "fluent_bit" {
-  description = "Parameters of Fluent bit"
-  type        = object({
-    image = string
-    tag   = string
-  })
-}
-
-# use Seq
-variable "seq_endpoints" {
-  description = "Endpoint URL of Seq"
-  type        = object({
-    url  = string
-    host = string
-    port = string
-  })
+# Monitoring
+variable "monitoring" {
+  description = "Monitoring info"
+  type        = any
 }
 
 # Parameters of control plane

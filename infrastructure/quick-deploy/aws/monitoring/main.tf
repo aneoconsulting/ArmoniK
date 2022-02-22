@@ -46,7 +46,7 @@ module "prometheus" {
   working_dir   = "${path.root}/../../.."
 }
 
-# KMS key for cloudwatch
+/*# KMS key for cloudwatch
 module "kms" {
   count  = (var.monitoring.cloudwatch.kms_key_id == "" ? 1 : 0)
   source = "../../../modules/aws/kms"
@@ -76,4 +76,4 @@ module "fluent_bit_cloudwatch" {
     retention_in_days = var.monitoring.cloudwatch.retention_in_days
     tags              = local.tags
   }
-}
+}*/

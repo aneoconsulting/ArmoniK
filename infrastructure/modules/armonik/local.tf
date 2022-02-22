@@ -40,4 +40,12 @@ locals {
   mongodb_allow_insecure_tls   = lookup(lookup(var.storage_endpoint_url, "mongodb", true), "allow_insecure_tls", true)
   redis_timeout                = lookup(lookup(var.storage_endpoint_url, "redis", 3000), "timeout", 3000)
   redis_ssl_host               = lookup(lookup(var.storage_endpoint_url, "redis", ""), "ssl_host", "")
+
+  # Monitoring
+  fluent_bit_is_daemonset      = lookup(lookup(var.monitoring, "fluent_bit", {}), "is_daemonset", false)
+  fluent_bit_container_name    = lookup(lookup(var.monitoring, "fluent_bit", {}), "container_name", "fluent-bit")
+  fluent_bit_image             = lookup(lookup(var.monitoring, "fluent_bit", {}), "image", "")
+  fluent_bit_tag               = lookup(lookup(var.monitoring, "fluent_bit", {}), "tag", "")
+  fluent_bit_envvars_configmap = lookup(lookup(lookup(var.monitoring, "fluent_bit", {}), "configmaps", {}), "envvars", "")
+  fluent_bit_configmap         = lookup(lookup(lookup(var.monitoring, "fluent_bit", {}), "configmaps", {}), "config", "")
 }

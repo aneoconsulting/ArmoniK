@@ -28,4 +28,11 @@ monitoring = {
       tag   = "latest"
     }
   }
+  fluent_bit = {
+    image          = "fluent/fluent-bit"
+    tag            = "1.5.0"
+    is_daemonset   = false
+    http_port      = 2020 # 0 or 2020
+    read_from_head = true
+  }
 }

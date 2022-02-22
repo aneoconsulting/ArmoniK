@@ -86,7 +86,7 @@ variable "monitoring" {
         tag   = string
       })
     })
-    cloudwatch = object({
+    /*cloudwatch = object({
       use                       = bool
       fluent_bit_http_port      = number
       fluent_bit_read_from_head = bool
@@ -97,6 +97,6 @@ variable "monitoring" {
         image = string
         tag   = string
       })
-    })
+    })*/
   })
 }

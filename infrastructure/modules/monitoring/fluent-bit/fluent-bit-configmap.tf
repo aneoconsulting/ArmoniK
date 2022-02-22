@@ -1,14 +1,21 @@
 # Envvars
 locals {
+  empty_file = <<EOF
+EOF
+
   fluent_bit = <<EOF
 [SERVICE]
     Flush         1
     Log_Level     error
     Daemon        off
     Parsers_File  parsers.conf
+    HTTP_Server   $${HTTP_SERVER}
+    HTTP_Listen   0.0.0.0
+    HTTP_Port     $${HTTP_PORT}
 @INCLUDE input-kubernetes.conf
 @INCLUDE filter-kubernetes.conf
 @INCLUDE output-http-seq.conf
+@INCLUDE output-cloudwatch.conf
 EOF
 
   input_kubernetes = <<EOF
@@ -43,19 +50,7 @@ EOF
     Keep_Log            Off
     Annotations         On
     Labels              On
-EOF
 
-  output_gelf = <<EOF
-[OUTPUT]
-    Name                    gelf
-    Match                   kube.*
-    Host                    $${FLUENT_GELF_HOST}
-    Port                    $${FLUENT_GELF_PORT}
-    Mode                    $${FLUENT_GELF_PROTOCOL}
-    Gelf_Short_Message_Key  log
-EOF
-
-  output_http_seq = <<EOF
 [FILTER]
     Name                    nest
     Match                   kube.*
@@ -75,7 +70,9 @@ EOF
     Condition               Key_exists log
     Rename                  log @m
     Add                     sourcetype renamelog
+EOF
 
+  output_http_seq = <<EOF
 [OUTPUT]
     Name                    http
     Match                   kube.*
@@ -86,6 +83,17 @@ EOF
     Format                  json_lines
     json_date_key           @t
     json_date_format        iso8601
+EOF
+
+  output_cloudwatch = <<EOF
+[OUTPUT]
+    Name                cloudwatch_logs
+    Match               application.*
+    region              $${AWS_REGION}
+    log_group_name      $${APPLICATION_CLOUDWATCH_LOG_GROUP}
+    log_stream_prefix   $${HOSTNAME}-
+    auto_create_group   $${APPLICATION_CLOUDWATCH_AUTO_CREATE_LOG_GROUP}
+    extra_user_agent    container-insights
 EOF
 
   parsers = <<EOF
@@ -129,7 +137,6 @@ EOF
     Time_Key    time
     Time_Format %b %d %H:%M:%S
 EOF
-
 }
 
 # configmap with all the variables
@@ -137,12 +144,20 @@ resource "kubernetes_config_map" "fluent_bit_config" {
   metadata {
     name      = "fluent-bit-configmap"
     namespace = var.namespace
+    labels    = {
+      app                             = "armonik"
+      type                            = "logs"
+      service                         = "fluent-bit"
+      version                         = "v1"
+      "kubernetes.io/cluster-service" = "true"
+    }
   }
   data = {
     "fluent-bit.conf"        = local.fluent_bit
     "input-kubernetes.conf"  = local.input_kubernetes
     "filter-kubernetes.conf" = local.filter_kubernetes
-    "output-http-seq.conf"   = local.output_http_seq
+    "output-http-seq.conf"   = (local.seq_use ? local.output_http_seq : local.empty_file)
+    "output-cloudwatch.conf" = (local.cloudwatch_use ? local.output_cloudwatch : local.empty_file)
     "parsers.conf"           = local.parsers
   }
 }

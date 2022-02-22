@@ -52,5 +52,12 @@ variable "monitoring" {
         tag   = string
       })
     })
+    fluent_bit = object({
+      image          = string
+      tag            = string
+      is_daemonset   = bool
+      http_port      = number
+      read_from_head = string
+    })
   })
 }

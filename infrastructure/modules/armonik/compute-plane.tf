@@ -168,37 +168,6 @@ resource "kubernetes_deployment" "compute_plane" {
             }
           }
         }
-        # Fluent-bit container
-        container {
-          name              = "fluent-bit"
-          image             = "${var.fluent_bit.image}:${var.fluent_bit.tag}"
-          image_pull_policy = "Always"
-          volume_mount {
-            name       = "varlog"
-            mount_path = "/var/log"
-          }
-          volume_mount {
-            name       = "varlibdockercontainers"
-            mount_path = "/var/lib/docker/containers"
-            read_only  = true
-          }
-          volume_mount {
-            name       = "fluent-bit-configmap"
-            mount_path = "/fluent-bit/etc/"
-          }
-          env {
-            name  = "FLUENT_HTTP_SEQ_HOST"
-            value = var.seq_endpoints.host
-          }
-          env {
-            name  = "FLUENT_HTTP_SEQ_PORT"
-            value = var.seq_endpoints.port
-          }
-          env {
-            name  = "FLUENT_CONTAINER_NAME"
-            value = "fluent-bit"
-          }
-        }
         # Containers of worker
         dynamic container {
           iterator = worker
@@ -237,25 +206,6 @@ resource "kubernetes_deployment" "compute_plane" {
                 read_only  = true
               }
             }
-          }
-        }
-        volume {
-          name = "varlog"
-          host_path {
-            path = "/var/log"
-          }
-        }
-        volume {
-          name = "varlibdockercontainers"
-          host_path {
-            path = "/var/lib/docker/containers"
-          }
-        }
-        volume {
-          name = "fluent-bit-configmap"
-          config_map {
-            name     = kubernetes_config_map.fluent_bit_config.metadata.0.name
-            optional = false
           }
         }
         volume {
@@ -310,6 +260,112 @@ resource "kubernetes_deployment" "compute_plane" {
             secret {
               secret_name = local.mongodb_certificates_secret
               optional    = false
+            }
+          }
+        }
+        # Fluent-bit container
+        dynamic container {
+          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
+          content {
+            name              = local.fluent_bit_container_name
+            image             = "${local.fluent_bit_image}:${local.fluent_bit_tag}"
+            image_pull_policy = "Always"
+            env_from {
+              config_map_ref {
+                name = local.fluent_bit_envvars_configmap
+              }
+            }
+            resources {
+              limits   = {
+                memory = "200Mi"
+              }
+              requests = {
+                cpu    = "500m"
+                memory = "100Mi"
+              }
+            }
+            # Please don't change below read-only permissions
+            volume_mount {
+              name       = "fluentbitstate"
+              mount_path = "/var/fluent-bit/state"
+            }
+            volume_mount {
+              name       = "varlog"
+              mount_path = "/var/log"
+              read_only  = true
+            }
+            volume_mount {
+              name       = "varlibdockercontainers"
+              mount_path = "/var/lib/docker/containers"
+              read_only  = true
+            }
+            volume_mount {
+              name       = "runlogjournal"
+              mount_path = "/run/log/journal"
+              read_only  = true
+            }
+            volume_mount {
+              name       = "dmesg"
+              mount_path = "/var/log/dmesg"
+              read_only  = true
+            }
+            volume_mount {
+              name       = "fluent-bit-config"
+              mount_path = "/fluent-bit/etc/"
+            }
+          }
+        }
+        dynamic volume {
+          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
+          content {
+            name = "fluentbitstate"
+            host_path {
+              path = "/var/fluent-bit/state"
+            }
+          }
+        }
+        dynamic volume {
+          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
+          content {
+            name = "varlog"
+            host_path {
+              path = "/var/log"
+            }
+          }
+        }
+        dynamic volume {
+          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
+          content {
+            name = "varlibdockercontainers"
+            host_path {
+              path = "/var/lib/docker/containers"
+            }
+          }
+        }
+        dynamic volume {
+          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
+          content {
+            name = "runlogjournal"
+            host_path {
+              path = "/run/log/journal"
+            }
+          }
+        }
+        dynamic volume {
+          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
+          content {
+            name = "dmesg"
+            host_path {
+              path = "/var/log/dmesg"
+            }
+          }
+        }
+        dynamic volume {
+          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
+          content {
+            name = "fluent-bit-config"
+            config_map {
+              name = local.fluent_bit_configmap
             }
           }
         }

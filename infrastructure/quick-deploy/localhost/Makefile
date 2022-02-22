@@ -39,7 +39,7 @@ clean-storage:
 	$(MAKE) -C $(CURRENT_DIR)/storage clean
 
 ####################################
-#           AWS Storage            #
+#           Monitoring             #
 ####################################
 
 deploy-monitoring:

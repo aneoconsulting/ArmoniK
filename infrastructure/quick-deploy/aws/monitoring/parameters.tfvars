@@ -40,7 +40,7 @@ monitoring = {
       tag   = "latest"
     }
   }
-  cloudwatch = {
+  /*cloudwatch = {
     use                       = true
     fluent_bit_http_port      = 2020 # 0 or 2020
     fluent_bit_read_from_head = false
@@ -51,5 +51,5 @@ monitoring = {
       image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-for-fluent-bit"
       tag   = "2.10.0"
     }
-  }
+  }*/
 }
