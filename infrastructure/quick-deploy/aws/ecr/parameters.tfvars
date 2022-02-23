@@ -69,7 +69,7 @@ ecr = {
     {
       name  = "fluent-bit"
       image = "fluent/fluent-bit"
-      tag   = "1.5.0"
+      tag   = "1.7.2"
     },
     {
       name  = "aws-for-fluent-bit"
