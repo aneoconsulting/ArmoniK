@@ -18,7 +18,7 @@ resource "kubernetes_cluster_role" "fluent_bit_role" {
   }
   rule {
     api_groups = [""]
-    resources  = ["namespaces", "pods", "pods/logs"]
+    resources  = ["namespaces", "pods", "pods/logs", "nodes", "nodes/proxy"]
     verbs      = ["get", "list", "watch"]
   }
 }

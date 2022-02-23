@@ -41,7 +41,8 @@ resource "kubernetes_daemonset" "fluent_bit" {
             name = "HOSTNAME"
             value_from {
               field_ref {
-                field_path = "spec.nodeName"
+                api_version = "v1"
+                field_path  = "metadata.name"
               }
             }
           }
@@ -125,6 +126,8 @@ resource "kubernetes_daemonset" "fluent_bit" {
             name = kubernetes_config_map.fluent_bit_config.metadata.0.name
           }
         }
+        host_network                     = true
+        dns_policy                       = "ClusterFirstWithHostNet"
         termination_grace_period_seconds = 10
         service_account_name             = kubernetes_service_account.fluent_bit.0.metadata.0.name
         toleration {
