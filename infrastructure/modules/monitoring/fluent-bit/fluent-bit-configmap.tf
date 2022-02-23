@@ -1,6 +1,9 @@
 # Envvars
 locals {
-  empty_file = <<EOF
+  default_stdout = <<EOF
+[OUTPUT]
+    Name      stdout
+    Match     *
 EOF
 
   fluent_bit = <<EOF
@@ -137,6 +140,11 @@ EOF
     Time_Key    time
     Time_Format %b %d %H:%M:%S
 EOF
+
+  input_kubernetes_conf  = (local.fluent_bit_is_daemonset ? local.input_kubernetes : file("${path.module}/configs/sidecar/input-kubernetes.conf"))
+  filter_kubernetes_conf = (local.fluent_bit_is_daemonset ? local.filter_kubernetes : file("${path.module}/configs/sidecar/filter-kubernetes.conf"))
+  output_http_seq_conf   = (local.seq_use ? (local.fluent_bit_is_daemonset ? local.output_http_seq : file("${path.module}/configs/sidecar/output-http-seq.conf")) : local.default_stdout)
+  output_cloudwatch_conf = (local.cloudwatch_use ? (local.fluent_bit_is_daemonset ? local.output_cloudwatch : file("${path.module}/configs/sidecar/output-cloudwatch.conf")) : local.default_stdout)
 }
 
 # configmap with all the variables
@@ -154,10 +162,10 @@ resource "kubernetes_config_map" "fluent_bit_config" {
   }
   data = {
     "fluent-bit.conf"        = local.fluent_bit
-    "input-kubernetes.conf"  = local.input_kubernetes
-    "filter-kubernetes.conf" = local.filter_kubernetes
-    "output-http-seq.conf"   = (local.seq_use ? local.output_http_seq : local.empty_file)
-    "output-cloudwatch.conf" = (local.cloudwatch_use ? local.output_cloudwatch : local.empty_file)
+    "input-kubernetes.conf"  = local.input_kubernetes_conf
+    "filter-kubernetes.conf" = local.filter_kubernetes_conf
+    "output-http-seq.conf"   = local.output_http_seq_conf
+    "output-cloudwatch.conf" = local.output_cloudwatch_conf
     "parsers.conf"           = local.parsers
   }
 }
