@@ -14,7 +14,6 @@ resource "kubernetes_config_map" "fluent_bit_envvars_config" {
     READ_FROM_TAIL                               = local.fluent_bit_read_from_tail
     AWS_REGION                                   = local.cloudwatch_region
     APPLICATION_CLOUDWATCH_LOG_GROUP             = local.cloudwatch_name
-    APPLICATION_CLOUDWATCH_AUTO_CREATE_LOG_GROUP = (local.cloudwatch_name == "" && local.cloudwatch_use ? "On" : "Off")
-    CI_VERSION                                   = local.cloudwatch_ci_version
+    APPLICATION_CLOUDWATCH_AUTO_CREATE_LOG_GROUP = (local.cloudwatch_name == "" && local.cloudwatch_use)
   }
 }

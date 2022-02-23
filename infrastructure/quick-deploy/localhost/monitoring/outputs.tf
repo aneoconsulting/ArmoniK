@@ -7,16 +7,18 @@ output "monitoring" {
       url     = module.seq.0.url
       web_url = module.seq.0.web_url
       use     = true
-    } : { use = false })
+    } : {})
     grafana    = (local.grafana_use ? {
       host = module.grafana.0.host
       port = module.grafana.0.port
       url  = module.grafana.0.url
+      use  = true
     } : {})
     prometheus = (local.prometheus_use ? {
       host = module.prometheus.0.host
       port = module.prometheus.0.port
       url  = module.prometheus.0.url
+      use  = true
     } : {})
     fluent_bit = {
       container_name = module.fluent_bit.container_name

@@ -18,7 +18,7 @@ output "token" {
   sensitive   = true
 }
 
-output "eks_name" {
+output "name" {
   description = "Name of EKS cluster"
   value       = module.eks.cluster_id
 }

@@ -88,7 +88,6 @@ variable "monitoring" {
     })
     cloudwatch = object({
       use               = bool
-      ci_version        = string
       kms_key_id        = string
       retention_in_days = number
     })

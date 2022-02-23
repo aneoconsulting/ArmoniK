@@ -41,7 +41,6 @@ locals {
 
   # CloudWatch
   cloudwatch_use               = tobool(lookup(lookup(var.monitoring, "cloudwatch", {}), "use", false))
-  cloudwatch_ci_version        = lookup(lookup(var.monitoring, "cloudwatch", {}), "ci_version", "k8s/1.3.8")
   cloudwatch_kms_key_id        = lookup(lookup(var.monitoring, "cloudwatch", {}), "kms_key_id", "")
   cloudwatch_retention_in_days = tonumber(lookup(lookup(var.monitoring, "cloudwatch", {}), "retention_in_days", 30))
 

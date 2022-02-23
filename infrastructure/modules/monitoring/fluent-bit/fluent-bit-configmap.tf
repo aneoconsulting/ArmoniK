@@ -14,6 +14,7 @@ EOF
     HTTP_Port     $${HTTP_PORT}
 @INCLUDE input-kubernetes.conf
 @INCLUDE filter-kubernetes.conf
+@INCLUDE output-cloudwatch.conf
 @INCLUDE output-http-seq.conf
 EOF
 
@@ -44,7 +45,7 @@ EOF
     Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
     Kube_Tag_Prefix     kube.var.log.containers.
     Merge_Log           On
-    Merge_Log_Key       log
+    Merge_Log_Key       log_processed
     Merge_Parser        json
     Keep_Log            Off
     Annotations         On
@@ -82,6 +83,17 @@ EOF
     Format                  json_lines
     json_date_key           @t
     json_date_format        iso8601
+EOF
+
+  output_cloudwatch = <<EOF
+[OUTPUT]
+    Name                cloudwatch_logs
+    Match               kube.*
+    region              $${AWS_REGION}
+    log_group_name      $${APPLICATION_CLOUDWATCH_LOG_GROUP}
+    log_stream_prefix   $${HOSTNAME}-
+    log_format          json/emf
+    auto_create_group   $${APPLICATION_CLOUDWATCH_AUTO_CREATE_LOG_GROUP}
 EOF
 
   parsers = <<EOF
@@ -145,6 +157,7 @@ resource "kubernetes_config_map" "fluent_bit_config" {
     "input-kubernetes.conf"  = local.input_kubernetes
     "filter-kubernetes.conf" = local.filter_kubernetes
     "output-http-seq.conf"   = (local.seq_use ? local.output_http_seq : local.empty_file)
+    "output-cloudwatch.conf" = (local.cloudwatch_use ? local.output_cloudwatch : local.empty_file)
     "parsers.conf"           = local.parsers
   }
 }

@@ -85,8 +85,8 @@ module "fluent_bit" {
     use  = true
   } : {})
   cloudwatch    = (local.cloudwatch_use ? {
-    name       = module.cloudwatch.0.name
-    region     = var.region
-    ci_version = local.cloudwatch_ci_version
+    name   = module.cloudwatch.0.name
+    region = var.region
+    use    = true
   } : {})
 }
