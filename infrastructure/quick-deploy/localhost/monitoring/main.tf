@@ -66,5 +66,4 @@ module "fluent_bit" {
     read_from_head = (local.fluent_bit_read_from_head ? "On" : "Off")
     read_from_tail = (local.fluent_bit_read_from_head ? "Off" : "On")
   }
-  depends_on    = [module.seq]
 }
