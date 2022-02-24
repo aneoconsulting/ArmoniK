@@ -19,6 +19,13 @@ variable "namespace" {
   default     = "armonik"
 }
 
+# Node selector
+variable "node_selector" {
+  description = "Node selector for Seq"
+  type        = any
+  default     = {}
+}
+
 # Logging level
 variable "logging_level" {
   description = "Logging level in ArmoniK"

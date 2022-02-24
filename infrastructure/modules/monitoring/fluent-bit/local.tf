@@ -10,12 +10,12 @@ locals {
   fluent_bit_read_from_tail = lookup(var.fluent_bit, "read_from_tail", "Off")
 
   # Seq
-  seq_host = lookup(var.seq, "host", "")
-  seq_port = lookup(var.seq, "port", "")
-  seq_use  = tobool(lookup(var.seq, "use", false))
+  seq_host    = lookup(var.seq, "host", "")
+  seq_port    = lookup(var.seq, "port", "")
+  seq_enabled = tobool(lookup(var.seq, "enabled", false))
 
   # CloudWatch
-  cloudwatch_name       = lookup(var.cloudwatch, "name", "")
-  cloudwatch_region     = lookup(var.cloudwatch, "region", "")
-  cloudwatch_use        = tobool(lookup(var.cloudwatch, "use", false))
+  cloudwatch_name    = lookup(var.cloudwatch, "name", "")
+  cloudwatch_region  = lookup(var.cloudwatch, "region", "")
+  cloudwatch_enabled = tobool(lookup(var.cloudwatch, "enabled", false))
 }

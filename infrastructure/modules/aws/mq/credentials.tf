@@ -1,8 +1,9 @@
 # Generate username
 resource "random_string" "user" {
   length  = 8
-  special = false
+  special = true
   number  = false
+  override_special = "-._~"
 }
 
 # Generate password
@@ -12,7 +13,7 @@ resource "random_password" "password" {
   lower            = true
   upper            = true
   number           = true
-  override_special = "!@#$%&*()-_=+[]{}<>:?"
+  override_special = "!@#$%&*()-_+.{}<>?"
 }
 
 resource "kubernetes_secret" "activemq_user" {

@@ -34,19 +34,19 @@ variable "monitoring" {
       image        = string
       tag          = string
       service_type = string
-      use          = bool
+      enabled      = bool
     })
     grafana    = object({
       image        = string
       tag          = string
       service_type = string
-      use          = bool
+      enabled      = bool
     })
     prometheus = object({
       image         = string
       tag           = string
       service_type  = string
-      use           = bool
+      enabled       = bool
       node_exporter = object({
         image = string
         tag   = string

@@ -27,6 +27,15 @@ resource "kubernetes_deployment" "compute_plane" {
         }
       }
       spec {
+        dynamic toleration {
+          for_each = (var.node_selector != {} ? [1] : [])
+          content {
+            key      = keys(var.node_selector)[0]
+            operator = "Equal"
+            value    = values(var.node_selector)[0]
+            effect   = "NoSchedule"
+          }
+        }
         termination_grace_period_seconds = var.compute_plane.termination_grace_period_seconds
         share_process_namespace          = true
         security_context {}

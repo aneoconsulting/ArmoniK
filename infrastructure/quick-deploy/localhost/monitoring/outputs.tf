@@ -1,24 +1,24 @@
 output "monitoring" {
   description = "Monitoring endpoint URLs"
   value       = {
-    seq        = (local.seq_use ? {
+    seq        = (local.seq_enabled ? {
       host    = module.seq.0.host
       port    = module.seq.0.port
       url     = module.seq.0.url
       web_url = module.seq.0.web_url
-      use     = true
+      enabled = true
     } : {})
-    grafana    = (local.grafana_use ? {
-      host = module.grafana.0.host
-      port = module.grafana.0.port
-      url  = module.grafana.0.url
-      use  = true
+    grafana    = (local.grafana_enabled ? {
+      host    = module.grafana.0.host
+      port    = module.grafana.0.port
+      url     = module.grafana.0.url
+      enabled = true
     } : {})
-    prometheus = (local.prometheus_use ? {
-      host = module.prometheus.0.host
-      port = module.prometheus.0.port
-      url  = module.prometheus.0.url
-      use  = true
+    prometheus = (local.prometheus_enabled ? {
+      host    = module.prometheus.0.host
+      port    = module.prometheus.0.port
+      url     = module.prometheus.0.url
+      enabled = true
     } : {})
     fluent_bit = {
       container_name = module.fluent_bit.container_name

@@ -1,6 +1,9 @@
 # Kubernetes namespace
 namespace = "armonik"
 
+# Node selector
+node_selector = {}
+
 # Logging level
 logging_level = "Information"
 

@@ -4,6 +4,13 @@ variable "namespace" {
   type        = string
 }
 
+# Node selector
+variable "node_selector" {
+  description = "Node selector"
+  type        = any
+  default     = {}
+}
+
 # Logging level
 variable "logging_level" {
   description = "Logging level in ArmoniK"

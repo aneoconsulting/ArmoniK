@@ -26,6 +26,15 @@ resource "kubernetes_deployment" "control_plane" {
         }
       }
       spec {
+        dynamic toleration {
+          for_each = (var.node_selector != {} ? [1] : [])
+          content {
+            key      = keys(var.node_selector)[0]
+            operator = "Equal"
+            value    = values(var.node_selector)[0]
+            effect   = "NoSchedule"
+          }
+        }
         dynamic image_pull_secrets {
           for_each = (var.control_plane.image_pull_secrets != "" ? [1] : [])
           content {

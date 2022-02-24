@@ -20,19 +20,19 @@ locals {
   })
 
   # Seq
-  seq_use          = tobool(lookup(lookup(var.monitoring, "seq", {}), "use", false))
+  seq_enabled      = tobool(lookup(lookup(var.monitoring, "seq", {}), "enabled", false))
   seq_image        = lookup(lookup(var.monitoring, "seq", {}), "image", "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/seq")
   seq_tag          = lookup(lookup(var.monitoring, "seq", {}), "tag", "2021.4")
   seq_service_type = lookup(lookup(var.monitoring, "seq", {}), "service_type", "LoadBalancer")
 
   # Grafana
-  grafana_use          = tobool(lookup(lookup(var.monitoring, "grafana", {}), "use", false))
+  grafana_enabled      = tobool(lookup(lookup(var.monitoring, "grafana", {}), "enabled", false))
   grafana_image        = lookup(lookup(var.monitoring, "grafana", {}), "image", "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/grafana")
   grafana_tag          = lookup(lookup(var.monitoring, "grafana", {}), "tag", "latest")
   grafana_service_type = lookup(lookup(var.monitoring, "grafana", {}), "service_type", "LoadBalancer")
 
   # Prometheus
-  prometheus_use                 = tobool(lookup(lookup(var.monitoring, "prometheus", {}), "use", false))
+  prometheus_enabled             = tobool(lookup(lookup(var.monitoring, "prometheus", {}), "enabled", false))
   prometheus_image               = lookup(lookup(var.monitoring, "prometheus", {}), "image", "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/prometheus")
   prometheus_tag                 = lookup(lookup(var.monitoring, "prometheus", {}), "tag", "latest")
   prometheus_service_type        = lookup(lookup(var.monitoring, "prometheus", {}), "service_type", "ClusterIP")
@@ -40,7 +40,7 @@ locals {
   prometheus_node_exporter_tag   = lookup(lookup(lookup(var.monitoring, "prometheus", {}), "node_exporter", {}), "tag", "latest")
 
   # CloudWatch
-  cloudwatch_use               = tobool(lookup(lookup(var.monitoring, "cloudwatch", {}), "use", false))
+  cloudwatch_enabled           = tobool(lookup(lookup(var.monitoring, "cloudwatch", {}), "enabled", false))
   cloudwatch_kms_key_id        = lookup(lookup(var.monitoring, "cloudwatch", {}), "kms_key_id", "")
   cloudwatch_retention_in_days = tonumber(lookup(lookup(var.monitoring, "cloudwatch", {}), "retention_in_days", 30))
 

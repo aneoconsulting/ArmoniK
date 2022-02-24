@@ -13,6 +13,9 @@ k8s_config_context = "default"
 # Kubernetes namespace
 namespace = "armonik"
 
+# Node selector
+node_selector = {}
+
 # Logging level
 logging_level = "Information"
 

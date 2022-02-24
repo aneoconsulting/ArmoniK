@@ -1,6 +1,6 @@
 # Seq
 module "seq" {
-  count         = (local.seq_use ? 1 : 0)
+  count         = (local.seq_enabled ? 1 : 0)
   source        = "../../../modules/monitoring/seq"
   namespace     = var.namespace
   service_type  = local.seq_service_type
@@ -14,7 +14,7 @@ module "seq" {
 
 # Grafana
 module "grafana" {
-  count         = (local.grafana_use ? 1 : 0)
+  count         = (local.grafana_enabled ? 1 : 0)
   source        = "../../../modules/monitoring/grafana"
   namespace     = var.namespace
   service_type  = local.grafana_service_type
@@ -28,7 +28,7 @@ module "grafana" {
 
 # Prometheus
 module "prometheus" {
-  count         = (local.prometheus_use ? 1 : 0)
+  count         = (local.prometheus_enabled ? 1 : 0)
   source        = "../../../modules/monitoring/prometheus"
   namespace     = var.namespace
   service_type  = local.prometheus_service_type
@@ -51,10 +51,10 @@ module "fluent_bit" {
   source        = "../../../modules/monitoring/fluent-bit"
   namespace     = var.namespace
   node_selector = var.node_selector
-  seq           = (local.seq_use ? {
-    host = module.seq.0.host
-    port = module.seq.0.port
-    use  = true
+  seq           = (local.seq_enabled ? {
+    host    = module.seq.0.host
+    port    = module.seq.0.port
+    enabled = true
   } : {})
   fluent_bit    = {
     container_name = "fluent-bit"

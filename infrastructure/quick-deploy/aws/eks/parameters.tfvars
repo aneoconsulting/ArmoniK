@@ -53,7 +53,7 @@ eks_operational_worker_groups = [
   {
     name                                     = "operational-worker-ondemand"
     spot_allocation_strategy                 = "capacity-optimized"
-    override_instance_types                  = ["m5.xlarge", "m5d.xlarge"]
+    override_instance_types                  = ["m5.xlarge", "m5a.xlarge", "m5d.xlarge"]
     spot_instance_pools                      = 0
     asg_min_size                             = 1
     asg_max_size                             = 5
@@ -110,17 +110,5 @@ eks_worker_groups = [
     asg_desired_capacity                     = 0
     on_demand_base_capacity                  = 0
     on_demand_percentage_above_base_capacity = 0
-  },
-  {
-    name                                     = "worker-small-ondemand"
-    spot_allocation_strategy                 = "capacity-optimized"
-    override_instance_types                  = ["m5.xlarge", "m5d.xlarge", "m5a.xlarge"]
-    spot_instance_pools                      = 0
-    asg_min_size                             = 0
-    asg_max_size                             = 20
-    asg_desired_capacity                     = 0
-    on_demand_base_capacity                  = 0
-    on_demand_percentage_above_base_capacity = 100
-    kubelet_extra_args                       = "--node-labels=lifecycle=OnDemand --register-with-taints=lifecycle=OnDemand:NoSchedule"
   }
 ]

@@ -1,6 +1,6 @@
 # AWS KMS
 module "kms" {
-  count  = (local.cloudwatch_kms_key_id == "" && local.cloudwatch_use ? 1 : 0)
+  count  = (local.cloudwatch_kms_key_id == "" && local.cloudwatch_enabled ? 1 : 0)
   source = "../../../modules/aws/kms"
   name   = "armonik-kms-cloudwatch-${local.suffix}-${local.random_string}"
   tags   = local.tags
@@ -8,7 +8,7 @@ module "kms" {
 
 # Seq
 module "seq" {
-  count         = (local.seq_use ? 1 : 0)
+  count         = (local.seq_enabled ? 1 : 0)
   source        = "../../../modules/monitoring/seq"
   namespace     = var.namespace
   service_type  = local.seq_service_type
@@ -22,7 +22,7 @@ module "seq" {
 
 # Grafana
 module "grafana" {
-  count         = (local.grafana_use ? 1 : 0)
+  count         = (local.grafana_enabled ? 1 : 0)
   source        = "../../../modules/monitoring/grafana"
   namespace     = var.namespace
   service_type  = local.grafana_service_type
@@ -36,7 +36,7 @@ module "grafana" {
 
 # Prometheus
 module "prometheus" {
-  count         = (local.prometheus_use ? 1 : 0)
+  count         = (local.prometheus_enabled ? 1 : 0)
   source        = "../../../modules/monitoring/prometheus"
   namespace     = var.namespace
   service_type  = local.prometheus_service_type
@@ -56,7 +56,7 @@ module "prometheus" {
 
 # CloudWatch
 module "cloudwatch" {
-  count             = (local.cloudwatch_use ? 1 : 0)
+  count             = (local.cloudwatch_enabled ? 1 : 0)
   source            = "../../../modules/aws/cloudwatch-log-group"
   name              = "/aws/containerinsights/${local.cluster_name}/application"
   kms_key_id        = (local.cloudwatch_kms_key_id != "" ? local.cloudwatch_kms_key_id : module.kms.0.selected.arn)
@@ -79,14 +79,14 @@ module "fluent_bit" {
     read_from_head = (local.fluent_bit_read_from_head ? "On" : "Off")
     read_from_tail = (local.fluent_bit_read_from_head ? "Off" : "On")
   }
-  seq           = (local.seq_use ? {
-    host = module.seq.0.host
-    port = module.seq.0.port
-    use  = true
+  seq           = (local.seq_enabled ? {
+    host    = module.seq.0.host
+    port    = module.seq.0.port
+    enabled = true
   } : {})
-  cloudwatch    = (local.cloudwatch_use ? {
-    name   = module.cloudwatch.0.name
-    region = var.region
-    use    = true
+  cloudwatch    = (local.cloudwatch_enabled ? {
+    name    = module.cloudwatch.0.name
+    region  = var.region
+    enabled = true
   } : {})
 }
