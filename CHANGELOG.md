@@ -18,6 +18,8 @@ Added
 * In addition to Seq, add AWS CloudWatch to monitor application logs of ArmoniK
 * The user can configure the *toleration* option of pods via `node_selector` parameter
 * Add resource codes for quick deployments on *localhost* and *AWS*
+* New Version of nuget package for worker API agent 0.4.0
+* New Version of nuget package for ArmoniK core 0.4.1
 
 Changed
 -

@@ -29,12 +29,12 @@ ecr = {
     {
       name  = "armonik-control-plane"
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.4.1-trypemfiles.5.cc68029"
+      tag   = "0.4.1"
     },
     {
       name  = "armonik-polling-agent"
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.4.1-trypemfiles.5.cc68029"
+      tag   = "0.4.1"
     },
     {
       name  = "armonik-worker"
@@ -70,11 +70,6 @@ ecr = {
       name  = "fluent-bit"
       image = "fluent/fluent-bit"
       tag   = "1.7.2"
-    },
-    {
-      name  = "aws-for-fluent-bit"
-      image = "amazon/aws-for-fluent-bit"
-      tag   = "2.10.0" #"2.22.0"
     },
     {
       name  = "node-exporter"
