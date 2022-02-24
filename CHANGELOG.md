@@ -15,16 +15,22 @@ Added
 * Add source codes of ArmoniK deployment on local machine in quick-deploy/
 * Add source codes of ArmoniK deployment on AWS in quick-deploy/
 * Add a script bash to deploy ArmoniK in all-in-one commands
+* In addition to Seq, add AWS CloudWatch to monitor application logs of ArmoniK
+* The user can configure the *toleration* option of pods via `node_selector` parameter
+* Add resource codes for quick deployments on *localhost* and *AWS*
 
 Changed
 -
 
-* FluentBit is used to tail logs and send them to seq instead of sending them directly from logger
 * Use environment variables instead of configmaps to configure applications in ArmoniK images
 * Terraform is used to generate self-signed certificates for ActiveMQ, MongoDB and Redis
 * Terraform is used to generate users and passwords for ActiveMQ, MongoDB and Redis
 * Certificates and credentials are stored as kubernetes secrets
 * ArmoniK expects those secrets as input
+* Fluent-bit is used to tail logs and send them to Seq/CloudWatch instead of sending them directly from logger
+* Two different implementations of Fluent-bit (the user can choose one of them):
+  * As a sidecar in ArmoniK control plane and compute plane
+  * As a DaemonSet in each Kubernetes node
 
 
 ## [v2.3.0](https://github.com/aneoconsulting/armonik/tree/v2.3.0) (2022-02-01)
