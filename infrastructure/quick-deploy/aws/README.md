@@ -120,7 +120,7 @@ where:
 - `ARMONIK_BUCKET_NAME`: is the name of S3 bucket in which `.tfsate` will be safely stored
 - `ARMONIK_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for ArmoniK
 
-**Warning:** `ARMONIK_SUFFIX` must be UNIQUE to allow resources to have unique name in AWS
+**Warning:** `ARMONIK_SUFFIX` must be *UNIQUE* to allow resources to have unique name in AWS
 
 # Prepare backend for Terraform
 
