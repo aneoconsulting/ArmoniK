@@ -1,5 +1,7 @@
 # Changelog
 
+## [latest](https://github.com/aneoconsulting/armonik/tree/main) (2022-02-24)
+
 ## [v2.4.0](https://github.com/aneoconsulting/armonik/tree/v2.4.0) (2022-02-24)
 
 Removed
