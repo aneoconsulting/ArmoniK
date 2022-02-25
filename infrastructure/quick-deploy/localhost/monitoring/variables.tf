@@ -23,7 +23,7 @@ variable "namespace" {
 variable "monitoring" {
   description = "Monitoring infos"
   type        = object({
-    seq           = object({
+    seq                = object({
       image              = string
       tag                = string
       image_pull_secrets = string
@@ -31,7 +31,7 @@ variable "monitoring" {
       enabled            = bool
       node_selector      = any
     })
-    grafana       = object({
+    grafana            = object({
       image              = string
       tag                = string
       image_pull_secrets = string
@@ -39,14 +39,14 @@ variable "monitoring" {
       enabled            = bool
       node_selector      = any
     })
-    node_exporter = object({
+    node_exporter      = object({
       image              = string
       tag                = string
       image_pull_secrets = string
       enabled            = bool
       node_selector      = any
     })
-    prometheus    = object({
+    prometheus         = object({
       image              = string
       tag                = string
       image_pull_secrets = string
@@ -54,7 +54,15 @@ variable "monitoring" {
       enabled            = bool
       node_selector      = any
     })
-    fluent_bit    = object({
+    prometheus_adapter = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      enabled            = bool
+      node_selector      = any
+    })
+    fluent_bit         = object({
       image              = string
       tag                = string
       image_pull_secrets = string

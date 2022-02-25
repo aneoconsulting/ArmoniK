@@ -57,6 +57,20 @@ module "prometheus" {
   working_dir   = "${path.root}/../../.."
 }
 
+# Prometheus adapter
+module "prometheus_adapter" {
+  count         = (local.prometheus_adapter_enabled ? 1 : 0)
+  source        = "../../../modules/monitoring/prometheus-adapter"
+  namespace     = var.namespace
+  service_type  = local.prometheus_adapter_service_type
+  node_selector = local.prometheus_adapter_node_selector
+  docker_image  = {
+    image              = local.prometheus_adapter_image
+    tag                = local.prometheus_adapter_tag
+    image_pull_secrets = local.prometheus_adapter_image_pull_secrets
+  }
+}
+
 # Fluent-bit
 module "fluent_bit" {
   source        = "../../../modules/monitoring/fluent-bit"

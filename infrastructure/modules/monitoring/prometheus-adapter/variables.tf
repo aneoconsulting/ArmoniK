@@ -6,7 +6,7 @@ variable "namespace" {
 
 # Docker image
 variable "docker_image" {
-  description = "Docker image for Prometheus"
+  description = "Docker image for Prometheus adapter"
   type        = object({
     image              = string
     tag                = string
@@ -16,7 +16,7 @@ variable "docker_image" {
 
 # Node selector
 variable "node_selector" {
-  description = "Node selector for Prometheus"
+  description = "Node selector for Prometheus adapter"
   type        = any
   default     = {}
 }
@@ -27,9 +27,15 @@ variable "service_type" {
   type        = string
 }
 
-# Working dir
-variable "working_dir" {
-  description = "Working directory"
-  type        = string
-  default     = ".."
+# Prometheus url
+variable "prometheus_endpoint_url" {
+  description = "Prometheus url"
+  type        = object({
+    url = string
+    port = number
+  })
+  default     = {
+    url = "http://prometheus.default.svc"
+    port = 9090
+  }
 }

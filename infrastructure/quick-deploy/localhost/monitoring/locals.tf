@@ -30,6 +30,14 @@ locals {
   prometheus_service_type       = lookup(lookup(var.monitoring, "prometheus", {}), "service_type", "ClusterIP")
   prometheus_node_selector      = lookup(lookup(var.monitoring, "prometheus", {}), "node_selector", {})
 
+  # Prometheus adapter
+  prometheus_adapter_enabled            = tobool(lookup(lookup(var.monitoring, "prometheus_adapter", {}), "enabled", false))
+  prometheus_adapter_image              = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "image", "k8s.gcr.io/prometheus-adapter/prometheus-adapter")
+  prometheus_adapter_tag                = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "tag", "v0.9.1")
+  prometheus_adapter_image_pull_secrets = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "image_pull_secrets", "")
+  prometheus_adapter_service_type       = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "service_type", "ClusterIP")
+  prometheus_adapter_node_selector      = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "node_selector", {})
+
   # Fluent-bit
   fluent_bit_image              = lookup(lookup(var.monitoring, "fluent_bit", {}), "image", "fluent/fluent-bit")
   fluent_bit_tag                = lookup(lookup(var.monitoring, "fluent_bit", {}), "tag", "1.3.11")
