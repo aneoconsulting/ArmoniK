@@ -1,8 +1,8 @@
 # Agent deployment
 resource "kubernetes_deployment" "compute_plane" {
-  count = (var.compute_plane.max_priority == 0 ? 1 : var.compute_plane.max_priority)
+  count = length(var.compute_plane)
   metadata {
-    name      = "compute-plane-${count.index}"
+    name      = var.compute_plane[count.index].name
     namespace = var.namespace
     labels    = {
       app     = "armonik"
@@ -10,7 +10,7 @@ resource "kubernetes_deployment" "compute_plane" {
     }
   }
   spec {
-    replicas = var.compute_plane.replicas
+    replicas = var.compute_plane[count.index].replicas
     selector {
       match_labels = {
         app     = "armonik"
@@ -28,10 +28,10 @@ resource "kubernetes_deployment" "compute_plane" {
       }
       spec {
         dynamic toleration {
-          for_each = (local.compute_plane_node_selector != {} ? [
-          for index in range(0, length(local.compute_plane_node_selector_keys)) : {
-            key   = local.compute_plane_node_selector_keys[index]
-            value = local.compute_plane_node_selector_values[index]
+          for_each = (local.compute_plane_node_selector[count.index] != {} ? [
+          for index in range(0, length(local.compute_plane_node_selector_keys[count.index])) : {
+            key   = local.compute_plane_node_selector_keys[count.index][index]
+            value = local.compute_plane_node_selector_values[count.index][index]
           }
           ] : [])
           content {
@@ -41,20 +41,20 @@ resource "kubernetes_deployment" "compute_plane" {
             effect   = "NoSchedule"
           }
         }
-        termination_grace_period_seconds = var.compute_plane.termination_grace_period_seconds
+        termination_grace_period_seconds = var.compute_plane[count.index].termination_grace_period_seconds
         share_process_namespace          = true
         security_context {}
         dynamic image_pull_secrets {
-          for_each = (var.compute_plane.image_pull_secrets != "" ? [1] : [])
+          for_each = (var.compute_plane[count.index].image_pull_secrets != "" ? [1] : [])
           content {
-            name = var.compute_plane.image_pull_secrets
+            name = var.compute_plane[count.index].image_pull_secrets
           }
         }
         # Polling agent container
         container {
           name              = "polling-agent"
-          image             = var.compute_plane.polling_agent.tag != "" ? "${var.compute_plane.polling_agent.image}:${var.compute_plane.polling_agent.tag}" : var.compute_plane.polling_agent.image
-          image_pull_policy = var.compute_plane.polling_agent.image_pull_policy
+          image             = var.compute_plane[count.index].polling_agent.tag != "" ? "${var.compute_plane[count.index].polling_agent.image}:${var.compute_plane[count.index].polling_agent.tag}" : var.compute_plane[count.index].polling_agent.image
+          image_pull_policy = var.compute_plane[count.index].polling_agent.image_pull_policy
           security_context {
             capabilities {
               drop = ["SYS_PTRACE"]
@@ -62,12 +62,12 @@ resource "kubernetes_deployment" "compute_plane" {
           }
           resources {
             limits   = {
-              cpu    = var.compute_plane.polling_agent.limits.cpu
-              memory = var.compute_plane.polling_agent.limits.memory
+              cpu    = var.compute_plane[count.index].polling_agent.limits.cpu
+              memory = var.compute_plane[count.index].polling_agent.limits.memory
             }
             requests = {
-              cpu    = var.compute_plane.polling_agent.requests.cpu
-              memory = var.compute_plane.polling_agent.requests.memory
+              cpu    = var.compute_plane[count.index].polling_agent.requests.cpu
+              memory = var.compute_plane[count.index].polling_agent.requests.memory
             }
           }
           env_from {
@@ -185,7 +185,7 @@ resource "kubernetes_deployment" "compute_plane" {
         # Containers of worker
         dynamic container {
           iterator = worker
-          for_each = var.compute_plane.worker
+          for_each = var.compute_plane[count.index].worker
           content {
             name              = "${worker.value.name}-${worker.key}"
             image             = worker.value.tag != "" ? "${worker.value.image}:${worker.value.tag}" : worker.value.image

@@ -106,10 +106,10 @@ runs:
       run: |
         set -ex
         python ${{ github.action_path }}/tools/modify_parameters.py \
-          -kv "compute_plane.worker[*].image=${{ inputs.worker-image }}" \
-          -kv "compute_plane.worker[*].tag=${{ inputs.worker-tag }}" \
-          -kv compute_plane.image=${{ inputs.polling-agent-image }} \
-          -kv compute_plane.tag=${{ inputs.polling-agent-tag }} \
+          -kv "compute_plane[*]..worker[*].image=${{ inputs.worker-image }}" \
+          -kv "compute_plane[*].worker[*].tag=${{ inputs.worker-tag }}" \
+          -kv "compute_plane[*].polling_agent.image=${{ inputs.polling-agent-image }}" \
+          -kv "compute_plane[*].polling_agent.tag=${{ inputs.polling-agent-tag }}" \
           -kv control_plane.image=${{ inputs.control-plane-image }} \
           -kv control_plane.tag=${{ inputs.control-plane-tag }} \
           -kv logging_level=Verbose \

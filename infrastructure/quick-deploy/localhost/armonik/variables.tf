@@ -71,11 +71,10 @@ variable "control_plane" {
 # Parameters of the compute plane
 variable "compute_plane" {
   description = "Parameters of the compute plane"
-  type        = object({
+  type        = list(object({
+    name                             = string
     replicas                         = number
     termination_grace_period_seconds = number
-    # number of queues according to priority of tasks
-    max_priority                     = number
     image_pull_secrets               = string
     node_selector                    = any
     polling_agent                    = object({
@@ -106,5 +105,5 @@ variable "compute_plane" {
         memory = string
       })
     }))
-  })
+  }))
 }
