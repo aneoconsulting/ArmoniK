@@ -23,38 +23,45 @@ variable "namespace" {
 variable "monitoring" {
   description = "Monitoring infos"
   type        = object({
-    seq        = object({
-      image         = string
-      tag           = string
-      service_type  = string
-      enabled       = bool
-      node_selector = any
+    seq           = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      enabled            = bool
+      node_selector      = any
     })
-    grafana    = object({
-      image         = string
-      tag           = string
-      service_type  = string
-      enabled       = bool
-      node_selector = any
+    grafana       = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      enabled            = bool
+      node_selector      = any
     })
-    prometheus = object({
-      image         = string
-      tag           = string
-      service_type  = string
-      enabled       = bool
-      node_selector = any
-      node_exporter = object({
-        image = string
-        tag   = string
-      })
+    node_exporter = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      enabled            = bool
+      node_selector      = any
     })
-    fluent_bit = object({
-      image          = string
-      tag            = string
-      is_daemonset   = bool
-      http_port      = number
-      read_from_head = string
-      node_selector  = any
+    prometheus    = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      enabled            = bool
+      node_selector      = any
+    })
+    fluent_bit    = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      is_daemonset       = bool
+      http_port          = number
+      read_from_head     = string
+      node_selector      = any
     })
   })
 }

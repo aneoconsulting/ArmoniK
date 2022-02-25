@@ -8,6 +8,7 @@ locals {
   fluent_bit_http_port            = lookup(var.fluent_bit, "http_port", "")
   fluent_bit_read_from_head       = lookup(var.fluent_bit, "read_from_head", "On")
   fluent_bit_read_from_tail       = lookup(var.fluent_bit, "read_from_tail", "Off")
+  fluent_bit_image_pull_secrets   = lookup(var.fluent_bit, "image_pull_secrets", "")
   fluent_bit_node_selector_keys   = keys(var.node_selector)
   fluent_bit_node_selector_values = values(var.node_selector)
 

@@ -43,9 +43,15 @@ resource "kubernetes_deployment" "prometheus" {
             effect   = "NoSchedule"
           }
         }
+        dynamic image_pull_secrets {
+          for_each = (var.docker_image.image_pull_secrets != "" ? [1] : [])
+          content {
+            name = var.docker_image.image_pull_secrets
+          }
+        }
         container {
           name              = "prometheus"
-          image             = "${var.docker_image.prometheus.image}:${var.docker_image.prometheus.tag}"
+          image             = "${var.docker_image.image}:${var.docker_image.tag}"
           image_pull_policy = "IfNotPresent"
           env {
             name  = "discovery.type"

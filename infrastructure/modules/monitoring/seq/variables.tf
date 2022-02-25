@@ -8,13 +8,10 @@ variable "namespace" {
 variable "docker_image" {
   description = "Docker image for Seq"
   type        = object({
-    image = string
-    tag   = string
+    image              = string
+    tag                = string
+    image_pull_secrets = string
   })
-  default     = {
-    image = "datalust/seq"
-    tag   = "2021.4"
-  }
 }
 
 # Node selector

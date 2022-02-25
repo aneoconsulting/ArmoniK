@@ -38,6 +38,12 @@ resource "kubernetes_daemonset" "fluent_bit" {
             effect   = "NoSchedule"
           }
         }
+        dynamic image_pull_secrets {
+          for_each = (local.fluent_bit_image_pull_secrets != "" ? [1] : [])
+          content {
+            name = local.fluent_bit_image_pull_secrets
+          }
+        }
         container {
           name              = local.fluent_bit_container_name
           image             = "${local.fluent_bit_image}:${local.fluent_bit_tag}"

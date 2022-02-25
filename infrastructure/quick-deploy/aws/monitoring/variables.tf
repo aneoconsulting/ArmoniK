@@ -57,43 +57,50 @@ variable "eks" {
 variable "monitoring" {
   description = "Monitoring infos"
   type        = object({
-    seq        = object({
-      image        = string
-      tag          = string
-      service_type = string
-      node_selector = any
-      enabled      = bool
+    seq           = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      node_selector      = any
+      enabled            = bool
     })
-    grafana    = object({
-      image        = string
-      tag          = string
-      service_type = string
-      node_selector = any
-      enabled      = bool
+    grafana       = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      node_selector      = any
+      enabled            = bool
     })
-    prometheus = object({
-      image         = string
-      tag           = string
-      service_type  = string
-      node_selector = any
-      enabled       = bool
-      node_exporter = object({
-        image = string
-        tag   = string
-      })
+    node_exporter = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      enabled            = bool
+      node_selector      = any
     })
-    cloudwatch = object({
+    prometheus    = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      node_selector      = any
+      enabled            = bool
+    })
+    cloudwatch    = object({
       enabled           = bool
       kms_key_id        = string
       retention_in_days = number
     })
-    fluent_bit = object({
-      image          = string
-      tag            = string
-      is_daemonset   = bool
-      http_port      = number
-      read_from_head = string
-      node_selector = any
+    fluent_bit    = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      is_daemonset       = bool
+      http_port          = number
+      read_from_head     = string
+      node_selector      = any
     })
   })
 }

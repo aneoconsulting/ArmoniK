@@ -43,6 +43,12 @@ resource "kubernetes_deployment" "seq" {
             effect   = "NoSchedule"
           }
         }
+        dynamic image_pull_secrets {
+          for_each = (var.docker_image.image_pull_secrets != "" ? [1] : [])
+          content {
+            name = var.docker_image.image_pull_secrets
+          }
+        }
         container {
           name              = "seq"
           image             = "${var.docker_image.image}:${var.docker_image.tag}"

@@ -6,7 +6,7 @@ variable "namespace" {
 
 # Docker image
 variable "docker_image" {
-  description = "Docker image for Prometheus"
+  description = "Docker image for node exporter"
   type        = object({
     image              = string
     tag                = string
@@ -16,15 +16,9 @@ variable "docker_image" {
 
 # Node selector
 variable "node_selector" {
-  description = "Node selector for Seq"
+  description = "Node selector for node exporter"
   type        = any
   default     = {}
-}
-
-# Type of service
-variable "service_type" {
-  description = "Service type which can be: ClusterIP, NodePort or LoadBalancer"
-  type        = string
 }
 
 # Working dir
