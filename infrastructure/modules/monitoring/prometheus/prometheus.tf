@@ -30,11 +30,16 @@ resource "kubernetes_deployment" "prometheus" {
       }
       spec {
         dynamic toleration {
-          for_each = (var.node_selector != {} ? [1] : [])
+          for_each = (var.node_selector != {} ? [
+          for index in range(0, length(local.node_selector_keys)) : {
+            key   = local.node_selector_keys[index]
+            value = local.node_selector_values[index]
+          }
+          ] : [])
           content {
-            key      = keys(var.node_selector)[0]
+            key      = toleration.value.key
             operator = "Equal"
-            value    = values(var.node_selector)[0]
+            value    = toleration.value.value
             effect   = "NoSchedule"
           }
         }

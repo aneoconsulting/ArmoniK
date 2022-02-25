@@ -13,9 +13,6 @@ k8s_config_context = "default"
 # Kubernetes namespace
 namespace = "armonik"
 
-# Node selector
-node_selector = {}
-
 # Logging level
 logging_level = "Information"
 
@@ -36,6 +33,7 @@ control_plane = {
     memory = "128Mi"
   }
   image_pull_secrets = ""
+  node_selector      = {}
 }
 
 # Parameters of the compute plane
@@ -46,6 +44,7 @@ compute_plane = {
   # number of queues according to priority of tasks
   max_priority                     = 1
   image_pull_secrets               = ""
+  node_selector                    = {}
   # ArmoniK polling agent
   polling_agent                    = {
     image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"

@@ -4,9 +4,9 @@ module "activemq" {
   namespace   = var.namespace
   working_dir = "${path.root}/../../.."
   activemq    = {
-    image         = var.activemq.image
-    tag           = var.activemq.tag
-    node_selector = var.activemq.node_selector
+    image         = local.activemq_image
+    tag           = local.activemq_tag
+    node_selector = local.activemq_node_selector
   }
 }
 
@@ -16,9 +16,9 @@ module "mongodb" {
   namespace   = var.namespace
   working_dir = "${path.root}/../../.."
   mongodb     = {
-    image         = var.mongodb.image
-    tag           = var.mongodb.tag
-    node_selector = var.mongodb.node_selector
+    image         = local.mongodb_image
+    tag           = local.mongodb_tag
+    node_selector = local.mongodb_node_selector
   }
 }
 
@@ -28,8 +28,8 @@ module "redis" {
   namespace   = var.namespace
   working_dir = "${path.root}/../../.."
   redis       = {
-    image         = var.redis.image
-    tag           = var.redis.tag
-    node_selector = var.redis.node_selector
+    image         = local.redis_image
+    tag           = local.redis_tag
+    node_selector = local.redis_node_selector
   }
 }

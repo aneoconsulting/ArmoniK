@@ -13,28 +13,28 @@ k8s_config_context = "default"
 # Kubernetes namespace
 namespace = "armonik"
 
-# Node selector
-node_selector = { "grid/type" = "Operator" }
-
 # Monitoring infos
 monitoring = {
   seq        = {
-    enabled      = true
-    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
-    tag          = "2021.4"
-    service_type = "LoadBalancer"
+    enabled       = true
+    image         = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
+    tag           = "2021.4"
+    service_type  = "LoadBalancer"
+    node_selector = { "grid/type" = "Operator" }
   }
   grafana    = {
-    enabled      = true
-    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/grafana"
-    tag          = "latest"
-    service_type = "LoadBalancer"
+    enabled       = true
+    image         = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/grafana"
+    tag           = "latest"
+    service_type  = "LoadBalancer"
+    node_selector = { "grid/type" = "Operator" }
   }
   prometheus = {
     enabled       = true
     image         = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus"
     tag           = "latest"
     service_type  = "ClusterIP"
+    node_selector = { "grid/type" = "Operator" }
     node_exporter = {
       image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/node-exporter"
       tag   = "latest"
@@ -51,5 +51,6 @@ monitoring = {
     is_daemonset   = true
     http_port      = 2020 # 0 or 2020
     read_from_head = true
+    node_selector  = { "grid/type" = "Operator" }
   }
 }

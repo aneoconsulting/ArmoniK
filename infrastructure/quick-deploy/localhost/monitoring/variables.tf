@@ -19,34 +19,30 @@ variable "namespace" {
   default     = "armonik"
 }
 
-# Node selector
-variable "node_selector" {
-  description = "Node selector for Seq"
-  type        = any
-  default     = {}
-}
-
 # Monitoring infos
 variable "monitoring" {
   description = "Monitoring infos"
   type        = object({
     seq        = object({
-      image        = string
-      tag          = string
-      service_type = string
-      enabled      = bool
+      image         = string
+      tag           = string
+      service_type  = string
+      enabled       = bool
+      node_selector = any
     })
     grafana    = object({
-      image        = string
-      tag          = string
-      service_type = string
-      enabled      = bool
+      image         = string
+      tag           = string
+      service_type  = string
+      enabled       = bool
+      node_selector = any
     })
     prometheus = object({
       image         = string
       tag           = string
       service_type  = string
       enabled       = bool
+      node_selector = any
       node_exporter = object({
         image = string
         tag   = string
@@ -58,6 +54,7 @@ variable "monitoring" {
       is_daemonset   = bool
       http_port      = number
       read_from_head = string
+      node_selector  = any
     })
   })
 }

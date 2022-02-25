@@ -64,6 +64,7 @@ variable "control_plane" {
       memory = string
     })
     image_pull_secrets = string
+    node_selector      = any
   })
 }
 
@@ -76,6 +77,7 @@ variable "compute_plane" {
     # number of queues according to priority of tasks
     max_priority                     = number
     image_pull_secrets               = string
+    node_selector                    = any
     polling_agent                    = object({
       image             = string
       tag               = string

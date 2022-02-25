@@ -1,4 +1,14 @@
 locals {
+  # Node selector for control plane
+  control_plane_node_selector        = lookup(var.control_plane, "node_selector", {})
+  control_plane_node_selector_keys   = keys(local.control_plane_node_selector)
+  control_plane_node_selector_values = values(local.control_plane_node_selector)
+
+  # Node selector for compute plane
+  compute_plane_node_selector        = lookup(var.compute_plane, "node_selector", {})
+  compute_plane_node_selector_keys   = keys(local.compute_plane_node_selector)
+  compute_plane_node_selector_values = values(local.compute_plane_node_selector)
+
   # Shared storage
   service_url             = lookup(lookup(var.storage_endpoint_url, "shared", ""), "service_url", "")
   kms_key_id              = lookup(lookup(var.storage_endpoint_url, "shared", ""), "kms_key_id", "")

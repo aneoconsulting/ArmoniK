@@ -50,9 +50,9 @@ output "storage_endpoint_url" {
       allow_insecure_tls = true
     }
     shared   = {
-      host_path         = var.shared_storage.host_path
-      file_storage_type = var.shared_storage.file_storage_type
-      file_server_ip    = var.shared_storage.file_server_ip
+      host_path         = local.shared_storage_host_path
+      file_storage_type = local.shared_storage_file_storage_type
+      file_server_ip    = local.shared_storage_file_server_ip
     }
   }
 }

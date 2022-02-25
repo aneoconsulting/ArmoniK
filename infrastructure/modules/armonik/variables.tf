@@ -4,13 +4,6 @@ variable "namespace" {
   type        = string
 }
 
-# Node selector
-variable "node_selector" {
-  description = "Node selector"
-  type        = any
-  default     = {}
-}
-
 # Logging level
 variable "logging_level" {
   description = "Logging level in ArmoniK"
@@ -55,6 +48,7 @@ variable "control_plane" {
       memory = string
     })
     image_pull_secrets = string
+    node_selector      = any
   })
 }
 
@@ -67,6 +61,7 @@ variable "compute_plane" {
     # number of queues according to priority of tasks
     max_priority                     = number
     image_pull_secrets               = string
+    node_selector                    = any
     polling_agent                    = object({
       image             = string
       tag               = string

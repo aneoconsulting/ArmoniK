@@ -12,7 +12,7 @@ module "seq" {
   source        = "../../../modules/monitoring/seq"
   namespace     = var.namespace
   service_type  = local.seq_service_type
-  node_selector = var.node_selector
+  node_selector = local.seq_node_selector
   docker_image  = {
     image = local.seq_image
     tag   = local.seq_tag
@@ -26,7 +26,7 @@ module "grafana" {
   source        = "../../../modules/monitoring/grafana"
   namespace     = var.namespace
   service_type  = local.grafana_service_type
-  node_selector = var.node_selector
+  node_selector = local.grafana_node_selector
   docker_image  = {
     image = local.grafana_image
     tag   = local.grafana_tag
@@ -40,7 +40,7 @@ module "prometheus" {
   source        = "../../../modules/monitoring/prometheus"
   namespace     = var.namespace
   service_type  = local.prometheus_service_type
-  node_selector = var.node_selector
+  node_selector = local.prometheus_node_selector
   docker_image  = {
     prometheus    = {
       image = local.prometheus_image
@@ -68,7 +68,7 @@ module "cloudwatch" {
 module "fluent_bit" {
   source        = "../../../modules/monitoring/fluent-bit"
   namespace     = var.namespace
-  node_selector = var.node_selector
+  node_selector = local.fluent_bit_node_selector
   fluent_bit    = {
     container_name = "fluent-bit"
     image          = local.fluent_bit_image
