@@ -71,7 +71,8 @@ mq_credentials = {
 
 # Parameters for MongoDB
 mongodb = {
-  image         = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongodb"
-  tag           = "4.4.11"
-  node_selector = { "grid/type" = "Operator" }
+  image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongodb"
+  tag                = "4.4.11"
+  node_selector      = { "grid/type" = "Operator" }
+  image_pull_secrets = ""
 }

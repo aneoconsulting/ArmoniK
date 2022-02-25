@@ -192,8 +192,9 @@ variable "mq_credentials" {
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type        = object({
-    image         = string
-    tag           = string
-    node_selector = any
+    image              = string
+    tag                = string
+    node_selector      = any
+    image_pull_secrets = string
   })
 }

@@ -44,6 +44,12 @@ resource "kubernetes_deployment" "activemq" {
             effect   = "NoSchedule"
           }
         }
+        dynamic image_pull_secrets {
+          for_each = (var.activemq.image_pull_secrets != "" ? [1] : [])
+          content {
+            name = var.activemq.image_pull_secrets
+          }
+        }
         container {
           name  = "activemq"
           image = "${var.activemq.image}:${var.activemq.tag}"

@@ -42,6 +42,12 @@ resource "kubernetes_deployment" "redis" {
             effect   = "NoSchedule"
           }
         }
+        dynamic image_pull_secrets {
+          for_each = (var.redis.image_pull_secrets != "" ? [1] : [])
+          content {
+            name = var.redis.image_pull_secrets
+          }
+        }
         container {
           name    = "redis"
           image   = "${var.redis.image}:${var.redis.tag}"

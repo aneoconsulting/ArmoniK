@@ -42,6 +42,12 @@ resource "kubernetes_deployment" "mongodb" {
             effect   = "NoSchedule"
           }
         }
+        dynamic image_pull_secrets {
+          for_each = (var.mongodb.image_pull_secrets != "" ? [1] : [])
+          content {
+            name = var.mongodb.image_pull_secrets
+          }
+        }
         container {
           name  = "mongodb"
           image = "${var.mongodb.image}:${var.mongodb.tag}"

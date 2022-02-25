@@ -66,8 +66,8 @@ module "mq" {
     subnet_ids  = var.vpc.private_subnet_ids
   }
   user      = {
-    password   = var.mq_credentials.password
-    username   = var.mq_credentials.username
+    password = var.mq_credentials.password
+    username = var.mq_credentials.username
   }
   mq        = {
     engine_type             = var.mq.engine_type
@@ -88,8 +88,9 @@ module "mongodb" {
   namespace   = var.namespace
   working_dir = "${path.root}/../../.."
   mongodb     = {
-    image         = var.mongodb.image
-    tag           = var.mongodb.tag
-    node_selector = var.mongodb.node_selector
+    image              = var.mongodb.image
+    tag                = var.mongodb.tag
+    node_selector      = var.mongodb.node_selector
+    image_pull_secrets = var.mongodb.image_pull_secrets
   }
 }
