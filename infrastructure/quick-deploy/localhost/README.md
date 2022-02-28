@@ -128,8 +128,12 @@ The parameters of each monitoring resources are defined in [monitoring/parameter
 Execute the following command to create the monitoring tools:
 
 ```bash
-make deploy-monitoring
+make deploy-monitoring STORAGE_PARAMETERS_FILE=<path-to-storage-parameters>
 ```
+
+where:
+
+- `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json`
 
 The monitoring deployment generates an output file `monitoring/generated/monitoring-output.json` which contains
 information needed for ArmoniK.
