@@ -19,47 +19,68 @@ variable "namespace" {
   default     = "armonik"
 }
 
+# List of needed storage
+variable "storage_endpoint_url" {
+  description = "List of storage needed by ArmoniK"
+  type        = any
+}
+
+# Logging level
+variable "logging_level" {
+  description = "Logging level in ArmoniK"
+  type        = string
+  default     = "Information"
+}
+
 # Monitoring infos
 variable "monitoring" {
   description = "Monitoring infos"
   type        = object({
     seq                = object({
+      enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
       service_type       = string
-      enabled            = bool
       node_selector      = any
     })
     grafana            = object({
+      enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
       service_type       = string
-      enabled            = bool
       node_selector      = any
     })
     node_exporter      = object({
+      enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
-      enabled            = bool
       node_selector      = any
     })
     prometheus         = object({
+      enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
       service_type       = string
-      enabled            = bool
       node_selector      = any
     })
     prometheus_adapter = object({
+      enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
       service_type       = string
+      node_selector      = any
+    })
+    metrics_exporter   = object({
       enabled            = bool
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
       node_selector      = any
     })
     fluent_bit         = object({

@@ -18,6 +18,10 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:9090"]
 
+  - job_name: "armonik-metrics-exporter"
+    static_configs:
+      - targets: ["${var.metrics_exporter_url}"]
+
   - job_name: "kubernetes-apiservers"
     kubernetes_sd_configs:
       - role: endpoints

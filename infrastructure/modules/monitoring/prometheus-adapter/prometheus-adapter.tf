@@ -20,7 +20,7 @@ resource "helm_release" "prometheus_adapter" {
   }
   set {
     name  = "prometheus.url"
-    value = var.prometheus_endpoint_url.url
+    value = "http://${var.prometheus_endpoint_url.host}"
   }
   set {
     name  = "prometheus.port"

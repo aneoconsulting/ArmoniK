@@ -15,9 +15,9 @@ output "monitoring" {
       enabled = true
     } : {})
     prometheus = (local.prometheus_enabled ? {
-      host    = module.prometheus.0.host
-      port    = module.prometheus.0.port
-      url     = module.prometheus.0.url
+      host    = module.prometheus.host
+      port    = module.prometheus.port
+      url     = module.prometheus.url
       enabled = true
     } : {})
     fluent_bit = {

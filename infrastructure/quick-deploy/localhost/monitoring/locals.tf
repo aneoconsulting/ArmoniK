@@ -38,6 +38,14 @@ locals {
   prometheus_adapter_service_type       = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "service_type", "ClusterIP")
   prometheus_adapter_node_selector      = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "node_selector", {})
 
+  # Metrics exporter
+  metrics_exporter_enabled            = tobool(lookup(lookup(var.monitoring, "metrics_exporter", {}), "enabled", false))
+  metrics_exporter_image              = lookup(lookup(var.monitoring, "metrics_exporter", {}), "image", "dockerhubaneo/armonik_control_metrics")
+  metrics_exporter_tag                = lookup(lookup(var.monitoring, "metrics_exporter", {}), "tag", "0.4.1-newtaskcreationapi.56.a51b258")
+  metrics_exporter_image_pull_secrets = lookup(lookup(var.monitoring, "metrics_exporter", {}), "image_pull_secrets", "")
+  metrics_exporter_service_type       = lookup(lookup(var.monitoring, "metrics_exporter", {}), "service_type", "ClusterIP")
+  metrics_exporter_node_selector      = lookup(lookup(var.monitoring, "metrics_exporter", {}), "node_selector", {})
+
   # Fluent-bit
   fluent_bit_image              = lookup(lookup(var.monitoring, "fluent_bit", {}), "image", "fluent/fluent-bit")
   fluent_bit_tag                = lookup(lookup(var.monitoring, "fluent_bit", {}), "tag", "1.3.11")

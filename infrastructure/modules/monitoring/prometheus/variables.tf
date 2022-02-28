@@ -27,6 +27,12 @@ variable "service_type" {
   type        = string
 }
 
+# Metrics exporter url
+variable "metrics_exporter_url" {
+  description = "URL of metrics exporter"
+  type        = string
+}
+
 # Working dir
 variable "working_dir" {
   description = "Working directory"

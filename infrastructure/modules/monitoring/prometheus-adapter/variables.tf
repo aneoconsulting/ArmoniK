@@ -31,11 +31,7 @@ variable "service_type" {
 variable "prometheus_endpoint_url" {
   description = "Prometheus url"
   type        = object({
-    url = string
+    host  = string
     port = number
   })
-  default     = {
-    url = "http://prometheus.default.svc"
-    port = 9090
-  }
 }
