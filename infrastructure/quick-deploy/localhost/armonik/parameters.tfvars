@@ -65,5 +65,24 @@ compute_plane = [
         }
       }
     ]
+    hpa                              = {
+      min_replicas   = 1
+      max_replicas   = 100
+      object_metrics = [
+        {
+          described_object = {
+            api_version = "batch/v1"
+            kind        = "Job"
+          }
+          metric_name      = "armonik_tasks_queued"
+          target           = {
+            type                = "Value" # "Value", "Utilization" or "AverageValue"
+            average_value       = "0"
+            average_utilization = 0
+            value               = "1"
+          }
+        }
+      ]
+    }
   }
 ]

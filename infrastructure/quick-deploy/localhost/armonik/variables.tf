@@ -105,5 +105,22 @@ variable "compute_plane" {
         memory = string
       })
     }))
+    hpa                              = object({
+      min_replicas   = number
+      max_replicas   = number
+      object_metrics = list(object({
+        described_object = object({
+          api_version = string
+          kind        = string
+        })
+        metric_name      = string
+        target           = object({
+          type                = string
+          average_value       = string
+          average_utilization = number
+          value               = string
+        })
+      }))
+    })
   }))
 }
