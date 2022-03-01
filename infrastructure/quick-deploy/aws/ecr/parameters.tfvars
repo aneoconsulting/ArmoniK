@@ -80,6 +80,11 @@ ecr = {
       name  = "prometheus-adapter"
       image = "k8s.gcr.io/prometheus-adapter/prometheus-adapter"
       tag   = "v0.9.1"
+    },
+    {
+      name  = "metrics-exporter"
+      image = "dockerhubaneo/armonik_control_metrics"
+      tag   = "0.4.1-newtaskcreationapi.59.65dc09e"
     }
   ]
 }

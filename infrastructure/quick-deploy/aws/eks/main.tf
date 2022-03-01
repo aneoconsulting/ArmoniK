@@ -11,6 +11,7 @@ module "eks" {
   source                        = "../../../modules/aws/eks"
   tags                          = local.tags
   name                          = local.cluster_name
+  node_selector                 = var.node_selector
   vpc                           = {
     id                 = var.vpc.id
     private_subnet_ids = var.vpc.private_subnet_ids

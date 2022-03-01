@@ -43,7 +43,6 @@ locals {
   node_exporter_node_selector      = lookup(lookup(var.monitoring, "node_exporter", {}), "node_selector", {})
 
   # Prometheus
-  prometheus_enabled             = tobool(lookup(lookup(var.monitoring, "prometheus", {}), "enabled", false))
   prometheus_image               = lookup(lookup(var.monitoring, "prometheus", {}), "image", "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/prometheus")
   prometheus_tag                 = lookup(lookup(var.monitoring, "prometheus", {}), "tag", "latest")
   prometheus_image_pull_secrets  = lookup(lookup(var.monitoring, "prometheus", {}), "image_pull_secrets", "")
@@ -51,6 +50,20 @@ locals {
   prometheus_node_exporter_image = lookup(lookup(lookup(var.monitoring, "prometheus", {}), "node_exporter", {}), "image", "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/node-exporter")
   prometheus_node_exporter_tag   = lookup(lookup(lookup(var.monitoring, "prometheus", {}), "node_exporter", {}), "tag", "latest")
   prometheus_node_selector       = lookup(lookup(var.monitoring, "prometheus", {}), "node_selector", {})
+
+  # Prometheus adapter
+  prometheus_adapter_image              = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "image", "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/prometheus-adapter")
+  prometheus_adapter_tag                = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "tag", "v0.9.1")
+  prometheus_adapter_image_pull_secrets = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "image_pull_secrets", "")
+  prometheus_adapter_service_type       = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "service_type", "ClusterIP")
+  prometheus_adapter_node_selector      = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "node_selector", {})
+
+  # Metrics exporter
+  metrics_exporter_image              = lookup(lookup(var.monitoring, "metrics_exporter", {}), "image", "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter")
+  metrics_exporter_tag                = lookup(lookup(var.monitoring, "metrics_exporter", {}), "tag", "0.4.1-newtaskcreationapi.56.a51b258")
+  metrics_exporter_image_pull_secrets = lookup(lookup(var.monitoring, "metrics_exporter", {}), "image_pull_secrets", "")
+  metrics_exporter_service_type       = lookup(lookup(var.monitoring, "metrics_exporter", {}), "service_type", "ClusterIP")
+  metrics_exporter_node_selector      = lookup(lookup(var.monitoring, "metrics_exporter", {}), "node_selector", {})
 
   # CloudWatch
   cloudwatch_enabled           = tobool(lookup(lookup(var.monitoring, "cloudwatch", {}), "enabled", false))

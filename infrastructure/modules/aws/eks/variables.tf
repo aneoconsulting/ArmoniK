@@ -12,6 +12,13 @@ variable "name" {
   default     = "armonik-eks"
 }
 
+# Node selector
+variable "node_selector" {
+  description = "Node selector for pods of EKS system"
+  type        = any
+  default     = {}
+}
+
 # VPC infos
 variable "vpc" {
   description = "AWS VPC info"

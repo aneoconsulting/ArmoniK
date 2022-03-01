@@ -250,13 +250,17 @@ make deploy-monitoring
 **or:**
 
 ```bash
-make deploy-monitoring EKS_PARAMETERS_FILE=<path-to-eks-parameters>
+make deploy-monitoring \
+  EKS_PARAMETERS_FILE=<path-to-eks-parameters> \
+  STORAGE_PARAMETERS_FILE=<path-to-storage-parameters> 
 ```
 
 where:
 
 - `<path-to-eks-parameters>` is the **absolute** path to file `eks/generated/eks-output.json` containing the information
   about the VPC previously created.
+- `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json` containing the
+  information about the storage previously created.
 
 The monitoring deployment generates an output file `monitoring/generated/monitoring-output.json` that contains
 information needed for ArmoniK.

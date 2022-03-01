@@ -50,19 +50,54 @@ module "node_exporter" {
   working_dir   = "${path.root}/../../../.."
 }
 
+# Metrics exporter
+module "metrics_exporter" {
+  source               = "../../../modules/monitoring/exporters/metrics-exporter"
+  namespace            = var.namespace
+  service_type         = local.metrics_exporter_service_type
+  node_selector        = local.metrics_exporter_node_selector
+  logging_level        = var.logging_level
+  storage_endpoint_url = var.storage_endpoint_url
+  docker_image         = {
+    image              = local.metrics_exporter_image
+    tag                = local.metrics_exporter_tag
+    image_pull_secrets = local.metrics_exporter_image_pull_secrets
+  }
+  working_dir          = "${path.root}/../../.."
+}
+
 # Prometheus
 module "prometheus" {
-  count         = (local.prometheus_enabled ? 1 : 0)
-  source        = "../../../modules/monitoring/prometheus"
-  namespace     = var.namespace
-  service_type  = local.prometheus_service_type
-  node_selector = local.prometheus_node_selector
-  docker_image  = {
+  source               = "../../../modules/monitoring/prometheus"
+  namespace            = var.namespace
+  service_type         = local.prometheus_service_type
+  node_selector        = local.prometheus_node_selector
+  metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
+  docker_image         = {
     image              = local.prometheus_image
     tag                = local.prometheus_tag
     image_pull_secrets = local.prometheus_image_pull_secrets
   }
-  working_dir   = "${path.root}/../../.."
+  working_dir          = "${path.root}/../../.."
+  depends_on           = [module.metrics_exporter]
+}
+
+# Prometheus adapter
+module "prometheus_adapter" {
+  source                  = "../../../modules/monitoring/prometheus-adapter"
+  namespace               = var.namespace
+  service_type            = local.prometheus_adapter_service_type
+  node_selector           = local.prometheus_adapter_node_selector
+  docker_image            = {
+    image              = local.prometheus_adapter_image
+    tag                = local.prometheus_adapter_tag
+    image_pull_secrets = local.prometheus_adapter_image_pull_secrets
+  }
+  prometheus_endpoint_url = {
+    host = module.prometheus.host
+    port = module.prometheus.port
+  }
+  depends_on              = [module.prometheus]
 }
 
 # CloudWatch

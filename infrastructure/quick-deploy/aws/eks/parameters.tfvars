@@ -7,6 +7,9 @@ region = "eu-west-3"
 # SUFFIX
 suffix = "main"
 
+# Node selector
+node_selector = { "grid/type" = "Operator" }
+
 # VPC info
 vpc = {
   id                     = ""

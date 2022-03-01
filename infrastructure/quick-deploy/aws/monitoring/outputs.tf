@@ -14,12 +14,11 @@ output "monitoring" {
       url     = module.grafana.0.url
       enabled = true
     } : {})
-    prometheus = (local.prometheus_enabled ? {
-      host    = module.prometheus.0.host
-      port    = module.prometheus.0.port
-      url     = module.prometheus.0.url
-      enabled = true
-    } : {})
+    prometheus = {
+      host = module.prometheus.host
+      port = module.prometheus.port
+      url  = module.prometheus.url
+    }
     cloudwatch = (local.cloudwatch_enabled ? {
       name    = module.cloudwatch.0.name
       region  = var.region

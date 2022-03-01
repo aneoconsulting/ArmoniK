@@ -53,47 +53,73 @@ variable "eks" {
   type        = any
 }
 
+# List of needed storage
+variable "storage_endpoint_url" {
+  description = "List of storage needed by ArmoniK"
+  type        = any
+}
+
+# Logging level
+variable "logging_level" {
+  description = "Logging level in ArmoniK"
+  type        = string
+  default     = "Information"
+}
+
 # Monitoring infos
 variable "monitoring" {
   description = "Monitoring infos"
   type        = object({
-    seq           = object({
+    seq                = object({
+      enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
-      enabled            = bool
     })
-    grafana       = object({
+    grafana            = object({
+      enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
-      enabled            = bool
     })
-    node_exporter = object({
+    node_exporter      = object({
+      enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
-      enabled            = bool
       node_selector      = any
     })
-    prometheus    = object({
+    prometheus         = object({
       image              = string
       tag                = string
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
-      enabled            = bool
     })
-    cloudwatch    = object({
+    prometheus_adapter = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      node_selector      = any
+    })
+    metrics_exporter   = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      node_selector      = any
+    })
+    cloudwatch         = object({
       enabled           = bool
       kms_key_id        = string
       retention_in_days = number
     })
-    fluent_bit    = object({
+    fluent_bit         = object({
       image              = string
       tag                = string
       image_pull_secrets = string

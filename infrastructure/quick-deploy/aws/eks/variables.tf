@@ -26,6 +26,13 @@ variable "tags" {
   default     = {}
 }
 
+# Node selector
+variable "node_selector" {
+  description = "Node selector for Seq"
+  type        = any
+  default     = {}
+}
+
 # VPC infos
 variable "vpc" {
   description = "AWS VPC info"

@@ -28,6 +28,38 @@ resource "helm_release" "cluster_autoscaler" {
     name  = "image.tag"
     value = var.eks.docker_images.cluster_autoscaler.tag
   }
+  set {
+    name  = "extraArgs.logtostderr"
+    value = true
+  }
+  set {
+    name  = "extraArgs.stderrthreshold"
+    value = "Info"
+  }
+  set {
+    name  = "extraArgs.v"
+    value = "4"
+  }
+  set {
+    name  = "extraArgs.aws-use-static-instance-list"
+    value = true
+  }
+  set {
+    name  = "resources.limits.cpu"
+    value = "3000m"
+  }
+  set {
+    name  = "resources.limits.memory"
+    value = "3000Mi"
+  }
+  set {
+    name  = "resources.requests.cpu"
+    value = "1000m"
+  }
+  set {
+    name  = "resources.requests.memory"
+    value = "1000Mi"
+  }
 
   # Method 2 - Specifying groups manually
   # Example for an ASG
@@ -44,7 +76,10 @@ resource "helm_release" "cluster_autoscaler" {
     value = "1"
   }*/
 
-  values     = [file("${path.module}/manifests/cluster_autoscaler.yaml")]
+  values     = [
+    yamlencode(local.node_selector),
+    yamlencode(local.tolerations)
+  ]
   depends_on = [
     module.eks,
     null_resource.update_kubeconfig
