@@ -43,7 +43,11 @@ monitoring = {
     tag                = "v0.9.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
-    node_selector      = {}
+    node_selector      = {
+      "beta.kubernetes.io/arch"          = "amd64"
+      "beta.kubernetes.io/instance-type" = "k3s"
+      "beta.kubernetes.io/os"            = "linux"
+    }
   }
   metrics_exporter   = {
     enabled            = true

@@ -2,8 +2,8 @@ resource "helm_release" "prometheus_adapter" {
   name       = "armonik"
   namespace  = var.namespace
   chart      = "prometheus-adapter"
-  repository = "https://prometheus-community.github.io/helm-charts"
-  #repository = "${path.module}/charts"
+  #repository = "https://prometheus-community.github.io/helm-charts"
+  repository = "${path.module}/charts"
   version    = "3.0.2"
 
   set {
@@ -38,4 +38,14 @@ resource "helm_release" "prometheus_adapter" {
     name  = "service.type"
     value = var.service_type
   }
+
+  values = [file("${path.module}/manifests/prometheus-rules.yaml")]
+  set {
+    name  = "nodeSelector"
+    value = tostring(var.node_selector)
+  }
+  /*set {
+    name  = "tolerations"
+    value = local.tolerations
+  }*/
 }

@@ -22,7 +22,7 @@ scrape_configs:
     static_configs:
       - targets: ["${var.metrics_exporter_url}"]
         labels:
-          namespace: armonik
+          namespace: "${var.namespace}"
 
   - job_name: "kubernetes-apiservers"
     kubernetes_sd_configs:

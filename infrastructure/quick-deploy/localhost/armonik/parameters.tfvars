@@ -9,7 +9,7 @@ control_plane = {
   service_type       = "LoadBalancer"
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
-  tag                = "0.4.1"
+  tag                = "0.4.1-newtaskcreationapi.59.65dc09e"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -36,7 +36,7 @@ compute_plane = [
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.4.1"
+      tag               = "0.4.1-newtaskcreationapi.59.65dc09e"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "100m"

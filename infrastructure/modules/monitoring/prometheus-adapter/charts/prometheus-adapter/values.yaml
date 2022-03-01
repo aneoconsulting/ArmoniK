@@ -1,11 +1,10 @@
 # Default values for k8s-prometheus-adapter..
-affinity: { }
+affinity: {}
 
 image:
   repository: k8s.gcr.io/prometheus-adapter/prometheus-adapter
   tag: v0.9.1
   pullPolicy: IfNotPresent
-  pullSecrets:
 
 logLevel: 4
 
@@ -13,18 +12,18 @@ metricsRelistInterval: 1m
 
 listenPort: 6443
 
-nodeSelector: { }
+nodeSelector: {}
 
 priorityClassName: ""
 
 
 ## Additional annotations to add to all resources
-customAnnotations: { }
-# role: custom-metrics
+customAnnotations: {}
+  # role: custom-metrics
 
 ## Additional labels to add to all resources
-customLabels: { }
-# monitoring: prometheus-adapter
+customLabels: {}
+  # monitoring: prometheus-adapter
 
 # Url to access prometheus
 prometheus:
@@ -57,10 +56,10 @@ serviceAccount:
   # ServiceAccount annotations.
   # Use case: AWS EKS IAM roles for service accounts
   # ref: https://docs.aws.amazon.com/eks/latest/userguide/specify-service-account-role.html
-  annotations: { }
+  annotations: {}
 
 # Custom DNS configuration to be added to prometheus-adapter pods
-dnsConfig: { }
+dnsConfig: {}
 # nameservers:
 #   - 1.2.3.4
 # searches:
@@ -70,51 +69,36 @@ dnsConfig: { }
 #   - name: ndots
 #     value: "2"
 #   - name: edns0
-resources: { }
+resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
   # limits:
   #   cpu: 100m
-#   memory: 128Mi
+  #   memory: 128Mi
 
 rules:
   default: true
-  custom:
-    - seriesQuery: '{__name__=~"^armonik_tasks.*",job="armonik-metrics-exporter"}'
-      resources:
-        # skip specifying generic resource<->label mappings, and just
-        # attach only pod and namespace resources by mapping label names to group-resources
-        overrides:
-          namespace: { resource: "namespace" }
-      # specify that the `container_` and `_seconds_total` suffixes should be removed.
-      # this also introduces an implicit filter on metric family names
-      name:
-        # we use the value of the capture group implicitly as the API name
-        # we could also explicitly write `as: "$1"`
-        matches: "^(.*)$"
-        as: "${1}"
-      metricsQuery: "sum(rate(<<.Series>>{<<.LabelMatchers>>,job="armonik-metrics-exporter"}[2m]))"
-
-  # - seriesQuery: '{__name__=~"^some_metric_count$"}'
-  #   resources:
-  #     template: <<.Resource>>
-  #   name:
-  #     matches: ""
-  #     as: "my_custom_metric"
-  #   metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
+  custom: []
+# - seriesQuery: '{__name__=~"^some_metric_count$"}'
+#   resources:
+#     template: <<.Resource>>
+#   name:
+#     matches: ""
+#     as: "my_custom_metric"
+#   metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
   # Mounts a configMap with pre-generated rules for use. Overrides the
   # default, custom, external and resource entries
   existing:
-  external: [ ]
-  # - seriesQuery: '{__name__=~"^some_metric_count$"}'
-  #   resources:
-  #     template: <<.Resource>>
-  #   name:
-  #     matches: ""
-  #     as: "my_external_metric"
-  #   metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
-  resource: { }
+  external: []
+# - seriesQuery: '{__name__=~"^some_metric_count$"}'
+#   resources:
+#     template: <<.Resource>>
+#   name:
+#     matches: ""
+#     as: "my_external_metric"
+#   metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
+  resource: {}
 #   cpu:
 #     containerQuery: sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>, container!=""}[3m])) by (<<.GroupBy>>)
 #     nodeQuery: sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>, id='/'}[3m])) by (<<.GroupBy>>)
@@ -142,7 +126,7 @@ rules:
 #   window: 3m
 
 service:
-  annotations: { }
+  annotations: {}
   port: 443
   type: ClusterIP
 # clusterIP: 1.2.3.4
@@ -157,12 +141,12 @@ tls:
     # Public key of the APIService
 
 # Any extra arguments
-extraArguments: [ ]
+extraArguments: []
   # - --tls-private-key-file=/etc/tls/tls.key
-# - --tls-cert-file=/etc/tls/tls.crt
+  # - --tls-cert-file=/etc/tls/tls.crt
 
 # Any extra volumes
-extraVolumes: [ ]
+extraVolumes: []
   # - name: example-name
   #   hostPath:
   #     path: /path/on/host
@@ -170,23 +154,23 @@ extraVolumes: [ ]
   # - name: ssl-certs
   #   hostPath:
   #     path: /etc/ssl/certs/ca-bundle.crt
-#     type: File
+  #     type: File
 
 # Any extra volume mounts
-extraVolumeMounts: [ ]
+extraVolumeMounts: []
   #   - name: example-name
   #     mountPath: /path/in/container
   #   - name: ssl-certs
   #     mountPath: /etc/ssl/certs/ca-certificates.crt
-#     readOnly: true
+  #     readOnly: true
 
-tolerations: [ ]
+tolerations: []
 
 # Labels added to the pod
-podLabels: { }
+podLabels: {}
 
 # Annotations added to the pod
-podAnnotations: { }
+podAnnotations: {}
 
 hostNetwork:
   # Specifies if prometheus-adapter should be started in hostNetwork mode.
