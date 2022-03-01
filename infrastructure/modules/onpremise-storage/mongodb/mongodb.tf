@@ -59,6 +59,7 @@ resource "kubernetes_deployment" "mongodb" {
             "--tlsDisabledProtocols=TLS1_0",
             "--tlsCertificateKeyFile=/mongodb/mongodb.pem",
             "--auth",
+            "--noscripting",
           ]
           port {
             name           = "mongodb"
