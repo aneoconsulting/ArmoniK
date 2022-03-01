@@ -100,7 +100,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "{__name__=~\".*\",job=\"armonik-metrics-exporter\"}",
+          "expr": "{__name__=~\"armonik_tasks.*\",job=\"armonik-metrics-exporter\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -600,6 +600,6 @@
   "timezone": "",
   "title": "ArmoniK at a glance",
   "uid": "pNlrmr1nz",
-  "version": 3,
+  "version": 2,
   "weekStart": ""
 }

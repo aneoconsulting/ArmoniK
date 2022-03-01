@@ -81,7 +81,7 @@ resources: { }
 rules:
   default: true
   custom:
-    - seriesQuery: '{__name__=~".*",job="armonik-metrics-exporter"}'
+    - seriesQuery: '{__name__=~"^armonik_tasks.*",job="armonik-metrics-exporter"}'
       resources:
         # skip specifying generic resource<->label mappings, and just
         # attach only pod and namespace resources by mapping label names to group-resources
