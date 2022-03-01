@@ -23,7 +23,6 @@ locals {
   node_exporter_node_selector      = lookup(lookup(var.monitoring, "node_exporter", {}), "node_selector", {})
 
   # Prometheus
-  prometheus_enabled            = tobool(lookup(lookup(var.monitoring, "prometheus", {}), "enabled", false))
   prometheus_image              = lookup(lookup(var.monitoring, "prometheus", {}), "image", "prom/prometheus")
   prometheus_tag                = lookup(lookup(var.monitoring, "prometheus", {}), "tag", "latest")
   prometheus_image_pull_secrets = lookup(lookup(var.monitoring, "prometheus", {}), "image_pull_secrets", "")
@@ -31,7 +30,6 @@ locals {
   prometheus_node_selector      = lookup(lookup(var.monitoring, "prometheus", {}), "node_selector", {})
 
   # Prometheus adapter
-  prometheus_adapter_enabled            = tobool(lookup(lookup(var.monitoring, "prometheus_adapter", {}), "enabled", false))
   prometheus_adapter_image              = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "image", "k8s.gcr.io/prometheus-adapter/prometheus-adapter")
   prometheus_adapter_tag                = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "tag", "v0.9.1")
   prometheus_adapter_image_pull_secrets = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "image_pull_secrets", "")
@@ -39,7 +37,6 @@ locals {
   prometheus_adapter_node_selector      = lookup(lookup(var.monitoring, "prometheus_adapter", {}), "node_selector", {})
 
   # Metrics exporter
-  metrics_exporter_enabled            = tobool(lookup(lookup(var.monitoring, "metrics_exporter", {}), "enabled", false))
   metrics_exporter_image              = lookup(lookup(var.monitoring, "metrics_exporter", {}), "image", "dockerhubaneo/armonik_control_metrics")
   metrics_exporter_tag                = lookup(lookup(var.monitoring, "metrics_exporter", {}), "tag", "0.4.1-newtaskcreationapi.56.a51b258")
   metrics_exporter_image_pull_secrets = lookup(lookup(var.monitoring, "metrics_exporter", {}), "image_pull_secrets", "")

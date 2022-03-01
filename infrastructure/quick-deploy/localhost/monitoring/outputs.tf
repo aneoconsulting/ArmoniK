@@ -14,12 +14,11 @@ output "monitoring" {
       url     = module.grafana.0.url
       enabled = true
     } : {})
-    prometheus = (local.prometheus_enabled ? {
-      host    = module.prometheus.host
-      port    = module.prometheus.port
-      url     = module.prometheus.url
-      enabled = true
-    } : {})
+    prometheus = {
+      host = module.prometheus.host
+      port = module.prometheus.port
+      url  = module.prometheus.url
+    }
     fluent_bit = {
       container_name = module.fluent_bit.container_name
       image          = module.fluent_bit.image

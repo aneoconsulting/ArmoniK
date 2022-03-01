@@ -133,7 +133,8 @@ make deploy-monitoring STORAGE_PARAMETERS_FILE=<path-to-storage-parameters>
 
 where:
 
-- `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json`
+- `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json` containing the
+  information about the storage previously created.
 
 The monitoring deployment generates an output file `monitoring/generated/monitoring-output.json` which contains
 information needed for ArmoniK.

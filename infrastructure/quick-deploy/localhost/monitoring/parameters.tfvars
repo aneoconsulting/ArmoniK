@@ -30,7 +30,6 @@ monitoring = {
     node_selector      = {}
   }
   prometheus         = {
-    enabled            = true
     image              = "prom/prometheus"
     tag                = "latest"
     image_pull_secrets = ""
@@ -38,19 +37,13 @@ monitoring = {
     node_selector      = {}
   }
   prometheus_adapter = {
-    enabled            = true
     image              = "k8s.gcr.io/prometheus-adapter/prometheus-adapter"
     tag                = "v0.9.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
-    node_selector      = {
-      "beta.kubernetes.io/arch"          = "amd64"
-      "beta.kubernetes.io/instance-type" = "k3s"
-      "beta.kubernetes.io/os"            = "linux"
-    }
+    node_selector      = {}
   }
   metrics_exporter   = {
-    enabled            = true
     image              = "dockerhubaneo/armonik_control_metrics"
     tag                = "0.4.1-newtaskcreationapi.59.65dc09e"
     image_pull_secrets = ""

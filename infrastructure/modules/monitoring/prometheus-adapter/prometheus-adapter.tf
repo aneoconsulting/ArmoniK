@@ -39,13 +39,9 @@ resource "helm_release" "prometheus_adapter" {
     value = var.service_type
   }
 
-  values = [file("${path.module}/manifests/prometheus-rules.yaml")]
-  set {
-    name  = "nodeSelector"
-    value = tostring(var.node_selector)
-  }
-  /*set {
-    name  = "tolerations"
-    value = local.tolerations
-  }*/
+  values = [
+    file("${path.module}/manifests/prometheus-rules.yaml"),
+    yamlencode(local.node_selector),
+    yamlencode(local.tolerations)
+  ]
 }

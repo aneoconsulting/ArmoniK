@@ -60,7 +60,6 @@ variable "monitoring" {
       node_selector      = any
     })
     prometheus         = object({
-      enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
@@ -68,7 +67,6 @@ variable "monitoring" {
       node_selector      = any
     })
     prometheus_adapter = object({
-      enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
@@ -76,7 +74,6 @@ variable "monitoring" {
       node_selector      = any
     })
     metrics_exporter   = object({
-      enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
