@@ -48,7 +48,7 @@ function build() {
 function deploy() {
   cd ${TestDir}
   cp packages/ArmoniK.Samples.GridServer.Client-v1.0.0.zip /data
-  kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
+  #kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 }
 
 function execute() {

@@ -23,7 +23,7 @@ if [ ! -w "/data" ]; then
 fi
 
 cp packages/ArmoniK.Samples.SymphonyPackage-v1.0.0.zip /data
-kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
+#kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 
 cd ArmoniK.Samples.SymphonyClient/
 dotnet bin/Debug/net5.0/linux-x64/ArmoniK.Samples.SymphonyClient.dll

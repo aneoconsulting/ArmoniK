@@ -13,8 +13,9 @@ resource "kubernetes_horizontal_pod_autoscaler" "compute_plane_hpa" {
     min_replicas = var.compute_plane[count.index].hpa.min_replicas
     max_replicas = var.compute_plane[count.index].hpa.max_replicas
     scale_target_ref {
-      kind = "Deployment"
-      name = var.compute_plane[count.index].name
+      api_version = "apps/v1"
+      kind        = "Deployment"
+      name        = var.compute_plane[count.index].name
     }
     dynamic metric {
       for_each = var.compute_plane[count.index].hpa.object_metrics
