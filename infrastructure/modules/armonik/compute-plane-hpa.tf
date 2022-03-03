@@ -17,6 +17,7 @@ resource "kubernetes_horizontal_pod_autoscaler" "compute_plane_hpa" {
       kind        = "Deployment"
       name        = var.compute_plane[count.index].name
     }
+    #target_cpu_utilization_percentage = 50
     dynamic metric {
       for_each = var.compute_plane[count.index].hpa.object_metrics
       content {
