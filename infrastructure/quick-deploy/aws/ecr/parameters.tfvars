@@ -84,7 +84,7 @@ ecr = {
     {
       name  = "metrics-exporter"
       image = "dockerhubaneo/armonik_control_metrics"
-      tag   = "0.4.1-newtaskcreationapi.59.65dc09e"
+      tag   = "0.4.1-newtaskcreationapi.70.fcfce0b"
     }
   ]
 }
