@@ -29,6 +29,10 @@ inputs:
     description: 'Is docker installed ?'
     required: false
     default: 'false'
+  log-level:
+    description: 'Log Level'
+    required: false
+    default: 'Information'
 
 runs:
   using: composite
@@ -112,7 +116,7 @@ runs:
           -kv compute_plane.tag=${{ inputs.polling-agent-tag }} \
           -kv control_plane.image=${{ inputs.control-plane-image }} \
           -kv control_plane.tag=${{ inputs.control-plane-tag }} \
-          -kv logging_level=Information \
+          -kv logging_level=${{ inputs.log-level }} \
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars \
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
