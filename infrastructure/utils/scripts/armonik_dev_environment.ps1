@@ -109,7 +109,8 @@ $ubuntu_password = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
 
 Write-Host "Avalaible branches:"
 $available_branches=git branch -a
-Write-Host $available_branches
+foreach ($branch_name in $available_branches) 
+    {Write-Host $branch_name}
 $armonik_branch = Read-Host -Prompt "Which branch do you want to use?"
 # TODO: parse the $available_branches, give a number using the actual one (with a * in front) as default
 
@@ -133,7 +134,7 @@ Restart-Genie
 # ArmoniK
 Write-Host "ArmoniK requirements installation (docker, k3s, terraform)"
 wsl genie -c cp -r $pathname/armonik_requirements.sh /tmp
-wsl genie -c sed -i -e "'s/\r$//'" /tmp/armonik_requirements.shg
+wsl genie -c sed -i -e "'s/\r$//'" /tmp/armonik_requirements.sh
 wsl genie -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/armonik_requirements.sh $ubuntu_user"
 wsl genie -c rm /tmp/armonik_requirements.sh
 

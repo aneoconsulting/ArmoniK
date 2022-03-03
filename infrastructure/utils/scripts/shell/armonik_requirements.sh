@@ -11,7 +11,7 @@ apt -y install gnupg2
 # docker
 source /etc/os-release
 curl -fsSL https://download.docker.com/linux/${ID}/gpg | apt-key add -
-echo "deb [arch=amd64] https://download.docker.com/linux/${ID} ${VERSION_CODENAME} stable" | tee /etc/apt/sources.list.d/docker.list
+echo "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/${ID} ${VERSION_CODENAME} stable" | tee /etc/apt/sources.list.d/docker.list
 apt update
 apt dist-upgrade -y
 apt -y install docker-ce docker-ce-cli containerd.io
