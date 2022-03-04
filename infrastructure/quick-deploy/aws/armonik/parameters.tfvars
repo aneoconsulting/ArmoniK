@@ -21,7 +21,7 @@ control_plane = {
   service_type       = "LoadBalancer"
   replicas           = 1
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag                = "0.4.1"
+  tag                = "0.4.1-newtaskcreationapi.70.fcfce0b"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -48,7 +48,7 @@ compute_plane = [
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.4.1"
+      tag               = "0.4.1-newtaskcreationapi.70.fcfce0b"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "100m"
@@ -65,7 +65,7 @@ compute_plane = [
         name              = "worker"
         port              = 80
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.4.0"
+        tag               = "0.4.1-newtaskcreationapi.70.fcfce0b"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "920m"
@@ -89,9 +89,9 @@ compute_plane = [
           metric_name      = "armonik_tasks_queued"
           target           = {
             type                = "Value" # "Value", "Utilization" or "AverageValue"
-            average_value       = "0"
+            average_value       = 2
             average_utilization = 0
-            value               = "1"
+            value               = 0
           }
         }
       ]

@@ -116,9 +116,9 @@ variable "compute_plane" {
         metric_name      = string
         target           = object({
           type                = string
-          average_value       = string
+          average_value       = number
           average_utilization = number
-          value               = string
+          value               = number
         })
       }))
     })

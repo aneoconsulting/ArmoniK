@@ -9,7 +9,8 @@ control_plane = {
   service_type       = "LoadBalancer"
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
-  tag                = "0.4.1"
+  #tag                = "0.4.1"
+  tag               = "0.4.1-newtaskcreationapi.70.fcfce0b"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -36,7 +37,8 @@ compute_plane = [
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.4.1"
+      #tag               = "0.4.1"
+      tag               = "0.4.1-newtaskcreationapi.70.fcfce0b"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "100m"
@@ -52,8 +54,10 @@ compute_plane = [
       {
         name              = "worker"
         port              = 80
-        image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.4.0"
+        #image             = "dockerhubaneo/armonik_worker_dll"
+        #tag               = "0.4.0"
+        image             = "dockerhubaneo/armonik_core_stream_test_worker"
+        tag               = "0.4.1-newtaskcreationapi.70.fcfce0b"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "920m"
@@ -67,7 +71,7 @@ compute_plane = [
     ]
     hpa                              = {
       min_replicas   = 1
-      max_replicas   = 100
+      max_replicas   = 8
       object_metrics = [
         {
           described_object = {
@@ -76,10 +80,10 @@ compute_plane = [
           }
           metric_name      = "armonik_tasks_queued"
           target           = {
-            type                = "Value" # "Value", "Utilization" or "AverageValue"
-            average_value       = "0"
+            type                = "AverageValue" # "Value", "Utilization" or "AverageValue"
+            average_value       = 2
             average_utilization = 0
-            value               = "1"
+            value               = 0
           }
         }
       ]
