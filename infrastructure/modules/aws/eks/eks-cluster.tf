@@ -72,8 +72,6 @@ module "eks" {
 
   /*
     # Required
-    cluster_endpoint_private_access_cidrs = []
-    cluster_endpoint_private_access_sg    = []
     cluster_service_ipv4_cidr             = ""
     fargate_pod_execution_role_name       = ""
     permissions_boundary                  = ""
@@ -81,7 +79,6 @@ module "eks" {
     # Optional
     attach_worker_cni_policy                           = true
     aws_auth_additional_labels                         = {}
-    cluster_create_endpoint_private_access_sg_rule     = false
     cluster_egress_cidrs                               = ["0.0.0.0/0"]
     cluster_iam_role_name                              = ""
     cluster_security_group_id                          = ""
