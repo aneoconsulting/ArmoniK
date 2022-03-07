@@ -22,5 +22,6 @@ module "vpc" {
     single_nat_gateway                              = var.vpc.enable_private_subnet
     flow_log_cloudwatch_log_group_retention_in_days = var.vpc.flow_log_cloudwatch_log_group_retention_in_days
     flow_log_cloudwatch_log_group_kms_key_id        = (var.vpc.flow_log_cloudwatch_log_group_kms_key_id != "" ? var.vpc.flow_log_cloudwatch_log_group_kms_key_id : module.kms.0.selected.arn)
+    peering                                         = var.vpc.peering
   }
 }
