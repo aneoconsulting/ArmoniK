@@ -84,7 +84,7 @@ where:
 see [storage/parameters.tfvars](storage/parameters.tfvars)):
 
 ```bash
-sudo mkdir -p /data && sudo chown -R $USER:$USER /data
+sudo mkdir -p $ARMONIK_SHARED_HOST_PATH && sudo chown -R $USER:$USER $ARMONIK_SHARED_HOST_PATH
 ```
 
 ## Kubernetes namespace
