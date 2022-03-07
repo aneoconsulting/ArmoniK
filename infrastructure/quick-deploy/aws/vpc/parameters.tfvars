@@ -21,4 +21,8 @@ vpc = {
   enable_private_subnet                           = true
   flow_log_cloudwatch_log_group_kms_key_id        = ""
   flow_log_cloudwatch_log_group_retention_in_days = 30
+  peering = {
+      enabled      = true
+      peer_vpc_ids = []
+    }
 }
