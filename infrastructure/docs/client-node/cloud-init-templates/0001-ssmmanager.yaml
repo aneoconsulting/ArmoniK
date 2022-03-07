@@ -1,0 +1,19 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [ append ]
+  - name: dict
+    settings: [ no_replace, recurse_list ]
+
+locale: en_US.UTF-8
+
+write_files:
+  - content: |
+      sudo yum install -y https://s3.${region}.amazonaws.com/amazon-ssm-${region}/latest/linux_amd64/amazon-ssm-agent.rpm
+    path: /app/private-ssmmanager.sh
+    permissions: 0755
+    owner: root
+
+runcmd:
+  - bash /app/private-ssmmanager.sh
