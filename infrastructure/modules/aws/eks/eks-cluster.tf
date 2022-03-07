@@ -25,15 +25,22 @@ module "eks" {
     var.name
   ]
 
-  # Cluster
-  cluster_endpoint_private_access      = var.eks.cluster_endpoint_private_access
+  # Private cluster
+  cluster_endpoint_private_access                = var.eks.cluster_endpoint_private_access
+  cluster_create_endpoint_private_access_sg_rule = var.eks.cluster_endpoint_private_access
+  cluster_endpoint_private_access_cidrs          = var.eks.cluster_endpoint_private_access_cidrs
+  cluster_endpoint_private_access_sg             = var.eks.cluster_endpoint_private_access_sg
+
+  # Public cluster
   cluster_endpoint_public_access       = var.eks.cluster_endpoint_public_access
   cluster_endpoint_public_access_cidrs = var.eks.cluster_endpoint_public_access_cidrs
-  cluster_enabled_log_types            = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
-  cluster_log_kms_key_id               = var.eks.encryption_keys.cluster_log_kms_key_id
-  cluster_log_retention_in_days        = var.eks.cluster_log_retention_in_days
-  cluster_create_security_group        = true
-  cluster_encryption_config            = [
+
+  # Cluster parameters
+  cluster_enabled_log_types     = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+  cluster_log_kms_key_id        = var.eks.encryption_keys.cluster_log_kms_key_id
+  cluster_log_retention_in_days = var.eks.cluster_log_retention_in_days
+  cluster_create_security_group = true
+  cluster_encryption_config     = [
     {
       provider_key_arn = var.eks.encryption_keys.cluster_encryption_config
       resources        = ["secrets"]

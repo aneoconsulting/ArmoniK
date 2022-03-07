@@ -13,22 +13,14 @@ ami = "ami-01d14e0ab732be0e4"
 # Instance type
 instance_type = "t3.2xlarge"
 
-/*# VPC
-vpc_id    = "vpc-81c00ee9"
-subnet_id = "subnet-d890c195"
-
 # VPC
-vpc_cidr_block = "10.100.0.0/16"
-subnet_cidr_block = "10.100.0.0/24"*/
-
-# VPC
-vpc_cidr_block = "10.100.0.0/16"
+vpc_cidr_block = "192.168.0.0/16"
 
 # Private Subnet
-private_subnet_cidr_block = ["10.100.1.0/24", "10.100.2.0/24", "10.100.3.0/24"]
+private_subnet_cidr_block = ["192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24"]
 
 # Public Subnet
-public_subnet_cidr_block = ["10.100.101.0/24", "10.100.102.0/24", "10.100.103.0/24"]
+public_subnet_cidr_block = ["192.168.101.0/24", "192.168.102.0/24", "192.168.103.0/24"]
 
 
 # SSH key

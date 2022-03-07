@@ -49,7 +49,7 @@ module "client" {
   instance_type               = var.instance_type
   key_name                    = aws_key_pair.ssh_key.key_name
   monitoring                  = false
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   iam_instance_profile        = aws_iam_instance_profile.client_profile.name
   root_block_device           = [
     {

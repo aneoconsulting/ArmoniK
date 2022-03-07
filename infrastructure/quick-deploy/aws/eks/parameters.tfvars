@@ -28,13 +28,15 @@ s3_fs = {
 
 # AWS EKS
 eks = {
-  name                                 = "armonik-eks"
-  cluster_version                      = "1.21"
-  cluster_endpoint_private_access      = true # vpc.enable_private_subnet
-  cluster_endpoint_public_access       = true
-  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
-  cluster_log_retention_in_days        = 30
-  docker_images                        = {
+  name                                  = "armonik-eks"
+  cluster_version                       = "1.21"
+  cluster_endpoint_private_access       = true # vpc.enable_private_subnet
+  cluster_endpoint_private_access_cidrs = []
+  cluster_endpoint_private_access_sg    = []
+  cluster_endpoint_public_access        = true
+  cluster_endpoint_public_access_cidrs  = ["0.0.0.0/0"]
+  cluster_log_retention_in_days         = 30
+  docker_images                         = {
     cluster_autoscaler = {
       image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/cluster-autoscaler"
       tag   = "v1.23.0"
@@ -44,7 +46,7 @@ eks = {
       tag   = "v1.15.0"
     }
   }
-  encryption_keys                      = {
+  encryption_keys                       = {
     cluster_log_kms_key_id    = ""
     cluster_encryption_config = ""
     ebs_kms_key_id            = ""
