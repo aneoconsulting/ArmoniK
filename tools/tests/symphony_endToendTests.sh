@@ -43,18 +43,12 @@ function deploy() {
     sudo chown -R $USER:$USER /data
   fi
   cp -v ../packages/ArmoniK.EndToEndTests-v1.0.0.zip /data
+  kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 }
 
 function execute() {
   cd ${TestDir}
-  if [ ! -d "/data" ]; then
-    sudo mkdir -p /data
-  fi
-  if [ ! -w "/data" ]; then
-    sudo chown -R $USER:$USER /data
-  fi
-  cp -v ../packages/ArmoniK.EndToEndTests-v1.0.0.zip /data
-  kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
+  
   dotnet bin/${configuration}/net5.0/linux-x64/ArmoniK.EndToEndTests.dll
 }
 
@@ -99,8 +93,9 @@ function main() {
       ;;
     -a | *)
       # unknown option
-      build
-      execute
+	build
+	deploy
+	execute
       ;;
     esac
   done
