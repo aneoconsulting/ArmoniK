@@ -81,8 +81,7 @@ runs:
       run: |
         set -ex
         cd ${{ github.action_path }}
-        sudo mkdir -p /data
-        sudo chown -R $USER:$USER /data
+        mkdir -p ${HOME}/data
 
     - name: Create Kubernetes namespace
       shell: bash

@@ -54,8 +54,7 @@ runs:
       shell: bash
       run: |
         set -ex
-        sudo mkdir -p /data
-        sudo chown -R $USER:$USER /data
+        mkdir -p ${HOME}/data
 
     - name: Test Symphony Like
       shell: bash
