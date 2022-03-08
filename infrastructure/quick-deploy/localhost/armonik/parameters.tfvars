@@ -67,7 +67,7 @@ compute_plane = [
     ]
     hpa                              = {
       min_replicas   = 1
-      max_replicas   = 8
+      max_replicas   = 5
       object_metrics = [
         {
           described_object = {
