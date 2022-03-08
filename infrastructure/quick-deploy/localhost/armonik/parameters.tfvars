@@ -5,7 +5,7 @@ namespace = "armonik"
 node_selector = {}
 
 # Logging level
-logging_level = "Verbose"
+logging_level = "Information"
 
 # Parameters of control plane
 control_plane = {
