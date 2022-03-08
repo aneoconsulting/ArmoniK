@@ -1,15 +1,15 @@
-export ARMONIK_SUFFIX?="main"
-export ARMONIK_REGION?="eu-west-3"
-export ARMONIK_PROFILE?="default"
-export ARMONIK_BUCKET_NAME?="armonik-tfstate"
-export ARMONIK_KUBERNETES_NAMESPACE?="armonik"
-export TFSTATE_BUCKET_NAME="$(ARMONIK_BUCKET_NAME)-$(ARMONIK_SUFFIX)"
+export ARMONIK_SUFFIX?=main
+export ARMONIK_REGION?=eu-west-3
+export ARMONIK_PROFILE?=default
+export ARMONIK_BUCKET_NAME?=armonik-tfstate
+export ARMONIK_KUBERNETES_NAMESPACE?=armonik
+export TFSTATE_BUCKET_NAME=$(ARMONIK_BUCKET_NAME)-$(ARMONIK_SUFFIX)
 
 CURRENT_DIR=$(shell pwd)
-VPC_PARAMETERS_FILE?="$(CURRENT_DIR)/vpc/generated/vpc-output.json"
-STORAGE_PARAMETERS_FILE?="$(CURRENT_DIR)/storage/generated/storage-output.json"
-MONITORING_PARAMETERS_FILE?="$(CURRENT_DIR)/monitoring/generated/monitoring-output.json"
-EKS_PARAMETERS_FILE?="$(CURRENT_DIR)/eks/generated/eks-output.json"
+VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/vpc/generated/vpc-output.json
+STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/storage/generated/storage-output.json
+MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/monitoring/generated/monitoring-output.json
+EKS_PARAMETERS_FILE?=$(CURRENT_DIR)/eks/generated/eks-output.json
 
 ####################################
 # KSM and S3 buckets for TF states #
