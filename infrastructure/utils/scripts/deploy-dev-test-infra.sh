@@ -7,7 +7,7 @@ popd
 
 MODE=""
 NAMESPACE="armonik"
-HOST_PATH="~/data"
+HOST_PATH="${HOME}/data"
 SERVER_NFS_IP=""
 SHARED_STORAGE_TYPE="HostPath"
 SOURCE_CODES_LOCALHOST_DIR="${BASEDIR}/../../quick-deploy/localhost"
@@ -114,7 +114,6 @@ create_host_path() {
   STORAGE_TYPE=$(echo "${SHARED_STORAGE_TYPE}" | awk '{print tolower($0)}')
   if [ "${STORAGE_TYPE}" == "hostpath" ]; then
     mkdir -p "${HOST_PATH}"
-    chown -R $USER:$USER "${HOST_PATH}"
   fi
 }
 
@@ -290,7 +289,7 @@ function main() {
   # Create shared storage
   create_host_path
 
-  # Create Kubernetes namespace
+    # Create Kubernetes namespace
   create_kubernetes_namespace
 
   # Prepare storage parameters

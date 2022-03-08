@@ -66,7 +66,7 @@ source envvars.sh
 
 ```bash
 export ARMONIK_KUBERNETES_NAMESPACE="armonik"
-export ARMONIK_SHARED_HOST_PATH="~/data"
+export ARMONIK_SHARED_HOST_PATH="${HOME}/data"
 export ARMONIK_FILE_STORAGE_FILE="HostPath"
 export ARMONIK_FILE_SERVER_IP=""
 ```
@@ -80,7 +80,7 @@ where:
 
 # Deploy
 
-**First**, You must create the `host_path="~/data"` directory which will be shared with ArmoniK worker pods (
+**First**, You must create the `host_path="${HOME}/data"` directory which will be shared with ArmoniK worker pods (
 see [storage/parameters.tfvars](storage/parameters.tfvars)):
 
 ```bash
