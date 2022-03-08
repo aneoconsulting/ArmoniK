@@ -1,16 +1,16 @@
 CURRENT_DIR=$(shell pwd)
-GENERATED_DIR=$(CURRENT_DIR)/generated
-PARAMETERS_FILE?=parameters.tfvars
-STATE_FILE=monitoring-terraform.tfstate
-OUTPUT_FILE=$(GENERATED_DIR)/monitoring-output.json
+GENERATED_DIR="$(CURRENT_DIR)/generated"
+PARAMETERS_FILE?="parameters.tfvars"
+STATE_FILE="monitoring-terraform.tfstate"
+OUTPUT_FILE="$(GENERATED_DIR)/monitoring-output.json"
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
-export REGION?=eu-west-3
-export PROFILE?=default
-export NAMESPACE?=armonik
-export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
-export EKS_PARAMETERS_FILE?=$(CURRENT_DIR)/../eks/generated/eks-output.json
-export STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/../storage/generated/storage-output.json
+export REGION?="eu-west-3"
+export PROFILE?="default"
+export NAMESPACE?="armonik"
+export TFSTATE_BUCKET_NAME?="armonik-tfstate-$(SUFFIX)"
+export EKS_PARAMETERS_FILE?="$(CURRENT_DIR)/../eks/generated/eks-output.json"
+export STORAGE_PARAMETERS_FILE?="$(CURRENT_DIR)/../storage/generated/storage-output.json"
 
 .PHONY: apply destroy
 
