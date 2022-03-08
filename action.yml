@@ -69,18 +69,12 @@ runs:
         cd ${{ github.action_path }}
         bash tools/install/k3s.sh
 
-    - name: Set environment variables
+    - name: Create shared host path directory
       shell: bash
       run: |
         set -ex
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         source envvars.sh
-
-    - name: Create shared host path directory
-      shell: bash
-      run: |
-        set -ex
-        cd ${{ github.action_path }}
         mkdir -p ${ARMONIK_SHARED_HOST_PATH}
 
     - name: Create Kubernetes namespace
@@ -88,12 +82,16 @@ runs:
       run: |
         set -ex
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        source envvars.sh
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         make create-namespace
 
     - name: Deploy storage
       shell: bash
       run: |
         set -ex
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        source envvars.sh
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         make deploy-storage
 
