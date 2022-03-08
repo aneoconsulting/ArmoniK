@@ -1,11 +1,11 @@
-export ARMONIK_KUBERNETES_NAMESPACE?=armonik
-export ARMONIK_SHARED_HOST_PATH?=/data
-export ARMONIK_FILE_STORAGE_FILE?=HostPath
+export ARMONIK_KUBERNETES_NAMESPACE?="armonik"
+export ARMONIK_SHARED_HOST_PATH?="~/data"
+export ARMONIK_FILE_STORAGE_FILE?="HostPath"
 export ARMONIK_FILE_SERVER_IP?=""
 
 CURRENT_DIR=$(shell pwd)
-STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/storage/generated/storage-output.json
-MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/monitoring/generated/monitoring-output.json
+STORAGE_PARAMETERS_FILE?="$(CURRENT_DIR)/storage/generated/storage-output.json"
+MONITORING_PARAMETERS_FILE?="$(CURRENT_DIR)/monitoring/generated/monitoring-output.json"
 
 ####################################
 #       Kubernetes namespace       #

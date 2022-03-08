@@ -1,8 +1,8 @@
-export SUFFIX?=main
-export REGION?=eu-west-3
-export BUCKET_NAME?=armonik-tfstate
-BACKEND?=generated
-YAML_SRC:=backend-resources.yaml
+export SUFFIX?="main"
+export REGION?="eu-west-3"
+export BUCKET_NAME?="armonik-tfstate"
+BACKEND?="generated"
+YAML_SRC:="backend-resources.yaml"
 
 all: deploy
 
