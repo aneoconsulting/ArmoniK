@@ -31,7 +31,7 @@ export S3_BUCKET=$(aws s3api list-buckets --output json | jq -r '.Buckets[0].Nam
 function build()
 {
     cd ${TestDir}
-    dotnet publish --self-contained -c $configuration -r linux-x64 .
+    dotnet publish --self-contained -c $configuration -r linux-x64 -f net5.0 .
     #aws s3 sync --exclude "*" --include ArmoniK.EndToEndTests-v1.0.0-700.zip ../packages/ s3://$S3_BUCKET
     aws s3 cp ../packages/ArmoniK.EndToEndTests-v1.0.0-700.zip s3://$S3_BUCKET
     kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
