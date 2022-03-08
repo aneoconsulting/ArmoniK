@@ -50,12 +50,6 @@ runs:
         worker-image: ${{ inputs.worker-image }}
         worker-tag: ${{ inputs.worker-tag }}
 
-    - name: Create data disk
-      shell: bash
-      run: |
-        set -ex
-        mkdir -p ${HOME}/data
-
     - name: Test Symphony Like
       shell: bash
       run: |

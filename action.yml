@@ -81,7 +81,7 @@ runs:
       run: |
         set -ex
         cd ${{ github.action_path }}
-        mkdir -p ${HOME}/data
+        mkdir -p ${ARMONIK_SHARED_HOST_PATH}
 
     - name: Create Kubernetes namespace
       shell: bash
