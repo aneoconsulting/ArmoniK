@@ -10,10 +10,10 @@ export S3_BUCKET=$(aws s3api list-buckets --output json | jq -r '.Buckets[0].Nam
 cd Samples/SymphonyLike/
 dotnet publish --self-contained -r linux-x64 SymphonyLike.sln
 
-#scp -i ~/.ssh/cluster-key packages/ArmoniK.Samples.SymphonyPackage-v1.0.0.zip ec2-user@54.213.147.130:/data
-#aws s3 sync --exclude "*" --include ArmoniK.Samples.SymphonyPackage-v1.0.0.zip packages/ s3://$S3_BUCKET
+#scp -i ~/.ssh/cluster-key packages/ArmoniK.Samples.SymphonyPackage-v2.0.0.zip ec2-user@54.213.147.130:/data
+#aws s3 sync --exclude "*" --include ArmoniK.Samples.SymphonyPackage-v2.0.0.zip packages/ s3://$S3_BUCKET
 
-aws s3 cp packages/ArmoniK.Samples.SymphonyPackage-v1.0.0.zip s3://$S3_BUCKET
+aws s3 cp packages/ArmoniK.Samples.SymphonyPackage-v2.0.0.zip s3://$S3_BUCKET
 kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 
 cd ArmoniK.Samples.SymphonyClient/

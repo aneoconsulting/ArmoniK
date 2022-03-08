@@ -22,7 +22,7 @@ if [ ! -w "/data" ]; then
   sudo chown -R $USER:$USER /data
 fi
 
-cp packages/ArmoniK.Samples.SymphonyPackage-v1.0.0.zip /data
+cp packages/ArmoniK.Samples.SymphonyPackage-v2.0.0.zip /data
 kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 
 cd ArmoniK.Samples.SymphonyClient/
