@@ -7,6 +7,32 @@ region = "eu-west-3"
 # SUFFIX
 suffix = "main"
 
+# Tags
+tags = {
+  name             = ""
+  env              = ""
+  entity           = ""
+  bu               = ""
+  owner            = ""
+  application_code = ""
+  project_code     = ""
+  cost_center      = ""
+  support_contact  = ""
+  origin           = ""
+  unit_of_measure  = ""
+  epic             = ""
+  functional_block = ""
+  hostname         = ""
+  interruptible    = ""
+  tostop           = ""
+  tostart          = ""
+  branch           = ""
+  gridserver       = ""
+  it_division      = ""
+  confidentiality  = ""
+  csp              = ""
+}
+
 # Node selector
 node_selector = { "grid/type" = "Operator" }
 

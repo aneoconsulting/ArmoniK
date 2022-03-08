@@ -114,9 +114,10 @@ data "aws_iam_policy_document" "worker_autoscaling_document" {
 }
 
 resource "aws_iam_policy" "worker_autoscaling_policy" {
-  name_prefix = "eks-worker-autoscaling-${module.eks.cluster_id}"
+  name_prefix = local.iam_worker_autoscaling_policy_name
   description = "EKS worker node autoscaling policy for cluster ${module.eks.cluster_id}"
   policy      = data.aws_iam_policy_document.worker_autoscaling_document.json
+  tags        = merge(local.tags, { name = local.iam_worker_autoscaling_policy_name })
 }
 
 resource "aws_iam_role_policy_attachment" "workers_autoscaling_attach" {
