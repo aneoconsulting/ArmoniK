@@ -1,14 +1,14 @@
 CURRENT_DIR=$(shell pwd)
-GENERATED_DIR=$(CURRENT_DIR)/generated
-PARAMETERS_FILE?=parameters.tfvars
-STATE_FILE=vpc-terraform.tfstate
-OUTPUT_FILE=$(GENERATED_DIR)/vpc-output.json
+GENERATED_DIR="$(CURRENT_DIR)/generated"
+PARAMETERS_FILE?="parameters.tfvars"
+STATE_FILE="vpc-terraform.tfstate"
+OUTPUT_FILE="$(GENERATED_DIR)/vpc-output.json"
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
-export SUFFIX?=main
-export REGION?=eu-west-3
-export PROFILE?=default
-export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
+export SUFFIX?="main"
+export REGION?="eu-west-3"
+export PROFILE?="default"
+export TFSTATE_BUCKET_NAME?="armonik-tfstate-$(SUFFIX)"
 
 .PHONY: apply destroy
 

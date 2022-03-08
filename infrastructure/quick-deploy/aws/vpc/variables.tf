@@ -26,6 +26,13 @@ variable "tags" {
   default     = {}
 }
 
+# EKS cluster name
+variable "cluster_name" {
+  description = "EKS cluster name"
+  type        = string
+  default     = ""
+}
+
 # VPC
 variable "vpc" {
   description = "Parameters of AWS VPC"

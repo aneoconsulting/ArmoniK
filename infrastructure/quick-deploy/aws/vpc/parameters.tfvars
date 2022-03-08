@@ -7,6 +7,35 @@ region = "eu-west-3"
 # SUFFIX
 suffix = "main"
 
+# AWS TAGs
+tags = {
+  name             = ""
+  env              = ""
+  entity           = ""
+  bu               = ""
+  owner            = ""
+  application_code = ""
+  project_code     = ""
+  cost_center      = ""
+  support_contact  = ""
+  origin           = ""
+  unit_of_measure  = ""
+  epic             = ""
+  functional_block = ""
+  hostname         = ""
+  interruptible    = ""
+  tostop           = ""
+  tostart          = ""
+  branch           = ""
+  gridserver       = ""
+  it_division      = ""
+  confidentiality  = ""
+  csp              = ""
+}
+
+# EKS cluster name
+cluster_name  = "armonik-eks"
+
 # VPC
 vpc = {
   name                                            = "armonik-vpc"
@@ -21,8 +50,8 @@ vpc = {
   enable_private_subnet                           = true
   flow_log_cloudwatch_log_group_kms_key_id        = ""
   flow_log_cloudwatch_log_group_retention_in_days = 30
-  peering = {
-      enabled      = false
-      peer_vpc_ids = []
-    }
+  peering                                         = {
+    enabled      = false
+    peer_vpc_ids = []
+  }
 }
