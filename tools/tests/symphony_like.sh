@@ -14,15 +14,10 @@ echo rm -rf ${nuget_cache}/armonik.*
 rm -rf $(dotnet nuget locals global-packages --list | awk '{ print $2 }')/armonik.*
 dotnet publish -c Debug --self-contained -r linux-x64 SymphonyLike.sln
 
-if [ ! -d "/data" ]; then
-  echo "Need to create Data folder for application"
-  sudo mkdir -p /data
-fi
-if [ ! -w "/data" ]; then
-  sudo chown -R $USER:$USER /data
-fi
+echo "Need to create Data folder for application"
+mkdir -p ${HOME}/data
 
-cp packages/ArmoniK.Samples.SymphonyPackage-v2.0.0.zip /data
+cp packages/ArmoniK.Samples.SymphonyPackage-v2.0.0.zip ${HOME}/data
 kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 
 cd ArmoniK.Samples.SymphonyClient/

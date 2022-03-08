@@ -29,13 +29,8 @@ export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT
 export Grpc__Endpoint=http://$CPIP:$CPPort
 nuget_cache=$(dotnet nuget locals global-packages --list | awk '{ print $2 }')
 
-if [ ! -d "/data" ]; then
-  echo "Need to create Data folder for application"
-  sudo mkdir -p /data
-fi
-if [ ! -w "/data" ]; then
-  sudo chown -R $USER:$USER /data
-fi
+echo "Need to create Data folder for application"
+mkdir -p ${HOME}/data
 
 function build() {
   cd ${TestDir}
@@ -47,7 +42,7 @@ function build() {
 
 function deploy() {
   cd ${TestDir}
-  cp packages/ArmoniK.Samples.GridServer.Client-v1.0.0-700.zip /data
+  cp packages/ArmoniK.Samples.GridServer.Client-v1.0.0-700.zip ${HOME}/data
   kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 }
 
