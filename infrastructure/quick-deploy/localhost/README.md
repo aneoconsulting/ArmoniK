@@ -128,6 +128,12 @@ The parameters of each monitoring resources are defined in [monitoring/parameter
 Execute the following command to create the monitoring tools:
 
 ```bash
+make deploy-monitoring
+```
+
+**or:**
+
+```bash
 make deploy-monitoring STORAGE_PARAMETERS_FILE=<path-to-storage-parameters>
 ```
 
