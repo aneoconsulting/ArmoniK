@@ -2,7 +2,7 @@
 namespace = "armonik"
 
 # Logging level
-logging_level = "Verbose"
+logging_level = "Information"
 
 # Parameters of control plane
 control_plane = {
