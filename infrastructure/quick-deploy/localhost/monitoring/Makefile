@@ -13,6 +13,7 @@ export STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/../storage/generated/storage-outp
 
 all: init apply output
 deploy: init apply output
+destroy: init delete
 
 init:
 	mkdir -p $(GENERATED_DIR)
@@ -32,7 +33,14 @@ output:
 	@echo -n "}" >> $(OUTPUT_FILE)
 	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 
-destroy:
+delete:
+	terraform destroy \
+		-var-file $(PARAMETERS_FILE) \
+		-var 'namespace=$(NAMESPACE)' \
+		-state $(STATE_FILE) \
+		-auto-approve
+
+delete-with-parameters:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(STORAGE_PARAMETERS_FILE) \

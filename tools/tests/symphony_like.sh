@@ -18,7 +18,7 @@ echo "Need to create Data folder for application"
 mkdir -p ${HOME}/data
 
 cp packages/ArmoniK.Samples.SymphonyPackage-v2.0.0.zip ${HOME}/data
-kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
+#kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 
 cd ArmoniK.Samples.SymphonyClient/
 dotnet bin/Debug/net5.0/linux-x64/ArmoniK.Samples.SymphonyClient.dll

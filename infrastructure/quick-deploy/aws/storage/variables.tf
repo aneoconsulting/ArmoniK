@@ -30,6 +30,7 @@ variable "tags" {
 variable "eks" {
   description = "EKS cluster infos"
   type        = any
+  default     = {}
 }
 
 # Kubeconfig path

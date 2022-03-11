@@ -15,6 +15,7 @@ export FILE_SERVER_IP?=
 
 all: init apply output
 deploy: init apply output
+destroy: init delete
 
 init:
 	mkdir -p $(GENERATED_DIR)
@@ -34,7 +35,7 @@ output:
 	@echo -n "}" >> $(OUTPUT_FILE)
 	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 
-destroy:
+delete:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
 		-var 'shared_storage={"host_path":"$(SHARED_HOST_PATH)","file_storage_type":"$(FILE_STORAGE_FILE)","file_server_ip":"$(FILE_SERVER_IP)"}' \

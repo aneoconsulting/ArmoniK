@@ -51,12 +51,14 @@ variable "namespace" {
 variable "eks" {
   description = "EKS info"
   type        = any
+  default     = {}
 }
 
 # List of needed storage
 variable "storage_endpoint_url" {
   description = "List of storage needed by ArmoniK"
   type        = any
+  default     = {}
 }
 
 # Logging level

@@ -37,12 +37,14 @@ variable "logging_level" {
 variable "storage_endpoint_url" {
   description = "List of storage needed by ArmoniK"
   type        = any
+  default     = {}
 }
 
 # Monitoring
 variable "monitoring" {
   description = "Endpoint URL of monitoring"
   type        = any
+  default     = {}
 }
 
 # Parameters of control plane

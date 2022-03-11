@@ -14,6 +14,7 @@ export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 
 all: init apply output
 deploy: init apply output
+destroy: init delete
 
 init:
 	mkdir -p generated
@@ -39,7 +40,7 @@ output:
 	@echo -n "}" >> $(OUTPUT_FILE)
 	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 
-destroy:
+delete:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \

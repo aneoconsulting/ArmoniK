@@ -83,6 +83,10 @@ usage() {
         destroy-monitoring  : To destroy monitoring deployment only
         destroy-armonik     : To destroy Armonik deployment only
         destroy-all         : To destroy all storage, monitoring and ArmoniK in the same command
+        clean-storage       : To clean and deleted generated files for storage deployment only
+        clean-monitoring    : To clean and deleted generated files for monitoring deployment only
+        clean-armonik       : To clean and deleted generated files for Armonik deployment only
+        clean-all           : To clean and deleted generated files for all storage, monitoring and ArmoniK in the same command
 EOF
   echo "   -n, --namespace <NAMESPACE>"
   echo
@@ -212,6 +216,32 @@ destroy_all() {
   destroy_storage
 }
 
+# Clean storage
+clean_storage() {
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  make clean-storage
+  rm -f "${BASEDIR}/storage-parameters.tfvars.json"
+}
+
+# Clean monitoring
+clean_monitoring() {
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  make clean-monitoring
+}
+
+# Clean ArmoniK
+clean_armonik() {
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  make clean-armonik
+}
+
+# Clean storage, monitoring and ArmoniK
+clean_all() {
+  clean_armonik
+  clean_monitoring
+  clean_storage
+}
+
 # Main
 function main() {
   for i in "$@"; do
@@ -289,7 +319,7 @@ function main() {
   # Create shared storage
   create_host_path
 
-    # Create Kubernetes namespace
+  # Create Kubernetes namespace
   create_kubernetes_namespace
 
   # Prepare storage parameters
@@ -323,6 +353,14 @@ function main() {
     destroy_armonik
   elif [ $MODE == "destroy-all" ]; then
     destroy_all
+  elif [ $MODE == "clean-storage" ]; then
+    clean_storage
+  elif [ $MODE == "clean-monitoring" ]; then
+    clean_monitoring
+  elif [ $MODE == "clean-armonik" ]; then
+    clean_armonik
+  elif [ $MODE == "clean-all" ]; then
+    clean_all
   else
     echo -e "\n${RED}$0 $@ where [ $MODE ] is not a correct Mode${NC}\n"
     usage

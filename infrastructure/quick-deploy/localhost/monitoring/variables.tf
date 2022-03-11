@@ -23,6 +23,7 @@ variable "namespace" {
 variable "storage_endpoint_url" {
   description = "List of storage needed by ArmoniK"
   type        = any
+  default     = {}
 }
 
 # Logging level
