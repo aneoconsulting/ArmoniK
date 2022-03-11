@@ -26,13 +26,13 @@ function Restart-Genie {
 
     # Initialise genie (small workaround to avoid systemd unit not working)
     $job = Start-Job -ScriptBlock {
-        wsl genie -i
+        wsl -d Ubuntu genie  -i
     }
     Write-Host "5 sec Pause "
     $job | Wait-Job -TimeoutSec 5
 
     # Start the Ubuntu image if systemd is running
-    $genie_run = wsl genie -r
+    $genie_run = wsl -d Ubuntu genie  -r
     if ($genie_run -ne "running") {
         Write-Host "systemd not working on this Ubuntu installation. Please reinstall genie."
         Write-Host "This script should have done it but something didn'work."
@@ -109,7 +109,8 @@ $ubuntu_password = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
 
 Write-Host "Avalaible branches:"
 $available_branches=git branch -a
-Write-Host $available_branches
+foreach ($branch_name in $available_branches) 
+    {Write-Host $branch_name}
 $armonik_branch = Read-Host -Prompt "Which branch do you want to use?"
 # TODO: parse the $available_branches, give a number using the actual one (with a * in front) as default
 
@@ -132,23 +133,23 @@ Restart-Genie
 
 # ArmoniK
 Write-Host "ArmoniK requirements installation (docker, k3s, terraform)"
-wsl genie -c cp -r $pathname/armonik_requirements.sh /tmp
-wsl genie -c sed -i -e "'s/\r$//'" /tmp/armonik_requirements.shg
-wsl genie -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/armonik_requirements.sh $ubuntu_user"
-wsl genie -c rm /tmp/armonik_requirements.sh
+wsl -d Ubuntu genie  -c cp -r $pathname/armonik_requirements.sh /tmp
+wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_requirements.sh
+wsl -d Ubuntu genie  -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/armonik_requirements.sh $ubuntu_user"
+wsl -d Ubuntu genie  -c rm /tmp/armonik_requirements.sh
 
 Write-Host "ArmoniK installation"
-wsl genie -c cp -r $pathname/armonik_installation.sh /tmp 
-wsl genie -c sed -i -e "'s/\r$//'" /tmp/armonik_installation.sh
-wsl genie -c bash /tmp/armonik_installation.sh $armonik_branch
-wsl genie -c rm /tmp/armonik_installation.sh
+wsl -d Ubuntu genie  -c cp -r $pathname/armonik_installation.sh /tmp 
+wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_installation.sh
+wsl -d Ubuntu genie  -c bash /tmp/armonik_installation.sh $armonik_branch
+wsl -d Ubuntu genie  -c rm /tmp/armonik_installation.sh
 
 # Test installation
-wsl genie -c kubectl get po -n armonik
-wsl genie -c kubectl get svc -n armonik
+wsl -d Ubuntu genie  -c kubectl get po -n armonik
+wsl -d Ubuntu genie  -c kubectl get svc -n armonik
 
 # Get WSL host IP adress
-$wsl_ip = (wsl genie -c hostname -I).trim().split()[0]
+$wsl_ip = (wsl -d Ubuntu genie  -c hostname -I).trim().split()[0]
 Write-Host "WSL Machine IP: ""$wsl_ip"""
 
 # Open seq webserver in default browser
@@ -157,7 +158,7 @@ Start-Process $seq_url
 
 # Launch integrations tests
 Write-Host "Launch integration test"
-wsl genie -c cp -r $pathname/test_armonik.sh /tmp 
-wsl genie -c sed -i -e "'s/\r$//'" /tmp/test_armonik.sh
-wsl genie -c bash /tmp/test_armonik.sh $armonik_branch
-wsl genie -c rm /tmp/test_armonik.sh
+wsl -d Ubuntu genie  -c cp -r $pathname/test_armonik.sh /tmp 
+wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/test_armonik.sh
+wsl -d Ubuntu genie  -c bash /tmp/test_armonik.sh $armonik_branch
+wsl -d Ubuntu genie  -c rm /tmp/test_armonik.sh
