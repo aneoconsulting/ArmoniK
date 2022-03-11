@@ -18,6 +18,8 @@ WORKER_IMAGE="dockerhubaneo/armonik_worker_dll"
 METRICS_EXPORTER_IMAGE="dockerhubaneo/armonik_control_metrics"
 CORE_TAG="0.5.1-opti.4.9725eeb"
 WORKER_TAG="0.5.0"
+HPA_MAX_REPLICAS=5
+HPA_MIN_REPLICAS=1
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -96,28 +98,32 @@ usage() {
 EOF
   echo "   -n, --namespace <NAMESPACE>"
   echo
-  echo "   -p, --host-path <HOST_PATH>"
+  echo "   --host-path <HOST_PATH>"
   echo
-  echo "   -ip, --nfs-server-ip <SERVER_NFS_IP>"
+  echo "   --nfs-server-ip <SERVER_NFS_IP>"
   echo
-  echo "   -s, --shared-storage-type <SHARED_STORAGE_TYPE>"
+  echo "   --shared-storage-type <SHARED_STORAGE_TYPE>"
   cat <<-EOF
   Where --shared-storage-type should be :
         HostPath            : Use in localhost
         NFS                 : Use a NFS server
 EOF
   echo
-  echo "   -cpi, --control-plane-image <CONTROL_PLANE_IMAGE>"
+  echo "   --control-plane-image <CONTROL_PLANE_IMAGE>"
   echo
-  echo "   -pai, --polling-agent-image <POLLING_AGENT_IMAGE>"
+  echo "   --polling-agent-image <POLLING_AGENT_IMAGE>"
   echo
-  echo "   -wi, --worker-image <WORKER_IMAGE>"
+  echo "   --worker-image <WORKER_IMAGE>"
   echo
-  echo "   -mei, --metrics-exporter-image <METRICS_EXPORTER_IMAGE>"
+  echo "   --metrics-exporter-image <METRICS_EXPORTER_IMAGE>"
   echo
-  echo "   -ct, --core-tag <CORE_TAG>"
+  echo "   --core-tag <CORE_TAG>"
   echo
-  echo "   -wt, --worker-tag <WORKER_TAG>"
+  echo "   --worker-tag <WORKER_TAG>"
+  echo
+  echo "   --hpa-min-replicas <HPA_MIN_REPLICAS>"
+  echo
+  echo "   --hpa-max-replicas <HPA_MAX_REPLICAS>"
   echo
   exit 1
 }
@@ -173,6 +179,8 @@ prepare_armonik_parameters() {
     -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
     -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
     -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
+    -kv compute_plane[*].hpa.min_replicas="${HPA_MIN_REPLICAS}" \
+    -kv compute_plane[*].hpa.max_replicas="${HPA_MAX_REPLICAS}" \
     "${SOURCE_CODES_LOCALHOST_DIR}/armonik/parameters.tfvars" \
     "${BASEDIR}/armonik-parameters.tfvars.json"
 }
@@ -301,30 +309,14 @@ function main() {
       shift
       shift
       ;;
-    -ip)
-      SERVER_NFS_IP="$2"
-      SHARED_STORAGE_TYPE="NFS"
-      shift
-      shift
-      ;;
     --nfs-server-ip)
       SERVER_NFS_IP="$2"
       SHARED_STORAGE_TYPE="NFS"
       shift
       shift
       ;;
-    -s)
-      SHARED_STORAGE_TYPE="$2"
-      shift
-      shift
-      ;;
     --shared-storage-type)
       SHARED_STORAGE_TYPE="$2"
-      shift
-      shift
-      ;;
-    -p)
-      HOST_PATH="$2"
       shift
       shift
       ;;
@@ -343,18 +335,8 @@ function main() {
       shift
       shift
       ;;
-    -cpi)
-      CONTROL_PLANE_IMAGE="$2"
-      shift
-      shift
-      ;;
     --control-plane-image)
       CONTROL_PLANE_IMAGE="$2"
-      shift
-      shift
-      ;;
-    -pai)
-      POLLING_AGENT_IMAGE="$2"
       shift
       shift
       ;;
@@ -363,18 +345,8 @@ function main() {
       shift
       shift
       ;;
-    -wi)
-      WORKER_IMAGE="$2"
-      shift
-      shift
-      ;;
     --worker-image)
       WORKER_IMAGE="$2"
-      shift
-      shift
-      ;;
-    -mei)
-      METRICS_EXPORTER_IMAGE="$2"
       shift
       shift
       ;;
@@ -383,23 +355,23 @@ function main() {
       shift
       shift
       ;;
-    -ct)
-      CORE_TAG="$2"
-      shift
-      shift
-      ;;
     --core-tag)
       CORE_TAG="$2"
       shift
       shift
       ;;
-    -wt)
+    --worker-tag)
       WORKER_TAG="$2"
       shift
       shift
       ;;
-    --worker-tag)
-      WORKER_TAG="$2"
+    --hpa-min-replicas)
+      HPA_MIN_REPLICAS="$2"
+      shift
+      shift
+      ;;
+    --hpa-max-replicas)
+      HPA_MAX_REPLICAS="$2"
       shift
       shift
       ;;

@@ -170,6 +170,15 @@ If You change container image and/or tag of control plane, polling agent, worker
 where `--core-tag <CORE_TAG>` allows to update the container tag for ArmoniK Core (control plane, polling agent and
 metrics exporter).
 
+If You change the max or min replicas in the HPA of the compute plane:
+
+```bash
+./deploy-dev-test-infra.sh \
+  -m deploy-all \
+  --hpa-min-replicas <HPA_MIN_REPLICAS> \
+  --hpa-max-replicas <HPA_MAX_REPLICAS>
+```
+
 ### [Return to the infrastructure main page](../README.md)
 
 ### [Return to the project main page](../../README.md)
