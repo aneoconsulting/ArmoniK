@@ -12,6 +12,12 @@ SERVER_NFS_IP=""
 SHARED_STORAGE_TYPE="HostPath"
 SOURCE_CODES_LOCALHOST_DIR="${BASEDIR}/../../quick-deploy/localhost"
 MODIFY_PARAMETERS_SCRIPT="${BASEDIR}/../../../tools/modify_parameters.py"
+CONTROL_PLANE_IMAGE="dockerhubaneo/armonik_control"
+POLLING_AGENT_IMAGE="dockerhubaneo/armonik_pollingagent"
+WORKER_IMAGE="dockerhubaneo/armonik_worker_dll"
+METRICS_EXPORTER_IMAGE="dockerhubaneo/armonik_control_metrics"
+CORE_TAG="0.5.1-opti.4.9725eeb"
+WORKER_TAG="0.5.0"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -95,12 +101,23 @@ EOF
   echo "   -ip, --nfs-server-ip <SERVER_NFS_IP>"
   echo
   echo "   -s, --shared-storage-type <SHARED_STORAGE_TYPE>"
-  echo
   cat <<-EOF
   Where --shared-storage-type should be :
         HostPath            : Use in localhost
         NFS                 : Use a NFS server
 EOF
+  echo
+  echo "   -cpi, --control-plane-image <CONTROL_PLANE_IMAGE>"
+  echo
+  echo "   -pai, --polling-agent-image <POLLING_AGENT_IMAGE>"
+  echo
+  echo "   -wi, --worker-image <WORKER_IMAGE>"
+  echo
+  echo "   -mei, --metrics-exporter-image <METRICS_EXPORTER_IMAGE>"
+  echo
+  echo "   -ct, --core-tag <CORE_TAG>"
+  echo
+  echo "   -wt, --worker-tag <WORKER_TAG>"
   echo
   exit 1
 }
@@ -138,6 +155,28 @@ prepare_storage_parameters() {
     "${BASEDIR}/storage-parameters.tfvars.json"
 }
 
+# Prepare monitoring parameters
+prepare_monitoring_parameters() {
+  python "${MODIFY_PARAMETERS_SCRIPT}" \
+    -kv monitoring.metrics_exporter.image="${METRICS_EXPORTER_IMAGE}" \
+    -kv monitoring.metrics_exporter.tag="${CORE_TAG}" \
+    "${SOURCE_CODES_LOCALHOST_DIR}/monitoring/parameters.tfvars" \
+    "${BASEDIR}/monitoring-parameters.tfvars.json"
+}
+
+# Prepare armonik parameters
+prepare_armonik_parameters() {
+  python "${MODIFY_PARAMETERS_SCRIPT}" \
+    -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
+    -kv control_plane.tag="${CORE_TAG}" \
+    -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
+    -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
+    -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
+    -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
+    "${SOURCE_CODES_LOCALHOST_DIR}/armonik/parameters.tfvars" \
+    "${BASEDIR}/armonik-parameters.tfvars.json"
+}
+
 # Deploy storage
 deploy_storage() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
@@ -147,13 +186,13 @@ deploy_storage() {
 # Deploy monitoring
 deploy_monitoring() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make deploy-monitoring
+  make deploy-monitoring PARAMETERS_FILE="${BASEDIR}/monitoring-parameters.tfvars.json"
 }
 
 # Deploy ArmoniK
 deploy_armonik() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make deploy-armonik
+  make deploy-armonik PARAMETERS_FILE="${BASEDIR}/armonik-parameters.tfvars.json"
 }
 
 # Deploy storage, monitoring and ArmoniK
@@ -161,34 +200,6 @@ deploy_all() {
   deploy_storage
   deploy_monitoring
   deploy_armonik
-}
-
-# Redeploy storage
-redeploy_storage() {
-  cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make destroy-storage
-  make deploy-storage PARAMETERS_FILE="${BASEDIR}/storage-parameters.tfvars.json"
-}
-
-# Redeploy monitoring
-redeploy_monitoring() {
-  cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make destroy-monitoring
-  make deploy-monitoring
-}
-
-# Redeploy ArmoniK
-redeploy_armonik() {
-  cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make destroy-armonik
-  make deploy-armonik
-}
-
-# Redeploy storage, monitoring and ArmoniK
-redeploy_all() {
-  redeploy_storage
-  redeploy_monitoring
-  redeploy_armonik
 }
 
 # Destroy storage
@@ -200,13 +211,13 @@ destroy_storage() {
 # Destroy monitoring
 destroy_monitoring() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make destroy-monitoring
+  make destroy-monitoring PARAMETERS_FILE="${BASEDIR}/monitoring-parameters.tfvars.json"
 }
 
 # Destroy ArmoniK
 destroy_armonik() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make destroy-armonik
+  make destroy-armonik PARAMETERS_FILE="${BASEDIR}/armonik-parameters.tfvars.json"
 }
 
 # Destroy storage, monitoring and ArmoniK
@@ -214,6 +225,33 @@ destroy_all() {
   destroy_armonik
   destroy_monitoring
   destroy_storage
+}
+
+# Redeploy storage
+redeploy_storage() {
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  destroy_storage
+  deploy_storage
+}
+
+# Redeploy monitoring
+redeploy_monitoring() {
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  destroy_monitoring
+  deploy_monitoring
+}
+
+# Redeploy ArmoniK
+redeploy_armonik() {
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  destroy_armonik
+  deploy_armonik
+}
+
+# Redeploy storage, monitoring and ArmoniK
+redeploy_all() {
+  destroy_all
+  deploy_all
 }
 
 # Clean storage
@@ -227,12 +265,14 @@ clean_storage() {
 clean_monitoring() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make clean-monitoring
+  rm -f "${BASEDIR}/monitoring-parameters.tfvars.json"
 }
 
 # Clean ArmoniK
 clean_armonik() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make clean-armonik
+  rm -f "${BASEDIR}/armonik-parameters.tfvars.json"
 }
 
 # Clean storage, monitoring and ArmoniK
@@ -303,6 +343,66 @@ function main() {
       shift
       shift
       ;;
+    -cpi)
+      CONTROL_PLANE_IMAGE="$2"
+      shift
+      shift
+      ;;
+    --control-plane-image)
+      CONTROL_PLANE_IMAGE="$2"
+      shift
+      shift
+      ;;
+    -pai)
+      POLLING_AGENT_IMAGE="$2"
+      shift
+      shift
+      ;;
+    --polling-agent-image)
+      POLLING_AGENT_IMAGE="$2"
+      shift
+      shift
+      ;;
+    -wi)
+      WORKER_IMAGE="$2"
+      shift
+      shift
+      ;;
+    --worker-image)
+      WORKER_IMAGE="$2"
+      shift
+      shift
+      ;;
+    -mei)
+      METRICS_EXPORTER_IMAGE="$2"
+      shift
+      shift
+      ;;
+    --metrics-exporter-image)
+      METRICS_EXPORTER_IMAGE="$2"
+      shift
+      shift
+      ;;
+    -ct)
+      CORE_TAG="$2"
+      shift
+      shift
+      ;;
+    --core-tag)
+      CORE_TAG="$2"
+      shift
+      shift
+      ;;
+    -wt)
+      WORKER_TAG="$2"
+      shift
+      shift
+      ;;
+    --worker-tag)
+      WORKER_TAG="$2"
+      shift
+      shift
+      ;;
     --default)
       DEFAULT=YES
       shift # past argument with no value
@@ -324,6 +424,12 @@ function main() {
 
   # Prepare storage parameters
   prepare_storage_parameters
+
+  # Prepare monitoring parameters
+  prepare_monitoring_parameters
+
+   # Prepare armonik parameters
+  prepare_armonik_parameters
 
   # Manage infra
   if [ -z $MODE ]; then
