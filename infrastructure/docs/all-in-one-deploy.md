@@ -66,8 +66,12 @@ cd infrastructure/utils/scripts
   ```bash
   ./deploy-dev-test-infra.sh -m destroy-all
   ```
+- To clean and delete all generated files from all deployment:
+  ```bash
+  ./deploy-dev-test-infra.sh -m clean-all
+  ```
 
-If you want to deploy each resource independently:
+If You want to deploy each resource independently:
 
 - To deploy storage:
   ```bash
@@ -82,7 +86,7 @@ If you want to deploy each resource independently:
   ./deploy-dev-test-infra.sh -m deploy-armonik
   ```
 
-If you want to redeploy each resource independently:
+If You want to redeploy each resource independently:
 
 - To redeploy storage:
   ```bash
@@ -97,7 +101,7 @@ If you want to redeploy each resource independently:
   ./deploy-dev-test-infra.sh -m redeploy-armonik
   ```
 
-If you want to destroy each resource independently:
+If You want to destroy each resource independently:
 
 - To destroy storage:
   ```bash
@@ -112,19 +116,35 @@ If you want to destroy each resource independently:
   ./deploy-dev-test-infra.sh -m destroy-armonik
   ```
 
+If You want to clean and delete generated files from each deployment independently:
+
+- To clean storage:
+  ```bash
+  ./deploy-dev-test-infra.sh -m clean-storage
+  ```
+- To clean monitoring:
+  ```bash
+  ./deploy-dev-test-infra.sh -m clean-monitoring
+  ```
+- To clean armonik:
+  ```bash
+  ./deploy-dev-test-infra.sh -m clean-armonik
+  ```
+
 If You want to deploy on specific Kubernetes namespace, You execute the following command:
 
 ```bash
 ./deploy-dev-test-infra.sh -m deploy-all --namespace <NAMESPACE>
 ```
 
-If the `host_path` for shared storage for ArmoniK workers is not `${HOME}/data`, You can deploy the infrastructure as follows:
+If the `host_path` for shared storage for ArmoniK workers is not `${HOME}/data`, You can deploy the infrastructure as
+follows:
 
 ```bash
 ./deploy-dev-test-infra.sh -m deploy-all --host-path <HOST_PATH>
 ```
 
-If you have a NFS filesystem as shared storage for ArmoniK workers, You deploy the infrastructure as follows:
+If You have a NFS filesystem as shared storage for ArmoniK workers, You deploy the infrastructure as follows:
 
 ```bash
 ./deploy-dev-test-infra.sh \
@@ -133,6 +153,22 @@ If you have a NFS filesystem as shared storage for ArmoniK workers, You deploy t
   --nfs-server-ip <SERVER_NFS_IP> \
   --shared-storage-type NFS
 ```
+
+If You change container image and/or tag of control plane, polling agent, worker or metrics exporter:
+
+```bash
+./deploy-dev-test-infra.sh \
+  -m deploy-all \
+  --control-plane-image <CONTROL_PLANE_IMAGE> \
+  --polling-agent-image <POLLING_AGENT_IMAGE> \
+  --worker-image <WORKER_IMAGE> \
+  --metrics-exporter-image <METRCS_EXPORTER_IMAGE> \
+  --core-tag <CORE_TAG> \
+  --worker-tag <WORKER_TAG>
+```
+
+where `--core-tag <CORE_TAG>` allows to update the container tag for ArmoniK Core (control plane, polling agent and
+metrics exporter).
 
 ### [Return to the infrastructure main page](../README.md)
 
