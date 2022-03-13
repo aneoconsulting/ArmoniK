@@ -29,12 +29,23 @@ resource "kubernetes_deployment" "mongodb" {
       }
       spec {
         dynamic toleration {
-          for_each = (var.mongodb.node_selector != {} ? [1] : [])
+          for_each = (var.mongodb.node_selector != {} ? [
+          for index in range(0, length(local.node_selector_keys)) : {
+            key   = local.node_selector_keys[index]
+            value = local.node_selector_values[index]
+          }
+          ] : [])
           content {
-            key      = keys(var.mongodb.node_selector)[0]
+            key      = toleration.value.key
             operator = "Equal"
-            value    = values(var.mongodb.node_selector)[0]
+            value    = toleration.value.value
             effect   = "NoSchedule"
+          }
+        }
+        dynamic image_pull_secrets {
+          for_each = (var.mongodb.image_pull_secrets != "" ? [1] : [])
+          content {
+            name = var.mongodb.image_pull_secrets
           }
         }
         container {
@@ -48,6 +59,7 @@ resource "kubernetes_deployment" "mongodb" {
             "--tlsDisabledProtocols=TLS1_0",
             "--tlsCertificateKeyFile=/mongodb/mongodb.pem",
             "--auth",
+            "--noscripting",
           ]
           port {
             name           = "mongodb"

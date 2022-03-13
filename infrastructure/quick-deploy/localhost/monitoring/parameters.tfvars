@@ -1,38 +1,62 @@
 # Kubernetes namespace
 namespace = "armonik"
 
-# Node selector
-node_selector = {}
+# Logging level
+logging_level = "Information"
 
 # Monitoring infos
 monitoring = {
-  seq        = {
-    image        = "datalust/seq"
-    tag          = "2021.4"
-    service_type = "LoadBalancer"
-    enabled      = true
+  seq                = {
+    enabled            = true
+    image              = "datalust/seq"
+    tag                = "2021.4"
+    image_pull_secrets = ""
+    service_type       = "LoadBalancer"
+    node_selector      = {}
   }
-  grafana    = {
-    image        = "grafana/grafana"
-    tag          = "latest"
-    service_type = "LoadBalancer"
-    enabled      = true
+  grafana            = {
+    enabled            = true
+    image              = "grafana/grafana"
+    tag                = "latest"
+    image_pull_secrets = ""
+    service_type       = "LoadBalancer"
+    node_selector      = {}
   }
-  prometheus = {
-    image         = "prom/prometheus"
-    tag           = "latest"
-    service_type  = "ClusterIP"
-    enabled       = true
-    node_exporter = {
-      image = "prom/node-exporter"
-      tag   = "latest"
-    }
+  node_exporter      = {
+    enabled            = true
+    image              = "prom/node-exporter"
+    tag                = "latest"
+    image_pull_secrets = ""
+    node_selector      = {}
   }
-  fluent_bit = {
-    image          = "fluent/fluent-bit"
-    tag            = "1.7.2"
-    is_daemonset   = false
-    http_port      = 2020 # 0 or 2020
-    read_from_head = true
+  prometheus         = {
+    image              = "prom/prometheus"
+    tag                = "latest"
+    image_pull_secrets = ""
+    service_type       = "ClusterIP"
+    node_selector      = {}
+  }
+  prometheus_adapter = {
+    image              = "k8s.gcr.io/prometheus-adapter/prometheus-adapter"
+    tag                = "v0.9.1"
+    image_pull_secrets = ""
+    service_type       = "ClusterIP"
+    node_selector      = {}
+  }
+  metrics_exporter   = {
+    image              = "dockerhubaneo/armonik_control_metrics"
+    tag                = "0.5.0"
+    image_pull_secrets = ""
+    service_type       = "ClusterIP"
+    node_selector      = {}
+  }
+  fluent_bit         = {
+    image              = "fluent/fluent-bit"
+    tag                = "1.7.2"
+    image_pull_secrets = ""
+    is_daemonset       = false
+    http_port          = 2020 # 0 or 2020
+    read_from_head     = true
+    node_selector      = {}
   }
 }

@@ -2,8 +2,8 @@
 module "kms" {
   count  = (var.eks.encryption_keys.cluster_log_kms_key_id != "" && var.eks.encryption_keys.cluster_encryption_config != "" && var.eks.encryption_keys.ebs_kms_key_id != "" ? 0 : 1)
   source = "../../../modules/aws/kms"
-  name   = "armonik-kms-eks-${local.suffix}-${local.random_string}"
-  tags   = local.tags
+  name   = local.kms_name
+  tags   = merge(local.tags, { name = local.kms_name })
 }
 
 # AWS EKS
@@ -11,6 +11,7 @@ module "eks" {
   source                        = "../../../modules/aws/eks"
   tags                          = local.tags
   name                          = local.cluster_name
+  node_selector                 = var.node_selector
   vpc                           = {
     id                 = var.vpc.id
     private_subnet_ids = var.vpc.private_subnet_ids
@@ -22,13 +23,15 @@ module "eks" {
     host_path  = var.s3_fs.host_path
   }
   eks                           = {
-    region                               = var.region
-    cluster_version                      = var.eks.cluster_version
-    cluster_endpoint_private_access      = var.eks.cluster_endpoint_private_access
-    cluster_endpoint_public_access       = var.eks.cluster_endpoint_public_access
-    cluster_endpoint_public_access_cidrs = var.eks.cluster_endpoint_public_access_cidrs
-    cluster_log_retention_in_days        = var.eks.cluster_log_retention_in_days
-    docker_images                        = {
+    region                                = var.region
+    cluster_version                       = var.eks.cluster_version
+    cluster_endpoint_private_access       = var.eks.cluster_endpoint_private_access
+    cluster_endpoint_private_access_cidrs = var.eks.cluster_endpoint_private_access_cidrs
+    cluster_endpoint_private_access_sg    = var.eks.cluster_endpoint_private_access_sg
+    cluster_endpoint_public_access        = var.eks.cluster_endpoint_public_access
+    cluster_endpoint_public_access_cidrs  = var.eks.cluster_endpoint_public_access_cidrs
+    cluster_log_retention_in_days         = var.eks.cluster_log_retention_in_days
+    docker_images                         = {
       cluster_autoscaler = {
         image = var.eks.docker_images.cluster_autoscaler.image
         tag   = var.eks.docker_images.cluster_autoscaler.tag
@@ -38,7 +41,7 @@ module "eks" {
         tag   = var.eks.docker_images.instance_refresh.tag
       }
     }
-    encryption_keys                      = {
+    encryption_keys                       = {
       cluster_log_kms_key_id    = (var.eks.encryption_keys.cluster_log_kms_key_id != "" ? var.eks.encryption_keys.cluster_log_kms_key_id : module.kms.0.selected.arn)
       cluster_encryption_config = (var.eks.encryption_keys.cluster_encryption_config != "" ? var.eks.encryption_keys.cluster_encryption_config : module.kms.0.selected.arn)
       ebs_kms_key_id            = (var.eks.encryption_keys.ebs_kms_key_id != "" ? var.eks.encryption_keys.ebs_kms_key_id : module.kms.0.selected.arn)

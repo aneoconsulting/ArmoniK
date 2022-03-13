@@ -6,7 +6,9 @@ data "external" "prometheus_node_ip" {
 }
 
 locals {
-  prometheus_node_ip = lookup(tomap(data.external.prometheus_node_ip.result), "node_ip", "")
+  prometheus_node_ip   = lookup(tomap(data.external.prometheus_node_ip.result), "node_ip", "")
+  node_selector_keys   = keys(var.node_selector)
+  node_selector_values = values(var.node_selector)
 
   load_balancer = (kubernetes_service.prometheus.spec.0.type == "LoadBalancer" ? {
     ip   = (kubernetes_service.prometheus.status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.prometheus.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.prometheus.status.0.load_balancer.0.ingress.0.ip)

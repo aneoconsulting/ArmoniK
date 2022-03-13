@@ -26,6 +26,13 @@ variable "tags" {
   default     = {}
 }
 
+# EKS cluster name
+variable "cluster_name" {
+  description = "EKS cluster name"
+  type        = string
+  default     = ""
+}
+
 # VPC
 variable "vpc" {
   description = "Parameters of AWS VPC"
@@ -42,6 +49,10 @@ variable "vpc" {
     enable_private_subnet                           = bool
     flow_log_cloudwatch_log_group_kms_key_id        = string
     flow_log_cloudwatch_log_group_retention_in_days = number
+    peering                                         = object({
+      enabled      = bool
+      peer_vpc_ids = list(string)
+    })
   })
   default     = {
     name                                            = "armonik-vpc"
@@ -56,5 +67,9 @@ variable "vpc" {
     enable_private_subnet                           = true
     flow_log_cloudwatch_log_group_kms_key_id        = ""
     flow_log_cloudwatch_log_group_retention_in_days = 30
+    peering = {
+      enabled      = false
+      peer_vpc_ids = []
+    }
   }
 }

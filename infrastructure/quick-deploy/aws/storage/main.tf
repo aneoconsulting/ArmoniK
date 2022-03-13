@@ -2,15 +2,15 @@
 module "kms" {
   count  = (var.s3_fs.kms_key_id != "" && var.elasticache.encryption_keys.kms_key_id != "" && var.elasticache.encryption_keys.log_kms_key_id != "" && var.mq.kms_key_id != "" ? 0 : 1)
   source = "../../../modules/aws/kms"
-  name   = "armonik-kms-storage-${local.suffix}-${local.random_string}"
-  tags   = local.tags
+  name   = local.kms_name
+  tags   = merge(local.tags, { name = local.kms_name })
 }
 
 # AWS S3 as shared storage
 module "s3_fs" {
   source = "../../../modules/aws/s3"
-  tags   = local.tags
-  name   = "${var.s3_fs.name}-${local.suffix}"
+  tags   = merge(local.tags, { name = local.s3_fs_name })
+  name   = local.s3_fs_name
   s3     = {
     policy                                = var.s3_fs.policy
     attach_policy                         = var.s3_fs.attach_policy
@@ -29,8 +29,8 @@ module "s3_fs" {
 # AWS Elasticache
 module "elasticache" {
   source      = "../../../modules/aws/elasticache"
-  tags        = local.tags
-  name        = "${var.elasticache.name}-${local.suffix}"
+  tags        = merge(local.tags, { name = local.elasticache_name })
+  name        = local.elasticache_name
   vpc         = {
     id          = var.vpc.id
     cidr_blocks = concat([var.vpc.cidr_block], var.vpc.pod_cidr_block_private)
@@ -57,8 +57,8 @@ module "elasticache" {
 # Amazon MQ
 module "mq" {
   source    = "../../../modules/aws/mq"
-  tags      = local.tags
-  name      = "${var.mq.name}-${local.suffix}"
+  tags      = merge(local.tags, { name = local.mq_name })
+  name      = local.mq_name
   namespace = var.namespace
   vpc       = {
     id          = var.vpc.id
@@ -66,8 +66,8 @@ module "mq" {
     subnet_ids  = var.vpc.private_subnet_ids
   }
   user      = {
-    password   = var.mq_credentials.password
-    username   = var.mq_credentials.username
+    password = var.mq_credentials.password
+    username = var.mq_credentials.username
   }
   mq        = {
     engine_type             = var.mq.engine_type
@@ -88,8 +88,9 @@ module "mongodb" {
   namespace   = var.namespace
   working_dir = "${path.root}/../../.."
   mongodb     = {
-    image         = var.mongodb.image
-    tag           = var.mongodb.tag
-    node_selector = var.mongodb.node_selector
+    image              = var.mongodb.image
+    tag                = var.mongodb.tag
+    node_selector      = var.mongodb.node_selector
+    image_pull_secrets = var.mongodb.image_pull_secrets
   }
 }

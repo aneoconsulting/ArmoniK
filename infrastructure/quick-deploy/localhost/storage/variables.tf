@@ -33,9 +33,10 @@ variable "shared_storage" {
 variable "activemq" {
   description = "Parameters of ActiveMQ"
   type        = object({
-    image         = string
-    tag           = string
-    node_selector = any
+    image              = string
+    tag                = string
+    node_selector      = any
+    image_pull_secrets = string
   })
 }
 
@@ -43,9 +44,10 @@ variable "activemq" {
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type        = object({
-    image         = string
-    tag           = string
-    node_selector = any
+    image              = string
+    tag                = string
+    node_selector      = any
+    image_pull_secrets = string
   })
 }
 
@@ -53,8 +55,9 @@ variable "mongodb" {
 variable "redis" {
   description = "Parameters of Redis"
   type        = object({
-    image         = string
-    tag           = string
-    node_selector = any
+    image              = string
+    tag                = string
+    node_selector      = any
+    image_pull_secrets = string
   })
 }

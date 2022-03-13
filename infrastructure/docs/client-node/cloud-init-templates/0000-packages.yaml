@@ -1,0 +1,25 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+locale: en_US.UTF-8
+
+apt_reboot_if_required: false
+package_update: true
+package_upgrade: true
+
+packages:
+  - curl
+  - telnet
+  - jq
+  - yum-utils
+  - git
+
+runcmd:
+  - yum update -y
+  - yum upgrade -y
+  - yum install -y curl telnet jq yum-utils git

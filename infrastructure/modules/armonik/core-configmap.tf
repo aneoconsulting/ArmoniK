@@ -8,7 +8,6 @@ resource "kubernetes_config_map" "core_config" {
     Components__TableStorage                   = "ArmoniK.Adapters.MongoDB.TableStorage"
     Components__ObjectStorage                  = "ArmoniK.Adapters.Redis.ObjectStorage"
     Components__QueueStorage                   = "ArmoniK.Adapters.Amqp.QueueStorage"
-    Components__LeaseProvider                  = "ArmoniK.Adapters.MongoDB.LeaseProvider"
     ComputePlan__GrpcChannel__Address          = "/cache/armonik.sock"
     ComputePlan__GrpcChannel__SocketType       = "unixsocket"
     ComputePlan__MessageBatchSize              = "1"

@@ -5,9 +5,14 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 locals {
-  account_id = data.aws_caller_identity.current.id
-  region     = data.aws_region.current.name
-  tags       = merge(var.tags, { resource = "EKS" })
+  account_id                                           = data.aws_caller_identity.current.id
+  region                                               = data.aws_region.current.name
+  tags                                                 = merge({ resource = "EKS" }, var.tags)
+  iam_worker_autoscaling_policy_name                   = "eks-worker-autoscaling-${module.eks.cluster_id}"
+  iam_worker_assume_role_agent_permissions_policy_name = "eks-worker-assume-agent-${module.eks.cluster_id}"
+  ima_aws_node_termination_handler_name                = "${var.name}-aws-node-termination-handler-${random_string.random_resources.result}"
+  aws_node_termination_handler_asg_name                = "${var.name}-asg-termination"
+  aws_node_termination_handler_spot_name               = "${var.name}-spot-termination"
 
   # Custom ENI
   subnets = {
@@ -18,6 +23,42 @@ locals {
       security_group_ids = [module.eks.worker_security_group_id]
     }
     ]
+  }
+
+  # Node selector
+  node_selector_keys   = keys(var.node_selector)
+  node_selector_values = values(var.node_selector)
+  node_selector        = {
+    nodeSelector = var.node_selector
+  }
+  tolerations          = {
+    tolerations = [
+    for index in range(0, length(local.node_selector_keys)) : {
+      key      = local.node_selector_keys[index]
+      operator = "Equal"
+      value    = local.node_selector_values[index]
+      effect   = "NoSchedule"
+    }
+    ]
+  }
+
+  # Patch coredns
+  patch_coredns_spec = {
+    spec = {
+      template = {
+        spec = {
+          nodeSelector = var.node_selector
+          tolerations  = [
+          for index in range(0, length(local.node_selector_keys)) : {
+            key      = local.node_selector_keys[index]
+            operator = "Equal"
+            value    = local.node_selector_values[index]
+            effect   = "NoSchedule"
+          }
+          ]
+        }
+      }
+    }
   }
 
   # EKS worker groups

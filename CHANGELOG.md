@@ -1,5 +1,28 @@
 # Changelog
 
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-03-08)
+
+## [v2.5.0](https://github.com/aneoconsulting/armonik/tree/v2.5.0) (2022-03-08)
+
+Removed
+-
+* Remove communication between workers and control-plane
+
+Added
+-
+* Add metrics exporter of custom metrics of ArmoniK to Prometheus
+* Add Prometheus adapter to expose custom metrics of ArmoniK in Kubernetes API service
+* Display the custom metrics of ArmoniK in Grafana
+* Add Horizontal Pod Autoscaler (HPA) for ArmoniK compute-plane based on the custom metrics
+* Add a new low-level API
+* Add complementary tags for AWS resources
+* Add revision number for application package version
+
+Changed
+-
+* Improve EKS parameters: full private access to EKS
+* Improve logs displaying in Seq
+
 ## [v2.4.0](https://github.com/aneoconsulting/armonik/tree/v2.4.0) (2022-02-24)
 
 Removed

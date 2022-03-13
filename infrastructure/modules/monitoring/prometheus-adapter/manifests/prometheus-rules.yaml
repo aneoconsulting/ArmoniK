@@ -1,0 +1,16 @@
+rules:
+  default: true
+  custom:
+  - seriesQuery: '{__name__=~"^armonik_tasks.*",job="armonik-metrics-exporter"}'
+    resources:
+      overrides:
+        namespace: { resource: "namespace" }
+    name:
+      matches: "^(.*)$"
+      as: "${1}"
+    metricsQuery: sum(rate(<<.Series>>{<<.LabelMatchers>>,job="armonik-metrics-exporter"}[2m]))
+  # Mounts a configMap with pre-generated rules for use. Overrides the
+  # default, custom, external and resource entries
+  existing:
+  external: [ ]
+  resource: { }

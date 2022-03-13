@@ -7,6 +7,32 @@ region = "eu-west-3"
 # SUFFIX
 suffix = "main"
 
+# Tags
+tags = {
+  name             = ""
+  env              = ""
+  entity           = ""
+  bu               = ""
+  owner            = ""
+  application_code = ""
+  project_code     = ""
+  cost_center      = ""
+  support_contact  = ""
+  origin           = ""
+  unit_of_measure  = ""
+  epic             = ""
+  functional_block = ""
+  hostname         = ""
+  interruptible    = ""
+  tostop           = ""
+  tostart          = ""
+  branch           = ""
+  gridserver       = ""
+  it_division      = ""
+  confidentiality  = ""
+  csp              = ""
+}
+
 # List of ECR repositories to create
 ecr = {
   kms_key_id   = ""
@@ -29,17 +55,17 @@ ecr = {
     {
       name  = "armonik-control-plane"
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.4.1"
+      tag   = "0.5.0"
     },
     {
       name  = "armonik-polling-agent"
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.4.1"
+      tag   = "0.5.0"
     },
     {
       name  = "armonik-worker"
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.4.0"
+      tag   = "0.5.0"
     },
     {
       name  = "seq"
@@ -75,6 +101,16 @@ ecr = {
       name  = "node-exporter"
       image = "prom/node-exporter"
       tag   = "latest"
+    },
+    {
+      name  = "prometheus-adapter"
+      image = "k8s.gcr.io/prometheus-adapter/prometheus-adapter"
+      tag   = "v0.9.1"
+    },
+    {
+      name  = "metrics-exporter"
+      image = "dockerhubaneo/armonik_control_metrics"
+      tag   = "0.5.0"
     }
   ]
 }

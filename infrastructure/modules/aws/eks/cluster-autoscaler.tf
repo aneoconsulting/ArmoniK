@@ -28,6 +28,38 @@ resource "helm_release" "cluster_autoscaler" {
     name  = "image.tag"
     value = var.eks.docker_images.cluster_autoscaler.tag
   }
+  set {
+    name  = "extraArgs.logtostderr"
+    value = true
+  }
+  set {
+    name  = "extraArgs.stderrthreshold"
+    value = "Info"
+  }
+  set {
+    name  = "extraArgs.v"
+    value = "4"
+  }
+  set {
+    name  = "extraArgs.aws-use-static-instance-list"
+    value = true
+  }
+  set {
+    name  = "resources.limits.cpu"
+    value = "3000m"
+  }
+  set {
+    name  = "resources.limits.memory"
+    value = "3000Mi"
+  }
+  set {
+    name  = "resources.requests.cpu"
+    value = "1000m"
+  }
+  set {
+    name  = "resources.requests.memory"
+    value = "1000Mi"
+  }
 
   # Method 2 - Specifying groups manually
   # Example for an ASG
@@ -44,7 +76,10 @@ resource "helm_release" "cluster_autoscaler" {
     value = "1"
   }*/
 
-  values     = [file("${path.module}/manifests/cluster_autoscaler.yaml")]
+  values     = [
+    yamlencode(local.node_selector),
+    yamlencode(local.tolerations)
+  ]
   depends_on = [
     module.eks,
     null_resource.update_kubeconfig
@@ -79,9 +114,10 @@ data "aws_iam_policy_document" "worker_autoscaling_document" {
 }
 
 resource "aws_iam_policy" "worker_autoscaling_policy" {
-  name_prefix = "eks-worker-autoscaling-${module.eks.cluster_id}"
+  name_prefix = local.iam_worker_autoscaling_policy_name
   description = "EKS worker node autoscaling policy for cluster ${module.eks.cluster_id}"
   policy      = data.aws_iam_policy_document.worker_autoscaling_document.json
+  tags        = merge(local.tags, { name = local.iam_worker_autoscaling_policy_name })
 }
 
 resource "aws_iam_role_policy_attachment" "workers_autoscaling_attach" {

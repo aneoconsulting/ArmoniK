@@ -8,30 +8,15 @@ variable "namespace" {
 variable "docker_image" {
   description = "Docker image for Prometheus"
   type        = object({
-    prometheus    = object({
-      image = string
-      tag   = string
-    })
-    node_exporter = object({
-      image = string
-      tag   = string
-    })
+    image              = string
+    tag                = string
+    image_pull_secrets = string
   })
-  default     = {
-    prometheus    = {
-      image = "prom/prometheus"
-      tag   = "latest"
-    }
-    node_exporter = {
-      image = "prom/node-exporter"
-      tag   = "latest"
-    }
-  }
 }
 
 # Node selector
 variable "node_selector" {
-  description = "Node selector for Seq"
+  description = "Node selector for Prometheus"
   type        = any
   default     = {}
 }
@@ -39,6 +24,12 @@ variable "node_selector" {
 # Type of service
 variable "service_type" {
   description = "Service type which can be: ClusterIP, NodePort or LoadBalancer"
+  type        = string
+}
+
+# Metrics exporter url
+variable "metrics_exporter_url" {
+  description = "URL of metrics exporter"
   type        = string
 }
 

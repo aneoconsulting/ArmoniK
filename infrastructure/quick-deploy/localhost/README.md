@@ -38,10 +38,12 @@ The infrastructure is composed of:
 The following software or tool should be installed upon your local Linux machine:
 
 * If You have Windows machine, You can install [WSL 2](docs/wsl2.md)
+* GNU make
 * [Docker](https://docs.docker.com/engine/install/)
 * [JQ](https://stedolan.github.io/jq/download/)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 * [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+* [.NET](https://docs.microsoft.com/en-us/dotnet/core/install/linux)
 
 # Install Kubernetes
 
@@ -65,9 +67,9 @@ source envvars.sh
 **or:**
 
 ```bash
-export ARMONIK_KUBERNETES_NAMESPACE=armonik
-export ARMONIK_SHARED_HOST_PATH=/data
-export ARMONIK_FILE_STORAGE_FILE=HostPath
+export ARMONIK_KUBERNETES_NAMESPACE="armonik"
+export ARMONIK_SHARED_HOST_PATH="${HOME}/data"
+export ARMONIK_FILE_STORAGE_FILE="HostPath"
 export ARMONIK_FILE_SERVER_IP=""
 ```
 
@@ -80,11 +82,11 @@ where:
 
 # Deploy
 
-**First**, You must create the `host_path=/data` directory which will be shared with ArmoniK worker pods (
+**First**, You must create the `host_path="${HOME}/data"` directory which will be shared with ArmoniK worker pods (
 see [storage/parameters.tfvars](storage/parameters.tfvars)):
 
 ```bash
-sudo mkdir -p /data && sudo chown -R $USER:$USER /data
+mkdir -p "${ARMONIK_SHARED_HOST_PATH}"
 ```
 
 ## Kubernetes namespace
@@ -128,8 +130,13 @@ The parameters of each monitoring resources are defined in [monitoring/parameter
 Execute the following command to create the monitoring tools:
 
 ```bash
-make deploy-monitoring
+make deploy-monitoring STORAGE_PARAMETERS_FILE=<path-to-storage-parameters>
 ```
+
+where:
+
+- `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json` containing the
+  information about the storage previously created.
 
 The monitoring deployment generates an output file `monitoring/generated/monitoring-output.json` which contains
 information needed for ArmoniK.

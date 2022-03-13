@@ -118,7 +118,7 @@ If You want to deploy on specific Kubernetes namespace, You execute the followin
 ./deploy-dev-test-infra.sh -m deploy-all --namespace <NAMESPACE>
 ```
 
-If the `host_path` for shared storage for ArmoniK workers is not `/data`, You can deploy the infrastructure as follows:
+If the `host_path` for shared storage for ArmoniK workers is not `${HOME}/data`, You can deploy the infrastructure as follows:
 
 ```bash
 ./deploy-dev-test-infra.sh -m deploy-all --host-path <HOST_PATH>

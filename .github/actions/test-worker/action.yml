@@ -50,13 +50,6 @@ runs:
         worker-image: ${{ inputs.worker-image }}
         worker-tag: ${{ inputs.worker-tag }}
 
-    - name: Create data disk
-      shell: bash
-      run: |
-        set -ex
-        sudo mkdir -p /data
-        sudo chown -R $USER:$USER /data
-
     - name: Test Symphony Like
       shell: bash
       run: |

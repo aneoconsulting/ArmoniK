@@ -19,45 +19,75 @@ variable "namespace" {
   default     = "armonik"
 }
 
-# Node selector
-variable "node_selector" {
-  description = "Node selector for Seq"
+# List of needed storage
+variable "storage_endpoint_url" {
+  description = "List of storage needed by ArmoniK"
   type        = any
-  default     = {}
+}
+
+# Logging level
+variable "logging_level" {
+  description = "Logging level in ArmoniK"
+  type        = string
+  default     = "Information"
 }
 
 # Monitoring infos
 variable "monitoring" {
   description = "Monitoring infos"
   type        = object({
-    seq        = object({
-      image        = string
-      tag          = string
-      service_type = string
-      enabled      = bool
+    seq                = object({
+      enabled            = bool
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      node_selector      = any
     })
-    grafana    = object({
-      image        = string
-      tag          = string
-      service_type = string
-      enabled      = bool
+    grafana            = object({
+      enabled            = bool
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      node_selector      = any
     })
-    prometheus = object({
-      image         = string
-      tag           = string
-      service_type  = string
-      enabled       = bool
-      node_exporter = object({
-        image = string
-        tag   = string
-      })
+    node_exporter      = object({
+      enabled            = bool
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      node_selector      = any
     })
-    fluent_bit = object({
-      image          = string
-      tag            = string
-      is_daemonset   = bool
-      http_port      = number
-      read_from_head = string
+    prometheus         = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      node_selector      = any
+    })
+    prometheus_adapter = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      node_selector      = any
+    })
+    metrics_exporter   = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      service_type       = string
+      node_selector      = any
+    })
+    fluent_bit         = object({
+      image              = string
+      tag                = string
+      image_pull_secrets = string
+      is_daemonset       = bool
+      http_port          = number
+      read_from_head     = string
+      node_selector      = any
     })
   })
 }

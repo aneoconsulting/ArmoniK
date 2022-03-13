@@ -31,12 +31,23 @@ resource "kubernetes_deployment" "activemq" {
       }
       spec {
         dynamic toleration {
-          for_each = (var.activemq.node_selector != {} ? [1] : [])
+          for_each = (var.activemq.node_selector != {} ? [
+          for index in range(0, length(local.node_selector_keys)) : {
+            key   = local.node_selector_keys[index]
+            value = local.node_selector_values[index]
+          }
+          ] : [])
           content {
-            key      = keys(var.activemq.node_selector)[0]
+            key      = toleration.value.key
             operator = "Equal"
-            value    = values(var.activemq.node_selector)[0]
+            value    = toleration.value.value
             effect   = "NoSchedule"
+          }
+        }
+        dynamic image_pull_secrets {
+          for_each = (var.activemq.image_pull_secrets != "" ? [1] : [])
+          content {
+            name = var.activemq.image_pull_secrets
           }
         }
         container {

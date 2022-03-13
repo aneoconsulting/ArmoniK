@@ -10,16 +10,13 @@ variable "docker_image" {
   type        = object({
     image = string
     tag   = string
+    image_pull_secrets = string
   })
-  default     = {
-    image = "grafana/grafana"
-    tag   = "latest"
-  }
 }
 
 # Node selector
 variable "node_selector" {
-  description = "Node selector for Seq"
+  description = "Node selector for Grafana"
   type        = any
   default     = {}
 }

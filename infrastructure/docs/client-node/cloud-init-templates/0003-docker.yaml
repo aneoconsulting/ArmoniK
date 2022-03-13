@@ -1,0 +1,25 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+locale: en_US.UTF-8
+
+write_files:
+  - content: |
+      amazon-linux-extras enable docker
+      yum -y install docker
+      systemctl start docker
+      systemctl enable docker.service
+      systemctl enable containerd.service
+      usermod -aG docker ec2-user
+      newgrp docker
+    path: /app/install-docker.sh
+    permissions: 0755
+    owner: root
+
+runcmd:
+  - bash /app/install-docker.sh

@@ -29,13 +29,14 @@ variable "cloudwatch" {
 variable "fluent_bit" {
   description = "Parameters of Fluent bit"
   type        = object({
-    container_name = string
-    image          = string
-    tag            = string
-    is_daemonset   = bool
-    http_server    = string
-    http_port      = string
-    read_from_head = string
-    read_from_tail = string
+    container_name     = string
+    image              = string
+    tag                = string
+    is_daemonset       = bool
+    http_server        = string
+    http_port          = string
+    read_from_head     = string
+    read_from_tail     = string
+    image_pull_secrets = string
   })
 }

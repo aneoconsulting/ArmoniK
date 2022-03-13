@@ -1,15 +1,13 @@
+# Node IP of metrics-exporter pod
+data "external" "metrics_exporter_node_ip" {
+  depends_on  = [kubernetes_service.metrics_exporter]
+  program     = ["bash", "get_node_ip.sh", "metrics-exporter", var.namespace]
+  working_dir = "${var.working_dir}/utils/scripts"
+}
+
 locals {
-  # Shared storage
-  service_url             = lookup(lookup(var.storage_endpoint_url, "shared", ""), "service_url", "")
-  kms_key_id              = lookup(lookup(var.storage_endpoint_url, "shared", ""), "kms_key_id", "")
-  name                    = lookup(lookup(var.storage_endpoint_url, "shared", ""), "name", "")
-  access_key_id           = lookup(lookup(var.storage_endpoint_url, "shared", ""), "access_key_id", "")
-  secret_access_key       = lookup(lookup(var.storage_endpoint_url, "shared", ""), "secret_access_key", "")
-  file_server_ip          = lookup(lookup(var.storage_endpoint_url, "shared", ""), "file_server_ip", "")
-  file_storage_type       = lookup(lookup(var.storage_endpoint_url, "shared", ""), "file_storage_type", "")
-  host_path               = lookup(lookup(var.storage_endpoint_url, "shared", ""), "host_path", "")
-  lower_file_storage_type = lower(var.storage_endpoint_url.shared.file_storage_type)
-  check_file_storage_type = (local.lower_file_storage_type == "s3" ? "S3" : "FS")
+  node_selector_keys   = keys(var.node_selector)
+  node_selector_values = values(var.node_selector)
 
   # Storage secrets
   activemq_certificates_secret      = lookup(lookup(lookup(var.storage_endpoint_url, "activemq", ""), "certificates", ""), "secret", "")
@@ -41,11 +39,31 @@ locals {
   redis_timeout                = lookup(lookup(var.storage_endpoint_url, "redis", 3000), "timeout", 3000)
   redis_ssl_host               = lookup(lookup(var.storage_endpoint_url, "redis", ""), "ssl_host", "")
 
-  # Monitoring
-  fluent_bit_is_daemonset      = lookup(lookup(var.monitoring, "fluent_bit", {}), "is_daemonset", false)
-  fluent_bit_container_name    = lookup(lookup(var.monitoring, "fluent_bit", {}), "container_name", "fluent-bit")
-  fluent_bit_image             = lookup(lookup(var.monitoring, "fluent_bit", {}), "image", "")
-  fluent_bit_tag               = lookup(lookup(var.monitoring, "fluent_bit", {}), "tag", "")
-  fluent_bit_envvars_configmap = lookup(lookup(lookup(var.monitoring, "fluent_bit", {}), "configmaps", {}), "envvars", "")
-  fluent_bit_configmap         = lookup(lookup(lookup(var.monitoring, "fluent_bit", {}), "configmaps", {}), "config", "")
+  # Endpoint urls
+  metrics_exporter_node_ip = lookup(tomap(data.external.metrics_exporter_node_ip.result), "node_ip", "")
+  load_balancer            = (kubernetes_service.metrics_exporter.spec.0.type == "LoadBalancer" ? {
+    ip   = (kubernetes_service.metrics_exporter.status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.metrics_exporter.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.metrics_exporter.status.0.load_balancer.0.ingress.0.ip)
+    port = kubernetes_service.metrics_exporter.spec.0.port.0.port
+  } : {
+    ip   = ""
+    port = ""
+  })
+
+  node_port = (local.load_balancer.ip == "" && kubernetes_service.metrics_exporter.spec.0.type == "NodePort" ? {
+    ip   = local.metrics_exporter_node_ip
+    port = kubernetes_service.metrics_exporter.spec.0.port.0.node_port
+  } : {
+    ip   = local.load_balancer.ip
+    port = local.load_balancer.port
+  })
+
+  metrics_exporter_endpoints = (local.node_port.ip == "" && kubernetes_service.metrics_exporter.spec.0.type == "ClusterIP" ? {
+    ip   = kubernetes_service.metrics_exporter.spec.0.cluster_ip
+    port = kubernetes_service.metrics_exporter.spec.0.port.0.port
+  } : {
+    ip   = local.node_port.ip
+    port = local.node_port.port
+  })
+
+  url = "http://${local.metrics_exporter_endpoints.ip}:${local.metrics_exporter_endpoints.port}"
 }

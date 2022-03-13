@@ -8,8 +8,8 @@
 - [Set environment variables](#set-environment-variables)
 - [Prepare backend for Terraform](#preapre-backend-for-terraform)
 - [Deploy infrastructure](#deploy-infrastructure)
-    - [AWS ECR](#aws-ecr)
     - [AWS VPC](#aws-vpc)
+    - [AWS ECR](#aws-ecr)
     - [AWS EKS](#aws-eks)
     - [AWS storage](#aws-storage)
     - [Monitoring](#monitoring)
@@ -135,19 +135,6 @@ make deploy-s3-of-backend
 
 # Deploy infrastructure
 
-## AWS ECR
-
-You need to create an AWS Elastic Container Registry (ECR) and push the container images needed for Kubernetes and
-ArmoniK [ecr/parameters.tfvars](ecr/parameters.tfvars).
-
-Execute the following command to create the ECR and push the list of container images:
-
-```bash
-make deploy-ecr
-```
-
-The list of created ECR repositories are in `ecr/generated/ecr-output.json`.
-
 ## AWS VPC
 
 You need to create an AWS Virtual Private Cloud (VPC) that provides an isolated virtual network environment. The
@@ -161,6 +148,19 @@ make deploy-vpc
 
 The VPC deployment generates an output file `vpc/generated/vpc-output.json` which contains information needed for the
 deployments of storage and Kubernetes.
+
+## AWS ECR
+
+You need to create an AWS Elastic Container Registry (ECR) and push the container images needed for Kubernetes and
+ArmoniK [ecr/parameters.tfvars](ecr/parameters.tfvars).
+
+Execute the following command to create the ECR and push the list of container images:
+
+```bash
+make deploy-ecr
+```
+
+The list of created ECR repositories are in `ecr/generated/ecr-output.json`.
 
 ## AWS EKS
 
@@ -250,13 +250,17 @@ make deploy-monitoring
 **or:**
 
 ```bash
-make deploy-monitoring EKS_PARAMETERS_FILE=<path-to-eks-parameters>
+make deploy-monitoring \
+  EKS_PARAMETERS_FILE=<path-to-eks-parameters> \
+  STORAGE_PARAMETERS_FILE=<path-to-storage-parameters> 
 ```
 
 where:
 
 - `<path-to-eks-parameters>` is the **absolute** path to file `eks/generated/eks-output.json` containing the information
   about the VPC previously created.
+- `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json` containing the
+  information about the storage previously created.
 
 The monitoring deployment generates an output file `monitoring/generated/monitoring-output.json` that contains
 information needed for ArmoniK.

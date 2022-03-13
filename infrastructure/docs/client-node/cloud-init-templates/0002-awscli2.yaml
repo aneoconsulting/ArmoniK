@@ -1,0 +1,22 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+locale: en_US.UTF-8
+
+write_files:
+  - content: |
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      ./aws/install
+      ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
+    path: /app/install-awscli2.sh
+    permissions: 0755
+    owner: root
+
+runcmd:
+  - bash /app/install-awscli2.sh

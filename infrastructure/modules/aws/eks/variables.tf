@@ -12,6 +12,13 @@ variable "name" {
   default     = "armonik-eks"
 }
 
+# Node selector
+variable "node_selector" {
+  description = "Node selector for pods of EKS system"
+  type        = any
+  default     = {}
+}
+
 # VPC infos
 variable "vpc" {
   description = "AWS VPC info"
@@ -36,12 +43,14 @@ variable "s3_fs" {
 variable "eks" {
   description = "Parameters of AWS EKS"
   type        = object({
-    cluster_version                      = string
-    cluster_endpoint_private_access      = bool
-    cluster_endpoint_public_access       = bool
-    cluster_endpoint_public_access_cidrs = list(string)
-    cluster_log_retention_in_days        = number
-    docker_images                        = object({
+    cluster_version                       = string
+    cluster_endpoint_private_access       = bool
+    cluster_endpoint_private_access_cidrs = list(string)
+    cluster_endpoint_private_access_sg    = list(string)
+    cluster_endpoint_public_access        = bool
+    cluster_endpoint_public_access_cidrs  = list(string)
+    cluster_log_retention_in_days         = number
+    docker_images                         = object({
       cluster_autoscaler = object({
         image = string
         tag   = string
@@ -51,7 +60,7 @@ variable "eks" {
         tag   = string
       })
     })
-    encryption_keys                      = object({
+    encryption_keys                       = object({
       cluster_log_kms_key_id    = string
       cluster_encryption_config = string
       ebs_kms_key_id            = string

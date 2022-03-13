@@ -7,9 +7,9 @@ OUTPUT_FILE=$(GENERATED_DIR)/storage-output.json
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export NAMESPACE?=armonik
-export SHARED_HOST_PATH?=/data
+export SHARED_HOST_PATH?=$(HOME)/data
 export FILE_STORAGE_FILE?=HostPath
-export FILE_SERVER_IP?=""
+export FILE_SERVER_IP?=
 
 .PHONY: apply destroy
 

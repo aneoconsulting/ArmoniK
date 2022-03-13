@@ -3,7 +3,7 @@ export ARMONIK_REGION?=eu-west-3
 export ARMONIK_PROFILE?=default
 export ARMONIK_BUCKET_NAME?=armonik-tfstate
 export ARMONIK_KUBERNETES_NAMESPACE?=armonik
-export TFSTATE_BUCKET_NAME="$(ARMONIK_BUCKET_NAME)-$(ARMONIK_SUFFIX)"
+export TFSTATE_BUCKET_NAME=$(ARMONIK_BUCKET_NAME)-$(ARMONIK_SUFFIX)
 
 CURRENT_DIR=$(shell pwd)
 VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/vpc/generated/vpc-output.json
@@ -28,27 +28,6 @@ destroy-s3-of-backend:
 		BUCKET_NAME=$(ARMONIK_BUCKET_NAME)
 
 ####################################
-#            AWS ECR               #
-####################################
-
-deploy-ecr:
-	$(MAKE) -C $(CURRENT_DIR)/ecr deploy \
-		SUFFIX=$(ARMONIK_SUFFIX) \
-		REGION=$(ARMONIK_REGION) \
-		PROFILE=$(ARMONIK_PROFILE) \
-		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
-
-destroy-ecr:
-	$(MAKE) -C $(CURRENT_DIR)/ecr destroy \
-		SUFFIX=$(ARMONIK_SUFFIX) \
-		REGION=$(ARMONIK_REGION) \
-		PROFILE=$(ARMONIK_PROFILE) \
-		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
-
-clean-ecr:
-	$(MAKE) -C $(CURRENT_DIR)/ecr clean
-
-####################################
 #             AWS VPC              #
 ####################################
 
@@ -68,6 +47,27 @@ destroy-vpc:
 
 clean-vpc:
 	$(MAKE) -C $(CURRENT_DIR)/vpc clean
+
+####################################
+#            AWS ECR               #
+####################################
+
+deploy-ecr:
+	$(MAKE) -C $(CURRENT_DIR)/ecr deploy \
+		SUFFIX=$(ARMONIK_SUFFIX) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+
+destroy-ecr:
+	$(MAKE) -C $(CURRENT_DIR)/ecr destroy \
+		SUFFIX=$(ARMONIK_SUFFIX) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+
+clean-ecr:
+	$(MAKE) -C $(CURRENT_DIR)/ecr clean
 
 ####################################
 #             AWS EKS              #
@@ -138,6 +138,7 @@ deploy-monitoring:
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 destroy-monitoring:
@@ -145,6 +146,7 @@ destroy-monitoring:
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 clean-monitoring:
@@ -179,8 +181,8 @@ clean-armonik:
 #               All                #
 ####################################
 
-deploy-all: deploy-ecr deploy-vpc deploy-eks deploy-aws-storage deploy-monitoring deploy-armonik
+deploy-all: deploy-vpc deploy-ecr deploy-eks deploy-aws-storage deploy-monitoring deploy-armonik
 
-destroy-all: destroy-armonik destroy-monitoring destroy-aws-storage destroy-eks destroy-vpc destroy-ecr
+destroy-all: destroy-armonik destroy-monitoring destroy-aws-storage destroy-eks destroy-ecr destroy-vpc
 
-clean-all: clean-armonik clean-monitoring clean-aws-storage clean-eks clean-vpc clean-ecr
+clean-all: clean-armonik clean-monitoring clean-aws-storage clean-eks clean-ecr clean-vpc

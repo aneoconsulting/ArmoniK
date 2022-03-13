@@ -1,0 +1,21 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+locale: en_US.UTF-8
+
+write_files:
+  - content: |
+      curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+      chmod 700 get_helm.sh
+      ./get_helm.sh
+    path: /app/install-helm.sh
+    permissions: 0755
+    owner: root
+
+runcmd:
+  - bash /app/install-helm.sh

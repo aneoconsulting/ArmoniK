@@ -1,17 +1,17 @@
 #! /bin/bash
 
 BASEDIR=$(dirname "$0")
-pushd $BASEDIR
+pushd "${BASEDIR}"
 BASEDIR=$(pwd -P)
 popd
 
 MODE=""
 NAMESPACE="armonik"
-HOST_PATH="/data"
+HOST_PATH="${HOME}/data"
 SERVER_NFS_IP=""
 SHARED_STORAGE_TYPE="HostPath"
-SOURCE_CODES_LOCALHOST_DIR=$BASEDIR/../../quick-deploy/localhost
-MODIFY_PARAMETERS_SCRIPT=$BASEDIR/../../../tools/modify_parameters.py
+SOURCE_CODES_LOCALHOST_DIR="${BASEDIR}/../../quick-deploy/localhost"
+MODIFY_PARAMETERS_SCRIPT="${BASEDIR}/../../../tools/modify_parameters.py"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -103,53 +103,52 @@ EOF
 
 # Set environment variables
 set_envvars() {
-  export ARMONIK_KUBERNETES_NAMESPACE=$NAMESPACE
-  export ARMONIK_SHARED_HOST_PATH=$HOST_PATH
-  export ARMONIK_FILE_STORAGE_FILE=$SHARED_STORAGE_TYPE
-  export ARMONIK_FILE_SERVER_IP=$SERVER_NFS_IP
+  export ARMONIK_KUBERNETES_NAMESPACE="${NAMESPACE}"
+  export ARMONIK_SHARED_HOST_PATH="${HOST_PATH}"
+  export ARMONIK_FILE_STORAGE_FILE="${SHARED_STORAGE_TYPE}"
+  export ARMONIK_FILE_SERVER_IP="${SERVER_NFS_IP}"
 }
 
 # Create shared storage
 create_host_path() {
-  STORAGE_TYPE=$(echo "$SHARED_STORAGE_TYPE" | awk '{print tolower($0)}')
-  if [ $STORAGE_TYPE == "hostpath" ]; then
-    sudo mkdir -p $HOST_PATH
-    sudo chown -R $USER:$USER $HOST_PATH
+  STORAGE_TYPE=$(echo "${SHARED_STORAGE_TYPE}" | awk '{print tolower($0)}')
+  if [ "${STORAGE_TYPE}" == "hostpath" ]; then
+    mkdir -p "${HOST_PATH}"
   fi
 }
 
 # Create Kubernetes namespace
 create_kubernetes_namespace() {
-  cd $SOURCE_CODES_LOCALHOST_DIR
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make create-namespace
 }
 
 # Prepare storage parameters
 prepare_storage_parameters() {
-  STORAGE_TYPE=$(echo "$SHARED_STORAGE_TYPE" | awk '{print tolower($0)}')
-  python $MODIFY_PARAMETERS_SCRIPT \
-    -kv shared_storage.file_storage_type=$STORAGE_TYPE \
-    -kv shared_storage.file_server_ip=$SERVER_NFS_IP \
-    -kv shared_storage.host_path=$HOST_PATH \
-    $SOURCE_CODES_LOCALHOST_DIR/storage/parameters.tfvars \
-    $BASEDIR/storage-parameters.tfvars.json
+  STORAGE_TYPE=$(echo "${SHARED_STORAGE_TYPE}" | awk '{print tolower($0)}')
+  python "${MODIFY_PARAMETERS_SCRIPT}" \
+    -kv shared_storage.file_storage_type="${STORAGE_TYPE}" \
+    -kv shared_storage.file_server_ip="${SERVER_NFS_IP}" \
+    -kv shared_storage.host_path="${HOST_PATH}" \
+    "${SOURCE_CODES_LOCALHOST_DIR}/storage/parameters.tfvars" \
+    "${BASEDIR}/storage-parameters.tfvars.json"
 }
 
 # Deploy storage
 deploy_storage() {
-  cd $SOURCE_CODES_LOCALHOST_DIR
-  make deploy-storage PARAMETERS_FILE=$BASEDIR/storage-parameters.tfvars.json
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  make deploy-storage PARAMETERS_FILE="${BASEDIR}/storage-parameters.tfvars.json"
 }
 
 # Deploy monitoring
 deploy_monitoring() {
-  cd $SOURCE_CODES_LOCALHOST_DIR
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make deploy-monitoring
 }
 
 # Deploy ArmoniK
 deploy_armonik() {
-  cd $SOURCE_CODES_LOCALHOST_DIR
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make deploy-armonik
 }
 
@@ -162,21 +161,21 @@ deploy_all() {
 
 # Redeploy storage
 redeploy_storage() {
-  cd $SOURCE_CODES_LOCALHOST_DIR
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make destroy-storage
-  make deploy-storage PARAMETERS_FILE=$BASEDIR/storage-parameters.tfvars.json
+  make deploy-storage PARAMETERS_FILE="${BASEDIR}/storage-parameters.tfvars.json"
 }
 
 # Redeploy monitoring
 redeploy_monitoring() {
-  cd $SOURCE_CODES_LOCALHOST_DIR
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make destroy-monitoring
   make deploy-monitoring
 }
 
 # Redeploy ArmoniK
 redeploy_armonik() {
-  cd $SOURCE_CODES_LOCALHOST_DIR
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make destroy-armonik
   make deploy-armonik
 }
@@ -190,19 +189,19 @@ redeploy_all() {
 
 # Destroy storage
 destroy_storage() {
-  cd $SOURCE_CODES_LOCALHOST_DIR
-  make destroy-storage PARAMETERS_FILE=$BASEDIR/storage-parameters.tfvars.json
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  make destroy-storage PARAMETERS_FILE="${BASEDIR}/storage-parameters.tfvars.json"
 }
 
 # Destroy monitoring
 destroy_monitoring() {
-  cd $SOURCE_CODES_LOCALHOST_DIR
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make destroy-monitoring
 }
 
 # Destroy ArmoniK
 destroy_armonik() {
-  cd $SOURCE_CODES_LOCALHOST_DIR
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make destroy-armonik
 }
 
@@ -290,7 +289,7 @@ function main() {
   # Create shared storage
   create_host_path
 
-  # Create Kubernetes namespace
+    # Create Kubernetes namespace
   create_kubernetes_namespace
 
   # Prepare storage parameters

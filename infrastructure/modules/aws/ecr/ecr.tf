@@ -6,13 +6,13 @@ resource "aws_ecr_repository" "ecr" {
     encryption_type = "KMS"
     kms_key         = var.kms_key_id
   }
-  tags  = local.tags
+  tags  = merge(local.tags, { name = var.repositories[count.index].name })
 }
 
 # Copy images
 resource "null_resource" "copy_images" {
-  count    = length(var.repositories)
-  triggers = {
+  count      = length(var.repositories)
+  triggers   = {
     state = join("-", [
       var.repositories[count.index].name, var.repositories[count.index].image, var.repositories[count.index].tag
     ])

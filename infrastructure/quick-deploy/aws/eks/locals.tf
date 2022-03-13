@@ -11,13 +11,14 @@ resource "random_string" "random_resources" {
 locals {
   random_string = random_string.random_resources.result
   suffix        = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
-  cluster_name  = "armonik-eks-${local.suffix}"
-  tags          = merge(var.tags, {
+  cluster_name  = lookup(var.vpc, "eks_cluster_name", "armonik-eks-${local.suffix}")
+  kms_name      = "armonik-kms-eks-${local.suffix}-${local.random_string}"
+  tags          = merge({
     application        = "ArmoniK"
     deployment_version = local.suffix
     created_by         = data.aws_caller_identity.current.arn
     date               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
-  })
+  }, var.tags)
 }
 
 # Empty Kubeconfig

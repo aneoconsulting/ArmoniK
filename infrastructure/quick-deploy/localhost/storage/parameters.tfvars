@@ -10,21 +10,24 @@ shared_storage = {
 
 # Parameters for ActiveMQ
 activemq = {
-  image         = "symptoma/activemq"
-  tag           = "5.16.3"
-  node_selector = {}
+  image              = "symptoma/activemq"
+  tag                = "5.16.3"
+  node_selector      = {}
+  image_pull_secrets = ""
 }
 
 # Parameters for MongoDB
 mongodb = {
-  image         = "mongo"
-  tag           = "4.4.11"
-  node_selector = {}
+  image              = "mongo"
+  tag                = "4.4.11"
+  node_selector      = {}
+  image_pull_secrets = ""
 }
 
 # Parameters for Redis
 redis = {
-  image         = "redis"
-  tag           = "bullseye"
-  node_selector = {}
+  image              = "redis"
+  tag                = "bullseye"
+  node_selector      = {}
+  image_pull_secrets = ""
 }

@@ -13,9 +13,6 @@ k8s_config_context = "default"
 # Kubernetes namespace
 namespace = "armonik"
 
-# Node selector
-node_selector = {}
-
 # Logging level
 logging_level = "Information"
 
@@ -24,7 +21,7 @@ control_plane = {
   service_type       = "LoadBalancer"
   replicas           = 1
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag                = "0.4.1"
+  tag                = "0.5.0"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -36,46 +33,68 @@ control_plane = {
     memory = "128Mi"
   }
   image_pull_secrets = ""
+  node_selector      = {}
 }
 
 # Parameters of the compute plane
-compute_plane = {
-  # number of replicas for each deployment of compute plane
-  replicas                         = 1
-  termination_grace_period_seconds = 30
-  # number of queues according to priority of tasks
-  max_priority                     = 1
-  image_pull_secrets               = ""
-  # ArmoniK polling agent
-  polling_agent                    = {
-    image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-    tag               = "0.4.1"
-    image_pull_policy = "IfNotPresent"
-    limits            = {
-      cpu    = "100m"
-      memory = "128Mi"
-    }
-    requests          = {
-      cpu    = "100m"
-      memory = "128Mi"
-    }
-  }
-  # ArmoniK workers
-  worker                           = [
-    {
-      name              = "worker"
-      port              = 80
-      image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-      tag               = "0.4.0"
+compute_plane = [
+  {
+    name                             = "compute-plane"
+    # number of replicas for each deployment of compute plane
+    replicas                         = 1
+    termination_grace_period_seconds = 30
+    image_pull_secrets               = ""
+    node_selector                    = {}
+    # ArmoniK polling agent
+    polling_agent                    = {
+      image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
+      tag               = "0.5.0"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "920m"
-        memory = "2048Mi"
+        cpu    = "100m"
+        memory = "128Mi"
       }
       requests          = {
-        cpu    = "50m"
-        memory = "100Mi"
+        cpu    = "100m"
+        memory = "128Mi"
       }
     }
-  ]
-}
+    # ArmoniK workers
+    worker                           = [
+      {
+        name              = "worker"
+        port              = 80
+        image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
+        tag               = "0.5.0"
+        image_pull_policy = "IfNotPresent"
+        limits            = {
+          cpu    = "920m"
+          memory = "2048Mi"
+        }
+        requests          = {
+          cpu    = "50m"
+          memory = "100Mi"
+        }
+      }
+    ]
+    hpa                              = {
+      min_replicas   = 1
+      max_replicas   = 100
+      object_metrics = [
+        {
+          described_object = {
+            api_version = "batch/v1"
+            kind        = "Job"
+          }
+          metric_name      = "armonik_tasks_queued"
+          target           = {
+            type                = "AverageValue" # "Value", "Utilization" or "AverageValue"
+            average_value       = 2
+            average_utilization = 0
+            value               = 0
+          }
+        }
+      ]
+    }
+  }
+]

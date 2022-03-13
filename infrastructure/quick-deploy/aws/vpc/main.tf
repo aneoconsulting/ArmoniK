@@ -2,15 +2,15 @@
 module "kms" {
   count  = (var.vpc.flow_log_cloudwatch_log_group_kms_key_id == "" ? 1 : 0)
   source = "../../../modules/aws/kms"
-  name   = "armonik-kms-vpc-${local.suffix}-${local.random_string}"
-  tags   = local.tags
+  name   = local.kms_name
+  tags   = merge(local.tags, { name = local.kms_name })
 }
 
 # AWS VPC
 module "vpc" {
   source = "../../../modules/aws/vpc"
-  tags   = local.tags
-  name   = "${var.vpc.name}-${local.suffix}"
+  tags   = merge(local.tags, { name = local.vpc_name })
+  name   = local.vpc_name
   vpc    = {
     cluster_name                                    = local.cluster_name
     private_subnets                                 = var.vpc.cidr_block_private
@@ -22,5 +22,6 @@ module "vpc" {
     single_nat_gateway                              = var.vpc.enable_private_subnet
     flow_log_cloudwatch_log_group_retention_in_days = var.vpc.flow_log_cloudwatch_log_group_retention_in_days
     flow_log_cloudwatch_log_group_kms_key_id        = (var.vpc.flow_log_cloudwatch_log_group_kms_key_id != "" ? var.vpc.flow_log_cloudwatch_log_group_kms_key_id : module.kms.0.selected.arn)
+    peering                                         = var.vpc.peering
   }
 }

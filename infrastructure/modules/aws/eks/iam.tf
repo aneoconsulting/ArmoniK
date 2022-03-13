@@ -23,9 +23,10 @@ data "aws_iam_policy_document" "worker_assume_role_agent_permissions_document" {
 }
 
 resource "aws_iam_policy" "worker_assume_role_agent_permissions_policy" {
-  name_prefix = "eks-worker-assume-agent-${module.eks.cluster_id}"
+  name_prefix = local.iam_worker_assume_role_agent_permissions_policy_name
   description = "EKS worker node policy for agent in  cluster ${module.eks.cluster_id}"
   policy      = data.aws_iam_policy_document.worker_assume_role_agent_permissions_document.json
+  tags        = merge(local.tags, { name = local.iam_worker_assume_role_agent_permissions_policy_name })
 }
 
 resource "aws_iam_role_policy_attachment" "worker_assume_role_agent_permissions_document" {

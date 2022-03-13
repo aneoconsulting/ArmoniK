@@ -1,12 +1,12 @@
-# nodeexporter daemonset
-resource "kubernetes_daemonset" "nodeexporter" {
+# node-exporter daemonset
+resource "kubernetes_daemonset" "node-exporter" {
   metadata {
-    name      = "nodeexporter"
+    name      = "node-exporter"
     namespace = var.namespace
     labels    = {
       app     = "armonik"
       type    = "monitoring"
-      service = "nodeexporter"
+      service = "node-exporter"
     }
   }
   spec {
@@ -14,36 +14,47 @@ resource "kubernetes_daemonset" "nodeexporter" {
       match_labels = {
         app     = "armonik"
         type    = "monitoring"
-        service = "nodeexporter"
+        service = "node-exporter"
       }
     }
     template {
       metadata {
-        name        = "nodeexporter"
+        name        = "node-exporter"
         labels      = {
           app     = "armonik"
           type    = "monitoring"
-          service = "nodeexporter"
+          service = "node-exporter"
         }
         annotations = {
           "prometheus.io/scrape" = "true"
           "prometheus.io/port"   = "9100"
-          "prometheus.io/input"  = "nodeexporter"
+          "prometheus.io/input"  = "node-exporter"
         }
       }
       spec {
         dynamic toleration {
-          for_each = (var.node_selector != {} ? [1] : [])
+          for_each = (var.node_selector != {} ? [
+          for index in range(0, length(local.node_selector_keys)) : {
+            key   = local.node_selector_keys[index]
+            value = local.node_selector_values[index]
+          }
+          ] : [])
           content {
-            key      = keys(var.node_selector)[0]
+            key      = toleration.value.key
             operator = "Equal"
-            value    = values(var.node_selector)[0]
+            value    = toleration.value.value
             effect   = "NoSchedule"
           }
         }
+        dynamic image_pull_secrets {
+          for_each = (var.docker_image.image_pull_secrets != "" ? [1] : [])
+          content {
+            name = var.docker_image.image_pull_secrets
+          }
+        }
         container {
-          name              = "nodeexporter"
-          image             = "${var.docker_image.node_exporter.image}:${var.docker_image.node_exporter.tag}"
+          name              = "node-exporter"
+          image             = "${var.docker_image.image}:${var.docker_image.tag}"
           image_pull_policy = "IfNotPresent"
           args              = [
             "--path.procfs",
@@ -54,7 +65,7 @@ resource "kubernetes_daemonset" "nodeexporter" {
             "^/(sys|proc|dev|host|etc)($|/)"
           ]
           port {
-            name           = "nodeexporter"
+            name           = "node-exporter"
             container_port = 9100
             protocol       = "TCP"
           }

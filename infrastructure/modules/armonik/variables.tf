@@ -4,13 +4,6 @@ variable "namespace" {
   type        = string
 }
 
-# Node selector
-variable "node_selector" {
-  description = "Node selector"
-  type        = any
-  default     = {}
-}
-
 # Logging level
 variable "logging_level" {
   description = "Logging level in ArmoniK"
@@ -55,18 +48,19 @@ variable "control_plane" {
       memory = string
     })
     image_pull_secrets = string
+    node_selector      = any
   })
 }
 
 # Parameters of the compute plane
 variable "compute_plane" {
   description = "Parameters of the compute plane"
-  type        = object({
+  type        = list(object({
+    name                             = string
     replicas                         = number
     termination_grace_period_seconds = number
-    # number of queues according to priority of tasks
-    max_priority                     = number
     image_pull_secrets               = string
+    node_selector                    = any
     polling_agent                    = object({
       image             = string
       tag               = string
@@ -95,6 +89,23 @@ variable "compute_plane" {
         memory = string
       })
     }))
-  })
+    hpa                              = object({
+      min_replicas   = number
+      max_replicas   = number
+      object_metrics = list(object({
+        described_object = object({
+          api_version = string
+          kind        = string
+        })
+        metric_name      = string
+        target           = object({
+          type                = string
+          average_value       = number
+          average_utilization = number
+          value               = number
+        })
+      }))
+    })
+  }))
 }
 
