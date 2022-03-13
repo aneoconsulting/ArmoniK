@@ -70,7 +70,7 @@ runs:
         set -ex
         git clone https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp.git source/ArmoniK.Extensions.Csharp
         cd tools/tests/
-        bash symphony_endToendTests.sh
+        bash endToendTests.sh
 
     - name: Copy logs
       if: always()
