@@ -36,13 +36,8 @@ function build() {
 }
 
 function deploy() {
-  if [ ! -d "/data" ]; then
-    sudo mkdir -p /data
-  fi
-  if [ ! -w "/data" ]; then
-    sudo chown -R $USER:$USER /data
-  fi
-  cp -v ../packages/ArmoniK.EndToEndTests-v1.0.0-700.zip /data
+  mkdir -p ${HOME}/data
+  cp -v ../packages/ArmoniK.EndToEndTests-v1.0.0-700.zip ${HOME}/data
   kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 }
 
