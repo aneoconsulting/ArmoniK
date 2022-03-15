@@ -56,6 +56,7 @@ infrastructure:
 * If You have Windows machine, You can install [WSL 2](../../docs/kubernetes/localhost/wsl2.md)
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) version 2
 * [Docker](https://docs.docker.com/engine/install/)
+* [GNU make](https://www.gnu.org/software/make/)
 * [JQ](https://stedolan.github.io/jq/download/)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 * [Helm](https://helm.sh/docs/intro/install/)

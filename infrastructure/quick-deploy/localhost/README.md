@@ -43,8 +43,8 @@ The infrastructure is composed of:
 The following software or tool should be installed upon your local Linux machine:
 
 * If You have Windows machine, You can install [WSL 2](docs/wsl2.md)
-* GNU make
 * [Docker](https://docs.docker.com/engine/install/)
+* [GNU make](https://www.gnu.org/software/make/)
 * [JQ](https://stedolan.github.io/jq/download/)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 * [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
