@@ -22,8 +22,9 @@ Hereafter, You have instructions to deploy infrastructure for ArmoniK on AWS clo
 
 The infrastructure is composed of:
 
-* AWS ECR for docker images
 * AWS VPC
+* AWS ECR for docker images
+* AWS EKS
 * Storage:
     * AWS S3 buckets:
         * to save safely `.tfsate`
@@ -32,10 +33,13 @@ The infrastructure is composed of:
     * Amazon MQ (ActiveMQ broker engine)
     * Onpremise MongoDB
 * Monitoring:
-    * Seq server for structured log data of ArmoniK
-    * Grafana
-    * Prometheus
     * AWS CloudWatch
+    * Fluent-bit
+    * Grafana
+    * Metrics exporter
+    * Prometheus
+    * Prometheus adapter
+    * Seq server for structured log data of ArmoniK
 * ArmoniK:
     * Control plane
     * Compute plane:

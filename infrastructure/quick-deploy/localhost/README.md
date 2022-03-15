@@ -26,12 +26,17 @@ The infrastructure is composed of:
     * MongoDB
     * Redis
 * Monitoring:
-    * Seq server for structured log data of ArmoniK
+    * Fluent-bit
     * Grafana
+    * Metrics exporter
     * Prometheus
+    * Prometheus Adapter
+    * Seq server for structured log data of ArmoniK
 * ArmoniK:
     * Control plane
-    * Compute plane: polling agent and workers
+    * Compute plane:
+        * polling agent
+        * workers
 
 # Prerequisites
 
