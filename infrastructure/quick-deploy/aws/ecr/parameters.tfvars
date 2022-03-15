@@ -68,6 +68,11 @@ ecr = {
       tag   = "0.5.0"
     },
     {
+      name  = "metrics-exporter"
+      image = "dockerhubaneo/armonik_control_metrics"
+      tag   = "0.5.0"
+    },
+    {
       name  = "seq"
       image = "datalust/seq"
       tag   = "2021.4"
@@ -106,11 +111,6 @@ ecr = {
       name  = "prometheus-adapter"
       image = "k8s.gcr.io/prometheus-adapter/prometheus-adapter"
       tag   = "v0.9.1"
-    },
-    {
-      name  = "metrics-exporter"
-      image = "dockerhubaneo/armonik_control_metrics"
-      tag   = "0.5.0"
     }
   ]
 }
