@@ -86,6 +86,8 @@ runs:
       id: sethostpath
       shell: bash
       run: |
+        set -ex
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         source envvars.sh
         echo "::set-output name=host-path::${ARMONIK_SHARED_HOST_PATH}"
 
