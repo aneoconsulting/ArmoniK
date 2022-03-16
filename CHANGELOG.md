@@ -1,15 +1,35 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-03-08)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-03-16)
+
+## [v2.5.1](https://github.com/aneoconsulting/armonik/tree/v2.5.1) (2022-03-16)
+
+Added
+- 
+
+* New feature to call static method in GridServer service
+* Add default serialization on native array (double[], float[], long[] int[] and so on)
+
+Fixed
+- 
+
+* Fix messages reinserted in the queue instead of being deleted
+* Fix the crashes due to MongoDB
+* Fix result storage after task processing
+* Fix issue with Properties in GridServer API (One constructor with optional connexion string)
+* Fix issue with byte[] in ProtoSerializer
+* Fix issue with SessionService in GridServer
 
 ## [v2.5.0](https://github.com/aneoconsulting/armonik/tree/v2.5.0) (2022-03-08)
 
 Removed
 -
+
 * Remove communication between workers and control-plane
 
 Added
 -
+
 * Add metrics exporter of custom metrics of ArmoniK to Prometheus
 * Add Prometheus adapter to expose custom metrics of ArmoniK in Kubernetes API service
 * Display the custom metrics of ArmoniK in Grafana
@@ -20,6 +40,7 @@ Added
 
 Changed
 -
+
 * Improve EKS parameters: full private access to EKS
 * Improve logs displaying in Seq
 
@@ -54,9 +75,8 @@ Changed
 * ArmoniK expects those secrets as input
 * Fluent-bit is used to tail logs and send them to Seq/CloudWatch instead of sending them directly from logger
 * Two different implementations of Fluent-bit (the user can choose one of them):
-  * As a sidecar in ArmoniK control plane and compute plane
-  * As a DaemonSet in each Kubernetes node
-
+    * As a sidecar in ArmoniK control plane and compute plane
+    * As a DaemonSet in each Kubernetes node
 
 ## [v2.3.0](https://github.com/aneoconsulting/armonik/tree/v2.3.0) (2022-02-01)
 
