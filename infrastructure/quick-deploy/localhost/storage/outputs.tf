@@ -31,7 +31,7 @@ output "storage_endpoint_url" {
         secret      = module.redis.user_certificate.secret
         ca_filename = module.redis.user_certificate.ca_filename
       }
-      timeout      = 3000
+      timeout      = 30000
       ssl_host     = "127.0.0.1"
     }
     mongodb  = {
