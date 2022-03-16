@@ -41,7 +41,6 @@ inputs:
     description: 'Log Level'
     required: false
     default: 'Information'
-
 outputs:
   host-path:
     description: 'Path of the shared storage between workers'
