@@ -82,7 +82,7 @@ runs:
         cd ${{ github.action_path }}
         bash tools/install/k3s.sh
 
-    - name: Set the path of the shared storage
+    - name: Set the name path of the shared storage
       id: sethostpath
       shell: bash
       run: |
