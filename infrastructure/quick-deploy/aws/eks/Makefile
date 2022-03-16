@@ -15,7 +15,6 @@ export VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/../vpc/generated/vpc-output.json
 
 all: init apply output
 deploy: init apply output
-destroy: init delete
 
 init:
 	mkdir -p generated
@@ -41,16 +40,7 @@ output:
 	@echo -n "}" >> $(OUTPUT_FILE)
 	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 
-delete:
-	terraform destroy \
-		-var-file $(PARAMETERS_FILE) \
-		-var 'region=$(REGION)' \
-		-var 'suffix=$(SUFFIX)' \
-		-var 'profile=$(PROFILE)' \
-		-state $(STATE_FILE) \
-		-auto-approve
-
-delete-with-parameters:
+destroy:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(VPC_PARAMETERS_FILE) \

@@ -43,16 +43,6 @@ ecr = {
       tag   = "4.4.11"
     },
     {
-      name  = "redis"
-      image = "redis"
-      tag   = "bullseye"
-    },
-    {
-      name  = "activemq"
-      image = "symptoma/activemq"
-      tag   = "5.16.3"
-    },
-    {
       name  = "armonik-control-plane"
       image = "dockerhubaneo/armonik_control"
       tag   = "0.5.0"

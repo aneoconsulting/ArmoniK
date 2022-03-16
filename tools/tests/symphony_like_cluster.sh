@@ -14,7 +14,7 @@ dotnet publish --self-contained -r linux-x64 SymphonyLike.sln
 #aws s3 sync --exclude "*" --include ArmoniK.Samples.SymphonyPackage-v2.0.0.zip packages/ s3://$S3_BUCKET
 
 aws s3 cp packages/ArmoniK.Samples.SymphonyPackage-v2.0.0.zip s3://$S3_BUCKET
-kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
+#kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 
 cd ArmoniK.Samples.SymphonyClient/
 dotnet bin/Debug/net5.0/linux-x64/ArmoniK.Samples.SymphonyClient.dll
