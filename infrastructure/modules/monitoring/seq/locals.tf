@@ -6,7 +6,7 @@ data "external" "seq_node_ip" {
 }
 
 locals {
-  seq_node_ip          = lookup(tomap(data.external.seq_node_ip.result), "node_ip", "")
+  seq_node_ip          = try(tomap(data.external.seq_node_ip.result).node_ip, "")
   node_selector_keys   = keys(var.node_selector)
   node_selector_values = values(var.node_selector)
 

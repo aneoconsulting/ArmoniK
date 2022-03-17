@@ -6,7 +6,7 @@ data "external" "grafana_node_ip" {
 }
 
 locals {
-  grafana_node_ip      = lookup(tomap(data.external.grafana_node_ip.result), "node_ip", "")
+  grafana_node_ip      = try(tomap(data.external.grafana_node_ip.result).node_ip, "")
   node_selector_keys   = keys(var.node_selector)
   node_selector_values = values(var.node_selector)
 

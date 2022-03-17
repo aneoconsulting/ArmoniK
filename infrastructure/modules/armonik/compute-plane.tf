@@ -291,11 +291,12 @@ resource "kubernetes_deployment" "compute_plane" {
             }
             resources {
               limits   = {
+                cpu    = "500m"
                 memory = "200Mi"
               }
               requests = {
-                cpu    = "500m"
-                memory = "100Mi"
+                cpu    = "0m"
+                memory = "0Mi"
               }
             }
             # Please don't change below read-only permissions

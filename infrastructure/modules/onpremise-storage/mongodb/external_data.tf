@@ -8,7 +8,7 @@ data "external" "mongodb_node_ip" {
 # Node names
 locals {
   # MongoDB
-  mongodb_node_ip = lookup(tomap(data.external.mongodb_node_ip.result), "node_ip", "")
+  mongodb_node_ip = try(tomap(data.external.mongodb_node_ip.result).node_ip, "")
 
   mongodb_load_balancer = (kubernetes_service.mongodb.spec.0.type == "LoadBalancer" ? {
     ip   = (kubernetes_service.mongodb.status.0.load_balancer.0.ingress.0.ip == "" || kubernetes_service.mongodb.status.0.load_balancer.0.ingress.0.ip == null ? kubernetes_service.mongodb.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.mongodb.status.0.load_balancer.0.ingress.0.ip)

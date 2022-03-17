@@ -6,6 +6,7 @@ logging_level = "Information"
 
 # Parameters of control plane
 control_plane = {
+  name               = "control-plane"
   service_type       = "LoadBalancer"
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"

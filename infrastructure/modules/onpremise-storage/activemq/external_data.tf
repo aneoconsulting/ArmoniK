@@ -8,7 +8,7 @@ data "external" "activemq_node_ip" {
 # Node names
 locals {
   # ActiveMQ
-  activemq_node_ip = lookup(tomap(data.external.activemq_node_ip.result), "node_ip", "")
+  activemq_node_ip = try(tomap(data.external.activemq_node_ip.result).node_ip, "")
 
   activemq_load_balancer = (kubernetes_service.activemq.spec.0.type == "LoadBalancer" ? {
     ip   = (kubernetes_service.activemq.status.0.load_balancer.0.ingress.0.ip == "" || kubernetes_service.activemq.status.0.load_balancer.0.ingress.0.ip == null ? kubernetes_service.activemq.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.activemq.status.0.load_balancer.0.ingress.0.ip)
