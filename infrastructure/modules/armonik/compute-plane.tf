@@ -61,7 +61,7 @@ resource "kubernetes_deployment" "compute_plane" {
             }
           }
           resources {
-            limits   = {
+            limits = {
               cpu    = var.compute_plane[count.index].polling_agent.limits.cpu
               memory = var.compute_plane[count.index].polling_agent.limits.memory
             }
@@ -194,7 +194,7 @@ resource "kubernetes_deployment" "compute_plane" {
               container_port = worker.value.port
             }
             resources {
-              limits   = {
+              limits = {
                 cpu    = worker.value.limits.cpu
                 memory = worker.value.limits.memory
               }
@@ -290,13 +290,13 @@ resource "kubernetes_deployment" "compute_plane" {
               }
             }
             resources {
-              limits   = {
-                cpu    = "500m"
-                memory = "200Mi"
+              limits = {
+                cpu    = "100m"
+                memory = "50Mi"
               }
               requests = {
-                cpu    = "0m"
-                memory = "0Mi"
+                cpu    = "1m"
+                memory = "1Mi"
               }
             }
             # Please don't change below read-only permissions

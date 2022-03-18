@@ -52,7 +52,7 @@ resource "kubernetes_deployment" "control_plane" {
           image             = var.control_plane.tag != "" ? "${var.control_plane.image}:${var.control_plane.tag}" : var.control_plane.image
           image_pull_policy = var.control_plane.image_pull_policy
           resources {
-            limits   = {
+            limits = {
               cpu    = var.control_plane.limits.cpu
               memory = var.control_plane.limits.memory
             }
@@ -216,13 +216,13 @@ resource "kubernetes_deployment" "control_plane" {
               }
             }
             resources {
-              limits   = {
-                cpu    = "500m"
-                memory = "200Mi"
+              limits = {
+                cpu    = "100m"
+                memory = "50Mi"
               }
               requests = {
-                cpu    = "0m"
-                memory = "0Mi"
+                cpu    = "1m"
+                memory = "1Mi"
               }
             }
             # Please don't change below read-only permissions
