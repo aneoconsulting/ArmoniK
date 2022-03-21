@@ -13,9 +13,9 @@ module "eks" {
   name                          = local.cluster_name
   node_selector                 = var.node_selector
   vpc                           = {
-    id                 = var.vpc.id
-    private_subnet_ids = var.vpc.private_subnet_ids
-    pods_subnet_ids    = var.vpc.pods_subnet_ids
+    id                 = local.vpc.id
+    private_subnet_ids = local.vpc.private_subnet_ids
+    pods_subnet_ids    = local.vpc.pods_subnet_ids
   }
   s3_fs                         = {
     name       = var.s3_fs.name

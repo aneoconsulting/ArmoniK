@@ -36,15 +36,6 @@ tags = {
 # Node selector
 node_selector = { "grid/type" = "Operator" }
 
-# VPC info
-vpc = {
-  id                     = ""
-  cidr_block             = ""
-  private_subnet_ids     = []
-  pod_cidr_block_private = []
-  pods_subnet_ids        = []
-}
-
 # shared storage
 s3_fs = {
   name       = ""
