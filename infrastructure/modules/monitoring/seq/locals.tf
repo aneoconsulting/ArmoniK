@@ -1,7 +1,7 @@
 # Node IP of seq_web_console pod
 data "external" "seq_node_ip" {
   depends_on  = [kubernetes_service.seq_web_console]
-  program     = ["bash", "get_node_ip.sh", "seq-web-console", var.namespace]
+  program     = ["bash", "get_node_ip.sh", "seq", var.namespace]
   working_dir = "${var.working_dir}/utils/scripts"
 }
 
