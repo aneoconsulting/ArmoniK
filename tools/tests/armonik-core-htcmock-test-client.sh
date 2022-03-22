@@ -13,7 +13,7 @@
 # --------------------------                                                                                                                                           #
 # SubTasksLevels       : number of levels in the graph of tasks                                                                                                        #
 # TotalNbSubTasks      : total number of tasks in all levels (the aggregation tasks are not taken into account in this parameter!)                                     #
-# MemorySize           : size in memory for a task                                                                                                                     #
+# MemorySize           : size in memory for a task in ? (KB, kiB, ...)                                                                                                               #
 # TotalCalculationTime : total computation time for TotalNbSubTasks tasks (the computation times for aggregation tasks are not taken into account in this parameter !) #
 # DataSize             : ?                                                                                                                                             #
 ########################################################################################################################################################################
