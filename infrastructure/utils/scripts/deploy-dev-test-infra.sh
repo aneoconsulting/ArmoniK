@@ -7,11 +7,11 @@ popd
 
 MODE=""
 NAMESPACE="armonik"
-HOST_PATH="${HOME}/data"
+HOST_PATH=$(realpath "${HOME}/data")
 SERVER_NFS_IP=""
 SHARED_STORAGE_TYPE="HostPath"
-SOURCE_CODES_LOCALHOST_DIR="${BASEDIR}/../../quick-deploy/localhost"
-MODIFY_PARAMETERS_SCRIPT="${BASEDIR}/../../../tools/modify_parameters.py"
+SOURCE_CODES_LOCALHOST_DIR=$(realpath "${BASEDIR}/../../quick-deploy/localhost")
+MODIFY_PARAMETERS_SCRIPT=$(realpath "${BASEDIR}/../../../tools/modify_parameters.py")
 CONTROL_PLANE_IMAGE="dockerhubaneo/armonik_control"
 POLLING_AGENT_IMAGE="dockerhubaneo/armonik_pollingagent"
 WORKER_IMAGE="dockerhubaneo/armonik_worker_dll"
@@ -20,6 +20,12 @@ CORE_TAG="0.5.0"
 WORKER_TAG="0.5.0"
 HPA_MAX_REPLICAS=5
 HPA_MIN_REPLICAS=1
+STORAGE_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/storage/parameters.tfvars"
+MONITORING_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/monitoring/parameters.tfvars"
+ARMONIK_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/armonik/parameters.tfvars"
+GENERATED_STORAGE_PARAMETERS_FILE="${BASEDIR}/storage-parameters.tfvars.json"
+GENERATED_MONITORING_PARAMETERS_FILE="${BASEDIR}/monitoring-parameters.tfvars.json"
+GENERATED_ARMONIK_PARAMETERS_FILE="${BASEDIR}/armonik-parameters.tfvars.json"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -157,8 +163,8 @@ prepare_storage_parameters() {
     -kv shared_storage.file_storage_type="${STORAGE_TYPE}" \
     -kv shared_storage.file_server_ip="${SERVER_NFS_IP}" \
     -kv shared_storage.host_path="${HOST_PATH}" \
-    "${SOURCE_CODES_LOCALHOST_DIR}/storage/parameters.tfvars" \
-    "${BASEDIR}/storage-parameters.tfvars.json"
+    "${STORAGE_PARAMETERS_FILE}" \
+    "${GENERATED_STORAGE_PARAMETERS_FILE}"
 }
 
 # Prepare monitoring parameters
@@ -166,8 +172,8 @@ prepare_monitoring_parameters() {
   python "${MODIFY_PARAMETERS_SCRIPT}" \
     -kv monitoring.metrics_exporter.image="${METRICS_EXPORTER_IMAGE}" \
     -kv monitoring.metrics_exporter.tag="${CORE_TAG}" \
-    "${SOURCE_CODES_LOCALHOST_DIR}/monitoring/parameters.tfvars" \
-    "${BASEDIR}/monitoring-parameters.tfvars.json"
+    "${MONITORING_PARAMETERS_FILE}" \
+    "${GENERATED_MONITORING_PARAMETERS_FILE}"
 }
 
 # Prepare armonik parameters
@@ -181,26 +187,38 @@ prepare_armonik_parameters() {
     -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
     -kv compute_plane[*].hpa.min_replicas="${HPA_MIN_REPLICAS}" \
     -kv compute_plane[*].hpa.max_replicas="${HPA_MAX_REPLICAS}" \
-    "${SOURCE_CODES_LOCALHOST_DIR}/armonik/parameters.tfvars" \
-    "${BASEDIR}/armonik-parameters.tfvars.json"
+    "${ARMONIK_PARAMETERS_FILE}" \
+    "${GENERATED_ARMONIK_PARAMETERS_FILE}"
 }
 
 # Deploy storage
 deploy_storage() {
+  # Prepare storage parameters
+  prepare_storage_parameters
+
+  # Deploy
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make deploy-storage PARAMETERS_FILE="${BASEDIR}/storage-parameters.tfvars.json"
+  make deploy-storage PARAMETERS_FILE="${GENERATED_STORAGE_PARAMETERS_FILE}"
 }
 
 # Deploy monitoring
 deploy_monitoring() {
+  # Prepare monitoring parameters
+  prepare_monitoring_parameters
+
+  # Deploy
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make deploy-monitoring PARAMETERS_FILE="${BASEDIR}/monitoring-parameters.tfvars.json"
+  make deploy-monitoring PARAMETERS_FILE="${GENERATED_MONITORING_PARAMETERS_FILE}"
 }
 
 # Deploy ArmoniK
 deploy_armonik() {
+  # Prepare armonik parameters
+  prepare_armonik_parameters
+
+  # Deploy
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make deploy-armonik PARAMETERS_FILE="${BASEDIR}/armonik-parameters.tfvars.json"
+  make deploy-armonik PARAMETERS_FILE="${GENERATED_ARMONIK_PARAMETERS_FILE}"
 }
 
 # Deploy storage, monitoring and ArmoniK
@@ -212,20 +230,32 @@ deploy_all() {
 
 # Destroy storage
 destroy_storage() {
+  if [ ! -f "${GENERATED_STORAGE_PARAMETERS_FILE}" ]; then
+    prepare_storage_parameters
+  fi
+
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make destroy-storage PARAMETERS_FILE="${BASEDIR}/storage-parameters.tfvars.json"
+  make destroy-storage PARAMETERS_FILE="${GENERATED_STORAGE_PARAMETERS_FILE}"
 }
 
 # Destroy monitoring
 destroy_monitoring() {
+  if [ ! -f "${GENERATED_MONITORING_PARAMETERS_FILE}" ]; then
+    prepare_monitoring_parameters
+  fi
+
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make destroy-monitoring PARAMETERS_FILE="${BASEDIR}/monitoring-parameters.tfvars.json"
+  make destroy-monitoring PARAMETERS_FILE="${GENERATED_MONITORING_PARAMETERS_FILE}"
 }
 
 # Destroy ArmoniK
 destroy_armonik() {
+  if [ ! -f "${GENERATED_ARMONIK_PARAMETERS_FILE}" ]; then
+    prepare_armonik_parameters
+  fi
+
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make destroy-armonik PARAMETERS_FILE="${BASEDIR}/armonik-parameters.tfvars.json"
+  make destroy-armonik PARAMETERS_FILE="${GENERATED_ARMONIK_PARAMETERS_FILE}"
 }
 
 # Destroy storage, monitoring and ArmoniK
@@ -266,21 +296,21 @@ redeploy_all() {
 clean_storage() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make clean-storage
-  rm -f "${BASEDIR}/storage-parameters.tfvars.json"
+  rm -f "${GENERATED_STORAGE_PARAMETERS_FILE}"
 }
 
 # Clean monitoring
 clean_monitoring() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make clean-monitoring
-  rm -f "${BASEDIR}/monitoring-parameters.tfvars.json"
+  rm -f "${GENERATED_MONITORING_PARAMETERS_FILE}"
 }
 
 # Clean ArmoniK
 clean_armonik() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make clean-armonik
-  rm -f "${BASEDIR}/armonik-parameters.tfvars.json"
+  rm -f "${GENERATED_ARMONIK_PARAMETERS_FILE}"
 }
 
 # Clean storage, monitoring and ArmoniK
@@ -321,7 +351,7 @@ function main() {
       shift
       ;;
     --host-path)
-      HOST_PATH="$2"
+      HOST_PATH=$(realpath "$2")
       shift
       shift
       ;;
@@ -393,15 +423,6 @@ function main() {
 
   # Create Kubernetes namespace
   create_kubernetes_namespace
-
-  # Prepare storage parameters
-  prepare_storage_parameters
-
-  # Prepare monitoring parameters
-  prepare_monitoring_parameters
-
-   # Prepare armonik parameters
-  prepare_armonik_parameters
 
   # Manage infra
   if [ -z $MODE ]; then
