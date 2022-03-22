@@ -34,7 +34,8 @@ and its infrastructure requirements on AWS.
 
 # Bugs/Support
 
-Please direct enquiries about ArmoniK to the public mailing list [armonik@aneo.fr](mailto:armonik@aneo.fr). See
+Please direct enquiries about ArmoniK to the public mailing
+list [armonik-support@aneo.fr](mailto:armonik-support@aneo.fr). See
 also [Issues](https://github.com/aneoconsulting/ArmoniK/issues) of ArmoniK project.
 
 To report a bug, please include the version of ArmoniK you are using.
