@@ -1,12 +1,23 @@
 #!/bin/bash
 
-###############################################################################
-# Container image for control plane: dockerhubaneo/armonik_control            #
-# Container Image for polling agent: dockerhubaneo/armonik_pollingagent       #
-# Container Image for worker: dockerhubaneo/armonik_core_htcmock_test_worker  #
-# Container Image for metrics exporter: dockerhubaneo/armonik_control_metrics #
-# Container image for client: dockerhubaneo/armonik_core_htcmock_test_client  #
-###############################################################################
+##########################################################################################
+# Container image for control plane    : dockerhubaneo/armonik_control                   #
+# Container Image for polling agent    : dockerhubaneo/armonik_pollingagent              #
+# Container Image for worker           : dockerhubaneo/armonik_core_htcmock_test_worker  #
+# Container Image for metrics exporter : dockerhubaneo/armonik_control_metrics           #
+# Container image for client           : dockerhubaneo/armonik_core_htcmock_test_client  #
+##########################################################################################
+
+########################################################################################################################################################################
+# Parameters of the HTCMock:                                                                                                                                           #
+# --------------------------                                                                                                                                           #
+# SubTasksLevels       : number of levels in the graph of tasks                                                                                                        #
+# TotalNbSubTasks      : total number of tasks in all levels (the aggregation tasks are not taken into account in this parameter!)                                     #
+# MemorySize           : size in memory for a task                                                                                                                     #
+# TotalCalculationTime : total computation time for TotalNbSubTasks tasks (the computation times for aggregation tasks are not taken into account in this parameter !) #
+# DataSize             : ?                                                                                                                                             #
+########################################################################################################################################################################
+
 
 BASEDIR=$(dirname "$0")
 INPUT_PARAMETERS_FILE=""
