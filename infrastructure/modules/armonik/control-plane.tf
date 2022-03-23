@@ -46,13 +46,14 @@ resource "kubernetes_deployment" "control_plane" {
             name = var.control_plane.image_pull_secrets
           }
         }
+        restart_policy = "Always" # Always, OnFailure, Never
         # Control plane container
         container {
           name              = var.control_plane.name
           image             = var.control_plane.tag != "" ? "${var.control_plane.image}:${var.control_plane.tag}" : var.control_plane.image
           image_pull_policy = var.control_plane.image_pull_policy
           resources {
-            limits = {
+            limits   = {
               cpu    = var.control_plane.limits.cpu
               memory = var.control_plane.limits.memory
             }
@@ -216,7 +217,7 @@ resource "kubernetes_deployment" "control_plane" {
               }
             }
             resources {
-              limits = {
+              limits   = {
                 cpu    = "100m"
                 memory = "50Mi"
               }
