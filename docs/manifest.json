@@ -1,0 +1,198 @@
+{
+  "homepages": [],
+  "source_base_path": "C:/Users/ngruel/Projets/ArmoniK/ArmoniK/devs_documentation",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/installations/all-in-one-deploy-linux.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/installations/all-in-one-deploy-linux.html",
+          "hash": "8p7DDR8I6mfF47yOZIH0kG17HJD+2N26Dwbem0jeAPs="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
+      "type": "Conceptual",
+      "source_relative_path": "articles/installations/all-in-one-deploy-powershell.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/installations/all-in-one-deploy-powershell.html",
+          "hash": "RsaAxTM4yMV3pDcFjTMJf5T4QOHF1hZ/tQnDc1eMDjk="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/installations/k3s.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/installations/k3s.html",
+          "hash": "9ejiYdQF/S4ukac1nC1+c275rfgOOgsNrnNp6o7U9pM="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/installations/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/installations/toc.html",
+          "hash": "MUApghXY04Wb25N2WCl6DwBMyHF/KREqwwTBCOTK8tY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "AZLXKl4SXQJYJBb5IdIka3xGz46Mn+uMXnCRlllCcVE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html",
+          "hash": "djdBAwCa3UKT3PsADktqifDVCqKkYtXPCSqbM8wV7Jk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/installations/wsl_armonik1.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/installations/wsl_armonik1.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/installations/wsl_armonik2.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/installations/wsl_armonik2.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/installations/wsl_armonik3.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/installations/wsl_armonik3.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/installations/wsl_armonik4.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/installations/wsl_armonik4.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "DIKiZL3SUi2QZY5FMS3EhNUUgR1Jf5VVgtLBPP8pc/4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "52mY4KTXgnUOtZHG2oitC86bQ6jZfjC/ployvimxkTQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": true,
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {
+        "ConceptualDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 5,
+          "skipped_file_count": 3
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": true,
+        "details": "Can support incremental post processing.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

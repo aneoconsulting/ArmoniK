@@ -1,0 +1,270 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Ubuntu Linux 18.04 and 20.04 deployment </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Ubuntu Linux 18.04 and 20.04 deployment ">
+    <meta name="generator" content="docfx 2.59.0.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="ubuntu-linux-1804-and-2004-deployment">Ubuntu Linux 18.04 and 20.04 deployment</h1>
+
+<p>Hereafter, You have instructions to deploy ArmoniK on dev/test environment upon your local machine with a simple deploy
+script [deploy-dev-test-infra.sh] located in ArmoniK directory <code>infrastructure/utils/scripts/</code>.</p>
+<p>The infrastructure is composed of:</p>
+<ul>
+<li>Storage:
+<ul>
+<li><a href="https://activemq.apache">ActiveMQ</a></li>
+<li><a href="https://www.mongodb.com/">MongoDB</a></li>
+<li><a href="https://redis.com/">Redis</a></li>
+</ul>
+</li>
+<li>Monitoring:
+<ul>
+<li><a href="https://datalust.co/">Seq</a> server for structured log data of ArmoniK.</li>
+<li><a href="https://grafana.com/">Grafana</a></li>
+<li><a href="https://prometheus.io/">Prometheus</a></li>
+</ul>
+</li>
+<li>ArmoniK:
+<ul>
+<li>Control plane</li>
+<li>Compute plane: polling agent and workers</li>
+</ul>
+</li>
+</ul>
+<h1 id="prerequisites">Prerequisites</h1>
+<p>The following software or tool should be installed upon your local Linux machine:</p>
+<ul>
+<li><a href="https://docs.docker.com/engine/install/">Docker</a></li>
+<li><a href="https://stedolan.github.io/jq/download/">JQ</a></li>
+<li><a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/">Kubectl</a></li>
+<li><a href="https://docs.python-guide.org/starting/install3/linux/">Python</a> version 3
+<ul>
+<li><a href="https://pypi.org/project/python-hcl2/">hcl2</a></li>
+<li><a href="https://pypi.org/project/jsonpath-ng/">jsonpath-ng</a></li>
+</ul>
+</li>
+<li><a href="https://learn.hashicorp.com/tutorials/terraform/install-cli">Terraform</a></li>
+</ul>
+<h1 id="install-kubernetes">Install Kubernetes</h1>
+<p>You must have a Kubernetes on your local machine to install ArmoniK. If not, You can follow instructions in one of the following documentation <a href="k3s.html">Install Kubernetes on dev/test local machine</a>.</p>
+<h1 id="script-bash-all-in-one">Script bash all-in-one</h1>
+<p>From the <strong>root</strong> of the repository, position yourself in directory <code>infrastructure/utils/scripts/</code> after cloning the <a href="https://github.com/aneoconsulting/ArmoniK">ArmoniK</a> repository:</p>
+<pre><code class="lang-bash">cd infrastructure/utils/scripts
+</code></pre>
+<ul>
+<li>To see the usage command:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -h
+</code></pre>
+</li>
+<li>To deploy for the first time all infrastructure:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m deploy-all
+</code></pre>
+</li>
+<li>To redeploy all infrastructure:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m redeploy-all
+</code></pre>
+</li>
+<li>To destroy all infrastructure:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m destroy-all
+</code></pre>
+</li>
+<li>To clean and delete all generated files from all deployment:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m clean-all
+</code></pre>
+</li>
+</ul>
+<p>If You want to deploy each resource independently:</p>
+<ul>
+<li>To deploy storage:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m deploy-storage
+</code></pre>
+</li>
+<li>To deploy monitoring:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m deploy-monitoring
+</code></pre>
+</li>
+<li>To deploy armonik:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m deploy-armonik
+</code></pre>
+</li>
+</ul>
+<p>If You want to redeploy each resource independently:</p>
+<ul>
+<li>To redeploy storage:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m redeploy-storage
+</code></pre>
+</li>
+<li>To redeploy monitoring:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m redeploy-monitoring
+</code></pre>
+</li>
+<li>To redeploy armonik:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m redeploy-armonik
+</code></pre>
+</li>
+</ul>
+<p>If You want to destroy each resource independently:</p>
+<ul>
+<li>To destroy storage:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m destroy-storage
+</code></pre>
+</li>
+<li>To destroy monitoring:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m destroy-monitoring
+</code></pre>
+</li>
+<li>To destroy armonik:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m destroy-armonik
+</code></pre>
+</li>
+</ul>
+<p>If You want to clean and delete generated files from each deployment independently:</p>
+<ul>
+<li>To clean storage:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m clean-storage
+</code></pre>
+</li>
+<li>To clean monitoring:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m clean-monitoring
+</code></pre>
+</li>
+<li>To clean armonik:
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m clean-armonik
+</code></pre>
+</li>
+</ul>
+<p>If You want to deploy on specific Kubernetes namespace, You execute the following command:</p>
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m deploy-all --namespace &lt;NAMESPACE&gt;
+</code></pre>
+<p>If the <code>host_path</code> for shared storage for ArmoniK workers is not <code>${HOME}/data</code>, You can deploy the infrastructure as
+follows:</p>
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh -m deploy-all --host-path &lt;HOST_PATH&gt;
+</code></pre>
+<p>If You have a NFS filesystem as shared storage for ArmoniK workers, You deploy the infrastructure as follows:</p>
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh \
+  -m deploy-all \
+  --host-path &lt;HOST_PATH&gt; \
+  --nfs-server-ip &lt;SERVER_NFS_IP&gt; \
+  --shared-storage-type NFS
+</code></pre>
+<p>If You change container image and/or tag of control plane, polling agent, worker or metrics exporter:</p>
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh \
+  -m deploy-all \
+  --control-plane-image &lt;CONTROL_PLANE_IMAGE&gt; \
+  --polling-agent-image &lt;POLLING_AGENT_IMAGE&gt; \
+  --worker-image &lt;WORKER_IMAGE&gt; \
+  --metrics-exporter-image &lt;METRCS_EXPORTER_IMAGE&gt; \
+  --core-tag &lt;CORE_TAG&gt; \
+  --worker-tag &lt;WORKER_TAG&gt;
+</code></pre>
+<p>where <code>--core-tag &lt;CORE_TAG&gt;</code> allows to update the container tag for ArmoniK Core (control plane, polling agent and
+metrics exporter).</p>
+<p>If You change the max or min replicas in the HPA of the compute plane:</p>
+<pre><code class="lang-bash">./deploy-dev-test-infra.sh \
+  -m deploy-all \
+  --hpa-min-replicas &lt;HPA_MIN_REPLICAS&gt; \
+  --hpa-max-replicas &lt;HPA_MAX_REPLICAS&gt;
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/aneoconsulting/ArmoniK/blob/documentation/devs_documentation/articles/installations/all-in-one-deploy-linux.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
