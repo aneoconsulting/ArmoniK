@@ -1,0 +1,4 @@
+- name: Windows Subsystem Linux deployment
+  href: all-in-one-deploy-powershell.md
+- name: Ubuntu Linux deployment
+  href: all-in-one-deploy-linux.md

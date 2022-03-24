@@ -1,25 +1,18 @@
-# Table of contents
-
-- [Introduction](#introduction)
-- [Prerequisites](#prerequisites)
-- [Install Kubernetes](#install-kubernetes)
-- [Script bash all-in-one](#script-bash-all-in-one)
-
-# Introduction
+# Ubuntu Linux 18.04 and 20.04 deployment
 
 Hereafter, You have instructions to deploy ArmoniK on dev/test environment upon your local machine with a simple deploy
-script [deploy-dev-test-infra.sh](../utils/scripts/deploy-dev-test-infra.sh)
+script [deploy-dev-test-infra.sh] located in ArmoniK directory `infrastructure/utils/scripts/`.
 
 The infrastructure is composed of:
 
 * Storage:
-    * ActiveMQ
-    * MongoDB
-    * Redis
+    * [ActiveMQ](https://activemq.apache)
+    * [MongoDB](https://www.mongodb.com/)
+    * [Redis](https://redis.com/)
 * Monitoring:
-    * Seq server for structured log data of ArmoniK.
-    * Grafana
-    * Prometheus
+    * [Seq](https://datalust.co/) server for structured log data of ArmoniK.
+    * [Grafana](https://grafana.com/)
+    * [Prometheus](https://prometheus.io/)
 * ArmoniK:
     * Control plane
     * Compute plane: polling agent and workers
@@ -28,7 +21,6 @@ The infrastructure is composed of:
 
 The following software or tool should be installed upon your local Linux machine:
 
-* If You have Windows machine, You have to install [WSL 2](../quick-deploy/localhost/docs/wsl2.md)
 * [Docker](https://docs.docker.com/engine/install/)
 * [JQ](https://stedolan.github.io/jq/download/)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
@@ -39,12 +31,11 @@ The following software or tool should be installed upon your local Linux machine
 
 # Install Kubernetes
 
-You must have a Kubernetes on your local machine to install ArmoniK. If not, You can follow instructions in one of the
-following documentation [Install Kubernetes on dev/test local machine](../quick-deploy/localhost/docs/k3s.md).
+You must have a Kubernetes on your local machine to install ArmoniK. If not, You can follow instructions in one of the following documentation [Install Kubernetes on dev/test local machine](k3s.md).
 
 # Script bash all-in-one
 
-From the **root** of the repository, position yourself in directory `infrastructure/utils/scripts/`:
+From the **root** of the repository, position yourself in directory `infrastructure/utils/scripts/` after cloning the [ArmoniK](https://github.com/aneoconsulting/ArmoniK) repository:
 
 ```bash
 cd infrastructure/utils/scripts
@@ -178,7 +169,3 @@ If You change the max or min replicas in the HPA of the compute plane:
   --hpa-min-replicas <HPA_MIN_REPLICAS> \
   --hpa-max-replicas <HPA_MAX_REPLICAS>
 ```
-
-### [Return to the infrastructure main page](../README.md)
-
-### [Return to the project main page](../../README.md)
