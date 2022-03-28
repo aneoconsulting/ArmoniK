@@ -4,6 +4,15 @@
 
 ## [v2.5.2](https://github.com/aneoconsulting/armonik/tree/v2.5.2) (2022-03-28)
 
+Added
+- 
+* Add multiarch images for ArmoniK Core (Control plane, Polling agent, and Metrics exporter)
+* Add health checks for Polling agent
+
+Fixed
+- 
+* Fix bugs with deserialization from MongoDB in polling agent and large payloads
+
 ## [v2.5.1](https://github.com/aneoconsulting/armonik/tree/v2.5.1) (2022-03-16)
 
 Added
