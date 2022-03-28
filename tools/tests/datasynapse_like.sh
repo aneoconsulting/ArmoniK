@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 BASEDIR=$(dirname "$0")
 pushd $BASEDIR

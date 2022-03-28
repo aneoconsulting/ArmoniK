@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 ###############################################################################
 # Container image for control plane: dockerhubaneo/armonik_control            #
