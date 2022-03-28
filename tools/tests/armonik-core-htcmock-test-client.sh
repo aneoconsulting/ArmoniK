@@ -25,12 +25,12 @@ INPUT_PARAMETERS_FILE=""
 Grpc__Endpoint=""
 ARMONIK_NAME_SPACE="armonik"
 CLIENT_IMAGE="dockerhubaneo/armonik_core_htcmock_test_client"
-CLIENT_TAG="0.5.2"
+CLIENT_TAG="0.5.4"
 HtcMock__TotalCalculationTime="00:00:00.100"
 HtcMock__DataSize=1
 HtcMock__MemorySize=1
 HtcMock__SubTasksLevels=4
-HtcMock__TotalNbSubTasks=100
+HtcMock__TotalNbSubTasks=1000
 
 # usage
 usage() {
