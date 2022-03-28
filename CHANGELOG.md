@@ -2,6 +2,8 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-03-16)
 
+## [v2.5.2](https://github.com/aneoconsulting/armonik/tree/v2.5.2) (2022-03-28)
+
 ## [v2.5.1](https://github.com/aneoconsulting/armonik/tree/v2.5.1) (2022-03-16)
 
 Added
