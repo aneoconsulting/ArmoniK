@@ -18,50 +18,50 @@ variable "tags" {
 # Instance type
 variable "instance_type" {
   description = "Instance type of client"
-  type = string
-  default = "t3.2xlarge"
+  type        = string
+  default     = "t3.2xlarge"
 }
 
 # AMI
 variable "ami" {
   description = "AMI for the client"
-  type = string
-  default = "ami-00f7e5c52c0f43726"
+  type        = string
+  default     = "ami-00f7e5c52c0f43726"
 }
 
 # VPC
 variable "vpc_id" {
   description = "ID of an existing VPC"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 # VPC
 variable "vpc_cidr_block" {
   description = "CIDR bloc of VPC to be created"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 # Subnet
 variable "subnet_id" {
   description = "ID of an existing Subnet in the VPC"
-  type = string
-  default = ""
+  type        = string
+  default     = ""
 }
 
 # Private Subnet
 variable "private_subnet_cidr_block" {
   description = "CIDR bloc of subnet to be created"
-  type = list(string)
-  default = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  type        = list(string)
+  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
 }
 
 # Public Subnet
 variable "public_subnet_cidr_block" {
   description = "CIDR bloc of subnet to be created"
-  type = list(string)
-  default = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+  type        = list(string)
+  default     = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 }
 
 # SSH key
@@ -82,4 +82,11 @@ variable "extra_userdata_merge" {
   description = "Control how cloud-init merges user-data sections"
   type        = string
   default     = "list(append)+dict(recurse_array)+str()"
+}
+
+# Name of the EKS cluster
+variable "eks_cluster_name" {
+  description = "EKS name"
+  type        = string
+  default     = ""
 }

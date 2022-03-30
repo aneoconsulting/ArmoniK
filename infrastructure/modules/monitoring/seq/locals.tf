@@ -1,12 +1,12 @@
 # Node IP of seq_web_console pod
 data "external" "seq_node_ip" {
   depends_on  = [kubernetes_service.seq_web_console]
-  program     = ["bash", "get_node_ip.sh", "seq-web-console", var.namespace]
+  program     = ["bash", "get_node_ip.sh", "seq", var.namespace]
   working_dir = "${var.working_dir}/utils/scripts"
 }
 
 locals {
-  seq_node_ip          = lookup(tomap(data.external.seq_node_ip.result), "node_ip", "")
+  seq_node_ip          = try(tomap(data.external.seq_node_ip.result).node_ip, "")
   node_selector_keys   = keys(var.node_selector)
   node_selector_values = values(var.node_selector)
 

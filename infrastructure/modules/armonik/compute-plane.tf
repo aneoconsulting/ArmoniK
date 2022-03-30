@@ -50,6 +50,7 @@ resource "kubernetes_deployment" "compute_plane" {
             name = var.compute_plane[count.index].image_pull_secrets
           }
         }
+        restart_policy                   = "Always" # Always, OnFailure, Never
         # Polling agent container
         container {
           name              = "polling-agent"
@@ -69,6 +70,32 @@ resource "kubernetes_deployment" "compute_plane" {
               cpu    = var.compute_plane[count.index].polling_agent.requests.cpu
               memory = var.compute_plane[count.index].polling_agent.requests.memory
             }
+          }
+          port {
+            name           = "poll-agent-port"
+            container_port = 80
+          }
+          liveness_probe {
+            http_get {
+              path = "/liveness"
+              port = 80
+            }
+            initial_delay_seconds = 15
+            period_seconds        = 5
+            timeout_seconds       = 1
+            success_threshold     = 1
+            failure_threshold     = 1
+          }
+          startup_probe {
+            http_get {
+              path = "/startup"
+              port = 80
+            }
+            initial_delay_seconds = 60
+            period_seconds        = 5
+            timeout_seconds       = 1
+            success_threshold     = 1
+            failure_threshold     = 3 # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
           }
           env_from {
             config_map_ref {
@@ -291,11 +318,12 @@ resource "kubernetes_deployment" "compute_plane" {
             }
             resources {
               limits   = {
-                memory = "200Mi"
+                cpu    = "100m"
+                memory = "50Mi"
               }
               requests = {
-                cpu    = "500m"
-                memory = "100Mi"
+                cpu    = "1m"
+                memory = "1Mi"
               }
             }
             # Please don't change below read-only permissions

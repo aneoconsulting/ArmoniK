@@ -1,4 +1,5 @@
 #! /bin/bash
+set -e
 
 BASEDIR=$(dirname "$0")
 pushd $BASEDIR
@@ -40,7 +41,7 @@ function deploy() {
   mkdir -p ${HOME}/data
 
   cp -v ../packages/ArmoniK.EndToEndTests-v1.0.0-700.zip ${HOME}/data
-  #kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
+  kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
 }
 
 function execute() {

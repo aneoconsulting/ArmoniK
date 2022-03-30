@@ -64,11 +64,12 @@ resource "kubernetes_daemonset" "fluent_bit" {
           }
           resources {
             limits   = {
-              memory = "200Mi"
+              cpu    = "100m"
+              memory = "50Mi"
             }
             requests = {
-              cpu    = "500m"
-              memory = "100Mi"
+              cpu    = "1m"
+              memory = "1Mi"
             }
           }
           # Please don't change below read-only permissions
