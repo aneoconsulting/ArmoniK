@@ -8,7 +8,7 @@ data "external" "redis_node_ip" {
 # Node names
 locals {
   # Redis
-  redis_node_ip = lookup(tomap(data.external.redis_node_ip.result), "node_ip", "")
+  redis_node_ip = try(tomap(data.external.redis_node_ip.result).node_ip, "")
 
   redis_load_balancer = (kubernetes_service.redis.spec.0.type == "LoadBalancer" ? {
     ip   = (kubernetes_service.redis.status.0.load_balancer.0.ingress.0.ip == "" || kubernetes_service.redis.status.0.load_balancer.0.ingress.0.ip == null ? kubernetes_service.redis.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.redis.status.0.load_balancer.0.ingress.0.ip)

@@ -121,10 +121,10 @@ runs:
       run: |
         set -ex
         python ${{ github.action_path }}/tools/modify_parameters.py \
-                  -kv "monitoring.metrics_exporter.image=${{ inputs.metrics-exporter-image }}" \
-                  -kv "monitoring.metrics_exporter.tag=${{ inputs.metrics-exporter-tag }}" \
-                  ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars \
-                  ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars.json
+          -kv "monitoring.metrics_exporter.image=${{ inputs.metrics-exporter-image }}" \
+          -kv "monitoring.metrics_exporter.tag=${{ inputs.metrics-exporter-tag }}" \
+          ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars \
+          ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars.json
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         make deploy-monitoring PARAMETERS_FILE=${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars.json
 

@@ -4,6 +4,7 @@
 - [Quick install of ArmoniK](#quick-install-of-armonik)
     - [On dev/test local machine](#on-devtest-local-machine)
     - [On Amazon Web Services (AWS)](#on-amazon-web-services-aws)
+- [Bugs/Support](#Bugs-support)
 
 # Introduction
 
@@ -30,3 +31,11 @@ install ArmoniK and its infrastructure requirements upon your local machine.
 
 You can follow instructions described in [Quick deploy ArmoniK on AWS](quick-deploy/aws/README.md) to install ArmoniK
 and its infrastructure requirements on AWS.
+
+# Bugs/Support
+
+Please direct enquiries about ArmoniK to the public mailing
+list [armonik-support@aneo.fr](mailto:armonik-support@aneo.fr). See
+also [Issues](https://github.com/aneoconsulting/ArmoniK/issues) of ArmoniK project.
+
+To report a bug, please include the version of ArmoniK you are using.

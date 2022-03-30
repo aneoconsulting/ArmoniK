@@ -3,6 +3,11 @@ output "selected" {
   value       = module.vpc
 }
 
+output "eks_cluster_name" {
+  description = "EKS cluster name"
+  value       = var.vpc.cluster_name
+}
+
 output "id" {
   description = "ID of the VPC"
   value       = module.vpc.vpc_id

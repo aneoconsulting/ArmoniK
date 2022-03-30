@@ -71,33 +71,6 @@ resource "kubernetes_deployment" "seq" {
             container_port = 80
             protocol       = "TCP"
           }
-          liveness_probe {
-            http_get {
-              path = "/health"
-              port = 80
-            }
-            initial_delay_seconds = 5
-            period_seconds        = 3
-            timeout_seconds       = 2
-          }
-          readiness_probe {
-            http_get {
-              path = "/health"
-              port = 80
-            }
-            initial_delay_seconds = 3
-            period_seconds        = 3
-            timeout_seconds       = 2
-          }
-          startup_probe {
-            http_get {
-              path = "/health"
-              port = 80
-            }
-            initial_delay_seconds = 3
-            period_seconds        = 1
-            timeout_seconds       = 2
-          }
         }
       }
     }

@@ -58,6 +58,7 @@ variable "monitoring" {
 variable "control_plane" {
   description = "Parameters of the control plane"
   type        = object({
+    name               = string
     service_type       = string
     replicas           = number
     image              = string

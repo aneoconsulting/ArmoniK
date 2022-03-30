@@ -1,6 +1,21 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-03-16)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-03-28)
+
+## [v2.5.2](https://github.com/aneoconsulting/armonik/tree/v2.5.2) (2022-03-28)
+
+Added
+- 
+* Add multiarch images for ArmoniK Core (Control plane, Polling agent, and Metrics exporter)
+* Add health checks for Polling agent
+* Add Ssl options in API to connect with https protocol
+* Add new constructor for GridServer Properties with default Configuration argument
+* Add Retry on getResult when Http connections could fail during the result retrieval
+
+Fixed
+- 
+* Fix bugs with deserialization from MongoDB in polling agent and large payloads
+* Fix bugs with TryGetResults
 
 ## [v2.5.1](https://github.com/aneoconsulting/armonik/tree/v2.5.1) (2022-03-16)
 
