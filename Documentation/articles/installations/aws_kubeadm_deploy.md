@@ -1,23 +1,21 @@
-# Table of contents
+---
+uid: aws_kubeadm_deploy
+---
 
-1. [Introduction](#introduction)
-2. [Prerequisites](#prerequisites)
-3. [AWS credentials](#aws-credentials)
-4. [Generate a SSH key pair](#generate-a-ssh-key-pair)
-5. [Deploy a cluster](#deploy-a-cluster)
-6. [Accessing the cluster from outside](#accessing-the-cluster-from-outside)
-7. [Destroy the cluster](#destroy-the-cluster)
+# [AWS deployment using kubeadm](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/docs/kubernetes/cluster/kubeadm-cluster)
 
-# Introduction
+## Introduction
 
 This project presents the creation of a small cluster on AWS. The cluster will be composed of a master node and three
 worker nodes.
+
+The files to achieve this deployment are available [here](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/docs/kubernetes/cluster/kubeadm-cluster)
 
 We mount a NFS server on the master node too, from which workers will upload .dll.
 
 > **_NOTE:_** You must have an AWS account to use these sources to create a cluster.
 
-# AWS credentials
+## AWS credentials
 
 You must create and provide
 your [AWS programmatic access keys](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
@@ -32,7 +30,7 @@ aws_secret_access_key = <SECRET_ACCESS_KEY>
 EOF
 ```
 
-# Generate a SSH key pair
+## Generate a SSH key pair
 
 Use the following procedure to generate a SSH key pair and save it in `~/.ssh`:
 
@@ -42,14 +40,14 @@ ssh-keygen -b 4096 -t rsa -f ~/.ssh/cluster-key
 
 The generated SSH key pair `cluster-key` will be used to ssh the instances of the cluster.
 
-# Deploy a cluster
+## Deploy a cluster
 
 We will create a cluster on AWS composed of four ec2 instances:
 
 * a master node
 * three worker nodes
 
-In [parameters.tfvars](parameters.tfvars):
+In [parameters.tfvars](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/docs/kubernetes/cluster/kubeadm-cluster/parameters.tfvars):
 
 * set the value of the parameter `ssh_key` with the content of the public SSH key `~/.ssh/cluster-key.pub` and the path
   to the private SSH key, for example:
@@ -95,27 +93,21 @@ worker_public_ip = [
 ]
 ```
 
-# Prerequisites
+## Prerequisites
 
 You must open the following inbound ports:
-![](../images/ports.png)
+![Open ports on aws](~/images/installations/ports.png)
 
-# Accessing the cluster from outside
+## Accessing the cluster from outside
 
-Copy `/etc/rancher/k3s/k3s.yaml` from the master on your machine located outside the cluster as `~/.kube/config`. Then
-replace `localhost` or the private address IP with the public with the IP the K3s server (master node). kubectl can now
-manage your K3s cluster from your local machine.
+Copy `/etc/kubernetes/admin.conf` from the master on your machine located outside the cluster as `~/.kube/config`. Then
+replace `localhost` or the private address IP with the public IP of the Kubeadm server (master node). kubectl can now
+manage your Kubeadm cluster from your local machine.
 
-# Destroy the cluster
+## Destroy the cluster
 
 To delete all resources of the cluster created on AWS, execute the command:
 
 ```bash
 make destroy
 ```
-
-### [Return to Quick install on localhost](../../../../quick-deploy/localhost/README.md)
-
-### [Return to Quick install on AWS](../../../../quick-deploy/aws/README.md)
-
-### [Return to Main page](../../../../README.md)

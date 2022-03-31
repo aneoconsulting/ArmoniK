@@ -1,3 +1,7 @@
+---
+uid: all_in_one_deploy_linux
+---
+
 # Ubuntu Linux 18.04 and 20.04 deployment
 
 Hereafter, You have instructions to deploy ArmoniK on dev/test environment upon your local machine with a simple deploy

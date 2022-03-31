@@ -1,0 +1,7 @@
+- name: ArmoniK Installation
+  href: intro.md
+  items:
+    - name: Single server installations
+      href: installations/
+    - name: Test ArmoniK installation
+      href: Tests/

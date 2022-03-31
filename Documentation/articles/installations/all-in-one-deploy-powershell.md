@@ -1,3 +1,7 @@
+---
+uid: all_in_one_deploy_powershell
+---
+
 # ArmoniK installation on Windows Subsytem Linux
 
 ## Pre-requirements
@@ -42,7 +46,7 @@ and start the script from a powershell (_pwsh_) terminal:
 .\armonik_dev_environment.ps1
 ```
 
-![start script](~/images/wsl_armonik1.png)
+![start script](~/images/installations/wsl_armonik1.png)
 
 This will open a new terminal where the Ubuntu linux image configuration (user and password) will be done:
 

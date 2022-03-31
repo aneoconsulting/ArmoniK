@@ -26,12 +26,8 @@ ArmoniK might not be the best choice if :
 3. The tasks use third party licensed software.
 
 
-## ArmoniK installation
+## [ArmoniK installation](articles/intro.md)
 
-Informations on how to install ArmoniK can be found [**here**](articles/intro.md)
+ArmoniK installations instructions for new user and/or test environments.
 
-[a comment]::
-
-[Refer to http://daringfireball.net/projects/markdown/ for how to write markdown files.]::
-
-[Add images to the *images* folder if the file is referencing an image.]::
+[Example of comment]::
