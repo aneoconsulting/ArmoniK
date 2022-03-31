@@ -1,10 +1,8 @@
-# **ArmoniK** developer documentation
+# **ArmoniK** documentation
 
 _ArmoniK_ is a high throughput compute grid project using Kubernetes. 
 
-The project provides a reference architecture that can be used to build and adapt a modern high throughput compute
-solution on-premise or using Cloud services, allowing users to submit high volumes of short and long-running tasks
-and scaling environments dynamically.
+The project provides a reference architecture that can be used to build and adapt a modern high throughput compute solution on-premise or using Cloud services, allowing users to submit high volumes of short and long-running tasks and scaling environments dynamically.
 
 **Warning**: This project is an Open Source ([Apache 2.0 License](https://github.com/aneoconsulting/ArmoniK/blob/main/LICENSE)).
 
@@ -14,8 +12,7 @@ ArmoniK should be used when the following criteria are meet:
 
 1. A high task throughput is required (from 250 to 10,000+ tasks per second).
 2. The tasks are loosely coupled.
-3. Variable workloads (tasks with heterogeneous execution times) are expected and the solution needs to 
-   dynamically scale with the load.
+3. Variable workloads (tasks with heterogeneous execution times) are expected and the solution needs to dynamically scale with the load.
 
 ## When should I not use ArmoniK 
 

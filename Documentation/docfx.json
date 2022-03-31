@@ -21,7 +21,8 @@
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
     "template": [
-      "default"
+      "default",
+      "templates/armonik"
     ],
     "postProcessors": [],
     "markdownEngineName": "markdig",
