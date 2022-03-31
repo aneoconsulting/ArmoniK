@@ -1,0 +1,181 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Simple tests </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Simple tests ">
+    <meta name="generator" content="docfx 2.59.0.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="simple-tests">Simple tests</h1>
+
+<p>After installing <strong>Armonik</strong>, it is time to execute some simple test to check that everything is working as expected. <strong>ArmoniK</strong> team is providing three simple tests to verify that the deployment wen well.</p>
+<h2 id="seq-webserver">Seq webserver</h2>
+<p>The first tests suggested is to validate that the log server (<a href="https://datalust.co/">Seq</a>) did start correctly.</p>
+<p>After the deployment, you can connect to the Seq webserver by using <code>seq.web_url</code> retrieved from the Terraform outputs <code>monitoring/generated/monitoring-output.json</code>, example:</p>
+<pre><code class="lang-bash">http://192.168.1.13:8080
+</code></pre>
+<p>or:</p>
+<pre><code class="lang-bash">http://localhost:8080
+</code></pre>
+<p>where <code>Username: admin</code> and <code>Password: admin</code>:</p>
+<p><img src="../../images/Tests/seq_auth.png" alt="Seq authentication"></p>
+<h2 id="tests">Tests</h2>
+<h3 id="scripts-of-tests">Scripts of tests</h3>
+<p>You have three scripts for testing ArmoniK :</p>
+<ul>
+<li><a href="https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/symphony_like.sh">tools/tests/symphony_like.sh</a></li>
+<li><a href="https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/datasynapse_like.sh">tools/tests/datasynapse_like.sh</a></li>
+<li><a href="https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/symphony_endToendTests.sh">tools/tests/symphony_endToendTests.sh</a>.</li>
+</ul>
+<p>The following commands in these scripts allow to retrieve the endpoint URL of ArmoniK control plane:</p>
+<pre><code class="lang-bash">export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns=&quot;IP:.spec.clusterIP&quot; --no-headers=true)
+export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns=&quot;PORT:.spec.ports[*].port&quot; --no-headers=true)
+export Grpc__Endpoint=http://$CPIP:$CPPort
+</code></pre>
+<p>or You can replace them by the <code>armonik.control_plane_url</code> retrieved from Terraform
+outputs <code>armonik/generated/armonik-output.json</code>, example:</p>
+<pre><code class="lang-bash">export Grpc__Endpoint=http://192.168.1.13:5001
+</code></pre>
+<h3 id="launch-tests">Launch tests</h3>
+<p>Before executing the tests, You must download source codes of Samples from the <strong>root</strong> repository:</p>
+<pre><code class="lang-bash">git submodule update --init --recursive
+</code></pre>
+<p><strong>and:</strong></p>
+<pre><code class="lang-bash">git clone https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp.git source/ArmoniK.Extensions.Csharp
+</code></pre>
+<p><strong>then:</strong></p>
+<ul>
+<li><p>Execute <a href="https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/symphony_like.sh">tools/tests/symphony_like.sh</a> from the <strong>root</strong> repository:</p>
+<pre><code class="lang-bash">tools/tests/symphony_like.sh
+</code></pre>
+</li>
+<li><p>Execute <a href="https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/datasynapse_like.sh">tools/tests/datasynapse_like.sh</a> from the <strong>root</strong> repository:</p>
+<pre><code class="lang-bash">tools/tests/datasynapse_like.sh
+</code></pre>
+</li>
+<li><p>Execute <a href="https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/symphony_endToendTests.sh">tools/tests/symphony_endToendTests.sh</a> from the <strong>root</strong>
+repository:</p>
+<pre><code class="lang-bash">tools/tests/symphony_endToendTests.sh
+</code></pre>
+</li>
+</ul>
+<p>You can follow logs on Seq webserver:</p>
+<p><img src="../../images/Tests/seq.png" alt="Seq Logs"></p>
+<h2 id="clean-up">Clean-up</h2>
+<p>To delete all resources created in Kubernetes, You can execute the following all-in-one command:</p>
+<pre><code class="lang-bash">make destroy-all
+</code></pre>
+<p>or execute the following commands in this order:</p>
+<pre><code class="lang-bash">make destroy-armonik 
+make destroy-monitoring 
+make destroy-storage 
+</code></pre>
+<p>To clean-up and delete all generated files, You execute:</p>
+<pre><code class="lang-bash">make clean-all
+</code></pre>
+<p>or:</p>
+<pre><code class="lang-bash">make clean-armonik 
+make clean-monitoring 
+make clean-aws-storage 
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/aneoconsulting/ArmoniK/blob/documentation/devs_documentation/articles/Tests/simple_tests.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

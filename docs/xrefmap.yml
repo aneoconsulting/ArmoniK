@@ -1,3 +1,18 @@
 ### YamlMime:XRefMap
 sorted: true
-references: []
+references:
+- uid: all_in_one_deploy_linux
+  name: Ubuntu Linux 18.04 and 20.04 deployment
+  href: articles/installations/all-in-one-deploy-linux.html
+- uid: all_in_one_deploy_powershell
+  name: ArmoniK installation on Windows Subsytem Linux
+  href: articles/installations/all-in-one-deploy-powershell.html
+- uid: aws_k3s_deploy
+  name: AWS deployment using k3s
+  href: articles/installations/aws_k3s_deploy.html
+- uid: aws_kubeadm_deploy
+  name: AWS deployment using kubeadm
+  href: articles/installations/aws_kubeadm_deploy.html
+- uid: introduction_installation
+  name: Cluster Installation
+  href: articles/intro.html
