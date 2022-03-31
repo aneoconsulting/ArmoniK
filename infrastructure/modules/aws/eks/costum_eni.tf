@@ -1,5 +1,3 @@
-data "aws_availability_zones" "available" {}
-
 resource "null_resource" "trigger_custom_cni" {
   provisioner "local-exec" {
     command     = "kubectl set env ds aws-node -n kube-system AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG=true"
