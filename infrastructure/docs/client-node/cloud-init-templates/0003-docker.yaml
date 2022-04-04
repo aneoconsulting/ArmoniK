@@ -18,6 +18,9 @@ write_files:
       newgroup docker
       chmod 666 /var/run/docker.sock
       usermod -aG docker ec2-user
+      curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+      chmod +x /usr/local/bin/docker-compose
+      chown ec2-user:ec2-user /usr/local/bin/docker-compose
     path: /app/install-docker.sh
     permissions: 0755
     owner: root
