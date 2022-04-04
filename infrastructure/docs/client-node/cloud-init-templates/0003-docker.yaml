@@ -17,7 +17,7 @@ write_files:
       systemctl enable containerd.service
       newgroup docker
       chmod 666 /var/run/docker.sock
-      usermod -aG docker ${USER}
+      usermod -aG docker ec2-user
     path: /app/install-docker.sh
     permissions: 0755
     owner: root

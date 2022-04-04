@@ -15,11 +15,11 @@ data "template_cloudinit_config" "client_cloud_init" {
     merge_type = var.extra_userdata_merge
   }
 
-  /*part {
+  part {
     filename   = "0002-awscli2.yml"
     content    = templatefile("cloud-init-templates/0002-awscli2.yaml", {})
     merge_type = var.extra_userdata_merge
-  }*/
+  }
 
   part {
     filename   = "0003-dokcer.yml"

@@ -4,6 +4,13 @@ data "aws_caller_identity" "current" {}
 # Current AWS region
 data "aws_region" "current" {}
 
+resource "random_string" "random_resources" {
+  length  = 5
+  special = false
+  upper   = false
+  number  = true
+}
+
 locals {
   account_id                                           = data.aws_caller_identity.current.id
   region                                               = data.aws_region.current.name

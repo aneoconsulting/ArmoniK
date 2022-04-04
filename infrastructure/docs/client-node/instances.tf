@@ -48,18 +48,19 @@ module "client" {
   ami                         = var.ami
   instance_type               = var.instance_type
   key_name                    = aws_key_pair.ssh_key.key_name
-  monitoring                  = false
-  associate_public_ip_address = false
+  monitoring                  = true
+  associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.client_profile.name
-  root_block_device           = [
+  /*root_block_device           = [
     {
-      volume_size = 50 # in GB <<----- I increased this!
+      volume_size = 100 # in GB <<----- I increased this!
       volume_type = "gp3"
     }
-  ]
+  ]*/
   vpc_security_group_ids      = [aws_security_group.client.id]
-  subnet_id                   = module.vpc.private_subnets[0]
+  #subnet_id                   = module.vpc.private_subnets[0]
+  subnet_id                   = aws_default_subnet.subnet.id
   user_data_base64            = data.template_cloudinit_config.client_cloud_init.rendered
   tags                        = var.tags
-  depends_on = [module.vpc]
+  #depends_on = [module.vpc]
 }

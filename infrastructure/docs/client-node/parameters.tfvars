@@ -1,5 +1,5 @@
 # Region
-region = "eu-west-3"
+region = "us-east-2"
 
 # Tags
 tags = {
@@ -8,19 +8,19 @@ tags = {
 }
 
 # AMI
-ami = "ami-01d14e0ab732be0e4"
+ami = "ami-064ff912f78e3e561"
 
 # Instance type
-instance_type = "t3.2xlarge"
+instance_type = "m6i.32xlarge"
 
 # VPC
-vpc_cidr_block = "192.168.0.0/16"
+vpc_cidr_block = "10.0.0.0/16"
 
 # Private Subnet
-private_subnet_cidr_block = ["192.168.1.0/24", "192.168.2.0/24", "192.168.3.0/24"]
+private_subnet_cidr_block = ["10.0.1.0/24", "10.10.2.0/24", "10.10.3.0/24"]
 
 # Public Subnet
-public_subnet_cidr_block = ["192.168.101.0/24", "192.168.102.0/24", "192.168.103.0/24"]
+public_subnet_cidr_block = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
 
 
 # SSH key

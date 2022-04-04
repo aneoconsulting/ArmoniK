@@ -10,7 +10,7 @@ locale: en_US.UTF-8
 
 write_files:
   - content: |
-      sudo yum install python37
+      sudo yum install python38
       curl -O https://bootstrap.pypa.io/get-pip.py
       python3 get-pip.py --user
       pip install python-hcl2
