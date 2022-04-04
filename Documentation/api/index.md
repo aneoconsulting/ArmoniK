@@ -1,2 +1,3 @@
-# PLACEHOLDER
-TODO: Add .NET projects to the *src* folder and run `docfx` to generate **REAL** *API Documentation*!
+# Armonik API documentations
+
+* [Armonik.Core api](https:///aneoconsulting.github.io/ArmoniK.Core/api/index.html)

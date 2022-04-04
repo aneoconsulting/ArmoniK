@@ -1,6 +1,15 @@
 {
   "build": {
+    "xref": [
+      "https://ngruelaneo.github.io/ArmoniK.Core/xrefmap.yml"
+    ],
     "content": [
+      {
+        "files": [
+          "api/**.yml",
+          "api/index.md"
+        ]
+      },
       {
         "files": [
           "articles/**.md",
