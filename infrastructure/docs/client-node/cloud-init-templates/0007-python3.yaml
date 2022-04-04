@@ -10,11 +10,12 @@ locale: en_US.UTF-8
 
 write_files:
   - content: |
-      sudo yum install python38
-      curl -O https://bootstrap.pypa.io/get-pip.py
-      python3 get-pip.py --user
-      pip install python-hcl2
-      pip install jsonpath-ng
+      amazon-linux-extras enable python3.8
+      yum install -y python3.8
+      update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+      pip3 install virtualenv
+      pip3 install python-hcl2
+      pip3 install jsonpath-ng
     path: /app/install-python3.sh
     permissions: 0755
     owner: root

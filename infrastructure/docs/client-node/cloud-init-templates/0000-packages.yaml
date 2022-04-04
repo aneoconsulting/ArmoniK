@@ -18,8 +18,9 @@ packages:
   - jq
   - yum-utils
   - git
+  - amazon-linux-extras
 
 runcmd:
   - yum update -y
   - yum upgrade -y
-  - yum install -y curl telnet jq yum-utils git
+  - yum install -y curl telnet jq yum-utils git amazon-linux-extras
