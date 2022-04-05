@@ -66,6 +66,26 @@ resource "kubernetes_deployment" "control_plane" {
             name           = "control-port"
             container_port = 80
           }
+          liveness_probe {
+            tcp_socket {
+              port = 80
+            }
+            initial_delay_seconds = 15
+            period_seconds        = 5
+            timeout_seconds       = 1
+            success_threshold     = 1
+            failure_threshold     = 1
+          }
+          startup_probe {
+            tcp_socket {
+              port = 80
+            }
+            initial_delay_seconds = 60
+            period_seconds        = 5
+            timeout_seconds       = 1
+            success_threshold     = 1
+            failure_threshold     = 3 # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
+          }
           env_from {
             config_map_ref {
               name = kubernetes_config_map.core_config.metadata.0.name
