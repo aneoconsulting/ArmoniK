@@ -3,24 +3,20 @@ name: Build Documentation
 on:
   push:
     branches:
-      - main
+      - gh-pages
 
 jobs:
   build:
-
     runs-on: ubuntu-20.04
 
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v1
-      with:
-        path: Documentation
-        fetch-depth: 1
+      uses: actions/checkout@v3
 
     - name: Get mono
-      run:
-        sudo apt -y install gnupg ca-certificates |
-        apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+      run: |
+        sudo apt-get -y install gnupg ca-certificates
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF        echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
         echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
         sudo apt-get update
         sudo apt -y dist-upgrade
@@ -33,9 +29,11 @@ jobs:
 
     - name: Build docs
       run:  |
-        mono $HOME/.docfx/docfx.exe build
-        cp -r _site ../docs
-        git add ../docs
-        git commit -m "Update documentation"
+        mono $HOME/.docfx/docfx.exe Documentation/docfx.json build
 
-
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: Documentation/_site       
+        destination_dir: docs
