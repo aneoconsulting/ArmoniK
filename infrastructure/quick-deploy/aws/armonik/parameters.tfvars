@@ -30,8 +30,8 @@ control_plane = {
     memory = "1024Mi"
   }
   requests           = {
-    cpu    = "100m"
-    memory = "128Mi"
+    cpu    = "50m"
+    memory = "50Mi"
   }
   image_pull_secrets = ""
   node_selector      = {}
@@ -52,12 +52,12 @@ compute_plane = [
       tag               = "0.5.4"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "100m"
+        cpu    = "200m"
         memory = "128Mi"
       }
       requests          = {
-        cpu    = "100m"
-        memory = "128Mi"
+        cpu    = "50m"
+        memory = "50Mi"
       }
     }
     # ArmoniK workers
@@ -69,12 +69,12 @@ compute_plane = [
         tag               = "0.5.2"
         image_pull_policy = "IfNotPresent"
         limits            = {
-          cpu    = "920m"
-          memory = "2048Mi"
+          cpu    = "200m"
+          memory = "512Mi"
         }
         requests          = {
           cpu    = "50m"
-          memory = "100Mi"
+          memory = "50Mi"
         }
       }
     ]
