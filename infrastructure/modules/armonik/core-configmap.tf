@@ -8,11 +8,6 @@ resource "kubernetes_config_map" "core_config" {
     Components__TableStorage                   = "ArmoniK.Adapters.MongoDB.TableStorage"
     Components__ObjectStorage                  = "ArmoniK.Adapters.Redis.ObjectStorage"
     Components__QueueStorage                   = "ArmoniK.Adapters.Amqp.QueueStorage"
-    ComputePlan__GrpcChannel__Address          = "/cache/armonik.sock"
-    ComputePlan__GrpcChannel__SocketType       = "unixsocket"
-    ComputePlan__MessageBatchSize              = "1"
-    target_grpc_sockets_path                   = "/cache"
-    target_data_path                           = "/data"
     Serilog__MinimumLevel                      = var.logging_level
     MongoDB__Host                              = local.mongodb_host
     MongoDB__Port                              = local.mongodb_port
