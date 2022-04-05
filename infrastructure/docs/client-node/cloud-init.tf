@@ -48,14 +48,19 @@ data "template_cloudinit_config" "client_cloud_init" {
     content    = templatefile("cloud-init-templates/0008-dotnet.yaml", {})
     merge_type = var.extra_userdata_merge
   }
+  /*part {
+    filename   = "0009-k3s.yml"
+    content    = templatefile("cloud-init-templates/0009-k3s.yaml", {})
+    merge_type = var.extra_userdata_merge
+  }*/
   part {
-    filename   = "0009-python3.yml"
-    content    = templatefile("cloud-init-templates/0009-python3.yaml", {})
+    filename   = "0010-python3.yml"
+    content    = templatefile("cloud-init-templates/0010-python3.yaml", {})
     merge_type = var.extra_userdata_merge
   }
   part {
-    filename   = "0010-armonik.yml"
-    content    = templatefile("cloud-init-templates/0010-armonik.yaml", {})
+    filename   = "0011-armonik.yml"
+    content    = templatefile("cloud-init-templates/0011-armonik.yaml", {})
     merge_type = var.extra_userdata_merge
   }
 }
