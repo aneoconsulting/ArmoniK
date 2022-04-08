@@ -30,6 +30,7 @@ control_plane = {
   }
   image_pull_secrets = ""
   node_selector      = {}
+  annotations        = {}
 }
 
 # Parameters of the compute plane

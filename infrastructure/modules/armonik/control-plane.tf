@@ -339,12 +339,13 @@ resource "kubernetes_deployment" "control_plane" {
 # Control plane service
 resource "kubernetes_service" "control_plane" {
   metadata {
-    name      = kubernetes_deployment.control_plane.metadata.0.name
-    namespace = kubernetes_deployment.control_plane.metadata.0.namespace
-    labels    = {
+    name        = kubernetes_deployment.control_plane.metadata.0.name
+    namespace   = kubernetes_deployment.control_plane.metadata.0.namespace
+    labels      = {
       app     = kubernetes_deployment.control_plane.metadata.0.labels.app
       service = kubernetes_deployment.control_plane.metadata.0.labels.service
     }
+    annotations = var.control_plane.annotations
   }
   spec {
     type     = var.control_plane.service_type

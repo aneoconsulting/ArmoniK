@@ -33,7 +33,7 @@ variable "monitoring" {
 # according to the size of the task and/or the application
 variable "mongodb_polling_delay" {
   description = "Polling delay to MongoDB according to the size of the task and/or the application"
-  type = object({
+  type        = object({
     min_polling_delay = string
     max_polling_delay = string
   })
@@ -60,6 +60,7 @@ variable "control_plane" {
     })
     image_pull_secrets = string
     node_selector      = any
+    annotations        = any
   })
 }
 
