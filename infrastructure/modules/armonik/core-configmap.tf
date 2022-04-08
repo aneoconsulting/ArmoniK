@@ -8,6 +8,8 @@ resource "kubernetes_config_map" "core_config" {
     Components__TableStorage                   = "ArmoniK.Adapters.MongoDB.TableStorage"
     Components__ObjectStorage                  = "ArmoniK.Adapters.Redis.ObjectStorage"
     Components__QueueStorage                   = "ArmoniK.Adapters.Amqp.QueueStorage"
+    MongoDB__TableStorage__PollingDelayMin     = local.mongodb_polling_min_delay
+    MongoDB__TableStorage__PollingDelayMax     = local.mongodb_polling_max_delay
     Serilog__MinimumLevel                      = var.logging_level
     MongoDB__Host                              = local.mongodb_host
     MongoDB__Port                              = local.mongodb_port

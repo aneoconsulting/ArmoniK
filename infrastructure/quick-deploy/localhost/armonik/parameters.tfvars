@@ -4,6 +4,13 @@ namespace = "armonik"
 # Logging level
 logging_level = "Information"
 
+# Polling delay to MongoDB
+# according to the size of the task and/or the application
+mongodb_polling_delay = {
+  min_polling_delay = "00:00:01"
+  max_polling_delay = "00:00:10"
+}
+
 # Parameters of control plane
 control_plane = {
   name               = "control-plane"

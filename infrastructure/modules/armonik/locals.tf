@@ -61,4 +61,8 @@ locals {
 
   # Metrics exporter
   metrics_exporter_name = try(var.monitoring.metrics_exporter.name, "")
+
+  # Polling delay to MongoDB
+  mongodb_polling_min_delay = try(var.mongodb_polling_delay.min_polling_delay, "00:00:01")
+  mongodb_polling_max_delay = try(var.mongodb_polling_delay.max_polling_delay, "00:05:00")
 }
