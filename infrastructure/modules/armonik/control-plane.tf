@@ -58,39 +58,13 @@ resource "kubernetes_deployment" "control_plane" {
             || var.control_plane.requests.cpu != ""
             || var.control_plane.requests.memory != "" ? [1] : [])
             content {
-              dynamic limits {
-                for_each = (var.control_plane.limits.cpu != "" || var.control_plane.limits.memory != ""? [1] : [])
-                content {
-                  dynamic cpu {
-                    for_each = (var.control_plane.limits.cpu != "" ? [1] : [])
-                    content {
-                      cpu = var.control_plane.limits.cpu
-                    }
-                  }
-                  dynamic memory {
-                    for_each = (var.control_plane.limits.memory != ""? [1] : [])
-                    content {
-                      memory = var.control_plane.limits.memory
-                    }
-                  }
-                }
+              limits   = {
+                cpu    = var.control_plane.limits.cpu
+                memory = var.control_plane.limits.memory
               }
-              dynamic requests {
-                for_each = (var.control_plane.requests.cpu != "" || var.control_plane.requests.memory != "" ? [1] : [])
-                content {
-                  dynamic cpu {
-                    for_each = (var.control_plane.requests.cpu != "" ? [1] : [])
-                    content {
-                      cpu = var.control_plane.requests.cpu
-                    }
-                  }
-                  dynamic memory {
-                    for_each = (var.control_plane.requests.memory != "" ? [1] : [])
-                    content {
-                      memory = var.control_plane.requests.memory
-                    }
-                  }
-                }
+              requests = {
+                cpu    = var.control_plane.requests.cpu
+                memory = var.control_plane.requests.memory
               }
             }
           }
