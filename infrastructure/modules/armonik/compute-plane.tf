@@ -61,14 +61,50 @@ resource "kubernetes_deployment" "compute_plane" {
               drop = ["SYS_PTRACE"]
             }
           }
-          resources {
-            limits   = {
-              cpu    = var.compute_plane[count.index].polling_agent.limits.cpu
-              memory = var.compute_plane[count.index].polling_agent.limits.memory
-            }
-            requests = {
-              cpu    = var.compute_plane[count.index].polling_agent.requests.cpu
-              memory = var.compute_plane[count.index].polling_agent.requests.memory
+          dynamic resources {
+            for_each = (var.compute_plane[count.index].polling_agent.limits.cpu != ""
+            || var.compute_plane[count.index].polling_agent.limits.memory != ""
+            || var.compute_plane[count.index].polling_agent.requests.cpu != ""
+            || var.compute_plane[count.index].polling_agent.requests.memory != "" ? [1] : [])
+            content {
+              dynamic limits {
+                for_each = (var.compute_plane[count.index].polling_agent.limits.cpu != "" || var.compute_plane[count.index].polling_agent.limits.memory != ""? [
+                  1
+                ] : [])
+                content {
+                  dynamic cpu {
+                    for_each = (var.compute_plane[count.index].polling_agent.limits.cpu != "" ? [1] : [])
+                    content {
+                      cpu = var.compute_plane[count.index].polling_agent.limits.cpu
+                    }
+                  }
+                  dynamic memory {
+                    for_each = (var.compute_plane[count.index].polling_agent.limits.memory != ""? [1] : [])
+                    content {
+                      memory = var.compute_plane[count.index].polling_agent.limits.memory
+                    }
+                  }
+                }
+              }
+              dynamic requests {
+                for_each = (var.compute_plane[count.index].polling_agent.requests.cpu != "" || var.compute_plane[count.index].polling_agent.requests.memory != "" ? [
+                  1
+                ] : [])
+                content {
+                  dynamic cpu {
+                    for_each = (var.compute_plane[count.index].polling_agent.requests.cpu != "" ? [1] : [])
+                    content {
+                      cpu = var.compute_plane[count.index].polling_agent.requests.cpu
+                    }
+                  }
+                  dynamic memory {
+                    for_each = (var.compute_plane[count.index].polling_agent.requests.memory != "" ? [1] : [])
+                    content {
+                      memory = var.compute_plane[count.index].polling_agent.requests.memory
+                    }
+                  }
+                }
+              }
             }
           }
           port {
@@ -225,14 +261,48 @@ resource "kubernetes_deployment" "compute_plane" {
             port {
               container_port = worker.value.port
             }
-            resources {
-              limits   = {
-                cpu    = worker.value.limits.cpu
-                memory = worker.value.limits.memory
-              }
-              requests = {
-                cpu    = worker.value.requests.cpu
-                memory = worker.value.requests.memory
+            dynamic resources {
+              for_each = (worker.value.limits.cpu != ""
+              || worker.value.limits.memory != ""
+              || worker.value.requests.cpu != ""
+              || worker.value.requests.memory != "" ? [1] : [])
+              content {
+                dynamic limits {
+                  for_each = (worker.value.limits.cpu != "" || worker.value.limits.memory != ""? [1] : [])
+                  content {
+                    dynamic cpu {
+                      for_each = (worker.value.limits.cpu != "" ? [1] : [])
+                      content {
+                        cpu = worker.value.limits.cpu
+                      }
+                    }
+                    dynamic memory {
+                      for_each = (worker.value.limits.memory != ""? [1] : [])
+                      content {
+                        memory = worker.value.limits.memory
+                      }
+                    }
+                  }
+                }
+                dynamic requests {
+                  for_each = (worker.value.requests.cpu != "" || worker.value.requests.memory != "" ? [
+                    1
+                  ] : [])
+                  content {
+                    dynamic cpu {
+                      for_each = (worker.value.requests.cpu != "" ? [1] : [])
+                      content {
+                        cpu = worker.value.requests.cpu
+                      }
+                    }
+                    dynamic memory {
+                      for_each = (worker.value.requests.memory != "" ? [1] : [])
+                      content {
+                        memory = worker.value.requests.memory
+                      }
+                    }
+                  }
+                }
               }
             }
             env_from {

@@ -52,14 +52,46 @@ resource "kubernetes_deployment" "control_plane" {
           name              = var.control_plane.name
           image             = var.control_plane.tag != "" ? "${var.control_plane.image}:${var.control_plane.tag}" : var.control_plane.image
           image_pull_policy = var.control_plane.image_pull_policy
-          resources {
-            limits   = {
-              cpu    = var.control_plane.limits.cpu
-              memory = var.control_plane.limits.memory
-            }
-            requests = {
-              cpu    = var.control_plane.requests.cpu
-              memory = var.control_plane.requests.memory
+          dynamic resources {
+            for_each = (var.control_plane.limits.cpu != ""
+            || var.control_plane.limits.memory != ""
+            || var.control_plane.requests.cpu != ""
+            || var.control_plane.requests.memory != "" ? [1] : [])
+            content {
+              dynamic limits {
+                for_each = (var.control_plane.limits.cpu != "" || var.control_plane.limits.memory != ""? [1] : [])
+                content {
+                  dynamic cpu {
+                    for_each = (var.control_plane.limits.cpu != "" ? [1] : [])
+                    content {
+                      cpu = var.control_plane.limits.cpu
+                    }
+                  }
+                  dynamic memory {
+                    for_each = (var.control_plane.limits.memory != ""? [1] : [])
+                    content {
+                      memory = var.control_plane.limits.memory
+                    }
+                  }
+                }
+              }
+              dynamic requests {
+                for_each = (var.control_plane.requests.cpu != "" || var.control_plane.requests.memory != "" ? [1] : [])
+                content {
+                  dynamic cpu {
+                    for_each = (var.control_plane.requests.cpu != "" ? [1] : [])
+                    content {
+                      cpu = var.control_plane.requests.cpu
+                    }
+                  }
+                  dynamic memory {
+                    for_each = (var.control_plane.requests.memory != "" ? [1] : [])
+                    content {
+                      memory = var.control_plane.requests.memory
+                    }
+                  }
+                }
+              }
             }
           }
           port {
