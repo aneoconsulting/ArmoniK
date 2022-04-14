@@ -48,6 +48,7 @@ monitoring = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
     tag                = "2021.4"
+    port               = 8080
     image_pull_secrets = ""
     service_type       = "LoadBalancer"
     node_selector      = { "grid/type" = "Operator" }
@@ -56,6 +57,7 @@ monitoring = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/grafana"
     tag                = "latest"
+    port               = 3000
     image_pull_secrets = ""
     service_type       = "LoadBalancer"
     node_selector      = { "grid/type" = "Operator" }

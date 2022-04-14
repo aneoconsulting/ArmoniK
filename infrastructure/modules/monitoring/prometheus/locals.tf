@@ -1,3 +1,10 @@
+resource "random_string" "random_resources" {
+  length  = 5
+  special = false
+  upper   = false
+  number  = true
+}
+
 # Node IP of prometheus pod
 data "external" "prometheus_node_ip" {
   depends_on  = [kubernetes_service.prometheus]

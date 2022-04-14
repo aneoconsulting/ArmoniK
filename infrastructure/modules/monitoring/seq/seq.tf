@@ -124,7 +124,7 @@ resource "kubernetes_service" "seq_web_console" {
     }
     port {
       name        = "web"
-      port        = 8080
+      port        = var.port
       target_port = 80
       protocol    = "TCP"
     }

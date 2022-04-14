@@ -59,7 +59,7 @@ resource "kubernetes_deployment" "grafana" {
           }
           port {
             name           = "grafana"
-            container_port = 3000
+            container_port = var.port
             protocol       = "TCP"
           }
           volume_mount {
@@ -123,8 +123,8 @@ resource "kubernetes_service" "grafana" {
     }
     port {
       name        = "grafana"
-      port        = 3000
-      target_port = 3000
+      port        = var.port
+      target_port = var.port
       protocol    = "TCP"
     }
   }

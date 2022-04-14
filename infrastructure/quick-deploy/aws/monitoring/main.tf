@@ -12,6 +12,7 @@ module "seq" {
   source        = "../../../modules/monitoring/seq"
   namespace     = var.namespace
   service_type  = local.seq_service_type
+  port          = local.seq_port
   node_selector = local.seq_node_selector
   docker_image  = {
     image              = local.seq_image
@@ -27,6 +28,7 @@ module "grafana" {
   source        = "../../../modules/monitoring/grafana"
   namespace     = var.namespace
   service_type  = local.grafana_service_type
+  port          = local.grafana_port
   node_selector = local.grafana_node_selector
   docker_image  = {
     image              = local.grafana_image

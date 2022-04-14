@@ -4,12 +4,18 @@ variable "namespace" {
   type        = string
 }
 
+# Port
+variable "port" {
+  description = "Port for Grafana service"
+  type        = string
+}
+
 # Docker image
 variable "docker_image" {
   description = "Docker image for Grafana"
   type        = object({
-    image = string
-    tag   = string
+    image              = string
+    tag                = string
     image_pull_secrets = string
   })
 }
