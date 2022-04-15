@@ -25,7 +25,7 @@ control_plane = {
     memory = "1024Mi" # memory="" if you don't want to set it
   }
   requests           = {
-    cpu    = "50m" # cpu="" if you don't want to set it
+    cpu    = "100m" # cpu="" if you don't want to set it
     memory = "50Mi" # memory="" if you don't want to set it
   }
   image_pull_secrets = ""
@@ -52,7 +52,7 @@ compute_plane = [
         memory = "128Mi" # memory="" if you don't want to set it
       }
       requests          = {
-        cpu    = "50m" # cpu="" if you don't want to set it
+        cpu    = "100m" # cpu="" if you don't want to set it
         memory = "50Mi" # memory="" if you don't want to set it
       }
     }
@@ -69,7 +69,7 @@ compute_plane = [
           memory = "512Mi" # memory="" if you don't want to set it
         }
         requests          = {
-          cpu    = "50m" # cpu="" if you don't want to set it
+          cpu    = "100m" # cpu="" if you don't want to set it
           memory = "50Mi" # memory="" if you don't want to set it
         }
       }
