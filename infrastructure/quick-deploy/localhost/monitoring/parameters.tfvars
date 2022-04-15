@@ -39,6 +39,7 @@ monitoring = {
     node_selector      = {}
   }
   prometheus_adapter = {
+    name               = "prometheus-adapter"
     image              = "k8s.gcr.io/prometheus-adapter/prometheus-adapter"
     tag                = "v0.9.1"
     image_pull_secrets = ""

@@ -1,4 +1,7 @@
 # Default values for k8s-prometheus-adapter..
+nameOverride: "prometeus-adapter"
+fullnameOverride: "prometeus-adapter"
+
 affinity: {}
 
 image:

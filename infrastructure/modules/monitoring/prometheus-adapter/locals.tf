@@ -1,4 +1,13 @@
+resource "random_string" "random_resources" {
+  length  = 5
+  special = false
+  upper   = false
+  number  = true
+}
+
 locals {
+  nameOverride         = "${var.name}-${var.namespace}-${random_string.random_resources.result}"
+  fullnameOverride     = "${var.name}-${var.namespace}-fullname-${random_string.random_resources.result}"
   node_selector_keys   = keys(var.node_selector)
   node_selector_values = values(var.node_selector)
 

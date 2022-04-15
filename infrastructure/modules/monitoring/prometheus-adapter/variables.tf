@@ -4,6 +4,12 @@ variable "namespace" {
   type        = string
 }
 
+# Name
+variable "name" {
+  description = "Name pf Prometheus adapter"
+  type        = string
+}
+
 # Docker image
 variable "docker_image" {
   description = "Docker image for Prometheus adapter"
@@ -31,7 +37,7 @@ variable "service_type" {
 variable "prometheus_endpoint_url" {
   description = "Prometheus url"
   type        = object({
-    host  = string
+    host = string
     port = number
   })
 }

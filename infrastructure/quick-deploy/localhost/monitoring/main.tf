@@ -80,6 +80,7 @@ module "prometheus" {
 module "prometheus_adapter" {
   source                  = "../../../modules/monitoring/prometheus-adapter"
   namespace               = var.namespace
+  name                    = var.monitoring.prometheus_adapter.name
   service_type            = local.prometheus_adapter_service_type
   node_selector           = local.prometheus_adapter_node_selector
   docker_image            = {
