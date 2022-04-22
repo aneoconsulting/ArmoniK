@@ -56,6 +56,7 @@ locals {
   prometheus_node_selector       = try(var.monitoring.prometheus.node_selector, {})
 
   # Prometheus adapter
+  prometheus_adapter_name               = try(var.monitoring.prometheus_adapter.name, "prometheus-adapter")
   prometheus_adapter_image              = try(var.monitoring.prometheus_adapter.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/prometheus-adapter")
   prometheus_adapter_tag                = try(var.monitoring.prometheus_adapter.tag, "v0.9.1")
   prometheus_adapter_image_pull_secrets = try(var.monitoring.prometheus_adapter.image_pull_secrets, "")

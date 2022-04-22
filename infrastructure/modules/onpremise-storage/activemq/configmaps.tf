@@ -213,7 +213,7 @@ EOF
 
                     -->
                   <pendingMessageLimitStrategy>
-                    <constantPendingMessageLimitStrategy limit="100000"/>
+                    <constantPendingMessageLimitStrategy limit="100000000"/>
                   </pendingMessageLimitStrategy>
                 </policyEntry>
               </policyEntries>
@@ -250,9 +250,9 @@ EOF
             http://activemq.apache.org/producer-flow-control.html
           -->
           <systemUsage>
-            <systemUsage>
+            <systemUsage sendFailIfNoSpaceAfterTimeout="60000">
                 <memoryUsage>
-                    <memoryUsage percentOfJvmHeap="70" />
+                    <memoryUsage percentOfJvmHeap="90" />
                 </memoryUsage>
                 <storeUsage>
                     <storeUsage limit="100 gb"/>
@@ -279,7 +279,7 @@ EOF
             <transportConnector name="mqtt" uri="mqtt://0.0.0.0:1883?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
             <transportConnector name="ws" uri="ws://0.0.0.0:61614?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
             -->
-            <transportConnector name="amqp+ssl" uri="amqp+ssl://0.0.0.0:5672?maximumConnections=10000&amp;wireFormat.maxFrameSize=1048576000"/>
+            <transportConnector name="amqp+ssl" uri="amqp+ssl://0.0.0.0:5672?maximumConnections=1000000&amp;wireFormat.maxFrameSize=1048576000"/>
         </transportConnectors>
 
         <!-- destroy the spring context on shutdown to stop jetty -->

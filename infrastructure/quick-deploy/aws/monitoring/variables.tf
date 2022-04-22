@@ -105,6 +105,7 @@ variable "monitoring" {
       node_selector      = any
     })
     prometheus_adapter = object({
+      name               = string
       image              = string
       tag                = string
       image_pull_secrets = string

@@ -77,6 +77,7 @@ monitoring = {
     node_selector      = { "grid/type" = "Operator" }
   }
   prometheus_adapter = {
+    name               = "prometheus-adapter"
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus-adapter"
     tag                = "v0.9.1"
     image_pull_secrets = ""

@@ -46,6 +46,8 @@ module "eks" {
       cluster_encryption_config = (var.eks.encryption_keys.cluster_encryption_config != "" ? var.eks.encryption_keys.cluster_encryption_config : module.kms.0.selected.arn)
       ebs_kms_key_id            = (var.eks.encryption_keys.ebs_kms_key_id != "" ? var.eks.encryption_keys.ebs_kms_key_id : module.kms.0.selected.arn)
     }
+    map_roles                             = var.eks.map_roles
+    map_users                             = var.eks.map_users
   }
   eks_operational_worker_groups = var.eks_operational_worker_groups
   eks_worker_groups             = var.eks_worker_groups
