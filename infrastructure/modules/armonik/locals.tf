@@ -4,6 +4,11 @@ locals {
   control_plane_node_selector_keys   = keys(local.control_plane_node_selector)
   control_plane_node_selector_values = values(local.control_plane_node_selector)
 
+  # Node selector for admin GUI
+  admin_gui_node_selector        = try(var.admin_gui.node_selector, {})
+  admin_gui_node_selector_keys   = keys(local.admin_gui_node_selector)
+  admin_gui_node_selector_values = values(local.admin_gui_node_selector)
+
   # Node selector for compute plane
   compute_plane_node_selector        = [for index in range(0, length(var.compute_plane)) : try(var.compute_plane[index].node_selector, {})]
   compute_plane_node_selector_keys   = [for index in range(0, length(local.compute_plane_node_selector)) : keys(local.compute_plane_node_selector[index])]
