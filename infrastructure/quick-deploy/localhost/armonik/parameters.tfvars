@@ -48,8 +48,8 @@ compute_plane = [
       tag               = "0.5.4"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "200m" 
-        memory = "128Mi" 
+        cpu    = "1000m"
+        memory = "1024Mi"
       }
       requests          = {
         cpu    = "100m" 
