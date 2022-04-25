@@ -91,7 +91,7 @@ eks_operational_worker_groups = [
 # EKS worker groups
 eks_worker_groups = [
   {
-    name                                     = "worker-8xmedium-spot"
+    name                                     = "worker-24xlarge-spot"
     spot_allocation_strategy                 = "capacity-optimized"
     override_instance_types                  = ["c5.24xlarge"]
     spot_instance_pools                      = 0
