@@ -34,11 +34,11 @@ control_plane = {
   port               = 5001
   limits             = {
     cpu    = "1000m"
-    memory = "1024Mi" # memory="" if you don't want to set it
+    memory = "1024Mi" 
   }
   requests           = {
     cpu    = "100m"
-    memory = "50Mi" # memory="" if you don't want to set it
+    memory = "50Mi" 
   }
   image_pull_secrets = ""
   node_selector      = {}
@@ -60,12 +60,12 @@ compute_plane = [
       tag               = "0.5.4"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "1000m" # cpu="" if you don't want to set it
-        memory = "1024Mi" # memory="" if you don't want to set it
+        cpu    = "1000m" 
+        memory = "1024Mi" 
       }
       requests          = {
-        cpu    = "100m" # cpu="" if you don't want to set it
-        memory = "50Mi" # memory="" if you don't want to set it
+        cpu    = "100m" 
+        memory = "50Mi" 
       }
     }
     # ArmoniK workers
@@ -77,12 +77,12 @@ compute_plane = [
         tag               = "0.5.2"
         image_pull_policy = "IfNotPresent"
         limits            = {
-          cpu    = "100m" # cpu="" if you don't want to set it
-          memory = "512Mi" # memory="" if you don't want to set it
+          cpu    = "100m" 
+          memory = "512Mi" 
         }
         requests          = {
-          cpu    = "50m" # cpu="" if you don't want to set it
-          memory = "50Mi" # memory="" if you don't want to set it
+          cpu    = "50m" 
+          memory = "50Mi" 
         }
       }
     ]
