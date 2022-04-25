@@ -20,6 +20,7 @@ CORE_TAG="0.5.3"
 WORKER_TAG="0.5.1"
 HPA_MAX_REPLICAS=5
 HPA_MIN_REPLICAS=1
+LOGGING_LEVEL="Information"
 STORAGE_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/storage/parameters.tfvars"
 MONITORING_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/monitoring/parameters.tfvars"
 ARMONIK_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/armonik/parameters.tfvars"
@@ -131,6 +132,8 @@ EOF
   echo
   echo "   --hpa-max-replicas <HPA_MAX_REPLICAS>"
   echo
+  echo "   --logging-level <LOGGING_LEVEL_FOR_ARMONIK>"
+  echo
   exit 1
 }
 
@@ -187,6 +190,7 @@ prepare_armonik_parameters() {
     -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
     -kv compute_plane[*].hpa.min_replicas="${HPA_MIN_REPLICAS}" \
     -kv compute_plane[*].hpa.max_replicas="${HPA_MAX_REPLICAS}" \
+    -kv logging_level="${LOGGING_LEVEL}" \
     "${ARMONIK_PARAMETERS_FILE}" \
     "${GENERATED_ARMONIK_PARAMETERS_FILE}"
 }
@@ -402,6 +406,11 @@ function main() {
       ;;
     --hpa-max-replicas)
       HPA_MAX_REPLICAS="$2"
+      shift
+      shift
+      ;;
+    --logging-level)
+      LOGGING_LEVEL="$2"
       shift
       shift
       ;;
