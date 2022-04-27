@@ -29,6 +29,30 @@ variable "monitoring" {
   type        = any
 }
 
+# Parameters of ingress
+variable "ingress" {
+  description = "Parameters of the ingress controller"
+  type        = object({
+    name               = string
+    service_type       = string
+    replicas           = number
+    image              = string
+    tag                = string
+    image_pull_policy  = string
+    port               = number
+    limits             = object({
+      cpu    = string
+      memory = string
+    })
+    requests           = object({
+      cpu    = string
+      memory = string
+    })
+    image_pull_secrets = string
+    node_selector      = any
+  })
+}
+
 # Parameters of control plane
 variable "control_plane" {
   description = "Parameters of the control plane"
