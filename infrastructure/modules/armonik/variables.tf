@@ -39,7 +39,7 @@ variable "ingress" {
     image              = string
     tag                = string
     image_pull_policy  = string
-    port               = number
+    port               = list(number)
     limits             = object({
       cpu    = string
       memory = string

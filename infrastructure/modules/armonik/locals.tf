@@ -59,6 +59,17 @@ locals {
   fluent_bit_envvars_configmap = try(var.monitoring.fluent_bit.configmaps.envvars, "")
   fluent_bit_configmap         = try(var.monitoring.fluent_bit.configmaps.config, "")
 
+  # Seq
+  seq_host    = try(var.monitoring.seq.host, "")
+  seq_port    = try(var.monitoring.seq.port, "")
+  seq_url     = try(var.monitoring.seq.url, "")
+  seq_web_url = try(var.monitoring.seq.web_url, "")
+
+  # Grafana
+  grafana_host  = try(var.monitoring.grafana.host, "")
+  grafana_port  = try(var.monitoring.grafana.port, "")
+  grafana_url  = try(var.monitoring.grafana.url, "")
+
   # Metrics exporter
   metrics_exporter_name = try(var.monitoring.metrics_exporter.name, "")
 }

@@ -7,7 +7,7 @@ logging_level = "Information"
 # Parameters of control plane
 control_plane = {
   name               = "control-plane"
-  service_type       = "LoadBalancer"
+  service_type       = "ClusterIP"
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
   tag                = "0.5.4"
@@ -87,3 +87,23 @@ compute_plane = [
     }
   }
 ]
+
+ingress = {
+  name               = "ingress"
+  service_type       = "LoadBalancer"
+  replicas           = 1
+  image              = "nginx"
+  tag                = "latest"
+  image_pull_policy  = "IfNotPresent"
+  port               = [80, 443]
+  limits             = {
+    cpu    = "200m"
+    memory = "100Mi"
+  }
+  requests           = {
+    cpu    = "1m"
+    memory = "1Mi"
+  }
+  image_pull_secrets = ""
+  node_selector      = {}
+}

@@ -11,7 +11,7 @@ monitoring = {
     image              = "datalust/seq"
     tag                = "2021.4"
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = {}
   }
   grafana            = {
@@ -19,7 +19,7 @@ monitoring = {
     image              = "grafana/grafana"
     tag                = "latest"
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = {}
   }
   node_exporter      = {

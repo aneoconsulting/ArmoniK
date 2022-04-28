@@ -65,6 +65,8 @@ resource "kubernetes_secret" "ingress_certificate" {
   }
   data = {
     "ingress.pem" = format("%s\n%s", tls_locally_signed_cert.ingress_certificate.cert_pem, tls_private_key.ingress_private_key.private_key_pem)
+    "ingress.crt" = tls_locally_signed_cert.ingress_certificate.cert_pem
+    "ingress.key" = tls_private_key.ingress_private_key.private_key_pem
   }
 }
 
@@ -74,6 +76,7 @@ resource "kubernetes_secret" "ingress_client_certificate" {
     namespace = var.namespace
   }
   data = {
+    "chain.crt" = tls_locally_signed_cert.ingress_certificate.cert_pem
     "chain.pem" = format("%s\n%s", tls_locally_signed_cert.ingress_certificate.cert_pem, tls_self_signed_cert.root_ingress.cert_pem)
   }
 }

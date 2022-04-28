@@ -1,22 +1,3 @@
-resource "kubernetes_config_map" "ingress" {
-  metadata {
-    name      = "ingress-nginx"
-    namespace = var.namespace
-  }
-  data = {
-    armonik.conf = <<-EOT
-      server {
-        listen 443 ssl http2;
-        ssl_certificate     /ingress/ingress.crt;
-        ssl_certificate_key /ingress/ingress.key;
-        location / {
-          grpc_pass http://${kubernetes_service.control_plane.metadata.0.name}:${kubernetes_service.control_plane.spec.0.port.0.port};
-        }
-      }
-    EOT
-  }
-}
-
 # Ingress deployment
 resource "kubernetes_deployment" "ingress" {
   metadata {
@@ -32,195 +13,84 @@ resource "kubernetes_deployment" "ingress" {
     selector {
       match_labels = {
         app     = "armonik"
-        service = "control-plane"
+        service = "ingress"
       }
     }
     template {
       metadata {
-        name      = "control-plane"
+        name      = "ingress"
         namespace = var.namespace
         labels    = {
           app     = "armonik"
-          service = "control-plane"
+          service = "ingress"
         }
       }
       spec {
-        dynamic toleration {
-          for_each = (local.control_plane_node_selector != {} ? [
-          for index in range(0, length(local.control_plane_node_selector_keys)) : {
-            key   = local.control_plane_node_selector_keys[index]
-            value = local.control_plane_node_selector_values[index]
-          }
-          ] : [])
-          content {
-            key      = toleration.value.key
-            operator = "Equal"
-            value    = toleration.value.value
-            effect   = "NoSchedule"
-          }
-        }
         dynamic image_pull_secrets {
-          for_each = (var.control_plane.image_pull_secrets != "" ? [1] : [])
+          for_each = (var.ingress.image_pull_secrets != "" ? [1] : [])
           content {
-            name = var.control_plane.image_pull_secrets
+            name = var.ingress.image_pull_secrets
           }
         }
         restart_policy = "Always" # Always, OnFailure, Never
         # Control plane container
         container {
-          name              = var.control_plane.name
-          image             = var.control_plane.tag != "" ? "${var.control_plane.image}:${var.control_plane.tag}" : var.control_plane.image
-          image_pull_policy = var.control_plane.image_pull_policy
+          name              = var.ingress.name
+          image             = var.ingress.tag != "" ? "${var.ingress.image}:${var.ingress.tag}" : var.ingress.image
+          image_pull_policy = var.ingress.image_pull_policy
           resources {
             limits   = {
-              cpu    = var.control_plane.limits.cpu
-              memory = var.control_plane.limits.memory
+              cpu    = var.ingress.limits.cpu
+              memory = var.ingress.limits.memory
             }
             requests = {
-              cpu    = var.control_plane.requests.cpu
-              memory = var.control_plane.requests.memory
+              cpu    = var.ingress.requests.cpu
+              memory = var.ingress.requests.memory
             }
           }
           port {
-            name           = "control-port"
+            name           = "ingress-port"
             container_port = 80
+          }
+          port {
+            name           = "ingress-port-s"
+            container_port = 443
           }
           env_from {
             config_map_ref {
-              name = kubernetes_config_map.core_config.metadata.0.name
+              name = kubernetes_config_map.ingress.metadata.0.name
             }
           }
-          dynamic env {
-            for_each = (local.activemq_credentials_secret != "" ? [1] : [])
-            content {
-              name = "Amqp__User"
-              value_from {
-                secret_key_ref {
-                  key      = local.activemq_credentials_username_key
-                  name     = local.activemq_credentials_secret
-                  optional = false
-                }
-              }
-            }
+          volume_mount {
+            name       = "ingress-secret-volume"
+            mount_path = "/ingress"
+            read_only  = true
           }
-          dynamic env {
-            for_each = (local.activemq_credentials_secret != "" ? [1] : [])
-            content {
-              name = "Amqp__Password"
-              value_from {
-                secret_key_ref {
-                  key      = local.activemq_credentials_password_key
-                  name     = local.activemq_credentials_secret
-                  optional = false
-                }
-              }
-            }
+          volume_mount {
+            name       = "ingress-nginx"
+            mount_path = "/etc/nginx/conf.d/armonik.conf"
+            sub_path   = "armonik.conf"
+            read_only  = true
           }
-          dynamic env {
-            for_each = (local.redis_credentials_secret != "" ? [1] : [])
-            content {
-              name = "Redis__User"
-              value_from {
-                secret_key_ref {
-                  key      = local.redis_credentials_username_key
-                  name     = local.redis_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.redis_credentials_secret != "" ? [1] : [])
-            content {
-              name = "Redis__Password"
-              value_from {
-                secret_key_ref {
-                  key      = local.redis_credentials_password_key
-                  name     = local.redis_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.mongodb_credentials_secret != "" ? [1] : [])
-            content {
-              name = "MongoDB__User"
-              value_from {
-                secret_key_ref {
-                  key      = local.mongodb_credentials_username_key
-                  name     = local.mongodb_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.mongodb_credentials_secret != "" ? [1] : [])
-            content {
-              name = "MongoDB__Password"
-              value_from {
-                secret_key_ref {
-                  key      = local.mongodb_credentials_password_key
-                  name     = local.mongodb_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic volume_mount {
-            for_each = (local.activemq_certificates_secret != "" ? [1] : [])
-            content {
-              name       = "activemq-secret-volume"
-              mount_path = "/amqp"
-              read_only  = true
-            }
-          }
-          dynamic volume_mount {
-            for_each = (local.redis_certificates_secret != "" ? [1] : [])
-            content {
-              name       = "redis-secret-volume"
-              mount_path = "/redis"
-              read_only  = true
-            }
-          }
-          dynamic volume_mount {
-            for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
-            content {
-              name       = "mongodb-secret-volume"
-              mount_path = "/mongodb"
-              read_only  = true
-            }
+          /*volume_mount {
+            name       = "ingress-nginx"
+            mount_path = "/etc/nginx/nginx.conf"
+            sub_path   = "nginx.conf"
+            read_only  = true
+          }*/
+        }
+        volume {
+          name = "ingress-secret-volume"
+          secret {
+            secret_name = kubernetes_secret.ingress_certificate.metadata[0].name
+            optional    = false
           }
         }
-        dynamic volume {
-          for_each = (local.activemq_certificates_secret != "" ? [1] : [])
-          content {
-            name = "activemq-secret-volume"
-            secret {
-              secret_name = local.activemq_certificates_secret
-              optional    = false
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (local.redis_certificates_secret != "" ? [1] : [])
-          content {
-            name = "redis-secret-volume"
-            secret {
-              secret_name = local.redis_certificates_secret
-              optional    = false
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
-          content {
-            name = "mongodb-secret-volume"
-            secret {
-              secret_name = local.mongodb_certificates_secret
-              optional    = false
-            }
+        volume {
+          name = "ingress-nginx"
+          config_map {
+            name = kubernetes_config_map.ingress.metadata[0].name
+            optional = false
           }
         }
         # Fluent-bit container
@@ -336,25 +206,31 @@ resource "kubernetes_deployment" "ingress" {
 }
 
 # Control plane service
-resource "kubernetes_service" "control_plane" {
+resource "kubernetes_service" "ingress" {
   metadata {
-    name      = kubernetes_deployment.control_plane.metadata.0.name
-    namespace = kubernetes_deployment.control_plane.metadata.0.namespace
+    name      = kubernetes_deployment.ingress.metadata.0.name
+    namespace = kubernetes_deployment.ingress.metadata.0.namespace
     labels    = {
-      app     = kubernetes_deployment.control_plane.metadata.0.labels.app
-      service = kubernetes_deployment.control_plane.metadata.0.labels.service
+      app     = kubernetes_deployment.ingress.metadata.0.labels.app
+      service = kubernetes_deployment.ingress.metadata.0.labels.service
     }
   }
   spec {
-    type     = var.control_plane.service_type
+    type     = var.ingress.service_type
     selector = {
-      app     = kubernetes_deployment.control_plane.metadata.0.labels.app
-      service = kubernetes_deployment.control_plane.metadata.0.labels.service
+      app     = kubernetes_deployment.ingress.metadata.0.labels.app
+      service = kubernetes_deployment.ingress.metadata.0.labels.service
     }
     port {
-      name        = kubernetes_deployment.control_plane.spec.0.template.0.spec.0.container.0.port.0.name
-      port        = var.control_plane.port
-      target_port = kubernetes_deployment.control_plane.spec.0.template.0.spec.0.container.0.port.0.container_port
+      name        = kubernetes_deployment.ingress.spec.0.template.0.spec.0.container.0.port.0.name
+      port        = var.ingress.port[0]
+      target_port = kubernetes_deployment.ingress.spec.0.template.0.spec.0.container.0.port.0.container_port
+      protocol    = "TCP"
+    }
+    port {
+      name        = kubernetes_deployment.ingress.spec.0.template.0.spec.0.container.0.port.1.name
+      port        = var.ingress.port[1]
+      target_port = kubernetes_deployment.ingress.spec.0.template.0.spec.0.container.0.port.1.container_port
       protocol    = "TCP"
     }
   }
