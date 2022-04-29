@@ -76,7 +76,7 @@ module "prometheus" {
   depends_on           = [module.metrics_exporter]
 }
 
-# Prometheus adapter
+/*# Prometheus adapter
 module "prometheus_adapter" {
   source                  = "../../../modules/monitoring/prometheus-adapter"
   namespace               = var.namespace
@@ -93,7 +93,7 @@ module "prometheus_adapter" {
     port = module.prometheus.port
   }
   depends_on              = [module.prometheus]
-}
+}*/
 
 # Fluent-bit
 module "fluent_bit" {
