@@ -48,13 +48,12 @@ resource "kubernetes_deployment" "ingress" {
               memory = var.ingress.requests.memory
             }
           }
-          port {
-            name           = "ingress-port"
-            container_port = 80
-          }
-          port {
-            name           = "ingress-port-s"
-            container_port = 443
+          dynamic port{
+            for_each = var.ingress.port
+            content {
+              name = "ingress-port"
+              container_port = port.value
+            }
           }
           env_from {
             config_map_ref {
@@ -221,17 +220,14 @@ resource "kubernetes_service" "ingress" {
       app     = kubernetes_deployment.ingress.metadata.0.labels.app
       service = kubernetes_deployment.ingress.metadata.0.labels.service
     }
-    port {
-      name        = kubernetes_deployment.ingress.spec.0.template.0.spec.0.container.0.port.0.name
-      port        = var.ingress.port[0]
-      target_port = kubernetes_deployment.ingress.spec.0.template.0.spec.0.container.0.port.0.container_port
-      protocol    = "TCP"
-    }
-    port {
-      name        = kubernetes_deployment.ingress.spec.0.template.0.spec.0.container.0.port.1.name
-      port        = var.ingress.port[1]
-      target_port = kubernetes_deployment.ingress.spec.0.template.0.spec.0.container.0.port.1.container_port
-      protocol    = "TCP"
+    dynamic port {
+      for_each = kubernetes_deployment.ingress.spec.0.template.0.spec.0.container.0.port
+      content {
+        name = port.value.name
+        port = port.value.container_port
+        target_port = port.value.container_port
+        protocol = "TCP"
+      }
     }
   }
 }
