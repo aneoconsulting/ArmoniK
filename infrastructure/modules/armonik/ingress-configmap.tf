@@ -1,10 +1,6 @@
 # Envvars
 locals {
   armonik_conf = <<-EOF
-    upstream controlplane{
-        server ${local.control_plane_endpoints.ip}:${local.control_plane_endpoints.port};
-        keepalive 15;
-    }
     map $http_upgrade $connection_upgrade {
       default upgrade;
       '' close;
@@ -12,10 +8,14 @@ locals {
     server {
         listen 443 ssl http2;
         listen [::]:443 ssl http2;
-        ssl_client_certificate /ingress/chain.pem;
-        ssl_certificate     /ingress/ingress.pem;
+        ssl_certificate     /ingress/ingress.crt;
         ssl_certificate_key /ingress/ingress.key;
+        ssl_verify_client off;
         
+        location / {
+            grpc_pass grpc://${local.control_plane_endpoints.ip}:${local.control_plane_endpoints.port};
+
+        }
         location /seq {
             proxy_set_header        Host $http_host;
             proxy_set_header Accept-Encoding "";
@@ -44,25 +44,41 @@ locals {
             proxy_set_header Host $http_host;
             proxy_pass ${local.grafana_url}/;
         }
-        
-        location / {
-            grpc_pass controlplane;
-        }
     }
     EOF
-  /*nginx_conf = <<EOF
-    worker_processes auto;
-    pid /run/nginx.pid;
+  nginx_conf = <<EOF
+    user  nginx;
+    worker_processes  auto;
+
+    error_log  stderr debug;
+    pid        /var/run/nginx.pid;
+
+
     events {
-        worker_connections 1024;
+        worker_connections  1024;
     }
+
+
     http {
-        sendfile on;
-        include /etc/nginx/mime.types;
-        default_type application/octet-stream;
-        include /etc/nginx/conf.d/armonik.conf;
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+
+        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for"';
+
+        access_log  /var/log/nginx/access.log  main;
+
+        sendfile        on;
+        #tcp_nopush     on;
+
+        keepalive_timeout  65;
+
+        #gzip  on;
+
+        include /etc/nginx/conf.d/*.conf;
     }
-    EOF*/
+    EOF
 }
 
 resource "kubernetes_config_map" "ingress" {
@@ -72,7 +88,7 @@ resource "kubernetes_config_map" "ingress" {
   }
   data = {
     "armonik.conf" = local.armonik_conf
-    #"nginx.conf" = local.nginx_conf
+    "nginx.conf" = local.nginx_conf
   }
 }
 

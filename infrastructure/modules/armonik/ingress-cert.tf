@@ -76,6 +76,7 @@ resource "kubernetes_secret" "ingress_client_certificate" {
     namespace = var.namespace
   }
   data = {
+    "ca.pem" = tls_self_signed_cert.root_ingress.cert_pem
     "chain.crt" = tls_locally_signed_cert.ingress_certificate.cert_pem
     "chain.pem" = format("%s\n%s", tls_locally_signed_cert.ingress_certificate.cert_pem, tls_self_signed_cert.root_ingress.cert_pem)
   }

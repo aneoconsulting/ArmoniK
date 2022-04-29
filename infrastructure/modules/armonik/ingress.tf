@@ -51,7 +51,7 @@ resource "kubernetes_deployment" "ingress" {
           dynamic port{
             for_each = var.ingress.port
             content {
-              name = "ingress-port"
+              name = "ingress-p-${port.key}"
               container_port = port.value
             }
           }
@@ -66,23 +66,35 @@ resource "kubernetes_deployment" "ingress" {
             read_only  = true
           }
           volume_mount {
+            name       = "ingress-client-secret-volume"
+            mount_path = "/ingressclient"
+            read_only  = true
+          }
+          volume_mount {
             name       = "ingress-nginx"
             mount_path = "/etc/nginx/conf.d/armonik.conf"
             sub_path   = "armonik.conf"
             read_only  = true
           }
-          /*volume_mount {
+          volume_mount {
             name       = "ingress-nginx"
             mount_path = "/etc/nginx/nginx.conf"
             sub_path   = "nginx.conf"
             read_only  = true
-          }*/
+          }
         }
         volume {
           name = "ingress-secret-volume"
           secret {
             secret_name = kubernetes_secret.ingress_certificate.metadata[0].name
             optional    = false
+          }
+        }
+        volume {
+          name = "ingress-client-secret-volume"
+          secret {
+            secret_name = kubernetes_secret.ingress_client_certificate.metadata[0].name
+            optional = false
           }
         }
         volume {
