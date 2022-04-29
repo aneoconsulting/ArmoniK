@@ -48,7 +48,7 @@ monitoring = {
   }
   metrics_exporter   = {
     image              = "dockerhubaneo/armonik_control_metrics"
-    tag                = "0.5.4"
+    tag                = "0.5.6"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
