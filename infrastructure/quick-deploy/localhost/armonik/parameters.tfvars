@@ -17,16 +17,16 @@ control_plane = {
   service_type       = "LoadBalancer"
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
-  tag                = "0.5.4"
+  tag                = "0.5.6"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
     cpu    = "1000m"
-    memory = "1024Mi" 
+    memory = "1024Mi"
   }
   requests           = {
-    cpu    = "100m" 
-    memory = "50Mi" 
+    cpu    = "100m"
+    memory = "50Mi"
   }
   image_pull_secrets = ""
   node_selector      = {}
@@ -45,15 +45,15 @@ compute_plane = [
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.5.4"
+      tag               = "0.5.6"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "1000m"
         memory = "1024Mi"
       }
       requests          = {
-        cpu    = "100m" 
-        memory = "50Mi" 
+        cpu    = "100m"
+        memory = "50Mi"
       }
     }
     # ArmoniK workers
@@ -62,19 +62,19 @@ compute_plane = [
         name              = "worker"
         port              = 80
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.5.2"
+        tag               = "0.5.3"
         image_pull_policy = "IfNotPresent"
         limits            = {
-          cpu    = "200m" 
-          memory = "512Mi" 
+          cpu    = "200m"
+          memory = "512Mi"
         }
         requests          = {
-          cpu    = "100m" 
-          memory = "50Mi" 
+          cpu    = "100m"
+          memory = "50Mi"
         }
       }
     ]
-    hpa                              = {
+    /*hpa                              = {
       min_replicas   = 1
       max_replicas   = 5
       object_metrics = [
@@ -92,6 +92,26 @@ compute_plane = [
           }
         }
       ]
+    }*/
+    # Enable only one KEDA HPA
+    keda_hpa_activemq                = {
+      enabled            = true
+      polling_interval   = 30
+      cooldown_period    = 300
+      idle_replica_count = 0
+      min_replica_count  = 1
+      max_replica_count  = 5
+      behavior           = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers           = {
+        destination_name  = "q0"
+        target_queue_size = "50"
+      }
     }
   }
 ]

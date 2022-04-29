@@ -1,4 +1,4 @@
-resource "kubernetes_horizontal_pod_autoscaler" "compute_plane_hpa" {
+/*resource "kubernetes_horizontal_pod_autoscaler" "compute_plane_hpa" {
   count = length(var.compute_plane)
   metadata {
     name      = "${var.compute_plane[count.index].name}-hpa"
@@ -42,3 +42,4 @@ resource "kubernetes_horizontal_pod_autoscaler" "compute_plane_hpa" {
     }
   }
 }
+*/

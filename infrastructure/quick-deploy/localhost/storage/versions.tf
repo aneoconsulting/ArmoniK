@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.7.1"
     }
+    kubectl    = {
+      source = "gavinbunney/kubectl"
+      version = "~> 1.14.0"
+    }
     external   = {
       source  = "hashicorp/external"
       version = "~> 2.1.1"

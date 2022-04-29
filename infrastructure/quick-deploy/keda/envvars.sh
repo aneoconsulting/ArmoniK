@@ -1,1 +1,0 @@
-export KEDA_KUBERNETES_NAMESPACE="default"

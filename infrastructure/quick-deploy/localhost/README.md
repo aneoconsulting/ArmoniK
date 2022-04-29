@@ -6,6 +6,7 @@
 - [Set environment variables](#set-environment-variables)
 - [Deploy](#deploy)
     - [Kubernetes namespace](#kubernetes-namespace)
+    - [KEDA](#keda)
     - [Storage](#storage)
     - [Monitoring](#monitoring)
     - [ArmoniK](#armonik)
@@ -21,6 +22,7 @@ Hereafter, You have instructions to deploy ArmoniK on dev/test environment upon 
 
 The infrastructure is composed of:
 
+* [KEDA](https://keda.sh/)
 * Storage:
     * ActiveMQ
     * MongoDB
@@ -76,6 +78,7 @@ export ARMONIK_KUBERNETES_NAMESPACE="armonik"
 export ARMONIK_SHARED_HOST_PATH="${HOME}/data"
 export ARMONIK_FILE_STORAGE_FILE="HostPath"
 export ARMONIK_FILE_SERVER_IP=""
+export KEDA_KUBERNETES_NAMESPACE="default"
 ```
 
 where:
@@ -84,6 +87,7 @@ where:
 - `ARMONIK_SHARED_HOST_PATH`: is the filesystem on your local machine shared with workers of ArmoniK
 - `ARMONIK_FILE_STORAGE_FILE`: is the type of the filesystem which can be one of `HostPath` or `NFS`
 - `ARMONIK_FILE_SERVER_IP`: is the IP of the network filesystem if `ARMONIK_SHARED_HOST_PATH=NFS`
+- `KEDA_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for [KEDA](https://keda.sh/)
 
 # Deploy
 
@@ -96,12 +100,24 @@ mkdir -p "${ARMONIK_SHARED_HOST_PATH}"
 
 ## Kubernetes namespace
 
-You create a Kubernetes namespace for ArmoniK with the name set in the environment
-variable`ARMONIK_KUBERNETES_NAMESPACE`:
+You create a Kubernetes namespace for ArmoniK and another for [KEDA](https://keda.sh/) with the names set in the environment
+variables`ARMONIK_KUBERNETES_NAMESPACE` and `KEDA_KUBERNETES_NAMESPACE`:
 
 ```bash
 make create-namespace
 ```
+
+## KEDA
+
+The parameters of KEDA are defined in [keda/parameters.tfvars](keda/parameters.tfvars).
+
+Execute the following command to install KEDA:
+
+```bash
+make deploy-keda
+```
+
+The Keda deployment generates an output file `keda/generated/keda-output.json`.
 
 ## Storage
 

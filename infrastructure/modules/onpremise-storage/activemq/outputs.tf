@@ -39,3 +39,17 @@ output "user_credentials" {
     password_key = "password"
   }
 }
+
+output "admin_credentials" {
+  description = "Admin credentials of ActiveMQ"
+  value       = {
+    secret       = kubernetes_secret.activemq_admin.metadata[0].name
+    username_key = "username"
+    password_key = "password"
+  }
+}
+
+output "trigger_authentication" {
+  description = "Keda trigger authentication for ActiveMQ"
+  value       = "trigger-auth-activemq"
+}

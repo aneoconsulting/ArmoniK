@@ -39,17 +39,22 @@ locals {
   redis_credentials_password_key    = try(var.storage_endpoint_url.redis.credentials.password_key, "")
 
   # Endpoint urls storage
-  activemq_host = try(var.storage_endpoint_url.activemq.host, "")
-  activemq_port = try(var.storage_endpoint_url.activemq.port, "")
-  mongodb_host  = try(var.storage_endpoint_url.mongodb.host, "")
-  mongodb_port  = try(var.storage_endpoint_url.mongodb.port, "")
-  redis_url     = try(var.storage_endpoint_url.redis.url, "")
+  activemq_host     = try(var.storage_endpoint_url.activemq.host, "")
+  activemq_port     = try(var.storage_endpoint_url.activemq.port, "")
+  activemq_web_host = try(var.storage_endpoint_url.activemq.web_host, "")
+  activemq_web_port = try(var.storage_endpoint_url.activemq.web_port, "")
+  activemq_web_url  = try(var.storage_endpoint_url.activemq.web_url, "")
+  mongodb_host      = try(var.storage_endpoint_url.mongodb.host, "")
+  mongodb_port      = try(var.storage_endpoint_url.mongodb.port, "")
+  redis_url         = try(var.storage_endpoint_url.redis.url, "")
 
   # Options of storage
-  activemq_allow_host_mismatch = try(var.storage_endpoint_url.activemq.allow_host_mismatch, true)
-  mongodb_allow_insecure_tls   = try(var.storage_endpoint_url.mongodb.allow_insecure_tls, true)
-  redis_timeout                = try(var.storage_endpoint_url.redis.timeout, 3000)
-  redis_ssl_host               = try(var.storage_endpoint_url.redis.ssl_host, "")
+  activemq_allow_host_mismatch    = try(var.storage_endpoint_url.activemq.allow_host_mismatch, true)
+  activemq_trigger_authentication = try(var.storage_endpoint_url.activemq.trigger_authentication, "")
+  activemq_broker_name            = try(var.storage_endpoint_url.activemq.broker_name, "localhost")
+  mongodb_allow_insecure_tls      = try(var.storage_endpoint_url.mongodb.allow_insecure_tls, true)
+  redis_timeout                   = try(var.storage_endpoint_url.redis.timeout, 3000)
+  redis_ssl_host                  = try(var.storage_endpoint_url.redis.ssl_host, "")
 
   # Fluent-bit
   fluent_bit_is_daemonset      = try(var.monitoring.fluent_bit.is_daemonset, false)
@@ -61,6 +66,9 @@ locals {
 
   # Metrics exporter
   metrics_exporter_name = try(var.monitoring.metrics_exporter.name, "")
+
+  # Prometheus
+  prometheus_url = try(var.monitoring.prometheus.url, "")
 
   # Polling delay to MongoDB
   mongodb_polling_min_delay = try(var.mongodb_polling_delay.min_polling_delay, "00:00:01")
