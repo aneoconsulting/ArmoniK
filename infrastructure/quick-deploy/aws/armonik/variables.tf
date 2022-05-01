@@ -126,7 +126,7 @@ variable "compute_plane" {
         memory = string
       })
     }))
-    hpa                              = object({
+    /*hpa                              = object({
       min_replicas   = number
       max_replicas   = number
       object_metrics = list(object({
@@ -142,6 +142,25 @@ variable "compute_plane" {
           value               = number
         })
       }))
+    })*/
+    keda_hpa_activemq                = object({
+      enabled            = bool
+      polling_interval   = number
+      cooldown_period    = number
+      idle_replica_count = number
+      min_replica_count  = number
+      max_replica_count  = number
+      behavior           = object({
+        restore_to_original_replica_count = bool
+        stabilization_window_seconds      = number
+        type                              = string
+        value                             = number
+        period_seconds                    = number
+      })
+      triggers           = object({
+        destination_name  = string
+        target_queue_size = string
+      })
     })
   }))
 }
