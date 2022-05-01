@@ -119,6 +119,8 @@ make deploy-keda
 
 The Keda deployment generates an output file `keda/generated/keda-output.json`.
 
+**NOTE:** Please note that KEDA must be deployed only once on the same Kubernetes cluster.
+
 ## Storage
 
 You need to create storage for ArmoniK which are:

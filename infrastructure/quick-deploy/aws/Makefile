@@ -98,9 +98,11 @@ clean-eks:
 
 create-namespace:
 	kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+	kubectl create namespace $(KEDA_KUBERNETES_NAMESPACE) || true
 
 delete-namespace:
 	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+	kubectl delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
 
 ####################################
 #           AWS Storage            #

@@ -18,6 +18,7 @@ create-namespace:
 
 delete-namespace:
 	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+	kubectl delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
 
 ####################################
 #              KEDA                #

@@ -101,6 +101,16 @@ ecr = {
       name  = "prometheus-adapter"
       image = "k8s.gcr.io/prometheus-adapter/prometheus-adapter"
       tag   = "v0.9.1"
+    },
+    {
+      name  = "keda"
+      image = "ghcr.io/kedacore/keda"
+      tag   = "2.6.1"
+    },
+    {
+      name  = "keda-metrics-apiserver"
+      image = "ghcr.io/kedacore/keda-metrics-apiserver"
+      tag   = "2.6.1"
     }
   ]
 }
