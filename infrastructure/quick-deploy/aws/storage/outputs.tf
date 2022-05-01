@@ -3,19 +3,21 @@ output "storage_endpoint_url" {
   description = "Storage endpoints URLs"
   value       = {
     activemq = {
-      url                 = module.mq.activemq_endpoint_url.url
-      host                = module.mq.activemq_endpoint_url.host
-      port                = module.mq.activemq_endpoint_url.port
-      web_url             = module.mq.web_url
-      web_host            = split(":", split("/", module.mq.web_url)[2])[0]
-      web_port            = split(":", split("/", module.mq.web_url)[2])[0]
-      allow_host_mismatch = false
-      credentials         = {
+      url                    = module.mq.activemq_endpoint_url.url
+      host                   = module.mq.activemq_endpoint_url.host
+      port                   = module.mq.activemq_endpoint_url.port
+      web_url                = module.mq.web_url
+      web_host               = split(":", split("/", module.mq.web_url)[2])[0]
+      web_port               = split(":", split("/", module.mq.web_url)[2])[0]
+      allow_host_mismatch    = false
+      borker_name            = module.mq.mq_name
+      trigger_authentication = module.mq.trigger_authentication
+      credentials            = {
         secret       = module.mq.user_credentials.secret
         username_key = module.mq.user_credentials.username_key
         password_key = module.mq.user_credentials.password_key
       }
-      certificates        = {
+      certificates           = {
         secret      = ""
         ca_filename = ""
       }

@@ -31,3 +31,8 @@ output "user_credentials" {
     password_key = "password"
   }
 }
+
+output "trigger_authentication" {
+  description = "Keda trigger authentication for ActiveMQ"
+  value       = "trigger-auth-activemq"
+}
