@@ -104,14 +104,14 @@ variable "monitoring" {
       service_type       = string
       node_selector      = any
     })
-    prometheus_adapter = object({
+    /*prometheus_adapter = object({
       name               = string
       image              = string
       tag                = string
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
-    })
+    })*/
     metrics_exporter   = object({
       image              = string
       tag                = string

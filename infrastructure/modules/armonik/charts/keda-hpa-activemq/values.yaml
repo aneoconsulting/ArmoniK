@@ -33,5 +33,6 @@ triggers:
   managementEndpoint: ""
   destinationName: ""
   brokerName: ""
+  restAPITemplate: ""
   targetQueueSize: "50"
   authentication: ""

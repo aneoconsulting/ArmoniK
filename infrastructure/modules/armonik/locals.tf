@@ -51,7 +51,7 @@ locals {
   # Options of storage
   activemq_allow_host_mismatch    = try(var.storage_endpoint_url.activemq.allow_host_mismatch, true)
   activemq_trigger_authentication = try(var.storage_endpoint_url.activemq.trigger_authentication, "")
-  activemq_broker_name            = try(var.storage_endpoint_url.activemq.broker_name, "localhost")
+  activemq_broker_name            = try(var.storage_endpoint_url.activemq.borker_name, "localhost")
   mongodb_allow_insecure_tls      = try(var.storage_endpoint_url.mongodb.allow_insecure_tls, true)
   redis_timeout                   = try(var.storage_endpoint_url.redis.timeout, 3000)
   redis_ssl_host                  = try(var.storage_endpoint_url.redis.ssl_host, "")

@@ -105,6 +105,19 @@ delete-namespace:
 	kubectl delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
 
 ####################################
+#              KEDA                #
+####################################
+
+deploy-keda:
+	$(MAKE) -C $(CURRENT_DIR)/keda deploy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE)
+
+destroy-keda:
+	$(MAKE) -C $(CURRENT_DIR)/keda destroy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE)
+
+clean-keda:
+	$(MAKE) -C $(CURRENT_DIR)/keda clean
+
+####################################
 #           AWS Storage            #
 ####################################
 

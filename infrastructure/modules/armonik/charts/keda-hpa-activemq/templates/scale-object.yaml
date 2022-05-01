@@ -35,6 +35,7 @@ spec:
         destinationName: {{ .Values.triggers.destinationName }}
         brokerName: {{ .Values.triggers.brokerName }}
         targetQueueSize: {{ .Values.triggers.targetQueueSize | quote }}
+        #restAPITemplate: https://{{ .Values.triggers.managementEndpoint }}/api/jolokia/read/org.apache.activemq:type=Broker,brokerName={{ .Values.triggers.brokerName }},destinationType=Queue,destinationName={{ .Values.triggers.destinationName }}/QueueSize
       authenticationRef:
         name: {{ .Values.triggers.authentication }}
 {{ end }}
