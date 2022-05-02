@@ -11,12 +11,12 @@ tags = {
 ami = "ami-0cf3321d8c3c28ee0"
 
 # Instance type
-instance_type = "c5.24xlarge"
+instance_type = "c5.xlarge"
 
 # VPC
 vpc_cidr_block = "10.0.0.0/16"
-vpc_id         = "vpc-019e48f672a4da313"
-subnet_id      = "subnet-08507874646fe5d33"
+vpc_id         = "vpc-00c36658244d6e19f"
+subnet_id      = "subnet-0dbcdfd490529648f"
 
 # Private Subnet
 private_subnet_cidr_block = ["10.0.1.0/24", "10.10.2.0/24", "10.10.3.0/24"]

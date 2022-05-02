@@ -52,6 +52,7 @@ locals {
   activemq_allow_host_mismatch    = try(var.storage_endpoint_url.activemq.allow_host_mismatch, true)
   activemq_trigger_authentication = try(var.storage_endpoint_url.activemq.trigger_authentication, "")
   activemq_broker_name            = try(var.storage_endpoint_url.activemq.borker_name, "localhost")
+  activemq_aws_region             = try(var.storage_endpoint_url.activemq.aws_region, "eu-west-3")
   mongodb_allow_insecure_tls      = try(var.storage_endpoint_url.mongodb.allow_insecure_tls, true)
   redis_timeout                   = try(var.storage_endpoint_url.redis.timeout, 3000)
   redis_ssl_host                  = try(var.storage_endpoint_url.redis.ssl_host, "")
@@ -65,12 +66,182 @@ locals {
   fluent_bit_configmap         = try(var.monitoring.fluent_bit.configmaps.config, "")
 
   # Metrics exporter
-  metrics_exporter_name = try(var.monitoring.metrics_exporter.name, "")
-
-  # Prometheus
-  prometheus_url = try(var.monitoring.prometheus.url, "")
+  metrics_exporter_name      = try(var.monitoring.metrics_exporter.name, "")
+  metrics_exporter_namespace = try(var.monitoring.metrics_exporter.namespace, "")
 
   # Polling delay to MongoDB
   mongodb_polling_min_delay = try(var.mongodb_polling_delay.min_polling_delay, "00:00:01")
   mongodb_polling_max_delay = try(var.mongodb_polling_delay.max_polling_delay, "00:05:00")
+
+  # HPA
+  hpa_common_parameters = [
+  for index in range(0, length(var.compute_plane)) : [
+    {
+      name  = "suffix"
+      value = try(var.compute_plane[index].name, "")
+    },
+    {
+      name  = "type"
+      value = try(var.compute_plane[index].hpa.type, "")
+    },
+    {
+      name  = "scaleTargetRef.apiVersion"
+      value = "apps/v1"
+    },
+    {
+      name  = "scaleTargetRef.kind"
+      value = "Deployment"
+    },
+    {
+      name  = "scaleTargetRef.name"
+      value = kubernetes_deployment.compute_plane[index].metadata.0.name
+    },
+    {
+      name  = "scaleTargetRef.envSourceContainerName"
+      value = kubernetes_deployment.compute_plane[index].spec.0.template.0.spec.0.container.0.name
+    },
+    {
+      name  = "pollingInterval"
+      value = try(var.compute_plane[index].hpa.polling_interval, 30)
+    },
+    {
+      name  = "cooldownPeriod"
+      value = try(var.compute_plane[index].hpa.cooldown_period, 300)
+    },
+    {
+      name  = "idleReplicaCount"
+      value = try(var.compute_plane[index].hpa.idle_replica_count, 0)
+    },
+    {
+      name  = "minReplicaCount"
+      value = try(var.compute_plane[index].hpa.min_replica_count, 1)
+    },
+    {
+      name  = "maxReplicaCount"
+      value = try(var.compute_plane[index].hpa.max_replica_count, 1)
+    },
+    {
+      name  = "behavior.restoreToOriginalReplicaCount"
+      value = try(var.compute_plane[index].hpa.restore_to_original_replica_count, true)
+    },
+    {
+      name  = "behavior.stabilizationWindowSeconds"
+      value = try(var.compute_plane[index].hpa.behavior.stabilization_window_seconds, 300)
+    },
+    {
+      name  = "behavior.type"
+      value = try(var.compute_plane[index].hpa.behavior.type, "Percent")
+    },
+    {
+      name  = "behavior.value"
+      value = try(var.compute_plane[index].hpa.behavior.value, 100)
+    },
+    {
+      name  = "behavior.periodSeconds"
+      value = try(var.compute_plane[index].hpa.behavior.period_seconds, 15)
+    },
+  ]
+  ]
+
+  # ACtiveMQ scaler
+  hpa_activemq_parameters = [
+  for index in range(0, length(var.compute_plane)) : (var.compute_plane[index].hpa.type == "activemq" ? [
+    {
+      name  = "triggers.managementEndpoint"
+      value = "${local.activemq_web_host}:${local.activemq_web_port}"
+    },
+    {
+      name  = "triggers.destinationName"
+      value = try(var.compute_plane[index].hpa.triggers.destination_name, "q0")
+    },
+    {
+      name  = "triggers.brokerName"
+      value = local.activemq_broker_name
+    },
+    {
+      name  = "triggers.targetQueueSize"
+      value = try(var.compute_plane[index].hpa.triggers.target_queue_size, "50")
+    },
+    {
+      name  = "triggers.url"
+      value = local.activemq_web_url
+    },
+    {
+      name  = "triggers.authentication"
+      value = local.activemq_trigger_authentication
+    },
+  ] : [])
+  ]
+
+  # CloudWatch scaler
+  hpa_cloudwtach_parameters = [
+  for index in range(0, length(var.compute_plane)) : (var.compute_plane[index].hpa.type == "cloudwatch" ? [
+    {
+      name  = "triggers.queueName"
+      value = try(var.compute_plane[index].hpa.triggers.queue_name, "q0")
+    },
+    {
+      name  = "triggers.brokerName"
+      value = local.activemq_broker_name
+    },
+    {
+      name  = "triggers.targetMetricValue"
+      value = try(var.compute_plane[index].hpa.triggers.target_metric_value, "50")
+    },
+    {
+      name  = "triggers.metricStatPeriod"
+      value = try(var.compute_plane[index].hpa.triggers.metric_stat_period, "60")
+    },
+    {
+      name  = "triggers.metricCollectionTime"
+      value = try(var.compute_plane[index].hpa.triggers.metric_collection_time, "60")
+    },
+    {
+      name  = "triggers.minMetricValue"
+      value = try(var.compute_plane[index].hpa.triggers.min_metric_value, "0")
+    },
+    {
+      name  = "triggers.metricEndTimeOffset"
+      value = try(var.compute_plane[index].hpa.triggers.metric_end_time_offset, "0")
+    },
+    {
+      name  = "triggers.awsRegion"
+      value = local.activemq_aws_region
+    },
+    {
+      name  = "triggers.namespace"
+      value = try(var.compute_plane[index].hpa.triggers.namespace, "AWS/AmazonMQ")
+    },
+    {
+      name  = "triggers.metricName"
+      value = try(var.compute_plane[index].hpa.triggers.metric_name, "QueueSize")
+    },
+  ] : [])
+  ]
+
+  # Prometheus scaler
+  hpa_prometheus_parameters = [
+  for index in range(0, length(var.compute_plane)) : (var.compute_plane[index].hpa.type == "prometheus" ? [
+    {
+      name  = "triggers.serverAddress"
+      value = try(var.monitoring.prometheus.url, "")
+    },
+    {
+      name  = "triggers.metricName"
+      value = try(var.compute_plane[index].hpa.triggers.metric_name, "armonik_tasks_queued")
+    },
+    {
+      name  = "triggers.threshold"
+      value = try(var.compute_plane[index].hpa.triggers.threshold, "2")
+    },
+    {
+      name  = "triggers.namespace"
+      value = local.metrics_exporter_namespace
+    },
+    {
+      name  = "triggers.query"
+      value = "sum(rate(${try(var.compute_plane[index].hpa.triggers.metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}[2m]))"
+    },
+  ] : [])
+  ]
 }

@@ -36,3 +36,8 @@ output "trigger_authentication" {
   description = "Keda trigger authentication for ActiveMQ"
   value       = "trigger-auth-activemq"
 }
+
+output "aws_region" {
+  description = "AWS region for ActiveMQ"
+  value       = var.region
+}

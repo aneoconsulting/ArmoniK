@@ -76,25 +76,6 @@ module "prometheus" {
   depends_on           = [module.metrics_exporter]
 }
 
-/*# Prometheus adapter
-module "prometheus_adapter" {
-  source                  = "../../../modules/monitoring/prometheus-adapter"
-  namespace               = var.namespace
-  name                    = var.monitoring.prometheus_adapter.name
-  service_type            = local.prometheus_adapter_service_type
-  node_selector           = local.prometheus_adapter_node_selector
-  docker_image            = {
-    image              = local.prometheus_adapter_image
-    tag                = local.prometheus_adapter_tag
-    image_pull_secrets = local.prometheus_adapter_image_pull_secrets
-  }
-  prometheus_endpoint_url = {
-    host = module.prometheus.host
-    port = module.prometheus.port
-  }
-  depends_on              = [module.prometheus]
-}*/
-
 # Fluent-bit
 module "fluent_bit" {
   source        = "../../../modules/monitoring/fluent-bit"

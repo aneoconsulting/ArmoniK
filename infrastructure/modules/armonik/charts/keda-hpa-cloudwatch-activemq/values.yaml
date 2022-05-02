@@ -4,7 +4,7 @@
 
 suffix: ""
 
-type: "activemq"
+type: "cloudwatch"
 
 scaleTargetRef:
   apiVersion: "apps/v1"                                       # Optional. Default: apps/v1
@@ -30,10 +30,13 @@ behavior: # Optional. Section to specify advanced options
   periodSeconds: 15
 
 triggers:
-  managementEndpoint: ""
-  destinationName: ""
+  queueName: ""
   brokerName: ""
-  restAPITemplate: ""
-  targetQueueSize: "50"
-  url: ""
-  authentication: ""
+  targetMetricValue: "50"
+  metricStatPeriod: "60"
+  metricCollectionTime: "60"
+  minMetricValue: "0"
+  metricEndTimeOffset: "0"
+  awsRegion: "eu-west-3"
+  namespace: "AWS/AmazonMQ"
+  metricName: "QueueSize"

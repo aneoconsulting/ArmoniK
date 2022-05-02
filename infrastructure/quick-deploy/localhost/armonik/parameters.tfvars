@@ -74,33 +74,14 @@ compute_plane = [
         }
       }
     ]
-    /*hpa                              = {
-      min_replicas   = 1
-      max_replicas   = 5
-      object_metrics = [
-        {
-          described_object = {
-            api_version = "batch/v1"
-            kind        = "Job"
-          }
-          metric_name      = "armonik_tasks_queued"
-          target           = {
-            type                = "AverageValue" # "Value", "Utilization" or "AverageValue"
-            average_value       = 2
-            average_utilization = 0
-            value               = 0
-          }
-        }
-      ]
-    }*/
     # Enable only one KEDA HPA
-    keda_hpa_activemq                = {
-      enabled            = true
+    /*hpa                = {
+      type            = "activemq"
       polling_interval   = 30
       cooldown_period    = 300
       idle_replica_count = 0
       min_replica_count  = 1
-      max_replica_count  = 5
+      max_replica_count  = 100
       behavior           = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
@@ -110,7 +91,51 @@ compute_plane = [
       }
       triggers           = {
         destination_name  = "q0"
-        target_queue_size = "50"
+        target_queue_size = "10"
+      }
+    }
+    hpa                              = {
+      type               = "cloudwatch"
+      polling_interval   = 30
+      cooldown_period    = 300
+      idle_replica_count = 0
+      min_replica_count  = 1
+      max_replica_count  = 100
+      behavior           = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers           = {
+        queue_name             = "q0"
+        target_metric_value    = "10"
+        metric_stat_period     = "60"
+        metric_collection_time = "60"
+        min_metric_value       = "0"
+        metric_end_time_offset = "0"
+        namespace              = "AWS/AmazonMQ"
+        metric_name            = "QueueSize"
+      }
+    }*/
+    hpa                              = {
+      type               = "prometheus"
+      polling_interval   = 30
+      cooldown_period    = 300
+      idle_replica_count = 0
+      min_replica_count  = 1
+      max_replica_count  = 100
+      behavior           = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers           = {
+        metric_name = "armonik_tasks_queued"
+        threshold   = "2"
       }
     }
   }

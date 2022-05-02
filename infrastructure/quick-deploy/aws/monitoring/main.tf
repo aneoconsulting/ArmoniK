@@ -84,25 +84,6 @@ module "prometheus" {
   depends_on           = [module.metrics_exporter]
 }
 
-/*# Prometheus adapter
-module "prometheus_adapter" {
-  source                  = "../../../modules/monitoring/prometheus-adapter"
-  name                    = local.prometheus_adapter_name
-  namespace               = var.namespace
-  service_type            = local.prometheus_adapter_service_type
-  node_selector           = local.prometheus_adapter_node_selector
-  docker_image            = {
-    image              = local.prometheus_adapter_image
-    tag                = local.prometheus_adapter_tag
-    image_pull_secrets = local.prometheus_adapter_image_pull_secrets
-  }
-  prometheus_endpoint_url = {
-    host = module.prometheus.host
-    port = module.prometheus.port
-  }
-  depends_on              = [module.prometheus]
-}*/
-
 # CloudWatch
 module "cloudwatch" {
   count             = (local.cloudwatch_enabled ? 1 : 0)

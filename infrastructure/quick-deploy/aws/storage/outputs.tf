@@ -12,6 +12,7 @@ output "storage_endpoint_url" {
       allow_host_mismatch    = false
       borker_name            = module.mq.mq_name
       trigger_authentication = module.mq.trigger_authentication
+      aws_region             = module.mq.aws_region
       credentials            = {
         secret       = module.mq.user_credentials.secret
         username_key = module.mq.user_credentials.username_key

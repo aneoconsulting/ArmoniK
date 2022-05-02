@@ -1,8 +1,8 @@
-{{ if eq .Values.type "activemq" }}
+{{ if eq .Values.type "prometheus" }}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: activemq-scaledobject-{{ .Values.suffix }}
+  name: prometheus-scaledobject-{{ .Values.suffix }}
   namespace: {{ .Release.Namespace }}
 spec:
   scaleTargetRef:
@@ -29,13 +29,15 @@ spec:
             value: {{ .Values.behavior.value }}
             periodSeconds: {{ .Values.behavior.periodSeconds }}
   triggers:
-    - type: activemq
+    - type: prometheus
       metadata:
-        #managementEndpoint: {{ .Values.triggers.managementEndpoint }}
-        #destinationName: {{ .Values.triggers.destinationName }}
-        #brokerName: {{ .Values.triggers.brokerName }}
-        targetQueueSize: {{ .Values.triggers.targetQueueSize | quote }}
-        restAPITemplate: {{ .Values.triggers.url }}/api/jolokia/read/org.apache.activemq:type=Broker,brokerName={{ .Values.triggers.brokerName }},destinationType=Queue,destinationName={{ .Values.triggers.destinationName }}/QueueSize
-      authenticationRef:
-        name: {{ .Values.triggers.authentication }}
+        # Required fields:
+        serverAddress: {{ .Values.triggers.serverAddress }}
+        metricName: {{ .Values.triggers.metricName }} # Note: name to identify the metric, generated value would be `prometheus-http_requests_total`
+        query: {{ .Values.triggers.query }} # Note: query must return a vector/scalar single element response
+        threshold: {{ .Values.triggers.threshold | quote }}
+        # Optional fields:
+        namespace: {{ .Values.triggers.namespace }}  # for namespaced queries, eg. Thanos
+      #authenticationRef:
+      #  name: {{ .Values.triggers.authentication }}
 {{ end }}
