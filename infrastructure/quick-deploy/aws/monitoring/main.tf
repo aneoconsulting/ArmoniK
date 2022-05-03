@@ -22,22 +22,6 @@ module "seq" {
   working_dir   = "${path.root}/../../.."
 }
 
-# Grafana
-module "grafana" {
-  count         = (local.grafana_enabled ? 1 : 0)
-  source        = "../../../modules/monitoring/grafana"
-  namespace     = var.namespace
-  service_type  = local.grafana_service_type
-  port          = local.grafana_port
-  node_selector = local.grafana_node_selector
-  docker_image  = {
-    image              = local.grafana_image
-    tag                = local.grafana_tag
-    image_pull_secrets = local.grafana_image_pull_secrets
-  }
-  working_dir   = "${path.root}/../../.."
-}
-
 # node exporter
 module "node_exporter" {
   count         = (local.node_exporter_enabled ? 1 : 0)
@@ -82,6 +66,24 @@ module "prometheus" {
   }
   working_dir          = "${path.root}/../../.."
   depends_on           = [module.metrics_exporter]
+}
+
+# Grafana
+module "grafana" {
+  count          = (local.grafana_enabled ? 1 : 0)
+  source         = "../../../modules/monitoring/grafana"
+  namespace      = var.namespace
+  service_type   = local.grafana_service_type
+  port           = local.grafana_port
+  node_selector  = local.grafana_node_selector
+  prometheus_url = module.prometheus.url
+  docker_image   = {
+    image              = local.grafana_image
+    tag                = local.grafana_tag
+    image_pull_secrets = local.grafana_image_pull_secrets
+  }
+  working_dir    = "${path.root}/../../.."
+  depends_on     = [module.prometheus]
 }
 
 # CloudWatch
