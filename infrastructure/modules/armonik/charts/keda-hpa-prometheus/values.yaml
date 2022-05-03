@@ -34,5 +34,5 @@ triggers:
   metricName: ""
   threshold: "50"
   namespace: ""
-  query: sum(rate(armonik_tasks_queued{job="armonik-metrics-exporter"}[2m]))
+  query: armonik_tasks_queued{job="armonik-metrics-exporter"}
   authentication: ""

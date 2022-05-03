@@ -75,11 +75,11 @@ compute_plane = [
     ]
     hpa                              = {
       type               = "prometheus"
-      polling_interval   = 30
+      polling_interval   = 15
       cooldown_period    = 300
       idle_replica_count = 0
       min_replica_count  = 1
-      max_replica_count  = 100
+      max_replica_count  = 5
       behavior           = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300

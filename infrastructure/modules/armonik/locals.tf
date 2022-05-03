@@ -161,7 +161,7 @@ locals {
     },
     {
       name  = "triggers.query"
-      value = "sum(rate(${try(var.compute_plane[index].hpa.triggers.metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}[2m]))"
+      value = "${try(var.compute_plane[index].hpa.triggers.metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}"
     },
   ] : [])
   ]
