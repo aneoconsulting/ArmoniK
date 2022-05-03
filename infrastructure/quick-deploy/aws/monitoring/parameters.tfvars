@@ -49,7 +49,7 @@ monitoring = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
     tag                = "2021.4"
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
   grafana            = {
@@ -57,7 +57,7 @@ monitoring = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/grafana"
     tag                = "latest"
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
   node_exporter      = {

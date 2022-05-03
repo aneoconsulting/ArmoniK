@@ -134,3 +134,28 @@ variable "compute_plane" {
     })
   }))
 }
+
+variable "ingress" {
+  description = "Parameters of the ingress controller"
+  type        = object({
+    name               = string
+    service_type       = string
+    replicas           = number
+    image              = string
+    tag                = string
+    image_pull_policy  = string
+    port               = list(number)
+    limits             = object({
+      cpu    = string
+      memory = string
+    })
+    requests           = object({
+      cpu    = string
+      memory = string
+    })
+    image_pull_secrets = string
+    node_selector      = any
+    tls                = bool
+    mtls               = bool
+  })
+}
