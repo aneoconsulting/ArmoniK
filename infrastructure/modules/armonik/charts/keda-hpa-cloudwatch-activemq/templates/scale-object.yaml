@@ -37,7 +37,7 @@ spec:
         dimensionName: Broker;Queue
         # Required: Dimension Value - Supports specifying multiple dimension values by using ";" as a separator i.e. dimensionValue: queue1;queue2
         #dimensionValue: {{ .Values.triggers.brokerName }};{{ .Values.triggers.queueName }}
-        dimensionValue: armonik-mq-damdou-1;{{ .Values.triggers.queueName }}
+        dimensionValue: {{ .Values.triggers.brokerName }};{{ .Values.triggers.queueName }}
         metricName: {{ .Values.triggers.metricName }}
         targetMetricValue: {{ .Values.triggers.targetMetricValue | quote }}
         minMetricValue: {{ .Values.triggers.minMetricValue | quote }}
