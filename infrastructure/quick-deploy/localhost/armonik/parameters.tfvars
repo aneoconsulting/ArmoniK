@@ -88,7 +88,7 @@ compute_plane = [
   }
 ]
 
-ingress = null/*{
+ingress = {
   name               = "ingress"
   service_type       = "LoadBalancer"
   replicas           = 1
@@ -108,4 +108,4 @@ ingress = null/*{
   node_selector      = {}
   tls                = true
   mtls               = true
-}*/
+}
