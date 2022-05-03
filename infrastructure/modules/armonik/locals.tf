@@ -50,9 +50,6 @@ locals {
 
   # Options of storage
   activemq_allow_host_mismatch    = try(var.storage_endpoint_url.activemq.allow_host_mismatch, true)
-  activemq_trigger_authentication = try(var.storage_endpoint_url.activemq.trigger_authentication, "")
-  activemq_broker_name            = try(var.storage_endpoint_url.activemq.borker_name, "localhost")
-  activemq_aws_region             = try(var.storage_endpoint_url.activemq.aws_region, "eu-west-3")
   mongodb_allow_insecure_tls      = try(var.storage_endpoint_url.mongodb.allow_insecure_tls, true)
   redis_timeout                   = try(var.storage_endpoint_url.redis.timeout, 3000)
   redis_ssl_host                  = try(var.storage_endpoint_url.redis.ssl_host, "")
@@ -141,82 +138,6 @@ locals {
       value = try(var.compute_plane[index].hpa.behavior.period_seconds, 15)
     },
   ]
-  ]
-
-  # ACtiveMQ scaler
-  hpa_activemq_parameters = [
-  for index in range(0, length(var.compute_plane)) : (var.compute_plane[index].hpa.type == "activemq" ? [
-    {
-      name  = "triggers.managementEndpoint"
-      value = "${local.activemq_web_host}:${local.activemq_web_port}"
-    },
-    {
-      name  = "triggers.destinationName"
-      value = try(var.compute_plane[index].hpa.triggers.destination_name, "q0")
-    },
-    {
-      name  = "triggers.brokerName"
-      value = local.activemq_broker_name
-    },
-    {
-      name  = "triggers.targetQueueSize"
-      value = try(var.compute_plane[index].hpa.triggers.target_queue_size, "50")
-    },
-    {
-      name  = "triggers.url"
-      value = local.activemq_web_url
-    },
-    {
-      name  = "triggers.authentication"
-      value = local.activemq_trigger_authentication
-    },
-  ] : [])
-  ]
-
-  # CloudWatch scaler
-  hpa_cloudwtach_parameters = [
-  for index in range(0, length(var.compute_plane)) : (var.compute_plane[index].hpa.type == "cloudwatch" ? [
-    {
-      name  = "triggers.queueName"
-      value = try(var.compute_plane[index].hpa.triggers.queue_name, "q0")
-    },
-    {
-      name  = "triggers.brokerName"
-      value = local.activemq_broker_name
-    },
-    {
-      name  = "triggers.targetMetricValue"
-      value = try(var.compute_plane[index].hpa.triggers.target_metric_value, "50")
-    },
-    {
-      name  = "triggers.metricStatPeriod"
-      value = try(var.compute_plane[index].hpa.triggers.metric_stat_period, "60")
-    },
-    {
-      name  = "triggers.metricCollectionTime"
-      value = try(var.compute_plane[index].hpa.triggers.metric_collection_time, "60")
-    },
-    {
-      name  = "triggers.minMetricValue"
-      value = try(var.compute_plane[index].hpa.triggers.min_metric_value, "0")
-    },
-    {
-      name  = "triggers.metricEndTimeOffset"
-      value = try(var.compute_plane[index].hpa.triggers.metric_end_time_offset, "0")
-    },
-    {
-      name  = "triggers.awsRegion"
-      value = local.activemq_aws_region
-    },
-    {
-      name  = "triggers.namespace"
-      value = try(var.compute_plane[index].hpa.triggers.namespace, "AWS/AmazonMQ")
-    },
-    {
-      name  = "triggers.metricName"
-      value = try(var.compute_plane[index].hpa.triggers.metric_name, "QueueSize")
-    },
-  ] : [])
   ]
 
   # Prometheus scaler

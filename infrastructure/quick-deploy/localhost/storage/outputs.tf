@@ -7,15 +7,7 @@ output "storage_endpoint_url" {
       host                   = module.activemq.host
       port                   = module.activemq.port
       web_url                = module.activemq.web_url
-      web_host               = module.activemq.web_host
-      web_port               = module.activemq.web_port
-      borker_name            = "localhost"
       credentials            = {
-        secret       = module.activemq.user_credentials.secret
-        username_key = module.activemq.user_credentials.username_key
-        password_key = module.activemq.user_credentials.password_key
-      }
-      admin_credentials      = {
         secret       = module.activemq.user_credentials.secret
         username_key = module.activemq.user_credentials.username_key
         password_key = module.activemq.user_credentials.password_key
@@ -25,7 +17,6 @@ output "storage_endpoint_url" {
         ca_filename = module.activemq.user_certificate.ca_filename
       }
       allow_host_mismatch    = true
-      trigger_authentication = module.activemq.trigger_authentication
     }
     redis    = {
       url          = module.redis.url

@@ -73,51 +73,6 @@ compute_plane = [
         }
       }
     ]
-    # Enable only one KEDA HPA
-    /*hpa                = {
-      type            = "activemq"
-      polling_interval   = 30
-      cooldown_period    = 300
-      idle_replica_count = 0
-      min_replica_count  = 1
-      max_replica_count  = 100
-      behavior           = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers           = {
-        destination_name  = "q0"
-        target_queue_size = "10"
-      }
-    }
-    hpa                              = {
-      type               = "cloudwatch"
-      polling_interval   = 30
-      cooldown_period    = 300
-      idle_replica_count = 0
-      min_replica_count  = 1
-      max_replica_count  = 100
-      behavior           = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers           = {
-        queue_name             = "q0"
-        target_metric_value    = "10"
-        metric_stat_period     = "60"
-        metric_collection_time = "60"
-        min_metric_value       = "0"
-        metric_end_time_offset = "0"
-        namespace              = "AWS/AmazonMQ"
-        metric_name            = "QueueSize"
-      }
-    }*/
     hpa                              = {
       type               = "prometheus"
       polling_interval   = 30

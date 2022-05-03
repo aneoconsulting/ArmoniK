@@ -51,9 +51,3 @@ resource "aws_iam_role_policy_attachment" "s3_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
   role       = module.eks.worker_iam_role_name
 }
-
-# Full access CloudWatch
-resource "aws_iam_role_policy_attachment" "cloudwatch_full_access" {
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchFullAccess"
-  role       = module.eks.worker_iam_role_name
-}
