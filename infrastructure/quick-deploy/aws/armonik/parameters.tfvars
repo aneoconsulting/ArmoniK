@@ -72,7 +72,6 @@ compute_plane = [
     worker                           = [
       {
         name              = "worker"
-        port              = 80
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
         tag               = "0.5.3"
         image_pull_policy = "IfNotPresent"

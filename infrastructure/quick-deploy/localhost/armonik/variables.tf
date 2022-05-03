@@ -106,7 +106,6 @@ variable "compute_plane" {
     })
     worker                           = list(object({
       name              = string
-      port              = number
       image             = string
       tag               = string
       image_pull_policy = string

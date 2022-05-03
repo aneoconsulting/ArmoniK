@@ -60,7 +60,6 @@ compute_plane = [
     worker                           = [
       {
         name              = "worker"
-        port              = 80
         image             = "dockerhubaneo/armonik_worker_dll"
         tag               = "0.5.3"
         image_pull_policy = "IfNotPresent"
