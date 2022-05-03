@@ -88,7 +88,7 @@ compute_plane = [
   }
 ]
 
-ingress = {
+ingress = null/*{
   name               = "ingress"
   service_type       = "LoadBalancer"
   replicas           = 1
@@ -106,4 +106,6 @@ ingress = {
   }
   image_pull_secrets = ""
   node_selector      = {}
-}
+  tls                = true
+  mtls               = true
+}*/

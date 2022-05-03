@@ -50,6 +50,8 @@ variable "ingress" {
     })
     image_pull_secrets = string
     node_selector      = any
+    tls                = bool
+    mtls               = bool
   })
 }
 

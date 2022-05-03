@@ -1,5 +1,7 @@
 # Ingress deployment
 resource "kubernetes_deployment" "ingress" {
+  count = var.ingress != null ? 1 : 0
+
   metadata {
     name      = "ingress"
     namespace = var.namespace
@@ -72,14 +74,7 @@ resource "kubernetes_deployment" "ingress" {
           }
           volume_mount {
             name       = "ingress-nginx"
-            mount_path = "/etc/nginx/conf.d/armonik.conf"
-            sub_path   = "armonik.conf"
-            read_only  = true
-          }
-          volume_mount {
-            name       = "ingress-nginx"
-            mount_path = "/etc/nginx/nginx.conf"
-            sub_path   = "nginx.conf"
+            mount_path = "/etc/nginx/conf.d"
             read_only  = true
           }
         }
@@ -218,22 +213,24 @@ resource "kubernetes_deployment" "ingress" {
 
 # Control plane service
 resource "kubernetes_service" "ingress" {
+  count = var.ingress != null ? 1 : 0
+
   metadata {
-    name      = kubernetes_deployment.ingress.metadata.0.name
-    namespace = kubernetes_deployment.ingress.metadata.0.namespace
+    name      = kubernetes_deployment.ingress.0.metadata.0.name
+    namespace = kubernetes_deployment.ingress.0.metadata.0.namespace
     labels    = {
-      app     = kubernetes_deployment.ingress.metadata.0.labels.app
-      service = kubernetes_deployment.ingress.metadata.0.labels.service
+      app     = kubernetes_deployment.ingress.0.metadata.0.labels.app
+      service = kubernetes_deployment.ingress.0.metadata.0.labels.service
     }
   }
   spec {
     type     = var.ingress.service_type
     selector = {
-      app     = kubernetes_deployment.ingress.metadata.0.labels.app
-      service = kubernetes_deployment.ingress.metadata.0.labels.service
+      app     = kubernetes_deployment.ingress.0.metadata.0.labels.app
+      service = kubernetes_deployment.ingress.0.metadata.0.labels.service
     }
     dynamic port {
-      for_each = kubernetes_deployment.ingress.spec.0.template.0.spec.0.container.0.port
+      for_each = kubernetes_deployment.ingress.0.spec.0.template.0.spec.0.container.0.port
       content {
         name = port.value.name
         port = port.value.container_port
