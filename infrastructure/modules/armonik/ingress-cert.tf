@@ -91,7 +91,7 @@ resource "tls_cert_request" "ingress_client_cert_request" {
   private_key_pem = tls_private_key.ingress_client_private_key.0.private_key_pem
   subject {
     country     = "France"
-    common_name = "127.0.0.1"
+    common_name = "test123"
     # organization = "127.0.0.1"
   }
 }

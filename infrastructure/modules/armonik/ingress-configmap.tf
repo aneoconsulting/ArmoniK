@@ -5,17 +5,25 @@ map $http_upgrade $connection_upgrade {
     default upgrade;
     '' close;
 }
+%{ if var.ingress != null ? var.ingress.mtls : false ~}
+    map $ssl_client_s_dn $ssl_client_s_dn_cn {
+        default "";
+        ~CN=(?<CN>[^,/]+) $CN;
+    }
+%{ endif ~}
 server {
 %{ if var.ingress != null ? var.ingress.tls : false ~}
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
     ssl_certificate     /ingress/ingress.crt;
     ssl_certificate_key /ingress/ingress.key;
-%{   if var.ingress.mtls ~}
+%{ if var.ingress.mtls ~}
     ssl_verify_client on;
     ssl_client_certificate /ingressclient/ca.pem;
 %{   else ~}
     ssl_verify_client off;
+    proxy_hide_header X-Certificate-Client-CN;
+    proxy_hide_header X-Certificate-Client-Fingerprint;
 %{   endif ~}
 %{ else ~}
     listen 80;
@@ -23,13 +31,21 @@ server {
     listen [::]:80;
     listen [::]:81 http2;
 %{ endif ~}
-    
+
     location / {
+%{ if var.ingress != null ? var.ingress.mtls : false ~}
+        grpc_set_header X-Certificate-Client-CN $ssl_client_s_dn_cn;
+        grpc_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
+%{ endif ~}
         grpc_pass grpc://${local.control_plane_endpoints.ip}:${local.control_plane_endpoints.port};
     }
 %{ if local.seq_web_url != "" ~}
     location /seq {
-        proxy_set_header        Host $http_host;
+%{ if var.ingress != null ? var.ingress.mtls : false ~}
+        proxy_set_header X-Certificate-Client-CN $ssl_client_s_dn_cn;
+        proxy_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
+%{ endif ~}
+        proxy_set_header Host $http_host;
         proxy_set_header Accept-Encoding "";
         rewrite  ^/seq/(.*)  /$1 break;
         proxy_pass ${local.seq_web_url}/;
@@ -43,6 +59,10 @@ server {
         rewrite ^ $scheme://$http_host/grafana/ permanent;
     }
     location /grafana/ {
+%{ if var.ingress != null ? var.ingress.mtls : false ~}
+        proxy_set_header X-Certificate-Client-CN $ssl_client_s_dn_cn;
+        proxy_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
+%{ endif ~}
         proxy_set_header Host $http_host;
         proxy_pass ${local.grafana_url}/;
         sub_filter '<head>' '<head><base href="$${scheme}://$${http_host}/grafana/">';
@@ -52,11 +72,15 @@ server {
     }
     location /grafana/api/live {
         rewrite  ^/grafana/(.*)  /$1 break;
-        proxy_http_version 1.1;
+%{ if var.ingress != null ? var.ingress.mtls : false ~}
+        proxy_set_header X-Certificate-Client-CN $ssl_client_s_dn_cn;
+        proxy_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
+%{ endif ~}
 %{ if var.ingress != null ? var.ingress.tls : false ~}
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
 %{ endif ~}
+        proxy_http_version 1.1;
         proxy_set_header Host $http_host;
         proxy_pass ${local.grafana_url}/;
     }
