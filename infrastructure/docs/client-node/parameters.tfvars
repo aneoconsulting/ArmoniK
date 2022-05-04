@@ -1,5 +1,5 @@
 # Region
-region = "eu-west-3"
+region = "us-east-1"
 
 # Tags
 tags = {
@@ -8,10 +8,10 @@ tags = {
 }
 
 # AMI
-ami = "ami-0cf3321d8c3c28ee0"
+ami = "ami-0022f774911c1d690"
 
 # Instance type
-instance_type = "c5.xlarge"
+instance_type = "c5.24xlarge"
 
 # VPC
 vpc_cidr_block = "10.0.0.0/16"
