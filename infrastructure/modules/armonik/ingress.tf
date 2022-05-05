@@ -51,7 +51,7 @@ resource "kubernetes_deployment" "ingress" {
             }
           }
           dynamic port{
-            for_each = var.ingress.port
+            for_each = local.ingress_ports
             content {
               name = "ingress-p-${port.key}"
               container_port = port.value

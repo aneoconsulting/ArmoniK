@@ -39,7 +39,8 @@ variable "ingress" {
     image              = string
     tag                = string
     image_pull_policy  = string
-    port               = list(number)
+    http_port          = number
+    grpc_port          = number
     limits             = object({
       cpu    = string
       memory = string

@@ -13,8 +13,10 @@ map $http_upgrade $connection_upgrade {
 %{ endif ~}
 server {
 %{ if var.ingress != null ? var.ingress.tls : false ~}
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
+%{   for port in local.ingress_ports ~}
+    listen ${port} ssl http2;
+    listen [::]:${port} ssl http2;
+%{   endfor ~}
     ssl_certificate     /ingress/ingress.crt;
     ssl_certificate_key /ingress/ingress.key;
 %{ if var.ingress.mtls ~}
@@ -26,10 +28,14 @@ server {
     proxy_hide_header X-Certificate-Client-Fingerprint;
 %{   endif ~}
 %{ else ~}
-    listen 80;
-    listen 81 http2;
-    listen [::]:80;
-    listen [::]:81 http2;
+%{   if var.ingress.http_port != null ~}
+    listen ${var.ingress.http_port};
+    listen [::]:${var.ingress.http_port};
+%{   endif ~}
+%{   if var.ingress.grpc_port != null ~}
+    listen ${var.ingress.grpc_port} http2;
+    listen [::]:${var.ingress.grpc_port} http2;
+%{   endif ~}
 %{ endif ~}
 
     location / {

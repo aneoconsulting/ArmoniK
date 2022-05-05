@@ -48,28 +48,35 @@ locals {
   ingress_node_ip = try(tomap(data.external.ingress_node_ip.0.result).node_ip, "")
 
   ingress_load_balancer = (var.ingress != null ? kubernetes_service.ingress.0.spec.0.type == "LoadBalancer" : false) ? {
-    ip   = (kubernetes_service.ingress.0.status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.ingress.0.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.ingress.0.status.0.load_balancer.0.ingress.0.ip)
-    port = kubernetes_service.ingress.0.spec.0.port.0.port
+    ip        = (kubernetes_service.ingress.0.status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.ingress.0.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.ingress.0.status.0.load_balancer.0.ingress.0.ip)
+    http_port = var.ingress.http_port
+    grpc_port = var.ingress.grpc_port
   } : {
-    ip   = ""
-    port = ""
+    ip        = ""
+    http_port = ""
+    grpc_port = ""
   }
 
   ingress_node_port = (var.ingress != null ? local.ingress_load_balancer.ip == "" && kubernetes_service.ingress.0.spec.0.type == "NodePort" : false) ? {
-    ip   = local.ingress_node_ip
-    port = kubernetes_service.ingress.0.spec.0.port.0.node_port
+    ip        = local.ingress_node_ip
+    http_port = element(kubernetes_service.ingress.0.spec.0.port[*].node_port, 0)
+    grpc_port = element(kubernetes_service.ingress.0.spec.0.port[*].node_port, 1)
   } : {
-    ip   = local.ingress_load_balancer.ip
-    port = local.ingress_load_balancer.port
+    ip        = local.ingress_load_balancer.ip
+    http_port = local.ingress_load_balancer.http_port
+    grpc_port = local.ingress_load_balancer.grpc_port
   }
 
   ingress_endpoint = (var.ingress != null ? local.ingress_node_port.ip == "" && kubernetes_service.ingress.0.spec.0.type == "ClusterIP" : false) ? {
-    ip   = kubernetes_service.ingress.0.spec.0.cluster_ip
-    port = kubernetes_service.ingress.0.spec.0.port.0.port
+    ip        = kubernetes_service.ingress.0.spec.0.cluster_ip
+    http_port = var.ingress.http_port
+    grpc_port = var.ingress.grpc_port
   } : {
-    ip   = local.ingress_node_port.ip
-    port = local.ingress_node_port.port
+    ip        = local.ingress_node_port.ip
+    http_port = local.ingress_node_port.http_port
+    grpc_port = local.ingress_node_port.grpc_port
   }
 
-  ingress_url = var.ingress != null ? "${var.ingress.tls ? "https" : "http"}://${local.ingress_endpoint.ip}:${local.ingress_endpoint.port}" : ""
+  ingress_http_url = var.ingress != null ? "${var.ingress.tls ? "https" : "http"}://${local.ingress_endpoint.ip}:${local.ingress_endpoint.http_port}" : ""
+  ingress_grpc_url = var.ingress != null ? "${var.ingress.tls ? "https" : "http"}://${local.ingress_endpoint.ip}:${local.ingress_endpoint.grpc_port}" : ""
 }

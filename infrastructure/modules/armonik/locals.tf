@@ -72,4 +72,7 @@ locals {
 
   # Metrics exporter
   metrics_exporter_name = try(var.monitoring.metrics_exporter.name, "")
+
+  # ingress ports
+  ingress_ports = var.ingress != null ? distinct(compact([var.ingress.http_port, var.ingress.grpc_port])) : []
 }
