@@ -5,7 +5,8 @@
     2. [When should I not use ArmoniK](#when-should-i-not-use-armonik)
 2. [ArmoniK deployment](#armonik-deployment)
 3. [How to run ArmoniK.Samples](#how-to-run-armonik.samples)
-4. [Bugs/Support](#bugs-support)
+4. [Acknowledge](#acknowledge)
+5. [Bugs/Support](#bugs-support)
 
 # ArmoniK
 
@@ -41,6 +42,9 @@ in [ArmoniK deployment](./infrastructure/README.md)
 
 Instructions to run ArmoniK.Samples are described
 in [Run Samples](https://github.com/aneoconsulting/ArmoniK.Samples/blob/main/README.md)
+
+# Acknowledge
+This project was funded by AWS and started with their [HTCGrid project](https://awslabs.github.io/aws-htc-grid/).
 
 # Bugs/Support
 

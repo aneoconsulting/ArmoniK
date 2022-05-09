@@ -7,6 +7,8 @@ output "storage_endpoint_url" {
       host                = module.mq.activemq_endpoint_url.host
       port                = module.mq.activemq_endpoint_url.port
       web_url             = module.mq.web_url
+      web_host            = split(":", split("/", module.mq.web_url)[2])[0]
+      web_port            = split(":", split("/", module.mq.web_url)[2])[0]
       allow_host_mismatch = false
       credentials         = {
         secret       = module.mq.user_credentials.secret

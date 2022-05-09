@@ -30,6 +30,7 @@ The following software or tool should be installed upon your local Linux machine
 
 * If You have Windows machine, You have to install [WSL 2](../quick-deploy/localhost/docs/wsl2.md)
 * [Docker](https://docs.docker.com/engine/install/)
+* [GNU make](https://www.gnu.org/software/make/)
 * [JQ](https://stedolan.github.io/jq/download/)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 * [Python](https://docs.python-guide.org/starting/install3/linux/) version 3

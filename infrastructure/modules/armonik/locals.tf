@@ -66,8 +66,8 @@ locals {
   seq_web_url = try(var.monitoring.seq.web_url, "")
 
   # Grafana
-  grafana_host  = try(var.monitoring.grafana.host, "")
-  grafana_port  = try(var.monitoring.grafana.port, "")
+  grafana_host = try(var.monitoring.grafana.host, "")
+  grafana_port = try(var.monitoring.grafana.port, "")
   grafana_url  = try(var.monitoring.grafana.url, "")
 
   # Metrics exporter
@@ -75,4 +75,9 @@ locals {
 
   # ingress ports
   ingress_ports = var.ingress != null ? distinct(compact([var.ingress.http_port, var.ingress.grpc_port])) : []
+
+  # Polling delay to MongoDB
+  mongodb_polling_min_delay = try(var.mongodb_polling_delay.min_polling_delay, "00:00:01")
+  mongodb_polling_max_delay = try(var.mongodb_polling_delay.max_polling_delay, "00:05:00")
 }
+

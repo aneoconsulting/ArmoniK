@@ -15,10 +15,18 @@ output "web_url" {
   value = local.activemq_web_url
 }
 
+output "web_host" {
+  value = local.activemq_endpoints.ip
+}
+
+output "web_port" {
+  value = local.activemq_endpoints.web_port
+}
+
 output "user_certificate" {
   description = "User certificates of ActiveMQ"
   value       = {
-    secret = kubernetes_secret.activemq_client_certificate.metadata[0].name
+    secret      = kubernetes_secret.activemq_client_certificate.metadata[0].name
     ca_filename = "chain.pem"
   }
 }

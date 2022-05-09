@@ -1,0 +1,19 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+locale: en_US.UTF-8
+
+write_files:
+  - content: |
+      curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL=latest sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig /home/ec2-user/.kube/
+    path: /app/install-k3s.sh
+    permissions: 0755
+    owner: root
+
+runcmd:
+  - bash /app/install-k3s.sh
