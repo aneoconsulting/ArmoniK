@@ -24,8 +24,8 @@ configuration=Debug
 TestDir=${BASEDIR}/../../source/ArmoniK.Extensions.Csharp/Common/EndToEnd.Tests/
 cd ${TestDir}
 
-export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].hostname" --no-headers=true)
-export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+export CPIP=$(kubectl get svc ingress -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].hostname" --no-headers=true)
+export CPPort=$(kubectl get svc ingress -n armonik -o custom-columns="PORT:.spec.ports[1].port" --no-headers=true)
 export Grpc__Endpoint=http://$CPIP:$CPPort
 export S3_BUCKET=$(aws s3api list-buckets --output json | jq -r '.Buckets[0].Name')
 
@@ -35,7 +35,7 @@ function build()
     dotnet publish --self-contained -c $configuration -r linux-x64 .
     #aws s3 sync --exclude "*" --include ArmoniK.EndToEndTests-v1.0.0-700.zip ../packages/ s3://$S3_BUCKET
     aws s3 cp ../packages/ArmoniK.EndToEndTests-v1.0.0-700.zip s3://$S3_BUCKET
-    kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
+    kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name) || true
 }
 
 function execute()

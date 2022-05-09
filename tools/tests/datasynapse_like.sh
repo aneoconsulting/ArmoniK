@@ -25,8 +25,8 @@ TestDir=${BASEDIR}/../../source/ArmoniK.Samples/Samples/GridServerLike
 
 cd ${TestDir}
 
-export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
-export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+export CPIP=$(kubectl get svc ingress -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
+export CPPort=$(kubectl get svc ingress -n armonik -o custom-columns="PORT:.spec.ports[1].port" --no-headers=true)
 export Grpc__Endpoint=http://$CPIP:$CPPort
 nuget_cache=$(dotnet nuget locals global-packages --list | awk '{ print $2 }')
 
@@ -44,7 +44,7 @@ function build() {
 function deploy() {
   cd ${TestDir}
   cp packages/ArmoniK.Samples.GridServer.Client-v1.0.0-700.zip ${HOME}/data
-  kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name)
+  kubectl delete -n armonik $(kubectl get pods -n armonik -l service=compute-plane --no-headers=true -o name) || true
 }
 
 function execute() {
