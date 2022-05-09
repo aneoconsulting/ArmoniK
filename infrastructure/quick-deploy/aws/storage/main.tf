@@ -32,9 +32,9 @@ module "elasticache" {
   tags        = merge(local.tags, { name = local.elasticache_name })
   name        = local.elasticache_name
   vpc         = {
-    id          = var.vpc.id
-    cidr_blocks = concat([var.vpc.cidr_block], var.vpc.pod_cidr_block_private)
-    subnet_ids  = var.vpc.private_subnet_ids
+    id          = local.vpc.id
+    cidr_blocks = local.vpc.cidr_blocks
+    subnet_ids  = local.vpc.subnet_ids
   }
   elasticache = {
     engine                      = var.elasticache.engine
@@ -61,9 +61,9 @@ module "mq" {
   name      = local.mq_name
   namespace = var.namespace
   vpc       = {
-    id          = var.vpc.id
-    cidr_blocks = concat([var.vpc.cidr_block], var.vpc.pod_cidr_block_private)
-    subnet_ids  = var.vpc.private_subnet_ids
+    id          = local.vpc.id
+    cidr_blocks = local.vpc.cidr_blocks
+    subnet_ids  = local.vpc.subnet_ids
   }
   user      = {
     password = var.mq_credentials.password

@@ -16,25 +16,33 @@ namespace = "armonik"
 # Logging level
 logging_level = "Information"
 
+# Polling delay to MongoDB
+# according to the size of the task and/or the application
+mongodb_polling_delay = {
+  min_polling_delay = "00:00:01"
+  max_polling_delay = "00:00:10"
+}
+
 # Parameters of control plane
 control_plane = {
   name               = "control-plane"
   service_type       = "LoadBalancer"
   replicas           = 1
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag                = "0.5.4"
+  tag                = "0.5.6"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
     cpu    = "1000m"
-    memory = "1024Mi"
+    memory = "1024Mi" 
   }
   requests           = {
     cpu    = "100m"
-    memory = "128Mi"
+    memory = "50Mi" 
   }
   image_pull_secrets = ""
   node_selector      = {}
+  annotations        = {}
 }
 
 # Parameters of the compute plane
@@ -49,15 +57,15 @@ compute_plane = [
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.5.4"
+      tag               = "0.5.6"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "100m"
-        memory = "128Mi"
+        cpu    = "1000m" 
+        memory = "1024Mi" 
       }
       requests          = {
-        cpu    = "100m"
-        memory = "128Mi"
+        cpu    = "100m" 
+        memory = "50Mi" 
       }
     }
     # ArmoniK workers
@@ -66,15 +74,15 @@ compute_plane = [
         name              = "worker"
         port              = 80
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.5.2"
+        tag               = "0.5.3"
         image_pull_policy = "IfNotPresent"
         limits            = {
-          cpu    = "920m"
-          memory = "2048Mi"
+          cpu    = "100m" 
+          memory = "512Mi" 
         }
         requests          = {
-          cpu    = "50m"
-          memory = "100Mi"
+          cpu    = "50m" 
+          memory = "50Mi" 
         }
       }
     ]

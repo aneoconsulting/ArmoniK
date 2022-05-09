@@ -7,6 +7,9 @@ output "storage_endpoint_url" {
       host                = module.activemq.host
       port                = module.activemq.port
       web_url             = module.activemq.web_url
+      web_host            = module.activemq.web_host
+      web_port            = module.activemq.web_port
+      borker_name         = "localhost"
       credentials         = {
         secret       = module.activemq.user_credentials.secret
         username_key = module.activemq.user_credentials.username_key

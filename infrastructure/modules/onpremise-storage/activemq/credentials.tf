@@ -27,7 +27,7 @@ resource "random_password" "mq_keystore_password" {
 
 resource "kubernetes_secret" "activemq_admin" {
   metadata {
-    name      = "activemqp-admin"
+    name      = "activemq-admin"
     namespace = var.namespace
   }
   data = {

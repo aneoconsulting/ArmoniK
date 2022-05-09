@@ -2,7 +2,7 @@
 uid: introduction_installation
 ---
 
-# Cluster Installation
+# Kubernetes installation
 
 Hereafter we describe the instructions to install Kubernetes on an onpremise cluster. We present two examples of Kubernetes on Linux cluster machines:
 
@@ -14,7 +14,7 @@ Installation using K3s as kubernetes implementation.
 
 Installation using kubeadm.
 
-# ArmoniK development
+# ArmoniK installation
 
 ## Single server installation (developement only)
 

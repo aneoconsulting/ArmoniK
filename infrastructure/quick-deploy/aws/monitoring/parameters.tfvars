@@ -48,6 +48,7 @@ monitoring = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
     tag                = "2021.4"
+    port               = 8080
     image_pull_secrets = ""
     service_type       = "LoadBalancer"
     node_selector      = { "grid/type" = "Operator" }
@@ -56,6 +57,7 @@ monitoring = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/grafana"
     tag                = "latest"
+    port               = 3000
     image_pull_secrets = ""
     service_type       = "LoadBalancer"
     node_selector      = { "grid/type" = "Operator" }
@@ -75,6 +77,7 @@ monitoring = {
     node_selector      = { "grid/type" = "Operator" }
   }
   prometheus_adapter = {
+    name               = "prometheus-adapter"
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus-adapter"
     tag                = "v0.9.1"
     image_pull_secrets = ""
@@ -83,7 +86,7 @@ monitoring = {
   }
   metrics_exporter   = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter"
-    tag                = "0.5.4"
+    tag                = "0.5.6"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }

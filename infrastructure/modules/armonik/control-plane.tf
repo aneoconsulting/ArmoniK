@@ -52,19 +52,45 @@ resource "kubernetes_deployment" "control_plane" {
           name              = var.control_plane.name
           image             = var.control_plane.tag != "" ? "${var.control_plane.image}:${var.control_plane.tag}" : var.control_plane.image
           image_pull_policy = var.control_plane.image_pull_policy
-          resources {
-            limits   = {
-              cpu    = var.control_plane.limits.cpu
-              memory = var.control_plane.limits.memory
-            }
-            requests = {
-              cpu    = var.control_plane.requests.cpu
-              memory = var.control_plane.requests.memory
+          dynamic resources {
+            for_each = (var.control_plane.limits.cpu != ""
+            || var.control_plane.limits.memory != ""
+            || var.control_plane.requests.cpu != ""
+            || var.control_plane.requests.memory != "" ? [1] : [])
+            content {
+              limits   = {
+                cpu    = var.control_plane.limits.cpu
+                memory = var.control_plane.limits.memory
+              }
+              requests = {
+                cpu    = var.control_plane.requests.cpu
+                memory = var.control_plane.requests.memory
+              }
             }
           }
           port {
             name           = "control-port"
             container_port = 80
+          }
+          liveness_probe {
+            tcp_socket {
+              port = 80
+            }
+            initial_delay_seconds = 15
+            period_seconds        = 5
+            timeout_seconds       = 1
+            success_threshold     = 1
+            failure_threshold     = 1
+          }
+          startup_probe {
+            tcp_socket {
+              port = 80
+            }
+            initial_delay_seconds = 60
+            period_seconds        = 5
+            timeout_seconds       = 1
+            success_threshold     = 1
+            failure_threshold     = 3 # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
           }
           env_from {
             config_map_ref {
@@ -319,12 +345,13 @@ resource "kubernetes_deployment" "control_plane" {
 # Control plane service
 resource "kubernetes_service" "control_plane" {
   metadata {
-    name      = kubernetes_deployment.control_plane.metadata.0.name
-    namespace = kubernetes_deployment.control_plane.metadata.0.namespace
-    labels    = {
+    name        = kubernetes_deployment.control_plane.metadata.0.name
+    namespace   = kubernetes_deployment.control_plane.metadata.0.namespace
+    labels      = {
       app     = kubernetes_deployment.control_plane.metadata.0.labels.app
       service = kubernetes_deployment.control_plane.metadata.0.labels.service
     }
+    annotations = var.control_plane.annotations
   }
   spec {
     type     = var.control_plane.service_type

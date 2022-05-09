@@ -82,6 +82,16 @@ variable "eks" {
       cluster_encryption_config = string
       ebs_kms_key_id            = string
     })
+    map_roles                             = list(object({
+      rolearn  = string
+      username = string
+      groups   = list(string)
+    }))
+    map_users                             = list(object({
+      userarn  = string
+      username = string
+      groups   = list(string)
+    }))
   })
   default     = {
     name                                  = "armonik-eks"
@@ -107,6 +117,8 @@ variable "eks" {
       cluster_encryption_config = ""
       ebs_kms_key_id            = ""
     }
+    map_roles                             = []
+    map_users                             = []
   }
 }
 

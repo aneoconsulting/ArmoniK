@@ -16,7 +16,7 @@ write_files:
       echo "Host *
         StrictHostKeyChecking no
         UserKnownHostsFile /dev/null" > /home/ec2-user/.ssh/config
-      chown -R ec2-user:$ec2-user /home/ec2-user/.ssh/
+      chown -R ec2-user:ec2-user /home/ec2-user/.ssh/
     path: /app/private-ssh-key.sh
     permissions: 0755
     owner: root

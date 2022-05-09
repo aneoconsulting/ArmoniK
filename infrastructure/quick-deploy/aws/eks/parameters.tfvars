@@ -68,9 +68,42 @@ eks = {
     cluster_encryption_config = ""
     ebs_kms_key_id            = ""
   }
+  map_roles                             = []
+  map_users                             = []
 }
 
 # Operational node groups for EKS
+eks_operational_worker_groups = [
+  {
+    name                                     = "operational-worker-ondemand"
+    spot_allocation_strategy                 = "capacity-optimized"
+    override_instance_types                  = ["c5.xlarge"]
+    spot_instance_pools                      = 0
+    asg_min_size                             = 1
+    asg_max_size                             = 5
+    asg_desired_capacity                     = 1
+    on_demand_base_capacity                  = 1
+    on_demand_percentage_above_base_capacity = 100
+    kubelet_extra_args                       = "--node-labels=grid/type=Operator --register-with-taints=grid/type=Operator:NoSchedule"
+  }
+]
+
+# EKS worker groups
+eks_worker_groups = [
+  {
+    name                                     = "worker-24xlarge-spot"
+    spot_allocation_strategy                 = "capacity-optimized"
+    override_instance_types                  = ["c5.24xlarge"]
+    spot_instance_pools                      = 0
+    asg_min_size                             = 0
+    asg_max_size                             = 1000
+    asg_desired_capacity                     = 0
+    on_demand_base_capacity                  = 0
+    on_demand_percentage_above_base_capacity = 0
+  }
+]
+
+/*# Operational node groups for EKS
 eks_operational_worker_groups = [
   {
     name                                     = "operational-worker-ondemand"
@@ -133,4 +166,4 @@ eks_worker_groups = [
     on_demand_base_capacity                  = 0
     on_demand_percentage_above_base_capacity = 0
   }
-]
+]*/
