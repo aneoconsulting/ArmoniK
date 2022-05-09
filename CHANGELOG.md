@@ -1,11 +1,17 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-03-28)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-05-05)
+
+Added
+- 
+
+* Add Ingress with no SSL, TLS and mTLS functionalities (Default: no SSL)
 
 ## [v2.5.2](https://github.com/aneoconsulting/armonik/tree/v2.5.2) (2022-03-28)
 
 Added
 - 
+
 * Add multiarch images for ArmoniK Core (Control plane, Polling agent, and Metrics exporter)
 * Add health checks for Polling agent
 * Add Ssl options in API to connect with https protocol
@@ -14,6 +20,7 @@ Added
 
 Fixed
 - 
+
 * Fix bugs with deserialization from MongoDB in polling agent and large payloads
 * Fix bugs with TryGetResults
 

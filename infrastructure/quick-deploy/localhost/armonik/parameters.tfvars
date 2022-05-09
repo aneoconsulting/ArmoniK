@@ -95,8 +95,8 @@ ingress = {
   image              = "nginx"
   tag                = "latest"
   image_pull_policy  = "IfNotPresent"
-  http_port          = 443
-  grpc_port          = 443
+  http_port          = 8443
+  grpc_port          = 5001
   limits             = {
     cpu    = "200m"
     memory = "100Mi"
@@ -107,6 +107,6 @@ ingress = {
   }
   image_pull_secrets = ""
   node_selector      = {}
-  tls                = true
-  mtls               = true
+  tls                = false
+  mtls               = false
 }
