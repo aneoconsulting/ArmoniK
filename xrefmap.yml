@@ -14,5 +14,5 @@ references:
   name: AWS deployment using kubeadm
   href: articles/installations/aws_kubeadm_deploy.html
 - uid: introduction_installation
-  name: Cluster Installation
+  name: Kubernetes installation
   href: articles/intro.html
