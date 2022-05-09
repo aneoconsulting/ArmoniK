@@ -58,7 +58,7 @@ infrastructure:
 * [Docker](https://docs.docker.com/engine/install/)
 * [GNU make](https://www.gnu.org/software/make/)
 * [JQ](https://stedolan.github.io/jq/download/)
-* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
+* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) v1.23.6
 * [Helm](https://helm.sh/docs/intro/install/)
 * [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 

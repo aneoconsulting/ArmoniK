@@ -27,11 +27,11 @@ control_plane = {
   port               = 5001
   limits             = {
     cpu    = "1000m"
-    memory = "1024Mi"
+    memory = "2048Mi"
   }
   requests           = {
-    cpu    = "100m"
-    memory = "128Mi"
+    cpu    = "200m"
+    memory = "256Mi"
   }
   image_pull_secrets = ""
   node_selector      = {}
@@ -52,12 +52,12 @@ compute_plane = [
       tag               = "0.5.4"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "100m"
-        memory = "128Mi"
+        cpu    = "1000m"
+        memory = "2048Mi"
       }
       requests          = {
-        cpu    = "100m"
-        memory = "128Mi"
+        cpu    = "200m"
+        memory = "256Mi"
       }
     }
     # ArmoniK workers
@@ -69,12 +69,12 @@ compute_plane = [
         tag               = "0.5.2"
         image_pull_policy = "IfNotPresent"
         limits            = {
-          cpu    = "920m"
-          memory = "2048Mi"
+          cpu    = "1000m"
+          memory = "1024Mi"
         }
         requests          = {
-          cpu    = "50m"
-          memory = "100Mi"
+          cpu    = "500m"
+          memory = "512Mi"
         }
       }
     ]
@@ -104,11 +104,11 @@ ingress = {
   name               = "ingress"
   service_type       = "LoadBalancer"
   replicas           = 1
-  image              = "nginx"
+  image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/nginx"
   tag                = "latest"
   image_pull_policy  = "IfNotPresent"
-  http_port          = 443
-  grpc_port          = 443
+  http_port          = 8443
+  grpc_port          = 5001
   limits             = {
     cpu    = "200m"
     memory = "100Mi"
@@ -119,6 +119,6 @@ ingress = {
   }
   image_pull_secrets = ""
   node_selector      = {}
-  tls                = true
-  mtls               = true
+  tls                = false
+  mtls               = false
 }

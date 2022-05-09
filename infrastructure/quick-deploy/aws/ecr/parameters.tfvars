@@ -101,6 +101,11 @@ ecr = {
       name  = "prometheus-adapter"
       image = "k8s.gcr.io/prometheus-adapter/prometheus-adapter"
       tag   = "v0.9.1"
+    },
+    {
+      name  = "nginx"
+      image = "nginx"
+      tag   = "latest"
     }
   ]
 }
