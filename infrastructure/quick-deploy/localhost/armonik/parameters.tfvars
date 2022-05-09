@@ -60,7 +60,6 @@ compute_plane = [
     worker                           = [
       {
         name              = "worker"
-        port              = 80
         image             = "dockerhubaneo/armonik_worker_dll"
         tag               = "0.5.3"
         image_pull_policy = "IfNotPresent"
@@ -75,23 +74,23 @@ compute_plane = [
       }
     ]
     hpa                              = {
-      min_replicas   = 1
-      max_replicas   = 5
-      object_metrics = [
-        {
-          described_object = {
-            api_version = "batch/v1"
-            kind        = "Job"
-          }
-          metric_name      = "armonik_tasks_queued"
-          target           = {
-            type                = "AverageValue" # "Value", "Utilization" or "AverageValue"
-            average_value       = 2
-            average_utilization = 0
-            value               = 0
-          }
-        }
-      ]
+      type               = "prometheus"
+      polling_interval   = 15
+      cooldown_period    = 300
+      idle_replica_count = 0
+      min_replica_count  = 1
+      max_replica_count  = 5
+      behavior           = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers           = {
+        metric_name = "armonik_tasks_queued"
+        threshold   = "2"
+      }
     }
   }
 ]

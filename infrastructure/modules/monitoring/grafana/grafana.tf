@@ -136,7 +136,7 @@ resource "kubernetes_service" "grafana" {
     port {
       name        = "grafana"
       port        = var.port
-      target_port = var.port
+      target_port = 3000
       protocol    = "TCP"
     }
   }

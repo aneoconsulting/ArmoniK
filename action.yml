@@ -107,6 +107,15 @@ runs:
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         make create-namespace
 
+    - name: Deploy KEDA
+      shell: bash
+      run: |
+        set -ex
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        source envvars.sh
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        make deploy-keda
+
     - name: Deploy storage
       shell: bash
       run: |
@@ -120,6 +129,8 @@ runs:
       shell: bash
       run: |
         set -ex
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        source envvars.sh
         python ${{ github.action_path }}/tools/modify_parameters.py \
           -kv "monitoring.metrics_exporter.image=${{ inputs.metrics-exporter-image }}" \
           -kv "monitoring.metrics_exporter.tag=${{ inputs.metrics-exporter-tag }}" \
@@ -132,6 +143,8 @@ runs:
       shell: bash
       run: |
         set -ex
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        source envvars.sh
         python ${{ github.action_path }}/tools/modify_parameters.py \
           -kv "compute_plane[*].worker[*].image=${{ inputs.worker-image }}" \
           -kv "compute_plane[*].worker[*].tag=${{ inputs.worker-tag }}" \

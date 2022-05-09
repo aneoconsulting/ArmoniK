@@ -106,6 +106,16 @@ ecr = {
       name  = "nginx"
       image = "nginx"
       tag   = "latest"
+    },
+    {
+      name  = "keda"
+      image = "ghcr.io/kedacore/keda"
+      tag   = "2.6.1"
+    },
+    {
+      name  = "keda-metrics-apiserver"
+      image = "ghcr.io/kedacore/keda-metrics-apiserver"
+      tag   = "2.6.1"
     }
   ]
 }

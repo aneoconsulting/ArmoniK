@@ -2,6 +2,7 @@ export ARMONIK_KUBERNETES_NAMESPACE?=armonik
 export ARMONIK_SHARED_HOST_PATH?=$(HOME)/data
 export ARMONIK_FILE_STORAGE_FILE?=HostPath
 export ARMONIK_FILE_SERVER_IP?=
+export KEDA_KUBERNETES_NAMESPACE?=default
 
 CURRENT_DIR=$(shell pwd)
 STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/storage/generated/storage-output.json
@@ -13,9 +14,24 @@ MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/monitoring/generated/monitoring-outpu
 
 create-namespace:
 	kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+	kubectl create namespace $(KEDA_KUBERNETES_NAMESPACE) || true
 
 delete-namespace:
 	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+	kubectl delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
+
+####################################
+#              KEDA                #
+####################################
+
+deploy-keda:
+	$(MAKE) -C $(CURRENT_DIR)/keda deploy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE)
+
+destroy-keda:
+	$(MAKE) -C $(CURRENT_DIR)/keda destroy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE)
+
+clean-keda:
+	$(MAKE) -C $(CURRENT_DIR)/keda clean
 
 ####################################
 #            Storage               #

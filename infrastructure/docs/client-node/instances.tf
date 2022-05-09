@@ -60,6 +60,7 @@ module "client" {
   vpc_security_group_ids      = [aws_security_group.client.id]
   #subnet_id                   = module.vpc.private_subnets[0]
   subnet_id                   = aws_default_subnet.subnet.id
+  #subnet_id                   = var.subnet_id
   user_data_base64            = data.template_cloudinit_config.client_cloud_init.rendered
   tags                        = var.tags
   #depends_on = [module.vpc]

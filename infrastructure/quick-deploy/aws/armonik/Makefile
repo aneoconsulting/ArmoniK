@@ -19,7 +19,7 @@ all: init apply output
 deploy: init apply output
 
 init:
-	mkdir -p generated
+	mkdir -p $(GENERATED_DIR)
 	terraform init \
 		-backend-config 'bucket=$(TFSTATE_BUCKET_NAME)' \
 		-backend-config 'region=$(REGION)' \

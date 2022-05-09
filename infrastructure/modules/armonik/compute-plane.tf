@@ -229,7 +229,7 @@ resource "kubernetes_deployment" "compute_plane" {
             image             = worker.value.tag != "" ? "${worker.value.image}:${worker.value.tag}" : worker.value.image
             image_pull_policy = worker.value.image_pull_policy
             port {
-              container_port = worker.value.port
+              container_port = 80
             }
             dynamic resources {
               for_each = (worker.value.limits.cpu != ""

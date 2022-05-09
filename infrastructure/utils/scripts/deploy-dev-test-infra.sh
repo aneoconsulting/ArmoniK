@@ -20,6 +20,7 @@ CORE_TAG=""
 WORKER_TAG=""
 HPA_MAX_REPLICAS=5
 HPA_MIN_REPLICAS=1
+HPA_IDLE_REPLICAS=0
 LOGGING_LEVEL="Information"
 STORAGE_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/storage/parameters.tfvars"
 MONITORING_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/monitoring/parameters.tfvars"
@@ -132,6 +133,8 @@ EOF
   echo
   echo "   --hpa-max-replicas <HPA_MAX_REPLICAS>"
   echo
+  echo "   --hpa-idle-replicas <HPA_IDLE_REPLICAS>"
+  echo
   echo "   --logging-level <LOGGING_LEVEL_FOR_ARMONIK>"
   echo
   exit 1
@@ -196,8 +199,9 @@ prepare_armonik_parameters() {
       -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
       -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
       -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
-      -kv compute_plane[*].hpa.min_replicas="${HPA_MIN_REPLICAS}" \
-      -kv compute_plane[*].hpa.max_replicas="${HPA_MAX_REPLICAS}" \
+      -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
+      -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
+      -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
       -kv logging_level="${LOGGING_LEVEL}" \
       "${ARMONIK_PARAMETERS_FILE}" \
       "${GENERATED_ARMONIK_PARAMETERS_FILE}"
@@ -206,8 +210,9 @@ prepare_armonik_parameters() {
       -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
       -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
       -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
-      -kv compute_plane[*].hpa.min_replicas="${HPA_MIN_REPLICAS}" \
-      -kv compute_plane[*].hpa.max_replicas="${HPA_MAX_REPLICAS}" \
+      -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
+      -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
+      -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
       -kv logging_level="${LOGGING_LEVEL}" \
       "${ARMONIK_PARAMETERS_FILE}" \
       "${GENERATED_ARMONIK_PARAMETERS_FILE}"
@@ -217,8 +222,9 @@ prepare_armonik_parameters() {
       -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
       -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
       -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
-      -kv compute_plane[*].hpa.min_replicas="${HPA_MIN_REPLICAS}" \
-      -kv compute_plane[*].hpa.max_replicas="${HPA_MAX_REPLICAS}" \
+      -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
+      -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
+      -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
       -kv logging_level="${LOGGING_LEVEL}" \
       "${ARMONIK_PARAMETERS_FILE}" \
       "${GENERATED_ARMONIK_PARAMETERS_FILE}"
@@ -229,8 +235,9 @@ prepare_armonik_parameters() {
       -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
       -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
       -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
-      -kv compute_plane[*].hpa.min_replicas="${HPA_MIN_REPLICAS}" \
-      -kv compute_plane[*].hpa.max_replicas="${HPA_MAX_REPLICAS}" \
+      -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
+      -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
+      -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
       -kv logging_level="${LOGGING_LEVEL}" \
       "${ARMONIK_PARAMETERS_FILE}" \
       "${GENERATED_ARMONIK_PARAMETERS_FILE}"
@@ -448,6 +455,11 @@ function main() {
       ;;
     --hpa-max-replicas)
       HPA_MAX_REPLICAS="$2"
+      shift
+      shift
+      ;;
+    --hpa-idle-replicas)
+      HPA_IDLE_REPLICAS="$2"
       shift
       shift
       ;;

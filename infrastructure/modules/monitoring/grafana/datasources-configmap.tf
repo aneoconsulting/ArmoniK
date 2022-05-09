@@ -6,7 +6,7 @@ apiVersion: 1
 datasources:
 - name: Prometheus
   type: prometheus
-  url: http://prometheus:9090
+  url: ${var.prometheus_url}
   access: proxy
   isDefault: true
   jsonData:

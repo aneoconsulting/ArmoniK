@@ -38,14 +38,6 @@ monitoring = {
     service_type       = "ClusterIP"
     node_selector      = {}
   }
-  prometheus_adapter = {
-    name               = "prometheus-adapter"
-    image              = "k8s.gcr.io/prometheus-adapter/prometheus-adapter"
-    tag                = "v0.9.1"
-    image_pull_secrets = ""
-    service_type       = "ClusterIP"
-    node_selector      = {}
-  }
   metrics_exporter   = {
     image              = "dockerhubaneo/armonik_control_metrics"
     tag                = "0.5.6"

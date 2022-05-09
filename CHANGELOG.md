@@ -1,6 +1,28 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-05-05)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-05-06)
+
+## [v2.7.0](https://github.com/aneoconsulting/armonik/tree/v2.7.0) (2022-05-11)
+
+Removed
+-
+
+* Prometheus Adapter is removed and replaced by KEDA
+
+Added
+- 
+
+* KEDA is used for Horizontal Pod Autoscaling (HPA)
+* Use KEDA Prometheus scaler for HPA
+* Health check is added in Control plane
+
+Fixed
+- 
+
+* Fix the problem of multiple APIservice of custom.metrics.k8s.io or external.metrics.k8s.io on the same Kubernetes
+  cluster.
+
+## [v2.6.0](https://github.com/aneoconsulting/armonik/tree/v2.6.0) (2022-05-06)
 
 Added
 - 
