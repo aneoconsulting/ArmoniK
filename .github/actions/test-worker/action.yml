@@ -64,13 +64,13 @@ runs:
         cd tools/tests/
         bash datasynapse_like.sh
 
-#    - name: Test end-to-end
-#      shell: bash
-#      run: |
-#        set -ex
-#        git clone https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp.git source/ArmoniK.Extensions.Csharp
-#        cd tools/tests/
-#        bash endToEndTests.sh
+    - name: Test end-to-end
+      shell: bash
+      run: |
+        set -ex
+        git clone https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp.git source/ArmoniK.Extensions.Csharp
+        cd tools/tests/
+        bash endToEndTests.sh
 
     - name: Copy logs
       if: always()
