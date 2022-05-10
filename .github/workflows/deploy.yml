@@ -35,10 +35,10 @@ jobs:
           fetch-depth: 0
 
       - name: Get Core Version
-        id: core-version
+        id: core
         run: |
-          VERSION=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=version::$VERSION"
+          TAG=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
 
       - uses: ./
         name: Deploy infrastructure
@@ -48,8 +48,8 @@ jobs:
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
-          core-tag: 0.5.6
-          worker-tag: 0.5.6
+          core-tag: ${{ steps.core.outputs.tag }}
+          worker-tag: ${{ steps.core.outputs.tag }}
 
       - name: Test HTC Mock
         shell: bash
@@ -65,7 +65,7 @@ jobs:
             -e HtcMock__DataSize="1" \
             -e HtcMock__MemorySize="1" \
             -e HtcMock__SubTasksLevels="4" \
-            dockerhubaneo/armonik_core_htcmock_test_client:0.5.6
+            dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
 
       - name: Copy logs
         if: always()
