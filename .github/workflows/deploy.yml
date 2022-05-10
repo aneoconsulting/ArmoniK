@@ -95,11 +95,10 @@ jobs:
           fetch-depth: 0
 
       - name: Get Core Version
-        id: core-version
+        id: core
         run: |
-          cd ${{ github.action_path }}
-          VERSION=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=version::$VERSION"
+          TAG=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
 
       - uses: ./
         name: Run local action
@@ -109,8 +108,8 @@ jobs:
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_stream_test_worker
-          core-tag: 0.5.6
-          worker-tag: 0.5.6
+          core-tag: ${{ steps.core.outputs.tag }}
+          worker-tag: ${{ steps.core.outputs.tag }}
 
       - name: Test Core Stream
         shell: bash
@@ -121,7 +120,7 @@ jobs:
           export Grpc__Endpoint=http://$CPIP:$CPPort
           docker run --rm \
             -e Grpc__Endpoint="${Grpc__Endpoint}" \
-            dockerhubaneo/armonik_core_stream_test_client:0.5.6
+            dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
 
       - name: Copy logs
         if: always()
@@ -140,3 +139,47 @@ jobs:
           name: Logs Core Stream
           path: /tmp/armoniklogs/**/*.log
           retention-days: 5
+
+  tags:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Get Core Version
+        id: core
+        run: |
+          TAG=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+      - name: Get Core Version
+        id: worker
+        run: |
+          TAG=$(grep "worker-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
+            client-image: dockerhubaneo/armonik_core_htcmock_test_client
+            tag: ${{ steps.core.outputs.tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Get Core Version
+        id: core
+        run: |
+          echo "CORE=${{ tags.steps.core.outputs.tag }}"
+          echo "WORKER=${{ tags.steps.worker.outputs.tag }}"
