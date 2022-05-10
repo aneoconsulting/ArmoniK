@@ -37,9 +37,8 @@ jobs:
       - name: Get Core Version
         id: core-version
         run: |
-          pwd
-          ls $PWD
           VERSION=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "VERSION=$VERSION"
           echo "::set-output name=version::$VERSION"
 
       - uses: ./
