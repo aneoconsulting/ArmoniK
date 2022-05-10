@@ -107,6 +107,8 @@ compute_plane = [
   }
 ]
 
+# Deploy ingress
+# PS: to not deploy ingress put: "ingress=null"
 ingress = {
   name               = "ingress"
   service_type       = "LoadBalancer"
