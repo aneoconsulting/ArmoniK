@@ -140,3 +140,26 @@ jobs:
           path: /tmp/armoniklogs/**/*.log
           retention-days: 5
 
+  tags:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Get Core Version
+        id: core
+        run: |
+          TAG=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+      - name: Get Core Version
+        id: worker
+        run: |
+          TAG=$(grep "worker-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+
+
