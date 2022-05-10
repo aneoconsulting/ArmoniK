@@ -38,11 +38,10 @@ jobs:
         id: core-version
         run: |
           VERSION=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "VERSION=$VERSION"
           echo "::set-output name=version::$VERSION"
 
       - uses: ./
-        name: Run local action
+        name: Deploy infrastructure
         id: deploy-infra
         with:
           metrics-exporter-image: dockerhubaneo/armonik_control_metrics

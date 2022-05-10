@@ -127,7 +127,6 @@ runs:
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars.json
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         make deploy-monitoring PARAMETERS_FILE=${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars.json
-        cat ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars.json
 
     - name: Deploy ArmoniK
       shell: bash
@@ -147,7 +146,6 @@ runs:
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         make deploy-armonik PARAMETERS_FILE=${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
-        cat ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
 
     - name: Copy logs
       if: always()
