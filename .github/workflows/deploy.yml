@@ -173,8 +173,8 @@ jobs:
       - name: Get Core Version
         id: core
         run: |
-          echo "CORE=${{ tags.steps.core.outputs.tag }}"
-          echo "WORKER=${{ tags.steps.worker.outputs.tag }}"
+          echo "CORE=${{ steps.core.outputs.tag }}"
+          echo "WORKER=${{ steps.worker.outputs.tag }}"
 
 
 
