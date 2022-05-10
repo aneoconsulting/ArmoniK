@@ -49,8 +49,8 @@ jobs:
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
-          core-tag: ${{ steps.core-version.outputs.version }}
-          worker-tag: ${{ steps.core-version.outputs.version }}
+          core-tag: 0.5.6
+          worker-tag: 0.5.6
 
       - name: Test HTC Mock
         shell: bash
@@ -66,7 +66,7 @@ jobs:
             -e HtcMock__DataSize="1" \
             -e HtcMock__MemorySize="1" \
             -e HtcMock__SubTasksLevels="4" \
-            dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core-version.outputs.version }}
+            dockerhubaneo/armonik_core_htcmock_test_client:0.5.6
 
       - name: Copy logs
         if: always()
@@ -122,7 +122,7 @@ jobs:
           export Grpc__Endpoint=http://$CPIP:$CPPort
           docker run --rm \
             -e Grpc__Endpoint="${Grpc__Endpoint}" \
-            dockerhubaneo/armonik_core_stream_test_client:${{ steps.core-version.outputs.version }}
+            dockerhubaneo/armonik_core_stream_test_client:0.5.6
 
       - name: Copy logs
         if: always()
