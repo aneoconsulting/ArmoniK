@@ -5,32 +5,24 @@ inputs:
     description: 'Repository/image for control plane docker image'
     required: false
     default: 'None'
-  control-plane-tag:
-    description: 'Tag for control plane docker image'
-    required: false
-    default: 'None'
   polling-agent-image:
     description: 'Repository/image for polling agent docker image'
-    required: false
-    default: 'None'
-  polling-agent-tag:
-    description: 'Tag for polling agent docker image'
     required: false
     default: 'None'
   worker-image:
     description: 'Repository/image for worker docker image'
     required: false
     default: 'None'
-  worker-tag:
-    description: 'Tag for worker docker image'
-    required: false
-    default: 'None'
   metrics-exporter-image:
     description: 'Repository/image for metrics exporter docker image'
     required: false
     default: 'None'
-  metrics-exporter-tag:
-    description: 'Tag for metrics exporter docker image'
+  core-tag:
+    description: 'ArmoniK Core tag'
+    required: false
+    default: 'None'
+  worker-tag:
+    description: 'ArmoniK worker tag'
     required: false
     default: 'None'
   docker-is-installed:
@@ -104,7 +96,6 @@ runs:
         set -ex
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         source envvars.sh
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         make create-namespace
 
     - name: Deploy KEDA
@@ -113,7 +104,6 @@ runs:
         set -ex
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         source envvars.sh
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         make deploy-keda
 
     - name: Deploy storage
@@ -122,7 +112,6 @@ runs:
         set -ex
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         source envvars.sh
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         make deploy-storage
 
     - name: Deploy monitoring
@@ -133,7 +122,7 @@ runs:
         source envvars.sh
         python ${{ github.action_path }}/tools/modify_parameters.py \
           -kv "monitoring.metrics_exporter.image=${{ inputs.metrics-exporter-image }}" \
-          -kv "monitoring.metrics_exporter.tag=${{ inputs.metrics-exporter-tag }}" \
+          -kv "monitoring.metrics_exporter.tag=${{ inputs.core-tag }}" \
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars \
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars.json
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
@@ -149,9 +138,9 @@ runs:
           -kv "compute_plane[*].worker[*].image=${{ inputs.worker-image }}" \
           -kv "compute_plane[*].worker[*].tag=${{ inputs.worker-tag }}" \
           -kv "compute_plane[*].polling_agent.image=${{ inputs.polling-agent-image }}" \
-          -kv "compute_plane[*].polling_agent.tag=${{ inputs.polling-agent-tag }}" \
+          -kv "compute_plane[*].polling_agent.tag=${{ inputs.core-tag }}" \
           -kv control_plane.image=${{ inputs.control-plane-image }} \
-          -kv control_plane.tag=${{ inputs.control-plane-tag }} \
+          -kv control_plane.tag=${{ inputs.core-tag }} \
           -kv logging_level=${{ inputs.log-level }} \
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars \
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
