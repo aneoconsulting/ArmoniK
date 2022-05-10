@@ -140,8 +140,24 @@ jobs:
           path: /tmp/armoniklogs/**/*.log
           retention-days: 5
 
-  tags:
+  tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: HTC Mock
+            metrics-exporter-image: dockerhubaneo/armonik_control_metrics
+            control-plane-image: dockerhubaneo/armonik_control
+            polling-agent-image: dockerhubaneo/armonik_pollingagent
+            worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
+            client-image: dockerhubaneo/armonik_core_htcmock_test_client
+          - name: Core Stream
+            metrics-exporter-image: dockerhubaneo/armonik_control_metrics
+            control-plane-image: dockerhubaneo/armonik_control
+            polling-agent-image: dockerhubaneo/armonik_pollingagent
+            worker-image: dockerhubaneo/armonik_core_stream_test_worker
+            client-image: dockerhubaneo/armonik_core_stream_test_client
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -155,26 +171,43 @@ jobs:
           TAG=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
           echo "::set-output name=tag::$TAG"
 
-      - name: Get Worker Tag
-        id: worker
-        run: |
-          TAG=$(grep "worker-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
-
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: ./
+        name: Deploy infrastructure
+        id: deploy-infra
         with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
+          metrics-exporter-image: ${{ matrix.metrics-exporter-image }}
+          control-plane-image: ${{ matrix.control-plane-image }}
+          polling-agent-image: ${{ matrix.polling-agent-image }}
+          worker-image: ${{ matrix.worker-image }}
+          core-tag: ${{ steps.core.outputs.tag }}
+          worker-tag: ${{ steps.core.outputs.tag }}
 
-      - name: Get Core Version
-        id: core
+      - name: Test ${{ matrix.name }}
+        shell: bash
         run: |
-          echo "CORE=${{ steps.core.outputs.tag }}"
-          echo "WORKER=${{ steps.worker.outputs.tag }}"
+          set -ex
+          export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
+          export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+          export Grpc__Endpoint=http://$CPIP:$CPPort
+          docker run --rm -e Grpc__Endpoint="${Grpc__Endpoint}" ${{ matrix.client-image }}:${{ steps.core.outputs.tag }}
+
+      - name: Copy logs
+        if: always()
+        shell: bash
+        run: |
+          set -e
+          mkdir -p /tmp/armoniklogs
+          sudo cp -rL /var/log/pods/armonik_* /tmp/armoniklogs
+          sudo chown $USER -R /tmp/armoniklogs
+          find /tmp/armoniklogs -name "*.log"
+
+      - name: Store logs
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Logs ${{ matrix.name }}
+          path: /tmp/armoniklogs/**/*.log
+          retention-days: 5
 
 
 
