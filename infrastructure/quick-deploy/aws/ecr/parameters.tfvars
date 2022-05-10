@@ -45,22 +45,22 @@ ecr = {
     {
       name  = "armonik-control-plane"
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.5.6"
+      tag   = "0.5.8-jgfixtaskretry158.45.db549de"
     },
     {
       name  = "armonik-polling-agent"
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.5.6"
+      tag   = "0.5.8-jgfixtaskretry158.45.db549de"
     },
     {
       name  = "armonik-worker"
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.5.3"
+      tag   = "0.5.5"
     },
     {
       name  = "metrics-exporter"
       image = "dockerhubaneo/armonik_control_metrics"
-      tag   = "0.5.6"
+      tag   = "0.5.8-jgfixtaskretry158.45.db549de"
     },
     {
       name  = "seq"
