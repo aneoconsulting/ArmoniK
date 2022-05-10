@@ -37,8 +37,7 @@ jobs:
       - name: Get Core Version
         id: core-version
         run: |
-          cd ${{ github.action_path }}
-          VERSION=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          VERSION=$(grep "core-tag" ../../armonik-versions.txt | tail -1 | cut -d "=" -f 2)
           echo "::set-output name=version::$VERSION"
 
       - uses: ./
