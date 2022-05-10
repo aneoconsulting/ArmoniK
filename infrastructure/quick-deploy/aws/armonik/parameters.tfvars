@@ -73,7 +73,7 @@ compute_plane = [
       {
         name              = "worker"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.5.4"
+        tag               = "0.5.3"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "1000m"
@@ -114,7 +114,7 @@ ingress = {
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/nginx"
   tag                = "latest"
   image_pull_policy  = "IfNotPresent"
-  http_port          = 8443
+  http_port          = 5000
   grpc_port          = 5001
   limits             = {
     cpu    = "200m"

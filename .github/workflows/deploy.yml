@@ -25,22 +25,63 @@ jobs:
           echo "::set-output name=version::$VERSION"
           echo $VERSION
 
-  defaultWorkers:
+  htcMockTest:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/test-worker
-        name: Test with dll worker
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          version: ${{ github.ref }}
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
 
-  htcMockV3:
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/test-mock-v3
-        name: Test with htc mock v3
+      - name: Get Core Version
+        id: core-version
+        run: |
+          cd ${{ github.action_path }}
+          VERSION=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=version::$VERSION"
+
+      - uses: ./
+        name: Run local action
+        id: deploy-infra
         with:
-          version: ${{ github.ref }}
+          metrics-exporter-image: ${{ inputs.metrics-exporter-image }}
+          control-plane-image: ${{ inputs.control-plane-image }}
+          polling-agent-image: ${{ inputs.polling-agent-image }}
+          worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
+          core-tag: ${{ steps.core-version.outputs.version }}
+          worker-tag: ${{ steps.core-version.outputs.version }}
+
+      - name: Test HTC Mock
+        shell: bash
+        run: |
+          set -ex
+          export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
+          export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+          export Grpc__Endpoint=http://$CPIP:$CPPort
+          docker run --rm \
+            -e Grpc__Endpoint="${Grpc__Endpoint}" \
+            -e HtcMock__NTasks=1000 \
+            -e HtcMock__TotalCalculationTime="00:00:00.100" \
+            -e HtcMock__DataSize="1" \
+            -e HtcMock__MemorySize="1" \
+            -e HtcMock__SubTasksLevels="4" \
+            dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core-version.outputs.version }}
+
+      - name: Copy logs
+        if: always()
+        shell: bash
+        run: |
+          set -e
+          mkdir -p /tmp/armoniklogs
+          sudo cp -rL /var/log/pods/armonik_* /tmp/armoniklogs
+          sudo chown $USER -R /tmp/armoniklogs
+          find /tmp/armoniklogs -name "*.log"
+
+      - name: Store logs
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Logs HTC Mock
+          path: /tmp/armoniklogs/**/*.log
+          retention-days: 5
