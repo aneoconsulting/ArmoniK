@@ -37,7 +37,9 @@ jobs:
       - name: Get Core Version
         id: core-version
         run: |
-          VERSION=$(grep "core-tag" ../../armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          pwd
+          ls $PWD
+          VERSION=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
           echo "::set-output name=version::$VERSION"
 
       - uses: ./
