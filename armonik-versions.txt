@@ -1,2 +1,2 @@
-core-tag=0.5.8-jgfixtaskretry158.45.db549de
+core-tag=0.5.8
 worker-tag=0.5.6
