@@ -12,6 +12,11 @@ jobs:
     outputs:
       version: ${{ steps.genver.outputs.version }}
     steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -25,7 +30,7 @@ jobs:
           echo "::set-output name=version::$VERSION"
           echo $VERSION
 
-  vmtype:
+  coreStreamTest:
     runs-on: ubuntu-latest
     steps:
       - name: Get type of VM
@@ -33,10 +38,6 @@ jobs:
           lscpu
           uname -a
 
-
-  coreStreamTest:
-    runs-on: ubuntu-latest
-    steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
@@ -101,6 +102,11 @@ jobs:
           - 5
           - 10
     steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
