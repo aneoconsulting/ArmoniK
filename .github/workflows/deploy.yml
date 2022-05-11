@@ -31,6 +31,8 @@ jobs:
       - name: Get type of VM
         run: |
           lscpu
+          uname -a
+
 
   coreStreamTest:
     runs-on: ubuntu-latest
