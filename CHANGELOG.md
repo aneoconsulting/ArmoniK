@@ -19,8 +19,11 @@ Added
 * Health check is added in Control plane
 * Add stability + larges tests in Polling agent and control plane
 * Add configuration management of task priority for ActivMQ
+* Add new timeout configuration when no more space left
+* Add configuration in ActivMQ to upgrade pending messages in queue to 1OOM messages
 * Add Dotnet Framework 4.8 in High level Client API
 * Add Retry communication from Client when communication is lost during waiting or getResult
+*
 
 Fixed
 -
@@ -43,6 +46,10 @@ Changed
 * Improve performance by removing dispatcher
 * Improve index in MongoDB for access performances
 * Improve TryGetResult + Fix when error comes from compute plane
+* Manage retry when disrupted communications happen between client and server (Default retry 5 WAITING 200ms)
+* Increase VM Size for ActivMQ to manage heavy load
+* Change storage type from EFS to EBS
+
 
 ## [v2.6.0](https://github.com/aneoconsulting/armonik/tree/v2.6.0) (2022-05-06)
 
