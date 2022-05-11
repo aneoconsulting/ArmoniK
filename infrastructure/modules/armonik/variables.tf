@@ -138,13 +138,8 @@ variable "compute_plane" {
     hpa                              = any
   }))
   validation {
-    condition     = (try(var.compute_plane.hpa.idle_replica_count, 0) > try(var.compute_plane.hpa.min_replica_count, 1))
+    condition     = (try(var.compute_plane.hpa.idle_replica_count, 0) >= try(var.compute_plane.hpa.min_replica_count, 1))
     error_message = "IdleReplicaCount must be less than MinReplicaCount."
-  }
-
-  validation {
-    condition     = (try(var.compute_plane.hpa.idle_replica_count, 0) <= try(var.compute_plane.hpa.min_replica_count, 1))
-    error_message = "Zzzz IdleReplicaCount must be less than MinReplicaCount."
   }
 }
 
