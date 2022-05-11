@@ -50,7 +50,7 @@ monitoring = {
     tag                = "2021.4"
     port               = 8080
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
   grafana            = {
@@ -59,7 +59,7 @@ monitoring = {
     tag                = "latest"
     port               = 3000
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
   node_exporter      = {
@@ -76,17 +76,9 @@ monitoring = {
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
-  prometheus_adapter = {
-    name               = "prometheus-adapter"
-    image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus-adapter"
-    tag                = "v0.9.1"
-    image_pull_secrets = ""
-    service_type       = "ClusterIP"
-    node_selector      = { "grid/type" = "Operator" }
-  }
   metrics_exporter   = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter"
-    tag                = "0.5.6"
+    tag                = "0.5.8"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }

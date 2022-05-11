@@ -4,7 +4,7 @@ resource "kubernetes_config_map" "dashboards_json_config" {
     namespace = var.namespace
   }
   data = {
-    "dashboard-armonik.json" = "${file("${path.module}/dashboard-armonik.json")}"
+    "dashboard-armonik.json" = file("${path.module}/dashboard-armonik.json")
   }
 }
 

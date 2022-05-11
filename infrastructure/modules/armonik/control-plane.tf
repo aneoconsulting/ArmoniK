@@ -242,16 +242,6 @@ resource "kubernetes_deployment" "control_plane" {
                 name = local.fluent_bit_envvars_configmap
               }
             }
-            resources {
-              limits   = {
-                cpu    = "100m"
-                memory = "50Mi"
-              }
-              requests = {
-                cpu    = "1m"
-                memory = "1Mi"
-              }
-            }
             # Please don't change below read-only permissions
             volume_mount {
               name       = "fluentbitstate"

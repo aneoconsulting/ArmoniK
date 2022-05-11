@@ -229,7 +229,7 @@ resource "kubernetes_deployment" "compute_plane" {
             image             = worker.value.tag != "" ? "${worker.value.image}:${worker.value.tag}" : worker.value.image
             image_pull_policy = worker.value.image_pull_policy
             port {
-              container_port = worker.value.port
+              container_port = 80
             }
             dynamic resources {
               for_each = (worker.value.limits.cpu != ""
@@ -331,16 +331,6 @@ resource "kubernetes_deployment" "compute_plane" {
             env_from {
               config_map_ref {
                 name = local.fluent_bit_envvars_configmap
-              }
-            }
-            resources {
-              limits   = {
-                cpu    = "100m"
-                memory = "50Mi"
-              }
-              requests = {
-                cpu    = "1m"
-                memory = "1Mi"
               }
             }
             # Please don't change below read-only permissions

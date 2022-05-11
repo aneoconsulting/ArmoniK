@@ -15,14 +15,6 @@ output "web_url" {
   value = local.activemq_web_url
 }
 
-output "web_host" {
-  value = local.activemq_endpoints.ip
-}
-
-output "web_port" {
-  value = local.activemq_endpoints.web_port
-}
-
 output "user_certificate" {
   description = "User certificates of ActiveMQ"
   value       = {

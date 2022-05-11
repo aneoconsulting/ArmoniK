@@ -39,3 +39,9 @@ variable "working_dir" {
   type        = string
   default     = ".."
 }
+
+# Prometheus url
+variable "prometheus_url" {
+  description = "Prometheus URL"
+  type        = string
+}

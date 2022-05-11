@@ -14,19 +14,19 @@ mongodb_polling_delay = {
 # Parameters of control plane
 control_plane = {
   name               = "control-plane"
-  service_type       = "LoadBalancer"
+  service_type       = "ClusterIP"
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
-  tag                = "0.5.6"
+  tag                = "0.5.8"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
     cpu    = "1000m"
-    memory = "1024Mi" 
+    memory = "2048Mi"
   }
   requests           = {
-    cpu    = "100m" 
-    memory = "50Mi" 
+    cpu    = "200m"
+    memory = "256Mi"
   }
   image_pull_secrets = ""
   node_selector      = {}
@@ -45,53 +45,77 @@ compute_plane = [
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.5.6"
+      tag               = "0.5.8"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "1000m"
-        memory = "1024Mi"
+        memory = "2048Mi"
       }
       requests          = {
-        cpu    = "100m" 
-        memory = "50Mi" 
+        cpu    = "200m"
+        memory = "256Mi"
       }
     }
     # ArmoniK workers
     worker                           = [
       {
         name              = "worker"
-        port              = 80
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.5.3"
+        tag               = "0.5.6"
         image_pull_policy = "IfNotPresent"
         limits            = {
-          cpu    = "200m" 
-          memory = "512Mi" 
+          cpu    = "1000m"
+          memory = "1024Mi"
         }
         requests          = {
-          cpu    = "100m" 
-          memory = "50Mi" 
+          cpu    = "500m"
+          memory = "512Mi"
         }
       }
     ]
     hpa                              = {
-      min_replicas   = 1
-      max_replicas   = 5
-      object_metrics = [
-        {
-          described_object = {
-            api_version = "batch/v1"
-            kind        = "Job"
-          }
-          metric_name      = "armonik_tasks_queued"
-          target           = {
-            type                = "AverageValue" # "Value", "Utilization" or "AverageValue"
-            average_value       = 2
-            average_utilization = 0
-            value               = 0
-          }
-        }
-      ]
+      type               = "prometheus"
+      polling_interval   = 15
+      cooldown_period    = 300
+      idle_replica_count = 0 # idle_replica_count must be less than min_replica_count
+      min_replica_count  = 1
+      max_replica_count  = 5
+      behavior           = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers           = {
+        metric_name = "armonik_tasks_queued"
+        threshold   = "2"
+      }
     }
   }
 ]
+
+# Deploy ingress
+# PS: to not deploy ingress put: "ingress=null"
+ingress = {
+  name               = "ingress"
+  service_type       = "LoadBalancer"
+  replicas           = 1
+  image              = "nginx"
+  tag                = "latest"
+  image_pull_policy  = "IfNotPresent"
+  http_port          = 5000
+  grpc_port          = 5001
+  limits             = {
+    cpu    = "200m"
+    memory = "100Mi"
+  }
+  requests           = {
+    cpu    = "1m"
+    memory = "1Mi"
+  }
+  image_pull_secrets = ""
+  node_selector      = {}
+  tls                = false
+  mtls               = false
+}

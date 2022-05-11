@@ -1,0 +1,2 @@
+core-tag=0.5.8
+worker-tag=0.5.6

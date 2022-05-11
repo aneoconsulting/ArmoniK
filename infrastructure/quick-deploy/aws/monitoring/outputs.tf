@@ -20,10 +20,11 @@ output "monitoring" {
       url  = module.prometheus.url
     }
     metrics_exporter = {
-      name = module.metrics_exporter.name
-      host = module.metrics_exporter.host
-      port = module.metrics_exporter.port
-      url  = module.metrics_exporter.url
+      name      = module.metrics_exporter.name
+      host      = module.metrics_exporter.host
+      port      = module.metrics_exporter.port
+      url       = module.metrics_exporter.url
+      namespace = module.metrics_exporter.namespace
     }
     cloudwatch       = (local.cloudwatch_enabled ? {
       name    = module.cloudwatch.0.name

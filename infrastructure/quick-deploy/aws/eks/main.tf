@@ -17,11 +17,6 @@ module "eks" {
     private_subnet_ids = local.vpc.private_subnet_ids
     pods_subnet_ids    = local.vpc.pods_subnet_ids
   }
-  s3_fs                         = {
-    name       = var.s3_fs.name
-    kms_key_id = var.s3_fs.kms_key_id
-    host_path  = var.s3_fs.host_path
-  }
   eks                           = {
     region                                = var.region
     cluster_version                       = var.eks.cluster_version

@@ -113,7 +113,6 @@ variable "compute_plane" {
     })
     worker                           = list(object({
       name              = string
-      port              = number
       image             = string
       tag               = string
       image_pull_policy = string
@@ -126,22 +125,33 @@ variable "compute_plane" {
         memory = string
       })
     }))
-    hpa                              = object({
-      min_replicas   = number
-      max_replicas   = number
-      object_metrics = list(object({
-        described_object = object({
-          api_version = string
-          kind        = string
-        })
-        metric_name      = string
-        target           = object({
-          type                = string
-          average_value       = number
-          average_utilization = number
-          value               = number
-        })
-      }))
-    })
+    # KEDA scaler
+    hpa                              = any
   }))
+}
+
+variable "ingress" {
+  description = "Parameters of the ingress controller"
+  type        = object({
+    name               = string
+    service_type       = string
+    replicas           = number
+    image              = string
+    tag                = string
+    image_pull_policy  = string
+    http_port          = number
+    grpc_port          = number
+    limits             = object({
+      cpu    = string
+      memory = string
+    })
+    requests           = object({
+      cpu    = string
+      memory = string
+    })
+    image_pull_secrets = string
+    node_selector      = any
+    tls                = bool
+    mtls               = bool
+  })
 }

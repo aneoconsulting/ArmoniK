@@ -15,10 +15,11 @@ output "monitoring" {
       enabled = true
     } : {})
     metrics_exporter = {
-      name = module.metrics_exporter.name
-      host = module.metrics_exporter.host
-      port = module.metrics_exporter.port
-      url  = module.metrics_exporter.url
+      name      = module.metrics_exporter.name
+      host      = module.metrics_exporter.host
+      port      = module.metrics_exporter.port
+      url       = module.metrics_exporter.url
+      namespace = module.metrics_exporter.namespace
     }
     prometheus       = {
       host = module.prometheus.host

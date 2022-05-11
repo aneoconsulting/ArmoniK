@@ -36,13 +36,6 @@ tags = {
 # Node selector
 node_selector = { "grid/type" = "Operator" }
 
-# shared storage
-s3_fs = {
-  name       = ""
-  kms_key_id = ""
-  host_path  = "/data"
-}
-
 # AWS EKS
 eks = {
   name                                  = "armonik-eks"
@@ -91,7 +84,7 @@ eks_operational_worker_groups = [
 # EKS worker groups
 eks_worker_groups = [
   {
-    name                                     = "worker-24xlarge-spot"
+    name                                     = "worker-c5.24xlarge-spot"
     spot_allocation_strategy                 = "capacity-optimized"
     override_instance_types                  = ["c5.24xlarge"]
     spot_instance_pools                      = 0
@@ -102,68 +95,3 @@ eks_worker_groups = [
     on_demand_percentage_above_base_capacity = 0
   }
 ]
-
-/*# Operational node groups for EKS
-eks_operational_worker_groups = [
-  {
-    name                                     = "operational-worker-ondemand"
-    spot_allocation_strategy                 = "capacity-optimized"
-    override_instance_types                  = ["m5.xlarge", "m5a.xlarge", "m5d.xlarge"]
-    spot_instance_pools                      = 0
-    asg_min_size                             = 1
-    asg_max_size                             = 5
-    asg_desired_capacity                     = 1
-    on_demand_base_capacity                  = 1
-    on_demand_percentage_above_base_capacity = 100
-    kubelet_extra_args                       = "--node-labels=grid/type=Operator --register-with-taints=grid/type=Operator:NoSchedule"
-  }
-]
-
-# EKS worker groups
-eks_worker_groups = [
-  {
-    name                                     = "worker-small-spot"
-    spot_allocation_strategy                 = "capacity-optimized"
-    override_instance_types                  = ["m5.xlarge", "m5d.xlarge", "m5a.xlarge"]
-    spot_instance_pools                      = 0
-    asg_min_size                             = 0
-    asg_max_size                             = 20
-    asg_desired_capacity                     = 0
-    on_demand_base_capacity                  = 0
-    on_demand_percentage_above_base_capacity = 0
-    tags                                     = []
-  },
-  {
-    name                                     = "worker-2xmedium-spot"
-    spot_allocation_strategy                 = "capacity-optimized"
-    override_instance_types                  = ["m5.2xlarge", "m5d.2xlarge", "m5a.2xlarge"]
-    spot_instance_pools                      = 0
-    asg_min_size                             = 0
-    asg_max_size                             = 20
-    asg_desired_capacity                     = 0
-    on_demand_base_capacity                  = 0
-    on_demand_percentage_above_base_capacity = 0
-  },
-  {
-    name                                     = "worker-4xmedium-spot"
-    spot_allocation_strategy                 = "capacity-optimized"
-    override_instance_types                  = ["m5.4xlarge", "m5d.4xlarge", "m5a.4xlarge"]
-    spot_instance_pools                      = 0
-    asg_min_size                             = 0
-    asg_max_size                             = 20
-    asg_desired_capacity                     = 0
-    on_demand_base_capacity                  = 0
-    on_demand_percentage_above_base_capacity = 0
-  },
-  {
-    name                                     = "worker-8xmedium-spot"
-    spot_allocation_strategy                 = "capacity-optimized"
-    override_instance_types                  = ["m5.8xlarge", "m5d.8xlarge", "m5a.8xlarge"]
-    spot_instance_pools                      = 0
-    asg_min_size                             = 0
-    asg_max_size                             = 20
-    asg_desired_capacity                     = 0
-    on_demand_base_capacity                  = 0
-    on_demand_percentage_above_base_capacity = 0
-  }
-]*/
