@@ -25,6 +25,13 @@ jobs:
           echo "::set-output name=version::$VERSION"
           echo $VERSION
 
+  vmtype:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+
   coreStreamTest:
     runs-on: ubuntu-latest
     steps:
