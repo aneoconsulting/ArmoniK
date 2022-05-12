@@ -196,8 +196,8 @@ clean-armonik:
 #               All                #
 ####################################
 
-deploy-all: deploy-vpc deploy-ecr deploy-eks deploy-aws-storage deploy-monitoring deploy-armonik
+deploy-all: deploy-vpc deploy-ecr deploy-eks create-namespace deploy-keda deploy-aws-storage deploy-monitoring deploy-armonik
 
-destroy-all: destroy-armonik destroy-monitoring destroy-aws-storage destroy-eks destroy-ecr destroy-vpc
+destroy-all: destroy-armonik destroy-monitoring destroy-aws-storage destroy-keda destroy-eks destroy-ecr destroy-vpc
 
-clean-all: clean-armonik clean-monitoring clean-aws-storage clean-eks clean-ecr clean-vpc
+clean-all: clean-armonik clean-monitoring clean-aws-storage clean-keda clean-eks clean-ecr clean-vpc

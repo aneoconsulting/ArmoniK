@@ -96,4 +96,4 @@ clean-armonik:
 
 deploy-all: create-namespace deploy-keda deploy-storage deploy-monitoring deploy-armonik
 destroy-all: destroy-armonik destroy-monitoring destroy-storage destroy-keda
-clean-all: clean-armonik clean-monitoring clean-storage
+clean-all: clean-armonik clean-monitoring clean-storage clean-keda
