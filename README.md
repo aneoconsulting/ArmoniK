@@ -1,12 +1,13 @@
 # Table of contents
 
-1. [ArmoniK](#armonik)
-    1. [When should I use ArmoniK](#when-should-i-use-armonik)
-    2. [When should I not use ArmoniK](#when-should-i-not-use-armonik)
-2. [ArmoniK deployment](#armonik-deployment)
-3. [How to run ArmoniK.Samples](#how-to-run-armonik.samples)
-4. [Acknowledge](#acknowledge)
-5. [Bugs/Support](#bugs-support)
+- [ArmoniK](#armonik)
+  - [When should I use ArmoniK](#when-should-i-use-armonik)
+  - [When should I not use ArmoniK](#when-should-i-not-use-armonik)
+- [ArmoniK versions](#armonik-versions)
+- [ArmoniK deployment](#armonik-deployment)
+- [How to run ArmoniK.Samples](#how-to-run-armonik.samples)
+- [Acknowledge](#acknowledge)
+- [Bugs/Support](#bugs-support)
 
 # ArmoniK
 
@@ -32,6 +33,20 @@ ArmoniK might not be the best choice if :
 1. The required task throughput is below 250 tasks per second.
 2. The tasks are tightly coupled, or use MPI.
 3. The tasks use third party licensed software.
+
+# ArmoniK versions
+
+The current version of ArmoniK uses the following tags:
+```bash
+core=0.5.8
+worker=0.5.6
+samples=2.7.0
+```
+
+where:
+* `core` is the ArmoniK Core tag used for container images of Control plane, Polling agent and Metrics exporter.
+* `worker` is the tag used for the container image of the workers
+* `samples` is the tag for ArmoniK Samples
 
 # ArmoniK deployment
 

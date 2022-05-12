@@ -47,7 +47,7 @@ jobs:
       - name: Get Core Tag
         id: core
         run: |
-          TAG=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
           echo "::set-output name=tag::$TAG"
 
       - uses: ./
@@ -116,7 +116,7 @@ jobs:
       - name: Get Core Tag
         id: core
         run: |
-          TAG=$(grep "core-tag" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
           echo "::set-output name=tag::$TAG"
 
       - uses: ./
