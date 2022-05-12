@@ -1,8 +1,8 @@
 # Table of contents
 
 - [ArmoniK](#armonik)
-  - [When should I use ArmoniK](#when-should-i-use-armonik)
-  - [When should I not use ArmoniK](#when-should-i-not-use-armonik)
+    - [When should I use ArmoniK](#when-should-i-use-armonik)
+    - [When should I not use ArmoniK](#when-should-i-not-use-armonik)
 - [ArmoniK versions](#armonik-versions)
 - [ArmoniK deployment](#armonik-deployment)
 - [How to run ArmoniK.Samples](#how-to-run-armonik.samples)
@@ -37,6 +37,7 @@ ArmoniK might not be the best choice if :
 # ArmoniK versions
 
 The current version of ArmoniK uses the following tags:
+
 ```bash
 core=0.5.8
 worker=0.5.6
@@ -44,6 +45,7 @@ samples=2.7.0
 ```
 
 where:
+
 * `core` is the ArmoniK Core tag used for container images of Control plane, Polling agent and Metrics exporter.
 * `worker` is the tag used for the container image of the workers
 * `samples` is the tag for ArmoniK Samples
@@ -59,12 +61,16 @@ Instructions to run ArmoniK.Samples are described
 in [Run Samples](https://github.com/aneoconsulting/ArmoniK.Samples/blob/main/README.md)
 
 # Acknowledge
+
 This project was funded by AWS and started with their [HTCGrid project](https://awslabs.github.io/aws-htc-grid/).
 
 # Bugs/Support
 
 Please direct enquiries about ArmoniK to the public mailing
-list [armonik-support@aneo.fr](mailto:armonik-support@aneo.fr). See
-also [Issues](https://github.com/aneoconsulting/ArmoniK/issues) of ArmoniK project.
+list [armonik-support@aneo.fr](mailto:armonik-support@aneo.fr).
 
-To report a bug, please include the version of ArmoniK you are using.
+See also [Issues](https://github.com/aneoconsulting/ArmoniK/issues) of ArmoniK project.
+
+To report a bug or request a feature, please use and follow the instructions in one of
+the [issue templates](https://github.com/aneoconsulting/ArmoniK/issues/new/choose). Don't forget to include the version
+of ArmoniK you are using.
