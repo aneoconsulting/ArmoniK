@@ -77,7 +77,6 @@ compute_plane = [
       type               = "prometheus"
       polling_interval   = 15
       cooldown_period    = 300
-      idle_replica_count = 0 # idle_replica_count must be less than min_replica_count
       min_replica_count  = 1
       max_replica_count  = 5
       behavior           = {

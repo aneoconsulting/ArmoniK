@@ -12,7 +12,7 @@ spec:
     envSourceContainerName: {{ .Values.scaleTargetRef.envSourceContainerName }}        # Optional. Default: .spec.template.spec.containers[0]
   pollingInterval:  {{ .Values.pollingInterval }}                               # Optional. Default: 30 seconds
   cooldownPeriod:   {{ .Values.cooldownPeriod }}                              # Optional. Default: 300 seconds
-  idleReplicaCount: {{ .Values.idleReplicaCount }}                               # Optional. Default: ignored, must be less than minReplicaCount
+#  idleReplicaCount: {{ .Values.idleReplicaCount }}                               # Optional. Default: ignored, must be less than minReplicaCount
   minReplicaCount:  {{ .Values.minReplicaCount }}                                # Optional. Default: 0
   maxReplicaCount:  {{ .Values.maxReplicaCount }}                              # Optional. Default: 100
 #  fallback:                                          # Optional. Section to specify fallback options
