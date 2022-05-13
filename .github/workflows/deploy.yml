@@ -96,11 +96,13 @@ jobs:
       fail-fast: false
       matrix:
         ntasks:
+          - 10
           - 100
           - 1000
         nlevels:
-          - 5
+          - 1
           - 10
+          - 100
     steps:
       - name: Get type of VM
         run: |
