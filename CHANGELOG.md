@@ -2,6 +2,14 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-05-011)
 
+## [v2.7.1](https://github.com/aneoconsulting/armonik/tree/v2.7.1) (2022-05-11)
+
+Changed
+-
+
+* Upgrade KEDA to version 2.7.2 and KEDA container images to version 2.7.1
+* Ignore IdleReplicaCount option in KEDA SacledObject 
+
 ## [v2.7.0](https://github.com/aneoconsulting/armonik/tree/v2.7.0) (2022-05-11)
 
 Removed
