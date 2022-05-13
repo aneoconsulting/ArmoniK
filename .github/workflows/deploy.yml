@@ -96,11 +96,10 @@ jobs:
       fail-fast: false
       matrix:
         ntasks:
-          - 10
           - 100
           - 1000
         nlevels:
-          - 1
+          - 5
           - 10
           - 100
     steps:
