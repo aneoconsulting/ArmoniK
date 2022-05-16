@@ -101,7 +101,6 @@ jobs:
         nlevels:
           - 5
           - 10
-          - 100
     steps:
       - name: Get type of VM
         run: |
