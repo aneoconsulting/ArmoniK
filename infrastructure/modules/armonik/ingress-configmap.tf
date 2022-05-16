@@ -107,7 +107,6 @@ resource "kubernetes_config_map" "ingress" {
 
 resource "local_file" "ingress_conf_file" {
   content  = local.armonik_conf
-  filename = "${path.root}/generated/configmaps/armonik.conf"
-
+  filename = "${path.root}/generated/configmaps/ingress/armonik.conf"
   file_permission = "0644"
 }

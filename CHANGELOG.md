@@ -4,11 +4,17 @@
 
 ## [v2.7.1](https://github.com/aneoconsulting/armonik/tree/v2.7.1) (2022-05-11)
 
+Removed
+-
+
+* Ignore IdleReplicaCount option in KEDA SacledObject Helm chart
+* Delete idle_replica_count parameter in HPA of compute plane
+
 Changed
 -
 
-* Upgrade KEDA to version 2.7.2 and KEDA container images to version 2.7.1
-* Ignore IdleReplicaCount option in KEDA SacledObject 
+* Upgrade KEDA Helm chart to version 2.7.2
+* Upgrade KEDA container images to version 2.7.1
 
 ## [v2.7.0](https://github.com/aneoconsulting/armonik/tree/v2.7.0) (2022-05-11)
 
@@ -57,7 +63,6 @@ Changed
 * Manage retry when disrupted communications happen between client and server (Default retry 5 WAITING 200ms)
 * Increase VM Size for ActivMQ to manage heavy load
 * Change storage type from EFS to EBS
-
 
 ## [v2.6.0](https://github.com/aneoconsulting/armonik/tree/v2.6.0) (2022-05-06)
 

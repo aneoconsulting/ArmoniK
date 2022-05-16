@@ -27,5 +27,5 @@ resource "kubernetes_config_map" "datasources_config" {
 
 resource "local_file" "datasources_config_file" {
   content  = local.datasources_config
-  filename = "${path.root}/generated/configmaps/datasources-grafana.yml"
+  filename = "${path.root}/generated/configmaps/grafana/datasources-grafana.yml"
 }

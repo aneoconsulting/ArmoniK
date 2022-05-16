@@ -124,23 +124,23 @@ resource "kubernetes_secret" "ingress_client_certificate" {
   } : {}
 }
 
-resource "local_file" "ingress_ca" {
-  count             = length(tls_self_signed_cert.root_ingress)
-  filename          = "${path.root}/generated/ca.crt"
-  sensitive_content = tls_self_signed_cert.root_ingress.0.cert_pem
-  file_permission   = "0600"
-}
-
-resource "local_file" "ingress_client_crt" {
-  count             = length(tls_locally_signed_cert.ingress_client_certificate)
-  filename          = "${path.root}/generated/client.crt"
-  sensitive_content = tls_locally_signed_cert.ingress_client_certificate.0.cert_pem
+resource "local_sensitive_file" "ingress_ca" {
+  count           = length(tls_self_signed_cert.root_ingress)
+  content         = tls_self_signed_cert.root_ingress.0.cert_pem
+  filename        = "${path.root}/generated/certificates/ingress/ca.crt"
   file_permission = "0600"
 }
 
-resource "local_file" "ingress_client_key" {
-  count             = length(tls_private_key.ingress_client_private_key)
-  filename          = "${path.root}/generated/client.key"
-  sensitive_content = tls_private_key.ingress_client_private_key.0.private_key_pem
-  file_permission   = "0600"
+resource "local_sensitive_file" "ingress_client_crt" {
+  count           = length(tls_locally_signed_cert.ingress_client_certificate)
+  content         = tls_locally_signed_cert.ingress_client_certificate.0.cert_pem
+  filename        = "${path.root}/generated/certificates/ingress/client.crt"
+  file_permission = "0600"
+}
+
+resource "local_sensitive_file" "ingress_client_key" {
+  count           = length(tls_private_key.ingress_client_private_key)
+  content         = tls_private_key.ingress_client_private_key.0.private_key_pem
+  filename        = "${path.root}/generated/certificates/ingress/client.key"
+  file_permission = "0600"
 }

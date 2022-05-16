@@ -77,3 +77,9 @@ resource "kubernetes_secret" "mongodb_client_certificate" {
     "chain.pem" = format("%s\n%s", tls_locally_signed_cert.mongodb_certificate.cert_pem, tls_self_signed_cert.root_mongodb.cert_pem)
   }
 }
+
+resource "local_sensitive_file" "mongodb_client_certificate" {
+  content         = format("%s\n%s", tls_locally_signed_cert.mongodb_certificate.cert_pem, tls_self_signed_cert.root_mongodb.cert_pem)
+  filename        = "${path.root}/generated/certificates/mongodb/chain.pem"
+  file_permission = "0600"
+}

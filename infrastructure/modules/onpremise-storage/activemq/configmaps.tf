@@ -484,3 +484,8 @@ resource "local_file" "activemq_xml_file" {
   content  = local.activemq_xml
   filename = "${path.root}/generated/configmaps/activemq/activemq.xml"
 }
+
+resource "local_file" "activemq_jolokia_file" {
+  content  = local.jolokia_access_xml
+  filename = "${path.root}/generated/configmaps/activemq/jolokia-access.xml"
+}
