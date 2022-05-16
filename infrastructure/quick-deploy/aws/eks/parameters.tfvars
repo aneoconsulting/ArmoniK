@@ -18,7 +18,7 @@ tags = {
   "project code"     = ""
   "cost center"      = ""
   "Support Contact"  = ""
-  "origin"           = ""
+  "origin"           = "terraform"
   "unit of measure"  = ""
   "epic"             = ""
   "functional block" = ""
@@ -30,9 +30,9 @@ tags = {
   "gridserver"       = ""
   "it division"      = ""
   "Confidentiality"  = ""
-  "csp"              = ""
+  "csp"              = "aws"
   "grafanaserver"    = ""
-  "Terraform"        = ""
+  "Terraform"        = "true"
   "DST_Update"       = ""
 }
 

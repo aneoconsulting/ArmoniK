@@ -15,6 +15,7 @@ Added
 
 * Add annotations in the Kubernetes deployments of ArmoniK components. The user who deploys ArmoniK can fill the
   annotations via the parameters.tfvars
+* Add tags in Terraform sources for AWS resources (VPC, ECR, EKS, AWS ElastiCache, Amazon MQ)
 
 Changed
 -
