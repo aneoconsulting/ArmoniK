@@ -19,10 +19,10 @@ locals {
     pods_subnet_ids    = try(var.vpc.pods_subnet_ids, [])
   }
   tags          = merge({
-    application        = "ArmoniK"
-    deployment_version = local.suffix
-    created_by         = data.aws_caller_identity.current.arn
-    date               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
+    "application"        = "armonik"
+    "deployment version" = local.suffix
+    "created by"         = data.aws_caller_identity.current.arn
+    "date"               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
   }, var.tags)
 }
 

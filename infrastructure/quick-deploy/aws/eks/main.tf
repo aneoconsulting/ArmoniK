@@ -9,7 +9,11 @@ module "kms" {
 # AWS EKS
 module "eks" {
   source                        = "../../../modules/aws/eks"
-  tags                          = local.tags
+  tags                          = merge(local.tags, {
+    "origin"    = "terraform",
+    "csp"       = "aws",
+    "Terraform" = true
+  })
   name                          = local.cluster_name
   node_selector                 = var.node_selector
   vpc                           = {
