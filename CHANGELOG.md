@@ -13,7 +13,7 @@ Removed
 Added
 -
 
-* Add annotations in the Kubernetes deployments of ArmoniK components. The user who deploy ArmoniK can fill the
+* Add annotations in the Kubernetes deployments of ArmoniK components. The user who deploys ArmoniK can fill the
   annotations via the parameters.tfvars
 
 Changed

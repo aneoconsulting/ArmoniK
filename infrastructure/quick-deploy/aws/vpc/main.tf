@@ -9,7 +9,12 @@ module "kms" {
 # AWS VPC
 module "vpc" {
   source = "../../../modules/aws/vpc"
-  tags   = merge(local.tags, { name = local.vpc_name })
+  tags   = merge(local.tags, {
+    "name"      = local.vpc_name,
+    "origin"    = "terraform",
+    "csp"       = "aws",
+    "Terraform" = true
+  })
   name   = local.vpc_name
   vpc    = {
     cluster_name                                    = local.cluster_name

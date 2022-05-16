@@ -5,7 +5,7 @@ resource "aws_vpc_peering_connection" "peering" {
   vpc_id = module.vpc.vpc_id
   auto_accept = true
   tags = merge(local.tags, {
-    name = "Peering ${var.vpc.peering.peer_vpc_ids[count.index]} and ${module.vpc.vpc_id}"
+    name = "peering-${var.vpc.peering.peer_vpc_ids[count.index]}-${module.vpc.vpc_id}"
   })
   depends_on = [module.vpc]
 }
