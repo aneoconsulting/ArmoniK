@@ -9,7 +9,11 @@ module "kms" {
 # AWS ECR
 module "ecr" {
   source       = "../../../modules/aws/ecr"
-  tags         = local.tags
+  tags         = merge(local.tags, {
+    "origin"    = "terraform",
+    "csp"       = "aws",
+    "Terraform" = true
+  })
   kms_key_id   = (var.ecr.kms_key_id != "" ? var.ecr.kms_key_id : module.kms.0.selected.arn)
   repositories = var.ecr.repositories
 }
