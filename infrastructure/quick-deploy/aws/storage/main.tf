@@ -3,13 +3,13 @@ module "kms" {
   count  = (var.s3_fs.kms_key_id != "" && var.elasticache.encryption_keys.kms_key_id != "" && var.elasticache.encryption_keys.log_kms_key_id != "" && var.mq.kms_key_id != "" ? 0 : 1)
   source = "../../../modules/aws/kms"
   name   = local.kms_name
-  tags   = merge(local.tags, { name = local.kms_name })
+  tags   = local.tags
 }
 
 # AWS S3 as shared storage
 module "s3_fs" {
   source = "../../../modules/aws/s3"
-  tags   = merge(local.tags, { name = local.s3_fs_name })
+  tags   = local.tags
   name   = local.s3_fs_name
   s3     = {
     policy                                = var.s3_fs.policy
@@ -29,7 +29,7 @@ module "s3_fs" {
 # AWS Elasticache
 module "elasticache" {
   source      = "../../../modules/aws/elasticache"
-  tags        = merge(local.tags, { name = local.elasticache_name })
+  tags        = local.tags
   name        = local.elasticache_name
   vpc         = {
     id          = local.vpc.id
@@ -57,7 +57,7 @@ module "elasticache" {
 # Amazon MQ
 module "mq" {
   source    = "../../../modules/aws/mq"
-  tags      = merge(local.tags, { name = local.mq_name })
+  tags      = local.tags
   name      = local.mq_name
   namespace = var.namespace
   vpc       = {

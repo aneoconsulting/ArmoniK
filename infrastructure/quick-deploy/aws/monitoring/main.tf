@@ -3,7 +3,7 @@ module "kms" {
   count  = (local.cloudwatch_kms_key_id == "" && local.cloudwatch_enabled ? 1 : 0)
   source = "../../../modules/aws/kms"
   name   = local.kms_name
-  tags   = merge(local.tags, { name = local.kms_name })
+  tags   = local.tags
 }
 
 # Seq
@@ -93,7 +93,7 @@ module "cloudwatch" {
   name              = local.cloudwatch_log_group_name
   kms_key_id        = (local.cloudwatch_kms_key_id != "" ? local.cloudwatch_kms_key_id : module.kms.0.selected.arn)
   retention_in_days = local.cloudwatch_retention_in_days
-  tags              = merge(local.tags, { name = local.cloudwatch_log_group_name })
+  tags              = local.tags
 }
 
 # Fluent-bit

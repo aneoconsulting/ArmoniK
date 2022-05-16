@@ -14,11 +14,10 @@ locals {
   kms_name                  = "armonik-kms-cloudwatch-${local.suffix}-${local.random_string}"
   cloudwatch_log_group_name = "/aws/containerinsights/${local.cluster_name}/application"
   tags                      = merge(var.tags, {
-    application        = "ArmoniK"
-    deployment_version = local.suffix
-    created_by         = data.aws_caller_identity.current.arn
-    date               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
-    resource           = "monitoring"
+    "application"        = "armonik"
+    "deployment version" = local.suffix
+    "created by"         = data.aws_caller_identity.current.arn
+    "date"               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
   })
 
   # Seq
@@ -54,14 +53,6 @@ locals {
   prometheus_node_exporter_image = try(var.monitoring.prometheus.node_exporter.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/node-exporter")
   prometheus_node_exporter_tag   = try(var.monitoring.prometheus.node_exporter.tag, "latest")
   prometheus_node_selector       = try(var.monitoring.prometheus.node_selector, {})
-
-  # Prometheus adapter
-  prometheus_adapter_name               = try(var.monitoring.prometheus_adapter.name, "prometheus-adapter")
-  prometheus_adapter_image              = try(var.monitoring.prometheus_adapter.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/prometheus-adapter")
-  prometheus_adapter_tag                = try(var.monitoring.prometheus_adapter.tag, "v0.9.1")
-  prometheus_adapter_image_pull_secrets = try(var.monitoring.prometheus_adapter.image_pull_secrets, "")
-  prometheus_adapter_service_type       = try(var.monitoring.prometheus_adapter.service_type, "ClusterIP")
-  prometheus_adapter_node_selector      = try(var.monitoring.prometheus_adapter.node_selector, {})
 
   # Metrics exporter
   metrics_exporter_image              = try(var.monitoring.metrics_exporter.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter")

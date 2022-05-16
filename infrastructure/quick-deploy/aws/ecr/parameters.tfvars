@@ -18,7 +18,7 @@ tags = {
   "project code"     = ""
   "cost center"      = ""
   "Support Contact"  = ""
-  "origin"           = ""
+  "origin"           = "terraform"
   "unit of measure"  = ""
   "epic"             = ""
   "functional block" = ""
@@ -30,9 +30,9 @@ tags = {
   "gridserver"       = ""
   "it division"      = ""
   "Confidentiality"  = ""
-  "csp"              = ""
+  "csp"              = "aws"
   "grafanaserver"    = ""
-  "Terraform"        = ""
+  "Terraform"        = "true"
   "DST_Update"       = ""
 }
 
@@ -113,12 +113,12 @@ ecr = {
     {
       name  = "keda"
       image = "ghcr.io/kedacore/keda"
-      tag   = "2.6.1"
+      tag   = "2.7.1"
     },
     {
       name  = "keda-metrics-apiserver"
       image = "ghcr.io/kedacore/keda-metrics-apiserver"
-      tag   = "2.6.1"
+      tag   = "2.7.1"
     }
   ]
 }

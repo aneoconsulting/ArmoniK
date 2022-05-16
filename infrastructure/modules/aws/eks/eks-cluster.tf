@@ -48,8 +48,8 @@ module "eks" {
   ]
 
   # Tags
-  tags         = merge(local.tags, { name = var.name })
-  cluster_tags = merge(local.tags, { name = var.name, component = "Cluster resources" })
+  tags         = local.tags
+  cluster_tags = local.tags
 
   # IAM
   map_roles = concat([

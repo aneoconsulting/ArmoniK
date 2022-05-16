@@ -20,7 +20,7 @@ resource "aws_iam_policy" "decrypt_object_policy" {
   name_prefix = local.iam_s3_decrypt_object_policy_name
   description = "Policy for alowing decryption of encrypted object in S3 ${var.eks.cluster_id}"
   policy      = data.aws_iam_policy_document.decrypt_object_document.json
-  tags        = merge(local.tags, { name = local.iam_s3_decrypt_object_policy_name })
+  tags        = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "decrypt_object_attachment" {

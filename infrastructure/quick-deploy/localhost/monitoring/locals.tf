@@ -31,13 +31,6 @@ locals {
   prometheus_service_type       = try(var.monitoring.prometheus.service_type, "ClusterIP")
   prometheus_node_selector      = try(var.monitoring.prometheus.node_selector, {})
 
-  # Prometheus adapter
-  prometheus_adapter_image              = try(var.monitoring.prometheus_adapter.image, "k8s.gcr.io/prometheus-adapter/prometheus-adapter")
-  prometheus_adapter_tag                = try(var.monitoring.prometheus_adapter.tag, "v0.9.1")
-  prometheus_adapter_image_pull_secrets = try(var.monitoring.prometheus_adapter.image_pull_secrets, "")
-  prometheus_adapter_service_type       = try(var.monitoring.prometheus_adapter.service_type, "ClusterIP")
-  prometheus_adapter_node_selector      = try(var.monitoring.prometheus_adapter.node_selector, {})
-
   # Metrics exporter
   metrics_exporter_image              = try(var.monitoring.metrics_exporter.image, "dockerhubaneo/armonik_control_metrics")
   metrics_exporter_tag                = try(var.monitoring.metrics_exporter.tag, "0.5.1")
