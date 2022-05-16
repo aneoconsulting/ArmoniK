@@ -98,6 +98,7 @@ variable "compute_plane" {
     termination_grace_period_seconds = number
     image_pull_secrets               = string
     node_selector                    = any
+    annotations                      = any
     polling_agent                    = object({
       image             = string
       tag               = string
@@ -151,6 +152,7 @@ variable "ingress" {
     })
     image_pull_secrets = string
     node_selector      = any
+    annotations        = any
     tls                = bool
     mtls               = bool
   })

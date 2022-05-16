@@ -42,6 +42,7 @@ compute_plane = [
     termination_grace_period_seconds = 30
     image_pull_secrets               = ""
     node_selector                    = {}
+    annotations                      = {}
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
@@ -74,19 +75,19 @@ compute_plane = [
       }
     ]
     hpa                              = {
-      type               = "prometheus"
-      polling_interval   = 15
-      cooldown_period    = 300
-      min_replica_count  = 1
-      max_replica_count  = 5
-      behavior           = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 5
+      behavior          = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
         value                             = 100
         period_seconds                    = 15
       }
-      triggers           = {
+      triggers          = {
         metric_name = "armonik_tasks_queued"
         threshold   = "2"
       }
@@ -115,6 +116,7 @@ ingress = {
   }
   image_pull_secrets = ""
   node_selector      = {}
+  annotations        = {}
   tls                = false
   mtls               = false
 }

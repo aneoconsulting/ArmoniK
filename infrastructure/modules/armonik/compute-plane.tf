@@ -19,12 +19,13 @@ resource "kubernetes_deployment" "compute_plane" {
     }
     template {
       metadata {
-        name      = "compute-plane-${count.index}"
-        namespace = var.namespace
-        labels    = {
+        name        = "compute-plane-${count.index}"
+        namespace   = var.namespace
+        labels      = {
           app     = "armonik"
           service = "compute-plane"
         }
+        annotations = local.compute_plane_annotations[count.index]
       }
       spec {
         dynamic toleration {
