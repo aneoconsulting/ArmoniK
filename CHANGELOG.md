@@ -10,6 +10,12 @@ Removed
 * Ignore IdleReplicaCount option in KEDA SacledObject Helm chart
 * Delete idle_replica_count parameter in HPA of compute plane
 
+Added
+-
+
+* Add annotations in the Kubernetes deployments of ArmoniK components. The user who deploy ArmoniK can fill the
+  annotations via the parameters.tfvars
+
 Changed
 -
 
