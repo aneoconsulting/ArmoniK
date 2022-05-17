@@ -3,7 +3,7 @@ module "kms" {
   count  = (var.ecr.kms_key_id == "" ? 1 : 0)
   source = "../../../modules/aws/kms"
   name   = local.kms_name
-  tags   = merge(local.tags, { name = local.kms_name })
+  tags   = local.tags
 }
 
 # AWS ECR

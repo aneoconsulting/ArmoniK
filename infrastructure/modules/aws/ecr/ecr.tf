@@ -2,11 +2,14 @@
 resource "aws_ecr_repository" "ecr" {
   count = length(var.repositories)
   name  = var.repositories[count.index].name
+  image_scanning_configuration {
+    scan_on_push = true
+  }
   encryption_configuration {
     encryption_type = "KMS"
     kms_key         = var.kms_key_id
   }
-  tags  = merge(local.tags, { name = var.repositories[count.index].name })
+  tags  = local.tags
 }
 
 # Copy images

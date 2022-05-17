@@ -24,6 +24,7 @@ resource "kubernetes_deployment" "control_plane" {
           app     = "armonik"
           service = "control-plane"
         }
+        annotations = local.control_plane_annotations
       }
       spec {
         dynamic toleration {

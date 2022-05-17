@@ -9,28 +9,31 @@ suffix = "main"
 
 # Tags
 tags = {
-  name             = ""
-  env              = ""
-  entity           = ""
-  bu               = ""
-  owner            = ""
-  application_code = ""
-  project_code     = ""
-  cost_center      = ""
-  support_contact  = ""
-  origin           = ""
-  unit_of_measure  = ""
-  epic             = ""
-  functional_block = ""
-  hostname         = ""
-  interruptible    = ""
-  tostop           = ""
-  tostart          = ""
-  branch           = ""
-  gridserver       = ""
-  it_division      = ""
-  confidentiality  = ""
-  csp              = ""
+  "name"             = ""
+  "env"              = ""
+  "entity"           = ""
+  "bu"               = ""
+  "owner"            = ""
+  "application code" = ""
+  "project code"     = ""
+  "cost center"      = ""
+  "Support Contact"  = ""
+  "origin"           = "terraform"
+  "unit of measure"  = ""
+  "epic"             = ""
+  "functional block" = ""
+  "hostname"         = ""
+  "interruptible"    = ""
+  "tostop"           = ""
+  "tostart"          = ""
+  "branch"           = ""
+  "gridserver"       = ""
+  "it division"      = ""
+  "Confidentiality"  = ""
+  "csp"              = "aws"
+  "grafanaserver"    = ""
+  "Terraform"        = "true"
+  "DST_Update"       = ""
 }
 
 # List of ECR repositories to create
@@ -45,22 +48,22 @@ ecr = {
     {
       name  = "armonik-control-plane"
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.5.8"
+      tag   = "0.5.9"
     },
     {
       name  = "armonik-polling-agent"
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.5.8"
+      tag   = "0.5.9"
     },
     {
       name  = "armonik-worker"
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.5.6"
+      tag   = "0.5.7"
     },
     {
       name  = "metrics-exporter"
       image = "dockerhubaneo/armonik_control_metrics"
-      tag   = "0.5.8"
+      tag   = "0.5.9"
     },
     {
       name  = "seq"
@@ -110,12 +113,12 @@ ecr = {
     {
       name  = "keda"
       image = "ghcr.io/kedacore/keda"
-      tag   = "2.6.1"
+      tag   = "2.7.1"
     },
     {
       name  = "keda-metrics-apiserver"
       image = "ghcr.io/kedacore/keda-metrics-apiserver"
-      tag   = "2.6.1"
+      tag   = "2.7.1"
     }
   ]
 }

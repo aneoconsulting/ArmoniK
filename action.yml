@@ -33,6 +33,18 @@ inputs:
     description: 'Log Level'
     required: false
     default: 'Information'
+  ingress:
+    description: 'Use ingress'
+    required: false
+    default: ''
+  mtls:
+    description: 'Use mTLS'
+    required: false
+    default: 'false'
+  tls:
+    description: 'Use tls'
+    required: false
+    default: 'false'
 outputs:
   host-path:
     description: 'Path of the shared storage between workers'
@@ -134,16 +146,32 @@ runs:
         set -ex
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         source envvars.sh
-        python ${{ github.action_path }}/tools/modify_parameters.py \
-          -kv "compute_plane[*].worker[*].image=${{ inputs.worker-image }}" \
-          -kv "compute_plane[*].worker[*].tag=${{ inputs.worker-tag }}" \
-          -kv "compute_plane[*].polling_agent.image=${{ inputs.polling-agent-image }}" \
-          -kv "compute_plane[*].polling_agent.tag=${{ inputs.core-tag }}" \
-          -kv control_plane.image=${{ inputs.control-plane-image }} \
-          -kv control_plane.tag=${{ inputs.core-tag }} \
-          -kv logging_level=${{ inputs.log-level }} \
-          ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars \
-          ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
+        if [ -z ${{ inputs.ingress }} ]; then
+          python ${{ github.action_path }}/tools/modify_parameters.py \
+            -kv "compute_plane[*].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[*].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[*].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[*].polling_agent.tag=${{ inputs.core-tag }}" \
+            -kv control_plane.image=${{ inputs.control-plane-image }} \
+            -kv control_plane.tag=${{ inputs.core-tag }} \
+            -kv logging_level=${{ inputs.log-level }} \
+            -kv ingress=null \
+            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars \
+            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
+        else
+          python ${{ github.action_path }}/tools/modify_parameters.py \
+            -kv "compute_plane[*].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[*].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[*].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[*].polling_agent.tag=${{ inputs.core-tag }}" \
+            -kv control_plane.image=${{ inputs.control-plane-image }} \
+            -kv control_plane.tag=${{ inputs.core-tag }} \
+            -kv logging_level=${{ inputs.log-level }} \
+            -kv ingress.tls=${{ inputs.tls }} \
+            -kv ingress.mtls=${{ inputs.mtls }} \
+            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars \
+            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
+        fi
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         make deploy-armonik PARAMETERS_FILE=${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
 

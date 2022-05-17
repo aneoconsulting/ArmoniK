@@ -15,9 +15,9 @@ locals {
   kms_name      = "armonik-kms-vpc-${local.suffix}-${local.random_string}"
   vpc_name      = "${var.vpc.name}-${local.suffix}"
   tags          = merge(var.tags, {
-    application        = "ArmoniK"
-    deployment_version = local.suffix
-    created_by         = data.aws_caller_identity.current.arn
-    date               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
+    "application"        = "armonik"
+    "deployment version" = local.suffix
+    "created by"         = data.aws_caller_identity.current.arn
+    "date"               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
   })
 }

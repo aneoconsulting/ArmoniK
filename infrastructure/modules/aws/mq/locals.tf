@@ -7,7 +7,7 @@ data "aws_region" "current" {}
 locals {
   account_id = data.aws_caller_identity.current.id
   region     = data.aws_region.current.name
-  tags       = merge(var.tags, { resource = "MQ Brocker" })
+  tags       = merge(var.tags, { module = "amazon-mq" })
   subnet_ids = (var.mq.deployment_mode == "SINGLE_INSTANCE" ? [var.vpc.subnet_ids[0]] : [
     var.vpc.subnet_ids[0],
     var.vpc.subnet_ids[1]

@@ -16,12 +16,13 @@ CONTROL_PLANE_IMAGE="dockerhubaneo/armonik_control"
 POLLING_AGENT_IMAGE="dockerhubaneo/armonik_pollingagent"
 WORKER_IMAGE="dockerhubaneo/armonik_worker_dll"
 METRICS_EXPORTER_IMAGE="dockerhubaneo/armonik_control_metrics"
-CORE_TAG=""
-WORKER_TAG=""
-HPA_MAX_REPLICAS=5
-HPA_MIN_REPLICAS=1
-HPA_IDLE_REPLICAS=0
+CORE_TAG=None
+WORKER_TAG=None
+HPA_MAX_REPLICAS=None
+HPA_MIN_REPLICAS=None
+HPA_IDLE_REPLICAS=None
 LOGGING_LEVEL="Information"
+HPA_TARGET_VALUE=None
 KEDA=""
 STORAGE_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/storage/parameters.tfvars"
 MONITORING_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/monitoring/parameters.tfvars"
@@ -138,6 +139,8 @@ EOF
   echo
   echo "   --logging-level <LOGGING_LEVEL_FOR_ARMONIK>"
   echo
+  echo "   --hpa-target-value <TARGET_VALUE_FOR_HPA>"
+  echo
   exit 1
 }
 
@@ -177,61 +180,16 @@ prepare_storage_parameters() {
 
 # Prepare monitoring parameters
 prepare_monitoring_parameters() {
-  if [ -z ${CORE_TAG} ]; then
-    python "${MODIFY_PARAMETERS_SCRIPT}" \
-      -kv monitoring.metrics_exporter.image="${METRICS_EXPORTER_IMAGE}" \
-      "${MONITORING_PARAMETERS_FILE}" \
-      "${GENERATED_MONITORING_PARAMETERS_FILE}"
-  else
-    python "${MODIFY_PARAMETERS_SCRIPT}" \
+  python "${MODIFY_PARAMETERS_SCRIPT}" \
       -kv monitoring.metrics_exporter.image="${METRICS_EXPORTER_IMAGE}" \
       -kv monitoring.metrics_exporter.tag="${CORE_TAG}" \
       "${MONITORING_PARAMETERS_FILE}" \
       "${GENERATED_MONITORING_PARAMETERS_FILE}"
-  fi
 }
 
 # Prepare armonik parameters
 prepare_armonik_parameters() {
-  if [ ! -z ${CORE_TAG} ] && [ ! -z ${WORKER_TAG} ]; then
-    python "${MODIFY_PARAMETERS_SCRIPT}" \
-      -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
-      -kv control_plane.tag="${CORE_TAG}" \
-      -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
-      -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
-      -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
-      -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
-      -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
-      -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
-      -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
-      -kv logging_level="${LOGGING_LEVEL}" \
-      "${ARMONIK_PARAMETERS_FILE}" \
-      "${GENERATED_ARMONIK_PARAMETERS_FILE}"
-  elif [ -z ${CORE_TAG} ] && [ -z ${WORKER_TAG} ]; then
-    python "${MODIFY_PARAMETERS_SCRIPT}" \
-      -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
-      -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
-      -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
-      -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
-      -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
-      -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
-      -kv logging_level="${LOGGING_LEVEL}" \
-      "${ARMONIK_PARAMETERS_FILE}" \
-      "${GENERATED_ARMONIK_PARAMETERS_FILE}"
-  elif [ -z ${CORE_TAG} ]; then
-    python "${MODIFY_PARAMETERS_SCRIPT}" \
-      -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
-      -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
-      -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
-      -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
-      -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
-      -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
-      -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
-      -kv logging_level="${LOGGING_LEVEL}" \
-      "${ARMONIK_PARAMETERS_FILE}" \
-      "${GENERATED_ARMONIK_PARAMETERS_FILE}"
-  elif [ -z ${WORKER_TAG} ]; then
-    python "${MODIFY_PARAMETERS_SCRIPT}" \
+  python "${MODIFY_PARAMETERS_SCRIPT}" \
       -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
       -kv control_plane.tag="${CORE_TAG}" \
       -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
@@ -240,10 +198,10 @@ prepare_armonik_parameters() {
       -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
       -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
       -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
+      -kv compute_plane[*].hpa.triggers.threshold="${HPA_TARGET_VALUE}" \
       -kv logging_level="${LOGGING_LEVEL}" \
       "${ARMONIK_PARAMETERS_FILE}" \
       "${GENERATED_ARMONIK_PARAMETERS_FILE}"
-  fi
 }
 
 # Deploy storage
@@ -488,6 +446,11 @@ function main() {
       ;;
     --logging-level)
       LOGGING_LEVEL="$2"
+      shift
+      shift
+      ;;
+    --hpa-target-value)
+      HPA_TARGET_VALUE="$2"
       shift
       shift
       ;;

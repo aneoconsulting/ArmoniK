@@ -122,5 +122,5 @@ resource "kubernetes_config_map" "prometheus_config" {
 
 resource "local_file" "prometheus_config_file" {
   content  = local.prometheus_config
-  filename = "${path.root}/generated/configmaps/prometheus.yml"
+  filename = "${path.root}/generated/configmaps/prometheus/prometheus.yml"
 }

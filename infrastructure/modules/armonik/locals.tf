@@ -9,6 +9,11 @@ locals {
   compute_plane_node_selector_keys   = [for index in range(0, length(local.compute_plane_node_selector)) : keys(local.compute_plane_node_selector[index])]
   compute_plane_node_selector_values = [for index in range(0, length(local.compute_plane_node_selector)) : values(local.compute_plane_node_selector[index])]
 
+  # Annotations
+  control_plane_annotations = try(var.control_plane.annotations, {})
+  compute_plane_annotations = [for index in range(0, length(var.compute_plane)) : try(var.compute_plane[index].annotations, {})]
+  ingress_annotations       = try(var.ingress.annotations, {})
+
   # Shared storage
   service_url             = try(var.storage_endpoint_url.shared.service_url, "")
   kms_key_id              = try(var.storage_endpoint_url.shared.kms_key_id, "")

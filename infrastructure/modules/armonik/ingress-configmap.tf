@@ -28,13 +28,17 @@ server {
     proxy_hide_header X-Certificate-Client-Fingerprint;
 %{   endif ~}
 %{ else ~}
-%{   if var.ingress.http_port != null ~}
+%{   if var.ingress != null ~}
+%{      if var.ingress.http_port != null ~}
     listen ${var.ingress.http_port};
     listen [::]:${var.ingress.http_port};
+%{      endif ~}
 %{   endif ~}
-%{   if var.ingress.grpc_port != null ~}
+%{   if var.ingress != null ~}
+%{      if var.ingress.grpc_port != null ~}
     listen ${var.ingress.grpc_port} http2;
     listen [::]:${var.ingress.grpc_port} http2;
+%{      endif ~}
 %{   endif ~}
 %{ endif ~}
 
@@ -107,7 +111,6 @@ resource "kubernetes_config_map" "ingress" {
 
 resource "local_file" "ingress_conf_file" {
   content  = local.armonik_conf
-  filename = "${path.root}/generated/configmaps/armonik.conf"
-
+  filename = "${path.root}/generated/configmaps/ingress/armonik.conf"
   file_permission = "0644"
 }

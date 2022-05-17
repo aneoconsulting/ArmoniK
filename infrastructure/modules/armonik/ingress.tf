@@ -20,12 +20,13 @@ resource "kubernetes_deployment" "ingress" {
     }
     template {
       metadata {
-        name      = "ingress"
-        namespace = var.namespace
-        labels    = {
+        name        = "ingress"
+        namespace   = var.namespace
+        labels      = {
           app     = "armonik"
           service = "ingress"
         }
+        annotations = local.ingress_annotations
       }
       spec {
         dynamic image_pull_secrets {
@@ -50,10 +51,10 @@ resource "kubernetes_deployment" "ingress" {
               memory = var.ingress.requests.memory
             }
           }
-          dynamic port{
+          dynamic port {
             for_each = local.ingress_ports
             content {
-              name = "ingress-p-${port.key}"
+              name           = "ingress-p-${port.key}"
               container_port = port.value
             }
           }
@@ -89,13 +90,13 @@ resource "kubernetes_deployment" "ingress" {
           name = "ingress-client-secret-volume"
           secret {
             secret_name = kubernetes_secret.ingress_client_certificate.metadata[0].name
-            optional = false
+            optional    = false
           }
         }
         volume {
           name = "ingress-nginx"
           config_map {
-            name = kubernetes_config_map.ingress.metadata[0].name
+            name     = kubernetes_config_map.ingress.metadata[0].name
             optional = false
           }
         }
@@ -109,16 +110,6 @@ resource "kubernetes_deployment" "ingress" {
             env_from {
               config_map_ref {
                 name = local.fluent_bit_envvars_configmap
-              }
-            }
-            resources {
-              limits   = {
-                cpu    = "100m"
-                memory = "50Mi"
-              }
-              requests = {
-                cpu    = "1m"
-                memory = "1Mi"
               }
             }
             # Please don't change below read-only permissions
@@ -232,10 +223,10 @@ resource "kubernetes_service" "ingress" {
     dynamic port {
       for_each = kubernetes_deployment.ingress.0.spec.0.template.0.spec.0.container.0.port
       content {
-        name = port.value.name
-        port = port.value.container_port
+        name        = port.value.name
+        port        = port.value.container_port
         target_port = port.value.container_port
-        protocol = "TCP"
+        protocol    = "TCP"
       }
     }
   }

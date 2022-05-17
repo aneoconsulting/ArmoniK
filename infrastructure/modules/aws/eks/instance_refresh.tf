@@ -67,7 +67,7 @@ module "aws_node_termination_handler_role" {
 resource "aws_iam_policy" "aws_node_termination_handler" {
   name   = local.ima_aws_node_termination_handler_name
   policy = data.aws_iam_policy_document.aws_node_termination_handler.json
-  tags   = merge(local.tags, { name = local.ima_aws_node_termination_handler_name })
+  tags   = local.tags
 }
 
 data "aws_iam_policy_document" "aws_node_termination_handler" {
@@ -115,7 +115,7 @@ resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
     "resources" : module.eks.workers_asg_arns
   }
   )
-  tags          = merge(local.tags, { name = local.aws_node_termination_handler_asg_name })
+  tags          = local.tags
 }
 
 resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
@@ -132,7 +132,7 @@ resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
     "resources" : module.eks.workers_asg_arns
   }
   )
-  tags          = merge(local.tags, { name = local.aws_node_termination_handler_spot_name })
+  tags          = local.tags
 }
 
 # Creating the lifecycle-hook outside of the ASG resource's `initial_lifecycle_hook`

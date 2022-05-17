@@ -91,3 +91,10 @@ resource "kubernetes_secret" "activemq_client_certificate" {
     "chain.pem" = format("%s\n%s", tls_locally_signed_cert.activemq_certificate.cert_pem, tls_self_signed_cert.root_activemq.cert_pem)
   }
 }
+
+resource "local_sensitive_file" "activemq_client_certificate" {
+  content           = format("%s\n%s", tls_locally_signed_cert.activemq_certificate.cert_pem, tls_self_signed_cert.root_activemq.cert_pem)
+  filename        = "${path.root}/generated/certificates/activemq/chain.pem"
+  file_permission = "0600"
+}
+

@@ -17,10 +17,10 @@ locals {
   elasticache_name                  = "${var.elasticache.name}-${local.suffix}"
   mq_name                           = "${var.mq.name}-${local.suffix}"
   tags                              = merge(var.tags, {
-    application        = "ArmoniK"
-    deployment_version = local.suffix
-    created_by         = data.aws_caller_identity.current.arn
-    date               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
+    "application"        = "armonik"
+    "deployment version" = local.suffix
+    "created by"         = data.aws_caller_identity.current.arn
+    "date"               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
   })
   s3_fs_kms_key_id                  = (var.s3_fs.kms_key_id != "" ? var.s3_fs.kms_key_id : module.kms.0.selected.arn)
   vpc                               = {

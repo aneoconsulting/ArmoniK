@@ -17,7 +17,7 @@ control_plane = {
   service_type       = "ClusterIP"
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
-  tag                = "0.5.8"
+  tag                = "0.5.9"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -42,10 +42,11 @@ compute_plane = [
     termination_grace_period_seconds = 30
     image_pull_secrets               = ""
     node_selector                    = {}
+    annotations                      = {}
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.5.8"
+      tag               = "0.5.9"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "1000m"
@@ -61,7 +62,7 @@ compute_plane = [
       {
         name              = "worker"
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.5.6"
+        tag               = "0.5.7"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "1000m"
@@ -74,20 +75,19 @@ compute_plane = [
       }
     ]
     hpa                              = {
-      type               = "prometheus"
-      polling_interval   = 15
-      cooldown_period    = 300
-      idle_replica_count = 0 # idle_replica_count must be less than min_replica_count
-      min_replica_count  = 1
-      max_replica_count  = 5
-      behavior           = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 5
+      behavior          = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
         value                             = 100
         period_seconds                    = 15
       }
-      triggers           = {
+      triggers          = {
         metric_name = "armonik_tasks_queued"
         threshold   = "2"
       }
@@ -116,6 +116,7 @@ ingress = {
   }
   image_pull_secrets = ""
   node_selector      = {}
+  annotations        = {}
   tls                = false
   mtls               = false
 }
