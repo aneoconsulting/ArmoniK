@@ -109,4 +109,7 @@ ingress = {
   node_selector      = {}
   tls                = true
   mtls               = true
+  server_cert_path = ""
+  server_key_path = ""
+  client_ca_path = ""
 }

@@ -151,5 +151,8 @@ variable "ingress" {
     node_selector      = any
     tls                = bool
     mtls               = bool
+    client_ca_path     = string
+    server_cert_path   = string
+    server_key_path    = string
   })
 }

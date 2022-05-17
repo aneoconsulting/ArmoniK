@@ -70,7 +70,7 @@ resource "kubernetes_secret" "ingress_certificate" {
   }
   data = var.ingress != null && var.ingress.tls ? {
     "ingress.crt" = length(tls_locally_signed_cert.ingress_certificate) > 0 ? tls_locally_signed_cert.ingress_certificate.0.cert_pem : file(var.ingress.server_cert_path)
-    "ingress.key" = length(tls_private_key.ingress_private_key > 0) ? tls_private_key.ingress_private_key.0.private_key_pem : file(var.ingress.server_key_path)
+    "ingress.key" = length(tls_private_key.ingress_private_key) > 0 ? tls_private_key.ingress_private_key.0.private_key_pem : file(var.ingress.server_key_path)
   } : {}
 }
 
@@ -78,7 +78,7 @@ resource "kubernetes_secret" "ingress_certificate" {
 # Client Certificate
 #------------------------------------------------------------------------------
 resource "tls_private_key" "ingress_client_private_key" {
-  count       = (var.ingress != null ? var.ingress.mtls && !fileexists(var.ingress.client_ca_path) : false) ? length(tls_private_key.root_client_ingress) : 0
+  count       = (var.ingress != null ? var.ingress.mtls && try(!fileexists(var.ingress.client_ca_path), false) : false) ? length(tls_private_key.root_ingress) : 0
   algorithm   = "RSA"
   ecdsa_curve = "P384"
   rsa_bits    = "4096"
@@ -117,7 +117,7 @@ resource "kubernetes_secret" "ingress_client_certificate" {
     namespace = var.namespace
   }
   data = length(tls_locally_signed_cert.ingress_client_certificate) > 0 ? {
-    "ca.pem"     = length(tls_self_signed_cert.root_ingress) > 0 ? tls_self_signed_cert.root_client_ingress.0.cert_pem : file(var.ingress.client_ca_path)
+    "ca.pem"     = length(tls_self_signed_cert.root_ingress) > 0 ? tls_self_signed_cert.root_ingress.0.cert_pem : file(var.ingress.client_ca_path)
   } : {}
 }
 
