@@ -2,7 +2,7 @@
 # Certificate Authority
 #------------------------------------------------------------------------------
 resource "tls_private_key" "root_ingress" {
-  count       = (var.ingress != null || var.ingress != {} ? var.ingress.tls : false) ? 1 : 0
+  count       = (var.ingress != null ? var.ingress.tls : false) ? 1 : 0
   algorithm   = "RSA"
   ecdsa_curve = "P384"
   rsa_bits    = "4096"
@@ -79,7 +79,7 @@ resource "kubernetes_secret" "ingress_certificate" {
 # Client Certificate
 #------------------------------------------------------------------------------
 resource "tls_private_key" "ingress_client_private_key" {
-  count       = (var.ingress != null || var.ingress != {} ? var.ingress.mtls : false) ? length(tls_private_key.root_ingress) : 0
+  count       = (var.ingress != null ? var.ingress.mtls : false) ? length(tls_private_key.root_ingress) : 0
   algorithm   = "RSA"
   ecdsa_curve = "P384"
   rsa_bits    = "4096"

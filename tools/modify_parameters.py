@@ -21,7 +21,7 @@ class Expr:
             return
         if self.val == "null":
             expr = parse("$." + self.key)
-            expr.update(data, {})
+            expr.update(data, None)
         else:
             expr = parse("$." + self.key)
             expr.update(data, self.val)

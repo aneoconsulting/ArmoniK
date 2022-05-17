@@ -57,11 +57,11 @@ variable "ingress" {
   })
   validation {
     error_message = "Ingress mTLS requires TLS to be enabled."
-    condition     = var.ingress != null || var.ingress != {} ? !var.ingress.mtls || var.ingress.tls : true
+    condition     = var.ingress != null ? !var.ingress.mtls || var.ingress.tls : true
   }
   validation {
     error_message = "Without TLS, http_port and grpc_port must be different."
-    condition     = var.ingress != null || var.ingress != {} ? var.ingress.http_port != var.ingress.grpc_port || var.ingress.tls : true
+    condition     = var.ingress != null ? var.ingress.http_port != var.ingress.grpc_port || var.ingress.tls : true
   }
 }
 
