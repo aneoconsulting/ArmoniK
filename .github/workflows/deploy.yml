@@ -286,7 +286,7 @@ jobs:
         run: |
           set -ex
           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
-          export CERTIFICATES_DIRECTORY_PATH="infrastructure/quick-deploy/localhost/armonik/generated/certificates/ingress"
+          export CERTIFICATES_DIRECTORY_PATH="$(pwd)/infrastructure/quick-deploy/localhost/armonik/generated/certificates/ingress"
           docker run \
             -v ${CERTIFICATES_DIRECTORY_PATH}/client.crt:/client.crt \
             -v ${CERTIFICATES_DIRECTORY_PATH}/client.key:/client.key \
