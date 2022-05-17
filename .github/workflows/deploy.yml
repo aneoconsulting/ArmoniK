@@ -31,7 +31,7 @@ jobs:
           echo "::set-output name=version::$VERSION"
           echo $VERSION
 
-  coreStreamTest:
+  coreStreamWithoutIngress:
     runs-on: ubuntu-latest
     steps:
       - name: Get type of VM
@@ -67,8 +67,7 @@ jobs:
         shell: bash
         run: |
           set -ex
-          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
-          if [ -z "${CONTROL_PLANE_URL}" ]; then CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url'); fi
+          CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           docker run --rm \
             -e Grpc__Endpoint="${CONTROL_PLANE_URL}" \
             dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
@@ -91,7 +90,7 @@ jobs:
           path: /tmp/armoniklogs/**/*.log
           retention-days: 5
 
-  htcMockTest:
+  htcMockWithoutIngress:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -136,8 +135,7 @@ jobs:
         shell: bash
         run: |
           set -ex
-          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
-          if [ -z "${CONTROL_PLANE_URL}" ]; then CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url'); fi
+          CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           docker run --rm \
             -e Grpc__Endpoint="${CONTROL_PLANE_URL}" \
             -e HtcMock__NTasks=${{ matrix.ntasks }} \
