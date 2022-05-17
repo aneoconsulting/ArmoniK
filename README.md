@@ -57,6 +57,12 @@ in [ArmoniK deployment](./infrastructure/README.md)
 
 # How to run ArmoniK.Samples
 
+Please Clone the repository Armonik.Samples into the [Root_Armonik_folder]/Source/
+
+```bash
+git clone https://github.com/aneoconsulting/ArmoniK.Samples.git
+```
+
 Instructions to run ArmoniK.Samples are described
 in [Run Samples](https://github.com/aneoconsulting/ArmoniK.Samples/blob/main/README.md)
 
