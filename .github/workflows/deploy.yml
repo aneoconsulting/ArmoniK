@@ -16,6 +16,7 @@ jobs:
         run: |
           lscpu
           uname -a
+          grep MemTotal /proc/meminfo
 
       - name: Checkout
         uses: actions/checkout@v2

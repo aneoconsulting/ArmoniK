@@ -16,12 +16,15 @@ Added
 * Add annotations in the Kubernetes deployments of ArmoniK components. The user who deploys ArmoniK can fill the
   annotations via the parameters.tfvars
 * Add tags in Terraform sources for AWS resources (VPC, ECR, EKS, AWS ElastiCache, Amazon MQ)
+* Add gRPC channel factory to support mTLS in core test clients
+* Add tests in fully integrated tests in core
 
 Changed
 -
 
 * Upgrade KEDA Helm chart to version 2.7.2
 * Upgrade KEDA container images to version 2.7.1
+* update Core package dependencies to reduce vulnerabilities
 
 ## [v2.7.0](https://github.com/aneoconsulting/armonik/tree/v2.7.0) (2022-05-11)
 
