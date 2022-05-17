@@ -40,14 +40,6 @@ delete:
 		-state $(STATE_FILE) \
 		-auto-approve
 
-delete-with-parameters:
-	terraform destroy \
-		-var-file $(PARAMETERS_FILE) \
-		-var-file $(STORAGE_PARAMETERS_FILE) \
-		-var 'namespace=$(NAMESPACE)' \
-		-state $(STATE_FILE) \
-		-auto-approve
-
 clean:
 	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform
 
