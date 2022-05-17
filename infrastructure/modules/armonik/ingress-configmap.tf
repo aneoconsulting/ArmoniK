@@ -28,13 +28,17 @@ server {
     proxy_hide_header X-Certificate-Client-Fingerprint;
 %{   endif ~}
 %{ else ~}
-%{   if var.ingress.http_port != null || var.ingress != {} ~}
+%{   if var.ingress != null || var.ingress != {} ~}
+%{      if var.ingress.http_port != null ~}
     listen ${var.ingress.http_port};
     listen [::]:${var.ingress.http_port};
+%{      endif ~}
 %{   endif ~}
-%{   if var.ingress.grpc_port != null || var.ingress != {} ~}
+%{   if var.ingress != null || var.ingress != {} ~}
+%{      if var.ingress.grpc_port != null ~}
     listen ${var.ingress.grpc_port} http2;
     listen [::]:${var.ingress.grpc_port} http2;
+%{      endif ~}
 %{   endif ~}
 %{ endif ~}
 
