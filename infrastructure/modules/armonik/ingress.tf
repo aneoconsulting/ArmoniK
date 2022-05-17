@@ -1,6 +1,6 @@
 # Ingress deployment
 resource "kubernetes_deployment" "ingress" {
-  count = var.ingress != null ? 1 : 0
+  count = var.ingress != null || var.ingress != {} ? 1 : 0
 
   metadata {
     name      = "ingress"
@@ -204,7 +204,7 @@ resource "kubernetes_deployment" "ingress" {
 
 # Control plane service
 resource "kubernetes_service" "ingress" {
-  count = var.ingress != null ? 1 : 0
+  count = var.ingress != null || var.ingress != {} ? 1 : 0
 
   metadata {
     name      = kubernetes_deployment.ingress.0.metadata.0.name

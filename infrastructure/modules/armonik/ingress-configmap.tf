@@ -5,14 +5,14 @@ map $http_upgrade $connection_upgrade {
     default upgrade;
     '' close;
 }
-%{ if var.ingress != null ? var.ingress.mtls : false ~}
+%{ if var.ingress != null || var.ingress != {} ? var.ingress.mtls : false ~}
     map $ssl_client_s_dn $ssl_client_s_dn_cn {
         default "";
         ~CN=(?<CN>[^,/]+) $CN;
     }
 %{ endif ~}
 server {
-%{ if var.ingress != null ? var.ingress.tls : false ~}
+%{ if var.ingress != null || var.ingress != {} ? var.ingress.tls : false ~}
 %{   for port in local.ingress_ports ~}
     listen ${port} ssl http2;
     listen [::]:${port} ssl http2;
@@ -28,18 +28,18 @@ server {
     proxy_hide_header X-Certificate-Client-Fingerprint;
 %{   endif ~}
 %{ else ~}
-%{   if var.ingress.http_port != null ~}
+%{   if var.ingress.http_port != null || var.ingress != {} ~}
     listen ${var.ingress.http_port};
     listen [::]:${var.ingress.http_port};
 %{   endif ~}
-%{   if var.ingress.grpc_port != null ~}
+%{   if var.ingress.grpc_port != null || var.ingress != {} ~}
     listen ${var.ingress.grpc_port} http2;
     listen [::]:${var.ingress.grpc_port} http2;
 %{   endif ~}
 %{ endif ~}
 
     location / {
-%{ if var.ingress != null ? var.ingress.mtls : false ~}
+%{ if var.ingress != null || var.ingress != {} ? var.ingress.mtls : false ~}
         grpc_set_header X-Certificate-Client-CN $ssl_client_s_dn_cn;
         grpc_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
 %{ endif ~}
@@ -47,7 +47,7 @@ server {
     }
 %{ if local.seq_web_url != "" ~}
     location /seq {
-%{ if var.ingress != null ? var.ingress.mtls : false ~}
+%{ if var.ingress != null || var.ingress != {} ? var.ingress.mtls : false ~}
         proxy_set_header X-Certificate-Client-CN $ssl_client_s_dn_cn;
         proxy_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
 %{ endif ~}
@@ -65,7 +65,7 @@ server {
         rewrite ^ $scheme://$http_host/grafana/ permanent;
     }
     location /grafana/ {
-%{ if var.ingress != null ? var.ingress.mtls : false ~}
+%{ if var.ingress != null || var.ingress != {} ? var.ingress.mtls : false ~}
         proxy_set_header X-Certificate-Client-CN $ssl_client_s_dn_cn;
         proxy_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
 %{ endif ~}
@@ -78,11 +78,11 @@ server {
     }
     location /grafana/api/live {
         rewrite  ^/grafana/(.*)  /$1 break;
-%{ if var.ingress != null ? var.ingress.mtls : false ~}
+%{ if var.ingress != null || var.ingress != {} ? var.ingress.mtls : false ~}
         proxy_set_header X-Certificate-Client-CN $ssl_client_s_dn_cn;
         proxy_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
 %{ endif ~}
-%{ if var.ingress != null ? var.ingress.tls : false ~}
+%{ if var.ingress != null || var.ingress != {} ? var.ingress.tls : false ~}
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
 %{ endif ~}
