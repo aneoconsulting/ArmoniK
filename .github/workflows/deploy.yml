@@ -65,11 +65,9 @@ jobs:
         shell: bash
         run: |
           set -ex
-          export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
-          export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
-          export Grpc__Endpoint=http://$CPIP:$CPPort
+          export Grpc__Endpoint=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
           docker run --rm \
-            -e Grpc__Endpoint="${Grpc__Endpoint}" \
+            -e GrpcClient__Endpoint="${Grpc__Endpoint}" \
             dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
 
       - name: Copy logs
@@ -134,11 +132,9 @@ jobs:
         shell: bash
         run: |
           set -ex
-          export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
-          export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
-          export Grpc__Endpoint=http://$CPIP:$CPPort
+          export Grpc__Endpoint=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
           docker run --rm \
-            -e Grpc__Endpoint="${Grpc__Endpoint}" \
+            -e GrpcClient__Endpoint="${Grpc__Endpoint}" \
             -e HtcMock__NTasks=${{ matrix.ntasks }} \
             -e HtcMock__TotalCalculationTime="00:00:00.100" \
             -e HtcMock__DataSize="1" \
