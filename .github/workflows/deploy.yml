@@ -70,7 +70,7 @@ jobs:
           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
           if [ -z "${CONTROL_PLANE_URL}" ]; then CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url'); fi
           docker run --rm \
-            -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
+            -e Grpc__Endpoint="${CONTROL_PLANE_URL}" \
             dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
 
       - name: Copy logs
@@ -139,7 +139,7 @@ jobs:
           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
           if [ -z "${CONTROL_PLANE_URL}" ]; then CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url'); fi
           docker run --rm \
-            -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
+            -e Grpc__Endpoint="${CONTROL_PLANE_URL}" \
             -e HtcMock__NTasks=${{ matrix.ntasks }} \
             -e HtcMock__TotalCalculationTime="00:00:00.100" \
             -e HtcMock__DataSize="1" \
