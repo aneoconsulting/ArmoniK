@@ -9,6 +9,7 @@ Removed
 
 * Ignore IdleReplicaCount option in KEDA SacledObject Helm chart
 * Delete idle_replica_count parameter in HPA of compute plane
+* Remove GetStatus for TryGetResult
 
 Added
 -
@@ -18,6 +19,7 @@ Added
 * Add tags in Terraform sources for AWS resources (VPC, ECR, EKS, AWS ElastiCache, Amazon MQ)
 * Add gRPC channel factory to support mTLS in core test clients
 * Add tests in fully integrated tests in core
+* Update Samples and Extensions.API End to end test to be compliant with .net 4.8
 
 Changed
 -
@@ -25,6 +27,9 @@ Changed
 * Upgrade KEDA Helm chart to version 2.7.2
 * Upgrade KEDA container images to version 2.7.1
 * update Core package dependencies to reduce vulnerabilities
+* Expose ClientOptions in Callback OnSessionEnter
+* Change default working directory to Application will be executed
+* Change to .net 6.0 in WorkerAPI Service
 
 ## [v2.7.0](https://github.com/aneoconsulting/armonik/tree/v2.7.0) (2022-05-11)
 
