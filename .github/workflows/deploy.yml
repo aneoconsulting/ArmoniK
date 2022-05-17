@@ -90,6 +90,66 @@ jobs:
           path: /tmp/armoniklogs/**/*.log
           retention-days: 5
 
+  coreStreamWithoutTlsMtls:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Get Core Tag
+        id: core
+        run: |
+          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+      - uses: ./
+        name: Deploy infrastructure
+        id: deploy-infra
+        with:
+          metrics-exporter-image: dockerhubaneo/armonik_control_metrics
+          control-plane-image: dockerhubaneo/armonik_control
+          polling-agent-image: dockerhubaneo/armonik_pollingagent
+          worker-image: dockerhubaneo/armonik_core_stream_test_worker
+          core-tag: ${{ steps.core.outputs.tag }}
+          worker-tag: ${{ steps.core.outputs.tag }}
+          ingress: 'None'
+
+      - name: Test Core Stream
+        shell: bash
+        run: |
+          set -ex
+          CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
+          docker run --rm \
+            -e Grpc__Endpoint="${CONTROL_PLANE_URL}" \
+            dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
+
+      - name: Copy logs
+        if: always()
+        shell: bash
+        run: |
+          set -e
+          mkdir -p /tmp/armoniklogs
+          sudo cp -rL /var/log/pods/armonik_* /tmp/armoniklogs
+          sudo chown $USER -R /tmp/armoniklogs
+          find /tmp/armoniklogs -name "*.log"
+
+      - name: Store logs
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Logs Core Stream
+          path: /tmp/armoniklogs/**/*.log
+          retention-days: 5
+
   htcMockWithoutIngress:
     runs-on: ubuntu-latest
     strategy:
@@ -130,6 +190,80 @@ jobs:
           worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
           core-tag: ${{ steps.core.outputs.tag }}
           worker-tag: ${{ steps.core.outputs.tag }}
+
+      - name: Test HTC Mock
+        shell: bash
+        run: |
+          set -ex
+          CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
+          docker run --rm \
+            -e Grpc__Endpoint="${CONTROL_PLANE_URL}" \
+            -e HtcMock__NTasks=${{ matrix.ntasks }} \
+            -e HtcMock__TotalCalculationTime="00:00:00.100" \
+            -e HtcMock__DataSize="1" \
+            -e HtcMock__MemorySize="1" \
+            -e HtcMock__SubTasksLevels=${{ matrix.nlevels }} \
+            dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
+
+      - name: Copy logs
+        if: always()
+        shell: bash
+        run: |
+          set -e
+          mkdir -p /tmp/armoniklogs
+          sudo cp -rL /var/log/pods/armonik_* /tmp/armoniklogs
+          sudo chown $USER -R /tmp/armoniklogs
+          find /tmp/armoniklogs -name "*.log"
+
+      - name: Store logs
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Logs HTC Mock
+          path: /tmp/armoniklogs/**/*.log
+          retention-days: 5
+
+  htcMockWithoutTlsMtls:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ntasks:
+          - 100
+          - 1000
+        nlevels:
+          - 5
+          - 10
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Get Core Tag
+        id: core
+        run: |
+          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+      - uses: ./
+        name: Deploy infrastructure
+        id: deploy-infra
+        with:
+          metrics-exporter-image: dockerhubaneo/armonik_control_metrics
+          control-plane-image: dockerhubaneo/armonik_control
+          polling-agent-image: dockerhubaneo/armonik_pollingagent
+          worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
+          core-tag: ${{ steps.core.outputs.tag }}
+          worker-tag: ${{ steps.core.outputs.tag }}
+          ingress: 'None'
 
       - name: Test HTC Mock
         shell: bash
