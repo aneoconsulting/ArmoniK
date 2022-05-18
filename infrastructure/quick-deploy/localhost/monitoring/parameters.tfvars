@@ -12,7 +12,7 @@ monitoring = {
     tag                = "2021.4"
     port               = 8080
     image_pull_secrets = ""
-    service_type       = "ClusterIP"
+    service_type       = "LoadBalancer"
     node_selector      = {}
   }
   grafana            = {
@@ -21,7 +21,7 @@ monitoring = {
     tag                = "latest"
     port               = 3000
     image_pull_secrets = ""
-    service_type       = "ClusterIP"
+    service_type       = "LoadBalancer"
     node_selector      = {}
   }
   node_exporter      = {
