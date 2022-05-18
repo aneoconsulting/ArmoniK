@@ -11,10 +11,10 @@ set -e
 
 BASEDIR=$(dirname "$0")
 INPUT_PARAMETERS_FILE=""
-Grpc__Endpoint=""
+GrpcClient__Endpoint=""
 ARMONIK_NAME_SPACE="armonik"
 CLIENT_IMAGE="dockerhubaneo/armonik_core_stream_test_client"
-CLIENT_TAG="0.5.4"
+CLIENT_TAG="0.5.9"
 
 # usage
 usage() {
@@ -37,32 +37,32 @@ usage() {
 get_control_plane_url() {
   # Retrieve from the file of parameters
   if [ -f "${INPUT_PARAMETERS_FILE}" ]; then
-    Grpc__Endpoint=$(cat "${INPUT_PARAMETERS_FILE}" | jq '.armonik.control_plane_url')
+    GrpcClient__Endpoint=$(cat "${INPUT_PARAMETERS_FILE}" | jq -r '.armonik.ingress.control_plane_url')
   fi
 
   # Retrieve from the control plane parameter
-  if [ -z ${Grpc__Endpoint} ]; then
-    CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].hostname" --no-headers=true)
+  if [ -z ${GrpcClient__Endpoint} ]; then
+    CPIP=$(kubectl get svc ingress -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].ip" --no-headers=true)
     if [ "${CPIP}" == "<none>" ]; then
-      CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
+      CPIP=$(kubectl get svc ingress -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
       if [ "${CPIP}" == "<none>" ]; then
-        NODE_NAME=$(kubectl get pods --selector="service=control-plane" -n ${ARMONIK_NAME_SPACE} -o custom-columns="NODE:.spec.nodeName" --no-headers=true)
+        NODE_NAME=$(kubectl get pods --selector="service=ingress" -n ${ARMONIK_NAME_SPACE} -o custom-columns="NODE:.spec.nodeName" --no-headers=true)
         if [ "${NODE_NAME}" == "<none>" ]; then
           echo "The URL of control plane is empty !"
           exit 1
         fi
         CPIP=$(kubectl get nodes -o wide --no-headers=true | grep -w ${NODE_NAME} | awk '{print $6}')
-        CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].nodePort" --no-headers=true)
+        CPPort=$(kubectl get svc ingress -n armonik -o custom-columns="PORT:.spec.ports[1].nodePort" --no-headers=true)
       fi
     fi
-    CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
-    Grpc__Endpoint="http://${CPIP}:${CPPort}"
+    CPPort=$(kubectl get svc ingress -n armonik -o custom-columns="PORT:.spec.ports[1].port" --no-headers=true)
+    GrpcClient__Endpoint="http://${CPIP}:${CPPort}"
   fi
 }
 
 # Execute client
 launch_client(){
-  docker run --rm -e Grpc__Endpoint="${Grpc__Endpoint}" ${CLIENT_IMAGE}:${CLIENT_TAG}
+  docker run --rm -e GrpcClient__Endpoint="${GrpcClient__Endpoint}" ${CLIENT_IMAGE}:${CLIENT_TAG}
 }
 
 # Main
@@ -85,12 +85,12 @@ function main() {
       shift
       ;;
     -c)
-      Grpc__Endpoint="$2"
+      GrpcClient__Endpoint="$2"
       shift
       shift
       ;;
     --control-plane-url)
-      Grpc__Endpoint="$2"
+      GrpcClient__Endpoint="$2"
       shift
       shift
       ;;
@@ -136,14 +136,14 @@ function main() {
 
   # Url of control plane
   get_control_plane_url
-  if [ -z ${Grpc__Endpoint} ]; then
+  if [ -z ${GrpcClient__Endpoint} ]; then
       echo "The URL of control plane is empty !"
       exit 1
   fi
 
   # Execute client
   echo "*****"
-  echo "***** Launch a client \"armonik_core_stream_test_client\" with control plane URL=${Grpc__Endpoint}"
+  echo "***** Launch a client \"armonik_core_stream_test_client\" with control plane URL=${GrpcClient__Endpoint}"
   echo "*****"
   launch_client
 }
