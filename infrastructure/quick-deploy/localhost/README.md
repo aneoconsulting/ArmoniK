@@ -232,13 +232,7 @@ After the deployment, connect to the Seq webserver by using `seq.web_url` retrie
 outputs `monitoring/generated/monitoring-output.json`, example:
 
 ```bash
-http://192.168.1.13:8080
-```
-
-or:
-
-```bash
-http://localhost:8080
+http://192.168.1.13:5000/seq/
 ```
 
 where `Username: admin` and `Password: admin`:
@@ -258,8 +252,8 @@ You have three scripts for testing ArmoniK :
 The following commands in these scripts allow to retrieve the endpoint URL of ArmoniK control plane:
 
 ```bash
-export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
-export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+export CPIP=$(kubectl get svc ingress -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].ip" --no-headers=true)
+export CPPort=$(kubectl get svc ingress -n armonik -o custom-columns="PORT:.spec.ports[1].port" --no-headers=true)
 export Grpc__Endpoint=http://$CPIP:$CPPort
 ```
 
