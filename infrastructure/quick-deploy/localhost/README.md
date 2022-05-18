@@ -228,17 +228,12 @@ the script PowerShell in [Script PowerShell all-in-one](../../docs/all-in-one-de
 
 ## Seq webserver
 
-After the deployment, connect to the Seq webserver by using `seq.web_url` retrieved from the Terraform
-outputs `monitoring/generated/monitoring-output.json`, example:
+After the deployment, connect to the Seq webserver by using `seq` url retrieved from the Terraform
+outputs `armonik/generated/armonik-output.json`, example:
+
 
 ```bash
-http://192.168.1.13:8080
-```
-
-or:
-
-```bash
-http://localhost:8080
+http://192.168.213.99:5000//seq
 ```
 
 where `Username: admin` and `Password: admin`:
