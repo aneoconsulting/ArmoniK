@@ -49,6 +49,8 @@ The following software or tool should be installed upon your local Linux machine
 * [GNU make](https://www.gnu.org/software/make/)
 * [JQ](https://stedolan.github.io/jq/download/)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
+* [Helm](https://helm.sh/docs/intro/install/)
+* [Openssl](https://www.howtoforge.com/tutorial/how-to-install-openssl-from-source-on-linux/)
 * [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 * [.NET](https://docs.microsoft.com/en-us/dotnet/core/install/linux)
 

@@ -117,6 +117,6 @@ ingress = {
   image_pull_secrets = ""
   node_selector      = {}
   annotations        = {}
-  tls                = false
-  mtls               = false
+  tls                = true
+  mtls               = true
 }

@@ -1,5 +1,10 @@
 CURRENT_DIR=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
+INGRESS_CERTIFICATES_DIR=$(GENERATED_DIR)/certificates/ingress
+INGRESS_CLIENT_CERT=$(INGRESS_CERTIFICATES_DIR)/client.crt
+INGRESS_CLIENT_KEY=$(INGRESS_CERTIFICATES_DIR)/client.key
+INGRESS_PKCS12=$(INGRESS_CERTIFICATES_DIR)/pkcs12.pem
+INGRESS_CLIENT_P12=$(INGRESS_CERTIFICATES_DIR)/client.p12
 BACKEND?=$(GENERATED_DIR)/backend
 PARAMETERS_FILE?=parameters.tfvars
 STATE_FILE=$(BACKEND)/terraform.tfstate
@@ -12,8 +17,8 @@ export STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/../storage/generated/storage-outp
 
 .PHONY: apply destroy
 
-all: init apply output
-deploy: init apply output
+all: init apply generate-certificate output
+deploy: init apply generate-certificate output
 destroy: init delete
 
 init:
@@ -41,6 +46,13 @@ delete:
 		-var 'namespace=$(NAMESPACE)' \
 		-state $(STATE_FILE) \
 		-auto-approve
+
+generate-certificate:
+	mkdir -p $(INGRESS_CERTIFICATES_DIR)
+	@if [ -f "${INGRESS_CLIENT_CERT}" ] && [ -f "${INGRESS_CLIENT_KEY}" ]; then\
+        cat $(INGRESS_CLIENT_CERT) $(INGRESS_CLIENT_KEY) > $(INGRESS_PKCS12);\
+		openssl pkcs12 -in $(INGRESS_PKCS12) -export -out $(INGRESS_CLIENT_P12) -password pass:;\
+    fi
 
 clean:
 	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform
