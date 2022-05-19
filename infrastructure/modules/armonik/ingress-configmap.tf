@@ -43,12 +43,22 @@ server {
 %{ endif ~}
 
     location / {
+      proxy_pass ${local.admin_app_url};
+    }
+
+    location /api {
+      proxy_pass ${local.admin_api_url};
+    }
+
+
+    location /ArmoniK. {
 %{ if var.ingress != null ? var.ingress.mtls : false ~}
         grpc_set_header X-Certificate-Client-CN $ssl_client_s_dn_cn;
         grpc_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
 %{ endif ~}
         grpc_pass grpc://${local.control_plane_endpoints.ip}:${local.control_plane_endpoints.port};
     }
+
 %{ if local.seq_web_url != "" ~}
     location /seq {
 %{ if var.ingress != null ? var.ingress.mtls : false ~}
