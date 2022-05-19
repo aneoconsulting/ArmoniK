@@ -37,10 +37,9 @@ control_plane = {
 admin_gui = {
   api = {
     name               = "admin-api"
-    service_type       = "LoadBalancer"
     replicas           = 1
     image              = "dockerhubaneo/armonik_admin_api"
-    tag                = "0.0.1"
+    tag                = "develop"
     port               = 3333
     limits             = {
       cpu    = "1000m"
@@ -53,10 +52,9 @@ admin_gui = {
   }
   app = {
     name               = "admin-app"
-    service_type       = "LoadBalancer"
     replicas           = 1
     image              = "dockerhubaneo/armonik_admin_app"
-    tag                = "0.0.1"
+    tag                = "develop"
     port               = 81
     limits             = {
       cpu    = "1000m"
@@ -67,7 +65,7 @@ admin_gui = {
       memory = "128Mi"
     }
   }
-  service_type       = "LoadBalancer"
+  service_type       = "ClusterIP"
   replicas           = 1
   image_pull_policy  = "IfNotPresent"
   image_pull_secrets = ""

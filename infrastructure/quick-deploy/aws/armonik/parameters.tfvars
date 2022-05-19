@@ -45,6 +45,45 @@ control_plane = {
   annotations        = {}
 }
 
+# Parameters of admin GUI
+admin_gui = {
+  api = {
+    name               = "admin-api"
+    replicas           = 1
+    image              = "dockerhubaneo/armonik_admin_api"
+    tag                = "develop"
+    port               = 3333
+    limits             = {
+      cpu    = "1000m"
+      memory = "1024Mi"
+    }
+    requests           = {
+      cpu    = "100m"
+      memory = "128Mi"
+    }
+  }
+  app = {
+    name               = "admin-app"
+    replicas           = 1
+    image              = "dockerhubaneo/armonik_admin_app"
+    tag                = "develop"
+    port               = 81
+    limits             = {
+      cpu    = "1000m"
+      memory = "1024Mi"
+    }
+    requests           = {
+      cpu    = "100m"
+      memory = "128Mi"
+    }
+  }
+  service_type       = "ClusterIP"
+  replicas           = 1
+  image_pull_policy  = "IfNotPresent"
+  image_pull_secrets = ""
+  node_selector      = {}
+}
+
 # Parameters of the compute plane
 compute_plane = [
   {
