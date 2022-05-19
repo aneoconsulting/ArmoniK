@@ -4,10 +4,21 @@ data "aws_caller_identity" "current" {}
 # Current AWS region
 data "aws_region" "current" {}
 
+# Available zones
+data "aws_availability_zones" "available" {}
+
+# Random string
+resource "random_string" "random_resources" {
+  length  = 5
+  special = false
+  upper   = false
+  number  = true
+}
+
 locals {
   account_id                                           = data.aws_caller_identity.current.id
   region                                               = data.aws_region.current.name
-  tags                                                 = merge({ resource = "EKS" }, var.tags)
+  tags                                                 = merge({ module = "eks" }, var.tags)
   iam_worker_autoscaling_policy_name                   = "eks-worker-autoscaling-${module.eks.cluster_id}"
   iam_worker_assume_role_agent_permissions_policy_name = "eks-worker-assume-agent-${module.eks.cluster_id}"
   ima_aws_node_termination_handler_name                = "${var.name}-aws-node-termination-handler-${random_string.random_resources.result}"
@@ -67,6 +78,9 @@ locals {
   merge(var.eks_worker_groups[index], {
     root_encrypted  = true
     root_kms_key_id = var.eks.encryption_keys.ebs_kms_key_id
+    /*additional_userdata        = <<-EOT
+      echo fs.inotify.max_user_instances=5242 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+    EOT*/
     tags            = [
       {
         key                 = "k8s.io/cluster-autoscaler/enabled"

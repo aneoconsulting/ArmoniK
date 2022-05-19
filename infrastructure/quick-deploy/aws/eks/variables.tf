@@ -40,21 +40,6 @@ variable "vpc" {
   default     = {}
 }
 
-# shared storage
-variable "s3_fs" {
-  description = "S3 bucket as shared storage"
-  type        = object({
-    name       = string
-    kms_key_id = string
-    host_path  = string
-  })
-  default     = {
-    name       = ""
-    kms_key_id = ""
-    host_path  = "/data"
-  }
-}
-
 # AWS EKS
 variable "eks" {
   description = "Parameters of AWS EKS"
@@ -82,6 +67,16 @@ variable "eks" {
       cluster_encryption_config = string
       ebs_kms_key_id            = string
     })
+    map_roles                             = list(object({
+      rolearn  = string
+      username = string
+      groups   = list(string)
+    }))
+    map_users                             = list(object({
+      userarn  = string
+      username = string
+      groups   = list(string)
+    }))
   })
   default     = {
     name                                  = "armonik-eks"
@@ -107,6 +102,8 @@ variable "eks" {
       cluster_encryption_config = ""
       ebs_kms_key_id            = ""
     }
+    map_roles                             = []
+    map_users                             = []
   }
 }
 

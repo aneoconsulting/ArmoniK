@@ -48,24 +48,24 @@ module "eks" {
   ]
 
   # Tags
-  tags         = merge(local.tags, { name = var.name })
-  cluster_tags = merge(local.tags, { name = var.name, component = "Cluster resources" })
+  tags         = local.tags
+  cluster_tags = local.tags
 
   # IAM
-  map_roles = [
+  map_roles = concat([
     {
       rolearn  = module.eks.worker_iam_role_arn
       username = "system:node:{{EC2PrivateDNSName}}"
       groups   = ["system:bootstrappers", "system:nodes"]
     }
-  ]
-  map_users = [
+  ], var.eks.map_roles)
+  map_users = concat([
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.arn}:user/admin"
       username = "admin"
       groups   = ["system:masters", "system:bootstrappers", "system:nodes"]
     }
-  ]
+  ], var.eks.map_users)
 
   # Worker groups
   worker_groups_launch_template = local.eks_worker_group

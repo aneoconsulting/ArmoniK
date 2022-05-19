@@ -109,7 +109,7 @@ resource "kubernetes_service" "prometheus" {
 
 resource "kubernetes_cluster_role" "prometheus" {
   metadata {
-    name   = kubernetes_deployment.prometheus.metadata.0.name
+    name   = "${kubernetes_deployment.prometheus.metadata.0.name}-${var.namespace}-${random_string.random_resources.result}"
     labels = {
       app     = "armonik"
       type    = "monitoring"
@@ -134,7 +134,7 @@ resource "kubernetes_cluster_role" "prometheus" {
 
 resource "kubernetes_cluster_role_binding" "prometheus" {
   metadata {
-    name   = kubernetes_deployment.prometheus.metadata.0.name
+    name   = "${kubernetes_deployment.prometheus.metadata.0.name}-${var.namespace}-${random_string.random_resources.result}"
     labels = {
       app     = "armonik"
       type    = "monitoring"
@@ -165,7 +165,7 @@ resource "kubernetes_cluster_role_binding" "prometheus" {
 
 resource "kubernetes_cluster_role_binding" "prometheus_ns_armonik" {
   metadata {
-    name   = "prometheus_ns_armonik"
+    name   = "${kubernetes_deployment.prometheus.metadata.0.name}-${var.namespace}-ns-${random_string.random_resources.result}"
     labels = {
       app     = "armonik"
       type    = "monitoring"

@@ -4,7 +4,7 @@ resource "kubernetes_config_map" "dashboards_json_config" {
     namespace = var.namespace
   }
   data = {
-    "dashboard-armonik.json" = "${file("${path.module}/dashboard-armonik.json")}"
+    "dashboard-armonik.json" = file("${path.module}/dashboard-armonik.json")
   }
 }
 
@@ -50,5 +50,5 @@ resource "kubernetes_config_map" "dashboards_config" {
 
 resource "local_file" "dashboards_config_file" {
   content  = local.dashboards_config
-  filename = "${path.root}/generated/configmaps/dashboards-grafana.yml"
+  filename = "${path.root}/generated/configmaps/grafana/dashboards-grafana.yml"
 }

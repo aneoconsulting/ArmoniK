@@ -16,84 +16,81 @@ namespace = "armonik"
 # Logging level
 logging_level = "Information"
 
-# Tags
 tags = {
-  name             = ""
-  env              = ""
-  entity           = ""
-  bu               = ""
-  owner            = ""
-  application_code = ""
-  project_code     = ""
-  cost_center      = ""
-  support_contact  = ""
-  origin           = ""
-  unit_of_measure  = ""
-  epic             = ""
-  functional_block = ""
-  hostname         = ""
-  interruptible    = ""
-  tostop           = ""
-  tostart          = ""
-  branch           = ""
-  gridserver       = ""
-  it_division      = ""
-  confidentiality  = ""
-  csp              = ""
+  "name"             = ""
+  "env"              = ""
+  "entity"           = ""
+  "bu"               = ""
+  "owner"            = ""
+  "application code" = ""
+  "project code"     = ""
+  "cost center"      = ""
+  "Support Contact"  = ""
+  "origin"           = "terraform"
+  "unit of measure"  = ""
+  "epic"             = ""
+  "functional block" = ""
+  "hostname"         = ""
+  "interruptible"    = ""
+  "tostop"           = ""
+  "tostart"          = ""
+  "branch"           = ""
+  "gridserver"       = ""
+  "it division"      = ""
+  "Confidentiality"  = ""
+  "csp"              = "aws"
+  "grafanaserver"    = ""
+  "Terraform"        = "true"
+  "DST_Update"       = ""
 }
 
 # Monitoring infos
 monitoring = {
-  seq                = {
+  seq              = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
     tag                = "2021.4"
+    port               = 8080
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
-  grafana            = {
+  grafana          = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/grafana"
     tag                = "latest"
+    port               = 3000
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
-  node_exporter      = {
+  node_exporter    = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/node-exporter"
     tag                = "latest"
     image_pull_secrets = ""
     node_selector      = { "grid/type" = "Operator" }
   }
-  prometheus         = {
+  prometheus       = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus"
     tag                = "latest"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
-  prometheus_adapter = {
-    image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus-adapter"
-    tag                = "v0.9.1"
-    image_pull_secrets = ""
-    service_type       = "ClusterIP"
-    node_selector      = { "grid/type" = "Operator" }
-  }
-  metrics_exporter   = {
+  metrics_exporter = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter"
-    tag                = "0.5.4"
+    tag                = "0.5.9"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
-  cloudwatch         = {
+  cloudwatch       = {
     enabled           = true
     kms_key_id        = ""
     retention_in_days = 30
   }
-  fluent_bit         = {
+  fluent_bit       = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"
     tag                = "1.7.2"
     image_pull_secrets = ""

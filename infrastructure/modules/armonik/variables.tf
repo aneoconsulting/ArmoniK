@@ -29,6 +29,52 @@ variable "monitoring" {
   type        = any
 }
 
+# Parameters of ingress
+variable "ingress" {
+  description = "Parameters of the ingress controller"
+  type        = object({
+    name               = string
+    service_type       = string
+    replicas           = number
+    image              = string
+    tag                = string
+    image_pull_policy  = string
+    http_port          = number
+    grpc_port          = number
+    limits             = object({
+      cpu    = string
+      memory = string
+    })
+    requests           = object({
+      cpu    = string
+      memory = string
+    })
+    image_pull_secrets = string
+    node_selector      = any
+    annotations        = any
+    tls                = bool
+    mtls               = bool
+  })
+  validation {
+    error_message = "Ingress mTLS requires TLS to be enabled."
+    condition     = var.ingress != null ? !var.ingress.mtls || var.ingress.tls : true
+  }
+  validation {
+    error_message = "Without TLS, http_port and grpc_port must be different."
+    condition     = var.ingress != null ? var.ingress.http_port != var.ingress.grpc_port || var.ingress.tls : true
+  }
+}
+
+# Polling delay to MongoDB
+# according to the size of the task and/or the application
+variable "mongodb_polling_delay" {
+  description = "Polling delay to MongoDB according to the size of the task and/or the application"
+  type        = object({
+    min_polling_delay = string
+    max_polling_delay = string
+  })
+}
+
 # Parameters of control plane
 variable "control_plane" {
   description = "Parameters of the control plane"
@@ -50,6 +96,7 @@ variable "control_plane" {
     })
     image_pull_secrets = string
     node_selector      = any
+    annotations        = any
   })
 }
 
@@ -102,6 +149,7 @@ variable "compute_plane" {
     termination_grace_period_seconds = number
     image_pull_secrets               = string
     node_selector                    = any
+    annotations                      = any
     polling_agent                    = object({
       image             = string
       tag               = string
@@ -117,7 +165,6 @@ variable "compute_plane" {
     })
     worker                           = list(object({
       name              = string
-      port              = number
       image             = string
       tag               = string
       image_pull_policy = string
@@ -130,23 +177,7 @@ variable "compute_plane" {
         memory = string
       })
     }))
-    hpa                              = object({
-      min_replicas   = number
-      max_replicas   = number
-      object_metrics = list(object({
-        described_object = object({
-          api_version = string
-          kind        = string
-        })
-        metric_name      = string
-        target           = object({
-          type                = string
-          average_value       = number
-          average_utilization = number
-          value               = number
-        })
-      }))
-    })
+    hpa                              = any
   }))
 }
 

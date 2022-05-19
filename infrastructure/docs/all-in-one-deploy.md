@@ -30,6 +30,7 @@ The following software or tool should be installed upon your local Linux machine
 
 * If You have Windows machine, You have to install [WSL 2](../quick-deploy/localhost/docs/wsl2.md)
 * [Docker](https://docs.docker.com/engine/install/)
+* [GNU make](https://www.gnu.org/software/make/)
 * [JQ](https://stedolan.github.io/jq/download/)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 * [Python](https://docs.python-guide.org/starting/install3/linux/) version 3
@@ -154,7 +155,7 @@ If You have a NFS filesystem as shared storage for ArmoniK workers, You deploy t
   --shared-storage-type NFS
 ```
 
-If You change container image and/or tag of control plane, polling agent, worker or metrics exporter:
+If You want to change container image and/or tag of control plane, polling agent, worker or metrics exporter:
 
 ```bash
 ./deploy-dev-test-infra.sh \
@@ -170,13 +171,22 @@ If You change container image and/or tag of control plane, polling agent, worker
 where `--core-tag <CORE_TAG>` allows to update the container tag for ArmoniK Core (control plane, polling agent and
 metrics exporter).
 
-If You change the max or min replicas in the HPA of the compute plane:
+If You change the max, min or idle replicas in the HPA of the compute plane:
 
 ```bash
 ./deploy-dev-test-infra.sh \
   -m deploy-all \
   --hpa-min-replicas <HPA_MIN_REPLICAS> \
-  --hpa-max-replicas <HPA_MAX_REPLICAS>
+  --hpa-max-replicas <HPA_MAX_REPLICAS> \
+  --hpa-idle-replicas <HPA_MAX_REPLICAS>
+```
+
+**Warning:** hpa-idle-replicas must be less than hpa-min-replicas !
+
+If You want to change logging level for ArmoniK components:
+
+```bash
+./deploy-dev-test-infra.sh -m deploy-all --logging-level <LOGGING_LEVEL_FOR_ARMONIK>
 ```
 
 ### [Return to the infrastructure main page](../README.md)

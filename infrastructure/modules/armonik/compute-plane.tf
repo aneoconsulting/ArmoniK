@@ -19,12 +19,13 @@ resource "kubernetes_deployment" "compute_plane" {
     }
     template {
       metadata {
-        name      = "compute-plane-${count.index}"
-        namespace = var.namespace
-        labels    = {
+        name        = "compute-plane-${count.index}"
+        namespace   = var.namespace
+        labels      = {
           app     = "armonik"
           service = "compute-plane"
         }
+        annotations = local.compute_plane_annotations[count.index]
       }
       spec {
         dynamic toleration {
@@ -61,14 +62,20 @@ resource "kubernetes_deployment" "compute_plane" {
               drop = ["SYS_PTRACE"]
             }
           }
-          resources {
-            limits   = {
-              cpu    = var.compute_plane[count.index].polling_agent.limits.cpu
-              memory = var.compute_plane[count.index].polling_agent.limits.memory
-            }
-            requests = {
-              cpu    = var.compute_plane[count.index].polling_agent.requests.cpu
-              memory = var.compute_plane[count.index].polling_agent.requests.memory
+          dynamic resources {
+            for_each = (var.compute_plane[count.index].polling_agent.limits.cpu != ""
+            || var.compute_plane[count.index].polling_agent.limits.memory != ""
+            || var.compute_plane[count.index].polling_agent.requests.cpu != ""
+            || var.compute_plane[count.index].polling_agent.requests.memory != "" ? [1] : [])
+            content {
+              limits   = {
+                cpu    = var.compute_plane[count.index].polling_agent.limits.cpu
+                memory = var.compute_plane[count.index].polling_agent.limits.memory
+              }
+              requests = {
+                cpu    = var.compute_plane[count.index].polling_agent.requests.cpu
+                memory = var.compute_plane[count.index].polling_agent.requests.memory
+              }
             }
           }
           port {
@@ -100,6 +107,11 @@ resource "kubernetes_deployment" "compute_plane" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map.core_config.metadata.0.name
+            }
+          }
+          env_from {
+            config_map_ref {
+              name = kubernetes_config_map.polling_agent_config.metadata.0.name
             }
           }
           dynamic env {
@@ -218,16 +230,22 @@ resource "kubernetes_deployment" "compute_plane" {
             image             = worker.value.tag != "" ? "${worker.value.image}:${worker.value.tag}" : worker.value.image
             image_pull_policy = worker.value.image_pull_policy
             port {
-              container_port = worker.value.port
+              container_port = 80
             }
-            resources {
-              limits   = {
-                cpu    = worker.value.limits.cpu
-                memory = worker.value.limits.memory
-              }
-              requests = {
-                cpu    = worker.value.requests.cpu
-                memory = worker.value.requests.memory
+            dynamic resources {
+              for_each = (worker.value.limits.cpu != ""
+              || worker.value.limits.memory != ""
+              || worker.value.requests.cpu != ""
+              || worker.value.requests.memory != "" ? [1] : [])
+              content {
+                limits   = {
+                  cpu    = worker.value.limits.cpu
+                  memory = worker.value.limits.memory
+                }
+                requests = {
+                  cpu    = worker.value.requests.cpu
+                  memory = worker.value.requests.memory
+                }
               }
             }
             env_from {
@@ -314,16 +332,6 @@ resource "kubernetes_deployment" "compute_plane" {
             env_from {
               config_map_ref {
                 name = local.fluent_bit_envvars_configmap
-              }
-            }
-            resources {
-              limits   = {
-                cpu    = "100m"
-                memory = "50Mi"
-              }
-              requests = {
-                cpu    = "1m"
-                memory = "1Mi"
               }
             }
             # Please don't change below read-only permissions

@@ -29,16 +29,6 @@ variable "vpc" {
   })
 }
 
-# Shared storage info
-variable "s3_fs" {
-  description = "S3 bucket used as shared storage"
-  type        = object({
-    name       = string
-    kms_key_id = string
-    host_path  = string
-  })
-}
-
 # EKS
 variable "eks" {
   description = "Parameters of AWS EKS"
@@ -65,6 +55,16 @@ variable "eks" {
       cluster_encryption_config = string
       ebs_kms_key_id            = string
     })
+    map_roles                             = list(object({
+      rolearn  = string
+      username = string
+      groups   = list(string)
+    }))
+    map_users                             = list(object({
+      userarn  = string
+      username = string
+      groups   = list(string)
+    }))
   })
 }
 

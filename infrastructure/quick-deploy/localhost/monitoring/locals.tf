@@ -3,6 +3,7 @@ locals {
   seq_enabled            = tobool(try(var.monitoring.seq.enabled, false))
   seq_image              = try(var.monitoring.seq.image, "datalust/seq")
   seq_tag                = try(var.monitoring.seq.tag, "2021.4")
+  seq_port               = try(var.monitoring.seq.port, 8080)
   seq_image_pull_secrets = try(var.monitoring.seq.image_pull_secrets, "")
   seq_service_type       = try(var.monitoring.seq.service_type, "LoadBalancer")
   seq_node_selector      = try(var.monitoring.seq.node_selector, {})
@@ -11,6 +12,7 @@ locals {
   grafana_enabled            = tobool(try(var.monitoring.grafana.enabled, false))
   grafana_image              = try(var.monitoring.grafana.image, "grafana/grafana")
   grafana_tag                = try(var.monitoring.grafana.tag, "latest")
+  grafana_port               = try(var.monitoring.grafana.port, 3000)
   grafana_image_pull_secrets = try(var.monitoring.grafana.image_pull_secrets, "")
   grafana_service_type       = try(var.monitoring.grafana.service_type, "LoadBalancer")
   grafana_node_selector      = try(var.monitoring.grafana.node_selector, {})
@@ -28,13 +30,6 @@ locals {
   prometheus_image_pull_secrets = try(var.monitoring.prometheus.image_pull_secrets, "")
   prometheus_service_type       = try(var.monitoring.prometheus.service_type, "ClusterIP")
   prometheus_node_selector      = try(var.monitoring.prometheus.node_selector, {})
-
-  # Prometheus adapter
-  prometheus_adapter_image              = try(var.monitoring.prometheus_adapter.image, "k8s.gcr.io/prometheus-adapter/prometheus-adapter")
-  prometheus_adapter_tag                = try(var.monitoring.prometheus_adapter.tag, "v0.9.1")
-  prometheus_adapter_image_pull_secrets = try(var.monitoring.prometheus_adapter.image_pull_secrets, "")
-  prometheus_adapter_service_type       = try(var.monitoring.prometheus_adapter.service_type, "ClusterIP")
-  prometheus_adapter_node_selector      = try(var.monitoring.prometheus_adapter.node_selector, {})
 
   # Metrics exporter
   metrics_exporter_image              = try(var.monitoring.metrics_exporter.image, "dockerhubaneo/armonik_control_metrics")

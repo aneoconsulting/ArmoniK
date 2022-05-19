@@ -62,16 +62,6 @@ resource "kubernetes_daemonset" "fluent_bit" {
               name = kubernetes_config_map.fluent_bit_envvars_config.metadata.0.name
             }
           }
-          resources {
-            limits   = {
-              cpu    = "100m"
-              memory = "50Mi"
-            }
-            requests = {
-              cpu    = "1m"
-              memory = "1Mi"
-            }
-          }
           # Please don't change below read-only permissions
           volume_mount {
             name       = "fluentbitstate"

@@ -3,7 +3,7 @@ module "kms" {
   count  = (var.eks.encryption_keys.cluster_log_kms_key_id != "" && var.eks.encryption_keys.cluster_encryption_config != "" && var.eks.encryption_keys.ebs_kms_key_id != "" ? 0 : 1)
   source = "../../../modules/aws/kms"
   name   = local.kms_name
-  tags   = merge(local.tags, { name = local.kms_name })
+  tags   = local.tags
 }
 
 # AWS EKS
@@ -16,11 +16,6 @@ module "eks" {
     id                 = local.vpc.id
     private_subnet_ids = local.vpc.private_subnet_ids
     pods_subnet_ids    = local.vpc.pods_subnet_ids
-  }
-  s3_fs                         = {
-    name       = var.s3_fs.name
-    kms_key_id = var.s3_fs.kms_key_id
-    host_path  = var.s3_fs.host_path
   }
   eks                           = {
     region                                = var.region
@@ -46,6 +41,8 @@ module "eks" {
       cluster_encryption_config = (var.eks.encryption_keys.cluster_encryption_config != "" ? var.eks.encryption_keys.cluster_encryption_config : module.kms.0.selected.arn)
       ebs_kms_key_id            = (var.eks.encryption_keys.ebs_kms_key_id != "" ? var.eks.encryption_keys.ebs_kms_key_id : module.kms.0.selected.arn)
     }
+    map_roles                             = var.eks.map_roles
+    map_users                             = var.eks.map_users
   }
   eks_operational_worker_groups = var.eks_operational_worker_groups
   eks_worker_groups             = var.eks_worker_groups

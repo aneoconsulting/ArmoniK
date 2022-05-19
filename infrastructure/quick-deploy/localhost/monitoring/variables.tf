@@ -41,6 +41,7 @@ variable "monitoring" {
       enabled            = bool
       image              = string
       tag                = string
+      port               = number
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
@@ -49,6 +50,7 @@ variable "monitoring" {
       enabled            = bool
       image              = string
       tag                = string
+      port               = number
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
@@ -61,13 +63,6 @@ variable "monitoring" {
       node_selector      = any
     })
     prometheus         = object({
-      image              = string
-      tag                = string
-      image_pull_secrets = string
-      service_type       = string
-      node_selector      = any
-    })
-    prometheus_adapter = object({
       image              = string
       tag                = string
       image_pull_secrets = string

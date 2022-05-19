@@ -4,6 +4,12 @@ variable "namespace" {
   type        = string
 }
 
+# Port
+variable "port" {
+  description = "Port for Seq service"
+  type        = string
+}
+
 # Docker image
 variable "docker_image" {
   description = "Docker image for Seq"

@@ -3,13 +3,13 @@ module "kms" {
   count  = (var.s3_fs.kms_key_id != "" && var.elasticache.encryption_keys.kms_key_id != "" && var.elasticache.encryption_keys.log_kms_key_id != "" && var.mq.kms_key_id != "" ? 0 : 1)
   source = "../../../modules/aws/kms"
   name   = local.kms_name
-  tags   = merge(local.tags, { name = local.kms_name })
+  tags   = local.tags
 }
 
 # AWS S3 as shared storage
 module "s3_fs" {
   source = "../../../modules/aws/s3"
-  tags   = merge(local.tags, { name = local.s3_fs_name })
+  tags   = local.tags
   name   = local.s3_fs_name
   s3     = {
     policy                                = var.s3_fs.policy
@@ -29,12 +29,12 @@ module "s3_fs" {
 # AWS Elasticache
 module "elasticache" {
   source      = "../../../modules/aws/elasticache"
-  tags        = merge(local.tags, { name = local.elasticache_name })
+  tags        = local.tags
   name        = local.elasticache_name
   vpc         = {
-    id          = var.vpc.id
-    cidr_blocks = concat([var.vpc.cidr_block], var.vpc.pod_cidr_block_private)
-    subnet_ids  = var.vpc.private_subnet_ids
+    id          = local.vpc.id
+    cidr_blocks = local.vpc.cidr_blocks
+    subnet_ids  = local.vpc.subnet_ids
   }
   elasticache = {
     engine                      = var.elasticache.engine
@@ -57,13 +57,13 @@ module "elasticache" {
 # Amazon MQ
 module "mq" {
   source    = "../../../modules/aws/mq"
-  tags      = merge(local.tags, { name = local.mq_name })
+  tags      = local.tags
   name      = local.mq_name
   namespace = var.namespace
   vpc       = {
-    id          = var.vpc.id
-    cidr_blocks = concat([var.vpc.cidr_block], var.vpc.pod_cidr_block_private)
-    subnet_ids  = var.vpc.private_subnet_ids
+    id          = local.vpc.id
+    cidr_blocks = local.vpc.cidr_blocks
+    subnet_ids  = local.vpc.subnet_ids
   }
   user      = {
     password = var.mq_credentials.password

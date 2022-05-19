@@ -73,6 +73,11 @@ resource "kubernetes_deployment" "grafana" {
             sub_path   = "dashboards.yml"
           }
           volume_mount {
+            name       = "grafana-ini-configmap"
+            mount_path = "/etc/grafana/grafana.ini"
+            sub_path   = "grafana.ini"
+          }
+          volume_mount {
             name       = "dashboards-json-configmap"
             mount_path = "/var/lib/grafana/dashboards/"
           }
@@ -95,6 +100,13 @@ resource "kubernetes_deployment" "grafana" {
           name = "dashboards-configmap"
           config_map {
             name     = kubernetes_config_map.dashboards_config.metadata.0.name
+            optional = false
+          }
+        }
+        volume {
+          name = "grafana-ini-configmap"
+          config_map {
+            name     = kubernetes_config_map.grafana_ini.metadata.0.name
             optional = false
           }
         }
@@ -123,7 +135,7 @@ resource "kubernetes_service" "grafana" {
     }
     port {
       name        = "grafana"
-      port        = 3000
+      port        = var.port
       target_port = 3000
       protocol    = "TCP"
     }

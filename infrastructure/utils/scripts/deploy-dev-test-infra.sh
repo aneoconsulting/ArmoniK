@@ -16,10 +16,14 @@ CONTROL_PLANE_IMAGE="dockerhubaneo/armonik_control"
 POLLING_AGENT_IMAGE="dockerhubaneo/armonik_pollingagent"
 WORKER_IMAGE="dockerhubaneo/armonik_worker_dll"
 METRICS_EXPORTER_IMAGE="dockerhubaneo/armonik_control_metrics"
-CORE_TAG="0.5.3"
-WORKER_TAG="0.5.1"
-HPA_MAX_REPLICAS=5
-HPA_MIN_REPLICAS=1
+CORE_TAG=None
+WORKER_TAG=None
+HPA_MAX_REPLICAS=None
+HPA_MIN_REPLICAS=None
+HPA_IDLE_REPLICAS=None
+LOGGING_LEVEL="Information"
+HPA_TARGET_VALUE=None
+KEDA=""
 STORAGE_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/storage/parameters.tfvars"
 MONITORING_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/monitoring/parameters.tfvars"
 ARMONIK_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/armonik/parameters.tfvars"
@@ -131,6 +135,12 @@ EOF
   echo
   echo "   --hpa-max-replicas <HPA_MAX_REPLICAS>"
   echo
+  echo "   --hpa-idle-replicas <HPA_IDLE_REPLICAS>"
+  echo
+  echo "   --logging-level <LOGGING_LEVEL_FOR_ARMONIK>"
+  echo
+  echo "   --hpa-target-value <TARGET_VALUE_FOR_HPA>"
+  echo
   exit 1
 }
 
@@ -140,6 +150,7 @@ set_envvars() {
   export ARMONIK_SHARED_HOST_PATH="${HOST_PATH}"
   export ARMONIK_FILE_STORAGE_FILE="${SHARED_STORAGE_TYPE}"
   export ARMONIK_FILE_SERVER_IP="${SERVER_NFS_IP}"
+  export KEDA_KUBERNETES_NAMESPACE="default"
 }
 
 # Create shared storage
@@ -170,25 +181,27 @@ prepare_storage_parameters() {
 # Prepare monitoring parameters
 prepare_monitoring_parameters() {
   python "${MODIFY_PARAMETERS_SCRIPT}" \
-    -kv monitoring.metrics_exporter.image="${METRICS_EXPORTER_IMAGE}" \
-    -kv monitoring.metrics_exporter.tag="${CORE_TAG}" \
-    "${MONITORING_PARAMETERS_FILE}" \
-    "${GENERATED_MONITORING_PARAMETERS_FILE}"
+      -kv monitoring.metrics_exporter.image="${METRICS_EXPORTER_IMAGE}" \
+      -kv monitoring.metrics_exporter.tag="${CORE_TAG}" \
+      "${MONITORING_PARAMETERS_FILE}" \
+      "${GENERATED_MONITORING_PARAMETERS_FILE}"
 }
 
 # Prepare armonik parameters
 prepare_armonik_parameters() {
   python "${MODIFY_PARAMETERS_SCRIPT}" \
-    -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
-    -kv control_plane.tag="${CORE_TAG}" \
-    -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
-    -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
-    -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
-    -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
-    -kv compute_plane[*].hpa.min_replicas="${HPA_MIN_REPLICAS}" \
-    -kv compute_plane[*].hpa.max_replicas="${HPA_MAX_REPLICAS}" \
-    "${ARMONIK_PARAMETERS_FILE}" \
-    "${GENERATED_ARMONIK_PARAMETERS_FILE}"
+      -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
+      -kv control_plane.tag="${CORE_TAG}" \
+      -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
+      -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
+      -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
+      -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
+      -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
+      -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
+      -kv compute_plane[*].hpa.triggers.threshold="${HPA_TARGET_VALUE}" \
+      -kv logging_level="${LOGGING_LEVEL}" \
+      "${ARMONIK_PARAMETERS_FILE}" \
+      "${GENERATED_ARMONIK_PARAMETERS_FILE}"
 }
 
 # Deploy storage
@@ -320,6 +333,27 @@ clean_all() {
   clean_storage
 }
 
+# Check if KEDA is deployed
+check_keda_instance() {
+  KEDA=$(kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
+  if [ -z "${KEDA}" ]; then
+    echo 0
+  else
+    echo 1
+  fi
+}
+
+# Deploy KEDA
+deploy_keda() {
+  if [ $(check_keda_instance) -eq 0 ]; then
+    cd "${SOURCE_CODES_LOCALHOST_DIR}"
+    echo "Deploying KEDA..."
+    make deploy-keda
+  else
+    echo "Keda is already deployed"
+  fi
+}
+
 # Main
 function main() {
   for i in "$@"; do
@@ -405,6 +439,21 @@ function main() {
       shift
       shift
       ;;
+    --hpa-idle-replicas)
+      HPA_IDLE_REPLICAS="$2"
+      shift
+      shift
+      ;;
+    --logging-level)
+      LOGGING_LEVEL="$2"
+      shift
+      shift
+      ;;
+    --hpa-target-value)
+      HPA_TARGET_VALUE="$2"
+      shift
+      shift
+      ;;
     --default)
       DEFAULT=YES
       shift # past argument with no value
@@ -423,6 +472,9 @@ function main() {
 
   # Create Kubernetes namespace
   create_kubernetes_namespace
+
+  # Deploy KEDA
+  deploy_keda
 
   # Manage infra
   if [ -z $MODE ]; then

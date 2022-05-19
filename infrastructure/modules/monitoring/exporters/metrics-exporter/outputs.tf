@@ -18,3 +18,8 @@ output "name" {
   description = "Name of Metrics exporter"
   value       = kubernetes_service.metrics_exporter.metadata.0.name
 }
+
+output "namespace" {
+  description = "Namespace of Metrics exporter"
+  value       = var.namespace
+}

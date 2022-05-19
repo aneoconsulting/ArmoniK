@@ -14,17 +14,17 @@ locals {
   kms_name                  = "armonik-kms-cloudwatch-${local.suffix}-${local.random_string}"
   cloudwatch_log_group_name = "/aws/containerinsights/${local.cluster_name}/application"
   tags                      = merge(var.tags, {
-    application        = "ArmoniK"
-    deployment_version = local.suffix
-    created_by         = data.aws_caller_identity.current.arn
-    date               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
-    resource           = "monitoring"
+    "application"        = "armonik"
+    "deployment version" = local.suffix
+    "created by"         = data.aws_caller_identity.current.arn
+    "date"               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
   })
 
   # Seq
   seq_enabled            = tobool(try(var.monitoring.seq.enabled, false))
   seq_image              = try(var.monitoring.seq.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/seq")
   seq_tag                = try(var.monitoring.seq.tag, "2021.4")
+  seq_port               = try(var.monitoring.seq.port, 8080)
   seq_image_pull_secrets = try(var.monitoring.seq.image_pull_secrets, "")
   seq_service_type       = try(var.monitoring.seq.service_type, "LoadBalancer")
   seq_node_selector      = try(var.monitoring.seq.node_selector, {})
@@ -33,6 +33,7 @@ locals {
   grafana_enabled            = tobool(try(var.monitoring.grafana.enabled, false))
   grafana_image              = try(var.monitoring.grafana.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/grafana")
   grafana_tag                = try(var.monitoring.grafana.tag, "latest")
+  grafana_port               = try(var.monitoring.grafana.port, 3000)
   grafana_image_pull_secrets = try(var.monitoring.grafana.image_pull_secrets, "")
   grafana_service_type       = try(var.monitoring.grafana.service_type, "LoadBalancer")
   grafana_node_selector      = try(var.monitoring.grafana.node_selector, {})
@@ -52,13 +53,6 @@ locals {
   prometheus_node_exporter_image = try(var.monitoring.prometheus.node_exporter.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/node-exporter")
   prometheus_node_exporter_tag   = try(var.monitoring.prometheus.node_exporter.tag, "latest")
   prometheus_node_selector       = try(var.monitoring.prometheus.node_selector, {})
-
-  # Prometheus adapter
-  prometheus_adapter_image              = try(var.monitoring.prometheus_adapter.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/prometheus-adapter")
-  prometheus_adapter_tag                = try(var.monitoring.prometheus_adapter.tag, "v0.9.1")
-  prometheus_adapter_image_pull_secrets = try(var.monitoring.prometheus_adapter.image_pull_secrets, "")
-  prometheus_adapter_service_type       = try(var.monitoring.prometheus_adapter.service_type, "ClusterIP")
-  prometheus_adapter_node_selector      = try(var.monitoring.prometheus_adapter.node_selector, {})
 
   # Metrics exporter
   metrics_exporter_image              = try(var.monitoring.metrics_exporter.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter")

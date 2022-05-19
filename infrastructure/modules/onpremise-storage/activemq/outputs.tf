@@ -18,7 +18,7 @@ output "web_url" {
 output "user_certificate" {
   description = "User certificates of ActiveMQ"
   value       = {
-    secret = kubernetes_secret.activemq_client_certificate.metadata[0].name
+    secret      = kubernetes_secret.activemq_client_certificate.metadata[0].name
     ca_filename = "chain.pem"
   }
 }

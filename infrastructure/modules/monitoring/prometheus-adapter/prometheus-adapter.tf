@@ -7,6 +7,14 @@ resource "helm_release" "prometheus_adapter" {
   version    = "3.0.2"
 
   set {
+    name  = "nameOverride"
+    value = local.nameOverride
+  }
+  set {
+    name  = "fullnameOverride"
+    value = local.fullnameOverride
+  }
+  set {
     name  = "image.repository"
     value = var.docker_image.image
   }

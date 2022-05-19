@@ -4,6 +4,7 @@ export ARMONIK_PROFILE?=default
 export ARMONIK_BUCKET_NAME?=armonik-tfstate
 export ARMONIK_KUBERNETES_NAMESPACE?=armonik
 export TFSTATE_BUCKET_NAME=$(ARMONIK_BUCKET_NAME)-$(ARMONIK_SUFFIX)
+export KEDA=$(shell kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
 
 CURRENT_DIR=$(shell pwd)
 VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/vpc/generated/vpc-output.json
@@ -98,9 +99,26 @@ clean-eks:
 
 create-namespace:
 	kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+	kubectl create namespace $(KEDA_KUBERNETES_NAMESPACE) || true
 
 delete-namespace:
 	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+	kubectl delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
+
+####################################
+#              KEDA                #
+####################################
+
+deploy-keda:
+	@if [ "${KEDA}" = "" ]; then\
+        $(MAKE) -C $(CURRENT_DIR)/keda deploy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE);\
+    fi
+
+destroy-keda:
+	$(MAKE) -C $(CURRENT_DIR)/keda destroy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE)
+
+clean-keda:
+	$(MAKE) -C $(CURRENT_DIR)/keda clean
 
 ####################################
 #           AWS Storage            #
@@ -181,7 +199,7 @@ clean-armonik:
 #               All                #
 ####################################
 
-deploy-all: deploy-vpc deploy-ecr deploy-eks deploy-aws-storage deploy-monitoring deploy-armonik
+deploy-all: deploy-vpc deploy-ecr create-namespace deploy-keda deploy-aws-storage deploy-monitoring deploy-armonik
 
 destroy-all: destroy-armonik destroy-monitoring destroy-aws-storage destroy-eks destroy-ecr destroy-vpc
 

@@ -57,20 +57,7 @@ variable "namespace" {
 # VPC infos
 variable "vpc" {
   description = "AWS VPC info"
-  type        = object({
-    id                     = string
-    cidr_block             = string
-    private_subnet_ids     = list(string)
-    pod_cidr_block_private = list(string)
-    pods_subnet_ids        = list(string)
-  })
-  default     = {
-    id                     = ""
-    cidr_block             = ""
-    private_subnet_ids     = []
-    pod_cidr_block_private = []
-    pods_subnet_ids        = []
-  }
+  type        = any
 }
 
 # S3 as shared storage

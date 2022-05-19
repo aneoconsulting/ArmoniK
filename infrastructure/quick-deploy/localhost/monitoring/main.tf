@@ -4,26 +4,12 @@ module "seq" {
   source        = "../../../modules/monitoring/seq"
   namespace     = var.namespace
   service_type  = local.seq_service_type
+  port          = local.seq_port
   node_selector = local.seq_node_selector
   docker_image  = {
     image              = local.seq_image
     tag                = local.seq_tag
     image_pull_secrets = local.seq_image_pull_secrets
-  }
-  working_dir   = "${path.root}/../../.."
-}
-
-# Grafana
-module "grafana" {
-  count         = (local.grafana_enabled ? 1 : 0)
-  source        = "../../../modules/monitoring/grafana"
-  namespace     = var.namespace
-  service_type  = local.grafana_service_type
-  node_selector = local.grafana_node_selector
-  docker_image  = {
-    image              = local.grafana_image
-    tag                = local.grafana_tag
-    image_pull_secrets = local.grafana_image_pull_secrets
   }
   working_dir   = "${path.root}/../../.."
 }
@@ -74,22 +60,22 @@ module "prometheus" {
   depends_on           = [module.metrics_exporter]
 }
 
-# Prometheus adapter
-module "prometheus_adapter" {
-  source                  = "../../../modules/monitoring/prometheus-adapter"
-  namespace               = var.namespace
-  service_type            = local.prometheus_adapter_service_type
-  node_selector           = local.prometheus_adapter_node_selector
-  docker_image            = {
-    image              = local.prometheus_adapter_image
-    tag                = local.prometheus_adapter_tag
-    image_pull_secrets = local.prometheus_adapter_image_pull_secrets
+# Grafana
+module "grafana" {
+  count          = (local.grafana_enabled ? 1 : 0)
+  source         = "../../../modules/monitoring/grafana"
+  namespace      = var.namespace
+  service_type   = local.grafana_service_type
+  port           = local.grafana_port
+  node_selector  = local.grafana_node_selector
+  prometheus_url = module.prometheus.url
+  docker_image   = {
+    image              = local.grafana_image
+    tag                = local.grafana_tag
+    image_pull_secrets = local.grafana_image_pull_secrets
   }
-  prometheus_endpoint_url = {
-    host = module.prometheus.host
-    port = module.prometheus.port
-  }
-  depends_on              = [module.prometheus]
+  working_dir    = "${path.root}/../../.."
+  depends_on     = [module.prometheus]
 }
 
 # Fluent-bit

@@ -79,3 +79,9 @@ resource "kubernetes_secret" "redis_client_certificate" {
     "chain.pem" = format("%s\n%s", tls_locally_signed_cert.redis_certificate.cert_pem, tls_self_signed_cert.root_redis.cert_pem)
   }
 }
+
+resource "local_sensitive_file" "redis_client_certificate" {
+  content         = format("%s\n%s", tls_locally_signed_cert.redis_certificate.cert_pem, tls_self_signed_cert.root_redis.cert_pem)
+  filename        = "${path.root}/generated/certificates/redis/chain.pem"
+  file_permission = "0600"
+}

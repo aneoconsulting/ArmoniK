@@ -19,8 +19,13 @@ class Expr:
     def update(self, data):
         if self.val == "None":
             return
-        expr = parse("$." + self.key)
-        expr.update(data, self.val)
+        if self.val == "null":
+            expr = parse("$." + self.key)
+            expr.update(data, None)
+        else:
+            expr = parse("$." + self.key)
+            expr.update(data, self.val)
+
 
 
 parser = argparse.ArgumentParser(description="Modify ArmoniK paramters.tfvars.json")

@@ -1,5 +1,52 @@
-# jetty.xml
 locals {
+  jolokia_access_xml = <<EOF
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ -->
+  <restrict>
+    <!--  Enforce that an Origin/Referer header is present to prevent CSRF  -->
+    <!--
+    <cors>
+      <strict-checking/>
+    </cors>
+    -->
+    <!--  deny calling operations or getting attributes from these mbeans  -->
+    <deny>
+      <mbean>
+        <name>com.sun.management:type=DiagnosticCommand</name>
+        <attribute>*</attribute>
+        <operation>*</operation>
+      </mbean>
+      <mbean>
+        <name>com.sun.management:type=HotSpotDiagnostic</name>
+        <attribute>*</attribute>
+        <operation>*</operation>
+      </mbean>
+    </deny>
+  </restrict>
+EOF
+
+  credentials_properties = <<EOF
+# Defines credentials that will be used by components (like web console) to access the broker
+
+activemq.username=${random_string.mq_admin_user.result}
+activemq.password=${random_password.mq_admin_password.result}
+guest.password=${random_password.mq_application_password.result}
+EOF
+
   activemq_jetty_realm_properties = <<EOF
 # username: password ,[role-name]
 ${random_string.mq_admin_user.result}:${random_password.mq_admin_password.result}, admin
@@ -7,12 +54,31 @@ ${random_string.mq_application_user.result}:${random_password.mq_application_pas
 EOF
 
   activemq_jetty_xml = <<EOF
+
+    <!--
+        Licensed to the Apache Software Foundation (ASF) under one or more contributor
+        license agreements. See the NOTICE file distributed with this work for additional
+        information regarding copyright ownership. The ASF licenses this file to You under
+        the Apache License, Version 2.0 (the "License"); you may not use this file except in
+        compliance with the License. You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or
+        agreed to in writing, software distributed under the License is distributed on an
+        "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+        implied. See the License for the specific language governing permissions and
+        limitations under the License.
+    -->
+    <!--
+        An embedded servlet engine for serving up the Admin consoles, REST and Ajax APIs and
+        some demos Include this file in your configuration to enable ActiveMQ web components
+        e.g. <import resource="jetty.xml"/>
+    -->
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="securityLoginService" class="org.eclipse.jetty.security.HashLoginService">
         <property name="name" value="ActiveMQRealm" />
-        <property name="config" value="conf/jetty-realm.properties" />
+        <property name="config" value="$${activemq.conf}/jetty-realm.properties" />
     </bean>
 
     <bean id="securityConstraint" class="org.eclipse.jetty.util.security.Constraint">
@@ -29,6 +95,9 @@ EOF
     </bean>
     <bean id="securityConstraintMapping" class="org.eclipse.jetty.security.ConstraintMapping">
         <property name="constraint" ref="securityConstraint" />
+        <!--
+        <property name="pathSpec" value="/,*.jsp,*.html,*.js,*.css,*.png,*.gif,*.ico" />
+        -->
         <property name="pathSpec" value="/*,/api/*,/admin/*,*.jsp" />
     </bean>
     <bean id="adminSecurityConstraintMapping" class="org.eclipse.jetty.security.ConstraintMapping">
@@ -170,6 +239,8 @@ EOF
         <property name="targetObject" ref="Server" />
         <property name="targetMethod" value="start" />
     </bean>
+
+
 </beans>
 EOF
 
@@ -181,13 +252,11 @@ EOF
   http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
 
     <!-- Allows us to use system properties as variables in this configuration file -->
-    <!--
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <value>file:$${activemq.conf}/credentials.properties</value>
         </property>
     </bean>
-    -->
 
    <!-- Allows accessing the server log -->
     <bean id="logQuery" class="io.fabric8.insight.log.log4j.Log4jLogQuery"
@@ -203,6 +272,7 @@ EOF
         <destinationPolicy>
             <policyMap>
               <policyEntries>
+                <policyEntry queue=">" prioritizedMessages="true" />
                 <policyEntry topic=">" >
                     <!-- The constantPendingMessageLimitStrategy is used to prevent
                          slow topic consumers to block producers and affect other consumers
@@ -213,7 +283,7 @@ EOF
 
                     -->
                   <pendingMessageLimitStrategy>
-                    <constantPendingMessageLimitStrategy limit="10000"/>
+                    <constantPendingMessageLimitStrategy limit="100000000"/>
                   </pendingMessageLimitStrategy>
                 </policyEntry>
               </policyEntries>
@@ -250,9 +320,9 @@ EOF
             http://activemq.apache.org/producer-flow-control.html
           -->
           <systemUsage>
-            <systemUsage>
+            <systemUsage sendFailIfNoSpaceAfterTimeout="60000">
                 <memoryUsage>
-                    <memoryUsage percentOfJvmHeap="70" />
+                    <memoryUsage percentOfJvmHeap="90" />
                 </memoryUsage>
                 <storeUsage>
                     <storeUsage limit="100 gb"/>
@@ -262,8 +332,6 @@ EOF
                 </tempUsage>
             </systemUsage>
         </systemUsage>
-
-
 
         <!--
             The transport connectors expose ActiveMQ over a given protocol to
@@ -275,11 +343,12 @@ EOF
             <!-- DOS protection, limit concurrent connections to 1000 and frame size to 100MB -->
             <!--
             <transportConnector name="openwire" uri="tcp://0.0.0.0:61616?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <transportConnector name="amqp" uri="amqp://0.0.0.0:5672?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
             <transportConnector name="stomp" uri="stomp://0.0.0.0:61613?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
             <transportConnector name="mqtt" uri="mqtt://0.0.0.0:1883?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
             <transportConnector name="ws" uri="ws://0.0.0.0:61614?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
             -->
-            <transportConnector name="amqp+ssl" uri="amqp+ssl://0.0.0.0:5672?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <transportConnector name="amqp+ssl" uri="amqp+ssl://0.0.0.0:5672?maximumConnections=1000000&amp;wireFormat.maxFrameSize=1048576000"/>
         </transportConnectors>
 
         <!-- destroy the spring context on shutdown to stop jetty -->
@@ -303,7 +372,6 @@ EOF
 
 </beans>
 EOF
-
 
   log4j_properties = <<EOF
 #
@@ -378,7 +446,6 @@ log4j.appender.audit.maxBackupIndex=5
 log4j.appender.audit.append=true
 log4j.appender.audit.layout=org.apache.log4j.PatternLayout
 log4j.appender.audit.layout.ConversionPattern=%-5p | %m | %t%n
-
 EOF
 }
 
@@ -389,10 +456,22 @@ resource "kubernetes_config_map" "activemq_configs" {
     namespace = var.namespace
   }
   data = {
-    "jetty.xml" = local.activemq_jetty_xml
-    "activemq.xml" = local.activemq_xml
-    "log4j.properties" = local.log4j_properties
+    "jetty.xml"              = local.activemq_jetty_xml
+    "activemq.xml"           = local.activemq_xml
+    "log4j.properties"       = local.log4j_properties
+    "credentials.properties" = local.credentials_properties
     "jetty-realm.properties" = local.activemq_jetty_realm_properties
+  }
+}
+
+# configmap with all the variables
+resource "kubernetes_config_map" "activemq_jolokia_configs" {
+  metadata {
+    name      = "activemq-jolokia-configs"
+    namespace = var.namespace
+  }
+  data = {
+    "jolokia-access.xml" = local.jolokia_access_xml
   }
 }
 
@@ -404,4 +483,9 @@ resource "local_file" "activemq_jetty_xml_file" {
 resource "local_file" "activemq_xml_file" {
   content  = local.activemq_xml
   filename = "${path.root}/generated/configmaps/activemq/activemq.xml"
+}
+
+resource "local_file" "activemq_jolokia_file" {
+  content  = local.jolokia_access_xml
+  filename = "${path.root}/generated/configmaps/activemq/jolokia-access.xml"
 }

@@ -30,5 +30,5 @@ resource "kubernetes_config_map" "mongodb_js" {
 
 resource "local_file" "mongodb_js_file" {
   content  = local.mongodb_js
-  filename = "${path.root}/generated/configmaps/mongodb.js"
+  filename = "${path.root}/generated/configmaps/mongodb/mongodb.js"
 }

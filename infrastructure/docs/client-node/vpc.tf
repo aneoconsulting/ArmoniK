@@ -1,4 +1,4 @@
-module "vpc" {
+/*module "vpc" {
   source              = "terraform-aws-modules/vpc/aws"
   version             = "3.12.0"
   name                = "client-vpc"
@@ -21,4 +21,14 @@ module "vpc" {
     "kubernetes.io/role/internal-elb"               = "1"
     Tier                                            = "Private"
   }
+}*/
+
+# Default vpc
+data "aws_vpc" "default_vpc" {
+  default = true
+}
+
+# default subnets
+resource "aws_default_subnet" "subnet" {
+  availability_zone = "${var.region}a"
 }

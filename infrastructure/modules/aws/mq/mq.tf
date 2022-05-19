@@ -40,11 +40,42 @@ resource "aws_mq_configuration" "mq_configuration" {
   data           = <<DATA
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <broker xmlns="http://activemq.apache.org/schema/core">
-  <plugins>
-    <forcePersistencyModeBrokerPlugin persistenceFlag="true"/>
-    <statisticsBrokerPlugin/>
-    <timeStampingBrokerPlugin ttlCeiling="86400000" zeroExpirationOverride="86400000"/>
-  </plugins>
+  <persistenceAdapter>
+    <kahaDB preallocationStrategy="zeros" concurrentStoreAndDispatchQueues="false" journalDiskSyncInterval="10000" journalDiskSyncStrategy="periodic"/>
+  </persistenceAdapter>
+
+  <systemUsage>
+    <systemUsage sendFailIfNoSpace="true" sendFailIfNoSpaceAfterTimeout="60000">
+      <memoryUsage>
+        <memoryUsage limit="100 gb" percentOfJvmHeap="70" />
+      </memoryUsage>
+      <storeUsage>
+        <storeUsage limit="100 gb"/>
+      </storeUsage>
+      <tempUsage>
+        <tempUsage limit="100 gb"/>
+      </tempUsage>
+    </systemUsage>
+  </systemUsage>
+
+  <destinationPolicy>
+    <policyMap>
+      <policyEntries>
+        <policyEntry queue=">" prioritizedMessages="true" />
+        <policyEntry topic=">" >
+        <!-- The constantPendingMessageLimitStrategy is used to prevent
+             slow topic consumers to block producers and affect other consumers
+             by limiting the number of messages that are retained
+             For more information, see:
+             http://activemq.apache.org/slow-consumer-handling.html
+        -->
+          <pendingMessageLimitStrategy>
+            <constantPendingMessageLimitStrategy limit="100000000"/>
+          </pendingMessageLimitStrategy>
+        </policyEntry>
+      </policyEntries>
+    </policyMap>
+  </destinationPolicy>
 </broker>
 DATA
   tags           = local.tags

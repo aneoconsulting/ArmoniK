@@ -2,6 +2,8 @@ export ARMONIK_KUBERNETES_NAMESPACE?=armonik
 export ARMONIK_SHARED_HOST_PATH?=$(HOME)/data
 export ARMONIK_FILE_STORAGE_FILE?=HostPath
 export ARMONIK_FILE_SERVER_IP?=
+export KEDA_KUBERNETES_NAMESPACE?=default
+export KEDA=$(shell kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
 
 CURRENT_DIR=$(shell pwd)
 STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/storage/generated/storage-output.json
@@ -13,9 +15,26 @@ MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/monitoring/generated/monitoring-outpu
 
 create-namespace:
 	kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+	kubectl create namespace $(KEDA_KUBERNETES_NAMESPACE) || true
 
 delete-namespace:
 	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+	kubectl delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
+
+####################################
+#              KEDA                #
+####################################
+
+deploy-keda:
+	@if [ "${KEDA}" = "" ]; then\
+        $(MAKE) -C $(CURRENT_DIR)/keda deploy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE);\
+    fi
+
+destroy-keda:
+	$(MAKE) -C $(CURRENT_DIR)/keda destroy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE)
+
+clean-keda:
+	$(MAKE) -C $(CURRENT_DIR)/keda clean
 
 ####################################
 #            Storage               #
@@ -78,6 +97,8 @@ clean-armonik:
 #               All                #
 ####################################
 
-deploy-all: create-namespace deploy-storage deploy-monitoring deploy-armonik
-destroy-all: destroy-armonik destroy-monitoring destroy-storage
-clean-all: clean-armonik clean-monitoring clean-storage
+deploy-all: create-namespace deploy-keda deploy-storage deploy-monitoring deploy-armonik
+
+destroy-all: destroy-armonik destroy-monitoring destroy-storage destroy-keda
+
+clean-all: clean-armonik clean-monitoring clean-storage clean-keda

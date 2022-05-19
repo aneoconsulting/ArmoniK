@@ -63,6 +63,11 @@ resource "kubernetes_deployment" "activemq" {
             mount_path = "/opt/activemq/conf/"
             read_only  = true
           }
+          volume_mount {
+            name       = "activemq-jolokia-xml"
+            mount_path = "/opt/activemq/webapps/api/WEB-INF/classes/"
+            read_only  = true
+          }
           port {
             name           = "amqp"
             container_port = 5672
@@ -85,6 +90,13 @@ resource "kubernetes_deployment" "activemq" {
           name = "activemq-jetty-xml"
           config_map {
             name     = kubernetes_config_map.activemq_configs.metadata.0.name
+            optional = false
+          }
+        }
+        volume {
+          name = "activemq-jolokia-xml"
+          config_map {
+            name     = kubernetes_config_map.activemq_jolokia_configs.metadata.0.name
             optional = false
           }
         }

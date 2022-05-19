@@ -23,7 +23,7 @@ ArmoniK might not be the best choice if :
 3. The tasks use third party licensed software.
 
 
-## [ArmoniK installation](articles/intro.md)
+## [Installation](articles/intro.md)
 
 ArmoniK installations instructions for new user and/or test environments.
 

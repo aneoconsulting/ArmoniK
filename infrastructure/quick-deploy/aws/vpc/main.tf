@@ -3,13 +3,13 @@ module "kms" {
   count  = (var.vpc.flow_log_cloudwatch_log_group_kms_key_id == "" ? 1 : 0)
   source = "../../../modules/aws/kms"
   name   = local.kms_name
-  tags   = merge(local.tags, { name = local.kms_name })
+  tags   = local.tags
 }
 
 # AWS VPC
 module "vpc" {
   source = "../../../modules/aws/vpc"
-  tags   = merge(local.tags, { name = local.vpc_name })
+  tags   = local.tags
   name   = local.vpc_name
   vpc    = {
     cluster_name                                    = local.cluster_name

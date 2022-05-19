@@ -1,11 +1,96 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-03-28)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-05-17)
+
+## [v2.7.1](https://github.com/aneoconsulting/armonik/tree/v2.7.1) (2022-05-17)
+
+Removed
+-
+
+* Ignore IdleReplicaCount option in KEDA SacledObject Helm chart
+* Delete idle_replica_count parameter in HPA of compute plane
+* Remove GetStatus for TryGetResult
+
+Added
+-
+
+* Add annotations in the Kubernetes deployments of ArmoniK components. The user who deploys ArmoniK can fill the
+  annotations via the parameters.tfvars
+* Add tags in Terraform sources for AWS resources (VPC, ECR, EKS, AWS ElastiCache, Amazon MQ)
+* Add gRPC channel factory to support mTLS in core test clients
+* Add tests in fully integrated tests in core
+* Update Samples and Extensions.API End to end test to be compliant with .net 4.8
+
+Changed
+-
+
+* Upgrade KEDA Helm chart to version 2.7.2
+* Upgrade KEDA container images to version 2.7.1
+* update Core package dependencies to reduce vulnerabilities
+* Expose ClientOptions in Callback OnSessionEnter
+* Change default working directory to Application will be executed
+* Change to .net 6.0 in WorkerAPI Service
+
+## [v2.7.0](https://github.com/aneoconsulting/armonik/tree/v2.7.0) (2022-05-11)
+
+Removed
+-
+
+* Prometheus Adapter is removed and replaced by KEDA
+* Remove dispatcher from Polling Agent
+* Remove task creating metrics from queued task metrics for HPA
+
+Added
+-
+
+* KEDA is used for Horizontal Pod Autoscaling (HPA)
+* Use KEDA Prometheus scaler for HPA
+* Health check is added in Control plane
+* Add stability + larges tests in Polling agent and control plane
+* Add configuration management of task priority for ActivMQ
+* Add new timeout configuration when no more space left
+* Add configuration in ActivMQ to upgrade pending messages in queue to 1OOM messages
+* Add Dotnet Framework 4.8 in High level Client API
+* Add Retry communication from Client when communication is lost during waiting or getResult
+*
+
+Fixed
+-
+
+* Fix the problem of multiple APIservice of custom.metrics.k8s.io or external.metrics.k8s.io on the same Kubernetes
+  cluster.
+* Fix tasks Retry in Polling agent
+* Fix HealthCheck in compute plane
+* Fix and validated cancel session API
+* Fix Issue to fix AssemblyLoadContext in Release
+
+Changed
+-
+
+* Improve RequestProcessor
+* Change heuristic of task submission (Parent task must finished before to start any subtask)
+* The retry will generate new taskId in polling agent manage retry of task internaly
+* Add start time, submission time, end time in database to monitor task activities
+* Improve performance for LogFunction
+* Improve performance by removing dispatcher
+* Improve index in MongoDB for access performances
+* Improve TryGetResult + Fix when error comes from compute plane
+* Manage retry when disrupted communications happen between client and server (Default retry 5 WAITING 200ms)
+* Increase VM Size for ActivMQ to manage heavy load
+* Change storage type from EFS to EBS
+
+## [v2.6.0](https://github.com/aneoconsulting/armonik/tree/v2.6.0) (2022-05-06)
+
+Added
+-
+
+* Add Ingress with no SSL, TLS and mTLS functionalities (Default: no SSL)
 
 ## [v2.5.2](https://github.com/aneoconsulting/armonik/tree/v2.5.2) (2022-03-28)
 
 Added
-- 
+-
+
 * Add multiarch images for ArmoniK Core (Control plane, Polling agent, and Metrics exporter)
 * Add health checks for Polling agent
 * Add Ssl options in API to connect with https protocol
@@ -13,20 +98,21 @@ Added
 * Add Retry on getResult when Http connections could fail during the result retrieval
 
 Fixed
-- 
+-
+
 * Fix bugs with deserialization from MongoDB in polling agent and large payloads
 * Fix bugs with TryGetResults
 
 ## [v2.5.1](https://github.com/aneoconsulting/armonik/tree/v2.5.1) (2022-03-16)
 
 Added
-- 
+-
 
 * New feature to call static method in GridServer service
 * Add default serialization on native array (double[], float[], long[] int[] and so on)
 
 Fixed
-- 
+-
 
 * Fix messages reinserted in the queue instead of being deleted
 * Fix the crashes due to MongoDB

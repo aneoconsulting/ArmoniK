@@ -10,16 +10,18 @@ monitoring = {
     enabled            = true
     image              = "datalust/seq"
     tag                = "2021.4"
+    port               = 8080
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = {}
   }
   grafana            = {
     enabled            = true
     image              = "grafana/grafana"
     tag                = "latest"
+    port               = 3000
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = {}
   }
   node_exporter      = {
@@ -36,16 +38,9 @@ monitoring = {
     service_type       = "ClusterIP"
     node_selector      = {}
   }
-  prometheus_adapter = {
-    image              = "k8s.gcr.io/prometheus-adapter/prometheus-adapter"
-    tag                = "v0.9.1"
-    image_pull_secrets = ""
-    service_type       = "ClusterIP"
-    node_selector      = {}
-  }
   metrics_exporter   = {
     image              = "dockerhubaneo/armonik_control_metrics"
-    tag                = "0.5.4"
+    tag                = "0.5.9"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}

@@ -16,25 +16,33 @@ namespace = "armonik"
 # Logging level
 logging_level = "Information"
 
+# Polling delay to MongoDB
+# according to the size of the task and/or the application
+mongodb_polling_delay = {
+  min_polling_delay = "00:00:01"
+  max_polling_delay = "00:00:10"
+}
+
 # Parameters of control plane
 control_plane = {
   name               = "control-plane"
-  service_type       = "LoadBalancer"
+  service_type       = "ClusterIP"
   replicas           = 1
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag                = "0.5.4"
+  tag                = "0.5.9"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
     cpu    = "1000m"
-    memory = "1024Mi"
+    memory = "2048Mi"
   }
   requests           = {
-    cpu    = "100m"
-    memory = "128Mi"
+    cpu    = "200m"
+    memory = "256Mi"
   }
   image_pull_secrets = ""
   node_selector      = {}
+  annotations        = {}
 }
 
 # Parameters of the compute plane
@@ -46,56 +54,81 @@ compute_plane = [
     termination_grace_period_seconds = 30
     image_pull_secrets               = ""
     node_selector                    = {}
+    annotations                      = {}
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.5.4"
+      tag               = "0.5.9"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "100m"
-        memory = "128Mi"
+        cpu    = "1000m"
+        memory = "2048Mi"
       }
       requests          = {
-        cpu    = "100m"
-        memory = "128Mi"
+        cpu    = "200m"
+        memory = "256Mi"
       }
     }
     # ArmoniK workers
     worker                           = [
       {
         name              = "worker"
-        port              = 80
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.5.2"
+        tag               = "0.5.7"
         image_pull_policy = "IfNotPresent"
         limits            = {
-          cpu    = "920m"
-          memory = "2048Mi"
+          cpu    = "1000m"
+          memory = "1024Mi"
         }
         requests          = {
-          cpu    = "50m"
-          memory = "100Mi"
+          cpu    = "500m"
+          memory = "512Mi"
         }
       }
     ]
     hpa                              = {
-      min_replicas   = 1
-      max_replicas   = 100
-      object_metrics = [
-        {
-          described_object = {
-            api_version = "batch/v1"
-            kind        = "Job"
-          }
-          metric_name      = "armonik_tasks_queued"
-          target           = {
-            type                = "AverageValue" # "Value", "Utilization" or "AverageValue"
-            average_value       = 2
-            average_utilization = 0
-            value               = 0
-          }
-        }
-      ]
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 100
+      behavior          = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers          = {
+        metric_name = "armonik_tasks_queued"
+        threshold   = "2"
+      }
     }
   }
 ]
+
+# Deploy ingress
+# PS: to not deploy ingress put: "ingress=null"
+ingress = {
+  name               = "ingress"
+  service_type       = "LoadBalancer"
+  replicas           = 1
+  image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/nginx"
+  tag                = "latest"
+  image_pull_policy  = "IfNotPresent"
+  http_port          = 5000
+  grpc_port          = 5001
+  limits             = {
+    cpu    = "200m"
+    memory = "100Mi"
+  }
+  requests           = {
+    cpu    = "1m"
+    memory = "1Mi"
+  }
+  image_pull_secrets = ""
+  node_selector      = {}
+  annotations        = {}
+  tls                = false
+  mtls               = false
+}

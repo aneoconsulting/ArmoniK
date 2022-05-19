@@ -11,6 +11,7 @@
     - [AWS VPC](#aws-vpc)
     - [AWS ECR](#aws-ecr)
     - [AWS EKS](#aws-eks)
+    - [KEDA](#keda)
     - [AWS storage](#aws-storage)
     - [Monitoring](#monitoring)
 - [Deploy ArmoniK](#deploy-armonik)
@@ -25,6 +26,7 @@ The infrastructure is composed of:
 * AWS VPC
 * AWS ECR for docker images
 * AWS EKS
+* [KEDA](https://keda.sh/)
 * Storage:
     * AWS S3 buckets:
         * to save safely `.tfsate`
@@ -58,7 +60,7 @@ infrastructure:
 * [Docker](https://docs.docker.com/engine/install/)
 * [GNU make](https://www.gnu.org/software/make/)
 * [JQ](https://stedolan.github.io/jq/download/)
-* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
+* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) v1.23.6
 * [Helm](https://helm.sh/docs/intro/install/)
 * [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
@@ -115,6 +117,7 @@ export ARMONIK_REGION=eu-west-3
 export ARMONIK_SUFFIX=main
 export ARMONIK_BUCKET_NAME=armonik-tfstate
 export ARMONIK_KUBERNETES_NAMESPACE=armonik
+export KEDA_KUBERNETES_NAMESPACE="default"
 ```
 
 where:
@@ -124,6 +127,7 @@ where:
 - `ARMONIK_SUFFIX`: will be used as suffix to the name of all resources
 - `ARMONIK_BUCKET_NAME`: is the name of S3 bucket in which `.tfsate` will be safely stored
 - `ARMONIK_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for ArmoniK
+- `KEDA_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for [KEDA](https://keda.sh/)
 
 **Warning:** `ARMONIK_SUFFIX` must be *UNIQUE* to allow resources to have unique name in AWS
 
@@ -193,12 +197,27 @@ The EKS deployment generates an output file `eks/generated/eks-output.json`.
 
 ### Create Kubernetes namespace
 
-After the EKS deployment, You create a Kubernetes namespace for ArmoniK with the name set in the environment
-variable`ARMONIK_KUBERNETES_NAMESPACE`:
+After the EKS deployment, You create a Kubernetes namespaces for ArmoniK with the name set in the environment
+variable`ARMONIK_KUBERNETES_NAMESPACE` and for KEDA with the name set in the environment
+variable`KEDA_KUBERNETES_NAMESPACE`:
 
 ```bash
 make create-namespace
 ```
+
+## KEDA
+
+The parameters of KEDA are defined in [keda/parameters.tfvars](keda/parameters.tfvars).
+
+Execute the following command to install KEDA:
+
+```bash
+make deploy-keda
+```
+
+The Keda deployment generates an output file `keda/generated/keda-output.json`.
+
+**NOTE:** Please note that KEDA must be deployed only ONCE on the same Kubernetes cluster.
 
 ## AWS storage
 
