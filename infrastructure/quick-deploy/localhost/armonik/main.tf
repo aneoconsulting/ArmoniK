@@ -8,5 +8,6 @@ module "armonik" {
   monitoring            = var.monitoring
   compute_plane         = var.compute_plane
   control_plane         = var.control_plane
+  admin_gui             = var.admin_gui
   ingress               = var.ingress
 }
