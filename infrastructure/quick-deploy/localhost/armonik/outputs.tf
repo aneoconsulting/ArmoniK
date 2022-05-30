@@ -4,5 +4,6 @@ output "armonik" {
     control_plane_url = module.armonik.endpoint_urls.control_plane_url
     grafana_url       = module.armonik.endpoint_urls.grafana_url
     seq_web_url       = module.armonik.endpoint_urls.seq_web_url
+    ingress           = module.armonik.ingress
   }
 }
