@@ -14,7 +14,7 @@ INPUT_PARAMETERS_FILE=""
 GrpcClient__Endpoint=""
 ARMONIK_NAME_SPACE="armonik"
 CLIENT_IMAGE="dockerhubaneo/armonik_core_stream_test_client"
-CLIENT_TAG="0.5.9"
+CLIENT_TAG="0.5.10"
 
 # usage
 usage() {
