@@ -67,7 +67,7 @@ jobs:
         shell: bash
         run: |
           set -ex
-          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
             dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
@@ -76,11 +76,11 @@ jobs:
         shell: bash
         run: |
           set -ex
-          export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.admin_api_url')
-          export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.admin_app_url')
+          export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
+          export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
           : "Add -f again when a success endpoint has been implemented"
-          curl -sSL "${ADMIN_API_URL}"
-          curl -fsSL "${ADMIN_APP_URL}"
+          curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
+          curl -fsSL "${ADMIN_APP_URL}" -o /dev/null
 
       - name: Copy logs
         if: always()
@@ -145,7 +145,7 @@ jobs:
         shell: bash
         run: |
           set -ex
-          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
             -e HtcMock__NTasks=${{ matrix.ntasks }} \
@@ -219,7 +219,7 @@ jobs:
         shell: bash
         run: |
           set -ex
-          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.ingress.control_plane_url')
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
             -e HtcMock__NTasks=${{ matrix.ntasks }} \
