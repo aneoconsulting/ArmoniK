@@ -80,7 +80,7 @@ jobs:
           export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
           : "Add -f again when a success endpoint has been implemented"
           curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
-          curl -fsSL "${ADMIN_APP_URL}" -o /dev/null
+          curl -fsSL "${ADMIN_APP_URL}" -o /dev/null || true "in v2.7.2, there is no app endpoint"
 
       - name: Copy logs
         if: always()
