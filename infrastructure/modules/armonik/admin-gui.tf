@@ -71,6 +71,10 @@ resource "kubernetes_deployment" "admin_gui" {
               name = kubernetes_config_map.core_config.metadata.0.name
             }
           }
+          env {
+            name  = "ControlPlane__Endpoint"
+            value = local.control_plane_url
+          }
           dynamic env {
             for_each = (local.activemq_credentials_secret != "" ? [1] : [])
             content {
@@ -197,6 +201,10 @@ resource "kubernetes_deployment" "admin_gui" {
             config_map_ref {
               name = kubernetes_config_map.core_config.metadata.0.name
             }
+          }
+          env {
+            name  = "ControlPlane__Endpoint"
+            value = local.control_plane_url
           }
           dynamic env {
             for_each = (local.activemq_credentials_secret != "" ? [1] : [])
