@@ -17,7 +17,7 @@ control_plane = {
   service_type       = "ClusterIP"
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
-  tag                = "0.5.9"
+  tag                = "0.5.10"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -33,6 +33,45 @@ control_plane = {
   annotations        = {}
 }
 
+# Parameters of admin GUI
+admin_gui = {
+  api = {
+    name               = "admin-api"
+    replicas           = 1
+    image              = "nginx"
+    tag                = "latest"
+    port               = 3333
+    limits             = {
+      cpu    = "1000m"
+      memory = "1024Mi"
+    }
+    requests           = {
+      cpu    = "100m"
+      memory = "128Mi"
+    }
+  }
+  app = {
+    name               = "admin-app"
+    replicas           = 1
+    image              = "nginx"
+    tag                = "latest"
+    port               = 81
+    limits             = {
+      cpu    = "1000m"
+      memory = "1024Mi"
+    }
+    requests           = {
+      cpu    = "100m"
+      memory = "128Mi"
+    }
+  }
+  service_type       = "ClusterIP"
+  replicas           = 1
+  image_pull_policy  = "IfNotPresent"
+  image_pull_secrets = ""
+  node_selector      = {}
+}
+
 # Parameters of the compute plane
 compute_plane = [
   {
@@ -46,7 +85,7 @@ compute_plane = [
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.5.9"
+      tag               = "0.5.10"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "1000m"
@@ -62,7 +101,7 @@ compute_plane = [
       {
         name              = "worker"
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.5.7"
+        tag               = "0.5.8"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "1000m"

@@ -14,7 +14,7 @@ INPUT_PARAMETERS_FILE=""
 GrpcClient__Endpoint=""
 ARMONIK_NAME_SPACE="armonik"
 CLIENT_IMAGE="dockerhubaneo/armonik_core_stream_test_client"
-CLIENT_TAG="0.5.9"
+CLIENT_TAG="0.5.10"
 
 # usage
 usage() {
@@ -37,7 +37,7 @@ usage() {
 get_control_plane_url() {
   # Retrieve from the file of parameters
   if [ -f "${INPUT_PARAMETERS_FILE}" ]; then
-    GrpcClient__Endpoint=$(cat "${INPUT_PARAMETERS_FILE}" | jq -r '.armonik.ingress.control_plane_url')
+    GrpcClient__Endpoint=$(cat "${INPUT_PARAMETERS_FILE}" | jq -r '.armonik.control_plane_url')
   fi
 
   # Retrieve from the control plane parameter

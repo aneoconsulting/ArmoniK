@@ -12,7 +12,7 @@ monitoring = {
     tag                = "2021.4"
     port               = 8080
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = {}
   }
   grafana            = {
@@ -21,7 +21,7 @@ monitoring = {
     tag                = "latest"
     port               = 3000
     image_pull_secrets = ""
-    service_type       = "LoadBalancer"
+    service_type       = "ClusterIP"
     node_selector      = {}
   }
   node_exporter      = {
@@ -40,7 +40,7 @@ monitoring = {
   }
   metrics_exporter   = {
     image              = "dockerhubaneo/armonik_control_metrics"
-    tag                = "0.5.9"
+    tag                = "0.5.10"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
