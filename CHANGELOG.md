@@ -2,6 +2,25 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-05-17)
 
+## [v2.7.2](https://github.com/aneoconsulting/armonik/tree/v2.7.2) (2022-06-02)
+
+Removed
+-
+
+Added
+-
+* Add HealthCheck for Worker Service
+*
+
+
+Changed
+-
+
+* Fix Issue with Properties object in datasynapse client sdk
+* Fix issue with Gateway timeout Error 504
+* Supply Strong name in Client Extension.CSharp for .Net 4.8 Libraries
+
+
 ## [v2.7.1](https://github.com/aneoconsulting/armonik/tree/v2.7.1) (2022-05-17)
 
 Removed
