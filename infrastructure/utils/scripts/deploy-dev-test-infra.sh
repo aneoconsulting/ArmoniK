@@ -6,6 +6,7 @@ BASEDIR=$(pwd -P)
 popd
 
 MODE=""
+CLEAN=""
 NAMESPACE="armonik"
 HOST_PATH=$(realpath "${HOME}/data")
 SERVER_NFS_IP=""
@@ -27,9 +28,11 @@ KEDA=""
 STORAGE_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/storage/parameters.tfvars"
 MONITORING_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/monitoring/parameters.tfvars"
 ARMONIK_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/armonik/parameters.tfvars"
+KEDA_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/keda/parameters.tfvars"
 GENERATED_STORAGE_PARAMETERS_FILE="${BASEDIR}/storage-parameters.tfvars.json"
 GENERATED_MONITORING_PARAMETERS_FILE="${BASEDIR}/monitoring-parameters.tfvars.json"
 GENERATED_ARMONIK_PARAMETERS_FILE="${BASEDIR}/armonik-parameters.tfvars.json"
+GENERATED_KEDA_PARAMETERS_FILE="${BASEDIR}/keda-parameters.tfvars.json"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -92,19 +95,18 @@ usage() {
         deploy-storage      : To deploy Storage independently on master machine. Available (Cluster or single node)
         deploy-monitoring   : To deploy monitoring independently on master machine. Available (Cluster or single node)
         deploy-armonik      : To deploy ArmoniK on master machine. Available (Cluster or single node)
+        deploy-keda         : To deploy KEDA on master machine. Available (Cluster or single node)
         deploy-all          : To deploy Storage, Monitoring and ArmoniK
         redeploy-storage    : To REdeploy storage
         redeploy-monitoring : To REdeploy monitoring
         redeploy-armonik    : To REdeploy ArmoniK
+        redeploy-keda       : To REdeploy KEDA
         redeploy-all        : To REdeploy storage, monitoring and ArmoniK
         destroy-storage     : To destroy storage deployment only
         destroy-monitoring  : To destroy monitoring deployment only
         destroy-armonik     : To destroy Armonik deployment only
+        destroy-keda        : To destroy KEDA deployment only
         destroy-all         : To destroy all storage, monitoring and ArmoniK in the same command
-        clean-storage       : To clean and deleted generated files for storage deployment only
-        clean-monitoring    : To clean and deleted generated files for monitoring deployment only
-        clean-armonik       : To clean and deleted generated files for Armonik deployment only
-        clean-all           : To clean and deleted generated files for all storage, monitoring and ArmoniK in the same command
 EOF
   echo "   -n, --namespace <NAMESPACE>"
   echo
@@ -141,6 +143,15 @@ EOF
   echo
   echo "   --hpa-target-value <TARGET_VALUE_FOR_HPA>"
   echo
+  echo "   -c, --clean <Possible options below>"
+  cat <<-EOF
+  Where --clean should be :
+        storage      : Clean generated files for storage
+        monitoring   : Clean generated files for monitoring
+        armonik      : Clean generated files for armonik
+        keda         : Clean generated files for keda
+        all          : Clean all generated
+EOF
   exit 1
 }
 
@@ -167,6 +178,16 @@ create_kubernetes_namespace() {
   make create-namespace
 }
 
+# Check if KEDA is deployed
+check_keda_instance() {
+  KEDA=$(kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
+  if [ -z "${KEDA}" ]; then
+    echo 0
+  else
+    echo 1
+  fi
+}
+
 # Prepare storage parameters
 prepare_storage_parameters() {
   STORAGE_TYPE=$(echo "${SHARED_STORAGE_TYPE}" | awk '{print tolower($0)}')
@@ -181,27 +202,34 @@ prepare_storage_parameters() {
 # Prepare monitoring parameters
 prepare_monitoring_parameters() {
   python "${MODIFY_PARAMETERS_SCRIPT}" \
-      -kv monitoring.metrics_exporter.image="${METRICS_EXPORTER_IMAGE}" \
-      -kv monitoring.metrics_exporter.tag="${CORE_TAG}" \
-      "${MONITORING_PARAMETERS_FILE}" \
-      "${GENERATED_MONITORING_PARAMETERS_FILE}"
+    -kv monitoring.metrics_exporter.image="${METRICS_EXPORTER_IMAGE}" \
+    -kv monitoring.metrics_exporter.tag="${CORE_TAG}" \
+    "${MONITORING_PARAMETERS_FILE}" \
+    "${GENERATED_MONITORING_PARAMETERS_FILE}"
 }
 
 # Prepare armonik parameters
 prepare_armonik_parameters() {
   python "${MODIFY_PARAMETERS_SCRIPT}" \
-      -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
-      -kv control_plane.tag="${CORE_TAG}" \
-      -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
-      -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
-      -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
-      -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
-      -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
-      -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
-      -kv compute_plane[*].hpa.triggers.threshold="${HPA_TARGET_VALUE}" \
-      -kv logging_level="${LOGGING_LEVEL}" \
-      "${ARMONIK_PARAMETERS_FILE}" \
-      "${GENERATED_ARMONIK_PARAMETERS_FILE}"
+    -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
+    -kv control_plane.tag="${CORE_TAG}" \
+    -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
+    -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
+    -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
+    -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
+    -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
+    -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
+    -kv compute_plane[*].hpa.triggers.threshold="${HPA_TARGET_VALUE}" \
+    -kv logging_level="${LOGGING_LEVEL}" \
+    "${ARMONIK_PARAMETERS_FILE}" \
+    "${GENERATED_ARMONIK_PARAMETERS_FILE}"
+}
+
+# Prepare keda parameters
+prepare_keda_parameters() {
+  python "${MODIFY_PARAMETERS_SCRIPT}" \
+    "${KEDA_PARAMETERS_FILE}" \
+    "${GENERATED_KEDA_PARAMETERS_FILE}"
 }
 
 # Deploy storage
@@ -234,8 +262,22 @@ deploy_armonik() {
   make deploy-armonik PARAMETERS_FILE="${GENERATED_ARMONIK_PARAMETERS_FILE}"
 }
 
+# Deploy KEDA
+deploy_keda() {
+  if [ $(check_keda_instance) -eq 0 ]; then
+    # Prepare armonik parameters
+    prepare_keda_parameters
+    cd "${SOURCE_CODES_LOCALHOST_DIR}"
+    echo "Deploying KEDA..."
+    make deploy-keda PARAMETERS_FILE="${GENERATED_KEDA_PARAMETERS_FILE}"
+  else
+    echo "Keda is already deployed"
+  fi
+}
+
 # Deploy storage, monitoring and ArmoniK
 deploy_all() {
+  deploy_keda
   deploy_storage
   deploy_monitoring
   deploy_armonik
@@ -271,11 +313,22 @@ destroy_armonik() {
   make destroy-armonik PARAMETERS_FILE="${GENERATED_ARMONIK_PARAMETERS_FILE}"
 }
 
+# Destroy KEDA
+destroy_keda() {
+  if [ ! -f "${GENERATED_KEDA_PARAMETERS_FILE}" ]; then
+    prepare_keda_parameters
+  fi
+
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  make destroy-keda PARAMETERS_FILE="${GENERATED_KEDA_PARAMETERS_FILE}"
+}
+
 # Destroy storage, monitoring and ArmoniK
 destroy_all() {
   destroy_armonik
   destroy_monitoring
   destroy_storage
+  destroy_keda
 }
 
 # Redeploy storage
@@ -297,6 +350,13 @@ redeploy_armonik() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
   destroy_armonik
   deploy_armonik
+}
+
+# Redeploy KEDA
+redeploy_keda() {
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  destroy_keda
+  deploy_keda
 }
 
 # Redeploy storage, monitoring and ArmoniK
@@ -326,32 +386,19 @@ clean_armonik() {
   rm -f "${GENERATED_ARMONIK_PARAMETERS_FILE}"
 }
 
+# Clean KEDA
+clean_keda() {
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  make clean-keda
+  rm -f "${GENERATED_KEDA_PARAMETERS_FILE}"
+}
+
 # Clean storage, monitoring and ArmoniK
 clean_all() {
   clean_armonik
   clean_monitoring
   clean_storage
-}
-
-# Check if KEDA is deployed
-check_keda_instance() {
-  KEDA=$(kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
-  if [ -z "${KEDA}" ]; then
-    echo 0
-  else
-    echo 1
-  fi
-}
-
-# Deploy KEDA
-deploy_keda() {
-  if [ $(check_keda_instance) -eq 0 ]; then
-    cd "${SOURCE_CODES_LOCALHOST_DIR}"
-    echo "Deploying KEDA..."
-    make deploy-keda
-  else
-    echo "Keda is already deployed"
-  fi
+  clean_keda
 }
 
 # Main
@@ -370,6 +417,16 @@ function main() {
       ;;
     --mode)
       MODE="$2"
+      shift
+      shift
+      ;;
+    -c)
+      CLEAN="$2"
+      shift
+      shift
+      ;;
+    --clean)
+      CLEAN="$2"
       shift
       shift
       ;;
@@ -464,6 +521,28 @@ function main() {
     esac
   done
 
+  # Clean generated files
+  if [ "${CLEAN}" == "storage" ]; then
+    clean_storage
+    exit
+  elif [ "${CLEAN}" == "monitoring" ]; then
+    clean_monitoring
+    exit
+  elif [ "${CLEAN}" == "armonik" ]; then
+    clean_armonik
+    exit
+  elif [ "${CLEAN}" == "keda" ]; then
+    clean_kda
+    exit
+  elif [ "${CLEAN}" == "all" ]; then
+    clean_all
+    exit
+  elif [ "${CLEAN}" != "" ]; then
+    echo -e "\n${RED}$0 $@ where [ "${CLEAN}" ] is not a correct Mode${NC}\n"
+    usage
+    exit
+  fi
+
   # Set environment variables
   set_envvars
 
@@ -473,47 +552,42 @@ function main() {
   # Create Kubernetes namespace
   create_kubernetes_namespace
 
-  # Deploy KEDA
-  deploy_keda
-
   # Manage infra
-  if [ -z $MODE ]; then
+  if [ -z "${MODE}" ]; then
     usage
     exit
-  elif [ $MODE == "deploy-storage" ]; then
+  elif [ "${MODE}" == "deploy-storage" ]; then
     deploy_storage
-  elif [ $MODE == "deploy-monitoring" ]; then
+  elif [ "${MODE}" == "deploy-monitoring" ]; then
     deploy_monitoring
-  elif [ $MODE == "deploy-armonik" ]; then
+  elif [ "${MODE}" == "deploy-armonik" ]; then
     deploy_armonik
-  elif [ $MODE == "deploy-all" ]; then
+  elif [ "${MODE}" == "deploy-keda" ]; then
+    deploy_keda
+  elif [ "${MODE}" == "deploy-all" ]; then
     deploy_all
-  elif [ $MODE == "redeploy-storage" ]; then
+  elif [ "${MODE}" == "redeploy-storage" ]; then
     redeploy_storage
-  elif [ $MODE == "redeploy-monitoring" ]; then
+  elif [ "${MODE}" == "redeploy-monitoring" ]; then
     redeploy_monitoring
-  elif [ $MODE == "redeploy-armonik" ]; then
+  elif [ "${MODE}" == "redeploy-armonik" ]; then
     redeploy_armonik
-  elif [ $MODE == "redeploy-all" ]; then
+  elif [ "${MODE}" == "redeploy-keda" ]; then
+    redeploy_keda
+  elif [ "${MODE}" == "redeploy-all" ]; then
     redeploy_all
-  elif [ $MODE == "destroy-storage" ]; then
+  elif [ "${MODE}" == "destroy-storage" ]; then
     destroy_storage
-  elif [ $MODE == "destroy-monitoring" ]; then
+  elif [ "${MODE}" == "destroy-monitoring" ]; then
     destroy_monitoring
-  elif [ $MODE == "destroy-armonik" ]; then
+  elif [ "${MODE}" == "destroy-armonik" ]; then
     destroy_armonik
-  elif [ $MODE == "destroy-all" ]; then
+  elif [ "${MODE}" == "destroy-keda" ]; then
+    destroy_keda
+  elif [ "${MODE}" == "destroy-all" ]; then
     destroy_all
-  elif [ $MODE == "clean-storage" ]; then
-    clean_storage
-  elif [ $MODE == "clean-monitoring" ]; then
-    clean_monitoring
-  elif [ $MODE == "clean-armonik" ]; then
-    clean_armonik
-  elif [ $MODE == "clean-all" ]; then
-    clean_all
   else
-    echo -e "\n${RED}$0 $@ where [ $MODE ] is not a correct Mode${NC}\n"
+    echo -e "\n${RED}$0 $@ where [ "${MODE}" ] is not a correct Mode${NC}\n"
     usage
     exit
   fi

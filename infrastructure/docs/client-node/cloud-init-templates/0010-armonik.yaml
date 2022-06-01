@@ -1,0 +1,24 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+locale: en_US.UTF-8
+
+write_files:
+  - content: |
+      cd /home/ec2-user
+      git clone https://github.com/aneoconsulting/ArmoniK.git armonik
+      mkdir -p /home/ec2-user/armonik/source
+      git clone https://github.com/aneoconsulting/ArmoniK.Samples.git /home/ec2-user/armonik/source/ArmoniK.Samples
+      git clone https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp.git /home/ec2-user/armonik/source/ArmoniK.Extensions.Csharp
+      chown -R ec2-user:ec2-user /home/ec2-user/armonik
+    path: /app/install-armonik.sh
+    permissions: 0755
+    owner: root
+
+runcmd:
+  - bash /app/install-armonik.sh
