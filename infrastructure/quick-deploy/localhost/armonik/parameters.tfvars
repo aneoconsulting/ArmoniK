@@ -17,7 +17,7 @@ control_plane = {
   service_type       = "ClusterIP"
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
-  tag                = "0.5.11-dbdockernonroot.16.ada200e"
+  tag                = "0.5.11-dbdockernonroot.17.d57069d"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -85,7 +85,7 @@ compute_plane = [
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.5.11-dbdockernonroot.16.ada200e"
+      tag               = "0.5.11-dbdockernonroot.17.d57069d"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "1000m"
