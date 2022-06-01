@@ -106,6 +106,11 @@ ecr = {
       tag   = "latest"
     },
     {
+      name  = "pause"
+      image = "rancher/pause"
+      tag   = "3.6"
+    },
+    {
       name  = "keda"
       image = "ghcr.io/kedacore/keda"
       tag   = "2.7.1"
