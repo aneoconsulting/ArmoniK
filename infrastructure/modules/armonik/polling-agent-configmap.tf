@@ -13,5 +13,7 @@ resource "kubernetes_config_map" "polling_agent_config" {
     ComputePlan__MessageBatchSize        = "1"
     target_grpc_sockets_path             = "/cache"
     target_data_path                     = "/data"
+    InitWorker__WorkerCheckRetries       = "10"
+    InitWorker__WorkerCheckDelay         = "00:00:10"
   }
 }
