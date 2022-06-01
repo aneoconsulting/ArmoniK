@@ -80,12 +80,12 @@ resource "kubernetes_deployment" "compute_plane" {
           }
           port {
             name           = "poll-agent-port"
-            container_port = 80
+            container_port = 1080
           }
           liveness_probe {
             http_get {
               path = "/liveness"
-              port = 80
+              port = 1080
             }
             initial_delay_seconds = 15
             period_seconds        = 5
@@ -96,7 +96,7 @@ resource "kubernetes_deployment" "compute_plane" {
           startup_probe {
             http_get {
               path = "/startup"
-              port = 80
+              port = 1080
             }
             initial_delay_seconds = 60
             period_seconds        = 5
@@ -230,7 +230,7 @@ resource "kubernetes_deployment" "compute_plane" {
             image             = worker.value.tag != "" ? "${worker.value.image}:${worker.value.tag}" : worker.value.image
             image_pull_policy = worker.value.image_pull_policy
             port {
-              container_port = 80
+              container_port = 1080
             }
             dynamic resources {
               for_each = (worker.value.limits.cpu != ""
