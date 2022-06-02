@@ -6,11 +6,15 @@
 
 Removed
 -
+* Remove Armonik.Proto project and merge into Armonik.Extension.API
 
 Added
 -
 * Add HealthCheck for Worker Service
-*
+* Add Strong name for Client Assemblies
+* Ingress option to avoid grpc timeout exception
+* Add list session for Administration API
+* Add infrastructure for Admin GUI
 
 
 Changed
@@ -19,6 +23,10 @@ Changed
 * Fix Issue with Properties object in datasynapse client sdk
 * Fix issue with Gateway timeout Error 504
 * Supply Strong name in Client Extension.CSharp for .Net 4.8 Libraries
+* Update Proto API in Extensions.CSharp
+* Fix Cancel Session
+* Fix issue with requested Adress Localhost:80
+* Fix issue with large task request
 
 
 ## [v2.7.1](https://github.com/aneoconsulting/armonik/tree/v2.7.1) (2022-05-17)
