@@ -48,22 +48,22 @@ ecr = {
     {
       name  = "armonik-control-plane"
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.5.9"
+      tag   = "0.5.10"
     },
     {
       name  = "armonik-polling-agent"
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.5.9"
+      tag   = "0.5.10"
     },
     {
       name  = "armonik-worker"
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.5.7"
+      tag   = "0.5.8"
     },
     {
       name  = "metrics-exporter"
       image = "dockerhubaneo/armonik_control_metrics"
-      tag   = "0.5.9"
+      tag   = "0.5.10"
     },
     {
       name  = "seq"
@@ -101,14 +101,14 @@ ecr = {
       tag   = "latest"
     },
     {
-      name  = "prometheus-adapter"
-      image = "k8s.gcr.io/prometheus-adapter/prometheus-adapter"
-      tag   = "v0.9.1"
-    },
-    {
       name  = "nginx"
       image = "nginx"
       tag   = "latest"
+    },
+    {
+      name  = "pause"
+      image = "rancher/pause"
+      tag   = "3.6"
     },
     {
       name  = "keda"

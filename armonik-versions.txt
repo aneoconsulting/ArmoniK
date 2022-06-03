@@ -1,2 +1,3 @@
 core=0.5.11-dbdockernonroot.17.d57069d
 worker=0.5.7-dbdockernonroot.1.7897df5
+samples=2.7.1

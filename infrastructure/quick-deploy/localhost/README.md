@@ -49,6 +49,8 @@ The following software or tool should be installed upon your local Linux machine
 * [GNU make](https://www.gnu.org/software/make/)
 * [JQ](https://stedolan.github.io/jq/download/)
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
+* [Helm](https://helm.sh/docs/intro/install/)
+* [Openssl](https://www.howtoforge.com/tutorial/how-to-install-openssl-from-source-on-linux/)
 * [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 * [.NET](https://docs.microsoft.com/en-us/dotnet/core/install/linux)
 
@@ -228,17 +230,12 @@ the script PowerShell in [Script PowerShell all-in-one](../../docs/all-in-one-de
 
 ## Seq webserver
 
-After the deployment, connect to the Seq webserver by using `seq.web_url` retrieved from the Terraform
-outputs `monitoring/generated/monitoring-output.json`, example:
+After the deployment, connect to the Seq webserver by using `seq` url retrieved from the Terraform
+outputs `armonik/generated/armonik-output.json`, example:
+
 
 ```bash
-http://192.168.1.13:8080
-```
-
-or:
-
-```bash
-http://localhost:8080
+http://192.168.213.99:5000/seq
 ```
 
 where `Username: admin` and `Password: admin`:
@@ -258,8 +255,8 @@ You have three scripts for testing ArmoniK :
 The following commands in these scripts allow to retrieve the endpoint URL of ArmoniK control plane:
 
 ```bash
-export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns="IP:.spec.clusterIP" --no-headers=true)
-export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT:.spec.ports[*].port" --no-headers=true)
+export CPIP=$(kubectl get svc ingress -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].ip" --no-headers=true)
+export CPPort=$(kubectl get svc ingress -n armonik -o custom-columns="PORT:.spec.ports[1].port" --no-headers=true)
 export Grpc__Endpoint=http://$CPIP:$CPPort
 ```
 
