@@ -40,7 +40,7 @@ monitoring = {
   }
   metrics_exporter   = {
     image              = "dockerhubaneo/armonik_control_metrics"
-    tag                = "0.5.11-dbdockernonroot.17.d57069d"
+    tag                = "0.5.11-jfreworktaskcreationrequests.75.7c66dc7"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
