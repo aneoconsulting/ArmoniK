@@ -1,6 +1,6 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-05-17)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-06-02)
 
 ## [v2.7.2](https://github.com/aneoconsulting/armonik/tree/v2.7.2) (2022-06-02)
 
