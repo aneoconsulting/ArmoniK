@@ -39,9 +39,9 @@ ArmoniK might not be the best choice if :
 The current version of ArmoniK uses the following tags:
 
 ```bash
-core=0.5.9
-worker=0.5.7
-samples=2.7.1
+core=0.5.10
+worker=0.5.9
+samples=2.7.3
 ```
 
 where:
