@@ -9,6 +9,7 @@ Fixed
 
 * Fix strong name for Armonik.API
 
+
 ## [v2.7.2](https://github.com/aneoconsulting/armonik/tree/v2.7.2) (2022-06-02)
 
 Removed
