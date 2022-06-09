@@ -1,21 +1,29 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-05-17)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-06-09)
+
+## [v2.7.3](https://github.com/aneoconsulting/armonik/tree/v2.7.3) (2022-06-09)
+
+Fixed
+-
+
+* Fix strong name for Armonik.API
 
 ## [v2.7.2](https://github.com/aneoconsulting/armonik/tree/v2.7.2) (2022-06-02)
 
 Removed
 -
+
 * Remove Armonik.Proto project and merge into Armonik.Extension.API
 
 Added
 -
+
 * Add HealthCheck for Worker Service
 * Add Strong name for Client Assemblies
 * Ingress option to avoid grpc timeout exception
 * Add list session for Administration API
 * Add infrastructure for Admin GUI
-
 
 Changed
 -
@@ -27,7 +35,6 @@ Changed
 * Fix Cancel Session
 * Fix issue with requested Adress Localhost:80
 * Fix issue with large task request
-
 
 ## [v2.7.1](https://github.com/aneoconsulting/armonik/tree/v2.7.1) (2022-05-17)
 
