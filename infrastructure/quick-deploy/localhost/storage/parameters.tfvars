@@ -27,7 +27,7 @@ mongodb = {
 # Parameters for Redis
 redis = {
   image              = "redis"
-  tag                = "bullseye"
+  tag                = "6.2.7"
   node_selector      = {}
   image_pull_secrets = ""
 }
