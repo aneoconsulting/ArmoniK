@@ -40,7 +40,7 @@ The current version of ArmoniK uses the following tags:
 
 ```bash
 core=0.5.11
-worker=0.5.8
+worker=0.5.9
 samples=2.8.0
 ```
 
