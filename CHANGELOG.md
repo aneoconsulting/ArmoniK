@@ -1,6 +1,54 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-05-17)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-06-22)
+
+## [v2.8.0](https://github.com/aneoconsulting/armonik/tree/v2.8.0) (2022-06-22)
+
+Added
+-
+
+* Add admin GUI
+
+Changed
+-
+
+* Rootless docker images for ArmoniK
+* Replace ports of ArmoniK components' containers from 80 to 1080
+* Refactoring tasks creation in ArmoniK Core
+* Update database scheme: replace sessions options from string to object, add creation date in the session object
+* Refactoring RequestProcessor
+
+Fixed
+-
+
+* Fix GetTaskStatus exception when task ID does not exist
+
+## [v2.7.2](https://github.com/aneoconsulting/armonik/tree/v2.7.2) (2022-06-02)
+
+Removed
+-
+
+* Remove Armonik.Proto project and merge into Armonik.Extension.API
+
+Added
+-
+
+* Add HealthCheck for Worker Service
+* Add Strong name for Client Assemblies
+* Ingress option to avoid grpc timeout exception
+* Add list session for Administration API
+* Add infrastructure for Admin GUI
+
+Changed
+-
+
+* Fix Issue with Properties object in datasynapse client sdk
+* Fix issue with Gateway timeout Error 504
+* Supply Strong name in Client Extension.CSharp for .Net 4.8 Libraries
+* Update Proto API in Extensions.CSharp
+* Fix Cancel Session
+* Fix issue with requested Adress Localhost:80
+* Fix issue with large task request
 
 ## [v2.7.1](https://github.com/aneoconsulting/armonik/tree/v2.7.1) (2022-05-17)
 

@@ -101,7 +101,7 @@ resource "kubernetes_deployment" "ingress" {
           }
         }
         # Fluent-bit container
-        dynamic container {
+        /*dynamic container {
           for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
           content {
             name              = local.fluent_bit_container_name
@@ -142,7 +142,7 @@ resource "kubernetes_deployment" "ingress" {
               mount_path = "/fluent-bit/etc/"
             }
           }
-        }
+        }*/
         dynamic volume {
           for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
           content {
