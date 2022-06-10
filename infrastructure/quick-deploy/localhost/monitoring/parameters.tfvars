@@ -6,48 +6,48 @@ logging_level = "Information"
 
 # Monitoring infos
 monitoring = {
-  seq                = {
+  seq              = {
     enabled            = true
     image              = "datalust/seq"
-    tag                = "2021.4"
+    tag                = "2022.1"
     port               = 8080
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
   }
-  grafana            = {
+  grafana          = {
     enabled            = true
     image              = "grafana/grafana"
-    tag                = "latest"
+    tag                = "8.5.5"
     port               = 3000
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
   }
-  node_exporter      = {
+  node_exporter    = {
     enabled            = true
     image              = "prom/node-exporter"
-    tag                = "latest"
+    tag                = "v1.3.1"
     image_pull_secrets = ""
     node_selector      = {}
   }
-  prometheus         = {
+  prometheus       = {
     image              = "prom/prometheus"
-    tag                = "latest"
+    tag                = "v2.36.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
   }
-  metrics_exporter   = {
+  metrics_exporter = {
     image              = "dockerhubaneo/armonik_control_metrics"
     tag                = "0.5.11"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
   }
-  fluent_bit         = {
+  fluent_bit       = {
     image              = "fluent/fluent-bit"
-    tag                = "1.7.2"
+    tag                = "1.9.4"
     image_pull_secrets = ""
     is_daemonset       = false
     http_port          = 2020 # 0 or 2020

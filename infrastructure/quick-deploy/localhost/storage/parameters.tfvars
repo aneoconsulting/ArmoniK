@@ -11,7 +11,7 @@ shared_storage = {
 # Parameters for ActiveMQ
 activemq = {
   image              = "symptoma/activemq"
-  tag                = "5.16.3"
+  tag                = "5.16.4"
   node_selector      = {}
   image_pull_secrets = ""
 }
@@ -19,7 +19,7 @@ activemq = {
 # Parameters for MongoDB
 mongodb = {
   image              = "mongo"
-  tag                = "4.4.11"
+  tag                = "5.0.9"
   node_selector      = {}
   image_pull_secrets = ""
 }

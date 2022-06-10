@@ -49,7 +49,7 @@ monitoring = {
   seq              = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
-    tag                = "2021.4"
+    tag                = "2022.1"
     port               = 8080
     image_pull_secrets = ""
     service_type       = "ClusterIP"
@@ -58,7 +58,7 @@ monitoring = {
   grafana          = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/grafana"
-    tag                = "latest"
+    tag                = "8.5.5"
     port               = 3000
     image_pull_secrets = ""
     service_type       = "ClusterIP"
@@ -67,13 +67,13 @@ monitoring = {
   node_exporter    = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/node-exporter"
-    tag                = "latest"
+    tag                = "v1.3.1"
     image_pull_secrets = ""
     node_selector      = { "grid/type" = "Operator" }
   }
   prometheus       = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus"
-    tag                = "latest"
+    tag                = "v2.36.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
@@ -92,7 +92,7 @@ monitoring = {
   }
   fluent_bit       = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"
-    tag                = "1.7.2"
+    tag                = "1.9.4"
     image_pull_secrets = ""
     is_daemonset       = true
     http_port          = 2020 # 0 or 2020
