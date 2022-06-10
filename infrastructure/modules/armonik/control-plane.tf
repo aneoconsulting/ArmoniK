@@ -71,11 +71,11 @@ resource "kubernetes_deployment" "control_plane" {
           }
           port {
             name           = "control-port"
-            container_port = 80
+            container_port = 1080
           }
           liveness_probe {
             tcp_socket {
-              port = 80
+              port = 1080
             }
             initial_delay_seconds = 15
             period_seconds        = 5
@@ -85,7 +85,7 @@ resource "kubernetes_deployment" "control_plane" {
           }
           startup_probe {
             tcp_socket {
-              port = 80
+              port = 1080
             }
             initial_delay_seconds = 60
             period_seconds        = 5

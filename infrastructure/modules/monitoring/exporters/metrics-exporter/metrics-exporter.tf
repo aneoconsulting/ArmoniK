@@ -56,7 +56,7 @@ resource "kubernetes_deployment" "metrics_exporter" {
           image_pull_policy = "IfNotPresent"
           port {
             name           = "metrics"
-            container_port = 80
+            container_port = 1080
           }
           env_from {
             config_map_ref {
@@ -220,7 +220,7 @@ resource "kubernetes_service" "metrics_exporter" {
     port {
       name        = kubernetes_deployment.metrics_exporter.spec.0.template.0.spec.0.container.0.port.0.name
       port        = 9419
-      target_port = 80
+      target_port = 1080
       protocol    = "TCP"
     }
   }

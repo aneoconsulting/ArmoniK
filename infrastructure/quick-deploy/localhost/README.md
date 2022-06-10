@@ -1,4 +1,4 @@
-# Table of contents
+ Table of contents
 
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
@@ -11,9 +11,6 @@
     - [Monitoring](#monitoring)
     - [ArmoniK](#armonik)
 - [Script bash all-in-one](#script-bash-all-in-one)
-- [Quick tests](#quick-tests)
-    - [Seq webserver](#seq-webserver)
-    - [Tests](#tests)
 - [Clean-up](#clean-up)
 
 # Introduction
@@ -241,67 +238,6 @@ http://192.168.213.99:5000/seq
 where `Username: admin` and `Password: admin`:
 
 ![](images/seq_auth.png)
-
-## Tests
-
-### Scripts of tests
-
-You have three scripts for testing ArmoniK :
-
-* [tools/tests/symphony_like.sh](../../../tools/tests/symphony_like.sh)
-* [tools/tests/datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh)
-* [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh).
-
-The following commands in these scripts allow to retrieve the endpoint URL of ArmoniK control plane:
-
-```bash
-export CPIP=$(kubectl get svc ingress -n armonik -o custom-columns="IP:.status.loadBalancer.ingress[*].ip" --no-headers=true)
-export CPPort=$(kubectl get svc ingress -n armonik -o custom-columns="PORT:.spec.ports[1].port" --no-headers=true)
-export Grpc__Endpoint=http://$CPIP:$CPPort
-```
-
-or You can replace them by the `armonik.control_plane_url` retrieved from Terraform
-outputs `armonik/generated/armonik-output.json`, example:
-
-```bash
-export Grpc__Endpoint=http://192.168.1.13:5001
-```
-
-### Launch tests
-
-Before executing the tests, You must download source codes of Samples from the **root** repository:
-
-```bash
-git submodule update --init --recursive
-```
-
-**and:**
-
-```bash
-git clone https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp.git source/ArmoniK.Extensions.Csharp
-```
-
-**then:**
-
-- Execute [tools/tests/symphony_like.sh](../../../tools/tests/symphony_like.sh) from the **root** repository:
-  ```bash
-  tools/tests/symphony_like.sh
-  ```
-
-- Execute [tools/tests/datasynapse_like.sh](../../../tools/tests/datasynapse_like.sh) from the **root** repository:
-  ```bash
-  tools/tests/datasynapse_like.sh
-  ```
-
-- Execute [tools/tests/symphony_endToendTests.sh](../../../tools/tests/symphony_endToendTests.sh) from the **root**
-  repository:
-  ```bash
-  tools/tests/symphony_endToendTests.sh
-  ```
-
-You can follow logs on Seq webserver:
-
-![](images/seq.png)
 
 # Clean-up
 
