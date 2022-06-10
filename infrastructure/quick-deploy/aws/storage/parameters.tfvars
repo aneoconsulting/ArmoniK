@@ -78,7 +78,7 @@ elasticache = {
 mq = {
   name                    = "armonik-mq"
   engine_type             = "ActiveMQ"
-  engine_version          = "5.16.3"
+  engine_version          = "5.16.4"
   host_instance_type      = "mq.m5.xlarge"
   apply_immediately       = true
   deployment_mode         = "SINGLE_INSTANCE" # "SINGLE_INSTANCE" | "ACTIVE_STANDBY_MULTI_AZ"
@@ -97,7 +97,7 @@ mq_credentials = {
 # Parameters for MongoDB
 mongodb = {
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongodb"
-  tag                = "4.4.11"
+  tag                = "5.0.9"
   node_selector      = { "grid/type" = "Operator" }
   image_pull_secrets = ""
 }

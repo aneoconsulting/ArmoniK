@@ -43,7 +43,7 @@ ecr = {
     {
       name  = "mongodb"
       image = "mongo"
-      tag   = "4.4.11"
+      tag   = "5.0.9"
     },
     {
       name  = "armonik-control-plane"
@@ -68,17 +68,17 @@ ecr = {
     {
       name  = "seq"
       image = "datalust/seq"
-      tag   = "2021.4"
+      tag   = "2022.1"
     },
     {
       name  = "grafana"
       image = "grafana/grafana"
-      tag   = "latest"
+      tag   = "8.5.5"
     },
     {
       name  = "prometheus"
       image = "prom/prometheus"
-      tag   = "latest"
+      tag   = "v2.36.1"
     },
     {
       name  = "cluster-autoscaler"
@@ -93,17 +93,17 @@ ecr = {
     {
       name  = "fluent-bit"
       image = "fluent/fluent-bit"
-      tag   = "1.7.2"
+      tag   = "1.9.4"
     },
     {
       name  = "node-exporter"
       image = "prom/node-exporter"
-      tag   = "latest"
+      tag   = "v1.3.1"
     },
     {
       name  = "nginx"
       image = "nginx"
-      tag   = "latest"
+      tag   = "1.22.0"
     },
     {
       name  = "pause"
