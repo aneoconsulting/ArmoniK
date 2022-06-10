@@ -23,6 +23,13 @@ Fixed
 
 * Fix GetTaskStatus exception when task ID does not exist
 
+## [v2.7.3](https://github.com/aneoconsulting/armonik/tree/v2.7.3) (2022-06-09)
+
+Fixed
+-
+
+* Fix strong name for Armonik.API
+
 ## [v2.7.2](https://github.com/aneoconsulting/armonik/tree/v2.7.2) (2022-06-02)
 
 Removed
