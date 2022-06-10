@@ -78,9 +78,9 @@ locals {
   merge(var.eks_worker_groups[index], {
     root_encrypted  = true
     root_kms_key_id = var.eks.encryption_keys.ebs_kms_key_id
-    /*additional_userdata        = <<-EOT
-      echo fs.inotify.max_user_instances=5242 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-    EOT*/
+    additional_userdata        = <<-EOT
+      echo fs.inotify.max_user_instances=8192 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+    EOT
     tags            = [
       {
         key                 = "k8s.io/cluster-autoscaler/enabled"
