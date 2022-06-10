@@ -113,7 +113,7 @@ compute_plane = [
       {
         name              = "worker"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.5.9"
+        tag               = "0.5.10"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "1000m"
