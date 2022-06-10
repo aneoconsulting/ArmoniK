@@ -8,6 +8,7 @@ Added
 -
 
 * Add admin GUI
+* Set fs.inotify.max_user_instances to 8192 in worker nodes on AWS
 
 Changed
 -
