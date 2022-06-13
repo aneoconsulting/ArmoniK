@@ -18,6 +18,7 @@ Changed
 * Refactoring tasks creation in ArmoniK Core
 * Update database scheme: replace sessions options from string to object, add creation date in the session object
 * Refactoring RequestProcessor
+* Upgrade and replace tags "latest" of the infrastructure's docker images
 
 Fixed
 -
