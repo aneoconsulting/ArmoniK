@@ -98,11 +98,11 @@ resource "kubernetes_deployment" "compute_plane" {
               path = "/startup"
               port = 1080
             }
-            initial_delay_seconds = 60
-            period_seconds        = 5
+            initial_delay_seconds = 1
+            period_seconds        = 3
             timeout_seconds       = 1
             success_threshold     = 1
-            failure_threshold     = 3 # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
+            failure_threshold     = 20 # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
           }
           env_from {
             config_map_ref {
