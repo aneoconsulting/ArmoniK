@@ -66,6 +66,16 @@ ecr = {
       tag   = "0.5.11"
     },
     {
+      name  = "admin-api"
+      image = "dockerhubaneo/armonik_admin_api"
+      tag   = "sha-bc97e45"
+    },
+    {
+      name  = "admin-app"
+      image = "dockerhubaneo/armonik_admin_app"
+      tag   = "sha-bc97e45"
+    },
+    {
       name  = "seq"
       image = "datalust/seq"
       tag   = "2022.1"
@@ -104,11 +114,6 @@ ecr = {
       name  = "nginx"
       image = "nginxinc/nginx-unprivileged"
       tag   = "1.22.0"
-    },
-    {
-      name  = "pause"
-      image = "rancher/pause"
-      tag   = "3.6"
     },
     {
       name  = "keda"

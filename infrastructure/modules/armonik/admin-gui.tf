@@ -195,7 +195,7 @@ resource "kubernetes_deployment" "admin_gui" {
           }
           port {
             name           = "app-port"
-            container_port = 80
+            container_port = 1080
           }
           env_from {
             config_map_ref {
