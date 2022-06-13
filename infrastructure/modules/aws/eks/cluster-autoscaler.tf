@@ -57,7 +57,7 @@ resource "helm_release" "cluster_autoscaler" {
     value = var.eks.cluster_autoscaler.min_replica_count
   }
   set {
-    name  = "extraArgs.scale-down-utilization-thresholdt"
+    name  = "extraArgs.scale-down-utilization-threshold"
     value = var.eks.cluster_autoscaler.scale_down_utilization_threshold
   }
   set {
