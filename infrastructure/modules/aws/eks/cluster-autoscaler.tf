@@ -45,6 +45,54 @@ resource "helm_release" "cluster_autoscaler" {
     value = true
   }
   set {
+    name  = "extraArgs.expander"
+    value = var.eks.cluster_autoscaler.expander
+  }
+  set {
+    name  = "extraArgs.scale-down-enabled"
+    value = var.eks.cluster_autoscaler.scale_down_enabled
+  }
+  set {
+    name  = "extraArgs.min-replica-count"
+    value = var.eks.cluster_autoscaler.min_replica_count
+  }
+  set {
+    name  = "extraArgs.scale-down-utilization-thresholdt"
+    value = var.eks.cluster_autoscaler.scale_down_utilization_threshold
+  }
+  set {
+    name  = "extraArgs.scale-down-non-empty-candidates-count"
+    value = var.eks.cluster_autoscaler.scale_down_non_empty_candidates_count
+  }
+  set {
+    name  = "extraArgs.max-node-provision-time"
+    value = var.eks.cluster_autoscaler.max_node_provision_time
+  }
+  set {
+    name  = "extraArgs.scan-interval"
+    value = var.eks.cluster_autoscaler.scan_interval
+  }
+  set {
+    name  = "extraArgs.scale-down-delay-after-add"
+    value = var.eks.cluster_autoscaler.scale_down_delay_after_add
+  }
+  set {
+    name  = "extraArgs.scale-down-delay-after-delete"
+    value = var.eks.cluster_autoscaler.scale_down_delay_after_delete
+  }
+  set {
+    name  = "extraArgs.scale-down-delay-after-failure"
+    value = var.eks.cluster_autoscaler.scale_down_delay_after_failure
+  }
+  set {
+    name  = "extraArgs.scale-down-unneeded-time"
+    value = var.eks.cluster_autoscaler.scale_down_unneeded_time
+  }
+  set {
+    name  = "extraArgs.skip-nodes-with-system-pods"
+    value = var.eks.cluster_autoscaler.skip_nodes_with_system_pods
+  }
+  set {
     name  = "resources.limits.cpu"
     value = "3000m"
   }
