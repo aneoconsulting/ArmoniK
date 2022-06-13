@@ -68,12 +68,12 @@ ecr = {
     {
       name  = "admin-api"
       image = "dockerhubaneo/armonik_admin_api"
-      tag   = "main"
+      tag   = "sha-bc97e45"
     },
     {
       name  = "admin-app"
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "main"
+      tag   = "sha-bc97e45"
     },
     {
       name  = "seq"
