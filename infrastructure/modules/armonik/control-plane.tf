@@ -237,7 +237,7 @@ resource "kubernetes_deployment" "control_plane" {
           content {
             name              = local.fluent_bit_container_name
             image             = "${local.fluent_bit_image}:${local.fluent_bit_tag}"
-            image_pull_policy = "Always"
+            image_pull_policy = "IfNotPresent"
             env_from {
               config_map_ref {
                 name = local.fluent_bit_envvars_configmap
