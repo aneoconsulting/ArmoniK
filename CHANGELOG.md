@@ -24,6 +24,7 @@ Fixed
 -
 
 * Fix GetTaskStatus exception when task ID does not exist
+* Reconfigure inputs of fluent-bit to eliminate the error on BN SQlite
 
 ## [v2.7.3](https://github.com/aneoconsulting/armonik/tree/v2.7.3) (2022-06-09)
 
