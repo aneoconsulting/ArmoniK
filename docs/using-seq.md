@@ -20,3 +20,10 @@ Then the id and the password are `admin`.
 The application name for the control plane is `ArmoniK.Control`. (Application = 'ArmoniK.Control')
 The application name for the polling agent is `ArmoniK.Compute.PollingAgent`. (Application = 'ArmoniK.Compute.PollingAgent')
 The application name for the worker is `ArmoniK.Compute.Worker`. (Application = 'ArmoniK.Compute.Worker')
+
+# Troubleshoot
+
+If you use docker as the kubernetes backend, you should configure the logging driver of docker to `json-file`.
+Otherwise, the logs will remain empty.
+
+https://docs.docker.com/config/containers/logging/configure/#configure-the-default-logging-driver
