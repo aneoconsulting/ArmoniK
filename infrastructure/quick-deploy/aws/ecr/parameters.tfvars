@@ -66,12 +66,12 @@ ecr = {
       tag   = "0.5.11"
     },
     {
-      name  = "admin-api"
+      name  = "armonik-admin-api"
       image = "dockerhubaneo/armonik_admin_api"
       tag   = "sha-bc97e45"
     },
     {
-      name  = "admin-app"
+      name  = "armonik-admin-app"
       image = "dockerhubaneo/armonik_admin_app"
       tag   = "sha-bc97e45"
     },
