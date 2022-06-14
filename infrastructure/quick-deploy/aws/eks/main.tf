@@ -36,6 +36,7 @@ module "eks" {
         tag   = var.eks.docker_images.instance_refresh.tag
       }
     }
+    cluster_autoscaler                    = var.eks.cluster_autoscaler
     encryption_keys                       = {
       cluster_log_kms_key_id    = (var.eks.encryption_keys.cluster_log_kms_key_id != "" ? var.eks.encryption_keys.cluster_log_kms_key_id : module.kms.0.selected.arn)
       cluster_encryption_config = (var.eks.encryption_keys.cluster_encryption_config != "" ? var.eks.encryption_keys.cluster_encryption_config : module.kms.0.selected.arn)

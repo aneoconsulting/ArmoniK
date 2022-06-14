@@ -59,6 +59,20 @@ eks = {
       tag   = "v1.15.0"
     }
   }
+  cluster_autoscaler                    = {
+    expander                              = "random" # random, most-pods, least-waste, price, priority
+    scale_down_enabled                    = true
+    min_replica_count                     = 0
+    scale_down_utilization_threshold      = 0.5
+    scale_down_non_empty_candidates_count = 30
+    max_node_provision_time               = "15m0s"
+    scan_interval                         = "10s"
+    scale_down_delay_after_add            = "2m"
+    scale_down_delay_after_delete         = "0s"
+    scale_down_delay_after_failure        = "3m"
+    scale_down_unneeded_time              = "2m"
+    skip_nodes_with_system_pods           = true
+  }
   encryption_keys                       = {
     cluster_log_kms_key_id    = ""
     cluster_encryption_config = ""

@@ -9,20 +9,23 @@ Added
 
 * Add admin GUI
 * Set fs.inotify.max_user_instances to 8192 in worker nodes on AWS
+* Expose the parameters of the cluster autscaler's Helm chart in Terraform sources
 
 Changed
 -
 
-* Rootless docker images for ArmoniK
+* Rootless docker images for ArmoniK components
 * Replace ports of ArmoniK components' containers from 80 to 1080
 * Refactoring tasks creation in ArmoniK Core
 * Update database scheme: replace sessions options from string to object, add creation date in the session object
 * Refactoring RequestProcessor
+* Upgrade and replace tags "latest" of the infrastructure's docker images
 
 Fixed
 -
 
 * Fix GetTaskStatus exception when task ID does not exist
+* Reconfigure inputs of fluent-bit to eliminate the error on SQlite DB
 
 ## [v2.7.3](https://github.com/aneoconsulting/armonik/tree/v2.7.3) (2022-06-09)
 
