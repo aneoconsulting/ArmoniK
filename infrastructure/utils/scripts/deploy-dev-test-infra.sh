@@ -216,9 +216,9 @@ prepare_armonik_parameters() {
     -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
     -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
     -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
+    -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
     -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
     -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
-    -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
     -kv compute_plane[*].hpa.triggers.threshold="${HPA_TARGET_VALUE}" \
     -kv logging_level="${LOGGING_LEVEL}" \
     "${ARMONIK_PARAMETERS_FILE}" \
