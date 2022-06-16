@@ -97,30 +97,32 @@ locals {
   # HPA scalers
   hpa_triggers = [
   for index in range(0, length(var.compute_plane)) : {
-    triggers = flatten([
+    triggers = [
     for idx in range(0, length(try(var.compute_plane[index].hpa.triggers, []))) :
-    (lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "prometheus" ? [
-      {
-        type     = "prometheus"
-        metadata = {
-          serverAddress = try(var.monitoring.prometheus.url, "")
-          metricName    = try(var.compute_plane[index].hpa.triggers[idx].metric_name, "armonik_tasks_queued")
-          threshold     = try(var.compute_plane[index].hpa.triggers[idx].threshold, "2")
-          namespace     = local.metrics_exporter_namespace
-          query         = "${try(var.compute_plane[index].hpa.triggers[idx].metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}"
-        }
+    (lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "prometheus" ? {
+      type     = "prometheus"
+      metadata = {
+        serverAddress = try(var.monitoring.prometheus.url, "")
+        metricName    = try(var.compute_plane[index].hpa.triggers[idx].metric_name, "armonik_tasks_queued")
+        threshold     = try(var.compute_plane[index].hpa.triggers[idx].threshold, "2")
+        namespace     = local.metrics_exporter_namespace
+        query         = "${try(var.compute_plane[index].hpa.triggers[idx].metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}"
       }
-    ] :
-    (lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "cpu" || lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "memory"? [
-      {
-        type       = lower(var.compute_plane[index].hpa.triggers[idx].type)
-        metricType = try(var.compute_plane[index].hpa.triggers[idx].metric_type, "Utilization")
-        metadata   = {
-          value = try(var.compute_plane[index].hpa.triggers[idx].value, "80")
-        }
+    } :
+    (lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "cpu" || lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "memory" ? {
+      type       = lower(var.compute_plane[index].hpa.triggers[idx].type)
+      metricType = try(var.compute_plane[index].hpa.triggers[idx].metric_type, "Utilization")
+      metadata   = {
+        value = try(var.compute_plane[index].hpa.triggers[idx].value, "80")
       }
-    ] : []))
-    ])
+    } : object({})))
+    ]
+  }
+  ]
+
+  triggers = [
+  for index in range(0, length(local.hpa_triggers)) : {
+    triggers = [for trigger in local.hpa_triggers[index].triggers : trigger if trigger != {}]
   }
   ]
 }

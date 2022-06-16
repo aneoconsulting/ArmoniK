@@ -72,6 +72,6 @@ resource "helm_release" "keda_hpa_compute_plane" {
   }
 
   values = [
-    yamlencode(local.hpa_triggers[count.index]),
+    yamlencode(local.triggers[count.index]),
   ]
 }
