@@ -36,6 +36,10 @@ variable "elasticache" {
     preferred_cache_cluster_azs = list(string)
     data_tiering_enabled        = bool
     log_retention_in_days       = number
+    cloudwatch_log_groups       = object({
+      slow_log   = string
+      engine_log = string
+    })
     encryption_keys             = object({
       kms_key_id     = string
       log_kms_key_id = string
