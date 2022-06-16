@@ -39,7 +39,7 @@ ArmoniK might not be the best choice if :
 The current version of ArmoniK uses the following tags:
 
 ```bash
-core=0.5.11
+core=0.5.12
 worker=0.5.10
 samples=2.8.0
 ```
