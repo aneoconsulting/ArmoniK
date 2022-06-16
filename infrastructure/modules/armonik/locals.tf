@@ -110,7 +110,16 @@ locals {
           query         = "${try(var.compute_plane[index].hpa.triggers[idx].metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}"
         }
       }
-    ] : [])
+    ] :
+    (lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "cpu" || lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "memory"? [
+      {
+        type       = lower(var.compute_plane[index].hpa.triggers[idx].type)
+        metricType = try(var.compute_plane[index].hpa.triggers[idx].metric_type, "Utilization")
+        metadata   = {
+          value = try(var.compute_plane[index].hpa.triggers[idx].value, "80")
+        }
+      }
+    ] : []))
     ])
   }
   ]
