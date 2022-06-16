@@ -17,6 +17,18 @@ resource "aws_elasticache_replication_group" "elasticache" {
   parameter_group_name        = aws_elasticache_parameter_group.elasticache.name
   security_group_ids          = [aws_security_group.elasticache.id]
   subnet_group_name           = aws_elasticache_subnet_group.elasticache.name
+  log_delivery_configuration {
+    destination      = module.slow_log.name
+    destination_type = "cloudwatch-logs"
+    log_format       = "json"
+    log_type         = "slow-log"
+  }
+  log_delivery_configuration {
+    destination      = module.engine_log.name
+    destination_type = "cloudwatch-logs"
+    log_format       = "json"
+    log_type         = "engine-log"
+  }
   tags                        = local.tags
   depends_on                  = [
     aws_elasticache_parameter_group.elasticache,
@@ -61,57 +73,4 @@ resource "aws_elasticache_subnet_group" "elasticache" {
   name        = "${var.name}-io"
   subnet_ids  = var.vpc.subnet_ids
   tags        = local.tags
-}
-
-# Enable cloudwatch logs
-# Slow log and engine log not yet available in Terraform
-module "slow_log" {
-  source            = "../cloudwatch-log-group"
-  name              = "/aws/elasticache/${var.name}-slow-log"
-  kms_key_id        = var.elasticache.encryption_keys.log_kms_key_id
-  retention_in_days = var.elasticache.log_retention_in_days
-  tags              = local.tags
-}
-
-module "engine_log" {
-  source            = "../cloudwatch-log-group"
-  name              = "/aws/elasticache/${var.name}-engine-log"
-  kms_key_id        = var.elasticache.encryption_keys.log_kms_key_id
-  retention_in_days = var.elasticache.log_retention_in_days
-  tags              = local.tags
-}
-
-resource "null_resource" "enable_logs" {
-  provisioner "local-exec" {
-    command = "aws elasticache modify-replication-group --replication-group-id ${aws_elasticache_replication_group.elasticache.id} --apply-immediately --log-delivery-configurations '[{\"LogType\":\"slow-log\",\"DestinationType\":\"cloudwatch-logs\",\"DestinationDetails\":{\"CloudWatchLogsDetails\":{\"LogGroup\":\"${module.slow_log.name}\"}},\"LogFormat\":\"json\",\"Enabled\":true},{\"LogType\":\"engine-log\",\"DestinationType\":\"cloudwatch-logs\",\"DestinationDetails\":{\"CloudWatchLogsDetails\":{\"LogGroup\":\"${module.engine_log.name}\"}},\"LogFormat\":\"json\",\"Enabled\":true}]'"
-  }
-  depends_on = [
-    aws_elasticache_replication_group.elasticache,
-    module.engine_log,
-    module.slow_log
-  ]
-}
-
-# IMA
-data "aws_iam_policy_document" "elasticache_logs_policy" {
-  statement {
-    effect    = "Allow"
-    actions   = [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:PutLogEventsBatch",
-      "logs:PutRetentionPolicy",
-    ]
-    resources = ["arn:aws:logs:*:*:*:/aws/elasticache/*"]
-    principals {
-      identifiers = ["elasticache.amazonaws.com"]
-      type        = "Service"
-    }
-  }
-}
-
-resource "aws_cloudwatch_log_resource_policy" "elasticache_logs_publishing_policy" {
-  policy_document = data.aws_iam_policy_document.elasticache_logs_policy.json
-  policy_name     = "elasticache-logs-publishing-policy"
 }
