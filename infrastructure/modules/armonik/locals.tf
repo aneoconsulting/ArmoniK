@@ -94,99 +94,24 @@ locals {
   mongodb_polling_min_delay = try(var.mongodb_polling_delay.min_polling_delay, "00:00:01")
   mongodb_polling_max_delay = try(var.mongodb_polling_delay.max_polling_delay, "00:05:00")
 
-  # HPA
-  hpa_common_parameters = [
-  for index in range(0, length(var.compute_plane)) : [
-    {
-      name  = "suffix"
-      value = try(var.compute_plane[index].name, "")
-    },
-    {
-      name  = "type"
-      value = try(var.compute_plane[index].hpa.type, "")
-    },
-    {
-      name  = "scaleTargetRef.apiVersion"
-      value = "apps/v1"
-    },
-    {
-      name  = "scaleTargetRef.kind"
-      value = "Deployment"
-    },
-    {
-      name  = "scaleTargetRef.name"
-      value = kubernetes_deployment.compute_plane[index].metadata.0.name
-    },
-    {
-      name  = "scaleTargetRef.envSourceContainerName"
-      value = kubernetes_deployment.compute_plane[index].spec.0.template.0.spec.0.container.0.name
-    },
-    {
-      name  = "pollingInterval"
-      value = try(var.compute_plane[index].hpa.polling_interval, 30)
-    },
-    {
-      name  = "cooldownPeriod"
-      value = try(var.compute_plane[index].hpa.cooldown_period, 300)
-    },
-    {
-      name  = "idleReplicaCount"
-      value = try(var.compute_plane[index].hpa.idle_replica_count, 0)
-    },
-    {
-      name  = "minReplicaCount"
-      value = try(var.compute_plane[index].hpa.min_replica_count, 1)
-    },
-    {
-      name  = "maxReplicaCount"
-      value = try(var.compute_plane[index].hpa.max_replica_count, 1)
-    },
-    {
-      name  = "behavior.restoreToOriginalReplicaCount"
-      value = try(var.compute_plane[index].hpa.restore_to_original_replica_count, true)
-    },
-    {
-      name  = "behavior.stabilizationWindowSeconds"
-      value = try(var.compute_plane[index].hpa.behavior.stabilization_window_seconds, 300)
-    },
-    {
-      name  = "behavior.type"
-      value = try(var.compute_plane[index].hpa.behavior.type, "Percent")
-    },
-    {
-      name  = "behavior.value"
-      value = try(var.compute_plane[index].hpa.behavior.value, 100)
-    },
-    {
-      name  = "behavior.periodSeconds"
-      value = try(var.compute_plane[index].hpa.behavior.period_seconds, 15)
-    },
-  ]
-  ]
-
-  # Prometheus scaler
-  hpa_prometheus_parameters = [
-  for index in range(0, length(var.compute_plane)) : (var.compute_plane[index].hpa.type == "prometheus" ? [
-    {
-      name  = "triggers.serverAddress"
-      value = try(var.monitoring.prometheus.url, "")
-    },
-    {
-      name  = "triggers.metricName"
-      value = try(var.compute_plane[index].hpa.triggers.metric_name, "armonik_tasks_queued")
-    },
-    {
-      name  = "triggers.threshold"
-      value = try(var.compute_plane[index].hpa.triggers.threshold, "2")
-    },
-    {
-      name  = "triggers.namespace"
-      value = local.metrics_exporter_namespace
-    },
-    {
-      name  = "triggers.query"
-      value = "${try(var.compute_plane[index].hpa.triggers.metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}"
-    },
-  ] : [])
+  # HPA scalers
+  hpa_triggers = [
+  for index in range(0, length(var.compute_plane)) : {
+    triggers = flatten([
+    for idx in range(0, length(try(var.compute_plane[index].hpa.triggers, []))) :
+    (lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "prometheus" ? [
+      {
+        type     = "prometheus"
+        metadata = {
+          serverAddress = try(var.monitoring.prometheus.url, "")
+          metricName    = try(var.compute_plane[index].hpa.triggers[idx].metric_name, "armonik_tasks_queued")
+          threshold     = try(var.compute_plane[index].hpa.triggers[idx].threshold, "2")
+          namespace     = local.metrics_exporter_namespace
+          query         = "${try(var.compute_plane[index].hpa.triggers[idx].metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}"
+        }
+      }
+    ] : [])
+    ])
+  }
   ]
 }

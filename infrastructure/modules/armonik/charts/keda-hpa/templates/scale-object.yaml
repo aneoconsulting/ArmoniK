@@ -1,8 +1,8 @@
-{{ if eq .Values.type "prometheus" }}
+{{ if .Values.triggers }}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: prometheus-scaledobject-{{ .Values.suffix }}
+  name: scaledobject-{{ .Values.suffix }}
   namespace: {{ .Release.Namespace }}
 spec:
   scaleTargetRef:
@@ -29,15 +29,5 @@ spec:
             value: {{ .Values.behavior.value }}
             periodSeconds: {{ .Values.behavior.periodSeconds }}
   triggers:
-    - type: prometheus
-      metadata:
-        # Required fields:
-        serverAddress: {{ .Values.triggers.serverAddress }}
-        metricName: {{ .Values.triggers.metricName }} # Note: name to identify the metric, generated value would be `prometheus-http_requests_total`
-        query: {{ .Values.triggers.query }} # Note: query must return a vector/scalar single element response
-        threshold: {{ .Values.triggers.threshold | quote }}
-        # Optional fields:
-        namespace: {{ .Values.triggers.namespace }}  # for namespaced queries, eg. Thanos
-      #authenticationRef:
-      #  name: {{ .Values.triggers.authentication }}
+{{ toYaml .Values.triggers | indent 8 }}
 {{ end }}
