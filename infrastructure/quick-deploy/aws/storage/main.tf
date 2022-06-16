@@ -47,6 +47,7 @@ module "elasticache" {
     preferred_cache_cluster_azs = var.elasticache.preferred_cache_cluster_azs
     data_tiering_enabled        = var.elasticache.data_tiering_enabled
     log_retention_in_days       = var.elasticache.log_retention_in_days
+    cloudwatch_log_groups       = var.elasticache.cloudwatch_log_groups
     encryption_keys             = {
       kms_key_id     = (var.elasticache.encryption_keys.kms_key_id != "" ? var.elasticache.encryption_keys.kms_key_id : module.kms.0.selected.arn)
       log_kms_key_id = (var.elasticache.encryption_keys.log_kms_key_id != "" ? var.elasticache.encryption_keys.log_kms_key_id : module.kms.0.selected.arn)

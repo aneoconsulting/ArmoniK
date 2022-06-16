@@ -68,6 +68,11 @@ elasticache = {
   # The order of the availability zones in the list is considered. The first item in the list will be the primary node
   data_tiering_enabled        = false # This parameter must be set to true when using r6gd nodes.
   log_retention_in_days       = 30
+  # Name of CloudWatch log groups for slow-log and engine-log to be created
+  cloudwatch_log_groups       = {
+    slow_log   = ""
+    engine_log = ""
+  }
   encryption_keys             = {
     kms_key_id     = ""
     log_kms_key_id = ""

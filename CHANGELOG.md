@@ -20,6 +20,8 @@ Changed
 * Update database scheme: replace sessions options from string to object, add creation date in the session object
 * Refactoring RequestProcessor
 * Upgrade and replace tags "latest" of the infrastructure's docker images
+* Upgrade the version of hashicorp/aws to 4.18.0
+* Update Terraform sources of AWS ElastiCache to publish logs in AWS CloudWatch 
 
 Fixed
 -

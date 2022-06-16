@@ -191,7 +191,7 @@ check_keda_instance() {
 # Prepare storage parameters
 prepare_storage_parameters() {
   STORAGE_TYPE=$(echo "${SHARED_STORAGE_TYPE}" | awk '{print tolower($0)}')
-  python "${MODIFY_PARAMETERS_SCRIPT}" \
+  python3 "${MODIFY_PARAMETERS_SCRIPT}" \
     -kv shared_storage.file_storage_type="${STORAGE_TYPE}" \
     -kv shared_storage.file_server_ip="${SERVER_NFS_IP}" \
     -kv shared_storage.host_path="${HOST_PATH}" \
@@ -201,7 +201,7 @@ prepare_storage_parameters() {
 
 # Prepare monitoring parameters
 prepare_monitoring_parameters() {
-  python "${MODIFY_PARAMETERS_SCRIPT}" \
+  python3 "${MODIFY_PARAMETERS_SCRIPT}" \
     -kv monitoring.metrics_exporter.image="${METRICS_EXPORTER_IMAGE}" \
     -kv monitoring.metrics_exporter.tag="${CORE_TAG}" \
     "${MONITORING_PARAMETERS_FILE}" \
@@ -210,15 +210,15 @@ prepare_monitoring_parameters() {
 
 # Prepare armonik parameters
 prepare_armonik_parameters() {
-  python "${MODIFY_PARAMETERS_SCRIPT}" \
+  python3 "${MODIFY_PARAMETERS_SCRIPT}" \
     -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
     -kv control_plane.tag="${CORE_TAG}" \
     -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
     -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
     -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
+    -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
     -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
     -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
-    -kv compute_plane[*].hpa.idle_replica_count="${HPA_IDLE_REPLICAS}" \
     -kv compute_plane[*].hpa.triggers.threshold="${HPA_TARGET_VALUE}" \
     -kv logging_level="${LOGGING_LEVEL}" \
     "${ARMONIK_PARAMETERS_FILE}" \
@@ -227,7 +227,7 @@ prepare_armonik_parameters() {
 
 # Prepare keda parameters
 prepare_keda_parameters() {
-  python "${MODIFY_PARAMETERS_SCRIPT}" \
+  python3 "${MODIFY_PARAMETERS_SCRIPT}" \
     "${KEDA_PARAMETERS_FILE}" \
     "${GENERATED_KEDA_PARAMETERS_FILE}"
 }
