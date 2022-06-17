@@ -10,6 +10,7 @@ Added
 * Add admin GUI
 * Set fs.inotify.max_user_instances to 8192 in worker nodes on AWS
 * Expose the parameters of the cluster autscaler's Helm chart in Terraform sources
+* Add KEDA HPA for the ArmoniK control plane
 
 Changed
 -
