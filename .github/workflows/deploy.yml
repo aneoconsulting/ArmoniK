@@ -31,6 +31,54 @@ jobs:
           echo "::set-output name=version::$VERSION"
           echo $VERSION
 
+  AdminGUI:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Get Core Tag
+        id: core
+        run: |
+          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+      - name: Get Worker Tag
+        id: worker
+        run: |
+          TAG=$(grep "worker" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+      - uses: ./
+        name: Deploy infrastructure
+        id: deploy-infra
+        with:
+          metrics-exporter-image: dockerhubaneo/armonik_control_metrics
+          control-plane-image: dockerhubaneo/armonik_control
+          polling-agent-image: dockerhubaneo/armonik_pollingagent
+          worker-image: dockerhubaneo/armonik_worker_dll
+          core-tag: ${{ steps.core.outputs.tag }}
+          worker-tag: ${{ steps.worker.outputs.tag }}
+
+      - name: Test ping AdminGUI
+        shell: bash
+        run: |
+          set -ex
+          export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
+          export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
+          : "Add -f again when a success endpoint has been implemented"
+          curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
+          curl -fsSL "${ADMIN_APP_URL}" -o /dev/null || true "in v2.7.2, there is no app endpoint"
+
   coreStreamWithoutIngress:
     runs-on: ubuntu-latest
     steps:
