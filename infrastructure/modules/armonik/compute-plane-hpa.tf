@@ -11,10 +11,6 @@ resource "helm_release" "keda_hpa_compute_plane" {
     value = try(var.compute_plane[count.index].name, "")
   }
   set {
-    name  = "type"
-    value = try(var.compute_plane[count.index].hpa.type, "")
-  }
-  set {
     name  = "scaleTargetRef.apiVersion"
     value = "apps/v1"
   }
@@ -72,6 +68,6 @@ resource "helm_release" "keda_hpa_compute_plane" {
   }
 
   values = [
-    yamlencode(local.triggers[count.index]),
+    yamlencode(local.compute_plane_triggers[count.index]),
   ]
 }

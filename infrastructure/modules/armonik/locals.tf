@@ -95,34 +95,62 @@ locals {
   mongodb_polling_max_delay = try(var.mongodb_polling_delay.max_polling_delay, "00:05:00")
 
   # HPA scalers
-  hpa_triggers = [
-  for index in range(0, length(var.compute_plane)) : {
+  # Compute plane
+  hpa_compute_plane_triggers = [
+  for compute_plane in var.compute_plane : {
     triggers = [
-    for idx in range(0, length(try(var.compute_plane[index].hpa.triggers, []))) :
-    (lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "prometheus" ? {
+    for trigger in try(compute_plane.hpa.triggers, []) :
+    (lower(try(trigger.type, "")) == "prometheus" ? {
       type     = "prometheus"
       metadata = {
         serverAddress = try(var.monitoring.prometheus.url, "")
-        metricName    = try(var.compute_plane[index].hpa.triggers[idx].metric_name, "armonik_tasks_queued")
-        threshold     = try(var.compute_plane[index].hpa.triggers[idx].threshold, "2")
+        metricName    = try(trigger.metric_name, "armonik_tasks_queued")
+        threshold     = try(trigger.threshold, "2")
         namespace     = local.metrics_exporter_namespace
-        query         = "${try(var.compute_plane[index].hpa.triggers[idx].metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}"
+        query         = "${try(trigger.metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}"
       }
     } :
-    (lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "cpu" || lower(try(var.compute_plane[index].hpa.triggers[idx].type, "")) == "memory" ? {
-      type       = lower(var.compute_plane[index].hpa.triggers[idx].type)
-      metricType = try(var.compute_plane[index].hpa.triggers[idx].metric_type, "Utilization")
+    (lower(try(trigger.type, "")) == "cpu" || lower(try(trigger.type, "")) == "memory" ? {
+      type       = lower(trigger.type)
+      metricType = try(trigger.metric_type, "Utilization")
       metadata   = {
-        value = try(var.compute_plane[index].hpa.triggers[idx].value, "80")
+        value = try(trigger.value, "80")
       }
     } : object({})))
     ]
   }
   ]
 
-  triggers = [
-  for index in range(0, length(local.hpa_triggers)) : {
-    triggers = [for trigger in local.hpa_triggers[index].triggers : trigger if trigger != {}]
+  compute_plane_triggers = [
+  for compute_plane in local.hpa_compute_plane_triggers : {
+    triggers = [for trigger in compute_plane.triggers : trigger if trigger != {}]
   }
   ]
+
+  # Control plane
+  hpa_control_plane_triggers = {
+    triggers = [
+    for trigger in try(var.control_plane.hpa.triggers, []) :
+    (lower(try(trigger.type, "")) == "cpu" || lower(try(trigger.type, "")) == "memory" ? {
+      type       = lower(trigger.type)
+      metricType = try(trigger.metric_type, "Utilization")
+      metadata   = {
+        value = try(trigger.value, "80")
+      }
+    } : lower(try(trigger.type, "")) == "prometheus" ? object({
+      type     = "prometheus"
+      metadata = {
+        serverAddress = try(var.monitoring.prometheus.url, "")
+        metricName    = try(trigger.metric_name, "armonik_tasks_queued")
+        threshold     = try(trigger.threshold, "2")
+        namespace     = local.metrics_exporter_namespace
+        query         = "${try(trigger.metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}"
+      }
+    }) : object({}))
+    ]
+  }
+
+  control_plane_triggers = {
+    triggers = [for trigger in local.hpa_control_plane_triggers.triggers : trigger if trigger != {}]
+  }
 }
