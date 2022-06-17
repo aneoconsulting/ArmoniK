@@ -229,9 +229,7 @@ jobs:
       matrix:
         ntasks:
           - 1
-          - 10
-          - 100
-          - 1000
+          - 5000
           - 10000
         nlevels:
           - 1
@@ -305,21 +303,118 @@ jobs:
           set -e
           export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          mkdir -p htcmock-without-ingress/infra/generated \
-            htcmock-without-ingress/infra/tfstates \
-            htcmock-without-ingress/app
+          mkdir -p htcmock-disabled-parameters-without-ingress/infra/generated \
+            htcmock-disabled-parameters-without-ingress/infra/tfstates \
+            htcmock-disabled-parameters-without-ingress/app
           cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
             infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
             infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
             infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
-            htcmock-without-ingress/infra/generated
+            htcmock-disabled-parameters-without-ingress/infra/generated
           cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
             infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
             infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
             infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
-            htcmock-without-ingress/infra/tfstates
-          sudo cp -rL /var/log/pods/armonik_* htcmock-without-ingress/app
-          sudo chown $USER -R htcmock-without-ingress
-          tar -czf htcmock-without-ingress.tar.gz htcmock-without-ingress
-          aws s3 cp htcmock-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock-without-ingress.tar.gz
+            htcmock-disabled-parameters-without-ingress/infra/tfstates
+          sudo cp -rL /var/log/pods/armonik_* htcmock-disabled-parameters-without-ingress/app
+          sudo chown $USER -R htcmock-disabled-parameters-without-ingress
+          tar -czf htcmock-disabled-parameters-without-ingress.tar.gz htcmock-disabled-parameters-without-ingress
+          aws s3 cp htcmock-disabled-parameters-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock-disabled-parameters-without-ingress.tar.gz
+
+  htcMockEnabledParametersWithoutIngress:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ntasks:
+          - 1000
+        nlevels:
+          - 4
+        datasize:
+          - 50
+          - 500
+        memorysize:
+          - 50
+          - 500
+        totalcalculationtime:
+          - 00:00:10.0
+          - 00:01:00.0
+        enablefastcompute:
+          - true
+        enablesmalloutput:
+          - true
+        enableuselowmem:
+          - true
+
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Get Core Tag
+        id: core
+        run: |
+          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+      - uses: ./
+        name: Deploy infrastructure
+        id: deploy-infra
+        with:
+          metrics-exporter-image: dockerhubaneo/armonik_control_metrics
+          control-plane-image: dockerhubaneo/armonik_control
+          polling-agent-image: dockerhubaneo/armonik_pollingagent
+          worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
+          core-tag: ${{ steps.core.outputs.tag }}
+          worker-tag: ${{ steps.core.outputs.tag }}
+          ingress: ''
+
+      - name: Test HTC Mock
+        shell: bash
+        run: |
+          set -ex
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          docker run --rm \
+            -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
+            -e HtcMock__NTasks=${{ matrix.ntasks }} \
+            -e HtcMock__TotalCalculationTime=${{ matrix.totalCalculationtime }} \
+            -e HtcMock__DataSize=${{ matrix.datasize }} \
+            -e HtcMock__MemorySize=${{ matrix.memorysize }} \
+            -e HtcMock__SubTasksLevels=${{ matrix.nlevels }} \
+            -e HtcMock__EnableUseLowMem=${{ matrix.enableuselowmem }} \
+            -e HtcMock__EnableSmallOutput=${{ matrix.enablesmalloutput }} \
+            -e HtcMock__EnableFastCompute=${{ matrix.enablefastcompute }} \
+            dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
+
+      - name: Show logs
+        if: always()
+        run: |
+          set -e
+          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          mkdir -p htcmock-enabled-parameters-without-ingress/infra/generated \
+            htcmock-enabled-parameters-without-ingress/infra/tfstates \
+            htcmock-enabled-parameters-without-ingress/app
+          cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
+            infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
+            infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
+            infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
+            htcmock-enabled-parameters-without-ingress/infra/generated
+          cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
+            htcmock-enabled-parameters-without-ingress/infra/tfstates
+          sudo cp -rL /var/log/pods/armonik_* htcmock-enabled-parameters-without-ingress/app
+          sudo chown $USER -R htcmock-enabled-parameters-without-ingress
+          tar -czf htcmock-enabled-parameters-without-ingress.tar.gz htcmock-enabled-parameters-without-ingress
+          aws s3 cp htcmock-enabled-parameters-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock-enabled-parameters-without-ingress.tar.gz
 
