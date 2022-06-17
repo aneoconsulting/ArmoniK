@@ -68,6 +68,7 @@ jobs:
           worker-image: dockerhubaneo/armonik_core_stream_test_worker
           core-tag: ${{ steps.core.outputs.tag }}
           worker-tag: ${{ steps.core.outputs.tag }}
+          ingress: ''
 
       - name: Test Core Stream
         shell: bash
@@ -84,8 +85,20 @@ jobs:
           set -e
           export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
           export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          mkdir -p core-stream-without-ingress
-          sudo cp -rL /var/log/pods/armonik_* core-stream-without-ingress
+          mkdir -p core-stream-without-ingress/infra/generated \
+            core-stream-without-ingress/infra/tfstates \
+            core-stream-without-ingress/app
+          cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
+            infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
+            infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
+            infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
+            core-stream-without-ingress/infra/generated
+          cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
+            core-stream-without-ingress/infra/tfstates
+          sudo cp -rL /var/log/pods/armonik_* core-stream-without-ingress/app
           sudo chown $USER -R core-stream-without-ingress
           tar -czf core-stream-without-ingress.tar.gz core-stream-without-ingress
           aws s3 cp core-stream-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/core-stream-without-ingress.tar.gz
