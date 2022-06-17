@@ -222,7 +222,7 @@ jobs:
           tar -czf core-stream-without-tls-without-mtls.tar.gz core-stream-without-tls-without-mtls
           aws s3 cp core-stream-without-tls-without-mtls.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/core-stream-without-tls-without-mtls.tar.gz
 
-  htcMockWithoutIngress:
+  htcMockDisabledParametersWithoutIngress:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -240,25 +240,16 @@ jobs:
           - 100
         datasize:
           - 1
-          - 10
-          - 100
         memorysize:
           - 1
-          - 10
-          - 100
         totalcalculationtime:
           - 00:00:00.100
-          - 00:00:10.0
-          - 00:01:00.0
         enablefastcompute:
           - false
-          - true
         enablesmalloutput:
           - false
-          - true
         enableuselowmem:
           - false
-          - true
 
     steps:
       - name: Get type of VM
