@@ -35,32 +35,32 @@ control_plane = {
 
 # Parameters of admin GUI
 admin_gui = {
-  api = {
-    name               = "admin-api"
-    replicas           = 1
-    image              = "dockerhubaneo/armonik_admin_api"
-    tag                = "sha-bc97e45"
-    port               = 3333
-    limits             = {
+  api                = {
+    name     = "admin-api"
+    replicas = 1
+    image    = "dockerhubaneo/armonik_admin_api"
+    tag      = "sha-bc97e45"
+    port     = 3333
+    limits   = {
       cpu    = "1000m"
       memory = "1024Mi"
     }
-    requests           = {
+    requests = {
       cpu    = "100m"
       memory = "128Mi"
     }
   }
-  app = {
-    name               = "admin-app"
-    replicas           = 1
-    image              = "dockerhubaneo/armonik_admin_app"
-    tag                = "sha-bc97e45"
-    port               = 1080
-    limits             = {
+  app                = {
+    name     = "admin-app"
+    replicas = 1
+    image    = "dockerhubaneo/armonik_admin_app"
+    tag      = "sha-bc97e45"
+    port     = 1080
+    limits   = {
       cpu    = "1000m"
       memory = "1024Mi"
     }
-    requests           = {
+    requests = {
       cpu    = "100m"
       memory = "128Mi"
     }
@@ -114,7 +114,6 @@ compute_plane = [
       }
     ]
     hpa                              = {
-      type              = "prometheus"
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 1
@@ -126,10 +125,13 @@ compute_plane = [
         value                             = 100
         period_seconds                    = 15
       }
-      triggers          = {
-        metric_name = "armonik_tasks_queued"
-        threshold   = "2"
-      }
+      triggers          = [
+        {
+          type        = "prometheus"
+          metric_name = "armonik_tasks_queued"
+          threshold   = "2"
+        },
+      ]
     }
   }
 ]

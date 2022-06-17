@@ -22,6 +22,7 @@ Changed
 * Upgrade and replace tags "latest" of the infrastructure's docker images
 * Upgrade the version of hashicorp/aws to 4.18.0
 * Update Terraform sources of AWS ElastiCache to publish logs in AWS CloudWatch 
+* Update Helm chart of ArmoniK's KEDA HPA
 
 Fixed
 -
