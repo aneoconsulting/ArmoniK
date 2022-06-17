@@ -64,11 +64,12 @@ resource "tls_locally_signed_cert" "ingress_certificate" {
 }
 
 resource "kubernetes_secret" "ingress_certificate" {
+  count = (var.ingress != null ? var.ingress.mtls : false) ? length(tls_private_key.root_ingress) : 0
   metadata {
     name      = "ingress-server-certificates"
     namespace = var.namespace
   }
-  data = length(tls_locally_signed_cert.ingress_certificate) > 0 ? {
+  data  = length(tls_locally_signed_cert.ingress_certificate) > 0 ? {
     "ingress.pem" = format("%s\n%s", tls_locally_signed_cert.ingress_certificate.0.cert_pem, tls_private_key.ingress_private_key.0.private_key_pem)
     "ingress.crt" = tls_locally_signed_cert.ingress_certificate.0.cert_pem
     "ingress.key" = tls_private_key.ingress_private_key.0.private_key_pem
@@ -113,11 +114,12 @@ resource "tls_locally_signed_cert" "ingress_client_certificate" {
 }
 
 resource "kubernetes_secret" "ingress_client_certificate" {
+  count = (var.ingress != null ? var.ingress.mtls : false) ? length(tls_private_key.root_ingress) : 0
   metadata {
     name      = "ingress-user-certificates"
     namespace = var.namespace
   }
-  data = length(tls_locally_signed_cert.ingress_client_certificate) > 0 ? {
+  data  = length(tls_locally_signed_cert.ingress_client_certificate) > 0 ? {
     "ca.pem"     = tls_self_signed_cert.root_ingress.0.cert_pem
     "client.crt" = tls_locally_signed_cert.ingress_client_certificate.0.cert_pem
     "client.key" = tls_private_key.ingress_client_private_key.0.private_key_pem
