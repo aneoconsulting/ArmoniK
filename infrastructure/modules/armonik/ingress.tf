@@ -83,14 +83,14 @@ resource "kubernetes_deployment" "ingress" {
         volume {
           name = "ingress-secret-volume"
           secret {
-            secret_name = kubernetes_secret.ingress_certificate.0.metadata[0].name
+            secret_name = kubernetes_secret.ingress_certificate.metadata[0].name
             optional    = false
           }
         }
         volume {
           name = "ingress-client-secret-volume"
           secret {
-            secret_name = kubernetes_secret.ingress_client_certificate.0.metadata[0].name
+            secret_name = kubernetes_secret.ingress_client_certificate.metadata[0].name
             optional    = false
           }
         }

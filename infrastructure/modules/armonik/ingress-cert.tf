@@ -64,7 +64,6 @@ resource "tls_locally_signed_cert" "ingress_certificate" {
 }
 
 resource "kubernetes_secret" "ingress_certificate" {
-  count = (var.ingress != null ? var.ingress.mtls : false) ? length(tls_private_key.root_ingress) : 0
   metadata {
     name      = "ingress-server-certificates"
     namespace = var.namespace
@@ -114,7 +113,6 @@ resource "tls_locally_signed_cert" "ingress_client_certificate" {
 }
 
 resource "kubernetes_secret" "ingress_client_certificate" {
-  count = (var.ingress != null ? var.ingress.mtls : false) ? length(tls_private_key.root_ingress) : 0
   metadata {
     name      = "ingress-user-certificates"
     namespace = var.namespace
