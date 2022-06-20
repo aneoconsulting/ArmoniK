@@ -8,6 +8,8 @@ Added
 -
 
 * Add admin GUI
+* Add and implement GetResultStatus in Armonik.Api
+* Implement TryGetResult to match Api
 * Set fs.inotify.max_user_instances to 8192 in worker nodes on AWS
 * Expose the parameters of the cluster autscaler's Helm chart in Terraform sources
 
@@ -28,6 +30,10 @@ Fixed
 -
 
 * Fix GetTaskStatus exception when task ID does not exist
+* Reduce crashes of polling-agent
+* Remove from the queue messages of tasks that no longer exist in the database MongoDB
+* fix the exception MongoDBWaitQueueFullException : the wait queue for acquiring a connection is full
+* Fix errors occurring with large number of subtasks
 * Reconfigure inputs of fluent-bit to eliminate the error on SQlite DB
 
 ## [v2.7.3](https://github.com/aneoconsulting/armonik/tree/v2.7.3) (2022-06-09)
