@@ -21,8 +21,8 @@ Changed
 * Replace ports of ArmoniK components' containers from 80 to 1080
 * Refactoring tasks creation in ArmoniK Core
 * Update database scheme: replace sessions options from string to object, add creation date in the session object
-* Refactoring RequestProcessor
-  * Improve error management in tryGetResult when tasks in error
+* Refactoring RequestProcessor 
+* Improve error management in tryGetResult when tasks in error
 * Upgrade and replace tags "latest" of the infrastructure's docker images
 * Upgrade the version of hashicorp/aws to 4.18.0
 * Update Terraform sources of AWS ElastiCache to publish logs in AWS CloudWatch 
