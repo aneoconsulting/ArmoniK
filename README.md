@@ -36,15 +36,7 @@ ArmoniK might not be the best choice if :
 
 # ArmoniK versions
 
-The current version of ArmoniK uses the following tags:
-
-```bash
-core=0.5.12
-worker=0.5.10
-samples=2.8.0
-```
-
-where:
+The current version of ArmoniK uses the tags listed in [armonik-versions.txt](./armonik-versions.txt) where:
 
 * `core` is the ArmoniK Core tag used for container images of Control plane, Polling agent and Metrics exporter.
 * `worker` is the tag used for the container image of the workers
