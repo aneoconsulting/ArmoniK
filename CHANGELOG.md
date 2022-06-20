@@ -10,6 +10,7 @@ Added
 * Add admin GUI
 * Add and implement GetResultStatus in Armonik.Api
 * Implement TryGetResult to match Api
+* Unified API delivery with User, Admin and monitoring API
 * Set fs.inotify.max_user_instances to 8192 in worker nodes on AWS
 * Expose the parameters of the cluster autscaler's Helm chart in Terraform sources
 
@@ -21,6 +22,7 @@ Changed
 * Refactoring tasks creation in ArmoniK Core
 * Update database scheme: replace sessions options from string to object, add creation date in the session object
 * Refactoring RequestProcessor
+  * Improve error management in tryGetResult when tasks in error
 * Upgrade and replace tags "latest" of the infrastructure's docker images
 * Upgrade the version of hashicorp/aws to 4.18.0
 * Update Terraform sources of AWS ElastiCache to publish logs in AWS CloudWatch 
