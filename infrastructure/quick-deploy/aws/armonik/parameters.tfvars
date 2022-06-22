@@ -140,9 +140,10 @@ compute_plane = [
       }
       triggers          = [
         {
+          type        = "prometheus"
           metric_name = "armonik_tasks_queued"
           threshold   = "2"
-        }
+        },
       ]
     }
   }
