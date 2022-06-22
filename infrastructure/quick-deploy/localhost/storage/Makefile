@@ -2,7 +2,7 @@ CURRENT_DIR=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 BACKEND?=$(GENERATED_DIR)/backend
 PARAMETERS_FILE?=parameters.tfvars
-STATE_FILE=$(BACKEND)/terraform.tfstate
+STATE_FILE=$(BACKEND)/storage-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/storage-output.json
 
 export TF_DATA_DIR?=$(GENERATED_DIR)

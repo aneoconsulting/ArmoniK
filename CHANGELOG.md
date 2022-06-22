@@ -8,6 +8,9 @@ Added
 -
 
 * Add admin GUI
+* Add and implement GetResultStatus in Armonik.Api
+* Implement TryGetResult to match Api
+* Unified API delivery with User, Admin and monitoring API
 * Set fs.inotify.max_user_instances to 8192 in worker nodes on AWS
 * Expose the parameters of the cluster autscaler's Helm chart in Terraform sources
 
@@ -18,7 +21,8 @@ Changed
 * Replace ports of ArmoniK components' containers from 80 to 1080
 * Refactoring tasks creation in ArmoniK Core
 * Update database scheme: replace sessions options from string to object, add creation date in the session object
-* Refactoring RequestProcessor
+* Refactoring RequestProcessor 
+* Improve error management in tryGetResult when tasks in error
 * Upgrade and replace tags "latest" of the infrastructure's docker images
 * Upgrade the version of hashicorp/aws to 4.18.0
 * Update Terraform sources of AWS ElastiCache to publish logs in AWS CloudWatch 
@@ -28,6 +32,10 @@ Fixed
 -
 
 * Fix GetTaskStatus exception when task ID does not exist
+* Reduce crashes of polling-agent
+* Remove from the queue messages of tasks that no longer exist in the database MongoDB
+* fix the exception MongoDBWaitQueueFullException : the wait queue for acquiring a connection is full
+* Fix errors occurring with large number of subtasks
 * Reconfigure inputs of fluent-bit to eliminate the error on SQlite DB
 
 ## [v2.7.3](https://github.com/aneoconsulting/armonik/tree/v2.7.3) (2022-06-09)

@@ -31,6 +31,54 @@ jobs:
           echo "::set-output name=version::$VERSION"
           echo $VERSION
 
+  AdminGUI:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Get Core Tag
+        id: core
+        run: |
+          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+      - name: Get Worker Tag
+        id: worker
+        run: |
+          TAG=$(grep "worker" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+      - uses: ./
+        name: Deploy infrastructure
+        id: deploy-infra
+        with:
+          metrics-exporter-image: dockerhubaneo/armonik_control_metrics
+          control-plane-image: dockerhubaneo/armonik_control
+          polling-agent-image: dockerhubaneo/armonik_pollingagent
+          worker-image: dockerhubaneo/armonik_worker_dll
+          core-tag: ${{ steps.core.outputs.tag }}
+          worker-tag: ${{ steps.worker.outputs.tag }}
+
+      - name: Test ping AdminGUI
+        shell: bash
+        run: |
+          set -ex
+          export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
+          export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
+          : "Add -f again when a success endpoint has been implemented"
+          curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
+          curl -fsSL "${ADMIN_APP_URL}" -o /dev/null || true "in v2.7.2, there is no app endpoint"
+
   coreStreamWithoutIngress:
     runs-on: ubuntu-latest
     steps:
@@ -45,6 +93,84 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq python3 python-is-python3 python3-pip
+          pip install awscli
+
+      - name: Get Core Tag
+        id: core
+        run: |
+          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+      - uses: ./
+        name: Deploy infrastructure
+        id: deploy-infra
+        with:
+          metrics-exporter-image: dockerhubaneo/armonik_control_metrics
+          control-plane-image: dockerhubaneo/armonik_control
+          polling-agent-image: dockerhubaneo/armonik_pollingagent
+          worker-image: dockerhubaneo/armonik_core_stream_test_worker
+          core-tag: ${{ steps.core.outputs.tag }}
+          worker-tag: ${{ steps.core.outputs.tag }}
+          ingress: ''
+
+      - name: Test Core Stream
+        shell: bash
+        run: |
+          set -ex
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          docker run --rm \
+            -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
+            dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
+
+      - name: Show logs
+        if: always()
+        run: |
+          set -e
+          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          mkdir -p core-stream-without-ingress/infra/generated \
+            core-stream-without-ingress/infra/tfstates \
+            core-stream-without-ingress/app
+          cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
+            infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
+            infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
+            infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
+            core-stream-without-ingress/infra/generated
+          cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
+            core-stream-without-ingress/infra/tfstates
+          sudo cp -rL /var/log/pods/armonik_* core-stream-without-ingress/app
+          sudo chown $USER -R core-stream-without-ingress
+          tar -czf core-stream-without-ingress.tar.gz core-stream-without-ingress
+          aws s3 cp core-stream-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/core-stream-without-ingress.tar.gz
+
+  coreStreamWithoutTlsMtls:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq python3 python-is-python3 python3-pip
+          pip install awscli
 
       - name: Get Core Tag
         id: core
@@ -71,46 +197,46 @@ jobs:
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
             dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
-            
-      - name: Test ping AdminGUI
-        shell: bash
-        run: |
-          set -ex
-          export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
-          export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
-          : "Add -f again when a success endpoint has been implemented"
-          curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
-          curl -fsSL "${ADMIN_APP_URL}" -o /dev/null || true "in v2.7.2, there is no app endpoint"
 
-      - name: Copy logs
+      - name: Show logs
         if: always()
-        shell: bash
         run: |
           set -e
-          mkdir -p /tmp/armoniklogs
-          sudo cp -rL /var/log/pods/armonik_* /tmp/armoniklogs
-          sudo chown $USER -R /tmp/armoniklogs
-          find /tmp/armoniklogs -name "*.log"
+          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          mkdir -p core-stream-without-tls-without-mtls/infra/generated \
+            core-stream-without-tls-without-mtls/infra/tfstates \
+            core-stream-without-tls-without-mtls/app
+          cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
+            infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
+            infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
+            infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
+            core-stream-without-tls-without-mtls/infra/generated
+          cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
+            core-stream-without-tls-without-mtls/infra/tfstates
+          sudo cp -rL /var/log/pods/armonik_* core-stream-without-tls-without-mtls/app
+          sudo chown $USER -R core-stream-without-tls-without-mtls
+          tar -czf core-stream-without-tls-without-mtls.tar.gz core-stream-without-tls-without-mtls
+          aws s3 cp core-stream-without-tls-without-mtls.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/core-stream-without-tls-without-mtls.tar.gz
 
-      - name: Store logs
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: Logs Core Stream
-          path: /tmp/armoniklogs/**/*.log
-          retention-days: 5
-
-  htcMockWithoutIngress:
+  htcMockDisabledParametersWithoutIngress:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         ntasks:
-          - 100
-          - 1000
+          - 1
+          - 5000
+          - 10000
         nlevels:
+          - 1
           - 5
           - 10
+          - 100
+
     steps:
       - name: Get type of VM
         run: |
@@ -123,6 +249,12 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq python3 python-is-python3 python3-pip
+          pip install awscli
 
       - name: Get Core Tag
         id: core
@@ -140,6 +272,7 @@ jobs:
           worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
           core-tag: ${{ steps.core.outputs.tag }}
           worker-tag: ${{ steps.core.outputs.tag }}
+          ingress: ''
 
       - name: Test HTC Mock
         shell: bash
@@ -149,41 +282,134 @@ jobs:
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
             -e HtcMock__NTasks=${{ matrix.ntasks }} \
-            -e HtcMock__TotalCalculationTime="00:00:00.100" \
-            -e HtcMock__DataSize="1" \
-            -e HtcMock__MemorySize="1" \
+            -e HtcMock__TotalCalculationTime=00:00:00.100 \
+            -e HtcMock__DataSize=1 \
+            -e HtcMock__MemorySize=1 \
             -e HtcMock__SubTasksLevels=${{ matrix.nlevels }} \
+            -e HtcMock__EnableUseLowMem=true \
+            -e HtcMock__EnableSmallOutput=true \
+            -e HtcMock__EnableFastCompute=true \
             dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
 
-      - name: Copy logs
+      - name: Show logs
         if: always()
-        shell: bash
         run: |
           set -e
-          mkdir -p /tmp/armoniklogs
-          sudo cp -rL /var/log/pods/armonik_* /tmp/armoniklogs
-          sudo chown $USER -R /tmp/armoniklogs
-          find /tmp/armoniklogs -name "*.log"
+          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          mkdir -p htcmock-disabled-parameters-without-ingress/infra/generated \
+            htcmock-disabled-parameters-without-ingress/infra/tfstates \
+            htcmock-disabled-parameters-without-ingress/app
+          cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
+            infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
+            infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
+            infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
+            htcmock-disabled-parameters-without-ingress/infra/generated
+          cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
+            htcmock-disabled-parameters-without-ingress/infra/tfstates
+          sudo cp -rL /var/log/pods/armonik_* htcmock-disabled-parameters-without-ingress/app
+          sudo chown $USER -R htcmock-disabled-parameters-without-ingress
+          tar -czf htcmock-disabled-parameters-without-ingress.tar.gz htcmock-disabled-parameters-without-ingress
+          aws s3 cp htcmock-disabled-parameters-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock-disabled-parameters-without-ingress.tar.gz
 
-      - name: Store logs
-        uses: actions/upload-artifact@v2
-        if: always()
+  htcMockEnabledParametersWithoutIngress:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        datasize:
+          - 50
+          - 500
+        memorysize:
+          - 50
+          - 500
+        totalcalculationtime:
+          - 00:00:10.0
+          - 00:01:00.0
+
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          name: Logs HTC Mock
-          path: /tmp/armoniklogs/**/*.log
-          retention-days: 5
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq python3 python-is-python3 python3-pip
+          pip install awscli
+
+      - name: Get Core Tag
+        id: core
+        run: |
+          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
+      - uses: ./
+        name: Deploy infrastructure
+        id: deploy-infra
+        with:
+          metrics-exporter-image: dockerhubaneo/armonik_control_metrics
+          control-plane-image: dockerhubaneo/armonik_control
+          polling-agent-image: dockerhubaneo/armonik_pollingagent
+          worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
+          core-tag: ${{ steps.core.outputs.tag }}
+          worker-tag: ${{ steps.core.outputs.tag }}
+          ingress: ''
+
+      - name: Test HTC Mock
+        shell: bash
+        run: |
+          set -ex
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          docker run --rm \
+            -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
+            -e HtcMock__NTasks=1000 \
+            -e HtcMock__TotalCalculationTime=${{ matrix.totalCalculationtime }} \
+            -e HtcMock__DataSize=${{ matrix.datasize }} \
+            -e HtcMock__MemorySize=${{ matrix.memorysize }} \
+            -e HtcMock__SubTasksLevels=5 \
+            -e HtcMock__EnableUseLowMem=false \
+            -e HtcMock__EnableSmallOutput=false \
+            -e HtcMock__EnableFastCompute=false \
+            dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
+
+      - name: Show logs
+        if: always()
+        run: |
+          set -e
+          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          mkdir -p htcmock-enabled-parameters-without-ingress/infra/generated \
+            htcmock-enabled-parameters-without-ingress/infra/tfstates \
+            htcmock-enabled-parameters-without-ingress/app
+          cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
+            infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
+            infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
+            infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
+            htcmock-enabled-parameters-without-ingress/infra/generated
+          cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
+            htcmock-enabled-parameters-without-ingress/infra/tfstates
+          sudo cp -rL /var/log/pods/armonik_* htcmock-enabled-parameters-without-ingress/app
+          sudo chown $USER -R htcmock-enabled-parameters-without-ingress
+          tar -czf htcmock-enabled-parameters-without-ingress.tar.gz htcmock-enabled-parameters-without-ingress
+          aws s3 cp htcmock-enabled-parameters-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock-enabled-parameters-without-ingress.tar.gz
 
   htcMockWithoutTlsMtls:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        ntasks:
-          - 100
-          - 1000
-        nlevels:
-          - 5
-          - 10
     steps:
       - name: Get type of VM
         run: |
@@ -196,6 +422,12 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq python3 python-is-python3 python3-pip
+          pip install awscli
 
       - name: Get Core Tag
         id: core
@@ -213,7 +445,6 @@ jobs:
           worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
           core-tag: ${{ steps.core.outputs.tag }}
           worker-tag: ${{ steps.core.outputs.tag }}
-          ingress: 'None'
 
       - name: Test HTC Mock
         shell: bash
@@ -222,32 +453,38 @@ jobs:
           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
-            -e HtcMock__NTasks=${{ matrix.ntasks }} \
-            -e HtcMock__TotalCalculationTime="00:00:00.100" \
-            -e HtcMock__DataSize="1" \
-            -e HtcMock__MemorySize="1" \
-            -e HtcMock__SubTasksLevels=${{ matrix.nlevels }} \
+            -e HtcMock__NTasks=5000 \
+            -e HtcMock__TotalCalculationTime=00:00:50.0 \
+            -e HtcMock__DataSize=50 \
+            -e HtcMock__MemorySize=50 \
+            -e HtcMock__SubTasksLevels=5 \
+            -e HtcMock__EnableUseLowMem=false \
+            -e HtcMock__EnableSmallOutput=false \
+            -e HtcMock__EnableFastCompute=false \
             dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
 
-      - name: Copy logs
+      - name: Show logs
         if: always()
-        shell: bash
         run: |
           set -e
-          mkdir -p /tmp/armoniklogs
-          sudo cp -rL /var/log/pods/armonik_* /tmp/armoniklogs
-          sudo chown $USER -R /tmp/armoniklogs
-          find /tmp/armoniklogs -name "*.log"
-
-      - name: Store logs
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: Logs HTC Mock
-          path: /tmp/armoniklogs/**/*.log
-          retention-days: 5
-
-
-
+          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          mkdir -p htcmock-without-tls-without-mtls/infra/generated \
+            htcmock-without-tls-without-mtls/infra/tfstates \
+            htcmock-without-tls-without-mtls/app
+          cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
+            infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
+            infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
+            infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
+            htcmock-without-tls-without-mtls/infra/generated
+          cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
+            htcmock-without-tls-without-mtls/infra/tfstates
+          sudo cp -rL /var/log/pods/armonik_* htcmock-without-tls-without-mtls/app
+          sudo chown $USER -R htcmock-without-tls-without-mtls
+          tar -czf htcmock-without-tls-without-mtls.tar.gz htcmock-without-tls-without-mtls
+          aws s3 cp htcmock-without-tls-without-mtls.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock-without-tls-without-mtls.tar.gz
 
 
