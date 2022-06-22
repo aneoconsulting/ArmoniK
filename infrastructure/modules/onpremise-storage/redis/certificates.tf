@@ -8,7 +8,6 @@ resource "tls_private_key" "root_redis" {
 }
 
 resource "tls_self_signed_cert" "root_redis" {
-  key_algorithm         = tls_private_key.root_redis.algorithm
   private_key_pem       = tls_private_key.root_redis.private_key_pem
   is_ca_certificate     = true
   validity_period_hours = "168"

@@ -90,7 +90,7 @@ mq = {
   storage_type            = "ebs" # "ebs" | "efs"
   kms_key_id              = ""
   authentication_strategy = "simple" # "ldap"
-  publicly_accessible     = false
+  publicly_accessible     = true
 }
 
 # MQ Credentials

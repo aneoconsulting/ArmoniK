@@ -58,7 +58,7 @@ ecr = {
     {
       name  = "armonik-worker"
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.5.12"
+      tag   = "0.6.0"
     },
     {
       name  = "metrics-exporter"

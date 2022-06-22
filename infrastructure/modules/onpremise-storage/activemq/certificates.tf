@@ -8,7 +8,6 @@ resource "tls_private_key" "root_activemq" {
 }
 
 resource "tls_self_signed_cert" "root_activemq" {
-  key_algorithm         = tls_private_key.root_activemq.algorithm
   private_key_pem       = tls_private_key.root_activemq.private_key_pem
   is_ca_certificate     = true
   validity_period_hours = "168"
