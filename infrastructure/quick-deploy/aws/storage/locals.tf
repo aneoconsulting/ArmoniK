@@ -26,6 +26,6 @@ locals {
   vpc                               = {
     id          = try(var.vpc.id, "")
     cidr_blocks = concat([try(var.vpc.cidr_block, "")], try(var.vpc.pod_cidr_block_private, []))
-    subnet_ids  = try(var.vpc.public_subnet_ids, [])
+    subnet_ids  = try(var.vpc.private_subnet_ids, [])
   }
 }
