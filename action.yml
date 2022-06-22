@@ -17,12 +17,24 @@ inputs:
     description: 'Repository/image for metrics exporter docker image'
     required: false
     default: 'None'
+  admin-api-image:
+    description: 'Repository/image for Admi GUI API docker image'
+    required: false
+    default: 'None'
+  admin-app-image:
+    description: 'Repository/image for Admi GUI APP docker image'
+    required: false
+    default: 'None'
   core-tag:
     description: 'ArmoniK Core tag'
     required: false
     default: 'None'
   worker-tag:
     description: 'ArmoniK worker tag'
+    required: false
+    default: 'None'
+  admin-gui-tag:
+    description: 'ArmoniK Admin GUI tag'
     required: false
     default: 'None'
   docker-is-installed:
@@ -154,6 +166,10 @@ runs:
             -kv "compute_plane[*].polling_agent.tag=${{ inputs.core-tag }}" \
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
+            -kv admin_gui.api.image=${{ inputs.admin-api-image }} \
+            -kv admin_gui.api.tag=${{ inputs.admin-gui-tag }} \
+            -kv admin_gui.app.image=${{ inputs.admin-app-image }} \
+            -kv admin_gui.app.tag=${{ inputs.admin-gui-tag }} \
             -kv logging_level=${{ inputs.log-level }} \
             -kv ingress=null \
             ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars \
@@ -166,6 +182,10 @@ runs:
             -kv "compute_plane[*].polling_agent.tag=${{ inputs.core-tag }}" \
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
+            -kv admin_gui.api.image=${{ inputs.admin-api-image }} \
+            -kv admin_gui.api.tag=${{ inputs.admin-gui-tag }} \
+            -kv admin_gui.app.image=${{ inputs.admin-app-image }} \
+            -kv admin_gui.app.tag=${{ inputs.admin-gui-tag }} \
             -kv logging_level=${{ inputs.log-level }} \
             -kv ingress.tls=${{ inputs.tls }} \
             -kv ingress.mtls=${{ inputs.mtls }} \

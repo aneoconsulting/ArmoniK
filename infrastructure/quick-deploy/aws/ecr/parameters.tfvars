@@ -58,7 +58,7 @@ ecr = {
     {
       name  = "armonik-worker"
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.5.12"
+      tag   = "0.6.0"
     },
     {
       name  = "metrics-exporter"
@@ -68,12 +68,12 @@ ecr = {
     {
       name  = "armonik-admin-api"
       image = "dockerhubaneo/armonik_admin_api"
-      tag   = "sha-bc97e45"
+      tag   = "0.1.0"
     },
     {
       name  = "armonik-admin-app"
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "sha-bc97e45"
+      tag   = "0.1.0"
     },
     {
       name  = "seq"

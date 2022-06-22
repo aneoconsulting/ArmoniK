@@ -51,7 +51,7 @@ admin_gui = {
     name     = "admin-api"
     replicas = 1
     image    = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-api"
-    tag      = "sha-bc97e45"
+    tag      = "0.1.0"
     port     = 3333
     limits   = {
       cpu    = "1000m"
@@ -66,7 +66,7 @@ admin_gui = {
     name     = "admin-app"
     replicas = 1
     image    = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app"
-    tag      = "sha-bc97e45"
+    tag      = "0.1.0"
     port     = 1080
     limits   = {
       cpu    = "1000m"
@@ -113,7 +113,7 @@ compute_plane = [
       {
         name              = "worker"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.5.12"
+        tag               = "0.6.0"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "1000m"
@@ -140,9 +140,10 @@ compute_plane = [
       }
       triggers          = [
         {
+          type        = "prometheus"
           metric_name = "armonik_tasks_queued"
           threshold   = "2"
-        }
+        },
       ]
     }
   }
