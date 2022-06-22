@@ -58,6 +58,12 @@ jobs:
           TAG=$(grep "worker" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
           echo "::set-output name=tag::$TAG"
 
+      - name: Get Admin GUI Tag
+        id: admin-gui
+        run: |
+          TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
       - uses: ./
         name: Deploy infrastructure
         id: deploy-infra
@@ -66,8 +72,11 @@ jobs:
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_worker_dll
+          admin-api-image: dockerhubaneo/armonik_admin_api
+          admin-app-image: dockerhubaneo/armonik_admin_app
           core-tag: ${{ steps.core.outputs.tag }}
           worker-tag: ${{ steps.worker.outputs.tag }}
+          admin-gui-tag: ${{ steps.admin-gui.outputs.tag }}
 
       - name: Test ping AdminGUI
         shell: bash
@@ -106,6 +115,12 @@ jobs:
           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
           echo "::set-output name=tag::$TAG"
 
+      - name: Get Admin GUI Tag
+        id: admin-gui
+        run: |
+          TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
       - uses: ./
         name: Deploy infrastructure
         id: deploy-infra
@@ -114,8 +129,11 @@ jobs:
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_stream_test_worker
+          admin-api-image: dockerhubaneo/armonik_admin_api
+          admin-app-image: dockerhubaneo/armonik_admin_app
           core-tag: ${{ steps.core.outputs.tag }}
           worker-tag: ${{ steps.core.outputs.tag }}
+          admin-gui-tag: ${{ steps.admin-gui.outputs.tag }}
           ingress: ''
 
       - name: Test Core Stream
@@ -178,6 +196,12 @@ jobs:
           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
           echo "::set-output name=tag::$TAG"
 
+      - name: Get Admin GUI Tag
+        id: admin-gui
+        run: |
+          TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
       - uses: ./
         name: Deploy infrastructure
         id: deploy-infra
@@ -186,8 +210,11 @@ jobs:
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_stream_test_worker
+          admin-api-image: dockerhubaneo/armonik_admin_api
+          admin-app-image: dockerhubaneo/armonik_admin_app
           core-tag: ${{ steps.core.outputs.tag }}
           worker-tag: ${{ steps.core.outputs.tag }}
+          admin-gui-tag: ${{ steps.admin-gui.outputs.tag }}
 
       - name: Test Core Stream
         shell: bash
@@ -262,6 +289,12 @@ jobs:
           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
           echo "::set-output name=tag::$TAG"
 
+      - name: Get Admin GUI Tag
+        id: admin-gui
+        run: |
+          TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
       - uses: ./
         name: Deploy infrastructure
         id: deploy-infra
@@ -270,8 +303,11 @@ jobs:
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
+          admin-api-image: dockerhubaneo/armonik_admin_api
+          admin-app-image: dockerhubaneo/armonik_admin_app
           core-tag: ${{ steps.core.outputs.tag }}
           worker-tag: ${{ steps.core.outputs.tag }}
+          admin-gui-tag: ${{ steps.admin-gui.outputs.tag }}
           ingress: ''
 
       - name: Test HTC Mock
@@ -355,6 +391,12 @@ jobs:
           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
           echo "::set-output name=tag::$TAG"
 
+      - name: Get Admin GUI Tag
+        id: admin-gui
+        run: |
+          TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
       - uses: ./
         name: Deploy infrastructure
         id: deploy-infra
@@ -363,8 +405,11 @@ jobs:
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
+          admin-api-image: dockerhubaneo/armonik_admin_api
+          admin-app-image: dockerhubaneo/armonik_admin_app
           core-tag: ${{ steps.core.outputs.tag }}
           worker-tag: ${{ steps.core.outputs.tag }}
+          admin-gui-tag: ${{ steps.admin-gui.outputs.tag }}
           ingress: ''
 
       - name: Test HTC Mock
@@ -435,6 +480,12 @@ jobs:
           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
           echo "::set-output name=tag::$TAG"
 
+      - name: Get Admin GUI Tag
+        id: admin-gui
+        run: |
+          TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "::set-output name=tag::$TAG"
+
       - uses: ./
         name: Deploy infrastructure
         id: deploy-infra
@@ -443,8 +494,11 @@ jobs:
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
+          admin-api-image: dockerhubaneo/armonik_admin_api
+          admin-app-image: dockerhubaneo/armonik_admin_app
           core-tag: ${{ steps.core.outputs.tag }}
           worker-tag: ${{ steps.core.outputs.tag }}
+          admin-gui-tag: ${{ steps.admin-gui.outputs.tag }}
 
       - name: Test HTC Mock
         shell: bash
