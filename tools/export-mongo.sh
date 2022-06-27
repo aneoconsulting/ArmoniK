@@ -9,7 +9,7 @@ if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
     exit 1
 fi
 
-# Get the destination from the argument list (could be anywhere in the list) (using regex -e)
+# Get the destination from the argument list (could be anywhere in the list)
 DEST=$(echo "$@" | grep -oe '--dest=.*' | sed 's/--dest=//')
 # Create the destination directory if it doesn't exist
 mkdir -p $DEST
