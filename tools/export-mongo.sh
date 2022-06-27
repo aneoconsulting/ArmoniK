@@ -16,7 +16,7 @@ mkdir -p $DEST
 
 # Set to pwd if no destination was passed
 if [ -z "$DEST" ]; then
-    dest="$(pwd)"
+    DEST="$(pwd)"
 fi
 
 # Get MongoDB Password
