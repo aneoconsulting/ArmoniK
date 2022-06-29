@@ -7,7 +7,7 @@
 Removed
 -
 
-* Disable MDSv1 and IMDSv2 on EC2 of EKS worker nodes
+* Enable IMDSv2 only on EC2 of EKS worker nodes
 
 ## [v2.8.0](https://github.com/aneoconsulting/armonik/tree/v2.8.0) (2022-06-22)
 
