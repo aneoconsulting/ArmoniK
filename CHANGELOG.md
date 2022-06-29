@@ -1,6 +1,13 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-06-22)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-07-01)
+
+## [v2.8.1](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-01)
+
+Removed
+-
+
+* Disable MDSv1 and IMDSv2 on EC2 of EKS worker nodes
 
 ## [v2.8.0](https://github.com/aneoconsulting/armonik/tree/v2.8.0) (2022-06-22)
 
@@ -46,20 +53,21 @@ Critical fixes
   Error: Kubernetes cluster unreachable: exec plugin: invalid apiVersion "client.authentication.k8s.io/v1alpha1"
   ```
   You have two options to fix this issue:
-  * **Option 1:** Update AWS CLI
-    ```bash
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    unzip awscliv2.zip
-    sudo ./aws/install --update
-    aws eks update-kubeconfig --region ${AWS_REGION}  --name ${EKS_CLUSTER_NAME}
-    ```
-  * **Option 2:** Replace `apiVersion: client.authentication.k8s.io/v1alpha1` by `client.authentication.k8s.io/v1beta1` in your `~/.kube/config`
-    ```bash
-    diff ~/.kube/config ~/.kube/config-backup
-    <             apiVersion: client.authentication.k8s.io/v1beta1
-    ---
-    >             apiVersion: client.authentication.k8s.io/v1alpha1
-    ```
+    * **Option 1:** Update AWS CLI
+      ```bash
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      sudo ./aws/install --update
+      aws eks update-kubeconfig --region ${AWS_REGION}  --name ${EKS_CLUSTER_NAME}
+      ```
+    * **Option 2:** Replace `apiVersion: client.authentication.k8s.io/v1alpha1`
+      by `client.authentication.k8s.io/v1beta1` in your `~/.kube/config`
+      ```bash
+      diff ~/.kube/config ~/.kube/config-backup
+      <             apiVersion: client.authentication.k8s.io/v1beta1
+      ---
+      >             apiVersion: client.authentication.k8s.io/v1alpha1
+      ```
 
 ## [v2.7.3](https://github.com/aneoconsulting/armonik/tree/v2.7.3) (2022-06-09)
 
