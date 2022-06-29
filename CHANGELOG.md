@@ -4,7 +4,12 @@
 
 ## [v2.8.1](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-01)
 
-Removed
+Changed
+-
+
+* Upgrade tag of Fluent-bit to 1.9.5
+
+Fixed
 -
 
 * Enable IMDSv2 only on EC2 of EKS worker nodes
