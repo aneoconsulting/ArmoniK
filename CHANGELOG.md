@@ -9,6 +9,7 @@ Changed
 
 * Upgrade tag of Fluent-bit to 1.9.5
 * Update kubeconfig API version to `client.authentication.k8s.io/v1beta1`
+* Upgrade AWS EKS version to 1.22
 
 Fixed
 -
