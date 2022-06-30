@@ -4,6 +4,11 @@
 
 ## [v2.8.1](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-01)
 
+Added
+-
+
+* Login forms in Seq/Grafana are now optional
+
 Changed
 -
 
