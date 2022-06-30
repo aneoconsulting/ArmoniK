@@ -8,6 +8,7 @@ Changed
 -
 
 * Upgrade tag of Fluent-bit to 1.9.5
+* Removed unsecure protocols and ciphers in nginx
 
 Fixed
 -
