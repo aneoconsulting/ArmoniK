@@ -39,3 +39,10 @@ variable "working_dir" {
   type        = string
   default     = ".."
 }
+
+# Enable authentication
+variable "authentication" {
+  description = "Enables the authentication form"
+  type        = bool
+  default     = false
+}

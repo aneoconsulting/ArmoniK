@@ -87,3 +87,10 @@ variable "monitoring" {
     })
   })
 }
+
+# Enable authentication of seq and grafana
+variable "authentication" {
+  description = "Enable authentication form in seq and grafana"
+  type        = bool
+  default     = false
+}

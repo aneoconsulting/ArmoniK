@@ -55,3 +55,5 @@ monitoring = {
     node_selector      = {}
   }
 }
+
+authentication = false

@@ -100,3 +100,5 @@ monitoring = {
     node_selector      = { "grid/type" = "Operator" }
   }
 }
+
+authentication = false
