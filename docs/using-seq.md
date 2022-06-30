@@ -13,7 +13,11 @@ kubectl get svc -n armonik
 ```
 You should see a service called `seqweb`. You can connect to its external-ip:8080 in your browser to access seq.
 
-Then the id and the password are `admin`.
+If you enabled the authentication of seq, the default credentials are the following:
+- Username: `admin`
+- Password: `admin`
+
+You can then change the password in `settings` -> `system`.
 
 # Useful requests
 
