@@ -17,7 +17,7 @@ control_plane = {
   service_type       = "ClusterIP"
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
-  tag                = "0.5.11"
+  tag                = "0.5.13"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -35,32 +35,32 @@ control_plane = {
 
 # Parameters of admin GUI
 admin_gui = {
-  api = {
-    name               = "admin-api"
-    replicas           = 1
-    image              = "dockerhubaneo/armonik_admin_api"
-    tag                = "sha-bc97e45"
-    port               = 3333
-    limits             = {
+  api                = {
+    name     = "admin-api"
+    replicas = 1
+    image    = "dockerhubaneo/armonik_admin_api"
+    tag      = "0.1.0"
+    port     = 3333
+    limits   = {
       cpu    = "1000m"
       memory = "1024Mi"
     }
-    requests           = {
+    requests = {
       cpu    = "100m"
       memory = "128Mi"
     }
   }
-  app = {
-    name               = "admin-app"
-    replicas           = 1
-    image              = "dockerhubaneo/armonik_admin_app"
-    tag                = "sha-bc97e45"
-    port               = 1080
-    limits             = {
+  app                = {
+    name     = "admin-app"
+    replicas = 1
+    image    = "dockerhubaneo/armonik_admin_app"
+    tag      = "0.1.0"
+    port     = 1080
+    limits   = {
       cpu    = "1000m"
       memory = "1024Mi"
     }
-    requests           = {
+    requests = {
       cpu    = "100m"
       memory = "128Mi"
     }
@@ -85,7 +85,7 @@ compute_plane = [
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.5.11"
+      tag               = "0.5.13"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "1000m"
@@ -101,7 +101,7 @@ compute_plane = [
       {
         name              = "worker"
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.5.10"
+        tag               = "0.6.1"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "1000m"
@@ -114,7 +114,6 @@ compute_plane = [
       }
     ]
     hpa                              = {
-      type              = "prometheus"
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 1
@@ -126,10 +125,13 @@ compute_plane = [
         value                             = 100
         period_seconds                    = 15
       }
-      triggers          = {
-        metric_name = "armonik_tasks_queued"
-        threshold   = "2"
-      }
+      triggers          = [
+        {
+          type        = "prometheus"
+          metric_name = "armonik_tasks_queued"
+          threshold   = "2"
+        },
+      ]
     }
   }
 ]

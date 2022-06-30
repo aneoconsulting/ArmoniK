@@ -12,13 +12,13 @@ write_files:
   - content: |
       #amazon-linux-extras enable python3.7
       #yum install -y python3.7
-      update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+      #update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
       curl -O https://bootstrap.pypa.io/get-pip.py
       python3 get-pip.py --user
       echo "PATH=~/.local/bin:$PATH" >> /home/ec2-user/.bashrc
       source /home/ec2-user/.bashrc
-      python -m pip install python-hcl2
-      python -m pip install jsonpath-ng
+      python3 -m pip install python-hcl2
+      python3 -m pip install jsonpath-ng
     path: /app/install-python3.sh
     permissions: 0755
     owner: root

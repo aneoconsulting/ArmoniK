@@ -108,6 +108,10 @@ variable "elasticache" {
     preferred_cache_cluster_azs = list(string)
     data_tiering_enabled        = bool
     log_retention_in_days       = number
+    cloudwatch_log_groups       = object({
+      slow_log   = string
+      engine_log = string
+    })
     encryption_keys             = object({
       kms_key_id     = string
       log_kms_key_id = string
@@ -126,6 +130,10 @@ variable "elasticache" {
     # The order of the availability zones in the list is considered. The first item in the list will be the primary node
     data_tiering_enabled        = false # This parameter must be set to true when using r6gd nodes.
     log_retention_in_days       = 30
+    cloudwatch_log_groups       = {
+      slow_log   = ""
+      engine_log = ""
+    }
     encryption_keys             = {
       kms_key_id     = ""
       log_kms_key_id = ""

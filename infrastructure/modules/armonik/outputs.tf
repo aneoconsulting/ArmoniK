@@ -33,6 +33,10 @@ output "admin_app_url" {
   value       = local.admin_app_url
 }
 
+output "ingress_DEPRECATED" {
+  description = "deprecation notice for `ingress` output"
+  value       = "`ingress` is deprecated. Please use `endpoint_urls` directly."
+}
 output "ingress" {
   description = <<-EOT
     [DEPRECATED] ingress endpoint

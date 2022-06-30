@@ -80,7 +80,7 @@ monitoring = {
   }
   metrics_exporter = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter"
-    tag                = "0.5.11"
+    tag                = "0.5.13"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
@@ -92,7 +92,7 @@ monitoring = {
   }
   fluent_bit       = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"
-    tag                = "1.9.4"
+    tag                = "1.9.5"
     image_pull_secrets = ""
     is_daemonset       = true
     http_port          = 2020 # 0 or 2020

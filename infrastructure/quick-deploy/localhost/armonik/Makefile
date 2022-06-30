@@ -7,7 +7,7 @@ INGRESS_PKCS12=$(INGRESS_CERTIFICATES_DIR)/pkcs12.pem
 INGRESS_CLIENT_P12=$(INGRESS_CERTIFICATES_DIR)/client.p12
 BACKEND?=$(GENERATED_DIR)/backend
 PARAMETERS_FILE?=parameters.tfvars
-STATE_FILE=$(BACKEND)/terraform.tfstate
+STATE_FILE=$(BACKEND)/armonik-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/armonik-output.json
 
 export TF_DATA_DIR?=$(GENERATED_DIR)

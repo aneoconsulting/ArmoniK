@@ -62,6 +62,20 @@ variable "eks" {
         tag   = string
       })
     })
+    cluster_autoscaler                    = object({
+      expander                              = string
+      scale_down_enabled                    = bool
+      min_replica_count                     = number
+      scale_down_utilization_threshold      = number
+      scale_down_non_empty_candidates_count = number
+      max_node_provision_time               = string
+      scan_interval                         = string
+      scale_down_delay_after_add            = string
+      scale_down_delay_after_delete         = string
+      scale_down_delay_after_failure        = string
+      scale_down_unneeded_time              = string
+      skip_nodes_with_system_pods           = bool
+    })
     encryption_keys                       = object({
       cluster_log_kms_key_id    = string
       cluster_encryption_config = string
@@ -78,33 +92,6 @@ variable "eks" {
       groups   = list(string)
     }))
   })
-  default     = {
-    name                                  = "armonik-eks"
-    cluster_version                       = "1.21"
-    cluster_endpoint_private_access       = true # vpc.enable_private_subnet
-    cluster_endpoint_private_access_cidrs = []
-    cluster_endpoint_private_access_sg    = []
-    cluster_endpoint_public_access        = false
-    cluster_endpoint_public_access_cidrs  = ["0.0.0.0/0"]
-    cluster_log_retention_in_days         = 30
-    docker_images                         = {
-      cluster_autoscaler = {
-        image = "k8s.gcr.io/autoscaling/cluster-autoscaler"
-        tag   = "v1.21.0"
-      }
-      instance_refresh   = {
-        image = "amazon/aws-node-termination-handler"
-        tag   = "v1.10.0"
-      }
-    }
-    encryption_keys                       = {
-      cluster_log_kms_key_id    = ""
-      cluster_encryption_config = ""
-      ebs_kms_key_id            = ""
-    }
-    map_roles                             = []
-    map_users                             = []
-  }
 }
 
 # Operational node groups for EKS

@@ -48,32 +48,32 @@ ecr = {
     {
       name  = "armonik-control-plane"
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.5.11"
+      tag   = "0.5.13"
     },
     {
       name  = "armonik-polling-agent"
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.5.11"
+      tag   = "0.5.13"
     },
     {
       name  = "armonik-worker"
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.5.10"
+      tag   = "0.6.1"
     },
     {
       name  = "metrics-exporter"
       image = "dockerhubaneo/armonik_control_metrics"
-      tag   = "0.5.11"
+      tag   = "0.5.13"
     },
     {
-      name  = "admin-api"
+      name  = "armonik-admin-api"
       image = "dockerhubaneo/armonik_admin_api"
-      tag   = "sha-bc97e45"
+      tag   = "0.1.0"
     },
     {
-      name  = "admin-app"
+      name  = "armonik-admin-app"
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "sha-bc97e45"
+      tag   = "0.1.0"
     },
     {
       name  = "seq"
@@ -103,7 +103,7 @@ ecr = {
     {
       name  = "fluent-bit"
       image = "fluent/fluent-bit"
-      tag   = "1.9.4"
+      tag   = "1.9.5"
     },
     {
       name  = "node-exporter"

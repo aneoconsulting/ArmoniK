@@ -4,8 +4,6 @@
 
 suffix: ""
 
-type: "prometheus"
-
 scaleTargetRef:
   apiVersion: "apps/v1"                                       # Optional. Default: apps/v1
   kind: "Deployment"                                          # Optional. Default: Deployment
@@ -29,10 +27,6 @@ behavior: # Optional. Section to specify advanced options
   value: 100
   periodSeconds: 15
 
-triggers:
-  serverAddress: ""
-  metricName: ""
-  threshold: "50"
-  namespace: ""
-  query: armonik_tasks_queued{job="armonik-metrics-exporter"}
-  authentication: ""
+triggers: []
+
+

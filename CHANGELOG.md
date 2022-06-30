@@ -1,6 +1,18 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-06-22)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-07-01)
+
+## [v2.8.1](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-01)
+
+Changed
+-
+
+* Upgrade tag of Fluent-bit to 1.9.5
+
+Fixed
+-
+
+* Enable IMDSv2 only on EC2 of EKS worker nodes
 
 ## [v2.8.0](https://github.com/aneoconsulting/armonik/tree/v2.8.0) (2022-06-22)
 
@@ -8,21 +20,59 @@ Added
 -
 
 * Add admin GUI
+* Add and implement GetResultStatus in Armonik.Api
+* Implement TryGetResult to match Api
+* Unified API delivery with User, Admin and monitoring API
 * Set fs.inotify.max_user_instances to 8192 in worker nodes on AWS
+* Expose the parameters of the cluster autscaler's Helm chart in Terraform sources
 
 Changed
 -
 
-* Rootless docker images for ArmoniK
+* Rootless docker images for ArmoniK components
 * Replace ports of ArmoniK components' containers from 80 to 1080
 * Refactoring tasks creation in ArmoniK Core
 * Update database scheme: replace sessions options from string to object, add creation date in the session object
 * Refactoring RequestProcessor
+* Improve error management in tryGetResult when tasks in error
+* Upgrade and replace tags "latest" of the infrastructure's docker images
+* Upgrade the version of hashicorp/aws to 4.18.0
+* Update Terraform sources of AWS ElastiCache to publish logs in AWS CloudWatch
+* Update Helm chart of ArmoniK's KEDA HPA
 
 Fixed
 -
 
 * Fix GetTaskStatus exception when task ID does not exist
+* Reduce crashes of polling-agent
+* Remove from the queue messages of tasks that no longer exist in the database MongoDB
+* fix the exception MongoDBWaitQueueFullException : the wait queue for acquiring a connection is full
+* Fix errors occurring with large number of subtasks
+* Reconfigure inputs of fluent-bit to eliminate the error on SQlite DB
+
+Critical fixes
+-
+
+* If You get an issue during a deployment on the AWS EKS of type:
+  ```bash
+  Error: Kubernetes cluster unreachable: exec plugin: invalid apiVersion "client.authentication.k8s.io/v1alpha1"
+  ```
+  You have two options to fix this issue:
+    * **Option 1:** Update AWS CLI
+      ```bash
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      sudo ./aws/install --update
+      aws eks update-kubeconfig --region ${AWS_REGION}  --name ${EKS_CLUSTER_NAME}
+      ```
+    * **Option 2:** Replace `apiVersion: client.authentication.k8s.io/v1alpha1`
+      by `client.authentication.k8s.io/v1beta1` in your `~/.kube/config`
+      ```bash
+      diff ~/.kube/config ~/.kube/config-backup
+      <             apiVersion: client.authentication.k8s.io/v1beta1
+      ---
+      >             apiVersion: client.authentication.k8s.io/v1alpha1
+      ```
 
 ## [v2.7.3](https://github.com/aneoconsulting/armonik/tree/v2.7.3) (2022-06-09)
 
