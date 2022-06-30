@@ -103,7 +103,7 @@ ecr = {
     {
       name  = "fluent-bit"
       image = "fluent/fluent-bit"
-      tag   = "1.9.4"
+      tag   = "1.9.5"
     },
     {
       name  = "node-exporter"
