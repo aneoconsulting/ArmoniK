@@ -27,6 +27,8 @@ server {
     proxy_hide_header X-Certificate-Client-CN;
     proxy_hide_header X-Certificate-Client-Fingerprint;
 %{   endif ~}
+    ssl_protocols TLSv1.3;
+    ssl_ciphers EECDH+AESGCM:EECDH+AES256;
 %{ else ~}
     listen 8080;
     listen [::]:8080;
