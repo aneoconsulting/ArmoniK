@@ -69,7 +69,7 @@ resource "kubernetes_deployment" "compute_plane" {
             || var.compute_plane[count.index].polling_agent.requests.memory != "" ? [1] : [])
             content {
               limits   = {
-       cpu    = var.compute_plane[count.index].polling_agent.limits.cpu
+                cpu    = var.compute_plane[count.index].polling_agent.limits.cpu
                 memory = var.compute_plane[count.index].polling_agent.limits.memory
               }
               requests = {
