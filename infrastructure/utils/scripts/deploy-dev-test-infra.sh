@@ -528,10 +528,12 @@ function main() {
       shift
       ;;
     --with-tls)
+      INGRESS=None
       WITH_TLS=true
       shift
       ;;
     --with-mtls)
+      INGRESS=None
       WITH_TLS=true
       WITH_MTLS=true
       shift

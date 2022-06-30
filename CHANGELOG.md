@@ -13,6 +13,8 @@ Changed
 -
 
 * Upgrade tag of Fluent-bit to 1.9.5
+* Update kubeconfig API version to `client.authentication.k8s.io/v1beta1`
+* Upgrade AWS EKS version from 1.21 to 1.22
 * Removed unsecure protocols and ciphers in nginx
 * Upgraded nginx from 1.22.0 to 1.23.0
 
