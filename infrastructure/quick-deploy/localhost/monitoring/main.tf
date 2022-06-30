@@ -1,17 +1,18 @@
 # Seq
 module "seq" {
-  count         = (local.seq_enabled ? 1 : 0)
-  source        = "../../../modules/monitoring/seq"
-  namespace     = var.namespace
-  service_type  = local.seq_service_type
-  port          = local.seq_port
-  node_selector = local.seq_node_selector
-  docker_image  = {
+  count          = (local.seq_enabled ? 1 : 0)
+  source         = "../../../modules/monitoring/seq"
+  namespace      = var.namespace
+  service_type   = local.seq_service_type
+  port           = local.seq_port
+  node_selector  = local.seq_node_selector
+  docker_image   = {
     image              = local.seq_image
     tag                = local.seq_tag
     image_pull_secrets = local.seq_image_pull_secrets
   }
-  working_dir   = "${path.root}/../../.."
+  working_dir    = "${path.root}/../../.."
+  authentication = var.authentication
 }
 
 # node exporter
@@ -75,6 +76,7 @@ module "grafana" {
     image_pull_secrets = local.grafana_image_pull_secrets
   }
   working_dir    = "${path.root}/../../.."
+  authentication = var.authentication
   depends_on     = [module.prometheus]
 }
 
