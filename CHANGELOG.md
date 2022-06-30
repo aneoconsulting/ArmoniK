@@ -15,6 +15,7 @@ Changed
 * Upgrade tag of Fluent-bit to 1.9.5
 * Removed unsecure protocols and ciphers in nginx
 * Upgraded nginx from 1.22.0 to 1.23.0
+* Ignore route logs at `Information` logging level
 
 Fixed
 -
