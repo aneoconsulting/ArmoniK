@@ -69,7 +69,7 @@ resource "kubernetes_deployment" "compute_plane" {
             || var.compute_plane[count.index].polling_agent.requests.memory != "" ? [1] : [])
             content {
               limits   = {
-                cpu    = var.compute_plane[count.index].polling_agent.limits.cpu
+       cpu    = var.compute_plane[count.index].polling_agent.limits.cpu
                 memory = var.compute_plane[count.index].polling_agent.limits.memory
               }
               requests = {
@@ -112,6 +112,11 @@ resource "kubernetes_deployment" "compute_plane" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map.polling_agent_config.metadata.0.name
+            }
+          }
+          env_from {
+            config_map_ref {
+              name = kubernetes_config_map.log_config.metadata.0.name
             }
           }
           dynamic env {
@@ -248,6 +253,11 @@ resource "kubernetes_deployment" "compute_plane" {
             env_from {
               config_map_ref {
                 name = kubernetes_config_map.worker_config.metadata.0.name
+              }
+            }
+            env_from {
+              config_map_ref {
+                name = kubernetes_config_map.log_config.metadata.0.name
               }
             }
             volume_mount {
