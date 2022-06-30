@@ -57,6 +57,13 @@ resource "kubernetes_deployment" "seq" {
             name  = "ACCEPT_EULA"
             value = "Y"
           }
+          dynamic env {
+            for_each = var.authentication ? [true] : []
+            content {
+              name  = "SEQ_FIRSTRUN_ADMINPASSWORDHASH"
+              value = "FMB0CwtRt8CwkiSDebSmdJszUzK9B52DV19CKdpFyGtrGRkBrQ=="
+            }
+          }
           port {
             name           = "ingestion"
             container_port = 5341
