@@ -17,6 +17,7 @@ Changed
 * Upgrade AWS EKS version from 1.21 to 1.22
 * Removed unsecure protocols and ciphers in nginx
 * Upgraded nginx from 1.22.0 to 1.23.0
+* Ignore route logs at `Information` logging level
 
 Fixed
 -
