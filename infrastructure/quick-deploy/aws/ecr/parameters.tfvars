@@ -113,7 +113,7 @@ ecr = {
     {
       name  = "nginx"
       image = "nginxinc/nginx-unprivileged"
-      tag   = "1.22.0"
+      tag   = "1.23.0"
     },
     {
       name  = "keda"
