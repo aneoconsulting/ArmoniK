@@ -8,6 +8,8 @@ Added
 -
 
 * Login forms in Seq/Grafana are now optional
+* Show data about sessions and tasks on AdminGUI
+* Auto upgrade version of AdminGUI when a release is created
 
 Changed
 -
