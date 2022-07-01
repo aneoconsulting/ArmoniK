@@ -10,21 +10,32 @@ Added
 * Login forms in Seq/Grafana are now optional
 * Show data about sessions and tasks on AdminGUI
 * Auto upgrade version of AdminGUI when a release is created
+* New management of Result status to check task error or result error
+* Improve performance of TryGetResult
+* Mark result status aborted when tasks are canceling
 
 Changed
 -
 
-* Upgrade tag of Fluent-bit to 1.9.5
+* Upgrade tag of Fluent-bit from 1.9.4 to 1.9.5
 * Update kubeconfig API version to `client.authentication.k8s.io/v1beta1`
 * Upgrade AWS EKS version from 1.21 to 1.22
 * Removed unsecure protocols and ciphers in nginx
 * Upgraded nginx from 1.22.0 to 1.23.0
 * Ignore route logs at `Information` logging level
+* Add new error management in samples
+* Add random failure tests in samples
+* Add time duration parameter for workload in task
 
 Fixed
 -
 
-* Enable IMDSv2 only on EC2 of EKS worker nodes
+* Enable IMDSv2 only on EC2 of EKS worker nodes 
+* PollsterError : `Error with messageHandler null`
+* Cancel task also modifies task start date and end date 
+* Propagate failures from tasks to results
+* Polling agent looping on `Task {taskId} already acquired by {OtherOwnerPodId`
+* Polling agent crash at any error
 
 ## [v2.8.0](https://github.com/aneoconsulting/armonik/tree/v2.8.0) (2022-06-22)
 
