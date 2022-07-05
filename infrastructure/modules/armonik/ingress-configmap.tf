@@ -38,7 +38,7 @@ server {
 
     sendfile on;
 
-    location / {
+    location /admin {
       proxy_pass ${local.admin_app_url};
     }
 
