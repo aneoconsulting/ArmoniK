@@ -76,6 +76,13 @@ resource "kubernetes_deployment" "admin_gui" {
             value = local.control_plane_url
           }
           dynamic env {
+            for_each = (local.grafana_url != "" ? [1] : [])
+            content {
+              name  = "Grafana__Endpoint"
+              value = local.grafana_url
+            }
+          }
+          dynamic env {
             for_each = (local.seq_web_url != "" ? [1] : [])
             content {
               name  = "Seq__Endpoint"
@@ -212,6 +219,13 @@ resource "kubernetes_deployment" "admin_gui" {
           env {
             name  = "ControlPlane__Endpoint"
             value = local.control_plane_url
+          }
+          dynamic env {
+            for_each = (local.grafana_url != "" ? [1] : [])
+            content {
+              name  = "Grafana__Endpoint"
+              value = local.grafana_url
+            }
           }
           dynamic env {
             for_each = (local.seq_web_url != "" ? [1] : [])
