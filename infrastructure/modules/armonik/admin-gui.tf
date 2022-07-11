@@ -76,6 +76,13 @@ resource "kubernetes_deployment" "admin_gui" {
             value = local.control_plane_url
           }
           dynamic env {
+            for_each = (local.seq_web_url != "" ? [1] : [])
+            content {
+              name  = "Seq__Endpoint"
+              value = local.seq_web_url
+            }
+          }
+          dynamic env {
             for_each = (local.activemq_credentials_secret != "" ? [1] : [])
             content {
               name = "Amqp__User"
@@ -205,6 +212,13 @@ resource "kubernetes_deployment" "admin_gui" {
           env {
             name  = "ControlPlane__Endpoint"
             value = local.control_plane_url
+          }
+          dynamic env {
+            for_each = (local.seq_web_url != "" ? [1] : [])
+            content {
+              name  = "Seq__Endpoint"
+              value = local.seq_web_url
+            }
           }
           dynamic env {
             for_each = (local.activemq_credentials_secret != "" ? [1] : [])
