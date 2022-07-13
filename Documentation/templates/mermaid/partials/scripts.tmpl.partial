@@ -1,0 +1,21 @@
+<!-- Required styles -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" />
+<script type="text/javascript"
+        src="{{_rel}}styles/docfx.vendor.js"></script>
+<script type="text/javascript"
+        src="{{_rel}}styles/docfx.js"></script>
+<script type="text/javascript"
+        src="{{_rel}}styles/main.js"></script>
+<!-- Load v9.1.3 of Mermaid -->
+<!-- Hash obtained via https://www.srihash.org/ -->
+<script type="text/javascript"
+        src="https://unpkg.com/mermaid@9.1.3/dist/mermaid.min.js"
+        integrity="sha384-LnGjpNDrP4cp7MIk4CpRa/lPNclrf839ryYVFx1T1mPSV3RGAZ7nlBa7pqcyGY/K"
+        crossorigin="anonymous"></script>
+<!-- Initialize Mermaid -->
+<script>
+    mermaid.initialize({
+        startOnLoad: false
+    });
+    mermaid.init(undefined, ".lang-mermaid");
+</script>
