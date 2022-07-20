@@ -79,7 +79,8 @@ variable "control_plane" {
     image_pull_secrets = string
     node_selector      = any
     annotations        = any
-    annotations        = any
+    # KEDA scaler
+    hpa                = any
   })
 }
 
