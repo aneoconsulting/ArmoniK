@@ -38,7 +38,7 @@ control_plane = {
   }
   requests           = {
     cpu    = "200m"
-    memory = "256Mi"
+    memory = "500Mi"
   }
   image_pull_secrets = ""
   node_selector      = {}
