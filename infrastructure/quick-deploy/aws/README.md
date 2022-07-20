@@ -63,7 +63,7 @@ infrastructure:
 * [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) v1.23.6
 * [Helm](https://helm.sh/docs/intro/install/)
 * [Openssl](https://www.howtoforge.com/tutorial/how-to-install-openssl-from-source-on-linux/)
-* [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+* [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version 1.0.9 and later
 
 ## AWS credentials
 

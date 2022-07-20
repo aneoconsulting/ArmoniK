@@ -27,6 +27,8 @@ server {
     proxy_hide_header X-Certificate-Client-CN;
     proxy_hide_header X-Certificate-Client-Fingerprint;
 %{   endif ~}
+    ssl_protocols TLSv1.3;
+    ssl_ciphers EECDH+AESGCM:EECDH+AES256;
 %{ else ~}
     listen 8080;
     listen [::]:8080;
@@ -115,17 +117,19 @@ EOF
 }
 
 resource "kubernetes_config_map" "ingress" {
+  count = (var.ingress != null  ? 1 : 0)
   metadata {
     name      = "ingress-nginx"
     namespace = var.namespace
   }
-  data = {
+  data  = {
     "armonik.conf" = local.armonik_conf
   }
 }
 
 resource "local_file" "ingress_conf_file" {
-  content  = local.armonik_conf
-  filename = "${path.root}/generated/configmaps/ingress/armonik.conf"
+  count           = (var.ingress != null  ? 1 : 0)
+  content         = local.armonik_conf
+  filename        = "${path.root}/generated/configmaps/ingress/armonik.conf"
   file_permission = "0644"
 }

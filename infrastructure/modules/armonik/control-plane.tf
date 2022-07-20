@@ -98,6 +98,11 @@ resource "kubernetes_deployment" "control_plane" {
               name = kubernetes_config_map.core_config.metadata.0.name
             }
           }
+          env_from {
+            config_map_ref {
+              name = kubernetes_config_map.log_config.metadata.0.name
+            }
+          }
           dynamic env {
             for_each = (local.activemq_credentials_secret != "" ? [1] : [])
             content {

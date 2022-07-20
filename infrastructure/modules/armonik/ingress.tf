@@ -61,7 +61,7 @@ resource "kubernetes_deployment" "ingress" {
           }
           env_from {
             config_map_ref {
-              name = kubernetes_config_map.ingress.metadata.0.name
+              name = kubernetes_config_map.ingress.0.metadata.0.name
             }
           }
           volume_mount {
@@ -97,7 +97,7 @@ resource "kubernetes_deployment" "ingress" {
         volume {
           name = "ingress-nginx"
           config_map {
-            name     = kubernetes_config_map.ingress.metadata[0].name
+            name     = kubernetes_config_map.ingress.0.metadata[0].name
             optional = false
           }
         }

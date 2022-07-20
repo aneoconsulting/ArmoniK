@@ -114,6 +114,11 @@ resource "kubernetes_deployment" "compute_plane" {
               name = kubernetes_config_map.polling_agent_config.metadata.0.name
             }
           }
+          env_from {
+            config_map_ref {
+              name = kubernetes_config_map.log_config.metadata.0.name
+            }
+          }
           dynamic env {
             for_each = (local.activemq_credentials_secret != "" ? [1] : [])
             content {
@@ -248,6 +253,11 @@ resource "kubernetes_deployment" "compute_plane" {
             env_from {
               config_map_ref {
                 name = kubernetes_config_map.worker_config.metadata.0.name
+              }
+            }
+            env_from {
+              config_map_ref {
+                name = kubernetes_config_map.log_config.metadata.0.name
               }
             }
             volume_mount {

@@ -29,7 +29,7 @@ control_plane = {
   service_type       = "ClusterIP"
   replicas           = 1
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag                = "0.5.12"
+  tag                = "0.5.15"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -76,7 +76,7 @@ admin_gui = {
     name     = "admin-api"
     replicas = 1
     image    = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-api"
-    tag      = "sha-bc97e45"
+    tag      = "0.2.0"
     port     = 3333
     limits   = {
       cpu    = "1000m"
@@ -91,7 +91,7 @@ admin_gui = {
     name     = "admin-app"
     replicas = 1
     image    = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app"
-    tag      = "sha-bc97e45"
+    tag      = "0.2.0"
     port     = 1080
     limits   = {
       cpu    = "1000m"
@@ -122,7 +122,7 @@ compute_plane = [
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.5.12"
+      tag               = "0.5.15"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "1000m"
@@ -138,7 +138,7 @@ compute_plane = [
       {
         name              = "worker"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.5.10"
+        tag               = "0.6.2"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "1000m"
@@ -165,9 +165,10 @@ compute_plane = [
       }
       triggers          = [
         {
+          type        = "prometheus"
           metric_name = "armonik_tasks_queued"
           threshold   = "2"
-        }
+        },
       ]
     }
   }
@@ -180,7 +181,7 @@ ingress = {
   service_type       = "LoadBalancer"
   replicas           = 1
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/nginx"
-  tag                = "1.22.0"
+  tag                = "1.23.0"
   image_pull_policy  = "IfNotPresent"
   http_port          = 5000
   grpc_port          = 5001

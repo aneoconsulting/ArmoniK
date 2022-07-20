@@ -42,7 +42,7 @@ node_selector = { "grid/type" = "Operator" }
 # AWS EKS
 eks = {
   name                                  = "armonik-eks"
-  cluster_version                       = "1.21"
+  cluster_version                       = "1.22"
   cluster_endpoint_private_access       = true # vpc.enable_private_subnet
   cluster_endpoint_private_access_cidrs = []
   cluster_endpoint_private_access_sg    = []

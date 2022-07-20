@@ -22,6 +22,9 @@ WORKER_TAG=None
 HPA_MAX_REPLICAS=None
 HPA_MIN_REPLICAS=None
 HPA_IDLE_REPLICAS=None
+INGRESS=None
+WITH_TLS=false
+WITH_MTLS=false
 LOGGING_LEVEL="Information"
 HPA_TARGET_VALUE=None
 KEDA=""
@@ -143,6 +146,12 @@ EOF
   echo
   echo "   --hpa-target-value <TARGET_VALUE_FOR_HPA>"
   echo
+  echo "   --without-ingress"
+  echo
+  echo "   --with-tls"
+  echo
+  echo "   --with-mtls"
+  echo
   echo "   -c, --clean <Possible options below>"
   cat <<-EOF
   Where --clean should be :
@@ -221,6 +230,9 @@ prepare_armonik_parameters() {
     -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
     -kv compute_plane[*].hpa.triggers.threshold="${HPA_TARGET_VALUE}" \
     -kv logging_level="${LOGGING_LEVEL}" \
+    -kv ingress="${INGRESS}" \
+    -kv ingress.tls="${WITH_TLS}" \
+    -kv ingress.mtls="${WITH_MTLS}" \
     "${ARMONIK_PARAMETERS_FILE}" \
     "${GENERATED_ARMONIK_PARAMETERS_FILE}"
 }
@@ -509,6 +521,21 @@ function main() {
     --hpa-target-value)
       HPA_TARGET_VALUE="$2"
       shift
+      shift
+      ;;
+    --without-ingress)
+      INGRESS=null
+      shift
+      ;;
+    --with-tls)
+      INGRESS=None
+      WITH_TLS=true
+      shift
+      ;;
+    --with-mtls)
+      INGRESS=None
+      WITH_TLS=true
+      WITH_MTLS=true
       shift
       ;;
     --default)

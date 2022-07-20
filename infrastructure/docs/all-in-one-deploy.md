@@ -189,6 +189,24 @@ If You want to change logging level for ArmoniK components:
 ./deploy-dev-test-infra.sh -m deploy-all --logging-level <LOGGING_LEVEL_FOR_ARMONIK>
 ```
 
+If You want to activate the TLS:
+
+```bash
+./deploy-dev-test-infra.sh -m deploy-all --with-tls
+```
+
+If You want to activate the mTLS:
+
+```bash
+./deploy-dev-test-infra.sh -m deploy-all --with-mtls
+```
+
+If You want to deactivate the ingress with NGINX:
+
+```bash
+./deploy-dev-test-infra.sh -m deploy-all --without-nginx
+```
+
 ### [Return to the infrastructure main page](../README.md)
 
 ### [Return to the project main page](../../README.md)

@@ -48,32 +48,32 @@ ecr = {
     {
       name  = "armonik-control-plane"
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.5.12"
+      tag   = "0.5.15"
     },
     {
       name  = "armonik-polling-agent"
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.5.12"
+      tag   = "0.5.15"
     },
     {
       name  = "armonik-worker"
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.5.10"
+      tag   = "0.6.2"
     },
     {
       name  = "metrics-exporter"
       image = "dockerhubaneo/armonik_control_metrics"
-      tag   = "0.5.12"
+      tag   = "0.5.15"
     },
     {
       name  = "armonik-admin-api"
       image = "dockerhubaneo/armonik_admin_api"
-      tag   = "sha-bc97e45"
+      tag   = "0.2.0"
     },
     {
       name  = "armonik-admin-app"
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "sha-bc97e45"
+      tag   = "0.2.0"
     },
     {
       name  = "seq"
@@ -103,7 +103,7 @@ ecr = {
     {
       name  = "fluent-bit"
       image = "fluent/fluent-bit"
-      tag   = "1.9.4"
+      tag   = "1.9.5"
     },
     {
       name  = "node-exporter"
@@ -113,7 +113,7 @@ ecr = {
     {
       name  = "nginx"
       image = "nginxinc/nginx-unprivileged"
-      tag   = "1.22.0"
+      tag   = "1.23.0"
     },
     {
       name  = "keda"

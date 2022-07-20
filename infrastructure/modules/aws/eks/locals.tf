@@ -76,12 +76,16 @@ locals {
   eks_worker_group = concat([
   for index in range(0, length(var.eks_worker_groups)) :
   merge(var.eks_worker_groups[index], {
-    root_encrypted  = true
-    root_kms_key_id = var.eks.encryption_keys.ebs_kms_key_id
-    additional_userdata        = <<-EOT
+    root_encrypted                       = true
+    root_kms_key_id                      = var.eks.encryption_keys.ebs_kms_key_id
+    additional_userdata                  = <<-EOT
       echo fs.inotify.max_user_instances=8192 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
     EOT
-    tags            = [
+    metadata_http_endpoint               = "enabled"  # The state of the metadata service: enabled, disabled.
+    metadata_http_tokens                 = "required" # If session tokens are required: optional, required.
+    metadata_http_put_response_hop_limit = 2
+    # The desired HTTP PUT response hop limit for instance metadata requests.
+    tags                                 = [
       {
         key                 = "k8s.io/cluster-autoscaler/enabled"
         propagate_at_launch = true
@@ -102,8 +106,14 @@ locals {
   ], [
   for index in range(0, length(var.eks_operational_worker_groups)) :
   merge(var.eks_operational_worker_groups[index], {
-    root_encrypted  = true
-    root_kms_key_id = var.eks.encryption_keys.ebs_kms_key_id
+    root_encrypted                       = true
+    root_kms_key_id                      = var.eks.encryption_keys.ebs_kms_key_id
+    additional_userdata                  = <<-EOT
+      echo fs.inotify.max_user_instances=8192 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+    EOT
+    metadata_http_endpoint               = "enabled"  # The state of the metadata service: enabled, disabled.
+    metadata_http_tokens                 = "required" # If session tokens are required: optional, required.
+    metadata_http_put_response_hop_limit = 2
   })
   ])
 }
