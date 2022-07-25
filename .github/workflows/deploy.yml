@@ -31,6 +31,14 @@ jobs:
           echo "::set-output name=version::$VERSION"
           echo $VERSION
 
+  TestPullImage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get type of VM
+        run: |
+          docker pull ghcr.io/kedacore/keda:2.7.1
+          docker pull ghcr.io/kedacore/keda-metrics-apiserver:2.7.1
+
   AdminGUI:
     runs-on: ubuntu-latest
     steps:
