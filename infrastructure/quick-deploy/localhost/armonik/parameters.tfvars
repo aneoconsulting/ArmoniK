@@ -26,7 +26,7 @@ control_plane = {
   }
   requests           = {
     cpu    = "200m"
-    memory = "256Mi"
+    memory = "500Mi"
   }
   image_pull_secrets = ""
   node_selector      = {}
@@ -34,7 +34,7 @@ control_plane = {
   hpa                = {
     polling_interval  = 15
     cooldown_period   = 300
-    min_replica_count = 3
+    min_replica_count = 1
     max_replica_count = 5
     behavior          = {
       restore_to_original_replica_count = true
@@ -113,11 +113,11 @@ compute_plane = [
       tag               = "0.5.15"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "1000m"
+        cpu    = "2000m"
         memory = "2048Mi"
       }
       requests          = {
-        cpu    = "200m"
+        cpu    = "1000m"
         memory = "256Mi"
       }
     }
