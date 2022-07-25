@@ -8,6 +8,7 @@ Added
 Changed
 -
 * Updated Admin GUI to 0.3.0
+* Case insensitive match for grpc path
 
 Fixed
 -
