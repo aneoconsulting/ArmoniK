@@ -2,6 +2,16 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-07-01)
 
+Added
+-
+
+Changed
+-
+* Updated Admin GUI to 0.3.0
+
+Fixed
+-
+
 ## [v2.8.1](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-01)
 
 Added
