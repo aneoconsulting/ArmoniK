@@ -154,7 +154,6 @@ runs:
     - name: Deploy ArmoniK
       shell: bash
       run: |
-        set -ex
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         source envvars.sh
         if [ -z ${{ inputs.ingress }} ]; then
@@ -195,3 +194,4 @@ runs:
         make deploy-armonik PARAMETERS_FILE=${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
         kubectl describe po --selector="service=control-plane" -n armonik
         kubectl describe po --selector="service=compute-plane" -n armonik
+        kubectl logs --selector="service=compute-plane" -n armonik
