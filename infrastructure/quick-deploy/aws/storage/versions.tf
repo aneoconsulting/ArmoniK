@@ -14,11 +14,19 @@ terraform {
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.8.0"
+      version = "~> 2.7.1"
     }
     kubectl    = {
       source  = "gavinbunney/kubectl"
       version = "~> 1.14.0"
+    }
+    tls        = {
+      source  = "hashicorp/tls"
+      version = "~> 3.1.0"
+    }
+    pkcs12     = {
+      source  = "chilicat/pkcs12"
+      version = "~> 0.0.7"
     }
   }
 }

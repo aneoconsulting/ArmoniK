@@ -25,8 +25,8 @@ control_plane = {
     memory = "2048Mi"
   }
   requests           = {
-    cpu    = "200m"
-    memory = "256Mi"
+    cpu    = "50m"
+    memory = "500Mi"
   }
   image_pull_secrets = ""
   node_selector      = {}
@@ -34,7 +34,7 @@ control_plane = {
   hpa                = {
     polling_interval  = 15
     cooldown_period   = 300
-    min_replica_count = 3
+    min_replica_count = 1
     max_replica_count = 5
     behavior          = {
       restore_to_original_replica_count = true
@@ -49,11 +49,11 @@ control_plane = {
         metric_type = "Utilization"
         value       = "80"
       },
-      {
+      /*{
         type        = "memory"
         metric_type = "Utilization"
         value       = "80"
-      },
+      },*/
     ]
   }
 }
@@ -71,7 +71,7 @@ admin_gui = {
       memory = "1024Mi"
     }
     requests = {
-      cpu    = "100m"
+      cpu    = "50m"
       memory = "128Mi"
     }
   }
@@ -86,7 +86,7 @@ admin_gui = {
       memory = "1024Mi"
     }
     requests = {
-      cpu    = "100m"
+      cpu    = "50m"
       memory = "128Mi"
     }
   }
@@ -113,11 +113,11 @@ compute_plane = [
       tag               = "0.5.15"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "1000m"
+        cpu    = "2000m"
         memory = "2048Mi"
       }
       requests          = {
-        cpu    = "200m"
+        cpu    = "1000m"
         memory = "256Mi"
       }
     }
@@ -133,7 +133,7 @@ compute_plane = [
           memory = "1024Mi"
         }
         requests          = {
-          cpu    = "500m"
+          cpu    = "50m"
           memory = "512Mi"
         }
       }

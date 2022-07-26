@@ -1,6 +1,13 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-07-01)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-07-29)
+
+## [v2.8.2](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-29)
+
+Added
+-
+
+* Add HPA on ArmoniK control plane based on CPU and RAM utilization metrics
 
 Added
 -
@@ -41,9 +48,9 @@ Changed
 Fixed
 -
 
-* Enable IMDSv2 only on EC2 of EKS worker nodes 
+* Enable IMDSv2 only on EC2 of EKS worker nodes
 * PollsterError : `Error with messageHandler null`
-* Cancel task also modifies task start date and end date 
+* Cancel task also modifies task start date and end date
 * Propagate failures from tasks to results
 * Polling agent looping on `Task {taskId} already acquired by {OtherOwnerPodId`
 * Polling agent crash at any error

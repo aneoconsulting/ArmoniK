@@ -31,7 +31,8 @@
     "fileMetadataFiles": [],
     "template": [
       "default",
-      "templates/armonik"
+      "templates/armonik",
+      "templates/mermaid"
     ],
     "postProcessors": [],
     "markdownEngineName": "markdig",
