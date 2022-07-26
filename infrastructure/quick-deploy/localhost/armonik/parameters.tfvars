@@ -49,11 +49,11 @@ control_plane = {
         metric_type = "Utilization"
         value       = "80"
       },
-      /*{
+      {
         type        = "memory"
         metric_type = "Utilization"
         value       = "80"
-      },*/
+      },
     ]
   }
 }

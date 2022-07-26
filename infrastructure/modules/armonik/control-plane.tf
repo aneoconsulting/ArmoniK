@@ -18,15 +18,16 @@ resource "kubernetes_deployment" "control_plane" {
     }
     template {
       metadata {
-        name      = "control-plane"
-        namespace = var.namespace
-        labels    = {
+        name        = "control-plane"
+        namespace   = var.namespace
+        labels      = {
           app     = "armonik"
           service = "control-plane"
         }
         annotations = local.control_plane_annotations
       }
       spec {
+        node_selector  = local.control_plane_node_selector
         dynamic toleration {
           for_each = (local.control_plane_node_selector != {} ? [
           for index in range(0, length(local.control_plane_node_selector_keys)) : {
@@ -91,7 +92,8 @@ resource "kubernetes_deployment" "control_plane" {
             period_seconds        = 3
             timeout_seconds       = 1
             success_threshold     = 1
-            failure_threshold     = 20 # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
+            failure_threshold     = 20
+            # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
           }
           env_from {
             config_map_ref {

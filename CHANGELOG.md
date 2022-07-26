@@ -8,6 +8,7 @@ Added
 -
 
 * Add HPA on ArmoniK control plane based on CPU and RAM utilization metrics
+* Add node selector on all deployments (ArmoniK and Helm charts for infrastructure)
 
 ## [v2.8.1](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-01)
 

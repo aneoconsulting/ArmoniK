@@ -29,6 +29,7 @@ resource "kubernetes_deployment" "grafana" {
         }
       }
       spec {
+        node_selector = var.node_selector
         dynamic toleration {
           for_each = (var.node_selector != {} ? [
           for index in range(0, length(local.node_selector_keys)) : {
