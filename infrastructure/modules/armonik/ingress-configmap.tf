@@ -38,16 +38,22 @@ server {
 
     sendfile on;
 
-    location / {
-      proxy_pass ${local.admin_app_url};
+    location = / {
+        rewrite ^ $scheme://$http_host/admin/ permanent;
+    }
+    location = /admin {
+        rewrite ^ $scheme://$http_host/admin/ permanent;
+    }
+    location /admin/ {
+        proxy_pass ${local.admin_app_url};
     }
 
     location /api {
-      proxy_pass ${local.admin_api_url};
+        proxy_pass ${local.admin_api_url};
     }
 
 
-    location /ArmoniK. {
+    location ~* ^/armonik\. {
 %{ if var.ingress != null ? var.ingress.mtls : false ~}
         grpc_set_header X-Certificate-Client-CN $ssl_client_s_dn_cn;
         grpc_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
@@ -67,7 +73,10 @@ server {
     }
 
 %{ if local.seq_web_url != "" ~}
-    location /seq {
+    location = /seq {
+        rewrite ^ $scheme://$http_host/seq/ permanent;
+    }
+    location /seq/ {
 %{ if var.ingress != null ? var.ingress.mtls : false ~}
         proxy_set_header X-Certificate-Client-CN $ssl_client_s_dn_cn;
         proxy_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
@@ -82,7 +91,7 @@ server {
     }
 %{ endif ~}
 %{ if local.grafana_url != "" ~}
-    location /grafana {
+    location = /grafana {
         rewrite ^ $scheme://$http_host/grafana/ permanent;
     }
     location /grafana/ {

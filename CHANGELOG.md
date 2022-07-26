@@ -9,6 +9,15 @@ Added
 
 * Add HPA on ArmoniK control plane based on CPU and RAM utilization metrics
 
+Changed
+-
+
+* Updated Admin GUI to 0.3.0
+* Case insensitive match for grpc path
+
+Fixed
+-
+
 ## [v2.8.1](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-01)
 
 Added
