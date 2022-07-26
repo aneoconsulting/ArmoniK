@@ -25,7 +25,7 @@ control_plane = {
     memory = "2048Mi"
   }
   requests           = {
-    cpu    = "200m"
+    cpu    = "50m"
     memory = "500Mi"
   }
   image_pull_secrets = ""
@@ -49,11 +49,11 @@ control_plane = {
         metric_type = "Utilization"
         value       = "80"
       },
-      {
+      /*{
         type        = "memory"
         metric_type = "Utilization"
         value       = "80"
-      },
+      },*/
     ]
   }
 }
@@ -71,7 +71,7 @@ admin_gui = {
       memory = "1024Mi"
     }
     requests = {
-      cpu    = "100m"
+      cpu    = "50m"
       memory = "128Mi"
     }
   }
@@ -86,7 +86,7 @@ admin_gui = {
       memory = "1024Mi"
     }
     requests = {
-      cpu    = "100m"
+      cpu    = "50m"
       memory = "128Mi"
     }
   }
@@ -133,7 +133,7 @@ compute_plane = [
           memory = "1024Mi"
         }
         requests          = {
-          cpu    = "500m"
+          cpu    = "50m"
           memory = "512Mi"
         }
       }
