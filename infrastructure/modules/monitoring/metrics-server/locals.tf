@@ -17,4 +17,8 @@ locals {
     }
     ]
   }
+
+  default_args = {
+    defaultArgs = var.default_args
+  }
 }

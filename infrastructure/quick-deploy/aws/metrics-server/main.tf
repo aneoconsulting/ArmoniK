@@ -8,4 +8,6 @@ module "metrics_server" {
   }
   image_pull_secrets = local.image_pull_secrets
   node_selector      = local.node_selector
+  default_args       = local.default_args
+  host_network       = local.host_network
 }

@@ -24,3 +24,15 @@ variable "node_selector" {
   description = "Node selector for metrics server"
   type        = any
 }
+
+# Default args
+variable "default_args" {
+  description = "Default args for metrics server"
+  type        = list(string)
+}
+
+# Host network
+variable "host_network" {
+  description = "Host network for metrics server"
+  type        = bool
+}
