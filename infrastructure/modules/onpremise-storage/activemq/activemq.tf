@@ -30,6 +30,7 @@ resource "kubernetes_deployment" "activemq" {
         }
       }
       spec {
+        node_selector = var.activemq.node_selector
         dynamic toleration {
           for_each = (var.activemq.node_selector != {} ? [
           for index in range(0, length(local.node_selector_keys)) : {

@@ -8,6 +8,8 @@ Added
 -
 
 * Add HPA on ArmoniK control plane based on CPU and RAM utilization metrics
+* Add node selector on all deployments (ArmoniK and Helm charts for infrastructure)
+* Add logs of metrics exporter, MongoDB, NGINX, and Keda in CloudWatch via Fluent-bit
 
 Changed
 -

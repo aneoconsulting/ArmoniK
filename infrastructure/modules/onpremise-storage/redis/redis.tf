@@ -28,6 +28,7 @@ resource "kubernetes_deployment" "redis" {
         }
       }
       spec {
+        node_selector = var.redis.node_selector
         dynamic toleration {
           for_each = (var.redis.node_selector != {} ? [
           for index in range(0, length(local.node_selector_keys)) : {

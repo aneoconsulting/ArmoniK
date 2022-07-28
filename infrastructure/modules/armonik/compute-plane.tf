@@ -28,6 +28,7 @@ resource "kubernetes_deployment" "compute_plane" {
         annotations = local.compute_plane_annotations[count.index]
       }
       spec {
+        node_selector                    = local.compute_plane_node_selector[count.index]
         dynamic toleration {
           for_each = (local.compute_plane_node_selector[count.index] != {} ? [
           for index in range(0, length(local.compute_plane_node_selector_keys[count.index])) : {
@@ -102,7 +103,8 @@ resource "kubernetes_deployment" "compute_plane" {
             period_seconds        = 3
             timeout_seconds       = 1
             success_threshold     = 1
-            failure_threshold     = 20 # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
+            failure_threshold     = 20
+            # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
           }
           env_from {
             config_map_ref {
