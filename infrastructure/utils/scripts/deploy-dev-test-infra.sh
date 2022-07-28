@@ -32,10 +32,12 @@ STORAGE_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/storage/parameters.tfvars
 MONITORING_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/monitoring/parameters.tfvars"
 ARMONIK_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/armonik/parameters.tfvars"
 KEDA_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/keda/parameters.tfvars"
+METRICS_SERVER_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/metrics-server/parameters.tfvars"
 GENERATED_STORAGE_PARAMETERS_FILE="${BASEDIR}/storage-parameters.tfvars.json"
 GENERATED_MONITORING_PARAMETERS_FILE="${BASEDIR}/monitoring-parameters.tfvars.json"
 GENERATED_ARMONIK_PARAMETERS_FILE="${BASEDIR}/armonik-parameters.tfvars.json"
 GENERATED_KEDA_PARAMETERS_FILE="${BASEDIR}/keda-parameters.tfvars.json"
+GENERATED_METRICS_SERVER_PARAMETERS_FILE="${BASEDIR}/keda-parameters.tfvars.json"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -95,21 +97,24 @@ usage() {
   echo "   -m, --mode <Possible options below>"
   cat <<-EOF
   Where --mode should be :
-        deploy-storage      : To deploy Storage independently on master machine. Available (Cluster or single node)
-        deploy-monitoring   : To deploy monitoring independently on master machine. Available (Cluster or single node)
-        deploy-armonik      : To deploy ArmoniK on master machine. Available (Cluster or single node)
-        deploy-keda         : To deploy KEDA on master machine. Available (Cluster or single node)
-        deploy-all          : To deploy Storage, Monitoring and ArmoniK
-        redeploy-storage    : To REdeploy storage
-        redeploy-monitoring : To REdeploy monitoring
-        redeploy-armonik    : To REdeploy ArmoniK
-        redeploy-keda       : To REdeploy KEDA
-        redeploy-all        : To REdeploy storage, monitoring and ArmoniK
-        destroy-storage     : To destroy storage deployment only
-        destroy-monitoring  : To destroy monitoring deployment only
-        destroy-armonik     : To destroy Armonik deployment only
-        destroy-keda        : To destroy KEDA deployment only
-        destroy-all         : To destroy all storage, monitoring and ArmoniK in the same command
+        deploy-storage          : To deploy Storage independently on master machine. Available (Cluster or single node)
+        deploy-monitoring       : To deploy monitoring independently on master machine. Available (Cluster or single node)
+        deploy-armonik          : To deploy ArmoniK on master machine. Available (Cluster or single node)
+        deploy-keda             : To deploy KEDA on master machine. Available (Cluster or single node)
+        deploy-metrics-server   : To deploy Metrics server on master machine. Available (Cluster or single node)
+        deploy-all              : To deploy Storage, Monitoring and ArmoniK
+        redeploy-storage        : To REdeploy storage
+        redeploy-monitoring     : To REdeploy monitoring
+        redeploy-armonik        : To REdeploy ArmoniK
+        redeploy-keda           : To REdeploy KEDA
+        redeploy-metrics-server : To REdeploy Metrics server
+        redeploy-all            : To REdeploy storage, monitoring and ArmoniK
+        destroy-storage         : To destroy storage deployment only
+        destroy-monitoring      : To destroy monitoring deployment only
+        destroy-armonik         : To destroy Armonik deployment only
+        destroy-keda            : To destroy KEDA deployment only
+        destroy-metrics-server  : To destroy Metrics server deployment only
+        destroy-all             : To destroy all storage, monitoring and ArmoniK in the same command
 EOF
   echo "   -n, --namespace <NAMESPACE>"
   echo
@@ -155,11 +160,12 @@ EOF
   echo "   -c, --clean <Possible options below>"
   cat <<-EOF
   Where --clean should be :
-        storage      : Clean generated files for storage
-        monitoring   : Clean generated files for monitoring
-        armonik      : Clean generated files for armonik
-        keda         : Clean generated files for keda
-        all          : Clean all generated
+        storage        : Clean generated files for storage
+        monitoring     : Clean generated files for monitoring
+        armonik        : Clean generated files for armonik
+        keda           : Clean generated files for keda
+        metrics-server : Clean generated files for keda
+        all            : Clean all generated
 EOF
   exit 1
 }
@@ -171,6 +177,7 @@ set_envvars() {
   export ARMONIK_FILE_STORAGE_FILE="${SHARED_STORAGE_TYPE}"
   export ARMONIK_FILE_SERVER_IP="${SERVER_NFS_IP}"
   export KEDA_KUBERNETES_NAMESPACE="default"
+  export METRICS_SERVER_KUBERNETES_NAMESPACE="kube-system"
 }
 
 # Create shared storage
@@ -244,6 +251,13 @@ prepare_keda_parameters() {
     "${GENERATED_KEDA_PARAMETERS_FILE}"
 }
 
+# Prepare metrics server parameters
+prepare_metrics_server_parameters() {
+  python3 "${MODIFY_PARAMETERS_SCRIPT}" \
+    "${METRICS_SERVER_PARAMETERS_FILE}" \
+    "${GENERATED_METRICS_SERVER_PARAMETERS_FILE}"
+}
+
 # Deploy storage
 deploy_storage() {
   # Prepare storage parameters
@@ -277,7 +291,6 @@ deploy_armonik() {
 # Deploy KEDA
 deploy_keda() {
   if [ $(check_keda_instance) -eq 0 ]; then
-    # Prepare armonik parameters
     prepare_keda_parameters
     cd "${SOURCE_CODES_LOCALHOST_DIR}"
     echo "Deploying KEDA..."
@@ -285,6 +298,13 @@ deploy_keda() {
   else
     echo "Keda is already deployed"
   fi
+}
+
+# Deploy Metrics server
+deploy_metrics_server() {
+  prepare_metrics_server_parameters
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  make deploy-metrics-server PARAMETERS_FILE="${GENERATED_METRICS_SERVER_PARAMETERS_FILE}"
 }
 
 # Deploy storage, monitoring and ArmoniK
@@ -335,6 +355,16 @@ destroy_keda() {
   make destroy-keda PARAMETERS_FILE="${GENERATED_KEDA_PARAMETERS_FILE}"
 }
 
+# Destroy Metrics server
+destroy_metrics_server() {
+  if [ ! -f "${GENERATED_METRICS_SERVER_PARAMETERS_FILE}" ]; then
+    prepare_metrics_server_parameters
+  fi
+
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  make destroy-metrics-server PARAMETERS_FILE="${GENERATED_METRICS_SERVER_PARAMETERS_FILE}"
+}
+
 # Destroy storage, monitoring and ArmoniK
 destroy_all() {
   destroy_armonik
@@ -371,6 +401,13 @@ redeploy_keda() {
   deploy_keda
 }
 
+# Redeploy Metrics server
+redeploy_metrics_server() {
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  destroy_metrics_server
+  deploy_metrics_server
+}
+
 # Redeploy storage, monitoring and ArmoniK
 redeploy_all() {
   destroy_all
@@ -403,6 +440,12 @@ clean_keda() {
   cd "${SOURCE_CODES_LOCALHOST_DIR}"
   make clean-keda
   rm -f "${GENERATED_KEDA_PARAMETERS_FILE}"
+}
+# Clean Metrics server
+clean_metrics_server() {
+  cd "${SOURCE_CODES_LOCALHOST_DIR}"
+  make clean-metrics-server
+  rm -f "${GENERATED_METRICS_SERVER_PARAMETERS_FILE}"
 }
 
 # Clean storage, monitoring and ArmoniK
@@ -561,6 +604,9 @@ function main() {
   elif [ "${CLEAN}" == "keda" ]; then
     clean_kda
     exit
+  elif [ "${CLEAN}" == "metrics-server" ]; then
+    clean_metrics_server
+    exit
   elif [ "${CLEAN}" == "all" ]; then
     clean_all
     exit
@@ -591,6 +637,8 @@ function main() {
     deploy_armonik
   elif [ "${MODE}" == "deploy-keda" ]; then
     deploy_keda
+  elif [ "${MODE}" == "deploy-metrics-server" ]; then
+    deploy_metrics_server
   elif [ "${MODE}" == "deploy-all" ]; then
     deploy_all
   elif [ "${MODE}" == "redeploy-storage" ]; then
@@ -601,6 +649,8 @@ function main() {
     redeploy_armonik
   elif [ "${MODE}" == "redeploy-keda" ]; then
     redeploy_keda
+  elif [ "${MODE}" == "redeploy-metrics-server" ]; then
+    redeploy_metrics_server
   elif [ "${MODE}" == "redeploy-all" ]; then
     redeploy_all
   elif [ "${MODE}" == "destroy-storage" ]; then
@@ -611,6 +661,8 @@ function main() {
     destroy_armonik
   elif [ "${MODE}" == "destroy-keda" ]; then
     destroy_keda
+  elif [ "${MODE}" == "destroy-metrics-server" ]; then
+    destroy_metrics_server
   elif [ "${MODE}" == "destroy-all" ]; then
     destroy_all
   else
