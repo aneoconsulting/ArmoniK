@@ -1,4 +1,4 @@
- Table of contents
+Table of contents
 
 - [Introduction](#introduction)
 - [Prerequisites](#prerequisites)
@@ -7,6 +7,7 @@
 - [Deploy](#deploy)
     - [Kubernetes namespace](#kubernetes-namespace)
     - [KEDA](#keda)
+    - [Metrics server](#metrics-server)
     - [Storage](#storage)
     - [Monitoring](#monitoring)
     - [ArmoniK](#armonik)
@@ -27,15 +28,19 @@ The infrastructure is composed of:
 * Monitoring:
     * Fluent-bit
     * Grafana
+    * Keda
     * Metrics exporter
+    * Metrics server
+    * Node exporter
     * Prometheus
-    * Prometheus Adapter
     * Seq server for structured log data of ArmoniK
 * ArmoniK:
     * Control plane
     * Compute plane:
         * polling agent
         * workers
+    * Ingress
+    * Admin GUI
 
 # Prerequisites
 
@@ -77,7 +82,8 @@ export ARMONIK_KUBERNETES_NAMESPACE="armonik"
 export ARMONIK_SHARED_HOST_PATH="${HOME}/data"
 export ARMONIK_FILE_STORAGE_FILE="HostPath"
 export ARMONIK_FILE_SERVER_IP=""
-export KEDA_KUBERNETES_NAMESPACE="default"
+export KEDA_KUBERNETES_NAMESPACE=default
+export METRICS_SERVER_KUBERNETES_NAMESPACE=kube-system
 ```
 
 where:
@@ -87,6 +93,7 @@ where:
 - `ARMONIK_FILE_STORAGE_FILE`: is the type of the filesystem which can be one of `HostPath` or `NFS`
 - `ARMONIK_FILE_SERVER_IP`: is the IP of the network filesystem if `ARMONIK_SHARED_HOST_PATH=NFS`
 - `KEDA_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for [KEDA](https://keda.sh/)
+- `METRICS_SERVER_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for metrics server
 
 # Deploy
 
@@ -99,8 +106,10 @@ mkdir -p "${ARMONIK_SHARED_HOST_PATH}"
 
 ## Kubernetes namespace
 
-You create a Kubernetes namespace for ArmoniK and another for [KEDA](https://keda.sh/) with the names set in the environment
-variables`ARMONIK_KUBERNETES_NAMESPACE` and `KEDA_KUBERNETES_NAMESPACE`:
+You create a Kubernetes namespaces for ArmoniK with the name set in the environment
+variable`ARMONIK_KUBERNETES_NAMESPACE`, for KEDA with the name set in the environment
+variable`KEDA_KUBERNETES_NAMESPACE` and for Metrics server with the name set in the environment
+variable`METRICS_SERVER_KUBERNETES_NAMESPACE`:
 
 ```bash
 make create-namespace
@@ -119,6 +128,20 @@ make deploy-keda
 The Keda deployment generates an output file `keda/generated/keda-output.json`.
 
 **NOTE:** Please note that KEDA must be deployed only once on the same Kubernetes cluster.
+
+## Metrics server
+
+The parameters of Metrics server are defined in [metrics-server/parameters.tfvars](metrics-server/parameters.tfvars).
+
+Execute the following command to install metrics server:
+
+```bash
+make deploy-metrics-server
+```
+
+The metrics server deployment generates an output file `metrics-server/generated/metrics-server-output.json`.
+
+**NOTE:** Please note that metrics server must be deployed only ONCE on the same Kubernetes cluster.
 
 ## Storage
 
@@ -230,7 +253,6 @@ the script PowerShell in [Script PowerShell all-in-one](../../docs/all-in-one-de
 After the deployment, connect to the Seq webserver by using `seq` url retrieved from the Terraform
 outputs `armonik/generated/armonik-output.json`, example:
 
-
 ```bash
 http://192.168.213.99:5000/seq
 ```
@@ -253,6 +275,8 @@ or execute the following commands in this order:
 make destroy-armonik 
 make destroy-monitoring 
 make destroy-storage 
+make destroy-metrics-server
+make destroy-keda
 ```
 
 To clean-up and delete all generated files, You execute:
@@ -267,6 +291,8 @@ or:
 make clean-armonik 
 make clean-monitoring 
 make clean-aws-storage 
+make clean-metrics-server
+make clean-keda
 ``` 
 
 ### [Return to the infrastructure main page](../../README.md)

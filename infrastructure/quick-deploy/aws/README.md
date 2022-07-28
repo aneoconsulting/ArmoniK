@@ -206,8 +206,9 @@ The EKS deployment generates an output file `eks/generated/eks-output.json`.
 ### Create Kubernetes namespace
 
 After the EKS deployment, You create a Kubernetes namespaces for ArmoniK with the name set in the environment
-variable`ARMONIK_KUBERNETES_NAMESPACE` and for KEDA with the name set in the environment
-variable`KEDA_KUBERNETES_NAMESPACE`:
+variable`ARMONIK_KUBERNETES_NAMESPACE`, for KEDA with the name set in the environment
+variable`KEDA_KUBERNETES_NAMESPACE` and for Metrics server with the name set in the environment
+variable`METRICS_SERVER_KUBERNETES_NAMESPACE`:
 
 ```bash
 make create-namespace
