@@ -12,7 +12,8 @@
     - [AWS ECR](#aws-ecr)
     - [AWS EKS](#aws-eks)
     - [KEDA](#keda)
-    - [AWS storage](#aws-storage)
+    - [Metrics server](#metrics-server)
+    - [Storage](#storage)
     - [Monitoring](#monitoring)
 - [Deploy ArmoniK](#deploy-armonik)
 - [Clean-up](#clean-up)
@@ -38,15 +39,19 @@ The infrastructure is composed of:
     * AWS CloudWatch
     * Fluent-bit
     * Grafana
+    * Keda
     * Metrics exporter
+    * Metrics server
+    * Node exporter
     * Prometheus
-    * Prometheus adapter
     * Seq server for structured log data of ArmoniK
 * ArmoniK:
     * Control plane
     * Compute plane:
         * polling agent
         * workers
+    * Ingress
+    * Admin GUI
 
 # Prerequisites
 
@@ -118,7 +123,8 @@ export ARMONIK_REGION=eu-west-3
 export ARMONIK_SUFFIX=main
 export ARMONIK_BUCKET_NAME=armonik-tfstate
 export ARMONIK_KUBERNETES_NAMESPACE=armonik
-export KEDA_KUBERNETES_NAMESPACE="default"
+export KEDA_KUBERNETES_NAMESPACE=default
+export METRICS_SERVER_KUBERNETES_NAMESPACE=kube-system
 ```
 
 where:
@@ -129,6 +135,7 @@ where:
 - `ARMONIK_BUCKET_NAME`: is the name of S3 bucket in which `.tfsate` will be safely stored
 - `ARMONIK_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for ArmoniK
 - `KEDA_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for [KEDA](https://keda.sh/)
+- `METRICS_SERVER_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for metrics server
 
 **Warning:** `ARMONIK_SUFFIX` must be *UNIQUE* to allow resources to have unique name in AWS
 
@@ -220,7 +227,21 @@ The Keda deployment generates an output file `keda/generated/keda-output.json`.
 
 **NOTE:** Please note that KEDA must be deployed only ONCE on the same Kubernetes cluster.
 
-## AWS storage
+## Metrics server
+
+The parameters of Metrics server are defined in [metrics-server/parameters.tfvars](metrics-server/parameters.tfvars).
+
+Execute the following command to install metrics server:
+
+```bash
+make deploy-metrics-server
+```
+
+The metrics server deployment generates an output file `metrics-server/generated/metrics-server-output.json`.
+
+**NOTE:** Please note that metrics server must be deployed only ONCE on the same Kubernetes cluster.
+
+## Storage
 
 You need to create AWS storage for ArmoniK which are:
 
@@ -234,13 +255,13 @@ The parameters of each storage are defined in [storage/parameters.tfvars](storag
 Execute the following command to create the storage:
 
 ```bash
-make deploy-aws-storage
+make deploy-storage
 ```
 
 **or:**
 
 ```bash
-make deploy-aws-storage \
+make deploy-storage \
   VPC_PARAMETERS_FILE=<path-to-vpc-parameters> \
   EKS_PARAMETERS_FILE=<path-to-eks-parameters>
 ```
@@ -344,7 +365,9 @@ make destroy-all
 ```bash
 make destroy-armonik 
 make destroy-monitoring 
-make destroy-aws-storage 
+make destroy-storage 
+make destroy-metrics-server
+make destroy-keda
 make destroy-eks 
 make destroy-vpc 
 make destroy-ecr
@@ -361,7 +384,9 @@ make clean-all
 ```bash
 make clean-armonik 
 make clean-monitoring 
-make clean-aws-storage 
+make clean-storage 
+make clean-metrics-server
+make clean-keda
 make clean-eks 
 make clean-vpc 
 make clean-ecr

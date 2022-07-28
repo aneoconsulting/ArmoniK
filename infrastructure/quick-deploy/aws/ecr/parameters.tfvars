@@ -101,6 +101,11 @@ ecr = {
       tag   = "v1.15.0"
     },
     {
+      name  = "metrics-server"
+      image = "k8s.gcr.io/metrics-server/metrics-server"
+      tag   = "v0.6.1"
+    },
+    {
       name  = "fluent-bit"
       image = "fluent/fluent-bit"
       tag   = "1.9.5"
