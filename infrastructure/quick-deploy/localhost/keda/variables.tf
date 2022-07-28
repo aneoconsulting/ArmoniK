@@ -23,7 +23,7 @@ variable "namespace" {
 variable "keda" {
   description = "Keda infos"
   type        = object({
-    docker_image  = object({
+    docker_image       = object({
       keda             = object({
         image = string
         tag   = string
@@ -33,6 +33,7 @@ variable "keda" {
         tag   = string
       })
     })
-    node_selector = any
+    image_pull_secrets = string
+    node_selector      = any
   })
 }

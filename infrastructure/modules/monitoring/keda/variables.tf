@@ -19,8 +19,14 @@ variable "docker_image" {
   })
 }
 
+# image pull secrets
+variable "image_pull_secrets" {
+  description = "image_pull_secrets for keda"
+  type        = string
+}
+
 # Node selector
 variable "node_selector" {
-  description = "Node selector for Prometheus adapter"
+  description = "Node selector for Keda"
   type        = any
 }

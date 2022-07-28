@@ -5,5 +5,6 @@ locals {
   keda_keda_tag               = try(var.keda.docker_image.keda.tag, "2.6.1")
   keda_metricsApiServer_image = try(var.keda.docker_image.metricsApiServer.image, "ghcr.io/kedacore/keda-metrics-apiserver")
   keda_metricsApiServer_tag   = try(var.keda.docker_image.metricsApiServer.tag, "2.6.1")
-  keda_node_selector          = try(var.keda.node_selector, "default")
+  keda_image_pull_secrets     = try(var.keda.image_pull_secrets, "")
+  keda_node_selector          = try(var.keda.node_selector, {})
 }
