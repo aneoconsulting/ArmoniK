@@ -10,22 +10,6 @@ Added
 * Add HPA on ArmoniK control plane based on CPU and RAM utilization metrics
 * Add node selector on all deployments (ArmoniK and Helm charts for infrastructure)
 * Add logs of metrics exporter, MongoDB, NGINX, and Keda in CloudWatch via Fluent-bit
-* Add code formatter
-* Add PayloadId to database
-
-Changed
--
-
-* Change default branch to main instead master
-* Migrate StreamWrapper to ArmoniK.Api
-* Split agent/worker bidirectional stream
-* ArmoniK.Api no longer a submodule
-
-Improved
--
-
-* Documentation: add mermaid support
-* Improve logging
 
 ## [v2.8.1](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-01)
 
