@@ -309,6 +309,7 @@ deploy_metrics_server() {
 
 # Deploy storage, monitoring and ArmoniK
 deploy_all() {
+  deploy_metrics_server
   deploy_keda
   deploy_storage
   deploy_monitoring
@@ -371,6 +372,7 @@ destroy_all() {
   destroy_monitoring
   destroy_storage
   destroy_keda
+  destroy_metrics_server
 }
 
 # Redeploy storage
@@ -454,6 +456,7 @@ clean_all() {
   clean_monitoring
   clean_storage
   clean_keda
+  clean_metrics_server
 }
 
 # Main
