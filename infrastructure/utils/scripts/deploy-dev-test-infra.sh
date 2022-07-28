@@ -37,7 +37,7 @@ GENERATED_STORAGE_PARAMETERS_FILE="${BASEDIR}/storage-parameters.tfvars.json"
 GENERATED_MONITORING_PARAMETERS_FILE="${BASEDIR}/monitoring-parameters.tfvars.json"
 GENERATED_ARMONIK_PARAMETERS_FILE="${BASEDIR}/armonik-parameters.tfvars.json"
 GENERATED_KEDA_PARAMETERS_FILE="${BASEDIR}/keda-parameters.tfvars.json"
-GENERATED_METRICS_SERVER_PARAMETERS_FILE="${BASEDIR}/keda-parameters.tfvars.json"
+GENERATED_METRICS_SERVER_PARAMETERS_FILE="${BASEDIR}/metrics-server-parameters.tfvars.json"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
