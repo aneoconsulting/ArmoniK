@@ -22,6 +22,10 @@ resource "helm_release" "keda" {
     name  = "image.metricsApiServer.tag"
     value = var.docker_image.metricsApiServer.tag
   }
+  set {
+    name  = "imagePullSecrets"
+    value = var.image_pull_secrets
+  }
 
   values = [
     yamlencode(local.node_selector),
