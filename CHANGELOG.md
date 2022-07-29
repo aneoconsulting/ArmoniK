@@ -11,6 +11,7 @@ Added
 * Add node selector on all deployments (ArmoniK and Helm charts for infrastructure)
 * Add logs of metrics exporter, MongoDB, NGINX, and Keda in CloudWatch via Fluent-bit
 * Add metrics server on EKS to use the HPA for ArmoniK control plane
+* Create in Admin GUI filters on task status, task ID, session ID, error date.
 
 Changed
 -
