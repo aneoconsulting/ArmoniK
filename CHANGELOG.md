@@ -2,25 +2,32 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-07-29)
 
-## [v2.8.2](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-29)
+## [v2.8.2](https://github.com/aneoconsulting/armonik/tree/v2.8.2) (2022-07-29)
 
 Added
 -
 
 * Add HPA on ArmoniK control plane based on CPU and RAM utilization metrics
 * Add node selector on all deployments (ArmoniK and Helm charts for infrastructure)
-* Add logs of metrics exporter, MongoDB, NGINX, and Keda in CloudWatch via Fluent-bit
-* Add metrics server on EKS to use the HPA for ArmoniK control plane
-* Create in Admin GUI filters on task status, task ID, session ID, error date.
+* Add logs of metrics exporter, MongoDB, NGINX, and Keda in CloudWatch via Fluent-bit (infrastructure)
+* Add metrics server on EKS to use the HPA for ArmoniK control plane (infrastructure)
+* Create in Admin GUI filters on task status, task ID, session ID, error date
+* Access to Seq from Admin GUI (when Seq is enabled)
 
 Changed
 -
 
-* Updated Admin GUI to 0.3.0
-* Case insensitive match for grpc path
+* Updated Admin GUI to 0.4.0
+* Case-insensitive match for gRPC path
 
 Fixed
 -
+
+* Fix sample for unified API
+* Fix error management with RPC exception
+* Fix issue with log in GridServer Like sample
+* Fix issue of sequential submit with gRPC ENHANCE_YOUR_CALM, error protocol, GO_AWAY
+* Fix performance request loading in Admin GUI
 
 ## [v2.8.1](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-01)
 
