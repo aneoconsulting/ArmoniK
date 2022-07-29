@@ -52,8 +52,9 @@ resource "kubernetes_deployment" "activemq" {
           }
         }
         container {
-          name  = "activemq"
-          image = "${var.activemq.image}:${var.activemq.tag}"
+          name              = "activemq"
+          image             = "${var.activemq.image}:${var.activemq.tag}"
+          image_pull_policy = "IfNotPresent"
           volume_mount {
             name       = "activemq-storage-secret-volume"
             mount_path = "/credentials/"

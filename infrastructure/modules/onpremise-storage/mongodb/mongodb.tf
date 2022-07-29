@@ -50,9 +50,10 @@ resource "kubernetes_deployment" "mongodb" {
           }
         }
         container {
-          name  = "mongodb"
-          image = "${var.mongodb.image}:${var.mongodb.tag}"
-          args  = [
+          name              = "mongodb"
+          image             = "${var.mongodb.image}:${var.mongodb.tag}"
+          image_pull_policy = "IfNotPresent"
+          args              = [
             "--dbpath=/data/db",
             "--port=27017",
             "--bind_ip=0.0.0.0",

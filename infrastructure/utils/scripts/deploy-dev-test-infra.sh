@@ -28,6 +28,7 @@ WITH_MTLS=false
 LOGGING_LEVEL="Information"
 HPA_TARGET_VALUE=None
 KEDA=""
+METRICS_SERVER=""
 STORAGE_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/storage/parameters.tfvars"
 MONITORING_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/monitoring/parameters.tfvars"
 ARMONIK_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/armonik/parameters.tfvars"
@@ -204,6 +205,17 @@ check_keda_instance() {
   fi
 }
 
+# Check if Metrics server is deployed
+check_metrics_server_instance() {
+  METRICS_SERVER=$(kubectl get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
+  if [ -z "${METRICS_SERVER}" ]; then
+    echo 0
+  else
+    echo 1
+  fi
+}
+
+
 # Prepare storage parameters
 prepare_storage_parameters() {
   STORAGE_TYPE=$(echo "${SHARED_STORAGE_TYPE}" | awk '{print tolower($0)}')
@@ -302,9 +314,14 @@ deploy_keda() {
 
 # Deploy Metrics server
 deploy_metrics_server() {
-  prepare_metrics_server_parameters
-  cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make deploy-metrics-server PARAMETERS_FILE="${GENERATED_METRICS_SERVER_PARAMETERS_FILE}"
+  if [ $(check_metrics_server_instance) -eq 0 ]; then
+    prepare_metrics_server_parameters
+    cd "${SOURCE_CODES_LOCALHOST_DIR}"
+    echo "Deploying Metrics server..."
+    make deploy-metrics-server PARAMETERS_FILE="${GENERATED_METRICS_SERVER_PARAMETERS_FILE}"
+  else
+    echo "Metrics server is already deployed"
+  fi
 }
 
 # Deploy storage, monitoring and ArmoniK
