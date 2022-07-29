@@ -13,6 +13,15 @@ Added
 * Add metrics server on EKS to use the HPA for ArmoniK control plane
 * Create in Admin GUI filters on task status, task ID, session ID, error date.
 
+Changed
+-
+
+* Updated Admin GUI to 0.3.0
+* Case insensitive match for grpc path
+
+Fixed
+-
+
 ## [v2.8.1](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-01)
 
 Added
