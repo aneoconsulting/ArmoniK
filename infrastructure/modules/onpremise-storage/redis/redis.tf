@@ -50,10 +50,11 @@ resource "kubernetes_deployment" "redis" {
           }
         }
         container {
-          name    = "redis"
-          image   = "${var.redis.image}:${var.redis.tag}"
-          command = ["redis-server"]
-          args    = [
+          name              = "redis"
+          image             = "${var.redis.image}:${var.redis.tag}"
+          image_pull_policy = "IfNotPresent"
+          command           = ["redis-server"]
+          args              = [
             "--tls-port 6379",
             "--port 0",
             "--tls-cert-file /certificates/cert.pem",

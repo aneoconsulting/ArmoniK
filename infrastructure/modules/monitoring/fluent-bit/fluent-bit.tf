@@ -47,7 +47,7 @@ resource "kubernetes_daemonset" "fluent_bit" {
         container {
           name              = local.fluent_bit_container_name
           image             = "${local.fluent_bit_image}:${local.fluent_bit_tag}"
-          image_pull_policy = "Always"
+          image_pull_policy = "IfNotPresent"
           env {
             name = "HOSTNAME"
             value_from {
