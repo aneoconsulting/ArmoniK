@@ -27,6 +27,7 @@ Fixed
 * Fix error management with RPC exception
 * Fix issue with log in GridServer Like sample
 * Fix issue of sequential submit with gRPC ENHANCE_YOUR_CALM, error protocol, GO_AWAY
+* Fix assembly version in ArmoniK.Extension.Csharp
 * Fix performance request loading in Admin GUI
 
 ## [v2.8.1](https://github.com/aneoconsulting/armonik/tree/v2.8.1) (2022-07-01)
