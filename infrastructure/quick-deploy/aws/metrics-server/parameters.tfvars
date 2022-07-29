@@ -19,8 +19,8 @@ image_pull_secrets = ""
 # node selector
 node_selector = { "grid/type" = "Operator" }
 
-# Default args
-default_args = [
+# args
+args = [
   "--cert-dir=/tmp",
   "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname",
   "--kubelet-use-node-status-port",

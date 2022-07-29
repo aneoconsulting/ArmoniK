@@ -53,9 +53,9 @@ variable "node_selector" {
   type        = any
 }
 
-# Default args
-variable "default_args" {
-  description = "Default args for metrics server"
+# Args
+variable "args" {
+  description = "Arguments for metrics server"
   type        = list(string)
 }
 
