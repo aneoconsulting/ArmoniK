@@ -94,7 +94,7 @@ runs:
     - name: Install K3s
       shell: bash
       run: |
-        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.23.8+k3s1" sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.23.8+k3s1" sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config --disable traefik --disable metrics-server
 
     - name: Set the name path of the shared storage
       id: sethostpath

@@ -4,6 +4,7 @@ export ARMONIK_PROFILE?=default
 export ARMONIK_BUCKET_NAME?=armonik-tfstate
 export ARMONIK_KUBERNETES_NAMESPACE?=armonik
 export KEDA_KUBERNETES_NAMESPACE?=default
+export METRICS_SERVER_KUBERNETES_NAMESPACE?=kube-system
 export TFSTATE_BUCKET_NAME=$(ARMONIK_BUCKET_NAME)-$(ARMONIK_SUFFIX)
 export KEDA=$(shell kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
 
@@ -101,10 +102,12 @@ clean-eks:
 create-namespace:
 	kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
 	kubectl create namespace $(KEDA_KUBERNETES_NAMESPACE) || true
+	kubectl create namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE) || true
 
 delete-namespace:
 	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
 	kubectl delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
+	kubectl delete namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE) || true
 
 ####################################
 #              KEDA                #
@@ -122,10 +125,23 @@ clean-keda:
 	$(MAKE) -C $(CURRENT_DIR)/keda clean
 
 ####################################
+#         Metrics server           #
+####################################
+
+deploy-metrics-server:
+	$(MAKE) -C $(CURRENT_DIR)/metrics-server deploy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE)
+
+destroy-metrics-server:
+	$(MAKE) -C $(CURRENT_DIR)/metrics-server destroy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE)
+
+clean-metrics-server:
+	$(MAKE) -C $(CURRENT_DIR)/metrics-server clean
+
+####################################
 #           AWS Storage            #
 ####################################
 
-deploy-aws-storage:
+deploy-storage:
 	$(MAKE) -C $(CURRENT_DIR)/storage deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
@@ -135,7 +151,7 @@ deploy-aws-storage:
 		EKS_PARAMETERS_FILE=$(EKS_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
-destroy-aws-storage:
+destroy-storage:
 	$(MAKE) -C $(CURRENT_DIR)/storage destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
@@ -145,7 +161,7 @@ destroy-aws-storage:
 		EKS_PARAMETERS_FILE=$(EKS_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
-clean-aws-storage:
+clean-storage:
 	$(MAKE) -C $(CURRENT_DIR)/storage clean
 
 ####################################
@@ -200,8 +216,8 @@ clean-armonik:
 #               All                #
 ####################################
 
-deploy-all: deploy-vpc deploy-ecr deploy-eks create-namespace deploy-keda deploy-aws-storage deploy-monitoring deploy-armonik
+deploy-all: deploy-vpc deploy-ecr deploy-eks create-namespace deploy-keda deploy-metrics-server deploy-storage deploy-monitoring deploy-armonik
 
-destroy-all: destroy-armonik destroy-monitoring destroy-aws-storage destroy-keda destroy-eks destroy-ecr destroy-vpc
+destroy-all: destroy-armonik destroy-monitoring destroy-storage destroy-metrics-server destroy-keda destroy-eks destroy-ecr destroy-vpc
 
-clean-all: clean-armonik clean-monitoring clean-aws-storage clean-keda clean-eks clean-ecr clean-vpc
+clean-all: clean-armonik clean-monitoring clean-storage clean-metrics-server clean-keda clean-eks clean-ecr clean-vpc
