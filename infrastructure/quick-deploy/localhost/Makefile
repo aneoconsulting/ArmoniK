@@ -5,6 +5,7 @@ export ARMONIK_FILE_SERVER_IP?=
 export KEDA_KUBERNETES_NAMESPACE?=default
 export METRICS_SERVER_KUBERNETES_NAMESPACE?=kube-system
 export KEDA=$(shell kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
+export METRICS_SERVER=$(shell kubectl get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
 
 CURRENT_DIR=$(shell pwd)
 STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/storage/generated/storage-output.json
@@ -44,7 +45,9 @@ clean-keda:
 ####################################
 
 deploy-metrics-server:
-	$(MAKE) -C $(CURRENT_DIR)/metrics-server deploy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE)
+	@if [ "${METRICS_SERVER}" = "" ]; then\
+        $(MAKE) -C $(CURRENT_DIR)/metrics-server deploy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE);\
+    fi
 
 destroy-metrics-server:
 	$(MAKE) -C $(CURRENT_DIR)/metrics-server destroy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE)
