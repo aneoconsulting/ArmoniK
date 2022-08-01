@@ -21,7 +21,7 @@ distribution.
 Install K3s as follows:
 
 ```bash
-curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.23.8+k3s1" sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config --disable traefik --disable metrics-server
+curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.23.8+k3s1" sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
 ```
 
 # Uninstall Kubernetes
