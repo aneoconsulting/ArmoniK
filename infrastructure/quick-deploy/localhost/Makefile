@@ -46,8 +46,8 @@ clean-keda:
 
 deploy-metrics-server:
 	@if [ "${METRICS_SERVER}" = "" ]; then\
-        $(MAKE) -C $(CURRENT_DIR)/metrics-server deploy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE);\
-    fi
+		$(MAKE) -C $(CURRENT_DIR)/metrics-server deploy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE);\
+	fi
 
 destroy-metrics-server:
 	$(MAKE) -C $(CURRENT_DIR)/metrics-server destroy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE)
