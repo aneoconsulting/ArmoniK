@@ -19,14 +19,18 @@ WORKER_IMAGE="dockerhubaneo/armonik_worker_dll"
 METRICS_EXPORTER_IMAGE="dockerhubaneo/armonik_control_metrics"
 CORE_TAG=None
 WORKER_TAG=None
-HPA_MAX_REPLICAS=None
-HPA_MIN_REPLICAS=None
-HPA_IDLE_REPLICAS=None
+HPA_MAX_COMPUTE_PLANE_REPLICAS=None
+HPA_MIN_COMPUTE_PLANE_REPLICAS=None
+HPA_IDLE_COMPUTE_PLANE_REPLICAS=None
+HPA_MAX_CONTROL_PLANE_REPLICAS=None
+HPA_MIN_CONTROL_PLANE_REPLICAS=None
+HPA_IDLE_CONTROL_PLANE_REPLICAS=None
 INGRESS=None
 WITH_TLS=false
 WITH_MTLS=false
 LOGGING_LEVEL="Information"
-HPA_TARGET_VALUE=None
+COMPUTE_PLANE_HPA_TARGET_VALUE=None
+CONTROL_PLANE_HPA_TARGET_VALUE=None
 KEDA=""
 METRICS_SERVER=""
 STORAGE_PARAMETERS_FILE="${SOURCE_CODES_LOCALHOST_DIR}/storage/parameters.tfvars"
@@ -142,15 +146,23 @@ EOF
   echo
   echo "   --worker-tag <WORKER_TAG>"
   echo
-  echo "   --hpa-min-replicas <HPA_MIN_REPLICAS>"
+  echo "   --hpa-min-compute-plane-replicas <HPA_MIN_COMPUTE_PLANE_REPLICAS>"
   echo
-  echo "   --hpa-max-replicas <HPA_MAX_REPLICAS>"
+  echo "   --hpa-max-compute-plane-replicas <HPA_MAX_COMPUTE_PLANE_REPLICAS>"
   echo
-  echo "   --hpa-idle-replicas <HPA_IDLE_REPLICAS>"
+  echo "   --hpa-idle-compute-plane-replicas <HPA_IDLE_COMPUTE_PLANE_REPLICAS>"
+  echo
+  echo "   --hpa-min-control-plane-replicas <HPA_MIN_CONTROL_PLANE_REPLICAS>"
+  echo
+  echo "   --hpa-max-control-plane-replicas <HPA_MAX_CONTROL_PLANE_REPLICAS>"
+  echo
+  echo "   --hpa-idle-control-plane-replicas <HPA_IDLE_CONTROL_PLANE_REPLICAS>"
   echo
   echo "   --logging-level <LOGGING_LEVEL_FOR_ARMONIK>"
   echo
-  echo "   --hpa-target-value <TARGET_VALUE_FOR_HPA>"
+  echo "   --compute-plane-hpa-target-value <TARGET_VALUE_FOR_HPA_OF_COMPUTE_PLANE>"
+  echo
+  echo "   --control-plane-hpa-target-value <TARGET_VALUE_FOR_HPA_OF_CONTROL_PLANE>"
   echo
   echo "   --without-ingress"
   echo
@@ -215,7 +227,6 @@ check_metrics_server_instance() {
   fi
 }
 
-
 # Prepare storage parameters
 prepare_storage_parameters() {
   STORAGE_TYPE=$(echo "${SHARED_STORAGE_TYPE}" | awk '{print tolower($0)}')
@@ -241,13 +252,16 @@ prepare_armonik_parameters() {
   python3 "${MODIFY_PARAMETERS_SCRIPT}" \
     -kv control_plane.image="${CONTROL_PLANE_IMAGE}" \
     -kv control_plane.tag="${CORE_TAG}" \
+    -kv control_plane.hpa.min_replica_count="${HPA_MIN_CONTROL_PLANE_REPLICAS}" \
+    -kv control_plane.hpa.max_replica_count="${HPA_MAX_CONTROL_PLANE_REPLICAS}" \
+    -kv control_plane.hpa.triggers[*].value="${CONTROL_PLANE_HPA_TARGET_VALUE}" \
     -kv compute_plane[*].polling_agent.image="${POLLING_AGENT_IMAGE}" \
     -kv compute_plane[*].polling_agent.tag="${CORE_TAG}" \
     -kv compute_plane[*].worker[*].image="${WORKER_IMAGE}" \
     -kv compute_plane[*].worker[*].tag="${WORKER_TAG}" \
-    -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_REPLICAS}" \
-    -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_REPLICAS}" \
-    -kv compute_plane[*].hpa.triggers.threshold="${HPA_TARGET_VALUE}" \
+    -kv compute_plane[*].hpa.min_replica_count="${HPA_MIN_COMPUTE_PLANE_REPLICAS}" \
+    -kv compute_plane[*].hpa.max_replica_count="${HPA_MAX_COMPUTE_PLANE_REPLICAS}" \
+    -kv compute_plane[*].hpa.triggers.threshold="${COMPUTE_PLANE_HPA_TARGET_VALUE}" \
     -kv logging_level="${LOGGING_LEVEL}" \
     -kv ingress="${INGRESS}" \
     -kv ingress.tls="${WITH_TLS}" \
@@ -561,18 +575,33 @@ function main() {
       shift
       shift
       ;;
-    --hpa-min-replicas)
-      HPA_MIN_REPLICAS="$2"
+    --hpa-min-compute-plane-replicas)
+      HPA_MIN_COMPUTE_PLANE_REPLICAS="$2"
       shift
       shift
       ;;
-    --hpa-max-replicas)
-      HPA_MAX_REPLICAS="$2"
+    --hpa-max-compute-plane-replicas)
+      HPA_MAX_COMPUTE_PLANE_REPLICAS="$2"
       shift
       shift
       ;;
-    --hpa-idle-replicas)
-      HPA_IDLE_REPLICAS="$2"
+    --hpa-idle-compute-plane-replicas)
+      HPA_IDLE_COMPUTE_PLANE_REPLICAS="$2"
+      shift
+      shift
+      ;;
+    --hpa-min-control-plane-replicas)
+      HPA_MIN_CONTROL_PLANE_REPLICAS="$2"
+      shift
+      shift
+      ;;
+    --hpa-max-control-plane-replicas)
+      HPA_MAX_CONTROL_PLANE_REPLICAS="$2"
+      shift
+      shift
+      ;;
+    --hpa-idle-control-plane-replicas)
+      HPA_IDLE_CONTROL_PLANE_REPLICAS="$2"
       shift
       shift
       ;;
@@ -581,8 +610,13 @@ function main() {
       shift
       shift
       ;;
-    --hpa-target-value)
-      HPA_TARGET_VALUE="$2"
+    --compute-plane-hpa-target-value)
+      COMPUTE_PLANE_HPA_TARGET_VALUE="$2"
+      shift
+      shift
+      ;;
+    --control-plane-hpa-target-value)
+      CONTROL_PLANE_HPA_TARGET_VALUE="$2"
       shift
       shift
       ;;
