@@ -12,17 +12,24 @@ script [deploy-dev-test-infra.sh](../utils/scripts/deploy-dev-test-infra.sh)
 
 The infrastructure is composed of:
 
+* Addons for Kubernetes:
+    * Keda
+    * Metrics server
 * Storage:
     * ActiveMQ
     * MongoDB
     * Redis
 * Monitoring:
-    * Seq server for structured log data of ArmoniK.
+    * ArmoniK metrics exporter
     * Grafana
+    * Node exporter
     * Prometheus
+    * Seq server for structured log data of ArmoniK.
 * ArmoniK:
+    * AdminGUI
     * Control plane
     * Compute plane: polling agent and workers
+    * Ingress
 
 # Prerequisites
 
@@ -69,11 +76,19 @@ cd infrastructure/utils/scripts
   ```
 - To clean and delete all generated files from all deployment:
   ```bash
-  ./deploy-dev-test-infra.sh -m clean-all
+  ./deploy-dev-test-infra.sh --clean all
   ```
 
 If You want to deploy each resource independently:
 
+- To deploy Keda:
+  ```bash
+  ./deploy-dev-test-infra.sh -m deploy-keda
+  ```
+- To deploy Metrics server:
+  ```bash
+  ./deploy-dev-test-infra.sh -m deploy-metrics-server
+  ```
 - To deploy storage:
   ```bash
   ./deploy-dev-test-infra.sh -m deploy-storage
@@ -82,13 +97,21 @@ If You want to deploy each resource independently:
   ```bash
   ./deploy-dev-test-infra.sh -m deploy-monitoring
   ```
-- To deploy armonik:
+- To deploy ArmoniK:
   ```bash
   ./deploy-dev-test-infra.sh -m deploy-armonik
   ```
 
 If You want to redeploy each resource independently:
 
+- To redeploy Keda:
+  ```bash
+  ./deploy-dev-test-infra.sh -m redeploy-keda
+  ```
+- To redeploy Metrics server:
+  ```bash
+  ./deploy-dev-test-infra.sh -m redeploy-metrics-server
+  ```
 - To redeploy storage:
   ```bash
   ./deploy-dev-test-infra.sh -m redeploy-storage
@@ -97,13 +120,21 @@ If You want to redeploy each resource independently:
   ```bash
   ./deploy-dev-test-infra.sh -m redeploy-monitoring
   ```
-- To redeploy armonik:
+- To redeploy ArmoniK:
   ```bash
   ./deploy-dev-test-infra.sh -m redeploy-armonik
   ```
 
 If You want to destroy each resource independently:
 
+- To destroy Keda:
+  ```bash
+  ./deploy-dev-test-infra.sh -m destroy-keda
+  ```
+- To destroy Metrics server:
+  ```bash
+  ./deploy-dev-test-infra.sh -m destroy-metrics-server
+  ```
 - To destroy storage:
   ```bash
   ./deploy-dev-test-infra.sh -m destroy-storage
@@ -112,27 +143,35 @@ If You want to destroy each resource independently:
   ```bash
   ./deploy-dev-test-infra.sh -m destroy-monitoring
   ```
-- To destroy armonik:
+- To destroy ArmoniK:
   ```bash
   ./deploy-dev-test-infra.sh -m destroy-armonik
   ```
 
 If You want to clean and delete generated files from each deployment independently:
 
+- To clean Keda:
+  ```bash
+  ./deploy-dev-test-infra.sh --clean keda
+  ```
+- To clean Metrics server:
+  ```bash
+  ./deploy-dev-test-infra.sh --clean metrics-server
+  ```
 - To clean storage:
   ```bash
-  ./deploy-dev-test-infra.sh -m clean-storage
+  ./deploy-dev-test-infra.sh --clean storage
   ```
 - To clean monitoring:
   ```bash
-  ./deploy-dev-test-infra.sh -m clean-monitoring
+  ./deploy-dev-test-infra.sh --clean monitoring
   ```
-- To clean armonik:
+- To clean ArmoniK:
   ```bash
-  ./deploy-dev-test-infra.sh -m clean-armonik
+  ./deploy-dev-test-infra.sh --clean armonik
   ```
 
-If You want to deploy on specific Kubernetes namespace, You execute the following command:
+If You want to deploy ArmoniK components on specific Kubernetes namespace, You execute the following command:
 
 ```bash
 ./deploy-dev-test-infra.sh -m deploy-all --namespace <NAMESPACE>
@@ -176,12 +215,30 @@ If You change the max, min or idle replicas in the HPA of the compute plane:
 ```bash
 ./deploy-dev-test-infra.sh \
   -m deploy-all \
-  --hpa-min-replicas <HPA_MIN_REPLICAS> \
-  --hpa-max-replicas <HPA_MAX_REPLICAS> \
-  --hpa-idle-replicas <HPA_MAX_REPLICAS>
+  --hpa-min-compute-plane-replicas <HPA_MIN_COMPUTE_PLANE_REPLICAS> \
+  --hpa-max-compute-plane-replicas <HPA_MAX_COMPUTE_PLANE_REPLICAS> \
+  --hpa-idle-compute-plane-replicas <HPA_IDLE_COMPUTE_PLANE_REPLICAS> \
+  --compute-plane-hpa-target-value <COMPUTE_PLANE_HPA_TARGET_VALUE>
 ```
 
-**Warning:** hpa-idle-replicas must be less than hpa-min-replicas !
+where `<COMPUTE_PLANE_HPA_TARGET_VALUE>` is the target value for the number of messages in the queue.
+
+**Warning:** `<HPA_IDLE_CONTOL_PLANE_REPLICAS>` must be less than `<HPA_MIN_CONTOL_PLANE_REPLICAS>` !
+
+If You change the max, min or idle replicas in the HPA of the control plane:
+
+```bash
+./deploy-dev-test-infra.sh \
+  -m deploy-all \
+  --hpa-min-control-plane-replicas <HPA_MIN_CONTOL_PLANE_REPLICAS> \
+  --hpa-max-control-plane-replicas <HPA_MAX_CONTOL_PLANE_REPLICAS> \
+  --hpa-idle-control-plane-replicas <HPA_IDLE_CONTOL_PLANE_REPLICAS> \
+  --control-plane-hpa-target-value <CONTROL_PLANE_HPA_TARGET_VALUE>
+```
+
+where `<CONTROL_PLANE_HPA_TARGET_VALUE>` is the target value in percentage for the CPU and memory utilization.
+
+**Warning:** `<HPA_IDLE_CONTOL_PLANE_REPLICAS>` must be less than `<HPA_MIN_CONTOL_PLANE_REPLICAS>` !
 
 If You want to change logging level for ArmoniK components:
 
