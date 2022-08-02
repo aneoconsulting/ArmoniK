@@ -1,4 +1,7 @@
 locals {
+  # list of partitions
+  partition_names = keys(try(var.compute_plane, {}))
+
   # Node selector for control plane
   control_plane_node_selector        = try(var.control_plane.node_selector, {})
   control_plane_node_selector_keys   = keys(local.control_plane_node_selector)
@@ -10,13 +13,13 @@ locals {
   admin_gui_node_selector_values = values(local.admin_gui_node_selector)
 
   # Node selector for compute plane
-  compute_plane_node_selector        = [for index in range(0, length(var.compute_plane)) : try(var.compute_plane[index].node_selector, {})]
-  compute_plane_node_selector_keys   = [for index in range(0, length(local.compute_plane_node_selector)) : keys(local.compute_plane_node_selector[index])]
-  compute_plane_node_selector_values = [for index in range(0, length(local.compute_plane_node_selector)) : values(local.compute_plane_node_selector[index])]
+  compute_plane_node_selector        = {for partition in local.partition_names : partition => try(var.compute_plane[partition].node_selector, {})}
+  compute_plane_node_selector_keys   = {for partition in local.partition_names : partition => keys(local.compute_plane_node_selector[partition])}
+  compute_plane_node_selector_values = {for partition in local.partition_names : partition => values(local.compute_plane_node_selector[partition])}
 
   # Annotations
   control_plane_annotations = try(var.control_plane.annotations, {})
-  compute_plane_annotations = [for index in range(0, length(var.compute_plane)) : try(var.compute_plane[index].annotations, {})]
+  compute_plane_annotations = {for partition in local.partition_names : partition => try(var.compute_plane[partition].annotations, {})}
   ingress_annotations       = try(var.ingress.annotations, {})
 
   # Shared storage
@@ -96,10 +99,10 @@ locals {
 
   # HPA scalers
   # Compute plane
-  hpa_compute_plane_triggers = [
-  for compute_plane in var.compute_plane : {
+  hpa_compute_plane_triggers = {
+  for partition in local.partition_names : partition => {
     triggers = [
-    for trigger in try(compute_plane.hpa.triggers, []) :
+    for trigger in try(var.compute_plane[partition].hpa.triggers, []) :
     (lower(try(trigger.type, "")) == "prometheus" ? {
       type     = "prometheus"
       metadata = {
@@ -119,13 +122,13 @@ locals {
     } : object({})))
     ]
   }
-  ]
-
-  compute_plane_triggers = [
-  for compute_plane in local.hpa_compute_plane_triggers : {
-    triggers = [for trigger in compute_plane.triggers : trigger if trigger != {}]
   }
-  ]
+
+  compute_plane_triggers = {
+  for partition in local.partition_names : partition => {
+    triggers = [for trigger in local.hpa_compute_plane_triggers[partition].triggers : trigger if trigger != {}]
+  }
+  }
 
   # Control plane
   hpa_control_plane_triggers = {

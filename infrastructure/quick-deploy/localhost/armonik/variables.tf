@@ -127,7 +127,7 @@ variable "admin_gui" {
 # Parameters of the compute plane
 variable "compute_plane" {
   description = "Parameters of the compute plane"
-  type        = list(object({
+  type        = map(object({
     name                             = string
     replicas                         = number
     termination_grace_period_seconds = number

@@ -21,12 +21,12 @@ control_plane = {
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
-    cpu    = "1000m"
-    memory = "2048Mi"
+    cpu    = "1000m" # set to null if you don't want to set it
+    memory = "2048Mi" # set to null if you don't want to set it
   }
   requests           = {
-    cpu    = "200m"
-    memory = "500Mi"
+    cpu    = "200m" # set to null if you don't want to set it
+    memory = "500Mi" # set to null if you don't want to set it
   }
   image_pull_secrets = ""
   node_selector      = {}
@@ -98,8 +98,8 @@ admin_gui = {
 }
 
 # Parameters of the compute plane
-compute_plane = [
-  {
+compute_plane = {
+  athos = {
     name                             = "compute-plane"
     # number of replicas for each deployment of compute plane
     replicas                         = 1
@@ -113,12 +113,12 @@ compute_plane = [
       tag               = "0.5.15"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "2000m"
-        memory = "2048Mi"
+        cpu    = "2000m" # set to null if you don't want to set it
+        memory = "2048Mi" # set to null if you don't want to set it
       }
       requests          = {
-        cpu    = "200m"
-        memory = "256Mi"
+        cpu    = "200m" # set to null if you don't want to set it
+        memory = "256Mi" # set to null if you don't want to set it
       }
     }
     # ArmoniK workers
@@ -129,12 +129,132 @@ compute_plane = [
         tag               = "0.6.4"
         image_pull_policy = "IfNotPresent"
         limits            = {
-          cpu    = "1000m"
-          memory = "1024Mi"
+          cpu    = "1000m" # set to null if you don't want to set it
+          memory = "1024Mi" # set to null if you don't want to set it
         }
         requests          = {
-          cpu    = "200m"
-          memory = "512Mi"
+          cpu    = "200m" # set to null if you don't want to set it
+          memory = "512Mi" # set to null if you don't want to set it
+        }
+      }
+    ]
+    hpa                              = {
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 5
+      behavior          = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers          = [
+        {
+          type        = "prometheus"
+          metric_name = "armonik_tasks_queued"
+          threshold   = "2"
+        },
+      ]
+    }
+  },
+  porthos = {
+    name                             = "compute-plane"
+    # number of replicas for each deployment of compute plane
+    replicas                         = 1
+    termination_grace_period_seconds = 30
+    image_pull_secrets               = ""
+    node_selector                    = {}
+    annotations                      = {}
+    # ArmoniK polling agent
+    polling_agent                    = {
+      image             = "dockerhubaneo/armonik_pollingagent"
+      tag               = "0.5.15"
+      image_pull_policy = "IfNotPresent"
+      limits            = {
+        cpu    = "2000m" # set to null if you don't want to set it
+        memory = "2048Mi" # set to null if you don't want to set it
+      }
+      requests          = {
+        cpu    = "200m" # set to null if you don't want to set it
+        memory = "256Mi" # set to null if you don't want to set it
+      }
+    }
+    # ArmoniK workers
+    worker                           = [
+      {
+        name              = "worker"
+        image             = "dockerhubaneo/armonik_worker_dll"
+        tag               = "0.6.4"
+        image_pull_policy = "IfNotPresent"
+        limits            = {
+          cpu    = "1000m" # set to null if you don't want to set it
+          memory = "1024Mi" # set to null if you don't want to set it
+        }
+        requests          = {
+          cpu    = "200m" # set to null if you don't want to set it
+          memory = "512Mi" # set to null if you don't want to set it
+        }
+      }
+    ]
+    hpa                              = {
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 5
+      behavior          = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers          = [
+        {
+          type        = "prometheus"
+          metric_name = "armonik_tasks_queued"
+          threshold   = "2"
+        },
+      ]
+    }
+  },
+  aramis = {
+    name                             = "compute-plane"
+    # number of replicas for each deployment of compute plane
+    replicas                         = 1
+    termination_grace_period_seconds = 30
+    image_pull_secrets               = ""
+    node_selector                    = {}
+    annotations                      = {}
+    # ArmoniK polling agent
+    polling_agent                    = {
+      image             = "dockerhubaneo/armonik_pollingagent"
+      tag               = "0.5.15"
+      image_pull_policy = "IfNotPresent"
+      limits            = {
+        cpu    = "2000m" # set to null if you don't want to set it
+        memory = "2048Mi" # set to null if you don't want to set it
+      }
+      requests          = {
+        cpu    = "200m" # set to null if you don't want to set it
+        memory = "256Mi" # set to null if you don't want to set it
+      }
+    }
+    # ArmoniK workers
+    worker                           = [
+      {
+        name              = "worker"
+        image             = "dockerhubaneo/armonik_worker_dll"
+        tag               = "0.6.4"
+        image_pull_policy = "IfNotPresent"
+        limits            = {
+          cpu    = "1000m" # set to null if you don't want to set it
+          memory = "1024Mi" # set to null if you don't want to set it
+        }
+        requests          = {
+          cpu    = "200m" # set to null if you don't want to set it
+          memory = "512Mi" # set to null if you don't want to set it
         }
       }
     ]
@@ -159,7 +279,7 @@ compute_plane = [
       ]
     }
   }
-]
+}
 
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
