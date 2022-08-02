@@ -213,7 +213,7 @@ compute_plane = {
       triggers          = [
         {
           type        = "prometheus"
-          metric_name = "armonik_tasks_queued"
+          metric_name = "armonik_tasks_queued_fake"
           threshold   = "2"
         },
       ]
@@ -273,7 +273,7 @@ compute_plane = {
       triggers          = [
         {
           type        = "prometheus"
-          metric_name = "armonik_tasks_queued"
+          metric_name = "armonik_tasks_queued_fake"
           threshold   = "2"
         },
       ]
