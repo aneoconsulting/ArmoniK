@@ -54,20 +54,14 @@ resource "kubernetes_deployment" "control_plane" {
           name              = var.control_plane.name
           image             = var.control_plane.tag != "" ? "${var.control_plane.image}:${var.control_plane.tag}" : var.control_plane.image
           image_pull_policy = var.control_plane.image_pull_policy
-          dynamic resources {
-            for_each = (var.control_plane.limits.cpu != ""
-            || var.control_plane.limits.memory != ""
-            || var.control_plane.requests.cpu != ""
-            || var.control_plane.requests.memory != "" ? [1] : [])
-            content {
-              limits   = {
-                cpu    = var.control_plane.limits.cpu
-                memory = var.control_plane.limits.memory
-              }
-              requests = {
-                cpu    = var.control_plane.requests.cpu
-                memory = var.control_plane.requests.memory
-              }
+          resources {
+            limits   = {
+              cpu    = var.control_plane.limits.cpu
+              memory = var.control_plane.limits.memory
+            }
+            requests = {
+              cpu    = var.control_plane.requests.cpu
+              memory = var.control_plane.requests.memory
             }
           }
           port {
@@ -103,6 +97,11 @@ resource "kubernetes_deployment" "control_plane" {
           env_from {
             config_map_ref {
               name = kubernetes_config_map.log_config.metadata.0.name
+            }
+          }
+          env_from {
+            config_map_ref {
+              name = kubernetes_config_map.control_plane_config.metadata.0.name
             }
           }
           dynamic env {

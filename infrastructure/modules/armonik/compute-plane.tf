@@ -118,6 +118,10 @@ resource "kubernetes_deployment" "compute_plane" {
               name = kubernetes_config_map.log_config.metadata.0.name
             }
           }
+          env {
+            name  = "ComputePlan__PartitionId"
+            value = each.key
+          }
           dynamic env {
             for_each = (local.activemq_credentials_secret != "" ? [1] : [])
             content {
@@ -233,20 +237,14 @@ resource "kubernetes_deployment" "compute_plane" {
             name              = "${worker.value.name}-${worker.key}"
             image             = worker.value.tag != "" ? "${worker.value.image}:${worker.value.tag}" : worker.value.image
             image_pull_policy = worker.value.image_pull_policy
-            dynamic resources {
-              for_each = (worker.value.limits.cpu != ""
-              || worker.value.limits.memory != ""
-              || worker.value.requests.cpu != ""
-              || worker.value.requests.memory != "" ? [1] : [])
-              content {
-                limits   = {
-                  cpu    = worker.value.limits.cpu
-                  memory = worker.value.limits.memory
-                }
-                requests = {
-                  cpu    = worker.value.requests.cpu
-                  memory = worker.value.requests.memory
-                }
+            resources {
+              limits   = {
+                cpu    = worker.value.limits.cpu
+                memory = worker.value.limits.memory
+              }
+              requests = {
+                cpu    = worker.value.requests.cpu
+                memory = worker.value.requests.memory
               }
             }
             env_from {
@@ -258,6 +256,10 @@ resource "kubernetes_deployment" "compute_plane" {
               config_map_ref {
                 name = kubernetes_config_map.log_config.metadata.0.name
               }
+            }
+            env {
+              name  = "ComputePlan__PartitionId"
+              value = each.key
             }
             volume_mount {
               name       = "cache-volume"
