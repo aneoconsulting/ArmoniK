@@ -173,12 +173,12 @@ compute_plane = {
       tag               = "0.5.15"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "2000m" # set to null if you don't want to set it
-        memory = "2048Mi" # set to null if you don't want to set it
+        cpu    = null # set to null if you don't want to set it
+        memory = null # set to null if you don't want to set it
       }
       requests          = {
-        cpu    = "200m" # set to null if you don't want to set it
-        memory = "256Mi" # set to null if you don't want to set it
+        cpu    = null # set to null if you don't want to set it
+        memory = null # set to null if you don't want to set it
       }
     }
     # ArmoniK workers
@@ -189,12 +189,12 @@ compute_plane = {
         tag               = "0.6.4"
         image_pull_policy = "IfNotPresent"
         limits            = {
-          cpu    = "1000m" # set to null if you don't want to set it
-          memory = "1024Mi" # set to null if you don't want to set it
+          cpu    = null # set to null if you don't want to set it
+          memory = null # set to null if you don't want to set it
         }
         requests          = {
-          cpu    = "200m" # set to null if you don't want to set it
-          memory = "512Mi" # set to null if you don't want to set it
+          cpu    = null # set to null if you don't want to set it
+          memory = null # set to null if you don't want to set it
         }
       }
     ]
@@ -233,12 +233,12 @@ compute_plane = {
       tag               = "0.5.15"
       image_pull_policy = "IfNotPresent"
       limits            = {
-        cpu    = "2000m" # set to null if you don't want to set it
-        memory = "2048Mi" # set to null if you don't want to set it
+        cpu    = null # set to null if you don't want to set it
+        memory = null # set to null if you don't want to set it
       }
       requests          = {
-        cpu    = "200m" # set to null if you don't want to set it
-        memory = "256Mi" # set to null if you don't want to set it
+        cpu    = null # set to null if you don't want to set it
+        memory = null # set to null if you don't want to set it
       }
     }
     # ArmoniK workers
@@ -249,12 +249,12 @@ compute_plane = {
         tag               = "0.6.4"
         image_pull_policy = "IfNotPresent"
         limits            = {
-          cpu    = "1000m" # set to null if you don't want to set it
-          memory = "1024Mi" # set to null if you don't want to set it
+          cpu    = null # set to null if you don't want to set it
+          memory = null # set to null if you don't want to set it
         }
         requests          = {
-          cpu    = "200m" # set to null if you don't want to set it
-          memory = "512Mi" # set to null if you don't want to set it
+          cpu    = null # set to null if you don't want to set it
+          memory = null # set to null if you don't want to set it
         }
       }
     ]
