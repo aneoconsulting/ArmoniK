@@ -145,7 +145,6 @@ variable "admin_gui" {
 variable "compute_plane" {
   description = "Parameters of the compute plane"
   type        = map(object({
-    name                             = string
     replicas                         = number
     termination_grace_period_seconds = number
     image_pull_secrets               = string
