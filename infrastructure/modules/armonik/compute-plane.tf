@@ -123,78 +123,13 @@ resource "kubernetes_deployment" "compute_plane" {
             value = each.key
           }
           dynamic env {
-            for_each = (local.activemq_credentials_secret != "" ? [1] : [])
+            for_each = local.credentials
             content {
-              name = "Amqp__User"
+              name = env.key
               value_from {
                 secret_key_ref {
-                  key      = local.activemq_credentials_username_key
-                  name     = local.activemq_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.activemq_credentials_secret != "" ? [1] : [])
-            content {
-              name = "Amqp__Password"
-              value_from {
-                secret_key_ref {
-                  key      = local.activemq_credentials_password_key
-                  name     = local.activemq_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.redis_credentials_secret != "" ? [1] : [])
-            content {
-              name = "Redis__User"
-              value_from {
-                secret_key_ref {
-                  key      = local.redis_credentials_username_key
-                  name     = local.redis_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.redis_credentials_secret != "" ? [1] : [])
-            content {
-              name = "Redis__Password"
-              value_from {
-                secret_key_ref {
-                  key      = local.redis_credentials_password_key
-                  name     = local.redis_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.mongodb_credentials_secret != "" ? [1] : [])
-            content {
-              name = "MongoDB__User"
-              value_from {
-                secret_key_ref {
-                  key      = local.mongodb_credentials_username_key
-                  name     = local.mongodb_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.mongodb_credentials_secret != "" ? [1] : [])
-            content {
-              name = "MongoDB__Password"
-              value_from {
-                secret_key_ref {
-                  key      = local.mongodb_credentials_password_key
-                  name     = local.mongodb_credentials_secret
+                  key      = env.value.key
+                  name     = env.value.name
                   optional = false
                 }
               }

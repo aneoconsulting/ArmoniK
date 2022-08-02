@@ -97,6 +97,36 @@ locals {
   mongodb_polling_min_delay = try(var.mongodb_polling_delay.min_polling_delay, "00:00:01")
   mongodb_polling_max_delay = try(var.mongodb_polling_delay.max_polling_delay, "00:05:00")
 
+  # Credentials
+  credentials = {
+  for key, value in {
+    Amqp__User        = local.activemq_credentials_secret != "" ? {
+      key  = local.activemq_credentials_username_key
+      name = local.activemq_credentials_secret
+    } : { key = "", name = "" }
+    Amqp__Password    = local.activemq_credentials_secret != "" ? {
+      key  = local.activemq_credentials_password_key
+      name = local.activemq_credentials_secret
+    } : { key = "", name = "" }
+    Redis__User       = local.redis_credentials_secret != "" ? {
+      key  = local.redis_credentials_username_key
+      name = local.redis_credentials_secret
+    } : { key = "", name = "" }
+    Redis__Password   = local.redis_credentials_secret != "" ? {
+      key  = local.redis_credentials_password_key
+      name = local.redis_credentials_secret
+    } : { key = "", name = "" }
+    MongoDB__User     = local.mongodb_credentials_secret != "" ? {
+      key  = local.mongodb_credentials_username_key
+      name = local.mongodb_credentials_secret
+    } : { key = "", name = "" }
+    MongoDB__Password = local.mongodb_credentials_secret != "" ? {
+      key  = local.mongodb_credentials_password_key
+      name = local.mongodb_credentials_secret
+    } : { key = "", name = "" }
+  } : key => value if !contains(values(value), "")
+  }
+
   # HPA scalers
   # Compute plane
   hpa_compute_plane_triggers = {
