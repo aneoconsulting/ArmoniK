@@ -163,6 +163,16 @@ runs:
             -kv "compute_plane[athos].worker[*].tag=${{ inputs.worker-tag }}" \
             -kv "compute_plane[athos].polling_agent.image=${{ inputs.polling-agent-image }}" \
             -kv "compute_plane[athos].polling_agent.tag=${{ inputs.core-tag }}" \
+
+            -kv "compute_plane[porthos].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[porthos].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[porthos].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[porthos].polling_agent.tag=${{ inputs.core-tag }}" \
+            -kv "compute_plane[aramis].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[aramis].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[aramis].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[aramis].polling_agent.tag=${{ inputs.core-tag }}" \
+
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
             -kv admin_gui.api.image=${{ inputs.admin-api-image }} \
@@ -179,6 +189,16 @@ runs:
             -kv "compute_plane[athos].worker[*].tag=${{ inputs.worker-tag }}" \
             -kv "compute_plane[athos].polling_agent.image=${{ inputs.polling-agent-image }}" \
             -kv "compute_plane[athos].polling_agent.tag=${{ inputs.core-tag }}" \
+
+            -kv "compute_plane[porthos].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[porthos].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[porthos].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[porthos].polling_agent.tag=${{ inputs.core-tag }}" \
+            -kv "compute_plane[aramis].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[aramis].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[aramis].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[aramis].polling_agent.tag=${{ inputs.core-tag }}" \
+
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
             -kv admin_gui.api.image=${{ inputs.admin-api-image }} \
