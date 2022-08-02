@@ -140,26 +140,10 @@ resource "kubernetes_deployment" "compute_plane" {
             mount_path = "/cache"
           }
           dynamic volume_mount {
-            for_each = (local.activemq_certificates_secret != "" ? [1] : [])
+            for_each = local.certificates
             content {
-              name       = "activemq-secret-volume"
-              mount_path = "/amqp"
-              read_only  = true
-            }
-          }
-          dynamic volume_mount {
-            for_each = (local.redis_certificates_secret != "" ? [1] : [])
-            content {
-              name       = "redis-secret-volume"
-              mount_path = "/redis"
-              read_only  = true
-            }
-          }
-          dynamic volume_mount {
-            for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
-            content {
-              name       = "mongodb-secret-volume"
-              mount_path = "/mongodb"
+              name       = volume_mount.value.name
+              mount_path = volume_mount.value.mount_path
               read_only  = true
             }
           }
@@ -236,31 +220,11 @@ resource "kubernetes_deployment" "compute_plane" {
           }
         }
         dynamic volume {
-          for_each = (local.activemq_certificates_secret != "" ? [1] : [])
+          for_each = local.certificates
           content {
-            name = "activemq-secret-volume"
+            name = volume.value.name
             secret {
-              secret_name = local.activemq_certificates_secret
-              optional    = false
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (local.redis_certificates_secret != "" ? [1] : [])
-          content {
-            name = "redis-secret-volume"
-            secret {
-              secret_name = local.redis_certificates_secret
-              optional    = false
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
-          content {
-            name = "mongodb-secret-volume"
-            secret {
-              secret_name = local.mongodb_certificates_secret
+              secret_name = volume.value.secret_name
               optional    = false
             }
           }

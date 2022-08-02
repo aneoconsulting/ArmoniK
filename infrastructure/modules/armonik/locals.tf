@@ -127,6 +127,27 @@ locals {
   } : key => value if !contains(values(value), "")
   }
 
+  # Certificates
+  certificates = {
+  for key, value in {
+    activemq = local.activemq_certificates_secret != "" ? {
+      name        = "activemq-secret-volume"
+      mount_path  = "/amqp"
+      secret_name = local.activemq_certificates_secret
+    } : { name = "", mount_path = "", secret_name = "" }
+    redis    = local.redis_certificates_secret != "" ? {
+      name        = "redis-secret-volume"
+      mount_path  = "/redis"
+      secret_name = local.redis_certificates_secret
+    } : { name = "", mount_path = "", secret_name = "" }
+    mongodb  = local.mongodb_certificates_secret != "" ? {
+      name        = "mongodb-secret-volume"
+      mount_path  = "/mongodb"
+      secret_name = local.mongodb_certificates_secret
+    } : { name = "", mount_path = "", secret_name = "" }
+  } : key => value if !contains(values(value), "")
+  }
+
   # HPA scalers
   # Compute plane
   hpa_compute_plane_triggers = {
