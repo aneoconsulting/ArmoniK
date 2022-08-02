@@ -379,22 +379,26 @@ destroy_armonik() {
 
 # Destroy KEDA
 destroy_keda() {
-  if [ ! -f "${GENERATED_KEDA_PARAMETERS_FILE}" ]; then
-    prepare_keda_parameters
-  fi
+  if [ -z "${KEDA}" ]; then
+    if [ ! -f "${GENERATED_KEDA_PARAMETERS_FILE}" ]; then
+      prepare_keda_parameters
+    fi
 
-  cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make destroy-keda PARAMETERS_FILE="${GENERATED_KEDA_PARAMETERS_FILE}"
+    cd "${SOURCE_CODES_LOCALHOST_DIR}"
+    make destroy-keda PARAMETERS_FILE="${GENERATED_KEDA_PARAMETERS_FILE}"
+  fi
 }
 
 # Destroy Metrics server
 destroy_metrics_server() {
-  if [ ! -f "${GENERATED_METRICS_SERVER_PARAMETERS_FILE}" ]; then
-    prepare_metrics_server_parameters
-  fi
+  if [ -z "${METRICS_SERVER}" ]; then
+    if [ ! -f "${GENERATED_METRICS_SERVER_PARAMETERS_FILE}" ]; then
+      prepare_metrics_server_parameters
+    fi
 
-  cd "${SOURCE_CODES_LOCALHOST_DIR}"
-  make destroy-metrics-server PARAMETERS_FILE="${GENERATED_METRICS_SERVER_PARAMETERS_FILE}"
+    cd "${SOURCE_CODES_LOCALHOST_DIR}"
+    make destroy-metrics-server PARAMETERS_FILE="${GENERATED_METRICS_SERVER_PARAMETERS_FILE}"
+  fi
 }
 
 # Destroy storage, monitoring and ArmoniK
