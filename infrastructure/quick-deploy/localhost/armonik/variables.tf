@@ -81,6 +81,7 @@ variable "control_plane" {
     annotations        = any
     # KEDA scaler
     hpa                = any
+    default_partition  = string
   })
 }
 

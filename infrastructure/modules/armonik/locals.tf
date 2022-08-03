@@ -1,6 +1,7 @@
 locals {
   # list of partitions
-  partition_names = keys(try(var.compute_plane, {}))
+  partition_names   = keys(try(var.compute_plane, {}))
+  default_partition = try(var.control_plane.default_partition, "")
 
   # Node selector for control plane
   control_plane_node_selector        = try(var.control_plane.node_selector, {})

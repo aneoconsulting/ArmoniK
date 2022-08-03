@@ -56,6 +56,7 @@ control_plane = {
       },
     ]
   }
+  default_partition  = "athos"
 }
 
 # Parameters of admin GUI
@@ -99,7 +100,7 @@ admin_gui = {
 
 # Parameters of the compute plane
 compute_plane = {
-  athos = {
+  athos   = {
     # number of replicas for each deployment of compute plane
     replicas                         = 1
     termination_grace_period_seconds = 30
