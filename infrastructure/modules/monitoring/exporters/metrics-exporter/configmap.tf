@@ -29,6 +29,7 @@ resource "kubernetes_config_map" "metrics-exporter_config" {
     Amqp__Scheme                               = "AMQPS"
     Amqp__AllowHostMismatch                    = local.activemq_allow_host_mismatch
     Amqp__MaxPriority                          = "10"
+    Amqp__MaxRetries                           = "5"
     Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
     Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
     Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
