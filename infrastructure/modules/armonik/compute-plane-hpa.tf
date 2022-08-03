@@ -1,6 +1,6 @@
 resource "helm_release" "keda_hpa_compute_plane" {
   for_each   = toset(local.partition_names)
-  name       = "${each.key}-compute-plane"
+  name       = "compute-plane-${each.key}"
   namespace  = var.namespace
   chart      = "keda-hpa"
   repository = "${path.module}/charts"
