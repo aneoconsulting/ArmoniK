@@ -2,7 +2,7 @@
 resource "kubernetes_deployment" "compute_plane" {
   for_each = toset(local.partition_names)
   metadata {
-    name      = "${each.key}-compute-plane"
+    name      = "compute-plane-${each.key}"
     namespace = var.namespace
     labels    = {
       app       = "armonik"
