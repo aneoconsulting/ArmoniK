@@ -1,4 +1,8 @@
 locals {
+  # list of partitions
+  partition_names   = keys(try(var.compute_plane, {}))
+  default_partition = try(var.control_plane.default_partition, "")
+
   # Node selector for control plane
   control_plane_node_selector        = try(var.control_plane.node_selector, {})
   control_plane_node_selector_keys   = keys(local.control_plane_node_selector)
@@ -10,13 +14,13 @@ locals {
   admin_gui_node_selector_values = values(local.admin_gui_node_selector)
 
   # Node selector for compute plane
-  compute_plane_node_selector        = [for index in range(0, length(var.compute_plane)) : try(var.compute_plane[index].node_selector, {})]
-  compute_plane_node_selector_keys   = [for index in range(0, length(local.compute_plane_node_selector)) : keys(local.compute_plane_node_selector[index])]
-  compute_plane_node_selector_values = [for index in range(0, length(local.compute_plane_node_selector)) : values(local.compute_plane_node_selector[index])]
+  compute_plane_node_selector        = {for partition, compute_plane in var.compute_plane : partition => try(compute_plane.node_selector, {})}
+  compute_plane_node_selector_keys   = {for partition in local.partition_names : partition => keys(local.compute_plane_node_selector[partition])}
+  compute_plane_node_selector_values = {for partition in local.partition_names : partition => values(local.compute_plane_node_selector[partition])}
 
   # Annotations
   control_plane_annotations = try(var.control_plane.annotations, {})
-  compute_plane_annotations = [for index in range(0, length(var.compute_plane)) : try(var.compute_plane[index].annotations, {})]
+  compute_plane_annotations = {for partition in local.partition_names : partition => try(var.compute_plane[partition].annotations, {})}
   ingress_annotations       = try(var.ingress.annotations, {})
 
   # Shared storage
@@ -94,12 +98,98 @@ locals {
   mongodb_polling_min_delay = try(var.mongodb_polling_delay.min_polling_delay, "00:00:01")
   mongodb_polling_max_delay = try(var.mongodb_polling_delay.max_polling_delay, "00:05:00")
 
+  # Credentials
+  credentials = {
+  for key, value in {
+    Amqp__User        = local.activemq_credentials_secret != "" ? {
+      key  = local.activemq_credentials_username_key
+      name = local.activemq_credentials_secret
+    } : { key = "", name = "" }
+    Amqp__Password    = local.activemq_credentials_secret != "" ? {
+      key  = local.activemq_credentials_password_key
+      name = local.activemq_credentials_secret
+    } : { key = "", name = "" }
+    Redis__User       = local.redis_credentials_secret != "" ? {
+      key  = local.redis_credentials_username_key
+      name = local.redis_credentials_secret
+    } : { key = "", name = "" }
+    Redis__Password   = local.redis_credentials_secret != "" ? {
+      key  = local.redis_credentials_password_key
+      name = local.redis_credentials_secret
+    } : { key = "", name = "" }
+    MongoDB__User     = local.mongodb_credentials_secret != "" ? {
+      key  = local.mongodb_credentials_username_key
+      name = local.mongodb_credentials_secret
+    } : { key = "", name = "" }
+    MongoDB__Password = local.mongodb_credentials_secret != "" ? {
+      key  = local.mongodb_credentials_password_key
+      name = local.mongodb_credentials_secret
+    } : { key = "", name = "" }
+  } : key => value if !contains(values(value), "")
+  }
+
+  # Certificates
+  certificates = {
+  for key, value in {
+    activemq = local.activemq_certificates_secret != "" ? {
+      name        = "activemq-secret-volume"
+      mount_path  = "/amqp"
+      secret_name = local.activemq_certificates_secret
+    } : { name = "", mount_path = "", secret_name = "" }
+    redis    = local.redis_certificates_secret != "" ? {
+      name        = "redis-secret-volume"
+      mount_path  = "/redis"
+      secret_name = local.redis_certificates_secret
+    } : { name = "", mount_path = "", secret_name = "" }
+    mongodb  = local.mongodb_certificates_secret != "" ? {
+      name        = "mongodb-secret-volume"
+      mount_path  = "/mongodb"
+      secret_name = local.mongodb_certificates_secret
+    } : { name = "", mount_path = "", secret_name = "" }
+  } : key => value if !contains(values(value), "")
+  }
+
+  # Fluent-bit volumes
+  # Please don't change below read-only permissions
+  fluent_bit_volumes = {
+    fluentbitstate         = {
+      mount_path = "/var/fluent-bit/state"
+      read_only  = false
+      type       = "host_path"
+    }
+    varlog                 = {
+      mount_path = "/var/log"
+      read_only  = true
+      type       = "host_path"
+    }
+    varlibdockercontainers = {
+      mount_path = "/var/lib/docker/containers"
+      read_only  = true
+      type       = "host_path"
+    }
+    runlogjournal          = {
+      mount_path = "/run/log/journal"
+      read_only  = true
+      type       = "host_path"
+    }
+    dmesg                  = {
+      mount_path = "/var/log/dmesg"
+      read_only  = true
+      type       = "host_path"
+    }
+    fluentbitconfig        = {
+      mount_path = "/fluent-bit/etc/"
+      read_only  = false
+      type       = "config_map"
+    }
+  }
+
   # HPA scalers
   # Compute plane
-  hpa_compute_plane_triggers = [
-  for compute_plane in var.compute_plane : {
+  hpa_compute_plane_triggers = {
+  for partition in local.partition_names : partition => {
     triggers = [
-    for trigger in try(compute_plane.hpa.triggers, []) :
+    for trigger in try(var.compute_plane[partition].hpa.triggers, []) :
     (lower(try(trigger.type, "")) == "prometheus" ? {
       type     = "prometheus"
       metadata = {
@@ -119,13 +209,13 @@ locals {
     } : object({})))
     ]
   }
-  ]
-
-  compute_plane_triggers = [
-  for compute_plane in local.hpa_compute_plane_triggers : {
-    triggers = [for trigger in compute_plane.triggers : trigger if trigger != {}]
   }
-  ]
+
+  compute_plane_triggers = {
+  for partition in local.partition_names : partition => {
+    triggers = [for trigger in local.hpa_compute_plane_triggers[partition].triggers : trigger if trigger != {}]
+  }
+  }
 
   # Control plane
   hpa_control_plane_triggers = {

@@ -98,6 +98,7 @@ variable "control_plane" {
     node_selector      = any
     annotations        = any
     hpa                = any
+    default_partition  = string
   })
 }
 
@@ -144,8 +145,7 @@ variable "admin_gui" {
 # Parameters of the compute plane
 variable "compute_plane" {
   description = "Parameters of the compute plane"
-  type        = list(object({
-    name                             = string
+  type        = map(object({
     replicas                         = number
     termination_grace_period_seconds = number
     image_pull_secrets               = string
