@@ -67,14 +67,8 @@ resource "kubernetes_deployment" "compute_plane" {
             }
           }
           resources {
-            limits   = {
-              cpu    = var.compute_plane[each.key].polling_agent.limits.cpu
-              memory = var.compute_plane[each.key].polling_agent.limits.memory
-            }
-            requests = {
-              cpu    = var.compute_plane[each.key].polling_agent.requests.cpu
-              memory = var.compute_plane[each.key].polling_agent.requests.memory
-            }
+            limits   = var.compute_plane[each.key].polling_agent.limits
+            requests = var.compute_plane[each.key].polling_agent.requests
           }
           port {
             name           = "poll-agent-port"
@@ -157,14 +151,8 @@ resource "kubernetes_deployment" "compute_plane" {
             image             = worker.value.tag != "" ? "${worker.value.image}:${worker.value.tag}" : worker.value.image
             image_pull_policy = worker.value.image_pull_policy
             resources {
-              limits   = {
-                cpu    = worker.value.limits.cpu
-                memory = worker.value.limits.memory
-              }
-              requests = {
-                cpu    = worker.value.requests.cpu
-                memory = worker.value.requests.memory
-              }
+              limits   = worker.value.limits
+              requests = worker.value.requests
             }
             env_from {
               config_map_ref {

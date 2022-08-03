@@ -42,14 +42,8 @@ resource "kubernetes_deployment" "ingress" {
           image             = var.ingress.tag != "" ? "${var.ingress.image}:${var.ingress.tag}" : var.ingress.image
           image_pull_policy = var.ingress.image_pull_policy
           resources {
-            limits   = {
-              cpu    = var.ingress.limits.cpu
-              memory = var.ingress.limits.memory
-            }
-            requests = {
-              cpu    = var.ingress.requests.cpu
-              memory = var.ingress.requests.memory
-            }
+            limits   = var.ingress.limits
+            requests = var.ingress.requests
           }
           port {
             name           = "ingress-p-http"
@@ -126,10 +120,10 @@ resource "kubernetes_service" "ingress" {
     }
     dynamic port {
       for_each = var.ingress.http_port == var.ingress.grpc_port ? {
-        "0": var.ingress.http_port
+        "0" : var.ingress.http_port
       } : {
-        "0": var.ingress.http_port
-        "1": var.ingress.grpc_port
+        "0" : var.ingress.http_port
+        "1" : var.ingress.grpc_port
       }
       content {
         name        = kubernetes_deployment.ingress.0.spec.0.template.0.spec.0.container.0.port[port.key].name

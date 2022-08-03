@@ -53,14 +53,8 @@ resource "kubernetes_deployment" "admin_gui" {
           image             = var.admin_gui.api.tag != "" ? "${var.admin_gui.api.image}:${var.admin_gui.api.tag}" : var.admin_gui.api.image
           image_pull_policy = var.admin_gui.image_pull_policy
           resources {
-            limits   = {
-              cpu    = var.admin_gui.api.limits.cpu
-              memory = var.admin_gui.api.limits.memory
-            }
-            requests = {
-              cpu    = var.admin_gui.api.requests.cpu
-              memory = var.admin_gui.api.requests.memory
-            }
+            limits   = var.admin_gui.api.limits
+            requests = var.admin_gui.api.requests
           }
           port {
             name           = "api-port"
@@ -117,14 +111,8 @@ resource "kubernetes_deployment" "admin_gui" {
           image             = var.admin_gui.app.tag != "" ? "${var.admin_gui.app.image}:${var.admin_gui.app.tag}" : var.admin_gui.app.image
           image_pull_policy = var.admin_gui.image_pull_policy
           resources {
-            limits   = {
-              cpu    = var.admin_gui.app.limits.cpu
-              memory = var.admin_gui.app.limits.memory
-            }
-            requests = {
-              cpu    = var.admin_gui.app.requests.cpu
-              memory = var.admin_gui.app.requests.memory
-            }
+            limits   = var.admin_gui.app.limits
+            requests = var.admin_gui.app.requests
           }
           port {
             name           = "app-port"
