@@ -230,87 +230,31 @@ resource "kubernetes_deployment" "compute_plane" {
               }
             }
             # Please don't change below read-only permissions
-            volume_mount {
-              name       = "fluentbitstate"
-              mount_path = "/var/fluent-bit/state"
-            }
-            volume_mount {
-              name       = "varlog"
-              mount_path = "/var/log"
-              read_only  = true
-            }
-            volume_mount {
-              name       = "varlibdockercontainers"
-              mount_path = "/var/lib/docker/containers"
-              read_only  = true
-            }
-            volume_mount {
-              name       = "runlogjournal"
-              mount_path = "/run/log/journal"
-              read_only  = true
-            }
-            volume_mount {
-              name       = "dmesg"
-              mount_path = "/var/log/dmesg"
-              read_only  = true
-            }
-            volume_mount {
-              name       = "fluent-bit-config"
-              mount_path = "/fluent-bit/etc/"
+            dynamic volume_mount {
+              for_each = local.fluent_bit_volumes
+              content {
+                name       = volume_mount.value.name
+                mount_path = volume_mount.value.mount_path
+                read_only  = volume_mount.value.read_only
+              }
             }
           }
         }
         dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
+          for_each = local.fluent_bit_volumes
           content {
-            name = "fluentbitstate"
-            host_path {
-              path = "/var/fluent-bit/state"
+            name = volume.value.name
+            dynamic host_path {
+              for_each = (volume.value.type == "host_path" ? [1] : [])
+              content {
+                path = volume.value.mount_path
+              }
             }
-          }
-        }
-        dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
-          content {
-            name = "varlog"
-            host_path {
-              path = "/var/log"
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
-          content {
-            name = "varlibdockercontainers"
-            host_path {
-              path = "/var/lib/docker/containers"
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
-          content {
-            name = "runlogjournal"
-            host_path {
-              path = "/run/log/journal"
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
-          content {
-            name = "dmesg"
-            host_path {
-              path = "/var/log/dmesg"
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
-          content {
-            name = "fluent-bit-config"
-            config_map {
-              name = local.fluent_bit_configmap
+            dynamic config_map {
+              for_each = (volume.value.type == "config_map" ? [1] : [])
+              content {
+                name = local.fluent_bit_configmap
+              }
             }
           }
         }
