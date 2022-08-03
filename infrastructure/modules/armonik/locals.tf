@@ -14,7 +14,7 @@ locals {
   admin_gui_node_selector_values = values(local.admin_gui_node_selector)
 
   # Node selector for compute plane
-  compute_plane_node_selector        = {for partition in local.partition_names : partition => try(var.compute_plane[partition].node_selector, {})}
+  compute_plane_node_selector        = {for partition, compute_plane in local.partition_names : partition => try(compute_plane.node_selector, {})}
   compute_plane_node_selector_keys   = {for partition in local.partition_names : partition => keys(local.compute_plane_node_selector[partition])}
   compute_plane_node_selector_values = {for partition in local.partition_names : partition => values(local.compute_plane_node_selector[partition])}
 
