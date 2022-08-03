@@ -151,44 +151,38 @@ locals {
 
   # Fluent-bit volumes
   # Please don't change below read-only permissions
-  fluent_bit_volumes = [
-    {
-      name       = "fluentbitstate"
+  fluent_bit_volumes = {
+    fluentbitstate         = {
       mount_path = "/var/fluent-bit/state"
       read_only  = false
       type       = "host_path"
-    },
-    {
-      name       = "varlog"
+    }
+    varlog                 = {
       mount_path = "/var/log"
       read_only  = true
       type       = "host_path"
-    },
-    {
-      name       = "varlibdockercontainers"
+    }
+    varlibdockercontainers = {
       mount_path = "/var/lib/docker/containers"
       read_only  = true
       type       = "host_path"
-    },
-    {
-      name       = "runlogjournal"
+    }
+    runlogjournal          = {
       mount_path = "/run/log/journal"
       read_only  = true
       type       = "host_path"
-    },
-    {
-      name       = "dmesg"
+    }
+    dmesg                  = {
       mount_path = "/var/log/dmesg"
       read_only  = true
       type       = "host_path"
-    },
-    {
-      name       = "fluentbitconfig"
+    }
+    fluentbitconfig        = {
       mount_path = "/fluent-bit/etc/"
       read_only  = false
       type       = "config_map"
     }
-  ]
+  }
 
   # HPA scalers
   # Compute plane

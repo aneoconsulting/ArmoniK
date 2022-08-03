@@ -233,7 +233,7 @@ resource "kubernetes_deployment" "compute_plane" {
             dynamic volume_mount {
               for_each = local.fluent_bit_volumes
               content {
-                name       = volume_mount.value.name
+                name       = volume_mount.key
                 mount_path = volume_mount.value.mount_path
                 read_only  = volume_mount.value.read_only
               }
@@ -243,7 +243,7 @@ resource "kubernetes_deployment" "compute_plane" {
         dynamic volume {
           for_each = local.fluent_bit_volumes
           content {
-            name = volume.value.name
+            name = volume.key
             dynamic host_path {
               for_each = (volume.value.type == "host_path" ? [1] : [])
               content {
