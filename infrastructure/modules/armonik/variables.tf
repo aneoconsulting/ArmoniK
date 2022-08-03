@@ -100,10 +100,6 @@ variable "control_plane" {
     hpa                = any
     default_partition  = string
   })
-  validation {
-    condition     = (var.control_plane.default_partition == null || contains(keys(var.compute_plane), var.control_plane.default_partition))
-    error_message = "Err: You MUST give the name of an existing partition for the default partition parameter, or set it to null."
-  }
 }
 
 # Parameters of admin gui

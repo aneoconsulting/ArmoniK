@@ -6,6 +6,6 @@ resource "kubernetes_config_map" "control_plane_config" {
   }
   data = {
     ControlPlane__Partitions       = join(",", local.partition_names)
-    ControlPlane__DefaultPartition = (local.default_partition == null ? "" : local.default_partition)
+    ControlPlane__DefaultPartition = (local.default_partition == null || !contains(keys(var.compute_plane), local.default_partition) ? "" : local.default_partition)
   }
 }
