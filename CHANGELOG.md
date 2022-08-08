@@ -1,11 +1,29 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-07-29)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-12)
+
+## [v2.9.0](https://github.com/aneoconsulting/armonik/tree/v2.8.3) (2022-08-12)
+
+Added
+-
+
+* Add in Admin GUI the duration of tasks
+* Add static partitioning in ArmoniK
+
+Changed
+-
+
+* Updated Admin GUI to 0.5.0
+
+Fixed
+-
+
+* Fix in Admin GUI the display of the status of a session
 
 ## [v2.8.2](https://github.com/aneoconsulting/armonik/tree/v2.8.2) (2022-07-29)
 
 Added
--
+- 
 
 * Add HPA on ArmoniK control plane based on CPU and RAM utilization metrics
 * Add node selector on all deployments (ArmoniK and Helm charts for infrastructure)
