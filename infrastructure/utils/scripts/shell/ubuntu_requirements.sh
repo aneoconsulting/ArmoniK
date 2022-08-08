@@ -1,5 +1,11 @@
 #!/usr/bin/bash
 # usage: $0 <username>
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <username>"
+    exit 1
+fi
+
 set -e
 
 apt update
