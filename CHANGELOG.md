@@ -13,13 +13,14 @@ Added
 Changed
 -
 
-* Updated Admin GUI version from 0.4.0 to 0.5.0
+* Updated Admin GUI version from 0.4.0 to 0.5.1
 * Update Core version from 0.5.15 to 0.5.16
 
 Fixed
 -
 
 * Fix in Admin GUI the display of the status of a session
+* Fix CVE in Admin GUI docker image
 * Better prefetching for Amqp messages
 * Optimize the result request
 
