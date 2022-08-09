@@ -13,7 +13,8 @@ Added
 Changed
 -
 
-* Updated Admin GUI to 0.5.0
+* Updated Admin GUI version from 0.4.0 to 0.5.0
+* Update Core version from 0.5.15 to 0.5.16
 
 Fixed
 -
