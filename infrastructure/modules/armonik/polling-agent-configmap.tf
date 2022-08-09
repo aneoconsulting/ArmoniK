@@ -15,5 +15,6 @@ resource "kubernetes_config_map" "polling_agent_config" {
     InitWorker__WorkerCheckDelay         = "00:00:10" # TODO: make it a variable
     target_grpc_sockets_path             = "/cache"
     target_data_path                     = "/data"
+    Amqp__LinkCredit                     = "2"
   }
 }
