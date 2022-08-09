@@ -8,7 +8,7 @@ Added
 -
 
 * Add in Admin GUI the duration of tasks
-* Add static partitioning in ArmoniK
+* Add the parameter Amqp__LinkCredit in the configmap of ArmoniK polling agent
 
 Changed
 -
@@ -21,6 +21,7 @@ Fixed
 
 * Fix in Admin GUI the display of the status of a session
 * Better prefetching for Amqp messages
+* Optimize the result request
 
 ## [v2.8.2](https://github.com/aneoconsulting/armonik/tree/v2.8.2) (2022-07-29)
 
