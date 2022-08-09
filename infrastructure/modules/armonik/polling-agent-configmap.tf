@@ -17,5 +17,6 @@ resource "kubernetes_config_map" "polling_agent_config" {
     target_data_path                     = "/data"
     InitWorker__WorkerCheckRetries       = "10"
     InitWorker__WorkerCheckDelay         = "00:00:10"
+    Amqp__LinkCredit                     = "2"
   }
 }

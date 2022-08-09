@@ -1,6 +1,26 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-07-29)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-12)
+
+## [v2.8.3](https://github.com/aneoconsulting/armonik/tree/v2.8.3) (2022-08-12)
+
+Added
+-
+
+* Add in Admin GUI the duration of tasks
+* Add static partitioning in ArmoniK
+
+Changed
+-
+
+* Updated Admin GUI version from 0.4.0 to 0.5.0
+* Update Core version from 0.5.15 to 0.5.16
+
+Fixed
+-
+
+* Fix in Admin GUI the display of the status of a session
+* Better prefetching for Amqp messages
 
 ## [v2.8.2](https://github.com/aneoconsulting/armonik/tree/v2.8.2) (2022-07-29)
 
