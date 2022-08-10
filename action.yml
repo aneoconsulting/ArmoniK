@@ -94,7 +94,7 @@ runs:
     - name: Install K3s
       shell: bash
       run: |
-        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.23.8+k3s1" sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config --disable traefik --disable metrics-server
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.23.8+k3s1" sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
 
     - name: Set the name path of the shared storage
       id: sethostpath
@@ -159,10 +159,14 @@ runs:
         source envvars.sh
         if [ -z ${{ inputs.ingress }} ]; then
           python ${{ github.action_path }}/tools/modify_parameters.py \
-            -kv "compute_plane[*].worker[*].image=${{ inputs.worker-image }}" \
-            -kv "compute_plane[*].worker[*].tag=${{ inputs.worker-tag }}" \
-            -kv "compute_plane[*].polling_agent.image=${{ inputs.polling-agent-image }}" \
-            -kv "compute_plane[*].polling_agent.tag=${{ inputs.core-tag }}" \
+            -kv "compute_plane[athos].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[athos].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[athos].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[athos].polling_agent.tag=${{ inputs.core-tag }}" \
+            -kv "compute_plane[porthos].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[porthos].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[porthos].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[porthos].polling_agent.tag=${{ inputs.core-tag }}" \
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
             -kv admin_gui.api.image=${{ inputs.admin-api-image }} \
@@ -175,10 +179,14 @@ runs:
             ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
         else
           python ${{ github.action_path }}/tools/modify_parameters.py \
-            -kv "compute_plane[*].worker[*].image=${{ inputs.worker-image }}" \
-            -kv "compute_plane[*].worker[*].tag=${{ inputs.worker-tag }}" \
-            -kv "compute_plane[*].polling_agent.image=${{ inputs.polling-agent-image }}" \
-            -kv "compute_plane[*].polling_agent.tag=${{ inputs.core-tag }}" \
+            -kv "compute_plane[athos].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[athos].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[athos].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[athos].polling_agent.tag=${{ inputs.core-tag }}" \
+            -kv "compute_plane[porthos].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[porthos].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[porthos].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[porthos].polling_agent.tag=${{ inputs.core-tag }}" \
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
             -kv admin_gui.api.image=${{ inputs.admin-api-image }} \

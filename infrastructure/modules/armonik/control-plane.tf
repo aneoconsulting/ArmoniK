@@ -54,21 +54,9 @@ resource "kubernetes_deployment" "control_plane" {
           name              = var.control_plane.name
           image             = var.control_plane.tag != "" ? "${var.control_plane.image}:${var.control_plane.tag}" : var.control_plane.image
           image_pull_policy = var.control_plane.image_pull_policy
-          dynamic resources {
-            for_each = (var.control_plane.limits.cpu != ""
-            || var.control_plane.limits.memory != ""
-            || var.control_plane.requests.cpu != ""
-            || var.control_plane.requests.memory != "" ? [1] : [])
-            content {
-              limits   = {
-                cpu    = var.control_plane.limits.cpu
-                memory = var.control_plane.limits.memory
-              }
-              requests = {
-                cpu    = var.control_plane.requests.cpu
-                memory = var.control_plane.requests.memory
-              }
-            }
+          resources {
+            limits   = var.control_plane.limits
+            requests = var.control_plane.requests
           }
           port {
             name           = "control-port"
@@ -105,135 +93,39 @@ resource "kubernetes_deployment" "control_plane" {
               name = kubernetes_config_map.log_config.metadata.0.name
             }
           }
-          dynamic env {
-            for_each = (local.activemq_credentials_secret != "" ? [1] : [])
-            content {
-              name = "Amqp__User"
-              value_from {
-                secret_key_ref {
-                  key      = local.activemq_credentials_username_key
-                  name     = local.activemq_credentials_secret
-                  optional = false
-                }
-              }
+          env_from {
+            config_map_ref {
+              name = kubernetes_config_map.control_plane_config.metadata.0.name
             }
           }
           dynamic env {
-            for_each = (local.activemq_credentials_secret != "" ? [1] : [])
+            for_each = local.credentials
             content {
-              name = "Amqp__Password"
+              name = env.key
               value_from {
                 secret_key_ref {
-                  key      = local.activemq_credentials_password_key
-                  name     = local.activemq_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.redis_credentials_secret != "" ? [1] : [])
-            content {
-              name = "Redis__User"
-              value_from {
-                secret_key_ref {
-                  key      = local.redis_credentials_username_key
-                  name     = local.redis_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.redis_credentials_secret != "" ? [1] : [])
-            content {
-              name = "Redis__Password"
-              value_from {
-                secret_key_ref {
-                  key      = local.redis_credentials_password_key
-                  name     = local.redis_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.mongodb_credentials_secret != "" ? [1] : [])
-            content {
-              name = "MongoDB__User"
-              value_from {
-                secret_key_ref {
-                  key      = local.mongodb_credentials_username_key
-                  name     = local.mongodb_credentials_secret
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic env {
-            for_each = (local.mongodb_credentials_secret != "" ? [1] : [])
-            content {
-              name = "MongoDB__Password"
-              value_from {
-                secret_key_ref {
-                  key      = local.mongodb_credentials_password_key
-                  name     = local.mongodb_credentials_secret
+                  key      = env.value.key
+                  name     = env.value.name
                   optional = false
                 }
               }
             }
           }
           dynamic volume_mount {
-            for_each = (local.activemq_certificates_secret != "" ? [1] : [])
+            for_each = local.certificates
             content {
-              name       = "activemq-secret-volume"
-              mount_path = "/amqp"
-              read_only  = true
-            }
-          }
-          dynamic volume_mount {
-            for_each = (local.redis_certificates_secret != "" ? [1] : [])
-            content {
-              name       = "redis-secret-volume"
-              mount_path = "/redis"
-              read_only  = true
-            }
-          }
-          dynamic volume_mount {
-            for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
-            content {
-              name       = "mongodb-secret-volume"
-              mount_path = "/mongodb"
+              name       = volume_mount.value.name
+              mount_path = volume_mount.value.mount_path
               read_only  = true
             }
           }
         }
         dynamic volume {
-          for_each = (local.activemq_certificates_secret != "" ? [1] : [])
+          for_each = local.certificates
           content {
-            name = "activemq-secret-volume"
+            name = volume.value.name
             secret {
-              secret_name = local.activemq_certificates_secret
-              optional    = false
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (local.redis_certificates_secret != "" ? [1] : [])
-          content {
-            name = "redis-secret-volume"
-            secret {
-              secret_name = local.redis_certificates_secret
-              optional    = false
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
-          content {
-            name = "mongodb-secret-volume"
-            secret {
-              secret_name = local.mongodb_certificates_secret
+              secret_name = volume.value.secret_name
               optional    = false
             }
           }
@@ -251,87 +143,31 @@ resource "kubernetes_deployment" "control_plane" {
               }
             }
             # Please don't change below read-only permissions
-            volume_mount {
-              name       = "fluentbitstate"
-              mount_path = "/var/fluent-bit/state"
-            }
-            volume_mount {
-              name       = "varlog"
-              mount_path = "/var/log"
-              read_only  = true
-            }
-            volume_mount {
-              name       = "varlibdockercontainers"
-              mount_path = "/var/lib/docker/containers"
-              read_only  = true
-            }
-            volume_mount {
-              name       = "runlogjournal"
-              mount_path = "/run/log/journal"
-              read_only  = true
-            }
-            volume_mount {
-              name       = "dmesg"
-              mount_path = "/var/log/dmesg"
-              read_only  = true
-            }
-            volume_mount {
-              name       = "fluent-bit-config"
-              mount_path = "/fluent-bit/etc/"
+            dynamic volume_mount {
+              for_each = local.fluent_bit_volumes
+              content {
+                name       = volume_mount.key
+                mount_path = volume_mount.value.mount_path
+                read_only  = volume_mount.value.read_only
+              }
             }
           }
         }
         dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
+          for_each = local.fluent_bit_volumes
           content {
-            name = "fluentbitstate"
-            host_path {
-              path = "/var/fluent-bit/state"
+            name = volume.key
+            dynamic host_path {
+              for_each = (volume.value.type == "host_path" ? [1] : [])
+              content {
+                path = volume.value.mount_path
+              }
             }
-          }
-        }
-        dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
-          content {
-            name = "varlog"
-            host_path {
-              path = "/var/log"
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
-          content {
-            name = "varlibdockercontainers"
-            host_path {
-              path = "/var/lib/docker/containers"
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
-          content {
-            name = "runlogjournal"
-            host_path {
-              path = "/run/log/journal"
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
-          content {
-            name = "dmesg"
-            host_path {
-              path = "/var/log/dmesg"
-            }
-          }
-        }
-        dynamic volume {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
-          content {
-            name = "fluent-bit-config"
-            config_map {
-              name = local.fluent_bit_configmap
+            dynamic config_map {
+              for_each = (volume.value.type == "config_map" ? [1] : [])
+              content {
+                name = local.fluent_bit_configmap
+              }
             }
           }
         }

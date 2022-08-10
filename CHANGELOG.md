@@ -1,6 +1,14 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-10)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-09-15)
+
+## [v2.9.0](https://github.com/aneoconsulting/armonik/tree/v2.9.0) (2022-09-15)
+
+Added
+-
+
+* Add static partitioning in ArmoniK
+* Add the parameters `InitWorker__WorkerCheckRetries` and `InitWorker__WorkerCheckDelay` in the configmap of ArmoniK polling agent
 
 ## [v2.8.3](https://github.com/aneoconsulting/armonik/tree/v2.8.3) (2022-08-10)
 
@@ -28,7 +36,7 @@ Fixed
 ## [v2.8.2](https://github.com/aneoconsulting/armonik/tree/v2.8.2) (2022-07-29)
 
 Added
--
+- 
 
 * Add HPA on ArmoniK control plane based on CPU and RAM utilization metrics
 * Add node selector on all deployments (ArmoniK and Helm charts for infrastructure)
