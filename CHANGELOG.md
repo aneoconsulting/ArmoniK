@@ -1,25 +1,37 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-12)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-09-15)
 
-## [v2.9.0](https://github.com/aneoconsulting/armonik/tree/v2.8.3) (2022-08-12)
+## [v2.9.0](https://github.com/aneoconsulting/armonik/tree/v2.9.0) (2022-09-15)
+
+Added
+-
+
+* Add static partitioning in ArmoniK
+* Add the parameters `InitWorker__WorkerCheckRetries` and `InitWorker__WorkerCheckDelay` in the configmap of ArmoniK polling agent
+
+## [v2.8.3](https://github.com/aneoconsulting/armonik/tree/v2.8.3) (2022-08-10)
 
 Added
 -
 
 * Add in Admin GUI the duration of tasks
-* Add static partitioning in ArmoniK
+* Add the parameter `Amqp__LinkCredit` in the configmap of ArmoniK polling agent
 
 Changed
 -
 
-* Updated Admin GUI version from 0.4.0 to 0.5.0
+* Updated Admin GUI version from 0.4.0 to 0.5.1
 * Update Core version from 0.5.15 to 0.5.16
+* Update Worker version from 0.6.4 to 0.6.5
+* Update Debian and Alpine docker images provided by Microsoft and Node.js (security)
 
 Fixed
 -
 
-* Fix in Admin GUI the display of the status of a session
+* Fix the session status display in Admin GUI
+* Better prefetching for Amqp messages
+* Optimize the result request
 
 ## [v2.8.2](https://github.com/aneoconsulting/armonik/tree/v2.8.2) (2022-07-29)
 
