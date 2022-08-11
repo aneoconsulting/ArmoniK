@@ -1,6 +1,12 @@
 #!/bin/bash
 # usage: armonik_installation.sh <git branch to use>
 
+if [ -z "$1"]
+then
+    echo "Usage: $0 <git branch name>"
+    exit 1
+fi
+
 # Clone ArmoniK github repository (with submodule)
 git config --global core.autocrlf
 if [ ! -d $HOME/ArmoniK ] 
@@ -9,7 +15,7 @@ then
 fi
 cd $HOME/ArmoniK
 
-git checkout $1
+git switch -c $1
 
 # change branch
 #while ! git rev-parse --quiet --verify $branch_name > /dev/null 
@@ -24,27 +30,23 @@ git checkout $1
 # Change directory to use Makefile for quick deployement
 cd $HOME/ArmoniK/infrastructure/quick-deploy/localhost
 
-mkdir -p $HOME/.kube && cp /etc/rancher/k3s/k3s.yaml $HOME/.kube/config && export KUBECONFIG=$HOME/.kube/config
 
 # source envvars.sh
-
 export ARMONIK_KUBERNETES_NAMESPACE=armonik
-export ARMONIK_SHARED_HOST_PATH=/data
+export ARMONIK_SHARED_HOST_PATH=$HOME/data
 export ARMONIK_FILE_STORAGE_FILE=HostPath
 export ARMONIK_FILE_SERVER_IP=""
+export KEDA_KUBERNETES_NAMESPACE=default
+export METRICS_SERVER_KUBERNETES_NAMESPACE=kube-system
 
-# ArmoniK installation
+# Created shared storage
+mkdir -p "${ARMONIK_SHARED_HOST_PATH}"
 
-echo "Kubernetes name space creation"
-make create-namespace
+# ArmoniK full deployment
 
-echo "Storage creation: ActiveMQ, MongoDB, Redis"
-make deploy-storage
+make deploy-all 
+
 echo "ArmoniK storage information are store in $PWD'/storage/generated/storage-output.json'"
-
-echo "Monitoring deployment"
-make deploy-monitoring
 echo "ArmoniK monitoring information are store in $PWD'/monitoring/generated/monitoring-output.json'"
-
-echo "Deploy ArmoniK"
-make deploy-armonik
+echo "ArmoniK keda information are store in $PWD'/keda/generated/keda-output.json'"
+echo "ArmoniK deploiement information are store in $PWD'/armonik/generated/armonik-output.json'"

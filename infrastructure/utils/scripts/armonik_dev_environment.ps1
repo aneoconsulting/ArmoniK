@@ -19,6 +19,7 @@
     
     #>
 
+$k3s_version = "v1.23.8+k3s1"
 function Restart-Genie {
 
     # Stop wsl
@@ -103,15 +104,15 @@ $ubuntu_user = Read-Host -Prompt "Which username did you use for your wsl instal
 Write-Host "Username that will be use for the next steps: $ubuntu_user"
 
 $ubuntu_password = Read-Host -Prompt "Which password did you use for your wsl installation" -AsSecureString
-Write-Host "Username that will be use for the next steps: $ubuntu_user"
 $ubuntu_password = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
     [Runtime.InteropServices.Marshal]::SecureStringToBSTR($ubuntu_password))
 
-Write-Host "Avalaible branches:"
+Write-Host "Available branches:"
 $available_branches=git branch -a
 foreach ($branch_name in $available_branches) 
     {Write-Host $branch_name}
 $armonik_branch = Read-Host -Prompt "Which branch do you want to use?"
+Write-Host "ArmoniK branch that will be use for the next steps: $armonik_branch"
 # TODO: parse the $available_branches, give a number using the actual one (with a * in front) as default
 
 
@@ -135,8 +136,13 @@ Restart-Genie
 Write-Host "ArmoniK requirements installation (docker, k3s, terraform)"
 wsl -d Ubuntu genie  -c cp -r $pathname/armonik_requirements.sh /tmp
 wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_requirements.sh
-wsl -d Ubuntu genie  -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/armonik_requirements.sh $ubuntu_user"
+wsl -d Ubuntu genie  -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/armonik_requirements.sh $ubuntu_user $k3s_version"
 wsl -d Ubuntu genie  -c rm /tmp/armonik_requirements.sh
+
+# wsl -d Ubuntu genie  -c cp -r $pathname/k3s_installation.sh /tmp
+# wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/k3s_installation.sh
+# wsl -d Ubuntu genie  -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/k3s_installation.sh $ubuntu_user $k3s_version"
+# wsl -d Ubuntu genie  -c rm /tmp/k3s_installation.sh
 
 Write-Host "ArmoniK installation"
 wsl -d Ubuntu genie  -c cp -r $pathname/armonik_installation.sh /tmp 
@@ -153,8 +159,8 @@ $wsl_ip = (wsl -d Ubuntu genie  -c hostname -I).trim().split()[0]
 Write-Host "WSL Machine IP: ""$wsl_ip"""
 
 # Open seq webserver in default browser
-$seq_url = -join("http://", $wsl_ip, ":8080")
-Start-Process $seq_url
+# $seq_url = -join("http://", $wsl_ip, ":8080")
+# Start-Process $seq_url
 
 # Launch integrations tests
 Write-Host "Launch integration test"
