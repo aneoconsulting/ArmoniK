@@ -23,11 +23,46 @@ imagePullSecrets: []
 operator:
   name: keda-operator
   replicaCount: 1
+  # -- Affinity for pod scheduling https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/ for KEDA operator. Takes precedence over the `affinity` field
+  affinity: {}
+    # podAntiAffinity:
+    #   requiredDuringSchedulingIgnoredDuringExecution:
+    #   - labelSelector:
+    #       matchExpressions:
+    #       - key: app
+    #         operator: In
+    #         values:
+    #         - keda-operator
+    #     topologyKey: "kubernetes.io/hostname"
 
 metricsServer:
+  replicaCount: 1
   # use ClusterFirstWithHostNet if `useHostNetwork: true` https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
   dnsPolicy: ClusterFirst
   useHostNetwork: false
+  # -- Affinity for pod scheduling https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/ for Metrics API Server. Takes precedence over the `affinity` field
+  affinity: {}
+    # podAntiAffinity:
+    #   requiredDuringSchedulingIgnoredDuringExecution:
+    #   - labelSelector:
+    #       matchExpressions:
+    #       - key: app
+    #         operator: In
+    #         values:
+    #         - keda-operator-metrics-apiserver
+    #     topologyKey: "kubernetes.io/hostname"
+
+upgradeStrategy:
+  operator: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxUnavailable: 1
+    #   maxSurge: 1
+  metricsApiServer: {}
+    # type: RollingUpdate
+    # rollingUpdate:
+    #   maxUnavailable: 1
+    #   maxSurge: 1
 
 podDisruptionBudget: {}
   # operator:
@@ -58,6 +93,8 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: keda-operator
+  # Specifies whether a service account should automount API-Credentials
+  automountServiceAccountToken: true
   # Annotations to add to the service account
   annotations: {}
 
@@ -96,9 +133,13 @@ logging:
     # allowed values: 'debug', 'info', 'error', or an integer value greater than 0, specified as string
     # default value: info
     level: info
-    # allowed valuesL 'json' or 'console'
+    # allowed values: 'json' or 'console'
     # default value: console
     format: console
+    ## Logging time encoding for KEDA Operator
+    # allowed values are 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'
+    # default value: rfc3339
+    timeEncoding: rfc3339
   metricServer:
     ## Logging level for Metrics Server
     # allowed values: '0' for info, '4' for debug, or an integer value greater than 0, specified as string
@@ -166,8 +207,8 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity:
-  {}
+# -- Affinity for pod scheduling https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/ for both KEDA operator and Metrics API Server
+affinity: {}
   # podAntiAffinity:
   #   requiredDuringSchedulingIgnoredDuringExecution:
   #   - labelSelector:
@@ -221,6 +262,7 @@ prometheus:
       scrapeTimeout:
       namespace:
       additionalLabels: {}
+      relabelings: []
   operator:
     enabled: false
     port: 8080
@@ -232,6 +274,7 @@ prometheus:
       scrapeTimeout:
       namespace:
       additionalLabels: {}
+      relabelings: []
     prometheusRules:
       # Enables PrometheusRules creation for the Prometheus Operator
       enabled: false

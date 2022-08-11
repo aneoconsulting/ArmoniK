@@ -8,7 +8,15 @@ Added
 -
 
 * Add static partitioning in ArmoniK
-* Add the parameters `InitWorker__WorkerCheckRetries` and `InitWorker__WorkerCheckDelay` in the configmap of ArmoniK polling agent
+* Add the environment variable `Amqp__MaxRetries` in the configmap of ArmoniK core and Metrics exporter
+* Add the environment variables `ControlPlane__Partitions` and `ControlPlane__DefaultPartition` in the configmap of
+  ArmoniK control plane
+* Add the environment variable `ComputePlan__PartitionId` in the of ArmoniK polling agent container
+
+Changed
+-
+
+* Upgrade Keda version from 2.7.1 to 2.8.0
 
 ## [v2.8.3](https://github.com/aneoconsulting/armonik/tree/v2.8.3) (2022-08-10)
 
