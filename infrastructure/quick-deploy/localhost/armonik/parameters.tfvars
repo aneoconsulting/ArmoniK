@@ -111,7 +111,7 @@ admin_gui = {
 
 # Parameters of the compute plane
 compute_plane = {
-  athos = {
+  athos   = {
     partition_data                   = {
       priority              = 1
       reserved_pods         = 50
@@ -176,8 +176,8 @@ compute_plane = {
       ]
     }
   },
-  /*porthos = {
-      partition_data                   = {
+  porthos = {
+    partition_data                   = {
       priority              = 2
       reserved_pods         = 50
       max_pods              = 100
@@ -236,11 +236,11 @@ compute_plane = {
       }
       triggers          = [
         {
-          type        = "prometheus"
+          type = "prometheus"
         },
       ]
     }
-  },*/
+  },
 }
 
 # Deploy ingress

@@ -17,6 +17,10 @@ inputs:
     description: 'Repository/image for metrics exporter docker image'
     required: false
     default: 'None'
+  partition_metrics-exporter-image:
+    description: 'Repository/image for partition metrics exporter docker image'
+    required: false
+    default: 'None'
   admin-api-image:
     description: 'Repository/image for Admi GUI API docker image'
     required: false
@@ -146,6 +150,8 @@ runs:
         python ${{ github.action_path }}/tools/modify_parameters.py \
           -kv "monitoring.metrics_exporter.image=${{ inputs.metrics-exporter-image }}" \
           -kv "monitoring.metrics_exporter.tag=${{ inputs.core-tag }}" \
+          -kv "monitoring.partition_metrics_exporter.image=${{ inputs.partition-metrics-exporter-image }}" \
+          -kv "monitoring.partition_metrics_exporter.tag=${{ inputs.core-tag }}" \
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars \
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars.json
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
