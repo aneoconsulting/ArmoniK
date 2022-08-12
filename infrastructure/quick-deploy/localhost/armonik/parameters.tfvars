@@ -159,7 +159,7 @@ compute_plane = {
       ]
     }
   },
-  porthos = {
+  /*porthos = {
     # number of replicas for each deployment of compute plane
     replicas                         = 1
     termination_grace_period_seconds = 30
@@ -217,7 +217,7 @@ compute_plane = {
         },
       ]
     }
-  },
+  },*/
 }
 
 # Deploy ingress

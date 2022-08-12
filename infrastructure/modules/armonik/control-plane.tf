@@ -83,19 +83,12 @@ resource "kubernetes_deployment" "control_plane" {
             failure_threshold     = 20
             # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
           }
-          env_from {
-            config_map_ref {
-              name = kubernetes_config_map.core_config.metadata.0.name
-            }
-          }
-          env_from {
-            config_map_ref {
-              name = kubernetes_config_map.log_config.metadata.0.name
-            }
-          }
-          env_from {
-            config_map_ref {
-              name = kubernetes_config_map.control_plane_config.metadata.0.name
+          dynamic env_from {
+            for_each = local.control_plane_configmaps
+            content {
+              config_map_ref {
+                name = env_from.value
+              }
             }
           }
           dynamic env {

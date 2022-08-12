@@ -184,6 +184,28 @@ locals {
     }
   }
 
+  # Configmaps for polling agent
+  polling_agent_configmaps = {
+    log           = kubernetes_config_map.log_config.metadata.0.name
+    polling_agent = kubernetes_config_map.polling_agent_config.metadata.0.name
+    core          = kubernetes_config_map.core_config.metadata.0.name
+    compute_plane = kubernetes_config_map.compute_plane_config.metadata.0.name
+  }
+
+  # Configmaps for worker
+  worker_configmaps = {
+    worker        = kubernetes_config_map.worker_config.metadata.0.name
+    compute_plane = kubernetes_config_map.compute_plane_config.metadata.0.name
+    log           = kubernetes_config_map.log_config.metadata.0.name
+  }
+
+  # Configmaps for control plane
+  control_plane_configmaps = {
+    core          = kubernetes_config_map.core_config.metadata.0.name
+    log           = kubernetes_config_map.log_config.metadata.0.name
+    control_plane = kubernetes_config_map.control_plane_config.metadata.0.name
+  }
+
   # HPA scalers
   # Compute plane
   hpa_compute_plane_triggers = {
