@@ -17,6 +17,7 @@ Changed
 -
 
 * Upgrade Keda version from 2.7.1 to 2.8.0
+* Upgrade Admin GUI version from 0.5.1 to 0.6.0
 
 ## [v2.8.3](https://github.com/aneoconsulting/armonik/tree/v2.8.3) (2022-08-10)
 
