@@ -1,7 +1,7 @@
 # Partition metrics exporter deployment
 resource "kubernetes_deployment" "partition_metrics_exporter" {
   metadata {
-    name      = "armonik-partition-metrics-exporter"
+    name      = "partition-metrics-exporter"
     namespace = var.namespace
     labels    = {
       app     = "armonik"
@@ -20,7 +20,7 @@ resource "kubernetes_deployment" "partition_metrics_exporter" {
     }
     template {
       metadata {
-        name      = "armonik-partition-metrics-exporter"
+        name      = "partition-metrics-exporter"
         namespace = var.namespace
         labels    = {
           app     = "armonik"

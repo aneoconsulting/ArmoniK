@@ -65,18 +65,22 @@ module "partition_metrics_exporter" {
 
 # Prometheus
 module "prometheus" {
-  source               = "../../../modules/monitoring/prometheus"
-  namespace            = var.namespace
-  service_type         = local.prometheus_service_type
-  node_selector        = local.prometheus_node_selector
-  metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  docker_image         = {
+  source                         = "../../../modules/monitoring/prometheus"
+  namespace                      = var.namespace
+  service_type                   = local.prometheus_service_type
+  node_selector                  = local.prometheus_node_selector
+  metrics_exporter_url           = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
+  partition_metrics_exporter_url = "${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
+  docker_image                   = {
     image              = local.prometheus_image
     tag                = local.prometheus_tag
     image_pull_secrets = local.prometheus_image_pull_secrets
   }
-  working_dir          = "${path.root}/../../.."
-  depends_on           = [module.metrics_exporter]
+  working_dir                    = "${path.root}/../../.."
+  depends_on                     = [
+    module.metrics_exporter,
+    module.partition_metrics_exporter
+  ]
 }
 
 # Grafana

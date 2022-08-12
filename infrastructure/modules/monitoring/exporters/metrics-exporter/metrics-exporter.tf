@@ -1,7 +1,7 @@
 # Metrics exporter deployment
 resource "kubernetes_deployment" "metrics_exporter" {
   metadata {
-    name      = "armonik-metrics-exporter"
+    name      = "metrics-exporter"
     namespace = var.namespace
     labels    = {
       app     = "armonik"
@@ -20,7 +20,7 @@ resource "kubernetes_deployment" "metrics_exporter" {
     }
     template {
       metadata {
-        name      = "armonik-metrics-exporter"
+        name      = "metrics-exporter"
         namespace = var.namespace
         labels    = {
           app     = "armonik"

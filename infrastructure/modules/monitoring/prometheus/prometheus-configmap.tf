@@ -18,9 +18,15 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:9090"]
 
-  - job_name: "armonik-metrics-exporter"
+  - job_name: "metrics-exporter"
     static_configs:
       - targets: ["${var.metrics_exporter_url}"]
+        labels:
+          namespace: "${var.namespace}"
+
+  - job_name: "partition-metrics-exporter"
+    static_configs:
+      - targets: ["${var.partition_metrics_exporter_url}"]
         labels:
           namespace: "${var.namespace}"
 
