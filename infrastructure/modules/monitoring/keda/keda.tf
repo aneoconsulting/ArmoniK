@@ -4,7 +4,7 @@ resource "helm_release" "keda" {
   chart      = "keda"
   #repository = "https://kedacore.github.io/charts"
   repository = "${path.module}/charts"
-  version    = "2.7.2"
+  version    = "2.8.0"
 
   set {
     name  = "image.keda.repository"
