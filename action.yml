@@ -17,7 +17,7 @@ inputs:
     description: 'Repository/image for metrics exporter docker image'
     required: false
     default: 'None'
-  partition_metrics-exporter-image:
+  partition-metrics-exporter-image:
     description: 'Repository/image for partition metrics exporter docker image'
     required: false
     default: 'None'
