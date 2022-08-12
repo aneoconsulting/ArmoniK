@@ -164,10 +164,6 @@ resource "kubernetes_deployment" "compute_plane" {
                 name = kubernetes_config_map.log_config.metadata.0.name
               }
             }
-            env {
-              name  = "ComputePlan__PartitionId"
-              value = each.key
-            }
             volume_mount {
               name       = "cache-volume"
               mount_path = "/cache"
