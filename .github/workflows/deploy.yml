@@ -69,7 +69,7 @@ jobs:
         id: deploy-infra
         with:
           metrics-exporter-image: dockerhubaneo/armonik_control_metrics
-          partition_metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
+          partition-metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_worker_dll
@@ -127,7 +127,7 @@ jobs:
         id: deploy-infra
         with:
           metrics-exporter-image: dockerhubaneo/armonik_control_metrics
-          partition_metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
+          partition-metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_stream_test_worker
@@ -210,7 +210,7 @@ jobs:
         id: deploy-infra
         with:
           metrics-exporter-image: dockerhubaneo/armonik_control_metrics
-          partition_metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
+          partition-metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_stream_test_worker
@@ -305,7 +305,7 @@ jobs:
         id: deploy-infra
         with:
           metrics-exporter-image: dockerhubaneo/armonik_control_metrics
-          partition_metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
+          partition-metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
@@ -409,7 +409,7 @@ jobs:
         id: deploy-infra
         with:
           metrics-exporter-image: dockerhubaneo/armonik_control_metrics
-          partition_metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
+          partition-metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
@@ -500,7 +500,7 @@ jobs:
         id: deploy-infra
         with:
           metrics-exporter-image: dockerhubaneo/armonik_control_metrics
-          partition_metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
+          partition-metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
           worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
