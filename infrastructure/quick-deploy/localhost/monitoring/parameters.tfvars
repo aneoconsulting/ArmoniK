@@ -6,7 +6,7 @@ logging_level = "Information"
 
 # Monitoring infos
 monitoring = {
-  seq              = {
+  seq                        = {
     enabled            = true
     image              = "datalust/seq"
     tag                = "2022.1"
@@ -15,7 +15,7 @@ monitoring = {
     service_type       = "ClusterIP"
     node_selector      = {}
   }
-  grafana          = {
+  grafana                    = {
     enabled            = true
     image              = "grafana/grafana"
     tag                = "8.5.5"
@@ -24,28 +24,35 @@ monitoring = {
     service_type       = "ClusterIP"
     node_selector      = {}
   }
-  node_exporter    = {
+  node_exporter              = {
     enabled            = true
     image              = "prom/node-exporter"
     tag                = "v1.3.1"
     image_pull_secrets = ""
     node_selector      = {}
   }
-  prometheus       = {
+  prometheus                 = {
     image              = "prom/prometheus"
     tag                = "v2.36.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
   }
-  metrics_exporter = {
+  metrics_exporter           = {
     image              = "dockerhubaneo/armonik_control_metrics"
     tag                = "0.5.16"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
   }
-  fluent_bit       = {
+  partition_metrics_exporter = {
+    image              = "dockerhubaneo/armonik_control_partition_metrics"
+    tag                = "0.5.16"
+    image_pull_secrets = ""
+    service_type       = "ClusterIP"
+    node_selector      = {}
+  }
+  fluent_bit                 = {
     image              = "fluent/fluent-bit"
     tag                = "1.9.5"
     image_pull_secrets = ""

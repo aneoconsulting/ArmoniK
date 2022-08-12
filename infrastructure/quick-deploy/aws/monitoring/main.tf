@@ -53,6 +53,24 @@ module "metrics_exporter" {
   working_dir          = "${path.root}/../../.."
 }
 
+# Partition metrics exporter
+module "partition_metrics_exporter" {
+  source               = "../../../modules/monitoring/exporters/partition-metrics-exporter"
+  namespace            = var.namespace
+  service_type         = local.partition_metrics_exporter_service_type
+  node_selector        = local.partition_metrics_exporter_node_selector
+  logging_level        = var.logging_level
+  storage_endpoint_url = var.storage_endpoint_url
+  metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
+  docker_image         = {
+    image              = local.partition_metrics_exporter_image
+    tag                = local.partition_metrics_exporter_tag
+    image_pull_secrets = local.partition_metrics_exporter_image_pull_secrets
+  }
+  working_dir          = "${path.root}/../../.."
+  depends_on           = [module.metrics_exporter]
+}
+
 # Prometheus
 module "prometheus" {
   source               = "../../../modules/monitoring/prometheus"

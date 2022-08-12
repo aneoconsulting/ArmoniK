@@ -17,6 +17,7 @@ CONTROL_PLANE_IMAGE="dockerhubaneo/armonik_control"
 POLLING_AGENT_IMAGE="dockerhubaneo/armonik_pollingagent"
 WORKER_IMAGE="dockerhubaneo/armonik_worker_dll"
 METRICS_EXPORTER_IMAGE="dockerhubaneo/armonik_control_metrics"
+PARTITION_METRICS_EXPORTER_IMAGE="dockerhubaneo/armonik_control_partition_metrics"
 CORE_TAG=None
 WORKER_TAG=None
 HPA_MAX_COMPUTE_PLANE_REPLICAS=None
@@ -142,6 +143,8 @@ EOF
   echo
   echo "   --metrics-exporter-image <METRICS_EXPORTER_IMAGE>"
   echo
+  echo "   --partition-metrics-exporter-image <PARTITION_METRICS_EXPORTER_IMAGE>"
+  echo
   echo "   --core-tag <CORE_TAG>"
   echo
   echo "   --worker-tag <WORKER_TAG>"
@@ -243,6 +246,8 @@ prepare_monitoring_parameters() {
   python3 "${MODIFY_PARAMETERS_SCRIPT}" \
     -kv monitoring.metrics_exporter.image="${METRICS_EXPORTER_IMAGE}" \
     -kv monitoring.metrics_exporter.tag="${CORE_TAG}" \
+    -kv monitoring.partition_metrics_exporter.image="${PARTITION_METRICS_EXPORTER_IMAGE}" \
+    -kv monitoring.partition_metrics_exporter.tag="${CORE_TAG}" \
     "${MONITORING_PARAMETERS_FILE}" \
     "${GENERATED_MONITORING_PARAMETERS_FILE}"
 }
@@ -566,6 +571,11 @@ function main() {
       ;;
     --metrics-exporter-image)
       METRICS_EXPORTER_IMAGE="$2"
+      shift
+      shift
+      ;;
+    --partition-metrics-exporter-image)
+      PARTITION_METRICS_EXPORTER_IMAGE="$2"
       shift
       shift
       ;;

@@ -66,6 +66,11 @@ ecr = {
       tag   = "0.5.16"
     },
     {
+      name  = "partition-metrics-exporter"
+      image = "dockerhubaneo/armonik_control_partition_metrics"
+      tag   = "0.5.16"
+    },
+    {
       name  = "armonik-admin-api"
       image = "dockerhubaneo/armonik_admin_api"
       tag   = "0.6.0"
