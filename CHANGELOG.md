@@ -8,16 +8,17 @@ Added
 -
 
 * Add static partitioning in ArmoniK
-* Add the environment variable `Amqp__MaxRetries` in the configmap of ArmoniK core and Metrics exporter
-* Add the environment variables `ControlPlane__Partitions` and `ControlPlane__DefaultPartition` in the configmap of
-  ArmoniK control plane
-* Add the environment variable `ComputePlan__PartitionId` in the of ArmoniK polling agent container
+* Add ArmoniK configmaps: compute-plane-configma and control-plane-configmap
+* Add the environment variable `Amqp__PartitionId` in the of ArmoniK polling agent container
+* Add partition metrics exporter service (monitoring)
 
 Changed
 -
 
 * Upgrade Keda version from 2.7.1 to 2.8.0
 * Upgrade Admin GUI version from 0.5.1 to 0.6.0
+* Update the configmaps of ArmoniK (polling-agent-configmap, worker-configmap, core-configmap)
+* Update the configmap of metrics exporter (monitoring)
 
 ## [v2.8.3](https://github.com/aneoconsulting/armonik/tree/v2.8.3) (2022-08-10)
 
