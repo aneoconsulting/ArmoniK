@@ -1,6 +1,18 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-10)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-22)
+
+## [v2.8.4](https://github.com/aneoconsulting/armonik/tree/v2.8.4) (2022-08-22)
+
+Changed
+-
+
+* Upgrade Admin GUI version from 0.5.1 to 0.6.0
+
+Fixed
+-
+
+* Adapt MongoDb call to be compatible with v4.4 and up
 
 ## [v2.8.3](https://github.com/aneoconsulting/armonik/tree/v2.8.3) (2022-08-10)
 
