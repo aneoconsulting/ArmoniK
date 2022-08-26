@@ -15,7 +15,7 @@ then
 fi
 cd $HOME/ArmoniK
 
-git switch -c $1
+git checkout -b arm_install $1
 
 # change branch
 #while ! git rev-parse --quiet --verify $branch_name > /dev/null 
@@ -30,7 +30,6 @@ git switch -c $1
 # Change directory to use Makefile for quick deployement
 cd $HOME/ArmoniK/infrastructure/quick-deploy/localhost
 
-
 # source envvars.sh
 export ARMONIK_KUBERNETES_NAMESPACE=armonik
 export ARMONIK_SHARED_HOST_PATH=$HOME/data
@@ -44,7 +43,14 @@ mkdir -p "${ARMONIK_SHARED_HOST_PATH}"
 
 # ArmoniK full deployment
 
-make deploy-all 
+#make deploy-all  # does not work with version v2.8.4
+make create-namespace
+make deploy-keda
+make deploy-storage
+make deploy-monitoring
+make deploy-armonik
+
+
 
 echo "ArmoniK storage information are store in $PWD'/storage/generated/storage-output.json'"
 echo "ArmoniK monitoring information are store in $PWD'/monitoring/generated/monitoring-output.json'"
