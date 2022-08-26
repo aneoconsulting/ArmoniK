@@ -37,5 +37,6 @@ resource "kubernetes_config_map" "core_config" {
     Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
     Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
     Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+    Amqp__PartitionId                          = (local.default_partition == null || !contains(keys(var.compute_plane), local.default_partition) ? "" : local.default_partition)
   }
 }
