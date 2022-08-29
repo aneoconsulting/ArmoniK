@@ -19,7 +19,9 @@
     
     #>
 
-$k3s_version = "v1.23.8+k3s1"
+# Use the version 1.23 for keda compatibility
+$k3s_version = "v1.23.9+k3s1"
+
 function Restart-Genie {
 
     # Stop wsl
@@ -117,6 +119,7 @@ Write-Host "ArmoniK branch that will be use for the next steps: $armonik_branch"
 
 
 ## Install requirements
+
 ## Note: the sed command is used to convert the end of line to unix ones
 wsl -d Ubuntu cp $pathname/ubuntu_requirements.sh /tmp
 wsl -d Ubuntu sed -i -e "'s/\r$//'" /tmp/ubuntu_requirements.sh 
@@ -134,7 +137,7 @@ Restart-Genie
 
 # ArmoniK
 Write-Host "ArmoniK requirements installation (docker, k3s, terraform)"
-wsl -d Ubuntu genie  -c cp -r $pathname/armonik_requirements.sh /tmp
+wsl -d Ubuntu genie  -c cp $pathname/armonik_requirements.sh /tmp
 wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_requirements.sh
 wsl -d Ubuntu genie  -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/armonik_requirements.sh $ubuntu_user $k3s_version"
 wsl -d Ubuntu genie  -c rm /tmp/armonik_requirements.sh
@@ -145,7 +148,7 @@ wsl -d Ubuntu genie  -c rm /tmp/armonik_requirements.sh
 # wsl -d Ubuntu genie  -c rm /tmp/k3s_installation.sh
 
 Write-Host "ArmoniK installation"
-wsl -d Ubuntu genie  -c cp -r $pathname/armonik_installation.sh /tmp 
+wsl -d Ubuntu genie  -c cp $pathname/armonik_installation.sh /tmp 
 wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_installation.sh
 wsl -d Ubuntu genie  -c bash /tmp/armonik_installation.sh $armonik_branch
 wsl -d Ubuntu genie  -c rm /tmp/armonik_installation.sh
@@ -159,12 +162,12 @@ $wsl_ip = (wsl -d Ubuntu genie  -c hostname -I).trim().split()[0]
 Write-Host "WSL Machine IP: ""$wsl_ip"""
 
 # Open seq webserver in default browser
-# $seq_url = -join("http://", $wsl_ip, ":8080")
-# Start-Process $seq_url
+$seq_url = -join("http://", $wsl_ip, ":5000/seq")
+Start-Process $seq_url
 
 # Launch integrations tests
 Write-Host "Launch integration test"
-wsl -d Ubuntu genie  -c cp -r $pathname/test_armonik.sh /tmp 
+wsl -d Ubuntu genie  -c cp $pathname/test_armonik.sh /tmp 
 wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/test_armonik.sh
 wsl -d Ubuntu genie  -c bash /tmp/test_armonik.sh $armonik_branch
 wsl -d Ubuntu genie  -c rm /tmp/test_armonik.sh
