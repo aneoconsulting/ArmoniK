@@ -1,4 +1,4 @@
 core=0.5.16
-worker=0.6.5
+worker=0.6.6
 admin-gui=0.6.0
-samples=2.8.3
+samples=2.8.5
