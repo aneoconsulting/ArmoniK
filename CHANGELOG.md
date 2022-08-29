@@ -1,8 +1,8 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-22)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-26)
 
-## [v2.9.0](https://github.com/aneoconsulting/armonik/tree/v2.9.0) (2022-08-15)
+## [v2.9.0](https://github.com/aneoconsulting/armonik/tree/v2.9.0) (2022-08-26)
 
 Added
 -
@@ -18,6 +18,18 @@ Changed
 
 * Upgrade Keda version from 2.7.1 to 2.8.0
 
+## [v2.8.5](https://github.com/aneoconsulting/armonik/tree/v2.8.5) (2022-08-29)
+
+Changed
+-
+
+* Upgrade Worker version from 0.6.5 to 0.6.6
+
+Fixed
+-
+
+* Remove unused dependencies and update version when needed
+* Add more logs in worker
 
 ## ## [v2.8.4](https://github.com/aneoconsulting/armonik/tree/v2.8.4) (2022-08-22)
 
