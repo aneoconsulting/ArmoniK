@@ -9,7 +9,7 @@ then
 fi
 cd $HOME/ArmoniK
 
-git checkout $1
+git checkout -b arm_install $1
 
 # change branch
 #while ! git rev-parse --quiet --verify $branch_name > /dev/null 
@@ -24,8 +24,6 @@ git checkout $1
 # Change directory to use Makefile for quick deployement
 cd $HOME/ArmoniK/infrastructure/quick-deploy/localhost
 
-mkdir -p $HOME/.kube && cp /etc/rancher/k3s/k3s.yaml $HOME/.kube/config && export KUBECONFIG=$HOME/.kube/config
-
 # source envvars.sh
 
 export ARMONIK_KUBERNETES_NAMESPACE=armonik
@@ -34,9 +32,15 @@ export ARMONIK_FILE_STORAGE_FILE=HostPath
 export ARMONIK_FILE_SERVER_IP=""
 
 # ArmoniK installation
+# ArmoniK full deployment
+
+#make deploy-all  # does not work with version v2.8.4
 
 echo "Kubernetes name space creation"
 make create-namespace
+
+echo "Keda deployment"
+make deploy-keda
 
 echo "Storage creation: ActiveMQ, MongoDB, Redis"
 make deploy-storage
