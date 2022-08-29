@@ -72,7 +72,7 @@ jobs:
           partition-metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
           control-plane-image: dockerhubaneo/armonik_control
           polling-agent-image: dockerhubaneo/armonik_pollingagent
-          worker-image: dockerhubaneo/armonik_worker_dll
+          worker-image: dockerhubaneo/armonik_core_htcmock_test_worker
           admin-api-image: dockerhubaneo/armonik_admin_api
           admin-app-image: dockerhubaneo/armonik_admin_app
           core-tag: ${{ steps.core.outputs.tag }}
