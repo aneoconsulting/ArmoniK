@@ -1,6 +1,19 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-22)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-29)
+
+## [v2.8.5](https://github.com/aneoconsulting/armonik/tree/v2.8.5) (2022-08-29)
+
+Changed
+-
+
+* Upgrade Worker version from 0.6.5 to 0.6.6
+
+Fixed
+-
+
+* Remove unused dependencies and update version when needed
+* Add more logs in worker
 
 ## [v2.8.4](https://github.com/aneoconsulting/armonik/tree/v2.8.4) (2022-08-22)
 
