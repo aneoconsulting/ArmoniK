@@ -139,7 +139,7 @@ Restart-Genie
 Write-Host "ArmoniK requirements installation (docker, k3s, terraform)"
 wsl -d Ubuntu genie  -c cp $pathname/armonik_requirements.sh /tmp
 wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_requirements.sh
-wsl -d Ubuntu genie  -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/armonik_requirements.sh $ubuntu_user"
+wsl -d Ubuntu genie  -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/armonik_requirements.sh $ubuntu_user $k3s_version"
 wsl -d Ubuntu genie  -c rm /tmp/armonik_requirements.sh
 
 Write-Host "ArmoniK installation"

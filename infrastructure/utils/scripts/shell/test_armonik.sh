@@ -5,13 +5,16 @@ export CPPort=$(kubectl get svc control-plane -n armonik -o custom-columns="PORT
 export Grpc__Endpoint=http://$CPIP:$CPPort
 
 cd $HOME/ArmoniK/
-if [ -d source/ArmoniK.Extensions.Csharp ] 
+if [ -d source/ArmoniK.Samples ] 
 then
     git submodule update --init --recursive
 else
-    git clone https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp.git source/ArmoniK.Extensions.Csharp
+    git clone https://github.com/aneoconsulting/ArmoniK.Samples.git
 fi
 
-bash ./tools/tests/symphony_like.sh
-bash ./tools/tests/datasynapse_like.sh
-bash ./tools/tests/symphony_endToendTests.sh
+cd ArmoniK.Samples
+git checkout -b arm_install $1
+
+bash tools/tests/gridserver_like.sh -e $Grpc__Endpoint pTask 1000
+bash tools/tests/symphony_like.sh -e $Grpc__Endpoint pTask 1000
+bash tools/tests/unified_api.sh -e $Grpc__Endpoint pTask 1000
