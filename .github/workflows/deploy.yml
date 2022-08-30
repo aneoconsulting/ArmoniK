@@ -104,9 +104,9 @@ jobs:
             logs/infra/tfstates
           sudo cp -rL /var/log/pods/armonik_* logs/app
           sudo chown $USER -R logs
-          ll logs
+          ls -al logs
           tar -czf admin-gui.tar.gz logs
-          ll
+          ls -al
           aws s3 cp admin-gui.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/admin-gui.tar.gz
 
 
