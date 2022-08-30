@@ -46,6 +46,12 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq python3 python-is-python3 python3-pip
+          pip install awscli
+
       - name: Get Core Tag
         id: core
         run: |
@@ -104,9 +110,7 @@ jobs:
             logs/infra/tfstates
           sudo cp -rL /var/log/pods/armonik_* logs/app
           sudo chown $USER -R logs
-          ls -al logs
           tar -czf admin-gui.tar.gz logs
-          ls -al
           aws s3 cp admin-gui.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/admin-gui.tar.gz
 
 
