@@ -13,7 +13,7 @@ else
 fi
 
 cd ArmoniK.Samples
-git checkout -b arm_install $1
+git checkout $1 -b $1 || git checkout $1
 
 bash tools/tests/gridserver_like.sh -e $Grpc__Endpoint pTask 1000
 bash tools/tests/symphony_like.sh -e $Grpc__Endpoint pTask 1000

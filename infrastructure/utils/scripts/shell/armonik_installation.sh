@@ -9,7 +9,7 @@ then
 fi
 cd $HOME/ArmoniK
 
-git checkout -b arm_install $1
+git checkout $1 -b $1 || git checkout $1
 
 # change branch
 #while ! git rev-parse --quiet --verify $branch_name > /dev/null 
