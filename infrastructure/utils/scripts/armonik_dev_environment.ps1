@@ -110,13 +110,14 @@ Write-Host "Username that will be use for the next steps: $ubuntu_user"
 $ubuntu_password = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
     [Runtime.InteropServices.Marshal]::SecureStringToBSTR($ubuntu_password))
 
-Write-Host "Avalaible branches:"
+Write-Host "Available branches:"
 $available_branches=git branch -a
 foreach ($branch_name in $available_branches) 
     {Write-Host $branch_name}
 $armonik_branch = Read-Host -Prompt "Which branch do you want to use?"
 # TODO: parse the $available_branches, give a number using the actual one (with a * in front) as default
 
+$armonik_sample = Read-Host -Prompt "Which ArmoniK.Sample version do you want to use?"
 
 ## Install requirements
 
@@ -135,7 +136,7 @@ wsl -d Ubuntu rm /tmp/systemd_wsl.sh
 wsl --shutdown
 Restart-Genie
 
-# ArmoniK
+## ArmoniK
 Write-Host "ArmoniK requirements installation (docker, k3s, terraform)"
 wsl -d Ubuntu genie  -c cp $pathname/armonik_requirements.sh /tmp
 wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_requirements.sh
@@ -164,5 +165,6 @@ Start-Process $seq_url
 Write-Host "Launch integration test"
 wsl -d Ubuntu genie  -c cp $pathname/test_armonik.sh /tmp 
 wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/test_armonik.sh
-wsl -d Ubuntu genie  -c bash /tmp/test_armonik.sh $armonik_branch
+wsl -d Ubuntu genie -c echo "Run test on Armonik infra $armonik_branch and Sample branch $armonik_sample"
+wsl -d Ubuntu genie  -c bash /tmp/test_armonik.sh $armonik_sample
 wsl -d Ubuntu genie  -c rm /tmp/test_armonik.sh

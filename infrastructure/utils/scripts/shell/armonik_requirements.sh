@@ -39,4 +39,5 @@ apt -y install dotnet-sdk-6.0
 
 # Create data directory (needed by ArmoniK) and give access to user
 mkdir -p /data && sudo chown -R $1:$1 /data
+mkdir -p $HOME/data && sudo chown -R $1:$1 $HOME/data
 chmod a+r /etc/rancher/k3s/k3s.yaml
