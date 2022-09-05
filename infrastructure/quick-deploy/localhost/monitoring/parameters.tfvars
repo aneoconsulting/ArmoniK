@@ -40,14 +40,14 @@ monitoring = {
   }
   metrics_exporter           = {
     image              = "dockerhubaneo/armonik_control_metrics"
-    tag                = "0.6.1-SNAPSHOT.305.141fc8ae"
+    tag                = "0.6.1-jgsigtermprop.319.4c448f18"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
   }
   partition_metrics_exporter = {
     image              = "dockerhubaneo/armonik_control_partition_metrics"
-    tag                = "0.6.1-SNAPSHOT.305.141fc8ae"
+    tag                = "0.6.1-jgsigtermprop.319.4c448f18"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
