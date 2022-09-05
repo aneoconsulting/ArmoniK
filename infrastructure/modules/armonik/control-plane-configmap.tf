@@ -5,7 +5,6 @@ resource "kubernetes_config_map" "control_plane_config" {
     namespace = var.namespace
   }
   data = {
-    ControlPlane__Partitions       = join(",", local.partition_names)
-    ControlPlane__DefaultPartition = (local.default_partition == null || !contains(keys(var.compute_plane), local.default_partition) ? "" : local.default_partition)
+    Submitter__DefaultPartition = (local.default_partition == null || !contains(keys(var.compute_plane), local.default_partition) ? "" : local.default_partition)
   }
 }
