@@ -29,7 +29,7 @@ control_plane = {
   service_type       = "ClusterIP"
   replicas           = 1
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag                = "0.6.1-jgsigtermprop.313.11c6a3e6"
+  tag                = "0.6.1-SNAPSHOT.305.141fc8ae"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -130,7 +130,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.6.1-jgsigtermprop.313.11c6a3e6"
+      tag               = "0.6.1-SNAPSHOT.305.141fc8ae"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "2000m"
@@ -196,7 +196,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.6.1-jgsigtermprop.313.11c6a3e6"
+      tag               = "0.6.1-SNAPSHOT.305.141fc8ae"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = null # set to null if you don't want to set it
