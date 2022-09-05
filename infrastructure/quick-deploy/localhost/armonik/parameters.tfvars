@@ -145,7 +145,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.6.6"
+        tag               = "0.6.7-SNAPSHOT.39.bc839b0"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "1000m" # set to null if you don't want to set it
@@ -210,7 +210,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.6.6"
+        tag               = "0.6.7-SNAPSHOT.39.bc839b0"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = null # set to null if you don't want to set it

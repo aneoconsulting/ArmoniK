@@ -1,4 +1,4 @@
 core=0.6.1-jgsigtermprop.319.4c448f18
-worker=0.6.5
+worker=0.6.7-SNAPSHOT.39.bc839b0
 admin-gui=0.6.0
 samples=2.8.3
