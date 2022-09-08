@@ -74,6 +74,13 @@ resource "kubernetes_deployment" "compute_plane" {
             name           = "poll-agent-port"
             container_port = 1080
           }
+          lifecycle {
+            pre_stop {
+              exec {
+                command = ["/bin/sh", "-c", "for d in /proc/*; do pid=\"$${d#/proc/}\"; if { test \"$pid\" -ne 0 && grep \"sleep\" \"$d/cmdline\" ; } >/dev/null 2>&1; then kill -2 \"$pid\" ; while kill -0 \"$pid\" >/dev/null 2>&1; do sleep 1 ; done ; fi ; done"]
+              }
+            }
+          }
           liveness_probe {
             http_get {
               path = "/liveness"
