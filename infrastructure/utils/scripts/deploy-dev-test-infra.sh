@@ -17,6 +17,7 @@ CONTROL_PLANE_IMAGE="dockerhubaneo/armonik_control"
 POLLING_AGENT_IMAGE="dockerhubaneo/armonik_pollingagent"
 WORKER_IMAGE="dockerhubaneo/armonik_worker_dll"
 METRICS_EXPORTER_IMAGE="dockerhubaneo/armonik_control_metrics"
+PARTITION_METRICS_EXPORTER_IMAGE="dockerhubaneo/armonik_control_partition_metrics"
 CORE_TAG=None
 WORKER_TAG=None
 HPA_MAX_COMPUTE_PLANE_REPLICAS=None
@@ -142,6 +143,8 @@ EOF
   echo
   echo "   --metrics-exporter-image <METRICS_EXPORTER_IMAGE>"
   echo
+  echo "   --partition-metrics-exporter-image <PARTITION_METRICS_EXPORTER_IMAGE>"
+  echo
   echo "   --core-tag <CORE_TAG>"
   echo
   echo "   --worker-tag <WORKER_TAG>"
@@ -243,6 +246,8 @@ prepare_monitoring_parameters() {
   python3 "${MODIFY_PARAMETERS_SCRIPT}" \
     -kv monitoring.metrics_exporter.image="${METRICS_EXPORTER_IMAGE}" \
     -kv monitoring.metrics_exporter.tag="${CORE_TAG}" \
+    -kv monitoring.partition_metrics_exporter.image="${PARTITION_METRICS_EXPORTER_IMAGE}" \
+    -kv monitoring.partition_metrics_exporter.tag="${CORE_TAG}" \
     "${MONITORING_PARAMETERS_FILE}" \
     "${GENERATED_MONITORING_PARAMETERS_FILE}"
 }
@@ -255,13 +260,13 @@ prepare_armonik_parameters() {
     -kv control_plane.hpa.min_replica_count="${HPA_MIN_CONTROL_PLANE_REPLICAS}" \
     -kv control_plane.hpa.max_replica_count="${HPA_MAX_CONTROL_PLANE_REPLICAS}" \
     -kv control_plane.hpa.triggers[*].value="${CONTROL_PLANE_HPA_TARGET_VALUE}" \
-    -kv compute_plane[athos].polling_agent.image="${POLLING_AGENT_IMAGE}" \
-    -kv compute_plane[athos].polling_agent.tag="${CORE_TAG}" \
-    -kv compute_plane[athos].worker[*].image="${WORKER_IMAGE}" \
-    -kv compute_plane[athos].worker[*].tag="${WORKER_TAG}" \
-    -kv compute_plane[athos].hpa.min_replica_count="${HPA_MIN_COMPUTE_PLANE_REPLICAS}" \
-    -kv compute_plane[athos].hpa.max_replica_count="${HPA_MAX_COMPUTE_PLANE_REPLICAS}" \
-    -kv compute_plane[athos].hpa.triggers.threshold="${COMPUTE_PLANE_HPA_TARGET_VALUE}" \
+    -kv compute_plane[default].polling_agent.image="${POLLING_AGENT_IMAGE}" \
+    -kv compute_plane[default].polling_agent.tag="${CORE_TAG}" \
+    -kv compute_plane[default].worker[*].image="${WORKER_IMAGE}" \
+    -kv compute_plane[default].worker[*].tag="${WORKER_TAG}" \
+    -kv compute_plane[default].hpa.min_replica_count="${HPA_MIN_COMPUTE_PLANE_REPLICAS}" \
+    -kv compute_plane[default].hpa.max_replica_count="${HPA_MAX_COMPUTE_PLANE_REPLICAS}" \
+    -kv compute_plane[default].hpa.triggers.threshold="${COMPUTE_PLANE_HPA_TARGET_VALUE}" \
     -kv logging_level="${LOGGING_LEVEL}" \
     -kv ingress="${INGRESS}" \
     -kv ingress.tls="${WITH_TLS}" \
@@ -566,6 +571,11 @@ function main() {
       ;;
     --metrics-exporter-image)
       METRICS_EXPORTER_IMAGE="$2"
+      shift
+      shift
+      ;;
+    --partition-metrics-exporter-image)
+      PARTITION_METRICS_EXPORTER_IMAGE="$2"
       shift
       shift
       ;;

@@ -17,6 +17,10 @@ inputs:
     description: 'Repository/image for metrics exporter docker image'
     required: false
     default: 'None'
+  partition-metrics-exporter-image:
+    description: 'Repository/image for partition metrics exporter docker image'
+    required: false
+    default: 'None'
   admin-api-image:
     description: 'Repository/image for Admi GUI API docker image'
     required: false
@@ -146,6 +150,8 @@ runs:
         python ${{ github.action_path }}/tools/modify_parameters.py \
           -kv "monitoring.metrics_exporter.image=${{ inputs.metrics-exporter-image }}" \
           -kv "monitoring.metrics_exporter.tag=${{ inputs.core-tag }}" \
+          -kv "monitoring.partition_metrics_exporter.image=${{ inputs.partition-metrics-exporter-image }}" \
+          -kv "monitoring.partition_metrics_exporter.tag=${{ inputs.core-tag }}" \
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars \
           ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars.json
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
@@ -159,14 +165,10 @@ runs:
         source envvars.sh
         if [ -z ${{ inputs.ingress }} ]; then
           python ${{ github.action_path }}/tools/modify_parameters.py \
-            -kv "compute_plane[athos].worker[*].image=${{ inputs.worker-image }}" \
-            -kv "compute_plane[athos].worker[*].tag=${{ inputs.worker-tag }}" \
-            -kv "compute_plane[athos].polling_agent.image=${{ inputs.polling-agent-image }}" \
-            -kv "compute_plane[athos].polling_agent.tag=${{ inputs.core-tag }}" \
-            -kv "compute_plane[porthos].worker[*].image=${{ inputs.worker-image }}" \
-            -kv "compute_plane[porthos].worker[*].tag=${{ inputs.worker-tag }}" \
-            -kv "compute_plane[porthos].polling_agent.image=${{ inputs.polling-agent-image }}" \
-            -kv "compute_plane[porthos].polling_agent.tag=${{ inputs.core-tag }}" \
+            -kv "compute_plane[default].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[default].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[default].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[default].polling_agent.tag=${{ inputs.core-tag }}" \
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
             -kv admin_gui.api.image=${{ inputs.admin-api-image }} \
@@ -179,14 +181,10 @@ runs:
             ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
         else
           python ${{ github.action_path }}/tools/modify_parameters.py \
-            -kv "compute_plane[athos].worker[*].image=${{ inputs.worker-image }}" \
-            -kv "compute_plane[athos].worker[*].tag=${{ inputs.worker-tag }}" \
-            -kv "compute_plane[athos].polling_agent.image=${{ inputs.polling-agent-image }}" \
-            -kv "compute_plane[athos].polling_agent.tag=${{ inputs.core-tag }}" \
-            -kv "compute_plane[porthos].worker[*].image=${{ inputs.worker-image }}" \
-            -kv "compute_plane[porthos].worker[*].tag=${{ inputs.worker-tag }}" \
-            -kv "compute_plane[porthos].polling_agent.image=${{ inputs.polling-agent-image }}" \
-            -kv "compute_plane[porthos].polling_agent.tag=${{ inputs.core-tag }}" \
+            -kv "compute_plane[default].worker[*].image=${{ inputs.worker-image }}" \
+            -kv "compute_plane[default].worker[*].tag=${{ inputs.worker-tag }}" \
+            -kv "compute_plane[default].polling_agent.image=${{ inputs.polling-agent-image }}" \
+            -kv "compute_plane[default].polling_agent.tag=${{ inputs.core-tag }}" \
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
             -kv admin_gui.api.image=${{ inputs.admin-api-image }} \

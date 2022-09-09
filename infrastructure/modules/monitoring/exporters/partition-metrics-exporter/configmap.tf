@@ -1,7 +1,7 @@
 # configmap with all the variables
-resource "kubernetes_config_map" "metrics_exporter_config" {
+resource "kubernetes_config_map" "partition_metrics_exporter_config" {
   metadata {
-    name      = "metrics-exporter-configmap"
+    name      = "partition-metrics-exporter-configmap"
     namespace = var.namespace
   }
   data = {
@@ -33,5 +33,8 @@ resource "kubernetes_config_map" "metrics_exporter_config" {
     Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
     Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
     Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+    MetricsExporter__Host                      = "http://${local.metrics_exporter_host}"
+    MetricsExporter__Port                      = local.metrics_exporter_port
+    MetricsExporter__Path                      = "/metrics"
   }
 }

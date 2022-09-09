@@ -32,6 +32,7 @@ The infrastructure is composed of:
     * Metrics exporter
     * Metrics server
     * Node exporter
+    * Partition metrics exporter
     * Prometheus
     * Seq server for structured log data of ArmoniK
 * ArmoniK:

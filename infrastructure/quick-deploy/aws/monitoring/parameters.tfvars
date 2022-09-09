@@ -46,7 +46,7 @@ tags = {
 
 # Monitoring infos
 monitoring = {
-  seq              = {
+  seq                        = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
     tag                = "2022.1"
@@ -55,7 +55,7 @@ monitoring = {
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
-  grafana          = {
+  grafana                    = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/grafana"
     tag                = "8.5.5"
@@ -64,33 +64,40 @@ monitoring = {
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
-  node_exporter    = {
+  node_exporter              = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/node-exporter"
     tag                = "v1.3.1"
     image_pull_secrets = ""
     node_selector      = { "grid/type" = "Operator" }
   }
-  prometheus       = {
+  prometheus                 = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus"
     tag                = "v2.36.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
-  metrics_exporter = {
+  metrics_exporter           = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter"
-    tag                = "0.5.16"
+    tag                = "0.6.1-jgimprovecancellation.341.8b7f2494"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
-  cloudwatch       = {
+  partition_metrics_exporter = {
+    image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/partition-metrics-exporter"
+    tag                = "0.6.1-jgimprovecancellation.341.8b7f2494"
+    image_pull_secrets = ""
+    service_type       = "ClusterIP"
+    node_selector      = { "grid/type" = "Operator" }
+  }
+  cloudwatch                 = {
     enabled           = true
     kms_key_id        = ""
     retention_in_days = 30
   }
-  fluent_bit       = {
+  fluent_bit                 = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"
     tag                = "1.9.5"
     image_pull_secrets = ""

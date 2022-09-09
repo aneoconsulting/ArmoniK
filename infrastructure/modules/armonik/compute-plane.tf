@@ -97,23 +97,16 @@ resource "kubernetes_deployment" "compute_plane" {
             failure_threshold     = 20
             # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
           }
-          env_from {
-            config_map_ref {
-              name = kubernetes_config_map.core_config.metadata.0.name
-            }
-          }
-          env_from {
-            config_map_ref {
-              name = kubernetes_config_map.polling_agent_config.metadata.0.name
-            }
-          }
-          env_from {
-            config_map_ref {
-              name = kubernetes_config_map.log_config.metadata.0.name
+          dynamic env_from {
+            for_each = local.polling_agent_configmaps
+            content {
+              config_map_ref {
+                name = env_from.value
+              }
             }
           }
           env {
-            name  = "ComputePlan__PartitionId"
+            name  = "Amqp__PartitionId"
             value = each.key
           }
           dynamic env {
@@ -154,14 +147,12 @@ resource "kubernetes_deployment" "compute_plane" {
               limits   = worker.value.limits
               requests = worker.value.requests
             }
-            env_from {
-              config_map_ref {
-                name = kubernetes_config_map.worker_config.metadata.0.name
-              }
-            }
-            env_from {
-              config_map_ref {
-                name = kubernetes_config_map.log_config.metadata.0.name
+            dynamic env_from {
+              for_each = local.worker_configmaps
+              content {
+                config_map_ref {
+                  name = env_from.value
+                }
               }
             }
             volume_mount {

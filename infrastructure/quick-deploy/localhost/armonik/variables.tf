@@ -57,6 +57,20 @@ variable "mongodb_polling_delay" {
   })
 }
 
+# Pod to insert partitions in the database
+variable "pod_partitions_in_database" {
+  description = "Pod to insert partitions IDs in the database"
+  type        = object({
+    name               = string
+    image              = string
+    tag                = string
+    image_pull_policy  = string
+    image_pull_secrets = string
+    node_selector      = any
+    annotations        = any
+  })
+}
+
 # Parameters of control plane
 variable "control_plane" {
   description = "Parameters of the control plane"
@@ -129,6 +143,14 @@ variable "admin_gui" {
 variable "compute_plane" {
   description = "Parameters of the compute plane"
   type        = map(object({
+    partition_data                   = object({
+      priority              = number
+      reserved_pods         = number
+      max_pods              = number
+      preemption_percentage = number
+      parent_partition_ids  = list(string)
+      pod_configuration     = any
+    })
     replicas                         = number
     termination_grace_period_seconds = number
     image_pull_secrets               = string

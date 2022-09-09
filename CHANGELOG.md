@@ -8,10 +8,11 @@ Added
 -
 
 * Add static partitioning in ArmoniK
-* Add the environment variable `Amqp__MaxRetries` in the configmap of ArmoniK core and Metrics exporter
-* Add the environment variables `ControlPlane__Partitions` and `ControlPlane__DefaultPartition` in the configmap of
-  ArmoniK control plane
-* Add the environment variable `ComputePlan__PartitionId` in the of ArmoniK polling agent container
+* Add ArmoniK configmaps: compute-plane-configmap and control-plane-configmap
+* Add the environment variable `Amqp__PartitionId` and `Pollster__GraceDelay` in the of ArmoniK polling agent container
+* Add partition metrics exporter service (monitoring)
+* Add a pod to insert partitions data in the database
+* Add partition metrics exporter in Prometheus scraping list
 
 Changed
 -
@@ -37,6 +38,8 @@ Changed
 -
 
 * Upgrade Admin GUI version from 0.5.1 to 0.6.0
+* Update the configmaps of ArmoniK (polling-agent-configmap, worker-configmap, core-configmap)
+* Update the configmap of metrics exporter (monitoring)
 
 Fixed
 -

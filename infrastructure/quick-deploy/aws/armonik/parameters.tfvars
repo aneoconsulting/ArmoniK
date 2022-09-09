@@ -29,7 +29,7 @@ control_plane = {
   service_type       = "ClusterIP"
   replicas           = 1
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag                = "0.5.16"
+  tag                = "0.6.1-jgimprovecancellation.341.8b7f2494"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -68,7 +68,7 @@ control_plane = {
       },
     ]
   }
-  default_partition  = "athos"
+  default_partition  = "default"
 }
 
 # Parameters of admin GUI
@@ -112,7 +112,15 @@ admin_gui = {
 
 # Parameters of the compute plane
 compute_plane = {
-  athos = {
+  default = {
+    partition_data                   = {
+      priority              = 1
+      reserved_pods         = 50
+      max_pods              = 100
+      preemption_percentage = 20
+      parent_partition_ids  = []
+      pod_configuration     = null
+    }
     # number of replicas for each deployment of compute plane
     replicas                         = 1
     termination_grace_period_seconds = 30
@@ -122,7 +130,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.5.16"
+      tag               = "0.6.1-jgimprovecancellation.341.8b7f2494"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "2000m"
@@ -138,7 +146,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.6.6"
+        tag               = "0.7.0-SNAPSHOT.45.433f857"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "1000m"
@@ -165,9 +173,7 @@ compute_plane = {
       }
       triggers          = [
         {
-          type        = "prometheus"
-          metric_name = "armonik_tasks_queued"
-          threshold   = "2"
+          type = "prometheus"
         },
       ]
     }
