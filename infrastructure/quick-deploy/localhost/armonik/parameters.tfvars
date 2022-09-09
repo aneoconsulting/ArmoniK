@@ -67,7 +67,7 @@ control_plane = {
       },
     ]
   }
-  default_partition  = "athos"
+  default_partition  = "default"
 }
 
 # Parameters of admin GUI
@@ -111,7 +111,7 @@ admin_gui = {
 
 # Parameters of the compute plane
 compute_plane = {
-  athos   = {
+  default = {
     partition_data                   = {
       priority              = 1
       reserved_pods         = 50
@@ -154,71 +154,6 @@ compute_plane = {
         requests          = {
           cpu    = "200m" # set to null if you don't want to set it
           memory = "512Mi" # set to null if you don't want to set it
-        }
-      }
-    ]
-    hpa                              = {
-      polling_interval  = 15
-      cooldown_period   = 300
-      min_replica_count = 1
-      max_replica_count = 5
-      behavior          = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers          = [
-        {
-          type = "prometheus"
-        },
-      ]
-    }
-  },
-  porthos = {
-    partition_data                   = {
-      priority              = 2
-      reserved_pods         = 50
-      max_pods              = 100
-      preemption_percentage = 20
-      parent_partition_ids  = []
-      pod_configuration     = null
-    }
-    # number of replicas for each deployment of compute plane
-    replicas                         = 1
-    termination_grace_period_seconds = 30
-    image_pull_secrets               = ""
-    node_selector                    = {}
-    annotations                      = {}
-    # ArmoniK polling agent
-    polling_agent                    = {
-      image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.6.1-jgimprovecancellation.339.716b9aad"
-      image_pull_policy = "IfNotPresent"
-      limits            = {
-        cpu    = null # set to null if you don't want to set it
-        memory = null # set to null if you don't want to set it
-      }
-      requests          = {
-        cpu    = null # set to null if you don't want to set it
-        memory = null # set to null if you don't want to set it
-      }
-    }
-    # ArmoniK workers
-    worker                           = [
-      {
-        name              = "worker"
-        image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.6.7-SNAPSHOT.39.bc839b0"
-        image_pull_policy = "IfNotPresent"
-        limits            = {
-          cpu    = null # set to null if you don't want to set it
-          memory = null # set to null if you don't want to set it
-        }
-        requests          = {
-          cpu    = null # set to null if you don't want to set it
-          memory = null # set to null if you don't want to set it
         }
       }
     ]

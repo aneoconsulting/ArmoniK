@@ -1,5 +1,4 @@
 resource "kubernetes_job" "partitions_in_database" {
-  depends_on          = [local_file.script]
   metadata {
     name      = "partitions-in-database"
     namespace = var.namespace
@@ -46,7 +45,7 @@ resource "kubernetes_job" "partitions_in_database" {
           name              = var.pod_partitions_in_database.name
           image             = var.pod_partitions_in_database.tag != "" ? "${var.pod_partitions_in_database.image}:${var.pod_partitions_in_database.tag}" : var.pod_partitions_in_database.image
           image_pull_policy = var.pod_partitions_in_database.image_pull_policy
-          command           = ["/script.sh"]
+          command           = ["/bin/bash", "-c", local.script]
           env {
             name  = "MongoDB_Host"
             value = local.mongodb_host
@@ -68,10 +67,6 @@ resource "kubernetes_job" "partitions_in_database" {
               }
             }
           }
-          volume_mount {
-            name       = "script"
-            mount_path = "/script.sh"
-          }
           dynamic volume_mount {
             for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
             content {
@@ -79,12 +74,6 @@ resource "kubernetes_job" "partitions_in_database" {
               mount_path = "/mongodb"
               read_only  = true
             }
-          }
-        }
-        volume {
-          name = "script"
-          host_path {
-            path = "${path.cwd}/generated/script.sh"
           }
         }
         dynamic volume {
@@ -117,10 +106,5 @@ mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllo
 # Insert
 mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://${local.mongodb_host}:${local.mongodb_port}/database --eval 'db.PartitionData.insertMany(${jsonencode(local.partitions_data)})'
 EOF
-}
-
-resource "local_file" "script" {
-  filename = "${path.cwd}/generated/script.sh"
-  content  = local.script
 }
 
