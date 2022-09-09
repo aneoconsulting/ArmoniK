@@ -80,14 +80,14 @@ monitoring = {
   }
   metrics_exporter           = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter"
-    tag                = "0.6.1-SNAPSHOT.325.eb20d474"
+    tag                = "0.6.1-jgimprovecancellation.339.716b9aad"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
   partition_metrics_exporter = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/partition-metrics-exporter"
-    tag                = "0.6.1-SNAPSHOT.325.eb20d474"
+    tag                = "0.6.1-jgimprovecancellation.339.716b9aad"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
