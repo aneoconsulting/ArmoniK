@@ -270,7 +270,7 @@ locals {
 
 for d in /proc/*; do
   pid="$${d#/proc/}"
-  if { test "$pid" -ne 0 && grep "PollingAgent" "$d/cmdline" && grep -E "^dotnet" "$d/cmdline" ; } >/dev/null 2>&1; then
+  if { test "$pid" -ne 0 && grep -E "^dotnet.*PollingAgent" "$d/cmdline" ; } >/dev/null 2>&1; then
     #echo [w] waiting $pid
     while kill -0 "$pid"; do
       sleep 1
