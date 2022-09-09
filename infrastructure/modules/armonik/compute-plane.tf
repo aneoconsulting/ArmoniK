@@ -77,7 +77,7 @@ resource "kubernetes_deployment" "compute_plane" {
           lifecycle {
             pre_stop {
               exec {
-                command = ["/bin/sh", "-c", "for d in /proc/*; do pid=\"$${d#/proc/}\"; if { test \"$pid\" -ne 0 && grep \"PollingAgent\" \"$d/cmdline\" ; } >/dev/null 2>&1; then kill -2 \"$pid\" ; while kill -0 \"$pid\" >/dev/null 2>&1; do sleep 1 ; done ; fi ; done"]
+                  command = ["/bin/sh", "-c", local.pre_stop_kill_script]
               }
             }
           }
@@ -154,6 +154,13 @@ resource "kubernetes_deployment" "compute_plane" {
               limits   = worker.value.limits
               requests = worker.value.requests
             }
+            lifecycle {
+              pre_stop {
+                exec {
+                  command = ["/bin/sh", "-c", local.pre_stop_wait_script]
+                }
+              }
+            }
             dynamic env_from {
               for_each = local.worker_configmaps
               content {
@@ -223,6 +230,13 @@ resource "kubernetes_deployment" "compute_plane" {
                 name = local.fluent_bit_envvars_configmap
               }
             }
+            lifecycle {
+              pre_stop {
+                exec {
+                  command = ["/bin/sh", "-c", local.pre_stop_wait_script]
+                }
+              }
+           }
             # Please don't change below read-only permissions
             dynamic volume_mount {
               for_each = local.fluent_bit_volumes
@@ -255,4 +269,40 @@ resource "kubernetes_deployment" "compute_plane" {
       }
     }
   }
+}
+
+
+locals {
+  pre_stop_kill_script = <<EOF
+
+for d in /proc/*; do
+  pid="$${d#/proc/}"
+  if { test "$pid" -ne 0 && grep "PollingAgent" "$d/cmdline" && grep -E "^dotnet" "$d/cmdline" ; } >/dev/null 2>&1; then
+    #echo sending sigint to $pid
+    kill -2 "$pid"
+    #echo waiting $pid
+    while kill -0 "$pid"; do
+      sleep 1
+    done
+  fi
+done
+
+#kill -s 15 -- -1
+
+EOF
+
+
+  pre_stop_wait_script = <<EOF
+
+for d in /proc/*; do
+  pid="$${d#/proc/}"
+  if { test "$pid" -ne 0 && grep "PollingAgent" "$d/cmdline" && grep -E "^dotnet" "$d/cmdline" ; } >/dev/null 2>&1; then
+    #echo waiting $pid
+    while kill -0 "$pid"; do
+      sleep 1
+    done
+  fi
+done
+
+EOF
 }
