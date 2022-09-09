@@ -170,7 +170,6 @@ jobs:
           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
-            -e Partition=athos \
             dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
 
       - name: Show logs
@@ -252,7 +251,6 @@ jobs:
           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
-            -e Partition=athos \
             dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
 
       - name: Show logs
@@ -356,7 +354,6 @@ jobs:
             -e HtcMock__EnableUseLowMem=true \
             -e HtcMock__EnableSmallOutput=true \
             -e HtcMock__EnableFastCompute=true \
-            -e HtcMock__Partition=athos \
             dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
 
       - name: Show logs
@@ -460,7 +457,6 @@ jobs:
             -e HtcMock__EnableUseLowMem=false \
             -e HtcMock__EnableSmallOutput=false \
             -e HtcMock__EnableFastCompute=false \
-            -e HtcMock__Partition=athos \
             dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
 
       - name: Show logs
@@ -550,7 +546,6 @@ jobs:
             -e HtcMock__EnableUseLowMem=false \
             -e HtcMock__EnableSmallOutput=false \
             -e HtcMock__EnableFastCompute=false \
-            -e HtcMock__Partition=athos \
             dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
 
       - name: Show logs
