@@ -68,7 +68,7 @@ control_plane = {
       },
     ]
   }
-  default_partition  = "athos"
+  default_partition  = "default"
 }
 
 # Parameters of admin GUI
