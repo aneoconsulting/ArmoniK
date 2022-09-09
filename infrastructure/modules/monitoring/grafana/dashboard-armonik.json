@@ -100,10 +100,21 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "{__name__=~\"armonik_tasks.*\",job=\"armonik-metrics-exporter\"}",
+          "expr": "{__name__=~\"armonik_tasks.*\",job=\"metrics-exporter\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "{__name__=~\"armonik.*\",job=\"partition-metrics-exporter\"}",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
         }
       ],
       "title": "ArmoniK Metrics",
