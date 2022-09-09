@@ -111,7 +111,7 @@ admin_gui = {
 
 # Parameters of the compute plane
 compute_plane = {
-  athos   = {
+  default = {
     partition_data                   = {
       priority              = 1
       reserved_pods         = 50
