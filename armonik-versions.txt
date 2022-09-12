@@ -1,4 +1,4 @@
-core=0.6.1-jgimprovecancellation.341.8b7f2494
+core=0.6.1-jgimprovecancellation.343.79ed4d89
 worker=0.7.0-SNAPSHOT.45.433f857
 admin-gui=0.6.0
 samples=2.8.5

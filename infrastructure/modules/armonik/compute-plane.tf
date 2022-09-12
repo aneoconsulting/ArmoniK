@@ -47,7 +47,7 @@ resource "kubernetes_deployment" "compute_plane" {
           }
         }
         termination_grace_period_seconds = var.compute_plane[each.key].termination_grace_period_seconds
-        share_process_namespace          = true
+        share_process_namespace          = false
         security_context {}
         dynamic image_pull_secrets {
           for_each = (var.compute_plane[each.key].image_pull_secrets != "" ? [1] : [])
@@ -268,15 +268,8 @@ resource "kubernetes_deployment" "compute_plane" {
 locals {
   pre_stop_wait_script = <<EOF
 
-for d in /proc/*; do
-  pid="$${d#/proc/}"
-  if { test "$pid" -ne 0 && grep -E "^dotnet.*PollingAgent" "$d/cmdline" ; } >/dev/null 2>&1; then
-    #echo [w] waiting $pid
-    while kill -0 "$pid"; do
-      sleep 1
-    done
-    #echo [w] waiting $pid done
-  fi
+while test -e /cache/armonik_agent.sock ; do
+  sleep 1
 done
 
 EOF
