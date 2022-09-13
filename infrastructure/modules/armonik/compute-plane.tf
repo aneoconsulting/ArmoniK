@@ -229,7 +229,12 @@ resource "kubernetes_deployment" "compute_plane" {
                   command = ["/bin/sh", "-c", local.pre_stop_wait_script]
                 }
               }
-           }
+            }
+            volume_mount {
+              name       = "cache-volume"
+              mount_path = "/cache"
+              read_only  = true
+            }
             # Please don't change below read-only permissions
             dynamic volume_mount {
               for_each = local.fluent_bit_volumes
