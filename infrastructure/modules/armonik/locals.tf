@@ -18,10 +18,16 @@ locals {
   compute_plane_node_selector_keys   = {for partition in local.partition_names : partition => keys(local.compute_plane_node_selector[partition])}
   compute_plane_node_selector_values = {for partition in local.partition_names : partition => values(local.compute_plane_node_selector[partition])}
 
+  # Node selector for pod to insert partitions IDs in database
+  pod_partitions_in_database_node_selector        = try(var.pod_partitions_in_database.node_selector, {})
+  pod_partitions_in_database_node_selector_keys   = keys(local.pod_partitions_in_database_node_selector)
+  pod_partitions_in_database_node_selector_values = values(local.pod_partitions_in_database_node_selector)
+
   # Annotations
-  control_plane_annotations = try(var.control_plane.annotations, {})
-  compute_plane_annotations = {for partition in local.partition_names : partition => try(var.compute_plane[partition].annotations, {})}
-  ingress_annotations       = try(var.ingress.annotations, {})
+  control_plane_annotations              = try(var.control_plane.annotations, {})
+  compute_plane_annotations              = {for partition in local.partition_names : partition => try(var.compute_plane[partition].annotations, {})}
+  ingress_annotations                    = try(var.ingress.annotations, {})
+  pod_partitions_in_database_annotations = try(var.pod_partitions_in_database.annotations, {})
 
   # Shared storage
   service_url             = try(var.storage_endpoint_url.shared.service_url, "")
@@ -91,6 +97,10 @@ locals {
   metrics_exporter_name      = try(var.monitoring.metrics_exporter.name, "")
   metrics_exporter_namespace = try(var.monitoring.metrics_exporter.namespace, "")
 
+  # Partition metrics exporter
+  partition_metrics_exporter_name      = try(var.monitoring.partition_metrics_exporter.name, "")
+  partition_metrics_exporter_namespace = try(var.monitoring.partition_metrics_exporter.namespace, "")
+
   # ingress ports
   ingress_ports = var.ingress != null ? distinct(compact([var.ingress.http_port, var.ingress.grpc_port])) : []
 
@@ -122,6 +132,20 @@ locals {
       name = local.mongodb_credentials_secret
     } : { key = "", name = "" }
     MongoDB__Password = local.mongodb_credentials_secret != "" ? {
+      key  = local.mongodb_credentials_password_key
+      name = local.mongodb_credentials_secret
+    } : { key = "", name = "" }
+  } : key => value if !contains(values(value), "")
+  }
+
+  # Credentials
+  pod_partitions_in_database_credentials = {
+  for key, value in {
+    MongoDB_User     = local.mongodb_credentials_secret != "" ? {
+      key  = local.mongodb_credentials_username_key
+      name = local.mongodb_credentials_secret
+    } : { key = "", name = "" }
+    MongoDB_Password = local.mongodb_credentials_secret != "" ? {
       key  = local.mongodb_credentials_password_key
       name = local.mongodb_credentials_secret
     } : { key = "", name = "" }
@@ -184,20 +208,55 @@ locals {
     }
   }
 
+  # Configmaps for polling agent
+  polling_agent_configmaps = {
+    log           = kubernetes_config_map.log_config.metadata.0.name
+    polling_agent = kubernetes_config_map.polling_agent_config.metadata.0.name
+    core          = kubernetes_config_map.core_config.metadata.0.name
+    compute_plane = kubernetes_config_map.compute_plane_config.metadata.0.name
+  }
+
+  # Configmaps for worker
+  worker_configmaps = {
+    worker        = kubernetes_config_map.worker_config.metadata.0.name
+    compute_plane = kubernetes_config_map.compute_plane_config.metadata.0.name
+    log           = kubernetes_config_map.log_config.metadata.0.name
+  }
+
+  # Configmaps for control plane
+  control_plane_configmaps = {
+    core          = kubernetes_config_map.core_config.metadata.0.name
+    log           = kubernetes_config_map.log_config.metadata.0.name
+    control_plane = kubernetes_config_map.control_plane_config.metadata.0.name
+  }
+
+  # Partitions data
+  partitions_data = [
+  for key, value in var.compute_plane : {
+    _id                  = key
+    ParentPartitionIds   = value.partition_data.parent_partition_ids
+    PodReserved          = value.partition_data.reserved_pods
+    PodMax               = value.partition_data.max_pods
+    PreemptionPercentage = value.partition_data.preemption_percentage
+    Priority             = value.partition_data.priority
+    PodConfiguration     = value.partition_data.pod_configuration
+  }
+  ]
+
   # HPA scalers
   # Compute plane
   hpa_compute_plane_triggers = {
-  for partition in local.partition_names : partition => {
+  for partition, value in var.compute_plane : partition => {
     triggers = [
-    for trigger in try(var.compute_plane[partition].hpa.triggers, []) :
+    for trigger in try(value.hpa.triggers, []) :
     (lower(try(trigger.type, "")) == "prometheus" ? {
       type     = "prometheus"
       metadata = {
         serverAddress = try(var.monitoring.prometheus.url, "")
-        metricName    = try(trigger.metric_name, "armonik_tasks_queued")
-        threshold     = try(trigger.threshold, "2")
+        metricName    = join("_", ["armonik", partition, "opt"])
+        threshold     = "1"
         namespace     = local.metrics_exporter_namespace
-        query         = "${try(trigger.metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}"
+        query         = "${join("_", ["armonik", partition, "opt"])}{job=\"${local.partition_metrics_exporter_name}\"}"
       }
     } :
     (lower(try(trigger.type, "")) == "cpu" || lower(try(trigger.type, "")) == "memory" ? {
@@ -227,16 +286,7 @@ locals {
       metadata   = {
         value = try(trigger.value, "80")
       }
-    } : lower(try(trigger.type, "")) == "prometheus" ? object({
-      type     = "prometheus"
-      metadata = {
-        serverAddress = try(var.monitoring.prometheus.url, "")
-        metricName    = try(trigger.metric_name, "armonik_tasks_queued")
-        threshold     = try(trigger.threshold, "2")
-        namespace     = local.metrics_exporter_namespace
-        query         = "${try(trigger.metric_name, "armonik_tasks_queued")}{job=\"${local.metrics_exporter_name}\"}"
-      }
-    }) : object({}))
+    } : object({}))
     ]
   }
 

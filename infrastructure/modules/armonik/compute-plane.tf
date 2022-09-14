@@ -47,7 +47,7 @@ resource "kubernetes_deployment" "compute_plane" {
           }
         }
         termination_grace_period_seconds = var.compute_plane[each.key].termination_grace_period_seconds
-        share_process_namespace          = true
+        share_process_namespace          = false
         security_context {}
         dynamic image_pull_secrets {
           for_each = (var.compute_plane[each.key].image_pull_secrets != "" ? [1] : [])
@@ -97,23 +97,16 @@ resource "kubernetes_deployment" "compute_plane" {
             failure_threshold     = 20
             # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
           }
-          env_from {
-            config_map_ref {
-              name = kubernetes_config_map.core_config.metadata.0.name
-            }
-          }
-          env_from {
-            config_map_ref {
-              name = kubernetes_config_map.polling_agent_config.metadata.0.name
-            }
-          }
-          env_from {
-            config_map_ref {
-              name = kubernetes_config_map.log_config.metadata.0.name
+          dynamic env_from {
+            for_each = local.polling_agent_configmaps
+            content {
+              config_map_ref {
+                name = env_from.value
+              }
             }
           }
           env {
-            name  = "ComputePlan__PartitionId"
+            name  = "Amqp__PartitionId"
             value = each.key
           }
           dynamic env {
@@ -154,14 +147,19 @@ resource "kubernetes_deployment" "compute_plane" {
               limits   = worker.value.limits
               requests = worker.value.requests
             }
-            env_from {
-              config_map_ref {
-                name = kubernetes_config_map.worker_config.metadata.0.name
+            lifecycle {
+              pre_stop {
+                exec {
+                  command = ["/bin/sh", "-c", local.pre_stop_wait_script]
+                }
               }
             }
-            env_from {
-              config_map_ref {
-                name = kubernetes_config_map.log_config.metadata.0.name
+            dynamic env_from {
+              for_each = local.worker_configmaps
+              content {
+                config_map_ref {
+                  name = env_from.value
+                }
               }
             }
             volume_mount {
@@ -225,6 +223,18 @@ resource "kubernetes_deployment" "compute_plane" {
                 name = local.fluent_bit_envvars_configmap
               }
             }
+            lifecycle {
+              pre_stop {
+                exec {
+                  command = ["/bin/sh", "-c", local.pre_stop_wait_script]
+                }
+              }
+            }
+            volume_mount {
+              name       = "cache-volume"
+              mount_path = "/cache"
+              read_only  = true
+            }
             # Please don't change below read-only permissions
             dynamic volume_mount {
               for_each = local.fluent_bit_volumes
@@ -257,4 +267,15 @@ resource "kubernetes_deployment" "compute_plane" {
       }
     }
   }
+}
+
+
+locals {
+  pre_stop_wait_script = <<EOF
+
+while test -e /cache/armonik_agent.sock ; do
+  sleep 1
+done
+
+EOF
 }

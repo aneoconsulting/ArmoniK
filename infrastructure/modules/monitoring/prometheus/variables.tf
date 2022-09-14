@@ -33,6 +33,12 @@ variable "metrics_exporter_url" {
   type        = string
 }
 
+# Partition metrics exporter url
+variable "partition_metrics_exporter_url" {
+  description = "URL of partition metrics exporter"
+  type        = string
+}
+
 # Working dir
 variable "working_dir" {
   description = "Working directory"

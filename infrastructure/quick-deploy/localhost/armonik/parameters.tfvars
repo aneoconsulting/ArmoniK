@@ -11,13 +11,24 @@ mongodb_polling_delay = {
   max_polling_delay = "00:00:10"
 }
 
+# Pod to insert partitions in the database
+pod_partitions_in_database = {
+  name               = "pod-partitions-in-database"
+  image              = "rtsp/mongosh"
+  tag                = "1.5.4"
+  image_pull_policy  = "IfNotPresent"
+  image_pull_secrets = ""
+  node_selector      = {}
+  annotations        = {}
+}
+
 # Parameters of control plane
 control_plane = {
   name               = "control-plane"
   service_type       = "ClusterIP"
   replicas           = 1
   image              = "dockerhubaneo/armonik_control"
-  tag                = "0.5.16"
+  tag                = "0.6.1"
   image_pull_policy  = "IfNotPresent"
   port               = 5001
   limits             = {
@@ -56,7 +67,7 @@ control_plane = {
       },
     ]
   }
-  default_partition  = "athos"
+  default_partition  = "default"
 }
 
 # Parameters of admin GUI
@@ -100,7 +111,15 @@ admin_gui = {
 
 # Parameters of the compute plane
 compute_plane = {
-  athos = {
+  default = {
+    partition_data                   = {
+      priority              = 1
+      reserved_pods         = 50
+      max_pods              = 100
+      preemption_percentage = 20
+      parent_partition_ids  = []
+      pod_configuration     = null
+    }
     # number of replicas for each deployment of compute plane
     replicas                         = 1
     termination_grace_period_seconds = 30
@@ -110,7 +129,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent                    = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.5.16"
+      tag               = "0.6.1"
       image_pull_policy = "IfNotPresent"
       limits            = {
         cpu    = "2000m" # set to null if you don't want to set it
@@ -126,7 +145,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.6.6"
+        tag               = "0.7.0-SNAPSHOT.45.433f857"
         image_pull_policy = "IfNotPresent"
         limits            = {
           cpu    = "1000m" # set to null if you don't want to set it
@@ -152,9 +171,7 @@ compute_plane = {
       }
       triggers          = [
         {
-          type        = "prometheus"
-          metric_name = "armonik_tasks_queued"
-          threshold   = "2"
+          type = "prometheus"
         },
       ]
     }
