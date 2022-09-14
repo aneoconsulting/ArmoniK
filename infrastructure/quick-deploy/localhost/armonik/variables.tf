@@ -51,7 +51,7 @@ variable "monitoring" {
 # according to the size of the task and/or the application
 variable "mongodb_polling_delay" {
   description = "Polling delay to MongoDB according to the size of the task and/or the application"
-  type        = object({
+  type = object({
     min_polling_delay = string
     max_polling_delay = string
   })
@@ -60,7 +60,7 @@ variable "mongodb_polling_delay" {
 # Pod to insert partitions in the database
 variable "pod_partitions_in_database" {
   description = "Pod to insert partitions IDs in the database"
-  type        = object({
+  type = object({
     name               = string
     image              = string
     tag                = string
@@ -74,19 +74,19 @@ variable "pod_partitions_in_database" {
 # Parameters of control plane
 variable "control_plane" {
   description = "Parameters of the control plane"
-  type        = object({
-    name               = string
-    service_type       = string
-    replicas           = number
-    image              = string
-    tag                = string
-    image_pull_policy  = string
-    port               = number
-    limits             = object({
+  type = object({
+    name              = string
+    service_type      = string
+    replicas          = number
+    image             = string
+    tag               = string
+    image_pull_policy = string
+    port              = number
+    limits = object({
       cpu    = string
       memory = string
     })
-    requests           = object({
+    requests = object({
       cpu    = string
       memory = string
     })
@@ -94,21 +94,21 @@ variable "control_plane" {
     node_selector      = any
     annotations        = any
     # KEDA scaler
-    hpa                = any
-    default_partition  = string
+    hpa               = any
+    default_partition = string
   })
 }
 
 # Parameters of admin gui
 variable "admin_gui" {
   description = "Parameters of the admin GUI"
-  type        = object({
-    api                = object({
-      name     = string
-      image    = string
-      tag      = string
-      port     = number
-      limits   = object({
+  type = object({
+    api = object({
+      name  = string
+      image = string
+      tag   = string
+      port  = number
+      limits = object({
         cpu    = string
         memory = string
       })
@@ -117,12 +117,12 @@ variable "admin_gui" {
         memory = string
       })
     })
-    app                = object({
-      name     = string
-      image    = string
-      tag      = string
-      port     = number
-      limits   = object({
+    app = object({
+      name  = string
+      image = string
+      tag   = string
+      port  = number
+      limits = object({
         cpu    = string
         memory = string
       })
@@ -142,8 +142,8 @@ variable "admin_gui" {
 # Parameters of the compute plane
 variable "compute_plane" {
   description = "Parameters of the compute plane"
-  type        = map(object({
-    partition_data                   = object({
+  type = map(object({
+    partition_data = object({
       priority              = number
       reserved_pods         = number
       max_pods              = number
@@ -156,54 +156,54 @@ variable "compute_plane" {
     image_pull_secrets               = string
     node_selector                    = any
     annotations                      = any
-    polling_agent                    = object({
+    polling_agent = object({
       image             = string
       tag               = string
       image_pull_policy = string
-      limits            = object({
+      limits = object({
         cpu    = string
         memory = string
       })
-      requests          = object({
+      requests = object({
         cpu    = string
         memory = string
       })
     })
-    worker                           = list(object({
+    worker = list(object({
       name              = string
       image             = string
       tag               = string
       image_pull_policy = string
-      limits            = object({
+      limits = object({
         cpu    = string
         memory = string
       })
-      requests          = object({
+      requests = object({
         cpu    = string
         memory = string
       })
     }))
     # KEDA scaler
-    hpa                              = any
+    hpa = any
   }))
 }
 
 variable "ingress" {
   description = "Parameters of the ingress controller"
-  type        = object({
-    name               = string
-    service_type       = string
-    replicas           = number
-    image              = string
-    tag                = string
-    image_pull_policy  = string
-    http_port          = number
-    grpc_port          = number
-    limits             = object({
+  type = object({
+    name              = string
+    service_type      = string
+    replicas          = number
+    image             = string
+    tag               = string
+    image_pull_policy = string
+    http_port         = number
+    grpc_port         = number
+    limits = object({
       cpu    = string
       memory = string
     })
-    requests           = object({
+    requests = object({
       cpu    = string
       memory = string
     })

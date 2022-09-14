@@ -1,8 +1,8 @@
 # Based on the official aws-node-termination-handler setup guide at https://github.com/aws/aws-node-termination-handler#infrastructure-setup
 resource "helm_release" "aws_node_termination_handler" {
-  name             = "armonik-aws-node-termination-handler"
-  namespace        = "kube-system"
-  chart            = "aws-node-termination-handler"
+  name      = "armonik-aws-node-termination-handler"
+  namespace = "kube-system"
+  chart     = "aws-node-termination-handler"
   #repository       = "https://aws.github.io/eks-charts"
   repository       = "${path.module}/charts"
   version          = "0.17.0"
@@ -47,7 +47,7 @@ resource "helm_release" "aws_node_termination_handler" {
     value = module.aws_node_termination_handler_sqs.sqs_queue_id
   }*/
 
-  values     = [
+  values = [
     yamlencode(local.node_selector),
     yamlencode(local.tolerations)
   ]
@@ -77,8 +77,8 @@ resource "aws_iam_policy" "aws_node_termination_handler" {
 
 data "aws_iam_policy_document" "aws_node_termination_handler" {
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "ec2:DescribeInstances",
       "autoscaling:DescribeAutoScalingInstances",
       "autoscaling:DescribeTags",
@@ -88,8 +88,8 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
     ]
   }
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "autoscaling:CompleteLifecycleAction",
     ]
     resources = module.eks.workers_asg_arns
@@ -107,37 +107,37 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
 }
 
 resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
-  name          = local.aws_node_termination_handler_asg_name
-  description   = "Node termination event rule"
+  name        = local.aws_node_termination_handler_asg_name
+  description = "Node termination event rule"
   event_pattern = jsonencode(
-  {
-    "source" : [
-      "aws.autoscaling"
-    ],
-    "detail-type" : [
-      "EC2 Instance-terminate Lifecycle Action"
-    ]
-    "resources" : module.eks.workers_asg_arns
-  }
+    {
+      "source" : [
+        "aws.autoscaling"
+      ],
+      "detail-type" : [
+        "EC2 Instance-terminate Lifecycle Action"
+      ]
+      "resources" : module.eks.workers_asg_arns
+    }
   )
-  tags          = local.tags
+  tags = local.tags
 }
 
 resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
-  name          = local.aws_node_termination_handler_spot_name
-  description   = "Node termination event rule"
+  name        = local.aws_node_termination_handler_spot_name
+  description = "Node termination event rule"
   event_pattern = jsonencode(
-  {
-    "source" : [
-      "aws.ec2"
-    ],
-    "detail-type" : [
-      "EC2 Spot Instance Interruption Warning"
-    ]
-    "resources" : module.eks.workers_asg_arns
-  }
+    {
+      "source" : [
+        "aws.ec2"
+      ],
+      "detail-type" : [
+        "EC2 Spot Instance Interruption Warning"
+      ]
+      "resources" : module.eks.workers_asg_arns
+    }
   )
-  tags          = local.tags
+  tags = local.tags
 }
 
 # Creating the lifecycle-hook outside of the ASG resource's `initial_lifecycle_hook`

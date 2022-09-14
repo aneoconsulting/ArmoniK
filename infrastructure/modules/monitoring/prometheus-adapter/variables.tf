@@ -13,7 +13,7 @@ variable "name" {
 # Docker image
 variable "docker_image" {
   description = "Docker image for Prometheus adapter"
-  type        = object({
+  type = object({
     image              = string
     tag                = string
     image_pull_secrets = string
@@ -36,7 +36,7 @@ variable "service_type" {
 # Prometheus url
 variable "prometheus_endpoint_url" {
   description = "Prometheus url"
-  type        = object({
+  type = object({
     host = string
     port = number
   })

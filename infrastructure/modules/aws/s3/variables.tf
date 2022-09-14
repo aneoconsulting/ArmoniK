@@ -14,7 +14,7 @@ variable "name" {
 
 variable "s3" {
   description = "Parameters of S3"
-  type        = object({
+  type = object({
     policy                                = string
     attach_policy                         = bool
     attach_deny_insecure_transport_policy = bool

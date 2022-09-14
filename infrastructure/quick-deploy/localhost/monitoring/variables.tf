@@ -36,8 +36,8 @@ variable "logging_level" {
 # Monitoring infos
 variable "monitoring" {
   description = "Monitoring infos"
-  type        = object({
-    seq                        = object({
+  type = object({
+    seq = object({
       enabled            = bool
       image              = string
       tag                = string
@@ -46,7 +46,7 @@ variable "monitoring" {
       service_type       = string
       node_selector      = any
     })
-    grafana                    = object({
+    grafana = object({
       enabled            = bool
       image              = string
       tag                = string
@@ -55,21 +55,21 @@ variable "monitoring" {
       service_type       = string
       node_selector      = any
     })
-    node_exporter              = object({
+    node_exporter = object({
       enabled            = bool
       image              = string
       tag                = string
       image_pull_secrets = string
       node_selector      = any
     })
-    prometheus                 = object({
+    prometheus = object({
       image              = string
       tag                = string
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
     })
-    metrics_exporter           = object({
+    metrics_exporter = object({
       image              = string
       tag                = string
       image_pull_secrets = string
@@ -83,7 +83,7 @@ variable "monitoring" {
       service_type       = string
       node_selector      = any
     })
-    fluent_bit                 = object({
+    fluent_bit = object({
       image              = string
       tag                = string
       image_pull_secrets = string

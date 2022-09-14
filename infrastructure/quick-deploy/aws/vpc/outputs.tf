@@ -1,7 +1,7 @@
 # VPC
 output "vpc" {
   description = "VPC infos"
-  value       = {
+  value = {
     id                     = module.vpc.id
     cidr_block             = module.vpc.cidr_block
     private_subnet_ids     = module.vpc.private_subnet_ids

@@ -1,8 +1,8 @@
 # A component that automatically adjusts the size of a Kubernetes Cluster so that all pods have a place to run and there are no unneeded nodes
 resource "helm_release" "cluster_autoscaler" {
-  name       = "armonik"
-  namespace  = "kube-system"
-  chart      = "cluster-autoscaler"
+  name      = "armonik"
+  namespace = "kube-system"
+  chart     = "cluster-autoscaler"
   #repository = "https://kubernetes.github.io/autoscaler"
   repository = "${path.module}/charts"
   version    = "9.14.0"
@@ -124,7 +124,7 @@ resource "helm_release" "cluster_autoscaler" {
     value = "1"
   }*/
 
-  values     = [
+  values = [
     yamlencode(local.node_selector),
     yamlencode(local.tolerations)
   ]
@@ -137,9 +137,9 @@ resource "helm_release" "cluster_autoscaler" {
 # Workers Auto Scaling policy
 data "aws_iam_policy_document" "worker_autoscaling_document" {
   statement {
-    sid       = "eksWorkerAutoscalingAll"
-    effect    = "Allow"
-    actions   = [
+    sid    = "eksWorkerAutoscalingAll"
+    effect = "Allow"
+    actions = [
       "autoscaling:DescribeAutoScalingGroups",
       "autoscaling:DescribeAutoScalingInstances",
       "autoscaling:DescribeLaunchConfigurations",
@@ -150,9 +150,9 @@ data "aws_iam_policy_document" "worker_autoscaling_document" {
     resources = ["*"]
   }
   statement {
-    sid       = "eksWorkerAutoscalingOwn"
-    effect    = "Allow"
-    actions   = [
+    sid    = "eksWorkerAutoscalingOwn"
+    effect = "Allow"
+    actions = [
       "autoscaling:SetDesiredCapacity",
       "autoscaling:TerminateInstanceInAutoScalingGroup",
       "autoscaling:UpdateAutoScalingGroup",

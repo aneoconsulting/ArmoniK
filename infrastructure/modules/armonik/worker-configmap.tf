@@ -4,7 +4,7 @@ resource "kubernetes_config_map" "worker_config" {
     name      = "worker-configmap"
     namespace = var.namespace
   }
-  data       = {
+  data = {
     target_data_path           = "/data"
     S3Storage__ServiceURL      = local.service_url
     S3Storage__AccessKeyId     = local.access_key_id

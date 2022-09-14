@@ -63,7 +63,7 @@ variable "vpc" {
 # S3 as shared storage
 variable "s3_fs" {
   description = "AWS S3 bucket as shared storage"
-  type        = object({
+  type = object({
     name                                  = string
     policy                                = string
     attach_policy                         = bool
@@ -77,7 +77,7 @@ variable "s3_fs" {
     kms_key_id                            = string
     sse_algorithm                         = string
   })
-  default     = {
+  default = {
     name                                  = "armonik-s3fs"
     policy                                = ""
     attach_policy                         = false
@@ -96,7 +96,7 @@ variable "s3_fs" {
 # AWS Elasticache
 variable "elasticache" {
   description = "Parameters of Elasticache"
-  type        = object({
+  type = object({
     name                        = string
     engine                      = string
     engine_version              = string
@@ -108,16 +108,16 @@ variable "elasticache" {
     preferred_cache_cluster_azs = list(string)
     data_tiering_enabled        = bool
     log_retention_in_days       = number
-    cloudwatch_log_groups       = object({
+    cloudwatch_log_groups = object({
       slow_log   = string
       engine_log = string
     })
-    encryption_keys             = object({
+    encryption_keys = object({
       kms_key_id     = string
       log_kms_key_id = string
     })
   })
-  default     = {
+  default = {
     name                        = "armonik-elasticache"
     engine                      = "redis"
     engine_version              = "6.x"
@@ -128,13 +128,13 @@ variable "elasticache" {
     num_cache_clusters          = 2
     preferred_cache_cluster_azs = []
     # The order of the availability zones in the list is considered. The first item in the list will be the primary node
-    data_tiering_enabled        = false # This parameter must be set to true when using r6gd nodes.
-    log_retention_in_days       = 30
-    cloudwatch_log_groups       = {
+    data_tiering_enabled  = false # This parameter must be set to true when using r6gd nodes.
+    log_retention_in_days = 30
+    cloudwatch_log_groups = {
       slow_log   = ""
       engine_log = ""
     }
-    encryption_keys             = {
+    encryption_keys = {
       kms_key_id     = ""
       log_kms_key_id = ""
     }
@@ -144,7 +144,7 @@ variable "elasticache" {
 # MQ parameters
 variable "mq" {
   description = "MQ Service parameters"
-  type        = object({
+  type = object({
     name                    = string
     engine_type             = string
     engine_version          = string
@@ -156,13 +156,13 @@ variable "mq" {
     authentication_strategy = string
     publicly_accessible     = bool
   })
-  default     = {
-    name                    = "armonik-mq"
-    engine_type             = "ActiveMQ"
-    engine_version          = "5.16.3"
-    host_instance_type      = "mq.m5.large"
-    apply_immediately       = false
-    deployment_mode         = "ACTIVE_STANDBY_MULTI_AZ"
+  default = {
+    name               = "armonik-mq"
+    engine_type        = "ActiveMQ"
+    engine_version     = "5.16.3"
+    host_instance_type = "mq.m5.large"
+    apply_immediately  = false
+    deployment_mode    = "ACTIVE_STANDBY_MULTI_AZ"
     # "SINGLE_INSTANCE" | "ACTIVE_STANDBY_MULTI_AZ" | "CLUSTER_MULTI_AZ"
     storage_type            = "efs" #"ebs"
     kms_key_id              = ""
@@ -174,11 +174,11 @@ variable "mq" {
 # MQ Credentials
 variable "mq_credentials" {
   description = "Amazon MQ credentials"
-  type        = object({
+  type = object({
     password = string
     username = string
   })
-  default     = {
+  default = {
     password = ""
     username = ""
   }
@@ -187,7 +187,7 @@ variable "mq_credentials" {
 # Parameters for MongoDB
 variable "mongodb" {
   description = "Parameters of MongoDB"
-  type        = object({
+  type = object({
     image              = string
     tag                = string
     node_selector      = any

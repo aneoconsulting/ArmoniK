@@ -15,7 +15,7 @@ variable "name" {
 # VPC infos
 variable "vpc" {
   description = "AWS VPC info"
-  type        = object({
+  type = object({
     id          = string
     cidr_blocks = list(string)
     subnet_ids  = list(string)
@@ -25,7 +25,7 @@ variable "vpc" {
 # AWS Elasticache
 variable "elasticache" {
   description = "Parameters of Elasticache"
-  type        = object({
+  type = object({
     engine                      = string
     engine_version              = string
     node_type                   = string
@@ -36,11 +36,11 @@ variable "elasticache" {
     preferred_cache_cluster_azs = list(string)
     data_tiering_enabled        = bool
     log_retention_in_days       = number
-    cloudwatch_log_groups       = object({
+    cloudwatch_log_groups = object({
       slow_log   = string
       engine_log = string
     })
-    encryption_keys             = object({
+    encryption_keys = object({
       kms_key_id     = string
       log_kms_key_id = string
     })

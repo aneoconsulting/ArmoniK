@@ -1,6 +1,6 @@
 # Update Kubeconfig
 resource "null_resource" "update_kubeconfig" {
-  triggers   = {
+  triggers = {
     cluster_arn = module.eks.cluster_arn
   }
   provisioner "local-exec" {

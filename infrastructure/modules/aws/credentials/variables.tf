@@ -32,7 +32,7 @@ variable "directory_path" {
 # User credentials
 variable "user" {
   description = "User credentials"
-  type        = object({
+  type = object({
     username = string
     password = string
   })

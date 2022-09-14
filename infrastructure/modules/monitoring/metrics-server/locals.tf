@@ -9,12 +9,12 @@ locals {
 
   tolerations = {
     tolerations = [
-    for index in range(0, length(local.node_selector_keys)) : {
-      key      = local.node_selector_keys[index]
-      operator = "Equal"
-      value    = local.node_selector_values[index]
-      effect   = "NoSchedule"
-    }
+      for index in range(0, length(local.node_selector_keys)) : {
+        key      = local.node_selector_keys[index]
+        operator = "Equal"
+        value    = local.node_selector_values[index]
+        effect   = "NoSchedule"
+      }
     ]
   }
 

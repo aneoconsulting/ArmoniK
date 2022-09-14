@@ -45,61 +45,61 @@ locals {
 
   # Credentials
   credentials = {
-  for key, value in {
-    Amqp__User        = local.activemq_credentials_secret != "" ? {
-      key  = local.activemq_credentials_username_key
-      name = local.activemq_credentials_secret
-    } : { key = "", name = "" }
-    Amqp__Password    = local.activemq_credentials_secret != "" ? {
-      key  = local.activemq_credentials_password_key
-      name = local.activemq_credentials_secret
-    } : { key = "", name = "" }
-    Redis__User       = local.redis_credentials_secret != "" ? {
-      key  = local.redis_credentials_username_key
-      name = local.redis_credentials_secret
-    } : { key = "", name = "" }
-    Redis__Password   = local.redis_credentials_secret != "" ? {
-      key  = local.redis_credentials_password_key
-      name = local.redis_credentials_secret
-    } : { key = "", name = "" }
-    MongoDB__User     = local.mongodb_credentials_secret != "" ? {
-      key  = local.mongodb_credentials_username_key
-      name = local.mongodb_credentials_secret
-    } : { key = "", name = "" }
-    MongoDB__Password = local.mongodb_credentials_secret != "" ? {
-      key  = local.mongodb_credentials_password_key
-      name = local.mongodb_credentials_secret
-    } : { key = "", name = "" }
-  } : key => value if !contains(values(value), "")
+    for key, value in {
+      Amqp__User = local.activemq_credentials_secret != "" ? {
+        key  = local.activemq_credentials_username_key
+        name = local.activemq_credentials_secret
+      } : { key = "", name = "" }
+      Amqp__Password = local.activemq_credentials_secret != "" ? {
+        key  = local.activemq_credentials_password_key
+        name = local.activemq_credentials_secret
+      } : { key = "", name = "" }
+      Redis__User = local.redis_credentials_secret != "" ? {
+        key  = local.redis_credentials_username_key
+        name = local.redis_credentials_secret
+      } : { key = "", name = "" }
+      Redis__Password = local.redis_credentials_secret != "" ? {
+        key  = local.redis_credentials_password_key
+        name = local.redis_credentials_secret
+      } : { key = "", name = "" }
+      MongoDB__User = local.mongodb_credentials_secret != "" ? {
+        key  = local.mongodb_credentials_username_key
+        name = local.mongodb_credentials_secret
+      } : { key = "", name = "" }
+      MongoDB__Password = local.mongodb_credentials_secret != "" ? {
+        key  = local.mongodb_credentials_password_key
+        name = local.mongodb_credentials_secret
+      } : { key = "", name = "" }
+    } : key => value if !contains(values(value), "")
   }
 
   # Certificates
   certificates = {
-  for key, value in {
-    activemq = local.activemq_certificates_secret != "" ? {
-      name        = "activemq-secret-volume"
-      mount_path  = "/amqp"
-      secret_name = local.activemq_certificates_secret
-    } : { name = "", mount_path = "", secret_name = "" }
-    redis    = local.redis_certificates_secret != "" ? {
-      name        = "redis-secret-volume"
-      mount_path  = "/redis"
-      secret_name = local.redis_certificates_secret
-    } : { name = "", mount_path = "", secret_name = "" }
-    mongodb  = local.mongodb_certificates_secret != "" ? {
-      name        = "mongodb-secret-volume"
-      mount_path  = "/mongodb"
-      secret_name = local.mongodb_certificates_secret
-    } : { name = "", mount_path = "", secret_name = "" }
-  } : key => value if !contains(values(value), "")
+    for key, value in {
+      activemq = local.activemq_certificates_secret != "" ? {
+        name        = "activemq-secret-volume"
+        mount_path  = "/amqp"
+        secret_name = local.activemq_certificates_secret
+      } : { name = "", mount_path = "", secret_name = "" }
+      redis = local.redis_certificates_secret != "" ? {
+        name        = "redis-secret-volume"
+        mount_path  = "/redis"
+        secret_name = local.redis_certificates_secret
+      } : { name = "", mount_path = "", secret_name = "" }
+      mongodb = local.mongodb_certificates_secret != "" ? {
+        name        = "mongodb-secret-volume"
+        mount_path  = "/mongodb"
+        secret_name = local.mongodb_certificates_secret
+      } : { name = "", mount_path = "", secret_name = "" }
+    } : key => value if !contains(values(value), "")
   }
 
   # Endpoint urls
   partition_metrics_exporter_node_ip = try(tomap(data.external.partition_metrics_exporter_node_ip.result).node_ip, "")
-  load_balancer                      = (kubernetes_service.partition_metrics_exporter.spec.0.type == "LoadBalancer" ? {
+  load_balancer = (kubernetes_service.partition_metrics_exporter.spec.0.type == "LoadBalancer" ? {
     ip   = (kubernetes_service.partition_metrics_exporter.status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.partition_metrics_exporter.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.partition_metrics_exporter.status.0.load_balancer.0.ingress.0.ip)
     port = kubernetes_service.partition_metrics_exporter.spec.0.port.0.port
-  } : {
+    } : {
     ip   = ""
     port = ""
   })
@@ -107,7 +107,7 @@ locals {
   node_port = (local.load_balancer.ip == "" && kubernetes_service.partition_metrics_exporter.spec.0.type == "NodePort" ? {
     ip   = local.partition_metrics_exporter_node_ip
     port = kubernetes_service.partition_metrics_exporter.spec.0.port.0.node_port
-  } : {
+    } : {
     ip   = local.load_balancer.ip
     port = local.load_balancer.port
   })
@@ -115,7 +115,7 @@ locals {
   partition_metrics_exporter_endpoints = (local.node_port.ip == "" && kubernetes_service.partition_metrics_exporter.spec.0.type == "ClusterIP" ? {
     ip   = kubernetes_service.partition_metrics_exporter.spec.0.cluster_ip
     port = kubernetes_service.partition_metrics_exporter.spec.0.port.0.port
-  } : {
+    } : {
     ip   = local.node_port.ip
     port = local.node_port.port
   })

@@ -5,7 +5,7 @@ resource "kubernetes_deployment" "ingress" {
   metadata {
     name      = "ingress"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app     = "armonik"
       service = "ingress"
     }
@@ -20,16 +20,16 @@ resource "kubernetes_deployment" "ingress" {
     }
     template {
       metadata {
-        name        = "ingress"
-        namespace   = var.namespace
-        labels      = {
+        name      = "ingress"
+        namespace = var.namespace
+        labels = {
           app     = "armonik"
           service = "ingress"
         }
         annotations = local.ingress_annotations
       }
       spec {
-        dynamic image_pull_secrets {
+        dynamic "image_pull_secrets" {
           for_each = (var.ingress.image_pull_secrets != "" ? [1] : [])
           content {
             name = var.ingress.image_pull_secrets
@@ -107,21 +107,21 @@ resource "kubernetes_service" "ingress" {
   metadata {
     name      = kubernetes_deployment.ingress.0.metadata.0.name
     namespace = kubernetes_deployment.ingress.0.metadata.0.namespace
-    labels    = {
+    labels = {
       app     = kubernetes_deployment.ingress.0.metadata.0.labels.app
       service = kubernetes_deployment.ingress.0.metadata.0.labels.service
     }
   }
   spec {
-    type     = var.ingress.service_type
+    type = var.ingress.service_type
     selector = {
       app     = kubernetes_deployment.ingress.0.metadata.0.labels.app
       service = kubernetes_deployment.ingress.0.metadata.0.labels.service
     }
-    dynamic port {
+    dynamic "port" {
       for_each = var.ingress.http_port == var.ingress.grpc_port ? {
         "0" : var.ingress.http_port
-      } : {
+        } : {
         "0" : var.ingress.http_port
         "1" : var.ingress.grpc_port
       }

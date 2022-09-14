@@ -3,7 +3,7 @@ resource "kubernetes_deployment" "mongodb" {
   metadata {
     name      = "mongodb"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app     = "storage"
       type    = "table"
       service = "mongodb"
@@ -20,7 +20,7 @@ resource "kubernetes_deployment" "mongodb" {
     }
     template {
       metadata {
-        name   = "mongodb"
+        name = "mongodb"
         labels = {
           app     = "storage"
           type    = "table"
@@ -29,12 +29,12 @@ resource "kubernetes_deployment" "mongodb" {
       }
       spec {
         node_selector = var.mongodb.node_selector
-        dynamic toleration {
+        dynamic "toleration" {
           for_each = (var.mongodb.node_selector != {} ? [
-          for index in range(0, length(local.node_selector_keys)) : {
-            key   = local.node_selector_keys[index]
-            value = local.node_selector_values[index]
-          }
+            for index in range(0, length(local.node_selector_keys)) : {
+              key   = local.node_selector_keys[index]
+              value = local.node_selector_values[index]
+            }
           ] : [])
           content {
             key      = toleration.value.key
@@ -43,7 +43,7 @@ resource "kubernetes_deployment" "mongodb" {
             effect   = "NoSchedule"
           }
         }
-        dynamic image_pull_secrets {
+        dynamic "image_pull_secrets" {
           for_each = (var.mongodb.image_pull_secrets != "" ? [1] : [])
           content {
             name = var.mongodb.image_pull_secrets
@@ -53,7 +53,7 @@ resource "kubernetes_deployment" "mongodb" {
           name              = "mongodb"
           image             = "${var.mongodb.image}:${var.mongodb.tag}"
           image_pull_policy = "IfNotPresent"
-          args              = [
+          args = [
             "--dbpath=/data/db",
             "--port=27017",
             "--bind_ip=0.0.0.0",
@@ -109,14 +109,14 @@ resource "kubernetes_service" "mongodb" {
   metadata {
     name      = kubernetes_deployment.mongodb.metadata.0.name
     namespace = kubernetes_deployment.mongodb.metadata.0.namespace
-    labels    = {
+    labels = {
       app     = kubernetes_deployment.mongodb.metadata.0.labels.app
       type    = kubernetes_deployment.mongodb.metadata.0.labels.type
       service = kubernetes_deployment.mongodb.metadata.0.labels.service
     }
   }
   spec {
-    type     = "ClusterIP"
+    type = "ClusterIP"
     selector = {
       app     = kubernetes_deployment.mongodb.metadata.0.labels.app
       type    = kubernetes_deployment.mongodb.metadata.0.labels.type

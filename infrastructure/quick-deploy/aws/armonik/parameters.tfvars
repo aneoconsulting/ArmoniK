@@ -25,37 +25,37 @@ mongodb_polling_delay = {
 
 # Parameters of control plane
 control_plane = {
-  name               = "control-plane"
-  service_type       = "ClusterIP"
-  replicas           = 1
-  image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag                = "0.6.1"
-  image_pull_policy  = "IfNotPresent"
-  port               = 5001
-  limits             = {
+  name              = "control-plane"
+  service_type      = "ClusterIP"
+  replicas          = 1
+  image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
+  tag               = "0.6.1"
+  image_pull_policy = "IfNotPresent"
+  port              = 5001
+  limits = {
     cpu    = "1000m"
     memory = "2048Mi"
   }
-  requests           = {
+  requests = {
     cpu    = "200m"
     memory = "500Mi"
   }
   image_pull_secrets = ""
   node_selector      = {}
   annotations        = {}
-  hpa                = {
+  hpa = {
     polling_interval  = 15
     cooldown_period   = 300
     min_replica_count = 1
     max_replica_count = 100
-    behavior          = {
+    behavior = {
       restore_to_original_replica_count = true
       stabilization_window_seconds      = 300
       type                              = "Percent"
       value                             = 100
       period_seconds                    = 15
     }
-    triggers          = [
+    triggers = [
       {
         type        = "cpu"
         metric_type = "Utilization"
@@ -68,18 +68,18 @@ control_plane = {
       },
     ]
   }
-  default_partition  = "default"
+  default_partition = "default"
 }
 
 # Parameters of admin GUI
 admin_gui = {
-  api                = {
+  api = {
     name     = "admin-api"
     replicas = 1
     image    = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-api"
     tag      = "0.6.0"
     port     = 3333
-    limits   = {
+    limits = {
       cpu    = "1000m"
       memory = "1024Mi"
     }
@@ -88,13 +88,13 @@ admin_gui = {
       memory = "128Mi"
     }
   }
-  app                = {
+  app = {
     name     = "admin-app"
     replicas = 1
     image    = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app"
     tag      = "0.6.0"
     port     = 1080
-    limits   = {
+    limits = {
       cpu    = "1000m"
       memory = "1024Mi"
     }
@@ -113,7 +113,7 @@ admin_gui = {
 # Parameters of the compute plane
 compute_plane = {
   default = {
-    partition_data                   = {
+    partition_data = {
       priority              = 1
       reserved_pods         = 50
       max_pods              = 100
@@ -128,50 +128,50 @@ compute_plane = {
     node_selector                    = {}
     annotations                      = {}
     # ArmoniK polling agent
-    polling_agent                    = {
+    polling_agent = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
       tag               = "0.6.1"
       image_pull_policy = "IfNotPresent"
-      limits            = {
+      limits = {
         cpu    = "2000m"
         memory = "2048Mi"
       }
-      requests          = {
+      requests = {
         cpu    = "1000m"
         memory = "256Mi"
       }
     }
     # ArmoniK workers
-    worker                           = [
+    worker = [
       {
         name              = "worker"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
         tag               = "0.7.0-SNAPSHOT.45.433f857"
         image_pull_policy = "IfNotPresent"
-        limits            = {
+        limits = {
           cpu    = "1000m"
           memory = "1024Mi"
         }
-        requests          = {
+        requests = {
           cpu    = "500m"
           memory = "512Mi"
         }
       }
     ]
-    hpa                              = {
+    hpa = {
       type              = "prometheus"
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 1
       max_replica_count = 100
-      behavior          = {
+      behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
         value                             = 100
         period_seconds                    = 15
       }
-      triggers          = [
+      triggers = [
         {
           type = "prometheus"
         },
@@ -183,19 +183,19 @@ compute_plane = {
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
 ingress = {
-  name               = "ingress"
-  service_type       = "LoadBalancer"
-  replicas           = 1
-  image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/nginx"
-  tag                = "1.23.0"
-  image_pull_policy  = "IfNotPresent"
-  http_port          = 5000
-  grpc_port          = 5001
-  limits             = {
+  name              = "ingress"
+  service_type      = "LoadBalancer"
+  replicas          = 1
+  image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/nginx"
+  tag               = "1.23.0"
+  image_pull_policy = "IfNotPresent"
+  http_port         = 5000
+  grpc_port         = 5001
+  limits = {
     cpu    = "200m"
     memory = "100Mi"
   }
-  requests           = {
+  requests = {
     cpu    = "1m"
     memory = "1Mi"
   }

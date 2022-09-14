@@ -7,7 +7,7 @@ variable "namespace" {
 # Parameters for Redis
 variable "redis" {
   description = "Parameters of Redis"
-  type        = object({
+  type = object({
     image              = string
     tag                = string
     node_selector      = any

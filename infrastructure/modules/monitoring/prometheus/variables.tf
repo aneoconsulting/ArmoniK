@@ -7,7 +7,7 @@ variable "namespace" {
 # Docker image
 variable "docker_image" {
   description = "Docker image for Prometheus"
-  type        = object({
+  type = object({
     image              = string
     tag                = string
     image_pull_secrets = string

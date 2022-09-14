@@ -31,6 +31,21 @@ jobs:
           echo "::set-output name=version::$VERSION"
           echo $VERSION
 
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Install terraform
+        run: sh tools/install/terraform.sh
+
+      - name: Check Format
+        run: terraform fmt -check -recursive -diff
+
   AdminGUI:
     runs-on: ubuntu-latest
     steps:

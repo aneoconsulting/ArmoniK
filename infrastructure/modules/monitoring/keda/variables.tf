@@ -7,8 +7,8 @@ variable "namespace" {
 # Docker image
 variable "docker_image" {
   description = "Docker image for Keda"
-  type        = object({
-    keda             = object({
+  type = object({
+    keda = object({
       image = string
       tag   = string
     })

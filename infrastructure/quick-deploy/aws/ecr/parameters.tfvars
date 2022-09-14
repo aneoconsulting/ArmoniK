@@ -38,7 +38,7 @@ tags = {
 
 # List of ECR repositories to create
 ecr = {
-  kms_key_id   = ""
+  kms_key_id = ""
   repositories = [
     {
       name  = "mongodb"

@@ -1,9 +1,9 @@
 # Agent permissions
 data "aws_iam_policy_document" "worker_assume_role_agent_permissions_document" {
   statement {
-    sid       = ""
-    effect    = "Allow"
-    actions   = [
+    sid    = ""
+    effect = "Allow"
+    actions = [
       "sqs:*",
       "dynamodb:*",
       "lambda:*",

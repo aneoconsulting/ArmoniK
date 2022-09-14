@@ -16,8 +16,8 @@ data "template_cloudinit_config" "master_cloud_init" {
   }
 
   part {
-    filename   = "0002-nfs-master.yml"
-    content    = templatefile("cloud-init-templates/0002-nfs-master.yaml", {
+    filename = "0002-nfs-master.yml"
+    content = templatefile("cloud-init-templates/0002-nfs-master.yaml", {
       worker_subnet = data.aws_subnet.worker_subnet.cidr_block
     })
     merge_type = var.extra_userdata_merge
