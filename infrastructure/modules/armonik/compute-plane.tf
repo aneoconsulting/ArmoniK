@@ -47,7 +47,7 @@ resource "kubernetes_deployment" "compute_plane" {
           }
         }
         termination_grace_period_seconds = var.compute_plane[each.key].termination_grace_period_seconds
-        share_process_namespace          = true
+        share_process_namespace          = false
         security_context {}
         dynamic image_pull_secrets {
           for_each = (var.compute_plane[each.key].image_pull_secrets != "" ? [1] : [])
@@ -147,6 +147,13 @@ resource "kubernetes_deployment" "compute_plane" {
               limits   = worker.value.limits
               requests = worker.value.requests
             }
+            lifecycle {
+              pre_stop {
+                exec {
+                  command = ["/bin/sh", "-c", local.pre_stop_wait_script]
+                }
+              }
+            }
             dynamic env_from {
               for_each = local.worker_configmaps
               content {
@@ -216,6 +223,18 @@ resource "kubernetes_deployment" "compute_plane" {
                 name = local.fluent_bit_envvars_configmap
               }
             }
+            lifecycle {
+              pre_stop {
+                exec {
+                  command = ["/bin/sh", "-c", local.pre_stop_wait_script]
+                }
+              }
+            }
+            volume_mount {
+              name       = "cache-volume"
+              mount_path = "/cache"
+              read_only  = true
+            }
             # Please don't change below read-only permissions
             dynamic volume_mount {
               for_each = local.fluent_bit_volumes
@@ -248,4 +267,15 @@ resource "kubernetes_deployment" "compute_plane" {
       }
     }
   }
+}
+
+
+locals {
+  pre_stop_wait_script = <<EOF
+
+while test -e /cache/armonik_agent.sock ; do
+  sleep 1
+done
+
+EOF
 }
