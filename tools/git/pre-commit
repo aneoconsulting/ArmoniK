@@ -1,0 +1,8 @@
+
+#! /bin/bash
+
+set -e
+
+DIR=$(git rev-parse --show-toplevel)
+
+terraform fmt -recursive $DIR
