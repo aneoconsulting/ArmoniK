@@ -1,15 +1,15 @@
 # Decrypt objects in S3
 data "aws_iam_policy_document" "decrypt_object_document" {
   statement {
-    sid       = "KMSAccess"
-    actions   = [
+    sid = "KMSAccess"
+    actions = [
       "kms:Encrypt",
       "kms:Decrypt",
       "kms:ReEncrypt*",
       "kms:GenerateDataKey*",
       "kms:DescribeKey"
     ]
-    effect    = "Allow"
+    effect = "Allow"
     resources = [
       local.s3_fs_kms_key_id
     ]

@@ -49,17 +49,17 @@ eks = {
   cluster_endpoint_public_access        = false
   cluster_endpoint_public_access_cidrs  = ["0.0.0.0/0"]
   cluster_log_retention_in_days         = 30
-  docker_images                         = {
+  docker_images = {
     cluster_autoscaler = {
       image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/cluster-autoscaler"
       tag   = "v1.23.0"
     }
-    instance_refresh   = {
+    instance_refresh = {
       image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-node-termination-handler"
       tag   = "v1.15.0"
     }
   }
-  cluster_autoscaler                    = {
+  cluster_autoscaler = {
     expander                              = "random" # random, most-pods, least-waste, price, priority
     scale_down_enabled                    = true
     min_replica_count                     = 0
@@ -73,13 +73,13 @@ eks = {
     scale_down_unneeded_time              = "2m"
     skip_nodes_with_system_pods           = true
   }
-  encryption_keys                       = {
+  encryption_keys = {
     cluster_log_kms_key_id    = ""
     cluster_encryption_config = ""
     ebs_kms_key_id            = ""
   }
-  map_roles                             = []
-  map_users                             = []
+  map_roles = []
+  map_users = []
 }
 
 # Operational node groups for EKS

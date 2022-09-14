@@ -28,7 +28,7 @@ variable "cloudwatch" {
 # Fluent-bit
 variable "fluent_bit" {
   description = "Parameters of Fluent bit"
-  type        = object({
+  type = object({
     container_name     = string
     image              = string
     tag                = string

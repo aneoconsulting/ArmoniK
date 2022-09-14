@@ -4,31 +4,31 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.7.1"
     }
-    kubectl    = {
-      source = "gavinbunney/kubectl"
+    kubectl = {
+      source  = "gavinbunney/kubectl"
       version = "~> 1.14.0"
     }
-    external   = {
+    external = {
       source  = "hashicorp/external"
       version = "~> 2.1.1"
     }
-    null       = {
+    null = {
       source  = "hashicorp/null"
       version = "~> 3.1.0"
     }
-    random     = {
+    random = {
       source  = "hashicorp/random"
       version = "~> 3.1.0"
     }
-    local      = {
+    local = {
       source  = "hashicorp/local"
       version = "~> 2.2.2"
     }
-    tls        = {
+    tls = {
       source  = "hashicorp/tls"
       version = "~> 3.1.0"
     }
-    pkcs12     = {
+    pkcs12 = {
       source  = "chilicat/pkcs12"
       version = "~> 0.0.7"
     }

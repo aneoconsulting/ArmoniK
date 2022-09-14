@@ -20,8 +20,8 @@ resource "aws_kms_alias" "kms_alias" {
 # KMS Policy
 data "aws_iam_policy_document" "kms_policy" {
   statement {
-    sid       = "Enable IAM User Permissions"
-    effect    = "Allow"
+    sid    = "Enable IAM User Permissions"
+    effect = "Allow"
     principals {
       identifiers = ["arn:aws:iam::${local.account_id}:root"]
       type        = "AWS"
@@ -30,13 +30,13 @@ data "aws_iam_policy_document" "kms_policy" {
     resources = ["*"]
   }
   statement {
-    sid       = "Supported resources"
-    effect    = "Allow"
+    sid    = "Supported resources"
+    effect = "Allow"
     principals {
       identifiers = ["arn:aws:iam::${local.account_id}:root"]
       type        = "AWS"
     }
-    actions   = [
+    actions = [
       "kms:Encrypt*",
       "kms:Decrypt*",
       "kms:ReEncrypt*",
@@ -45,8 +45,8 @@ data "aws_iam_policy_document" "kms_policy" {
     ]
     resources = ["*"]
     condition {
-      test     = "StringEquals"
-      values   = [
+      test = "StringEquals"
+      values = [
         "ec2.${local.region}.amazonaws.com",
         "s3.${local.region}.amazonaws.com",
         "dynamodb.${local.region}.amazonaws.com",
@@ -59,13 +59,13 @@ data "aws_iam_policy_document" "kms_policy" {
     }
   }
   statement {
-    sid       = "Logs"
-    effect    = "Allow"
+    sid    = "Logs"
+    effect = "Allow"
     principals {
       identifiers = ["logs.${local.region}.amazonaws.com"]
       type        = "Service"
     }
-    actions   = [
+    actions = [
       "kms:Encrypt*",
       "kms:Decrypt*",
       "kms:ReEncrypt*",
@@ -80,16 +80,16 @@ data "aws_iam_policy_document" "kms_policy" {
     }
   }
   statement {
-    sid       = "Autoscaling"
-    effect    = "Allow"
+    sid    = "Autoscaling"
+    effect = "Allow"
     principals {
       identifiers = [
         "arn:aws:iam::${local.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
         "arn:aws:iam::${local.account_id}:root"
       ]
-      type        = "AWS"
+      type = "AWS"
     }
-    actions   = [
+    actions = [
       "kms:Encrypt*",
       "kms:Decrypt*",
       "kms:ReEncrypt*",
@@ -99,14 +99,14 @@ data "aws_iam_policy_document" "kms_policy" {
     resources = ["*"]
   }
   statement {
-    sid       = ""
-    effect    = "Allow"
+    sid    = ""
+    effect = "Allow"
     principals {
       identifiers = [
         "arn:aws:iam::${local.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
         "arn:aws:iam::${local.account_id}:root"
       ]
-      type        = "AWS"
+      type = "AWS"
     }
     actions   = ["kms:CreateGrant"]
     resources = ["*"]

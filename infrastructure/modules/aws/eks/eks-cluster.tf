@@ -10,12 +10,12 @@ module "eks" {
   vpc_id  = var.vpc.id
 
   # KUBECONFIG
-  kubeconfig_name                           = "kubeconfig-${var.name}"
-  write_kubeconfig                          = true
-  kubeconfig_output_path                    = "${path.root}/generated/eks/kubeconfig-${var.name}"
-  kubeconfig_file_permission                = "0600"
-  kubeconfig_api_version                    = "client.authentication.k8s.io/v1beta1"
-  kubeconfig_aws_authenticator_command      = "aws"
+  kubeconfig_name                      = "kubeconfig-${var.name}"
+  write_kubeconfig                     = true
+  kubeconfig_output_path               = "${path.root}/generated/eks/kubeconfig-${var.name}"
+  kubeconfig_file_permission           = "0600"
+  kubeconfig_api_version               = "client.authentication.k8s.io/v1beta1"
+  kubeconfig_aws_authenticator_command = "aws"
   kubeconfig_aws_authenticator_command_args = [
     "--region",
     local.region,
@@ -40,7 +40,7 @@ module "eks" {
   cluster_log_kms_key_id        = var.eks.encryption_keys.cluster_log_kms_key_id
   cluster_log_retention_in_days = var.eks.cluster_log_retention_in_days
   cluster_create_security_group = true
-  cluster_encryption_config     = [
+  cluster_encryption_config = [
     {
       provider_key_arn = var.eks.encryption_keys.cluster_encryption_config
       resources        = ["secrets"]

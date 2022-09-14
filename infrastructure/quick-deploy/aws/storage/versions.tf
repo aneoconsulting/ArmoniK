@@ -1,14 +1,14 @@
 terraform {
   required_providers {
-    aws        = {
+    aws = {
       source  = "hashicorp/aws"
       version = "~> 4.18.0"
     }
-    null       = {
+    null = {
       source  = "hashicorp/null"
       version = "~> 3.1.0"
     }
-    random     = {
+    random = {
       source  = "hashicorp/random"
       version = "~> 3.1.0"
     }
@@ -16,15 +16,15 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.7.1"
     }
-    kubectl    = {
+    kubectl = {
       source  = "gavinbunney/kubectl"
       version = "~> 1.14.0"
     }
-    tls        = {
+    tls = {
       source  = "hashicorp/tls"
       version = "~> 3.1.0"
     }
-    pkcs12     = {
+    pkcs12 = {
       source  = "chilicat/pkcs12"
       version = "~> 0.0.7"
     }

@@ -3,7 +3,7 @@ resource "kubernetes_deployment" "redis" {
   metadata {
     name      = "redis"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app     = "storage"
       type    = "object"
       service = "redis"
@@ -20,7 +20,7 @@ resource "kubernetes_deployment" "redis" {
     }
     template {
       metadata {
-        name   = "redis"
+        name = "redis"
         labels = {
           app     = "storage"
           type    = "object"
@@ -29,12 +29,12 @@ resource "kubernetes_deployment" "redis" {
       }
       spec {
         node_selector = var.redis.node_selector
-        dynamic toleration {
+        dynamic "toleration" {
           for_each = (var.redis.node_selector != {} ? [
-          for index in range(0, length(local.node_selector_keys)) : {
-            key   = local.node_selector_keys[index]
-            value = local.node_selector_values[index]
-          }
+            for index in range(0, length(local.node_selector_keys)) : {
+              key   = local.node_selector_keys[index]
+              value = local.node_selector_values[index]
+            }
           ] : [])
           content {
             key      = toleration.value.key
@@ -43,7 +43,7 @@ resource "kubernetes_deployment" "redis" {
             effect   = "NoSchedule"
           }
         }
-        dynamic image_pull_secrets {
+        dynamic "image_pull_secrets" {
           for_each = (var.redis.image_pull_secrets != "" ? [1] : [])
           content {
             name = var.redis.image_pull_secrets
@@ -54,7 +54,7 @@ resource "kubernetes_deployment" "redis" {
           image             = "${var.redis.image}:${var.redis.tag}"
           image_pull_policy = "IfNotPresent"
           command           = ["redis-server"]
-          args              = [
+          args = [
             "--tls-port 6379",
             "--port 0",
             "--tls-cert-file /certificates/cert.pem",
@@ -88,14 +88,14 @@ resource "kubernetes_service" "redis" {
   metadata {
     name      = kubernetes_deployment.redis.metadata.0.name
     namespace = kubernetes_deployment.redis.metadata.0.namespace
-    labels    = {
+    labels = {
       app     = kubernetes_deployment.redis.metadata.0.labels.app
       type    = kubernetes_deployment.redis.metadata.0.labels.type
       service = kubernetes_deployment.redis.metadata.0.labels.service
     }
   }
   spec {
-    type     = "ClusterIP"
+    type = "ClusterIP"
     selector = {
       app     = kubernetes_deployment.redis.metadata.0.labels.app
       type    = kubernetes_deployment.redis.metadata.0.labels.type

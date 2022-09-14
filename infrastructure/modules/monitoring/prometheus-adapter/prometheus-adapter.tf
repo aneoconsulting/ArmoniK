@@ -1,7 +1,7 @@
 resource "helm_release" "prometheus_adapter" {
-  name       = "armonik"
-  namespace  = var.namespace
-  chart      = "prometheus-adapter"
+  name      = "armonik"
+  namespace = var.namespace
+  chart     = "prometheus-adapter"
   #repository = "https://prometheus-community.github.io/helm-charts"
   repository = "${path.module}/charts"
   version    = "3.0.2"

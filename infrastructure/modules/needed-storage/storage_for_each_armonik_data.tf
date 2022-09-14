@@ -1,24 +1,24 @@
 locals {
   allowed_storage = {
-    object         = [
+    object = [
       "MongoDB",
       "Redis"
     ],
-    table          = [
+    table = [
       "MongoDB"
     ],
-    queue          = [
+    queue = [
       "MongoDB",
       "Amqp"
     ],
     lease_provider = [
       "MongoDB"
     ],
-    shared         = [
+    shared = [
       "HostPath",
       "NFS"
     ],
-    external       = [
+    external = [
       "Redis"
     ]
   }

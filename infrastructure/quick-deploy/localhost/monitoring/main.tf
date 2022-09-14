@@ -1,12 +1,12 @@
 # Seq
 module "seq" {
-  count          = (local.seq_enabled ? 1 : 0)
-  source         = "../../../modules/monitoring/seq"
-  namespace      = var.namespace
-  service_type   = local.seq_service_type
-  port           = local.seq_port
-  node_selector  = local.seq_node_selector
-  docker_image   = {
+  count         = (local.seq_enabled ? 1 : 0)
+  source        = "../../../modules/monitoring/seq"
+  namespace     = var.namespace
+  service_type  = local.seq_service_type
+  port          = local.seq_port
+  node_selector = local.seq_node_selector
+  docker_image = {
     image              = local.seq_image
     tag                = local.seq_tag
     image_pull_secrets = local.seq_image_pull_secrets
@@ -21,12 +21,12 @@ module "node_exporter" {
   source        = "../../../modules/monitoring/exporters/node-exporter"
   namespace     = var.namespace
   node_selector = local.node_exporter_node_selector
-  docker_image  = {
+  docker_image = {
     image              = local.node_exporter_image
     tag                = local.node_exporter_tag
     image_pull_secrets = local.node_exporter_image_pull_secrets
   }
-  working_dir   = "${path.root}/../../../.."
+  working_dir = "${path.root}/../../../.."
 }
 
 # Metrics exporter
@@ -37,12 +37,12 @@ module "metrics_exporter" {
   node_selector        = local.metrics_exporter_node_selector
   logging_level        = var.logging_level
   storage_endpoint_url = var.storage_endpoint_url
-  docker_image         = {
+  docker_image = {
     image              = local.metrics_exporter_image
     tag                = local.metrics_exporter_tag
     image_pull_secrets = local.metrics_exporter_image_pull_secrets
   }
-  working_dir          = "${path.root}/../../.."
+  working_dir = "${path.root}/../../.."
 }
 
 # Partition metrics exporter
@@ -54,13 +54,13 @@ module "partition_metrics_exporter" {
   logging_level        = var.logging_level
   storage_endpoint_url = var.storage_endpoint_url
   metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  docker_image         = {
+  docker_image = {
     image              = local.partition_metrics_exporter_image
     tag                = local.partition_metrics_exporter_tag
     image_pull_secrets = local.partition_metrics_exporter_image_pull_secrets
   }
-  working_dir          = "${path.root}/../../.."
-  depends_on           = [module.metrics_exporter]
+  working_dir = "${path.root}/../../.."
+  depends_on  = [module.metrics_exporter]
 }
 
 # Prometheus
@@ -71,13 +71,13 @@ module "prometheus" {
   node_selector                  = local.prometheus_node_selector
   metrics_exporter_url           = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
   partition_metrics_exporter_url = "${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
-  docker_image                   = {
+  docker_image = {
     image              = local.prometheus_image
     tag                = local.prometheus_tag
     image_pull_secrets = local.prometheus_image_pull_secrets
   }
-  working_dir                    = "${path.root}/../../.."
-  depends_on                     = [
+  working_dir = "${path.root}/../../.."
+  depends_on = [
     module.metrics_exporter,
     module.partition_metrics_exporter
   ]
@@ -92,7 +92,7 @@ module "grafana" {
   port           = local.grafana_port
   node_selector  = local.grafana_node_selector
   prometheus_url = module.prometheus.url
-  docker_image   = {
+  docker_image = {
     image              = local.grafana_image
     tag                = local.grafana_tag
     image_pull_secrets = local.grafana_image_pull_secrets
@@ -107,12 +107,12 @@ module "fluent_bit" {
   source        = "../../../modules/monitoring/fluent-bit"
   namespace     = var.namespace
   node_selector = local.fluent_bit_node_selector
-  seq           = (local.seq_enabled ? {
+  seq = (local.seq_enabled ? {
     host    = module.seq.0.host
     port    = module.seq.0.port
     enabled = true
   } : {})
-  fluent_bit    = {
+  fluent_bit = {
     container_name     = "fluent-bit"
     image              = local.fluent_bit_image
     tag                = local.fluent_bit_tag

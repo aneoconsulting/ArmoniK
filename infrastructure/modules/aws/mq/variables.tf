@@ -15,7 +15,7 @@ variable "tags" {
 # Kubernetes namespace
 variable "namespace" {
   description = "Kubernetes namespace for ArmoniK"
-  type = string
+  type        = string
 }
 
 # MQ name
@@ -28,7 +28,7 @@ variable "name" {
 # VPC infos
 variable "vpc" {
   description = "AWS VPC info"
-  type        = object({
+  type = object({
     id          = string
     cidr_blocks = list(string)
     subnet_ids  = list(string)
@@ -38,16 +38,16 @@ variable "vpc" {
 # User credentials
 variable "user" {
   description = "User credentials"
-  type        = object({
-    password   = string
-    username   = string
+  type = object({
+    password = string
+    username = string
   })
 }
 
 # MQ parameters
 variable "mq" {
   description = "MQ Service parameters"
-  type        = object({
+  type = object({
     engine_type             = string
     engine_version          = string
     host_instance_type      = string

@@ -13,7 +13,7 @@ locals {
   load_balancer = (kubernetes_service.grafana.spec.0.type == "LoadBalancer" ? {
     ip   = (kubernetes_service.grafana.status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.grafana.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.grafana.status.0.load_balancer.0.ingress.0.ip)
     port = kubernetes_service.grafana.spec.0.port.0.port
-  } : {
+    } : {
     ip   = ""
     port = ""
   })
@@ -21,7 +21,7 @@ locals {
   node_port = (local.load_balancer.ip == "" && kubernetes_service.grafana.spec.0.type == "NodePort" ? {
     ip   = local.grafana_node_ip
     port = kubernetes_service.grafana.spec.0.port.0.node_port
-  } : {
+    } : {
     ip   = local.load_balancer.ip
     port = local.load_balancer.port
   })
@@ -29,7 +29,7 @@ locals {
   grafana_endpoints = (local.node_port.ip == "" && kubernetes_service.grafana.spec.0.type == "ClusterIP" ? {
     ip   = kubernetes_service.grafana.spec.0.cluster_ip
     port = kubernetes_service.grafana.spec.0.port.0.port
-  } : {
+    } : {
     ip   = local.node_port.ip
     port = local.node_port.port
   })

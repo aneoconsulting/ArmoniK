@@ -7,7 +7,7 @@ variable "namespace" {
 # Parameters for MongoDB
 variable "mongodb" {
   description = "Parameters of MongoDB"
-  type        = object({
+  type = object({
     image              = string
     tag                = string
     node_selector      = any

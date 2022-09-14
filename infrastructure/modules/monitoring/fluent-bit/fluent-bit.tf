@@ -3,7 +3,7 @@ resource "kubernetes_daemonset" "fluent_bit" {
   metadata {
     name      = "fluent-bit"
     namespace = var.namespace
-    labels    = {
+    labels = {
       "k8s-app"                       = "fluent-bit"
       version                         = "v1"
       "kubernetes.io/cluster-service" = "true"
@@ -24,12 +24,12 @@ resource "kubernetes_daemonset" "fluent_bit" {
         }
       }
       spec {
-        dynamic toleration {
+        dynamic "toleration" {
           for_each = (var.node_selector != {} ? [
-          for index in range(0, length(local.fluent_bit_node_selector_keys)) : {
-            key   = local.fluent_bit_node_selector_keys[index]
-            value = local.fluent_bit_node_selector_values[index]
-          }
+            for index in range(0, length(local.fluent_bit_node_selector_keys)) : {
+              key   = local.fluent_bit_node_selector_keys[index]
+              value = local.fluent_bit_node_selector_values[index]
+            }
           ] : [])
           content {
             key      = toleration.value.key
@@ -38,7 +38,7 @@ resource "kubernetes_daemonset" "fluent_bit" {
             effect   = "NoSchedule"
           }
         }
-        dynamic image_pull_secrets {
+        dynamic "image_pull_secrets" {
           for_each = (local.fluent_bit_image_pull_secrets != "" ? [1] : [])
           content {
             name = local.fluent_bit_image_pull_secrets

@@ -5,19 +5,19 @@ terraform {
       version = "~> 2.7.1"
     }
     kubectl = {
-      source = "gavinbunney/kubectl"
+      source  = "gavinbunney/kubectl"
       version = "~> 1.14.0"
     }
-    external   = {
+    external = {
       source  = "hashicorp/external"
       version = "~> 2.1.0"
     }
-    null       = {
+    null = {
       source  = "hashicorp/null"
       version = "~> 3.1.0"
     }
     pkcs12 = {
-      source = "chilicat/pkcs12"
+      source  = "chilicat/pkcs12"
       version = "~> 0.0.7"
     }
   }

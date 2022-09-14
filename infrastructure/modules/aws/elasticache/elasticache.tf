@@ -29,8 +29,8 @@ resource "aws_elasticache_replication_group" "elasticache" {
     log_format       = "json"
     log_type         = "engine-log"
   }
-  tags                        = local.tags
-  depends_on                  = [
+  tags = local.tags
+  depends_on = [
     aws_elasticache_parameter_group.elasticache,
     aws_security_group.elasticache,
     aws_elasticache_subnet_group.elasticache,
@@ -44,7 +44,7 @@ resource "aws_elasticache_parameter_group" "elasticache" {
     name  = "maxmemory-policy"
     value = "allkeys-lru"
   }
-  tags   = local.tags
+  tags = local.tags
 }
 
 resource "aws_security_group" "elasticache" {
@@ -64,7 +64,7 @@ resource "aws_security_group" "elasticache" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags        = local.tags
+  tags = local.tags
 }
 
 # Subnet group for Elasticache IP

@@ -12,7 +12,7 @@ resource "tls_self_signed_cert" "root_activemq" {
   private_key_pem       = tls_private_key.root_activemq.private_key_pem
   is_ca_certificate     = true
   validity_period_hours = "168"
-  allowed_uses          = [
+  allowed_uses = [
     "cert_signing",
     "key_encipherment",
     "digital_signature"
@@ -72,7 +72,7 @@ resource "kubernetes_secret" "activemq_certificate" {
     name      = "activemq-server-certificates"
     namespace = var.namespace
   }
-  data        = {
+  data = {
     "root.pem" = tls_self_signed_cert.root_activemq.cert_pem
     "cert.pem" = tls_locally_signed_cert.activemq_certificate.cert_pem
     "key.pem"  = tls_private_key.activemq_private_key.private_key_pem
@@ -93,7 +93,7 @@ resource "kubernetes_secret" "activemq_client_certificate" {
 }
 
 resource "local_sensitive_file" "activemq_client_certificate" {
-  content           = format("%s\n%s", tls_locally_signed_cert.activemq_certificate.cert_pem, tls_self_signed_cert.root_activemq.cert_pem)
+  content         = format("%s\n%s", tls_locally_signed_cert.activemq_certificate.cert_pem, tls_self_signed_cert.root_activemq.cert_pem)
   filename        = "${path.root}/generated/certificates/activemq/chain.pem"
   file_permission = "0600"
 }

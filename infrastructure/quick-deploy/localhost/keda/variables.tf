@@ -22,9 +22,9 @@ variable "namespace" {
 # Keda infos
 variable "keda" {
   description = "Keda infos"
-  type        = object({
-    docker_image       = object({
-      keda             = object({
+  type = object({
+    docker_image = object({
+      keda = object({
         image = string
         tag   = string
       })

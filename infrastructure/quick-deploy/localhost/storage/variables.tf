@@ -22,7 +22,7 @@ variable "namespace" {
 # Shared storage
 variable "shared_storage" {
   description = "Shared storage infos"
-  type        = object({
+  type = object({
     host_path         = string
     file_storage_type = string
     file_server_ip    = string
@@ -32,7 +32,7 @@ variable "shared_storage" {
 # Parameters for ActiveMQ
 variable "activemq" {
   description = "Parameters of ActiveMQ"
-  type        = object({
+  type = object({
     image              = string
     tag                = string
     node_selector      = any
@@ -43,7 +43,7 @@ variable "activemq" {
 # Parameters for MongoDB
 variable "mongodb" {
   description = "Parameters of MongoDB"
-  type        = object({
+  type = object({
     image              = string
     tag                = string
     node_selector      = any
@@ -54,7 +54,7 @@ variable "mongodb" {
 # Parameters for Redis
 variable "redis" {
   description = "Parameters of Redis"
-  type        = object({
+  type = object({
     image              = string
     tag                = string
     node_selector      = any

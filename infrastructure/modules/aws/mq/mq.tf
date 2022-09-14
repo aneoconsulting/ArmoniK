@@ -28,7 +28,7 @@ resource "aws_mq_broker" "mq" {
     console_access = true
     groups         = []
   }
-  tags                    = local.tags
+  tags = local.tags
 }
 
 # MQ configuration
@@ -106,14 +106,14 @@ resource "aws_security_group" "mq" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags        = local.tags
+  tags = local.tags
 }
 
 # IMA
 data "aws_iam_policy_document" "mq_logs_policy" {
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",

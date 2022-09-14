@@ -8,7 +8,7 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(module.eks.certificate_authority.0.data)
   token                  = module.eks.token
   #config_path            = pathexpand("~/.kube/config")
-  insecure               = false
+  insecure = false
 }
 
 # package manager for kubernetes
@@ -19,7 +19,7 @@ provider "helm" {
     cluster_ca_certificate = base64decode(module.eks.certificate_authority.0.data)
     token                  = module.eks.token
     #config_path            = pathexpand("~/.kube/config")
-    insecure               = false
+    insecure = false
   }
 }
 

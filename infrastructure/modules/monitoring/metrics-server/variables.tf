@@ -7,7 +7,7 @@ variable "namespace" {
 # Docker image
 variable "docker_image" {
   description = "Docker image for metrics server"
-  type        = object({
+  type = object({
     image = string
     tag   = string
   })

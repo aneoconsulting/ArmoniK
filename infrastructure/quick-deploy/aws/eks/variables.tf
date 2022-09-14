@@ -43,7 +43,7 @@ variable "vpc" {
 # AWS EKS
 variable "eks" {
   description = "Parameters of AWS EKS"
-  type        = object({
+  type = object({
     name                                  = string
     cluster_version                       = string
     cluster_endpoint_private_access       = bool # vpc.enable_private_subnet
@@ -52,17 +52,17 @@ variable "eks" {
     cluster_endpoint_public_access        = bool
     cluster_endpoint_public_access_cidrs  = list(string)
     cluster_log_retention_in_days         = number
-    docker_images                         = object({
+    docker_images = object({
       cluster_autoscaler = object({
         image = string
         tag   = string
       })
-      instance_refresh   = object({
+      instance_refresh = object({
         image = string
         tag   = string
       })
     })
-    cluster_autoscaler                    = object({
+    cluster_autoscaler = object({
       expander                              = string
       scale_down_enabled                    = bool
       min_replica_count                     = number
@@ -76,17 +76,17 @@ variable "eks" {
       scale_down_unneeded_time              = string
       skip_nodes_with_system_pods           = bool
     })
-    encryption_keys                       = object({
+    encryption_keys = object({
       cluster_log_kms_key_id    = string
       cluster_encryption_config = string
       ebs_kms_key_id            = string
     })
-    map_roles                             = list(object({
+    map_roles = list(object({
       rolearn  = string
       username = string
       groups   = list(string)
     }))
-    map_users                             = list(object({
+    map_users = list(object({
       userarn  = string
       username = string
       groups   = list(string)

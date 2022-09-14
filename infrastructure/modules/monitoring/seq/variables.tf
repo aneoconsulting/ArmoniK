@@ -13,7 +13,7 @@ variable "port" {
 # Docker image
 variable "docker_image" {
   description = "Docker image for Seq"
-  type        = object({
+  type = object({
     image              = string
     tag                = string
     image_pull_secrets = string
