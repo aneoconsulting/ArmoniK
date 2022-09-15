@@ -4,7 +4,7 @@ if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
     echo "Usage: $0 [--dest=string]"
     echo ""
 
-    echo "This script will export data from collections TaskData, SessionData and Result from database of ArmoniK"
+    echo "This script will export data from collections TaskData, SessionData and Result from database of ArmoniK."
     echo "Data will be saved to Session.json, TaskData.json and Result.json in the wanted destination (default is current directory)."
     exit 1
 fi
