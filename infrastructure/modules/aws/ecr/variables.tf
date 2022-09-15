@@ -16,7 +16,7 @@ variable "kms_key_id" {
 variable "repositories" {
   description = "List of ECR repositories to create"
   type        = list(any)
-  default     = [
+  default = [
     {
       name  = "mongodb"
       image = "mongo"

@@ -2,7 +2,7 @@ resource "kubernetes_job" "partitions_in_database" {
   metadata {
     name      = "partitions-in-database"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app     = "armonik"
       service = "partitions-in-database"
       type    = "monitoring"
@@ -11,7 +11,7 @@ resource "kubernetes_job" "partitions_in_database" {
   spec {
     template {
       metadata {
-        name   = "partitions-in-database"
+        name = "partitions-in-database"
         labels = {
           app     = "armonik"
           service = "partitions-in-database"
@@ -19,13 +19,13 @@ resource "kubernetes_job" "partitions_in_database" {
         }
       }
       spec {
-        node_selector  = local.pod_partitions_in_database_node_selector
-        dynamic toleration {
+        node_selector = local.pod_partitions_in_database_node_selector
+        dynamic "toleration" {
           for_each = (local.pod_partitions_in_database_node_selector != {} ? [
-          for index in range(0, length(local.pod_partitions_in_database_node_selector_keys)) : {
-            key   = local.pod_partitions_in_database_node_selector_keys[index]
-            value = local.pod_partitions_in_database_node_selector_values[index]
-          }
+            for index in range(0, length(local.pod_partitions_in_database_node_selector_keys)) : {
+              key   = local.pod_partitions_in_database_node_selector_keys[index]
+              value = local.pod_partitions_in_database_node_selector_values[index]
+            }
           ] : [])
           content {
             key      = toleration.value.key
@@ -34,7 +34,7 @@ resource "kubernetes_job" "partitions_in_database" {
             effect   = "NoSchedule"
           }
         }
-        dynamic image_pull_secrets {
+        dynamic "image_pull_secrets" {
           for_each = (var.pod_partitions_in_database.image_pull_secrets != "" ? [1] : [])
           content {
             name = var.pod_partitions_in_database.image_pull_secrets
@@ -54,7 +54,7 @@ resource "kubernetes_job" "partitions_in_database" {
             name  = "MongoDB_Port"
             value = local.mongodb_port
           }
-          dynamic env {
+          dynamic "env" {
             for_each = local.pod_partitions_in_database_credentials
             content {
               name = env.key
@@ -67,7 +67,7 @@ resource "kubernetes_job" "partitions_in_database" {
               }
             }
           }
-          dynamic volume_mount {
+          dynamic "volume_mount" {
             for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
             content {
               name       = "mongodb-secret-volume"
@@ -76,7 +76,7 @@ resource "kubernetes_job" "partitions_in_database" {
             }
           }
         }
-        dynamic volume {
+        dynamic "volume" {
           for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
           content {
             name = "mongodb-secret-volume"

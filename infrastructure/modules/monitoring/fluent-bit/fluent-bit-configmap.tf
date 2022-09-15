@@ -3,7 +3,7 @@ resource "kubernetes_config_map" "fluent_bit_config" {
   metadata {
     name      = "fluent-bit-configmap"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app                             = "armonik"
       type                            = "logs"
       service                         = "fluent-bit"

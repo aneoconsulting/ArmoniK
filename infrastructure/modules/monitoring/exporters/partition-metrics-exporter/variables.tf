@@ -32,7 +32,7 @@ variable "metrics_exporter_url" {
 # Docker image
 variable "docker_image" {
   description = "Docker image for partition metrics exporter"
-  type        = object({
+  type = object({
     image              = string
     tag                = string
     image_pull_secrets = string

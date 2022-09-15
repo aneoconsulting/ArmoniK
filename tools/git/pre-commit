@@ -1,0 +1,22 @@
+#! /bin/bash
+
+r=0
+while IFS= read FILE ; do
+  if ! terraform fmt -check -recursive "$FILE" >/dev/null ; then
+    if test "${r:-0}" = 0 ; then
+      r=1
+      echo Malformated files are:
+    fi
+    
+    echo "$FILE"
+  fi
+done < <(git diff --name-only --cached --diff-filter=AM | grep -E 'tf$|tfvars$')
+
+if test "${r:-0}" = 0 ; then
+  exit 0
+fi
+
+echo
+echo You can use the following command to format the code:
+echo terraform fmt -recursive
+exit 1

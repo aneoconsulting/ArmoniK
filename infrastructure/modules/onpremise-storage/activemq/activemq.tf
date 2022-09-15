@@ -5,7 +5,7 @@ resource "kubernetes_deployment" "activemq" {
   metadata {
     name      = "activemq"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app     = "storage"
       type    = "queue"
       service = "activemq"
@@ -22,7 +22,7 @@ resource "kubernetes_deployment" "activemq" {
     }
     template {
       metadata {
-        name   = "activemq"
+        name = "activemq"
         labels = {
           app     = "storage"
           type    = "queue"
@@ -31,12 +31,12 @@ resource "kubernetes_deployment" "activemq" {
       }
       spec {
         node_selector = var.activemq.node_selector
-        dynamic toleration {
+        dynamic "toleration" {
           for_each = (var.activemq.node_selector != {} ? [
-          for index in range(0, length(local.node_selector_keys)) : {
-            key   = local.node_selector_keys[index]
-            value = local.node_selector_values[index]
-          }
+            for index in range(0, length(local.node_selector_keys)) : {
+              key   = local.node_selector_keys[index]
+              value = local.node_selector_values[index]
+            }
           ] : [])
           content {
             key      = toleration.value.key
@@ -45,7 +45,7 @@ resource "kubernetes_deployment" "activemq" {
             effect   = "NoSchedule"
           }
         }
-        dynamic image_pull_secrets {
+        dynamic "image_pull_secrets" {
           for_each = (var.activemq.image_pull_secrets != "" ? [1] : [])
           content {
             name = var.activemq.image_pull_secrets
@@ -112,14 +112,14 @@ resource "kubernetes_service" "activemq" {
   metadata {
     name      = kubernetes_deployment.activemq.metadata.0.name
     namespace = kubernetes_deployment.activemq.metadata.0.namespace
-    labels    = {
+    labels = {
       app     = kubernetes_deployment.activemq.metadata.0.labels.app
       type    = kubernetes_deployment.activemq.metadata.0.labels.type
       service = kubernetes_deployment.activemq.metadata.0.labels.service
     }
   }
   spec {
-    type     = "ClusterIP"
+    type = "ClusterIP"
     selector = {
       app     = kubernetes_deployment.activemq.metadata.0.labels.app
       type    = kubernetes_deployment.activemq.metadata.0.labels.type

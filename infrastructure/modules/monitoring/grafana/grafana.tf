@@ -3,7 +3,7 @@ resource "kubernetes_deployment" "grafana" {
   metadata {
     name      = "grafana"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app     = "armonik"
       type    = "logs"
       service = "grafana"
@@ -22,7 +22,7 @@ resource "kubernetes_deployment" "grafana" {
       metadata {
         name      = "grafana"
         namespace = var.namespace
-        labels    = {
+        labels = {
           app     = "armonik"
           type    = "logs"
           service = "grafana"
@@ -30,12 +30,12 @@ resource "kubernetes_deployment" "grafana" {
       }
       spec {
         node_selector = var.node_selector
-        dynamic toleration {
+        dynamic "toleration" {
           for_each = (var.node_selector != {} ? [
-          for index in range(0, length(local.node_selector_keys)) : {
-            key   = local.node_selector_keys[index]
-            value = local.node_selector_values[index]
-          }
+            for index in range(0, length(local.node_selector_keys)) : {
+              key   = local.node_selector_keys[index]
+              value = local.node_selector_values[index]
+            }
           ] : [])
           content {
             key      = toleration.value.key
@@ -44,7 +44,7 @@ resource "kubernetes_deployment" "grafana" {
             effect   = "NoSchedule"
           }
         }
-        dynamic image_pull_secrets {
+        dynamic "image_pull_secrets" {
           for_each = (var.docker_image.image_pull_secrets != "" ? [1] : [])
           content {
             name = var.docker_image.image_pull_secrets
@@ -121,14 +121,14 @@ resource "kubernetes_service" "grafana" {
   metadata {
     name      = kubernetes_deployment.grafana.metadata.0.name
     namespace = kubernetes_deployment.grafana.metadata.0.namespace
-    labels    = {
+    labels = {
       app     = kubernetes_deployment.grafana.metadata.0.labels.app
       type    = kubernetes_deployment.grafana.metadata.0.labels.type
       service = kubernetes_deployment.grafana.metadata.0.labels.service
     }
   }
   spec {
-    type     = var.service_type
+    type = var.service_type
     selector = {
       app     = kubernetes_deployment.grafana.metadata.0.labels.app
       type    = kubernetes_deployment.grafana.metadata.0.labels.type

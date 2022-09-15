@@ -29,9 +29,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
 data "aws_iam_policy_document" "deny_insecure_transport" {
   count = (var.s3.attach_deny_insecure_transport_policy ? 1 : 0)
   statement {
-    sid       = "denyInsecureTransport"
-    effect    = "Deny"
-    actions   = [
+    sid    = "denyInsecureTransport"
+    effect = "Deny"
+    actions = [
       "s3:*",
     ]
     resources = [
@@ -45,7 +45,7 @@ data "aws_iam_policy_document" "deny_insecure_transport" {
     condition {
       test     = "Bool"
       variable = "aws:SecureTransport"
-      values   = [
+      values = [
         "false"
       ]
     }
@@ -55,9 +55,9 @@ data "aws_iam_policy_document" "deny_insecure_transport" {
 data "aws_iam_policy_document" "require_latest_tls" {
   count = (var.s3.attach_require_latest_tls_policy ? 1 : 0)
   statement {
-    sid       = "denyOutdatedTLS"
-    effect    = "Deny"
-    actions   = [
+    sid    = "denyOutdatedTLS"
+    effect = "Deny"
+    actions = [
       "s3:*",
     ]
     resources = [
@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "require_latest_tls" {
     condition {
       test     = "NumericLessThan"
       variable = "s3:TlsVersion"
-      values   = [
+      values = [
         "1.2"
       ]
     }
@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "require_latest_tls" {
 }
 
 data "aws_iam_policy_document" "combined" {
-  count                   = (local.attach_policy ? 1 : 0)
+  count = (local.attach_policy ? 1 : 0)
   source_policy_documents = compact([
     var.s3.attach_require_latest_tls_policy ? data.aws_iam_policy_document.require_latest_tls[0].json : "",
     var.s3.attach_deny_insecure_transport_policy ? data.aws_iam_policy_document.deny_insecure_transport[0].json : "",

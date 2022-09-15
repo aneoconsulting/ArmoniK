@@ -3,7 +3,7 @@ resource "kubernetes_daemonset" "node-exporter" {
   metadata {
     name      = "node-exporter"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app     = "armonik"
       type    = "monitoring"
       service = "node-exporter"
@@ -19,8 +19,8 @@ resource "kubernetes_daemonset" "node-exporter" {
     }
     template {
       metadata {
-        name        = "node-exporter"
-        labels      = {
+        name = "node-exporter"
+        labels = {
           app     = "armonik"
           type    = "monitoring"
           service = "node-exporter"
@@ -32,12 +32,12 @@ resource "kubernetes_daemonset" "node-exporter" {
         }
       }
       spec {
-        dynamic toleration {
+        dynamic "toleration" {
           for_each = (var.node_selector != {} ? [
-          for index in range(0, length(local.node_selector_keys)) : {
-            key   = local.node_selector_keys[index]
-            value = local.node_selector_values[index]
-          }
+            for index in range(0, length(local.node_selector_keys)) : {
+              key   = local.node_selector_keys[index]
+              value = local.node_selector_values[index]
+            }
           ] : [])
           content {
             key      = toleration.value.key
@@ -46,7 +46,7 @@ resource "kubernetes_daemonset" "node-exporter" {
             effect   = "NoSchedule"
           }
         }
-        dynamic image_pull_secrets {
+        dynamic "image_pull_secrets" {
           for_each = (var.docker_image.image_pull_secrets != "" ? [1] : [])
           content {
             name = var.docker_image.image_pull_secrets
@@ -56,7 +56,7 @@ resource "kubernetes_daemonset" "node-exporter" {
           name              = "node-exporter"
           image             = "${var.docker_image.image}:${var.docker_image.tag}"
           image_pull_policy = "IfNotPresent"
-          args              = [
+          args = [
             "--path.procfs",
             "/host/proc",
             "--path.sysfs",

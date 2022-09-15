@@ -12,7 +12,7 @@ resource "tls_self_signed_cert" "root_redis" {
   private_key_pem       = tls_private_key.root_redis.private_key_pem
   is_ca_certificate     = true
   validity_period_hours = "168"
-  allowed_uses          = [
+  allowed_uses = [
     "cert_signing",
     "key_encipherment",
     "digital_signature"
@@ -49,7 +49,7 @@ resource "tls_locally_signed_cert" "redis_certificate" {
   ca_private_key_pem    = tls_private_key.root_redis.private_key_pem
   ca_cert_pem           = tls_self_signed_cert.root_redis.cert_pem
   validity_period_hours = "168"
-  allowed_uses          = [
+  allowed_uses = [
     "key_encipherment",
     "digital_signature",
     "server_auth",

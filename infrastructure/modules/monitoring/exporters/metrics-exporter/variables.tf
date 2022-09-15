@@ -26,7 +26,7 @@ variable "storage_endpoint_url" {
 # Docker image
 variable "docker_image" {
   description = "Docker image for Metrics exporter"
-  type        = object({
+  type = object({
     image              = string
     tag                = string
     image_pull_secrets = string

@@ -3,8 +3,8 @@ namespace = "default"
 
 # Keda infos
 keda = {
-  docker_image       = {
-    keda             = {
+  docker_image = {
+    keda = {
       image = "ghcr.io/kedacore/keda"
       tag   = "2.8.0"
     }

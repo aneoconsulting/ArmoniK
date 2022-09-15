@@ -1,7 +1,7 @@
 # MQ
 output "activemq_endpoint_url" {
   description = "AWS MQ (ActiveMQ) endpoint urls"
-  value       = {
+  value = {
     url  = aws_mq_broker.mq.instances.0.endpoints.1
     host = trim(split(":", aws_mq_broker.mq.instances.0.endpoints.1).1, "//")
     port = tonumber(split(":", aws_mq_broker.mq.instances.0.endpoints.1).2)
@@ -25,7 +25,7 @@ output "web_url" {
 
 output "user_credentials" {
   description = "User credentials of ActiveMQ"
-  value       = {
+  value = {
     secret       = kubernetes_secret.activemq_user.metadata[0].name
     username_key = "username"
     password_key = "password"

@@ -25,7 +25,7 @@ output "name" {
 
 output "kms_key_id" {
   description = "ARN of KMS used for EKS"
-  value       = {
+  value = {
     cluster_log_kms_key_id    = var.eks.encryption_keys.cluster_log_kms_key_id
     cluster_encryption_config = var.eks.encryption_keys.cluster_encryption_config
     ebs_kms_key_id            = var.eks.encryption_keys.ebs_kms_key_id

@@ -1,9 +1,9 @@
 # Keda
 module "keda" {
-  source             = "../../../modules/monitoring/keda"
-  namespace          = local.keda_namespace
-  docker_image       = {
-    keda             = {
+  source    = "../../../modules/monitoring/keda"
+  namespace = local.keda_namespace
+  docker_image = {
+    keda = {
       image = local.keda_keda_image
       tag   = local.keda_keda_tag
     }

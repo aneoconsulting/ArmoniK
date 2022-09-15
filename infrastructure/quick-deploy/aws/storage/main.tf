@@ -11,7 +11,7 @@ module "s3_fs" {
   source = "../../../modules/aws/s3"
   tags   = local.tags
   name   = local.s3_fs_name
-  s3     = {
+  s3 = {
     policy                                = var.s3_fs.policy
     attach_policy                         = var.s3_fs.attach_policy
     attach_deny_insecure_transport_policy = var.s3_fs.attach_deny_insecure_transport_policy
@@ -28,10 +28,10 @@ module "s3_fs" {
 
 # AWS Elasticache
 module "elasticache" {
-  source      = "../../../modules/aws/elasticache"
-  tags        = local.tags
-  name        = local.elasticache_name
-  vpc         = {
+  source = "../../../modules/aws/elasticache"
+  tags   = local.tags
+  name   = local.elasticache_name
+  vpc = {
     id          = local.vpc.id
     cidr_blocks = local.vpc.cidr_blocks
     subnet_ids  = local.vpc.subnet_ids
@@ -48,7 +48,7 @@ module "elasticache" {
     data_tiering_enabled        = var.elasticache.data_tiering_enabled
     log_retention_in_days       = var.elasticache.log_retention_in_days
     cloudwatch_log_groups       = var.elasticache.cloudwatch_log_groups
-    encryption_keys             = {
+    encryption_keys = {
       kms_key_id     = (var.elasticache.encryption_keys.kms_key_id != "" ? var.elasticache.encryption_keys.kms_key_id : module.kms.0.selected.arn)
       log_kms_key_id = (var.elasticache.encryption_keys.log_kms_key_id != "" ? var.elasticache.encryption_keys.log_kms_key_id : module.kms.0.selected.arn)
     }
@@ -61,16 +61,16 @@ module "mq" {
   tags      = local.tags
   name      = local.mq_name
   namespace = var.namespace
-  vpc       = {
+  vpc = {
     id          = local.vpc.id
     cidr_blocks = local.vpc.cidr_blocks
     subnet_ids  = local.vpc.subnet_ids
   }
-  user      = {
+  user = {
     password = var.mq_credentials.password
     username = var.mq_credentials.username
   }
-  mq        = {
+  mq = {
     engine_type             = var.mq.engine_type
     engine_version          = var.mq.engine_version
     host_instance_type      = var.mq.host_instance_type
@@ -88,7 +88,7 @@ module "mongodb" {
   source      = "../../../modules/onpremise-storage/mongodb"
   namespace   = var.namespace
   working_dir = "${path.root}/../../.."
-  mongodb     = {
+  mongodb = {
     image              = var.mongodb.image
     tag                = var.mongodb.tag
     node_selector      = var.mongodb.node_selector

@@ -1,8 +1,8 @@
 # Metrics server
 module "metrics_server" {
-  source             = "../../../modules/monitoring/metrics-server"
-  namespace          = local.namespace
-  docker_image       = {
+  source    = "../../../modules/monitoring/metrics-server"
+  namespace = local.namespace
+  docker_image = {
     image = local.image
     tag   = local.tag
   }

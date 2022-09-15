@@ -11,7 +11,7 @@ module "vpc" {
   source = "../../../modules/aws/vpc"
   tags   = local.tags
   name   = local.vpc_name
-  vpc    = {
+  vpc = {
     cluster_name                                    = local.cluster_name
     private_subnets                                 = var.vpc.cidr_block_private
     public_subnets                                  = var.vpc.cidr_block_public

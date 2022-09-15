@@ -3,7 +3,7 @@ resource "kubernetes_deployment" "control_plane" {
   metadata {
     name      = "control-plane"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app     = "armonik"
       service = "control-plane"
     }
@@ -18,22 +18,22 @@ resource "kubernetes_deployment" "control_plane" {
     }
     template {
       metadata {
-        name        = "control-plane"
-        namespace   = var.namespace
-        labels      = {
+        name      = "control-plane"
+        namespace = var.namespace
+        labels = {
           app     = "armonik"
           service = "control-plane"
         }
         annotations = local.control_plane_annotations
       }
       spec {
-        node_selector  = local.control_plane_node_selector
-        dynamic toleration {
+        node_selector = local.control_plane_node_selector
+        dynamic "toleration" {
           for_each = (local.control_plane_node_selector != {} ? [
-          for index in range(0, length(local.control_plane_node_selector_keys)) : {
-            key   = local.control_plane_node_selector_keys[index]
-            value = local.control_plane_node_selector_values[index]
-          }
+            for index in range(0, length(local.control_plane_node_selector_keys)) : {
+              key   = local.control_plane_node_selector_keys[index]
+              value = local.control_plane_node_selector_values[index]
+            }
           ] : [])
           content {
             key      = toleration.value.key
@@ -42,7 +42,7 @@ resource "kubernetes_deployment" "control_plane" {
             effect   = "NoSchedule"
           }
         }
-        dynamic image_pull_secrets {
+        dynamic "image_pull_secrets" {
           for_each = (var.control_plane.image_pull_secrets != "" ? [1] : [])
           content {
             name = var.control_plane.image_pull_secrets
@@ -83,7 +83,7 @@ resource "kubernetes_deployment" "control_plane" {
             failure_threshold     = 20
             # the pod has (period_seconds x failure_threshold) seconds to finalize its startup
           }
-          dynamic env_from {
+          dynamic "env_from" {
             for_each = local.control_plane_configmaps
             content {
               config_map_ref {
@@ -91,7 +91,7 @@ resource "kubernetes_deployment" "control_plane" {
               }
             }
           }
-          dynamic env {
+          dynamic "env" {
             for_each = local.credentials
             content {
               name = env.key
@@ -104,7 +104,7 @@ resource "kubernetes_deployment" "control_plane" {
               }
             }
           }
-          dynamic volume_mount {
+          dynamic "volume_mount" {
             for_each = local.certificates
             content {
               name       = volume_mount.value.name
@@ -113,7 +113,7 @@ resource "kubernetes_deployment" "control_plane" {
             }
           }
         }
-        dynamic volume {
+        dynamic "volume" {
           for_each = local.certificates
           content {
             name = volume.value.name
@@ -124,7 +124,7 @@ resource "kubernetes_deployment" "control_plane" {
           }
         }
         # Fluent-bit container
-        dynamic container {
+        dynamic "container" {
           for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
           content {
             name              = local.fluent_bit_container_name
@@ -136,7 +136,7 @@ resource "kubernetes_deployment" "control_plane" {
               }
             }
             # Please don't change below read-only permissions
-            dynamic volume_mount {
+            dynamic "volume_mount" {
               for_each = local.fluent_bit_volumes
               content {
                 name       = volume_mount.key
@@ -146,17 +146,17 @@ resource "kubernetes_deployment" "control_plane" {
             }
           }
         }
-        dynamic volume {
+        dynamic "volume" {
           for_each = local.fluent_bit_volumes
           content {
             name = volume.key
-            dynamic host_path {
+            dynamic "host_path" {
               for_each = (volume.value.type == "host_path" ? [1] : [])
               content {
                 path = volume.value.mount_path
               }
             }
-            dynamic config_map {
+            dynamic "config_map" {
               for_each = (volume.value.type == "config_map" ? [1] : [])
               content {
                 name = local.fluent_bit_configmap
@@ -172,16 +172,16 @@ resource "kubernetes_deployment" "control_plane" {
 # Control plane service
 resource "kubernetes_service" "control_plane" {
   metadata {
-    name        = kubernetes_deployment.control_plane.metadata.0.name
-    namespace   = kubernetes_deployment.control_plane.metadata.0.namespace
-    labels      = {
+    name      = kubernetes_deployment.control_plane.metadata.0.name
+    namespace = kubernetes_deployment.control_plane.metadata.0.namespace
+    labels = {
       app     = kubernetes_deployment.control_plane.metadata.0.labels.app
       service = kubernetes_deployment.control_plane.metadata.0.labels.service
     }
     annotations = var.control_plane.annotations
   }
   spec {
-    type     = var.control_plane.service_type
+    type = var.control_plane.service_type
     selector = {
       app     = kubernetes_deployment.control_plane.metadata.0.labels.app
       service = kubernetes_deployment.control_plane.metadata.0.labels.service

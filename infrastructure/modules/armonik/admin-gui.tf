@@ -3,7 +3,7 @@ resource "kubernetes_deployment" "admin_gui" {
   metadata {
     name      = "admin-gui"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app     = "armonik"
       service = "admin-gui"
     }
@@ -20,18 +20,18 @@ resource "kubernetes_deployment" "admin_gui" {
       metadata {
         name      = "admin-gui"
         namespace = var.namespace
-        labels    = {
+        labels = {
           app     = "armonik"
           service = "admin-gui"
         }
       }
       spec {
-        dynamic toleration {
+        dynamic "toleration" {
           for_each = (local.admin_gui_node_selector != {} ? [
-          for index in range(0, length(local.admin_gui_node_selector_keys)) : {
-            key   = local.admin_gui_node_selector_keys[index]
-            value = local.admin_gui_node_selector_values[index]
-          }
+            for index in range(0, length(local.admin_gui_node_selector_keys)) : {
+              key   = local.admin_gui_node_selector_keys[index]
+              value = local.admin_gui_node_selector_values[index]
+            }
           ] : [])
           content {
             key      = toleration.value.key
@@ -40,7 +40,7 @@ resource "kubernetes_deployment" "admin_gui" {
             effect   = "NoSchedule"
           }
         }
-        dynamic image_pull_secrets {
+        dynamic "image_pull_secrets" {
           for_each = (var.admin_gui.image_pull_secrets != "" ? [1] : [])
           content {
             name = var.admin_gui.image_pull_secrets
@@ -69,21 +69,21 @@ resource "kubernetes_deployment" "admin_gui" {
             name  = "ControlPlane__Endpoint"
             value = local.control_plane_url
           }
-          dynamic env {
+          dynamic "env" {
             for_each = (local.grafana_url != "" ? [1] : [])
             content {
               name  = "Grafana__Endpoint"
               value = local.grafana_url
             }
           }
-          dynamic env {
+          dynamic "env" {
             for_each = (local.seq_web_url != "" ? [1] : [])
             content {
               name  = "Seq__Endpoint"
               value = local.seq_web_url
             }
           }
-          dynamic env {
+          dynamic "env" {
             for_each = local.credentials
             content {
               name = env.key
@@ -96,7 +96,7 @@ resource "kubernetes_deployment" "admin_gui" {
               }
             }
           }
-          dynamic volume_mount {
+          dynamic "volume_mount" {
             for_each = local.certificates
             content {
               name       = volume_mount.value.name
@@ -127,21 +127,21 @@ resource "kubernetes_deployment" "admin_gui" {
             name  = "ControlPlane__Endpoint"
             value = local.control_plane_url
           }
-          dynamic env {
+          dynamic "env" {
             for_each = (local.grafana_url != "" ? [1] : [])
             content {
               name  = "Grafana__Endpoint"
               value = local.grafana_url
             }
           }
-          dynamic env {
+          dynamic "env" {
             for_each = (local.seq_web_url != "" ? [1] : [])
             content {
               name  = "Seq__Endpoint"
               value = local.seq_web_url
             }
           }
-          dynamic env {
+          dynamic "env" {
             for_each = local.credentials
             content {
               name = env.key
@@ -154,7 +154,7 @@ resource "kubernetes_deployment" "admin_gui" {
               }
             }
           }
-          dynamic volume_mount {
+          dynamic "volume_mount" {
             for_each = local.certificates
             content {
               name       = volume_mount.value.name
@@ -164,7 +164,7 @@ resource "kubernetes_deployment" "admin_gui" {
           }
         }
         # Secrets volumes
-        dynamic volume {
+        dynamic "volume" {
           for_each = local.certificates
           content {
             name = volume.value.name
@@ -184,13 +184,13 @@ resource "kubernetes_service" "admin_gui" {
   metadata {
     name      = kubernetes_deployment.admin_gui.metadata.0.name
     namespace = kubernetes_deployment.admin_gui.metadata.0.namespace
-    labels    = {
+    labels = {
       app     = kubernetes_deployment.admin_gui.metadata.0.labels.app
       service = kubernetes_deployment.admin_gui.metadata.0.labels.service
     }
   }
   spec {
-    type     = var.admin_gui.service_type
+    type = var.admin_gui.service_type
     selector = {
       app     = kubernetes_deployment.admin_gui.metadata.0.labels.app
       service = kubernetes_deployment.admin_gui.metadata.0.labels.service

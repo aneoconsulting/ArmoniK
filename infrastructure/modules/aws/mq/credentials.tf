@@ -1,8 +1,8 @@
 # Generate username
 resource "random_string" "user" {
-  length  = 8
-  special = true
-  number  = false
+  length           = 8
+  special          = true
+  number           = false
   override_special = "-._~"
 }
 

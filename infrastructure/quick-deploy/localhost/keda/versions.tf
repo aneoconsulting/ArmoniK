@@ -4,23 +4,23 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.7.1"
     }
-    external   = {
+    external = {
       source  = "hashicorp/external"
       version = "~> 2.1.1"
     }
-    null       = {
+    null = {
       source  = "hashicorp/null"
       version = "~> 3.1.0"
     }
-    random     = {
+    random = {
       source  = "hashicorp/random"
       version = "~> 3.1.0"
     }
-    local      = {
+    local = {
       source  = "hashicorp/local"
       version = "~> 2.1.0"
     }
-    tls        = {
+    tls = {
       source  = "hashicorp/tls"
       version = "~> 3.1.0"
     }

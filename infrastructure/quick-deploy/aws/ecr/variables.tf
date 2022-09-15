@@ -29,12 +29,12 @@ variable "tags" {
 # List of ECR repositories to create
 variable "ecr" {
   description = "List of ECR repositories to create"
-  type        = object({
+  type = object({
     kms_key_id   = string
     repositories = list(any)
   })
-  default     = {
-    kms_key_id   = ""
+  default = {
+    kms_key_id = ""
     repositories = [
       {
         name  = "mongodb"
