@@ -2,6 +2,20 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-29)
 
+## [v2.8.6](https://github.com/aneoconsulting/armonik/tree/v2.8.6) (2022-09-19)
+
+Changed
+-
+
+* Upgrade Admin GUI version from 0.6.0 to 0.6.1
+
+
+Fixed
+-
+
+* Cancellation is working as expected
+* Duration in millisecond
+
 ## [v2.8.5](https://github.com/aneoconsulting/armonik/tree/v2.8.5) (2022-08-29)
 
 Changed
