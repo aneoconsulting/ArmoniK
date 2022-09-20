@@ -57,9 +57,9 @@ variable "mongodb_polling_delay" {
   })
 }
 
-# Pod to insert partitions in the database
-variable "pod_partitions_in_database" {
-  description = "Pod to insert partitions IDs in the database"
+# Job to insert partitions in the database
+variable "job_partitions_in_database" {
+  description = "Job to insert partitions IDs in the database"
   type = object({
     name               = string
     image              = string

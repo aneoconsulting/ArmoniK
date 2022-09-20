@@ -19,15 +19,15 @@ locals {
   compute_plane_node_selector_values = { for partition in local.partition_names : partition => values(local.compute_plane_node_selector[partition]) }
 
   # Node selector for pod to insert partitions IDs in database
-  pod_partitions_in_database_node_selector        = try(var.pod_partitions_in_database.node_selector, {})
-  pod_partitions_in_database_node_selector_keys   = keys(local.pod_partitions_in_database_node_selector)
-  pod_partitions_in_database_node_selector_values = values(local.pod_partitions_in_database_node_selector)
+  job_partitions_in_database_node_selector        = try(var.job_partitions_in_database.node_selector, {})
+  job_partitions_in_database_node_selector_keys   = keys(local.job_partitions_in_database_node_selector)
+  job_partitions_in_database_node_selector_values = values(local.job_partitions_in_database_node_selector)
 
   # Annotations
   control_plane_annotations              = try(var.control_plane.annotations, {})
   compute_plane_annotations              = { for partition in local.partition_names : partition => try(var.compute_plane[partition].annotations, {}) }
   ingress_annotations                    = try(var.ingress.annotations, {})
-  pod_partitions_in_database_annotations = try(var.pod_partitions_in_database.annotations, {})
+  job_partitions_in_database_annotations = try(var.job_partitions_in_database.annotations, {})
 
   # Shared storage
   service_url             = try(var.storage_endpoint_url.shared.service_url, "")

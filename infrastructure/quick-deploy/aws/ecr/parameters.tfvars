@@ -48,12 +48,12 @@ ecr = {
     {
       name  = "armonik-control-plane"
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.6.1"
+      tag   = "0.6.2-SNAPSHOT.10.9977406e"
     },
     {
       name  = "armonik-polling-agent"
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.6.1"
+      tag   = "0.6.2-SNAPSHOT.10.9977406e"
     },
     {
       name  = "armonik-worker"
@@ -63,12 +63,12 @@ ecr = {
     {
       name  = "metrics-exporter"
       image = "dockerhubaneo/armonik_control_metrics"
-      tag   = "0.6.1"
+      tag   = "0.6.2-SNAPSHOT.10.9977406e"
     },
     {
       name  = "partition-metrics-exporter"
       image = "dockerhubaneo/armonik_control_partition_metrics"
-      tag   = "0.6.1"
+      tag   = "0.6.2-SNAPSHOT.10.9977406e"
     },
     {
       name  = "armonik-admin-api"
@@ -79,6 +79,11 @@ ecr = {
       name  = "armonik-admin-app"
       image = "dockerhubaneo/armonik_admin_app"
       tag   = "0.6.0"
+    },
+    {
+      name  = "mongosh"
+      image = "rtsp/mongosh"
+      tag   = "1.5.4"
     },
     {
       name  = "seq"
