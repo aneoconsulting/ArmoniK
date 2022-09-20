@@ -19,12 +19,12 @@ resource "kubernetes_job" "partitions_in_database" {
         }
       }
       spec {
-        node_selector = local.pod_partitions_in_database_node_selector
+        node_selector = local.job_partitions_in_database_node_selector
         dynamic "toleration" {
-          for_each = (local.pod_partitions_in_database_node_selector != {} ? [
-            for index in range(0, length(local.pod_partitions_in_database_node_selector_keys)) : {
-              key   = local.pod_partitions_in_database_node_selector_keys[index]
-              value = local.pod_partitions_in_database_node_selector_values[index]
+          for_each = (local.job_partitions_in_database_node_selector != {} ? [
+            for index in range(0, length(local.job_partitions_in_database_node_selector_keys)) : {
+              key   = local.job_partitions_in_database_node_selector_keys[index]
+              value = local.job_partitions_in_database_node_selector_values[index]
             }
           ] : [])
           content {
@@ -35,16 +35,16 @@ resource "kubernetes_job" "partitions_in_database" {
           }
         }
         dynamic "image_pull_secrets" {
-          for_each = (var.pod_partitions_in_database.image_pull_secrets != "" ? [1] : [])
+          for_each = (var.job_partitions_in_database.image_pull_secrets != "" ? [1] : [])
           content {
-            name = var.pod_partitions_in_database.image_pull_secrets
+            name = var.job_partitions_in_database.image_pull_secrets
           }
         }
         restart_policy = "OnFailure" # Always, OnFailure, Never
         container {
-          name              = var.pod_partitions_in_database.name
-          image             = var.pod_partitions_in_database.tag != "" ? "${var.pod_partitions_in_database.image}:${var.pod_partitions_in_database.tag}" : var.pod_partitions_in_database.image
-          image_pull_policy = var.pod_partitions_in_database.image_pull_policy
+          name              = var.job_partitions_in_database.name
+          image             = var.job_partitions_in_database.tag != "" ? "${var.job_partitions_in_database.image}:${var.job_partitions_in_database.tag}" : var.job_partitions_in_database.image
+          image_pull_policy = var.job_partitions_in_database.image_pull_policy
           command           = ["/bin/bash", "-c", local.script]
           env {
             name  = "MongoDB_Host"

@@ -81,6 +81,11 @@ ecr = {
       tag   = "0.6.0"
     },
     {
+      name  = "mongosh"
+      image = "rtsp/mongosh"
+      tag   = "1.5.4"
+    },
+    {
       name  = "seq"
       image = "datalust/seq"
       tag   = "2022.1"

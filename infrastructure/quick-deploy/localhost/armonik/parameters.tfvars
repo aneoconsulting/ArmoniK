@@ -11,9 +11,9 @@ mongodb_polling_delay = {
   max_polling_delay = "00:00:10"
 }
 
-# Pod to insert partitions in the database
-pod_partitions_in_database = {
-  name               = "pod-partitions-in-database"
+# Job to insert partitions in the database
+job_partitions_in_database = {
+  name               = "job-partitions-in-database"
   image              = "rtsp/mongosh"
   tag                = "1.5.4"
   image_pull_policy  = "IfNotPresent"

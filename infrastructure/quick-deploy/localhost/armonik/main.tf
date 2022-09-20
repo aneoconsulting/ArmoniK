@@ -10,5 +10,5 @@ module "armonik" {
   control_plane              = var.control_plane
   admin_gui                  = var.admin_gui
   ingress                    = var.ingress
-  pod_partitions_in_database = var.pod_partitions_in_database
+  job_partitions_in_database = var.job_partitions_in_database
 }

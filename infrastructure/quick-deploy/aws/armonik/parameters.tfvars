@@ -23,6 +23,17 @@ mongodb_polling_delay = {
   max_polling_delay = "00:00:10"
 }
 
+# Job to insert partitions in the database
+job_partitions_in_database = {
+  name               = "job-partitions-in-database"
+  image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongosh"
+  tag                = "1.5.4"
+  image_pull_policy  = "IfNotPresent"
+  image_pull_secrets = ""
+  node_selector      = {}
+  annotations        = {}
+}
+
 # Parameters of control plane
 control_plane = {
   name              = "control-plane"
