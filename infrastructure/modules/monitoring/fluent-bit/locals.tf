@@ -18,7 +18,11 @@ locals {
   seq_enabled = tobool(try(var.seq.enabled, false))
 
   # CloudWatch
-  cloudwatch_name    = try(var.cloudwatch.name, "")
-  cloudwatch_region  = try(var.cloudwatch.region, "")
-  cloudwatch_enabled = tobool(try(var.cloudwatch.enabled, false))
+  cloudwatch_name                 = try(var.cloudwatch.name, "")
+  cloudwatch_region               = try(var.cloudwatch.region, "")
+  cloudwatch_enabled              = tobool(try(var.cloudwatch.enabled, false))
+  cloudwatch_arn                  = try(var.cloudwatch.arn, "")
+  cloudwatch_worker_iam_role_name = try(var.cloudwatch.worker_iam_role_name, "")
+  cloudwatch_tags                 = try(var.cloudwatch.tags, {})
+  cloudwatch_cluster_id           = try(var.cloudwatch.cluster_id, "")
 }

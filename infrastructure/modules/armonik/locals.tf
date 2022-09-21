@@ -255,7 +255,7 @@ locals {
             serverAddress = try(var.monitoring.prometheus.url, "")
             metricName    = join("_", ["armonik", partition, "opt"])
             threshold     = "1"
-            namespace     = local.metrics_exporter_namespace
+            namespace     = local.partition_metrics_exporter_namespace
             query         = "${join("_", ["armonik", partition, "opt"])}{job=\"${local.partition_metrics_exporter_name}\"}"
           }
           } :
