@@ -256,7 +256,7 @@ locals {
             metricName    = "armonik_${partition}_tasks_queued"
             threshold     = "1"
             namespace     = local.metrics_exporter_namespace
-            query         = "armonik_${partition}_tasks_queued{job=\"${local.partition_metrics_exporter_name}\"}"
+            query         = "armonik_${partition}_tasks_queued{job=\"${local.metrics_exporter_name}\"}"
           }
           } :
           (lower(try(trigger.type, "")) == "cpu" || lower(try(trigger.type, "")) == "memory" ? {
