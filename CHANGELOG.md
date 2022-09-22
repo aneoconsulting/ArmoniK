@@ -10,10 +10,7 @@ Added
 * Add static partitioning in ArmoniK
 * Add ArmoniK configmaps: compute-plane-configmap and control-plane-configmap
 * Add the environment variable `Amqp__PartitionId` and `Pollster__GraceDelay` in the of ArmoniK polling agent container
-* Add partition metrics exporter service (monitoring)
 * Add a job to insert partitions data in the database (ArmoniK)
-* Add partition metrics exporter in Prometheus scraping list (monitoring)
-* Add partition metrics exporter in Grafana dashboard (monitoring)
 
 Changed
 -

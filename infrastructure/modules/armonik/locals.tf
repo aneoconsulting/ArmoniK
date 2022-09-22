@@ -253,10 +253,10 @@ locals {
           type = "prometheus"
           metadata = {
             serverAddress = try(var.monitoring.prometheus.url, "")
-            metricName    = join("_", ["armonik", partition, "opt"])
+            metricName    = "armonik_${partition}_tasks_queued"
             threshold     = "1"
             namespace     = local.metrics_exporter_namespace
-            query         = "${join("_", ["armonik", partition, "opt"])}{job=\"${local.partition_metrics_exporter_name}\"}"
+            query         = "armonik_${partition}_tasks_queued{job=\"${local.metrics_exporter_name}\"}"
           }
           } :
           (lower(try(trigger.type, "")) == "cpu" || lower(try(trigger.type, "")) == "memory" ? {
