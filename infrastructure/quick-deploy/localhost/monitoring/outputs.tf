@@ -22,11 +22,11 @@ output "monitoring" {
       namespace = module.metrics_exporter.namespace
     }
     partition_metrics_exporter = {
-      name      = null#module.partition_metrics_exporter.name
-      host      = null#module.partition_metrics_exporter.host
-      port      = null#module.partition_metrics_exporter.port
-      url       = null#module.partition_metrics_exporter.url
-      namespace = null#module.partition_metrics_exporter.namespace
+      name      = null #module.partition_metrics_exporter.name
+      host      = null #module.partition_metrics_exporter.host
+      port      = null #module.partition_metrics_exporter.port
+      url       = null #module.partition_metrics_exporter.url
+      namespace = null #module.partition_metrics_exporter.namespace
     }
     prometheus = {
       host = module.prometheus.host

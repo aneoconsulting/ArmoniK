@@ -78,7 +78,7 @@ module "prometheus" {
   service_type                   = local.prometheus_service_type
   node_selector                  = local.prometheus_node_selector
   metrics_exporter_url           = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  partition_metrics_exporter_url = null#"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
+  partition_metrics_exporter_url = null #"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
   docker_image = {
     image              = local.prometheus_image
     tag                = local.prometheus_tag
