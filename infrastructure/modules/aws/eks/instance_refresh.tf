@@ -57,24 +57,6 @@ resource "helm_release" "aws_node_termination_handler" {
   ]
 }
 
-module "aws_node_termination_handler_role" {
-  source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version                       = "4.1.0"
-  create_role                   = true
-  role_description              = "IRSA role for ANTH, cluster ${var.name}"
-  role_name_prefix              = var.name
-  provider_url                  = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
-  role_policy_arns              = [aws_iam_policy.aws_node_termination_handler.arn]
-  oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:aws-node-termination-handler"]
-  depends_on                    = [module.eks]
-}
-
-resource "aws_iam_policy" "aws_node_termination_handler" {
-  name   = local.ima_aws_node_termination_handler_name
-  policy = data.aws_iam_policy_document.aws_node_termination_handler.json
-  tags   = local.tags
-}
-
 data "aws_iam_policy_document" "aws_node_termination_handler" {
   statement {
     effect = "Allow"
@@ -104,6 +86,24 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
       module.aws_node_termination_handler_sqs.sqs_queue_arn
     ]
   }*/
+}
+
+resource "aws_iam_policy" "aws_node_termination_handler" {
+  name   = local.ima_aws_node_termination_handler_name
+  policy = data.aws_iam_policy_document.aws_node_termination_handler.json
+  tags   = local.tags
+}
+
+module "aws_node_termination_handler_role" {
+  source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+  version                       = "4.1.0"
+  create_role                   = true
+  role_description              = "IRSA role for ANTH, cluster ${var.name}"
+  role_name_prefix              = var.name
+  provider_url                  = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
+  role_policy_arns              = [aws_iam_policy.aws_node_termination_handler.arn]
+  oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:aws-node-termination-handler"]
+  depends_on                    = [module.eks]
 }
 
 resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
