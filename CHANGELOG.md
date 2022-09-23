@@ -1,21 +1,35 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-08-26)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-09-23)
 
-## [v2.9.0](https://github.com/aneoconsulting/armonik/tree/v2.9.0) (2022-08-26)
+## [v2.8.7-beta](https://github.com/aneoconsulting/armonik/tree/v2.8.7-beta) (2022-09-23)
 
 Added
 -
 
-* Add static partitioning in ArmoniK
 * Add ArmoniK configmaps: compute-plane-configmap and control-plane-configmap
-* Add the environment variable `Amqp__PartitionId` and `Pollster__GraceDelay` in the of ArmoniK polling agent container
-* Add a job to insert partitions data in the database (ArmoniK)
+* Add the environment variable [`Amqp__PartitionId`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/modules/armonik/compute-plane.tf) and [`Pollster__GraceDelay`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/modules/armonik/polling-agent-configmap.tf) in the of ArmoniK polling agent container
+* Add a job to update database with new schema(ArmoniK)
+* TaskOptions does not use implicit informations provided with a dictionnary. TaksOptions keys are provided to configure the tasks.
 
 Changed
 -
 
 * Upgrade Keda version from 2.7.1 to 2.8.0
+
+## [v2.8.6](https://github.com/aneoconsulting/armonik/tree/v2.8.6) (2022-09-19)
+
+Changed
+-
+
+* Upgrade Admin GUI version from 0.6.0 to 0.6.1
+
+
+Fixed
+-
+
+* Cancellation is working as expected
+* Duration in millisecond
 
 ## [v2.8.5](https://github.com/aneoconsulting/armonik/tree/v2.8.5) (2022-08-29)
 
