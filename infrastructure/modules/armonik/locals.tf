@@ -14,9 +14,9 @@ locals {
   admin_gui_node_selector_values = values(local.admin_gui_node_selector)
 
   # Node selector for compute plane
-  compute_plane_node_selector        = { for partition, compute_plane in var.compute_plane : partition => try(compute_plane.node_selector, {}) }
-  compute_plane_node_selector_keys   = { for partition in local.partition_names : partition => keys(local.compute_plane_node_selector[partition]) }
-  compute_plane_node_selector_values = { for partition in local.partition_names : partition => values(local.compute_plane_node_selector[partition]) }
+  compute_plane_node_selector        = {for partition, compute_plane in var.compute_plane : partition => try(compute_plane.node_selector, {})}
+  compute_plane_node_selector_keys   = {for partition in local.partition_names : partition => keys(local.compute_plane_node_selector[partition])}
+  compute_plane_node_selector_values = {for partition in local.partition_names : partition => values(local.compute_plane_node_selector[partition])}
 
   # Node selector for pod to insert partitions IDs in database
   job_partitions_in_database_node_selector        = try(var.job_partitions_in_database.node_selector, {})
@@ -25,7 +25,7 @@ locals {
 
   # Annotations
   control_plane_annotations              = try(var.control_plane.annotations, {})
-  compute_plane_annotations              = { for partition in local.partition_names : partition => try(var.compute_plane[partition].annotations, {}) }
+  compute_plane_annotations              = {for partition in local.partition_names : partition => try(var.compute_plane[partition].annotations, {})}
   ingress_annotations                    = try(var.ingress.annotations, {})
   job_partitions_in_database_annotations = try(var.job_partitions_in_database.annotations, {})
 
@@ -110,78 +110,78 @@ locals {
 
   # Credentials
   credentials = {
-    for key, value in {
-      Amqp__User = local.activemq_credentials_secret != "" ? {
-        key  = local.activemq_credentials_username_key
-        name = local.activemq_credentials_secret
-      } : { key = "", name = "" }
-      Amqp__Password = local.activemq_credentials_secret != "" ? {
-        key  = local.activemq_credentials_password_key
-        name = local.activemq_credentials_secret
-      } : { key = "", name = "" }
-      Redis__User = local.redis_credentials_secret != "" ? {
-        key  = local.redis_credentials_username_key
-        name = local.redis_credentials_secret
-      } : { key = "", name = "" }
-      Redis__Password = local.redis_credentials_secret != "" ? {
-        key  = local.redis_credentials_password_key
-        name = local.redis_credentials_secret
-      } : { key = "", name = "" }
-      MongoDB__User = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_username_key
-        name = local.mongodb_credentials_secret
-      } : { key = "", name = "" }
-      MongoDB__Password = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_password_key
-        name = local.mongodb_credentials_secret
-      } : { key = "", name = "" }
-    } : key => value if !contains(values(value), "")
+  for key, value in {
+    Amqp__User        = local.activemq_credentials_secret != "" ? {
+      key  = local.activemq_credentials_username_key
+      name = local.activemq_credentials_secret
+    } : { key = "", name = "" }
+    Amqp__Password    = local.activemq_credentials_secret != "" ? {
+      key  = local.activemq_credentials_password_key
+      name = local.activemq_credentials_secret
+    } : { key = "", name = "" }
+    Redis__User       = local.redis_credentials_secret != "" ? {
+      key  = local.redis_credentials_username_key
+      name = local.redis_credentials_secret
+    } : { key = "", name = "" }
+    Redis__Password   = local.redis_credentials_secret != "" ? {
+      key  = local.redis_credentials_password_key
+      name = local.redis_credentials_secret
+    } : { key = "", name = "" }
+    MongoDB__User     = local.mongodb_credentials_secret != "" ? {
+      key  = local.mongodb_credentials_username_key
+      name = local.mongodb_credentials_secret
+    } : { key = "", name = "" }
+    MongoDB__Password = local.mongodb_credentials_secret != "" ? {
+      key  = local.mongodb_credentials_password_key
+      name = local.mongodb_credentials_secret
+    } : { key = "", name = "" }
+  } : key => value if !contains(values(value), "")
   }
 
   # Credentials
   pod_partitions_in_database_credentials = {
-    for key, value in {
-      MongoDB_User = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_username_key
-        name = local.mongodb_credentials_secret
-      } : { key = "", name = "" }
-      MongoDB_Password = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_password_key
-        name = local.mongodb_credentials_secret
-      } : { key = "", name = "" }
-    } : key => value if !contains(values(value), "")
+  for key, value in {
+    MongoDB_User     = local.mongodb_credentials_secret != "" ? {
+      key  = local.mongodb_credentials_username_key
+      name = local.mongodb_credentials_secret
+    } : { key = "", name = "" }
+    MongoDB_Password = local.mongodb_credentials_secret != "" ? {
+      key  = local.mongodb_credentials_password_key
+      name = local.mongodb_credentials_secret
+    } : { key = "", name = "" }
+  } : key => value if !contains(values(value), "")
   }
 
   # Certificates
   certificates = {
-    for key, value in {
-      activemq = local.activemq_certificates_secret != "" ? {
-        name        = "activemq-secret-volume"
-        mount_path  = "/amqp"
-        secret_name = local.activemq_certificates_secret
-      } : { name = "", mount_path = "", secret_name = "" }
-      redis = local.redis_certificates_secret != "" ? {
-        name        = "redis-secret-volume"
-        mount_path  = "/redis"
-        secret_name = local.redis_certificates_secret
-      } : { name = "", mount_path = "", secret_name = "" }
-      mongodb = local.mongodb_certificates_secret != "" ? {
-        name        = "mongodb-secret-volume"
-        mount_path  = "/mongodb"
-        secret_name = local.mongodb_certificates_secret
-      } : { name = "", mount_path = "", secret_name = "" }
-    } : key => value if !contains(values(value), "")
+  for key, value in {
+    activemq = local.activemq_certificates_secret != "" ? {
+      name        = "activemq-secret-volume"
+      mount_path  = "/amqp"
+      secret_name = local.activemq_certificates_secret
+    } : { name = "", mount_path = "", secret_name = "" }
+    redis    = local.redis_certificates_secret != "" ? {
+      name        = "redis-secret-volume"
+      mount_path  = "/redis"
+      secret_name = local.redis_certificates_secret
+    } : { name = "", mount_path = "", secret_name = "" }
+    mongodb  = local.mongodb_certificates_secret != "" ? {
+      name        = "mongodb-secret-volume"
+      mount_path  = "/mongodb"
+      secret_name = local.mongodb_certificates_secret
+    } : { name = "", mount_path = "", secret_name = "" }
+  } : key => value if !contains(values(value), "")
   }
 
   # Fluent-bit volumes
   # Please don't change below read-only permissions
   fluent_bit_volumes = {
-    fluentbitstate = {
+    fluentbitstate         = {
       mount_path = "/var/fluent-bit/state"
       read_only  = false
       type       = "host_path"
     }
-    varlog = {
+    varlog                 = {
       mount_path = "/var/log"
       read_only  = true
       type       = "host_path"
@@ -191,17 +191,17 @@ locals {
       read_only  = true
       type       = "host_path"
     }
-    runlogjournal = {
+    runlogjournal          = {
       mount_path = "/run/log/journal"
       read_only  = true
       type       = "host_path"
     }
-    dmesg = {
+    dmesg                  = {
       mount_path = "/var/log/dmesg"
       read_only  = true
       type       = "host_path"
     }
-    fluentbitconfig = {
+    fluentbitconfig        = {
       mount_path = "/fluent-bit/etc/"
       read_only  = false
       type       = "config_map"
@@ -232,61 +232,61 @@ locals {
 
   # Partitions data
   partitions_data = [
-    for key, value in var.compute_plane : {
-      _id                  = key
-      ParentPartitionIds   = value.partition_data.parent_partition_ids
-      PodReserved          = value.partition_data.reserved_pods
-      PodMax               = value.partition_data.max_pods
-      PreemptionPercentage = value.partition_data.preemption_percentage
-      Priority             = value.partition_data.priority
-      PodConfiguration     = value.partition_data.pod_configuration
-    }
+  for key, value in var.compute_plane : {
+    _id                  = key
+    ParentPartitionIds   = value.partition_data.parent_partition_ids
+    PodReserved          = value.partition_data.reserved_pods
+    PodMax               = value.partition_data.max_pods
+    PreemptionPercentage = value.partition_data.preemption_percentage
+    Priority             = value.partition_data.priority
+    PodConfiguration     = value.partition_data.pod_configuration
+  }
   ]
 
   # HPA scalers
   # Compute plane
   hpa_compute_plane_triggers = {
-    for partition, value in var.compute_plane : partition => {
-      triggers = [
-        for trigger in try(value.hpa.triggers, []) :
-        (lower(try(trigger.type, "")) == "prometheus" ? {
-          type = "prometheus"
-          metadata = {
-            serverAddress = try(var.monitoring.prometheus.url, "")
-            metricName    = join("_", ["armonik", partition, "opt"])
-            threshold     = "1"
-            namespace     = local.partition_metrics_exporter_namespace
-            query         = "${join("_", ["armonik", partition, "opt"])}{job=\"${local.partition_metrics_exporter_name}\"}"
-          }
-          } :
-          (lower(try(trigger.type, "")) == "cpu" || lower(try(trigger.type, "")) == "memory" ? {
-            type       = lower(trigger.type)
-            metricType = try(trigger.metric_type, "Utilization")
-            metadata = {
-              value = try(trigger.value, "80")
-            }
-        } : object({})))
-      ]
-    }
+  for partition, value in var.compute_plane : partition => {
+    triggers = [
+    for trigger in try(value.hpa.triggers, []) :
+    (lower(try(trigger.type, "")) == "prometheus" ? {
+      type     = "prometheus"
+      metadata = {
+        serverAddress = try(var.monitoring.prometheus.url, "")
+        metricName    = "armonik_${partition}_tasks_queued"
+        threshold     = "1"
+        namespace     = local.metrics_exporter_namespace
+        query         = "armonik_${partition}_tasks_queued{job=\"${local.metrics_exporter_name}\"}"
+      }
+    } :
+    (lower(try(trigger.type, "")) == "cpu" || lower(try(trigger.type, "")) == "memory" ? {
+      type       = lower(trigger.type)
+      metricType = try(trigger.metric_type, "Utilization")
+      metadata   = {
+        value = try(trigger.value, "80")
+      }
+    } : object({})))
+    ]
+  }
   }
 
   compute_plane_triggers = {
-    for partition in local.partition_names : partition => {
-      triggers = [for trigger in local.hpa_compute_plane_triggers[partition].triggers : trigger if trigger != {}]
-    }
+  for partition in local.partition_names : partition => {
+    triggers = [for trigger in local.hpa_compute_plane_triggers[partition].triggers : trigger if trigger != {}]
+  }
   }
 
   # Control plane
   hpa_control_plane_triggers = {
     triggers = [
-      for trigger in try(var.control_plane.hpa.triggers, []) :
-      (lower(try(trigger.type, "")) == "cpu" || lower(try(trigger.type, "")) == "memory" ? {
-        type       = lower(trigger.type)
-        metricType = try(trigger.metric_type, "Utilization")
-        metadata = {
-          value = try(trigger.value, "80")
-        }
-      } : object({}))
+    for trigger in try(var.control_plane.hpa.triggers, []) :
+    (lower(try(trigger.type, "")) == "cpu" || lower(try(trigger.type, "")) == "memory" ? {
+      type       = lower(trigger.type)
+      metricType = try(trigger.metric_type, "Utilization")
+      metadata   = {
+        value = try(trigger.value, "80")
+      }
+    } : object({}))
     ]
   }
 

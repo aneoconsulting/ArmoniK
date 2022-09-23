@@ -24,12 +24,6 @@ scrape_configs:
         labels:
           namespace: "${var.namespace}"
 
-  - job_name: "partition-metrics-exporter"
-    static_configs:
-      - targets: ["${var.partition_metrics_exporter_url}"]
-        labels:
-          namespace: "${var.namespace}"
-
   - job_name: "kubernetes-apiservers"
     kubernetes_sd_configs:
       - role: endpoints

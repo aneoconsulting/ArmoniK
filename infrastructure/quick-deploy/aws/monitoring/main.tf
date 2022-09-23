@@ -54,22 +54,22 @@ module "metrics_exporter" {
 }
 
 # Partition metrics exporter
-module "partition_metrics_exporter" {
-  source               = "../../../modules/monitoring/exporters/partition-metrics-exporter"
-  namespace            = var.namespace
-  service_type         = local.partition_metrics_exporter_service_type
-  node_selector        = local.partition_metrics_exporter_node_selector
-  logging_level        = var.logging_level
-  storage_endpoint_url = var.storage_endpoint_url
-  metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  docker_image = {
-    image              = local.partition_metrics_exporter_image
-    tag                = local.partition_metrics_exporter_tag
-    image_pull_secrets = local.partition_metrics_exporter_image_pull_secrets
-  }
-  working_dir = "${path.root}/../../.."
-  depends_on  = [module.metrics_exporter]
-}
+#module "partition_metrics_exporter" {
+#  source               = "../../../modules/monitoring/exporters/partition-metrics-exporter"
+#  namespace            = var.namespace
+#  service_type         = local.partition_metrics_exporter_service_type
+#  node_selector        = local.partition_metrics_exporter_node_selector
+#  logging_level        = var.logging_level
+#  storage_endpoint_url = var.storage_endpoint_url
+#  metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
+#  docker_image = {
+#    image              = local.partition_metrics_exporter_image
+#    tag                = local.partition_metrics_exporter_tag
+#    image_pull_secrets = local.partition_metrics_exporter_image_pull_secrets
+#  }
+#  working_dir = "${path.root}/../../.."
+#  depends_on  = [module.metrics_exporter]
+#}
 
 # Prometheus
 module "prometheus" {
@@ -78,7 +78,7 @@ module "prometheus" {
   service_type                   = local.prometheus_service_type
   node_selector                  = local.prometheus_node_selector
   metrics_exporter_url           = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  partition_metrics_exporter_url = "${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
+  partition_metrics_exporter_url = null #"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
   docker_image = {
     image              = local.prometheus_image
     tag                = local.prometheus_tag
@@ -87,7 +87,7 @@ module "prometheus" {
   working_dir = "${path.root}/../../.."
   depends_on = [
     module.metrics_exporter,
-    module.partition_metrics_exporter
+    #module.partition_metrics_exporter
   ]
 }
 

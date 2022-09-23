@@ -27,11 +27,11 @@ output "monitoring" {
       namespace = module.metrics_exporter.namespace
     }
     partition_metrics_exporter = {
-      name      = module.partition_metrics_exporter.name
-      host      = module.partition_metrics_exporter.host
-      port      = module.partition_metrics_exporter.port
-      url       = module.partition_metrics_exporter.url
-      namespace = module.partition_metrics_exporter.namespace
+      name      = null #module.partition_metrics_exporter.name
+      host      = null #module.partition_metrics_exporter.host
+      port      = null #module.partition_metrics_exporter.port
+      url       = null #module.partition_metrics_exporter.url
+      namespace = null #module.partition_metrics_exporter.namespace
     }
     cloudwatch = (local.cloudwatch_enabled ? {
       name    = module.cloudwatch.0.name
