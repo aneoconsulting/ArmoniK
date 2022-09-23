@@ -49,8 +49,8 @@ module "elasticache" {
     log_retention_in_days       = var.elasticache.log_retention_in_days
     cloudwatch_log_groups       = var.elasticache.cloudwatch_log_groups
     encryption_keys = {
-      kms_key_id     = (var.elasticache.encryption_keys.kms_key_id != "" ? var.elasticache.encryption_keys.kms_key_id : module.kms.0.selected.arn)
-      log_kms_key_id = (var.elasticache.encryption_keys.log_kms_key_id != "" ? var.elasticache.encryption_keys.log_kms_key_id : module.kms.0.selected.arn)
+      kms_key_id     = (var.elasticache.encryption_keys.kms_key_id != "" ? var.elasticache.encryption_keys.kms_key_id : module.kms.0.arn)
+      log_kms_key_id = (var.elasticache.encryption_keys.log_kms_key_id != "" ? var.elasticache.encryption_keys.log_kms_key_id : module.kms.0.arn)
     }
   }
 }
@@ -79,7 +79,7 @@ module "mq" {
     storage_type            = var.mq.storage_type
     authentication_strategy = var.mq.authentication_strategy
     publicly_accessible     = var.mq.publicly_accessible
-    kms_key_id              = (var.mq.kms_key_id != "" ? var.mq.kms_key_id : module.kms.0.selected.arn)
+    kms_key_id              = (var.mq.kms_key_id != "" ? var.mq.kms_key_id : module.kms.0.arn)
   }
 }
 
