@@ -2,13 +2,13 @@
 data "aws_iam_policy_document" "send_logs_from_fluent_bit_to_cloudwatch_document" {
   count = (local.cloudwatch_enabled ? 1 : 0)
   statement {
-    sid       = "SendLogsFromFluentBitToCloudWatch"
-    actions   = [
+    sid = "SendLogsFromFluentBitToCloudWatch"
+    actions = [
       "logs:CreateLogStream",
       "logs:CreateLogGroup",
       "logs:PutLogEvents",
     ]
-    effect    = "Allow"
+    effect = "Allow"
     resources = [
       "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:${local.cloudwatch_log_group_name}:*"
     ]
