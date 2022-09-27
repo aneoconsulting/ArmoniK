@@ -131,7 +131,7 @@ resource "kubernetes_daemonset" "fluent_bit" {
         host_network                     = true
         dns_policy                       = "ClusterFirstWithHostNet"
         termination_grace_period_seconds = 10
-        service_account_name             = kubernetes_service_account.fluent_bit.0.metadata.0.name
+        service_account_name             = kubernetes_manifest.service_account_fluent_bit.0.manifest.metadata.name #kubernetes_service_account.fluent_bit.0.metadata.0.name
         toleration {
           key      = "node-role.kubernetes.io/master"
           operator = "Exists"
