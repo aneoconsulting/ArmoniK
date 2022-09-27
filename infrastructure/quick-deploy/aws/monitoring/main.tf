@@ -115,7 +115,7 @@ module "cloudwatch" {
   count             = (local.cloudwatch_enabled ? 1 : 0)
   source            = "../../../modules/aws/cloudwatch-log-group"
   name              = local.cloudwatch_log_group_name
-  kms_key_id        = (local.cloudwatch_kms_key_id != "" ? local.cloudwatch_kms_key_id : module.kms.0.selected.arn)
+  kms_key_id        = (local.cloudwatch_kms_key_id != "" ? local.cloudwatch_kms_key_id : module.kms.0.arn)
   retention_in_days = local.cloudwatch_retention_in_days
   tags              = local.tags
 }

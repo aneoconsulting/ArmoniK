@@ -73,11 +73,10 @@ control_plane = {
 # Parameters of admin GUI
 admin_gui = {
   api = {
-    name     = "admin-api"
-    replicas = 1
-    image    = "dockerhubaneo/armonik_admin_api"
-    tag      = "0.7.0"
-    port     = 3333
+    name  = "admin-api"
+    image = "dockerhubaneo/armonik_admin_api"
+    tag   = "0.7.0"
+    port  = 3333
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
@@ -88,11 +87,10 @@ admin_gui = {
     }
   }
   app = {
-    name     = "admin-app"
-    replicas = 1
-    image    = "dockerhubaneo/armonik_admin_app"
-    tag      = "0.7.0"
-    port     = 1080
+    name  = "admin-app"
+    image = "dockerhubaneo/armonik_admin_app"
+    tag   = "0.7.0"
+    port  = 1080
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
@@ -181,22 +179,16 @@ compute_plane = {
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
 ingress = {
-  name              = "ingress"
-  service_type      = "LoadBalancer"
-  replicas          = 1
-  image             = "nginxinc/nginx-unprivileged"
-  tag               = "1.23.0"
-  image_pull_policy = "IfNotPresent"
-  http_port         = 5000
-  grpc_port         = 5001
-  limits = {
-    cpu    = "200m"
-    memory = "100Mi"
-  }
-  requests = {
-    cpu    = "1m"
-    memory = "1Mi"
-  }
+  name               = "ingress"
+  service_type       = "LoadBalancer"
+  replicas           = 1
+  image              = "nginxinc/nginx-unprivileged"
+  tag                = "1.23.0"
+  image_pull_policy  = "IfNotPresent"
+  http_port          = 5000
+  grpc_port          = 5001
+  limits             = null
+  requests           = null
   image_pull_secrets = ""
   node_selector      = {}
   annotations        = {}

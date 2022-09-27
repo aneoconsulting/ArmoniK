@@ -2,15 +2,31 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-09-23)
 
+## [v2.8.7](https://github.com/aneoconsulting/armonik/tree/v2.8.7) (2022-09-23)
+
+Changed
+-
+
+* Put in place the least privileges for the worker node groups of the AWS EKS:
+    * [Read-only permission on S3 of .dll](infrastructure/quick-deploy/aws/storage/iam.tf).
+    * [Permissions to send logs in CloudWatch for Fluent-bit](infrastructure/quick-deploy/aws/monitoring/iam.tf)
+    * [Permissions for the cluster auto-scaler to scale woker nodes](infrastructure/modules/aws/eks/cluster-autoscaler.tf)
+    * [Permissions for the termination handler to gracefully handle EC2 instance shutdown within Kubernetes](infrastructure/modules/aws/eks/instance_refresh.tf)
+* Let Kubernetes manage the limits of nginx (don't set limits and requests)
+
 ## [v2.8.7-beta](https://github.com/aneoconsulting/armonik/tree/v2.8.7-beta) (2022-09-23)
 
 Added
 -
 
 * Add ArmoniK configmaps: compute-plane-configmap and control-plane-configmap
-* Add the environment variable [`Amqp__PartitionId`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/modules/armonik/compute-plane.tf) and [`Pollster__GraceDelay`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/modules/armonik/polling-agent-configmap.tf) in the of ArmoniK polling agent container
+* Add the environment
+  variable [`Amqp__PartitionId`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/modules/armonik/compute-plane.tf)
+  and [`Pollster__GraceDelay`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/modules/armonik/polling-agent-configmap.tf)
+  in the of ArmoniK polling agent container
 * Add a job to update database with new schema(ArmoniK)
-* TaskOptions does not use implicit informations provided with a dictionnary. TaksOptions keys are provided to configure the tasks.
+* TaskOptions does not use implicit information provided with a dictionary. TaksOptions keys are provided to configure
+  the tasks.
 
 Changed
 -
@@ -23,7 +39,6 @@ Changed
 -
 
 * Upgrade Admin GUI version from 0.6.0 to 0.6.1
-
 
 Fixed
 -

@@ -10,6 +10,6 @@ module "kms" {
 module "ecr" {
   source       = "../../../modules/aws/ecr"
   tags         = local.tags
-  kms_key_id   = (var.ecr.kms_key_id != "" ? var.ecr.kms_key_id : module.kms.0.selected.arn)
+  kms_key_id   = (var.ecr.kms_key_id != "" ? var.ecr.kms_key_id : module.kms.0.arn)
   repositories = var.ecr.repositories
 }

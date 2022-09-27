@@ -77,14 +77,14 @@ module "vpc_endpoints" {
       subnet_ids          = var.vpc.enable_private_subnet ? matchkeys(module.vpc.private_subnets, tolist(module.vpc.private_subnets_cidr_blocks), var.vpc.private_subnets) : []
       security_group_ids  = var.vpc.enable_private_subnet ? [module.vpc.default_security_group_id] : []
     }
-    dynamodb = {
+    /*dynamodb = {
       service      = "dynamodb"
       service_type = "Gateway"
       route_table_ids = flatten([
         module.vpc.intra_route_table_ids, module.vpc.private_route_table_ids, module.vpc.public_route_table_ids
       ])
     }
-    /*sqs                  = {
+    sqs                  = {
       service             = "sqs"
       private_dns_enabled = var.vpc.enable_private_subnet
       subnet_ids          = var.vpc.enable_private_subnet ? matchkeys(module.vpc.private_subnets, tolist(module.vpc.private_subnets_cidr_blocks), var.vpc.private_subnets) : []
