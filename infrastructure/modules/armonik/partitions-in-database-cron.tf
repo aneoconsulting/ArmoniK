@@ -1,10 +1,10 @@
-resource "kubernetes_cron_job" "partitions_in_database_cron" {
+resource "kubernetes_cron_job" "partitions_in_database" {
   metadata {
-    name      = "partitions-in-database-cron"
+    name      = "partitions-in-database"
     namespace = var.namespace
     labels = {
       app     = "armonik"
-      service = "partitions-in-database-cron"
+      service = "partitions-in-database"
       type    = "monitoring"
     }
   }
@@ -17,20 +17,20 @@ resource "kubernetes_cron_job" "partitions_in_database_cron" {
     schedule                      = "* * * * *"
     job_template {
       metadata {
-        name = "partitions-in-database-cron"
+        name = "partitions-in-database"
         labels = {
           app     = "armonik"
-          service = "partitions-in-database-cron"
+          service = "partitions-in-database"
           type    = "monitoring"
         }
       }
       spec {
         template {
           metadata {
-            name = "partitions-in-database-cron"
+            name = "partitions-in-database"
             labels = {
               app     = "armonik"
-              service = "partitions-in-database-cron"
+              service = "partitions-in-database"
               type    = "monitoring"
             }
           }
@@ -61,7 +61,7 @@ resource "kubernetes_cron_job" "partitions_in_database_cron" {
               name              = var.job_partitions_in_database.name
               image             = var.job_partitions_in_database.tag != "" ? "${var.job_partitions_in_database.image}:${var.job_partitions_in_database.tag}" : var.job_partitions_in_database.image
               image_pull_policy = var.job_partitions_in_database.image_pull_policy
-              command           = ["/bin/bash", "-c", local.script]
+              command           = ["/bin/bash", "-c", local.script_cron]
               env {
                 name  = "MongoDB_Host"
                 value = local.mongodb_host
@@ -111,7 +111,7 @@ resource "kubernetes_cron_job" "partitions_in_database_cron" {
 }
 
 locals {
-  script = <<EOF
+  script_cron = <<EOF
 #!/bin/bash
 export nbElements=$(mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://${local.mongodb_host}:${local.mongodb_port}/database --eval 'db.PartitionData.countDocuments()' --quiet)
 if [[ $nbElements != ${length(local.partition_names)} ]]; then
