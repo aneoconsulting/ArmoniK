@@ -1,7 +1,6 @@
 # Agent deployment
 resource "kubernetes_deployment" "compute_plane" {
-  depends_on = [kubernetes_cron_job.partitions_in_database]
-  for_each   = toset(local.partition_names)
+  for_each = toset(local.partition_names)
   metadata {
     name      = "compute-plane-${each.key}"
     namespace = var.namespace

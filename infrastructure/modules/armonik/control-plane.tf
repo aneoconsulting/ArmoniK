@@ -1,6 +1,5 @@
 # Control plane deployment
 resource "kubernetes_deployment" "control_plane" {
-  depends_on = [kubernetes_cron_job.partitions_in_database]
   metadata {
     name      = "control-plane"
     namespace = var.namespace
