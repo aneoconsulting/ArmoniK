@@ -1,10 +1,10 @@
-resource "kubernetes_cron_job" "partitions_in_database" {
+resource "kubernetes_cron_job" "partitions_in_database_cron" {
   metadata {
-    name      = "partitions-in-database"
+    name      = "partitions-in-database-cron"
     namespace = var.namespace
     labels = {
       app     = "armonik"
-      service = "partitions-in-database"
+      service = "partitions-in-database-cron"
       type    = "monitoring"
     }
   }
@@ -17,20 +17,20 @@ resource "kubernetes_cron_job" "partitions_in_database" {
     schedule                      = "* * * * *"
     job_template {
       metadata {
-        name = "partitions-in-database"
+        name = "partitions-in-database-cron"
         labels = {
           app     = "armonik"
-          service = "partitions-in-database"
+          service = "partitions-in-database-cron"
           type    = "monitoring"
         }
       }
       spec {
         template {
           metadata {
-            name = "partitions-in-database"
+            name = "partitions-in-database-cron"
             labels = {
               app     = "armonik"
-              service = "partitions-in-database"
+              service = "partitions-in-database-cron"
               type    = "monitoring"
             }
           }
