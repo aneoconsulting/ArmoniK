@@ -2,7 +2,7 @@ resource "kubernetes_cron_job" "partitions_in_database" {
   metadata {
     name      = "partitions-in-database"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app     = "armonik"
       service = "partitions-in-database"
       type    = "monitoring"
@@ -17,7 +17,7 @@ resource "kubernetes_cron_job" "partitions_in_database" {
     schedule                      = "*/1 * * * *"
     job_template {
       metadata {
-        name   = "partitions-in-database"
+        name = "partitions-in-database"
         labels = {
           app     = "armonik"
           service = "partitions-in-database"
@@ -27,7 +27,7 @@ resource "kubernetes_cron_job" "partitions_in_database" {
       spec {
         template {
           metadata {
-            name   = "partitions-in-database"
+            name = "partitions-in-database"
             labels = {
               app     = "armonik"
               service = "partitions-in-database"
@@ -35,13 +35,13 @@ resource "kubernetes_cron_job" "partitions_in_database" {
             }
           }
           spec {
-            node_selector  = local.job_partitions_in_database_node_selector
+            node_selector = local.job_partitions_in_database_node_selector
             dynamic "toleration" {
               for_each = (local.job_partitions_in_database_node_selector != {} ? [
-              for index in range(0, length(local.job_partitions_in_database_node_selector_keys)) : {
-                key   = local.job_partitions_in_database_node_selector_keys[index]
-                value = local.job_partitions_in_database_node_selector_values[index]
-              }
+                for index in range(0, length(local.job_partitions_in_database_node_selector_keys)) : {
+                  key   = local.job_partitions_in_database_node_selector_keys[index]
+                  value = local.job_partitions_in_database_node_selector_values[index]
+                }
               ] : [])
               content {
                 key      = toleration.value.key
