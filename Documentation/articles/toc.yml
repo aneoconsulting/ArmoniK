@@ -2,6 +2,7 @@
   href: intro.md
   items:
     - name: Single server installations
-      href: installations/
+      href: installations/toc.md
+      homepage: installations/overview.md
     - name: Test ArmoniK installation
       href: Tests/
