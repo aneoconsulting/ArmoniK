@@ -84,9 +84,9 @@
 <h3 id="scripts-of-tests">Scripts of tests</h3>
 <p>You have three scripts for testing ArmoniK :</p>
 <ul>
-<li><a href="https://github.com/aneoconsulting/ArmoniK.Samples/tree/main/tools/tests/symphony_like.sh">tools/tests/symphony_like.sh</a></li>
-<li><a href="https://github.com/aneoconsulting/ArmoniK.Samples/tree/main/tools/tests/datasynapse_like.sh">tools/tests/datasynapse_like.sh</a></li>
-<li><a href="https://github.com/aneoconsulting/ArmoniK.Samples/tree/main/tools/tests/symphony_endToendTests.sh">tools/tests/symphony_endToendTests.sh</a>.</li>
+<li><a href="https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/symphony_like.sh">tools/tests/symphony_like.sh</a></li>
+<li><a href="https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/datasynapse_like.sh">tools/tests/datasynapse_like.sh</a></li>
+<li><a href="https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/symphony_endToendTests.sh">tools/tests/symphony_endToendTests.sh</a>.</li>
 </ul>
 <p>The following commands in these scripts allow to retrieve the endpoint URL of ArmoniK control plane:</p>
 <pre><code class="lang-bash">export CPIP=$(kubectl get svc control-plane -n armonik -o custom-columns=&quot;IP:.spec.clusterIP&quot; --no-headers=true)
