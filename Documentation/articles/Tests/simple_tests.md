@@ -28,9 +28,9 @@ where `Username: admin` and `Password: admin`:
 
 You have three scripts for testing ArmoniK :
 
-* [tools/tests/symphony_like.sh](https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/symphony_like.sh)
-* [tools/tests/datasynapse_like.sh](https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/datasynapse_like.sh)
-* [tools/tests/symphony_endToendTests.sh](https://github.com/aneoconsulting/ArmoniK/blob/main/tools/tests/symphony_endToendTests.sh).
+* [tools/tests/symphony_like.sh](https://github.com/aneoconsulting/ArmoniK.Samples/tree/main/tools/tests/symphony_like.sh)
+* [tools/tests/datasynapse_like.sh](https://github.com/aneoconsulting/ArmoniK.Samples/tree/main/tools/tests/datasynapse_like.sh)
+* [tools/tests/symphony_endToendTests.sh](https://github.com/aneoconsulting/ArmoniK.Samples/tree/main/tools/tests/symphony_endToendTests.sh).
 
 The following commands in these scripts allow to retrieve the endpoint URL of ArmoniK control plane:
 
