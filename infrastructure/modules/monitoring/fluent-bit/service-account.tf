@@ -1,12 +1,13 @@
 # Service account and role for Fluent-bit
-#resource "kubernetes_service_account" "fluent_bit" {
-#  count = (local.fluent_bit_is_daemonset ? 1 : 0)
-#  metadata {
-#    name      = "fluent-bit"
-#    namespace = var.namespace
-#  }
-#}
+resource "kubernetes_service_account" "fluent_bit" {
+  count = (local.fluent_bit_is_daemonset ? 1 : 0)
+  metadata {
+    name      = "fluent-bit"
+    namespace = var.namespace
+  }
+}
 
+/*
 ## Issue: https://github.com/hashicorp/terraform-provider-kubernetes/issues/1724
 ## This should be rolled back once the kubernetes provider for terraform has been updated.
 resource "kubernetes_manifest" "service_account_fluent_bit" {
@@ -20,6 +21,7 @@ resource "kubernetes_manifest" "service_account_fluent_bit" {
     }
   }
 }
+*/
 
 resource "kubernetes_cluster_role" "fluent_bit_role" {
   count = (local.fluent_bit_is_daemonset ? 1 : 0)
@@ -49,7 +51,9 @@ resource "kubernetes_cluster_role_binding" "fluent_bit_role_binding" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_manifest.service_account_fluent_bit.0.manifest.metadata.name      #kubernetes_service_account.fluent_bit.0.metadata.0.name
-    namespace = kubernetes_manifest.service_account_fluent_bit.0.manifest.metadata.namespace #kubernetes_service_account.fluent_bit.0.metadata.0.namespace
+    name      = kubernetes_service_account.fluent_bit.0.metadata.0.name
+    namespace = kubernetes_service_account.fluent_bit.0.metadata.0.namespace
+    #name      = kubernetes_manifest.service_account_fluent_bit.0.manifest.metadata.name
+    #namespace = kubernetes_manifest.service_account_fluent_bit.0.manifest.metadata.namespace
   }
 }
