@@ -7,11 +7,15 @@ tags = {
   Environment = "dev"
 }
 
+# VMs names
+#vm_names = ["client"]
+vm_names = ["stark", "lannister", "baratheon", "targaryen", "greyjoy", "tyrell"]
+
 # AMI
 ami = "ami-0022f774911c1d690"
 
 # Instance type
-instance_type = "c5.24xlarge"
+instance_type = "c5.4xlarge"
 
 # VPC
 vpc_cidr_block = "10.0.0.0/16"
