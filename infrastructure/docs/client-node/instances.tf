@@ -55,11 +55,11 @@ module "vm" {
   key_name                    = aws_key_pair.generated_key[each.key].key_name
   monitoring                  = true
   associate_public_ip_address = true
-  root_block_device           = [
+  root_block_device = [
     {
       volume_size = 100 # in GB <<----- I increased this!
       volume_type = "gp3"
     }
   ]
-  tags                        = var.tags
+  tags = var.tags
 }
