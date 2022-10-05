@@ -1,7 +1,7 @@
 #!/bin/bash
 # usage: armonik_installation.sh <git branch to use>
 
-if [ -z "$1"]
+if [ -z "$1" ]
 then
     echo "Usage: $0 <git branch name>"
     exit 1
