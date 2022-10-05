@@ -131,6 +131,8 @@ wsl -d Ubuntu cp $pathname/systemd_wsl.sh /tmp
 wsl -d Ubuntu sed -i -e "'s/\r$//'" /tmp/systemd_wsl.sh
 wsl -d Ubuntu bash -c "echo $ubuntu_password | sudo -S bash /tmp/systemd_wsl.sh"
 wsl -d Ubuntu rm /tmp/systemd_wsl.sh
+wsl -d Ubuntu bash -c "echo $ubuntu_password | sudo -S systemctl disable getty@tty1.service multipathd.service multipathd.socket ssh.service"
+wsl -d Ubuntu bash -c "echo $ubuntu_password | sudo -S systemctl mask systemd-remount-fs.service"
 
 wsl --shutdown
 Restart-Genie
