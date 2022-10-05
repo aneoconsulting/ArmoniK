@@ -63,8 +63,8 @@ resource "kubernetes_deployment" "control_plane" {
             container_port = 1080
           }
           liveness_probe {
-            tcp_socket {
-              port = 1080
+            exec {
+              command = ["curl", "-fsSL", "--http2-prior-knowledge", "http://localhost:1080/liveness"]
             }
             initial_delay_seconds = 15
             period_seconds        = 5
@@ -73,8 +73,8 @@ resource "kubernetes_deployment" "control_plane" {
             failure_threshold     = 1
           }
           startup_probe {
-            tcp_socket {
-              port = 1080
+            exec {
+              command = ["curl", "-fsSL", "--http2-prior-knowledge", "http://localhost:1080/startup"]
             }
             initial_delay_seconds = 1
             period_seconds        = 3
