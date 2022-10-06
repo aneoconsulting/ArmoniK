@@ -63,8 +63,9 @@ resource "kubernetes_deployment" "control_plane" {
             container_port = 1080
           }
           liveness_probe {
-            tcp_socket {
-              port = 1080
+            http_get {
+              path = "/liveness"
+              port = 1081
             }
             initial_delay_seconds = 15
             period_seconds        = 5
@@ -73,8 +74,9 @@ resource "kubernetes_deployment" "control_plane" {
             failure_threshold     = 1
           }
           startup_probe {
-            tcp_socket {
-              port = 1080
+            http_get {
+              path = "/startup"
+              port = 1081
             }
             initial_delay_seconds = 1
             period_seconds        = 3

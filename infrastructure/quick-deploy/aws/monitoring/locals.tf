@@ -56,14 +56,14 @@ locals {
 
   # Metrics exporter
   metrics_exporter_image              = try(var.monitoring.metrics_exporter.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter")
-  metrics_exporter_tag                = try(var.monitoring.metrics_exporter.tag, "0.6.2")
+  metrics_exporter_tag                = try(var.monitoring.metrics_exporter.tag, "0.6.5")
   metrics_exporter_image_pull_secrets = try(var.monitoring.metrics_exporter.image_pull_secrets, "")
   metrics_exporter_service_type       = try(var.monitoring.metrics_exporter.service_type, "ClusterIP")
   metrics_exporter_node_selector      = try(var.monitoring.metrics_exporter.node_selector, {})
 
   # Partition metrics exporter
   partition_metrics_exporter_image              = try(var.monitoring.partition_metrics_exporter.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/partition-metrics-exporter")
-  partition_metrics_exporter_tag                = try(var.monitoring.partition_metrics_exporter.tag, "0.6.2")
+  partition_metrics_exporter_tag                = try(var.monitoring.partition_metrics_exporter.tag, "0.6.5")
   partition_metrics_exporter_image_pull_secrets = try(var.monitoring.partition_metrics_exporter.image_pull_secrets, "")
   partition_metrics_exporter_service_type       = try(var.monitoring.partition_metrics_exporter.service_type, "ClusterIP")
   partition_metrics_exporter_node_selector      = try(var.monitoring.partition_metrics_exporter.node_selector, {})

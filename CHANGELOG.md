@@ -1,8 +1,13 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-09-23)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-10-05)
 
-## [v2.8.7](https://github.com/aneoconsulting/armonik/tree/v2.8.7) (2022-09-23)
+## [v2.8.7beta2](https://github.com/aneoconsulting/armonik/tree/v2.8.7beta2) (2022-10-05)
+
+Added
+-
+
+* Add cronjob in ArmoniK to populate the database MongoDB with partition IDs.
 
 Changed
 -
