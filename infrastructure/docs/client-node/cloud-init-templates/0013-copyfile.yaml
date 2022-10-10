@@ -1,0 +1,16 @@
+#cloud-config
+
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+locale: en_US.UTF-8
+
+write_files:
+  - content: ${content}
+    path: "/home/ec2-user/kubectl-cheat-sheet.md"
+    permissions: 0777
+    owner: root
+    #encoding: "b64"
