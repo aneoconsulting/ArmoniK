@@ -13,5 +13,6 @@ resource "kubernetes_config_map" "polling_agent_config" {
     InitWorker__WorkerCheckDelay   = "00:00:10" # TODO: make it a variable
     Amqp__LinkCredit               = "2"
     Pollster__GraceDelay           = "00:00:15"
+    Pollster__MaxErrorAllowed      = "10"
   }
 }
