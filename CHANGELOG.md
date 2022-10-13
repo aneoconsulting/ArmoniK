@@ -1,8 +1,24 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-10-05)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-10-12)
 
-## [v2.8.7beta2](https://github.com/aneoconsulting/armonik/tree/v2.8.7beta2) (2022-10-05)
+## [v2.8.7](https://github.com/aneoconsulting/armonik/tree/v2.8.7) (2022-10-12)
+
+Changed
+-
+
+* Update Core version from 0.6.5 to 0.6.6
+* Update Worker version from 0.7.3 to 0.7.4
+
+
+Fixed
+-
+
+* Fix last retry not throwing properly in task submission
+* Fixed task not being retried when exception is thrown by custom worker
+* Better error management in polling agent when there is issues during task processing
+
+## [v2.8.7-beta2](https://github.com/aneoconsulting/armonik/tree/v2.8.7-beta2) (2022-10-05)
 
 Added
 -
