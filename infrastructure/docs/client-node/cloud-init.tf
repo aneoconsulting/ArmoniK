@@ -1,5 +1,6 @@
 # Render the cloud config for master
 data "template_cloudinit_config" "client_cloud_init" {
+  for_each      = toset(var.vm_names)
   gzip          = true
   base64_encode = true
 
@@ -68,4 +69,18 @@ data "template_cloudinit_config" "client_cloud_init" {
     content    = templatefile("cloud-init-templates/0012-fsinotify.yaml", {})
     merge_type = var.extra_userdata_merge
   }
+  /*part {
+    filename   = "0013-copyfile.yml"
+    content    = templatefile("cloud-init-templates/0013-copyfile.yaml", {
+      content = filebase64("${path.root}/data/kubectl-cheat-sheet.md")
+    })
+    merge_type = var.extra_userdata_merge
+  }
+  part {
+    filename   = "0014-hostname.yml"
+    content    = templatefile("cloud-init-templates/0014-hostname.yaml", {
+      name = each.key
+    })
+    merge_type = var.extra_userdata_merge
+  }*/
 }

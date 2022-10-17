@@ -10,7 +10,7 @@ locale: en_US.UTF-8
 
 write_files:
   - content: |
-      curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL=latest sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig /home/ec2-user/.kube/
+      curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.23.8+k3s1" sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
     path: /app/install-k3s.sh
     permissions: 0755
     owner: root
