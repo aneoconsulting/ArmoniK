@@ -2,9 +2,7 @@
 resource "aws_security_group" "client" {
   name        = "client"
   description = "Allow SSH inbound traffic for client node"
-  #vpc_id      = module.vpc.vpc_id
-  vpc_id = data.aws_vpc.default_vpc.id
-  #vpc_id      = var.vpc_id
+  vpc_id      = data.aws_vpc.default_vpc.id
 
   ingress {
     description = "SSH"
