@@ -7,6 +7,7 @@ on:
 
 jobs:
   versionning:
+    name: "Versionning"
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     outputs:
@@ -19,7 +20,7 @@ jobs:
           grep MemTotal /proc/meminfo
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -28,14 +29,16 @@ jobs:
         id: genver
         run: |
           VERSION=$(docker run --rm -v $(pwd):/repo codacy/git-version /bin/git-version --folder=/repo --release-branch=release --dev-branch=main)
-          echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo $VERSION
+          echo "Version :" >> $GITHUB_STEP_SUMMARY
+          echo "$VERSION" >> $GITHUB_STEP_SUMMARY
 
   format:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -56,7 +59,7 @@ jobs:
           grep MemTotal /proc/meminfo
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -71,13 +74,13 @@ jobs:
         id: core
         run: |
           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Get Admin GUI Tag
         id: admin-gui
         run: |
           TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - uses: ./
         name: Deploy infrastructure
@@ -139,7 +142,7 @@ jobs:
           grep MemTotal /proc/meminfo
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -154,13 +157,13 @@ jobs:
         id: core
         run: |
           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Get Admin GUI Tag
         id: admin-gui
         run: |
           TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - uses: ./
         name: Deploy infrastructure
@@ -222,7 +225,7 @@ jobs:
           grep MemTotal /proc/meminfo
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -237,13 +240,13 @@ jobs:
         id: core
         run: |
           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Get Admin GUI Tag
         id: admin-gui
         run: |
           TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - uses: ./
         name: Deploy infrastructure
@@ -317,7 +320,7 @@ jobs:
           grep MemTotal /proc/meminfo
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -332,13 +335,13 @@ jobs:
         id: core
         run: |
           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Get Admin GUI Tag
         id: admin-gui
         run: |
           TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - uses: ./
         name: Deploy infrastructure
@@ -420,7 +423,7 @@ jobs:
           grep MemTotal /proc/meminfo
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -435,13 +438,13 @@ jobs:
         id: core
         run: |
           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Get Admin GUI Tag
         id: admin-gui
         run: |
           TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - uses: ./
         name: Deploy infrastructure
@@ -510,7 +513,7 @@ jobs:
           grep MemTotal /proc/meminfo
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -525,13 +528,13 @@ jobs:
         id: core
         run: |
           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Get Admin GUI Tag
         id: admin-gui
         run: |
           TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "::set-output name=tag::$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - uses: ./
         name: Deploy infrastructure
