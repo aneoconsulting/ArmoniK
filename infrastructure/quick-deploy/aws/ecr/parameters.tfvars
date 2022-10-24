@@ -93,7 +93,7 @@ ecr = {
     {
       name  = "grafana"
       image = "grafana/grafana"
-      tag   = "8.5.5"
+      tag   = "9.2.1"
     },
     {
       name  = "prometheus"
@@ -118,7 +118,7 @@ ecr = {
     {
       name  = "fluent-bit"
       image = "fluent/fluent-bit"
-      tag   = "1.9.5"
+      tag   = "1.9.9"
     },
     {
       name  = "node-exporter"
@@ -128,7 +128,7 @@ ecr = {
     {
       name  = "nginx"
       image = "nginxinc/nginx-unprivileged"
-      tag   = "1.23.0"
+      tag   = "1.23.2"
     },
     {
       name  = "keda"
