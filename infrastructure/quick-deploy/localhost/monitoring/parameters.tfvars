@@ -18,7 +18,7 @@ monitoring = {
   grafana = {
     enabled            = true
     image              = "grafana/grafana"
-    tag                = "8.5.5"
+    tag                = "9.2.1"
     port               = 3000
     image_pull_secrets = ""
     service_type       = "ClusterIP"
@@ -54,7 +54,7 @@ monitoring = {
   }
   fluent_bit = {
     image              = "fluent/fluent-bit"
-    tag                = "1.9.5"
+    tag                = "1.9.9"
     image_pull_secrets = ""
     is_daemonset       = true
     http_port          = 2020 # 0 or 2020
