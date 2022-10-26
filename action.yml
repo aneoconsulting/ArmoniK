@@ -107,7 +107,7 @@ runs:
         set -ex
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         source envvars.sh
-        echo "::set-output name=host-path::${ARMONIK_SHARED_HOST_PATH}"
+        echo "host-path=${ARMONIK_SHARED_HOST_PATH}" >> $GITHUB_OUTPUT
 
     - name: Create shared host path directory
       shell: bash
