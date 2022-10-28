@@ -207,4 +207,5 @@ ingress = {
   annotations        = {}
   tls                = false
   mtls               = false
+  generate_client_cert_count = 0
 }

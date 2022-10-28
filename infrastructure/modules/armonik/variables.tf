@@ -54,6 +54,7 @@ variable "ingress" {
     annotations        = any
     tls                = bool
     mtls               = bool
+    generate_client_cert_count = number
   })
   validation {
     error_message = "Ingress mTLS requires TLS to be enabled."
@@ -62,6 +63,10 @@ variable "ingress" {
   validation {
     error_message = "Without TLS, http_port and grpc_port must be different."
     condition     = var.ingress != null ? var.ingress.http_port != var.ingress.grpc_port || var.ingress.tls : true
+  }
+  validation {
+    error_message = "Client certificate generation requires mTLS to be enabled"
+    condition     = var.ingress != null ? var.ingress.generate_client_cert_count <= 0 || var.ingress.mtls  : true
   }
 }
 
