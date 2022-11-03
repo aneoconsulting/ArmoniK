@@ -15,5 +15,5 @@ locals {
   region     = data.aws_region.current.name
   tags       = merge(var.tags, { module = "efs" })
   encrypt    = (var.efs.kms_key_id != "" && var.efs.kms_key_id != null)
-  subnet     = {for subnet in data.aws_subnet.private_subnet : subnet.availability_zone => subnet.id}
+  subnet     = { for subnet in data.aws_subnet.private_subnet : subnet.availability_zone => subnet.id }
 }

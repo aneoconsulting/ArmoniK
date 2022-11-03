@@ -8,7 +8,7 @@ variable "tags" {
 # VPC info
 variable "vpc" {
   description = "AWS VPC info"
-  type        = object({
+  type = object({
     id          = string
     cidr_blocks = list(string)
     subnet_ids  = list(string)
@@ -18,7 +18,7 @@ variable "vpc" {
 # EFS info
 variable "efs" {
   description = "EFS info"
-  type        = object({
+  type = object({
     name                            = string
     kms_key_id                      = string
     performance_mode                = string # "generalPurpose" or "maxIO"
