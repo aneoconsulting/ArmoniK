@@ -23,11 +23,17 @@ locals {
   job_partitions_in_database_node_selector_keys   = keys(local.job_partitions_in_database_node_selector)
   job_partitions_in_database_node_selector_values = values(local.job_partitions_in_database_node_selector)
 
+  # Node selector for pod to insert authentication data in database
+  job_authentication_in_database_node_selector        = try(var.job_authentication_in_database.node_selector, {})
+  job_authentication_in_database_node_selector_keys   = keys(local.job_authentication_in_database_node_selector)
+  job_authentication_in_database_node_selector_values = values(local.job_authentication_in_database_node_selector)
+
   # Annotations
   control_plane_annotations              = try(var.control_plane.annotations, {})
   compute_plane_annotations              = { for partition in local.partition_names : partition => try(var.compute_plane[partition].annotations, {}) }
   ingress_annotations                    = try(var.ingress.annotations, {})
   job_partitions_in_database_annotations = try(var.job_partitions_in_database.annotations, {})
+  job_authentication_in_database_config  = try(var.job_authentication_in_database.auth_config, "")
 
   # Shared storage
   service_url             = try(var.storage_endpoint_url.shared.service_url, "")
@@ -140,6 +146,19 @@ locals {
 
   # Credentials
   pod_partitions_in_database_credentials = {
+    for key, value in {
+      MongoDB_User = local.mongodb_credentials_secret != "" ? {
+        key  = local.mongodb_credentials_username_key
+        name = local.mongodb_credentials_secret
+      } : { key = "", name = "" }
+      MongoDB_Password = local.mongodb_credentials_secret != "" ? {
+        key  = local.mongodb_credentials_password_key
+        name = local.mongodb_credentials_secret
+      } : { key = "", name = "" }
+    } : key => value if !contains(values(value), "")
+  }
+
+  pod_authentication_in_database_credentials = {
     for key, value in {
       MongoDB_User = local.mongodb_credentials_secret != "" ? {
         key  = local.mongodb_credentials_username_key
@@ -292,5 +311,50 @@ locals {
 
   control_plane_triggers = {
     triggers = [for trigger in local.hpa_control_plane_triggers.triggers : trigger if trigger != {}]
+  }
+
+  ingress_generated_cert = {
+    names = ["Submitter", "Monitoring"]
+    permissions = tomap({
+      "Submitter" = [
+        "Submitter:GetServiceConfiguration",
+        "Submitter:CancelSession",
+        "Submitter:CancelTasks",
+        "Submitter:CreateSession",
+        "Submitter:CreateSmallTasks",
+        "Submitter:CreateLargeTasks",
+        "Submitter:CountTasks",
+        "Submitter:TryGetResultStream",
+        "Submitter:WaitForCompletion",
+        "Submitter:TryGetTaskOutput",
+        "Submitter:WaitForAvailability",
+        "Submitter:GetTaskStatus",
+        "Submitter:GetResultStatus",
+        "Submitter:ListTasks",
+        "Submitter:ListSessions",
+        "Sessions:CancelSession",
+        "Sessions:GetSession",
+        "Sessions:ListSessions",
+        "Tasks:GetTask",
+        "Tasks:ListTasks",
+        "Tasks:GetResultIds",
+        "Results:GetOwnerTaskId",
+        "General:Impersonate"
+        ]
+      "Monitoring" = [
+        "Submitter:GetServiceConfiguration",
+        "Submitter:CountTasks",
+        "Submitter:GetTaskStatus",
+        "Submitter:GetResultStatus",
+        "Submitter:ListTasks",
+        "Submitter:ListSessions",
+        "Sessions:GetSession",
+        "Sessions:ListSessions",
+        "Tasks:GetTask",
+        "Tasks:ListTasks",
+        "Tasks:GetResultIds",
+        "Results:GetOwnerTaskId"
+        ]
+    })
   }
 }

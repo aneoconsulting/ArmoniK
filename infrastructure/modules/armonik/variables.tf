@@ -54,7 +54,7 @@ variable "ingress" {
     annotations        = any
     tls                = bool
     mtls               = bool
-    generate_client_cert_count = number
+    generate_client_cert = bool
   })
   validation {
     error_message = "Ingress mTLS requires TLS to be enabled."
@@ -66,7 +66,7 @@ variable "ingress" {
   }
   validation {
     error_message = "Client certificate generation requires mTLS to be enabled"
-    condition     = var.ingress != null ? var.ingress.generate_client_cert_count <= 0 || var.ingress.mtls  : true
+    condition     = var.ingress != null ? !var.ingress.generate_client_cert || var.ingress.mtls  : true
   }
 }
 
@@ -91,6 +91,34 @@ variable "job_partitions_in_database" {
     image_pull_secrets = string
     node_selector      = any
     annotations        = any
+  })
+}
+
+# Job to insert authentication data in the database
+variable "job_authentication_in_database" {
+  description = "Job to insert authentication data in the database"
+  type = object({
+    name               = string
+    image              = string
+    tag                = string
+    image_pull_policy  = string
+    image_pull_secrets = string
+    node_selector      = any
+    auth_config        = object({
+      roles = list(object({
+        rolename = string
+        permissions = list(string)
+      }))
+      users = list(object({
+        username = string
+        roles = list(string)
+      }))
+      certificates = list(object({
+        fingerprint = string
+        common_name = string
+        username = string
+      }))
+    })
   })
 }
 
