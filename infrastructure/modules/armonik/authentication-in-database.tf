@@ -45,7 +45,7 @@ resource "kubernetes_job" "authentication_in_database" {
           name              = var.job_authentication_in_database.name
           image             = var.job_authentication_in_database.tag != "" ? "${var.job_authentication_in_database.image}:${var.job_authentication_in_database.tag}" : var.job_authentication_in_database.image
           image_pull_policy = var.job_authentication_in_database.image_pull_policy
-          command           = ["/bin/bash", "-c", local.script]
+          command           = ["/bin/bash", "-c", local.authentication_script]
           env {
             name  = "MongoDB_Host"
             value = local.mongodb_host
@@ -103,12 +103,94 @@ data "tls_certificate" "certificate_data"{
 }
 
 locals {
-  script = <<EOF
+  certificates_list = [for index, cert in data.tls_certificate.certificate_data : {
+      "\"Fingerprint\"" = "\"${cert.certificates[length(cert.certificates)-1].sha1_fingerprint}\""
+      "\"CN\"" = "\"${tls_cert_request.ingress_client_cert_request[index].subject.0.common_name}\""
+      "\"Username\"" = "${local.ingress_generated_cert.names[index]}"
+  }]
+  users_list = [for index, cert in local.certificates_list : {
+      "\"Username\"" = cert["\"Username\""],
+      "\"Roles\"" = [cert["\"Username\""]]
+      }]
+  roles_list = [ for cert in local.certificates_list : {
+      "\"RoleName\"" = cert["\"Username\""],
+      "\"Permissions\"" = "${local.ingress_generated_cert.permissions[cert["\"Username\""]]}"
+      }]
+  authentication_script = <<EOF
 #!/bin/bash
-# Drop
-mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://${local.mongodb_host}:${local.mongodb_port}/database --eval 'db.PartitionData.drop()'
+mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://${local.mongodb_host}:${local.mongodb_port}/database --eval "
+var certs_list = ${jsonencode(local.certificates_list)};
+var users_list = ${jsonencode(local.users_list)};
+var roles_list = ${jsonencode(local.roles_list)};
+var aggregation_user = [
+  {
+    '\$lookup': {
+      'from': 'RoleData',
+      'localField': 'Roles',
+      'foreignField': 'RoleName',
+      'as': 'RoleIds'
+    }
+  }, {
+    '\$project': {
+      '_id': 0,
+      'Username': 1,
+      'Roles': '\$RoleIds._id'
+    }
+  }, {
+    '\$out': 'UserData'
+  }
+];
+var aggregation_certs = [
+  {
+    '\$lookup': {
+      'from': 'UserData',
+      'localField': 'Username',
+      'foreignField': 'Username',
+      'as': 'UserId'
+    }
+  }, {
+    '\$match': {
+      'UserId': {
+        '\$ne': null,
+        '\$not': {
+          '\$size': 0
+        }
+      }
+    }
+  }, {
+    '\$project': {
+      '_id': 0,
+      'CN': 1,
+      'Fingerprint': 1,
+      'UserId': {
+        '\$arrayElemAt': [
+          '\$UserId._id', 0
+        ]
+      }
+    }
+  }, {
+    '\$out': 'AuthData'
+  }
+];
 
-# Insert
-mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://${local.mongodb_host}:${local.mongodb_port}/database --eval 'db.PartitionData.insertMany(${jsonencode(local.partitions_data)})'
+// Drop
+db.RoleData.drop();
+db.Temp_UserData.drop();
+db.Temp_AuthData.drop();
+db.UserData.drop();
+db.AuthData.drop();
+
+// We need to put the certs and users in temporary tables because inline documents in pipelines are only available in Mongo 5.1
+db.RoleData.insertMany(roles_list);
+db.Temp_UserData.insertMany(users_list);
+db.Temp_AuthData.insertMany(certs_list);
+
+// Then we use the aggregation pipelines to populate the users and certificates with the right objectIds
+db.Temp_UserData.aggregate(aggregation_user)
+db.Temp_AuthData.aggregate(aggregation_certs)
+
+//We drop the temporary tables
+db.Temp_UserData.drop();
+db.Temp_AuthData.drop();"
 EOF
 }

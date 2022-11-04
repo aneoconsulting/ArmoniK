@@ -71,6 +71,34 @@ variable "job_partitions_in_database" {
   })
 }
 
+# Job to insert authentication data in the database
+variable "job_authentication_in_database" {
+  description = "Job to insert authentication data in the database"
+  type = object({
+    name               = string
+    image              = string
+    tag                = string
+    image_pull_policy  = string
+    image_pull_secrets = string
+    node_selector      = any
+    auth_config        = object({
+      roles = list(object({
+        rolename = string
+        permissions = list(string)
+      }))
+      users = list(object({
+        username = string
+        roles = list(string)
+      }))
+      certificates = list(object({
+        fingerprint = string
+        common_name = string
+        username = string
+      }))
+    })
+  })
+}
+
 # Parameters of control plane
 variable "control_plane" {
   description = "Parameters of the control plane"
@@ -212,6 +240,6 @@ variable "ingress" {
     annotations        = any
     tls                = bool
     mtls               = bool
-    generate_client_cert_count = number
+    generate_client_cert = bool
   })
 }

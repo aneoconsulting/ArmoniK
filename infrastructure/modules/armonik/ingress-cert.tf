@@ -10,7 +10,6 @@ resource "tls_private_key" "root_ingress" {
 
 resource "tls_self_signed_cert" "root_ingress" {
   count                 = length(tls_private_key.root_ingress)
-  key_algorithm         = tls_private_key.root_ingress.0.algorithm
   private_key_pem       = tls_private_key.root_ingress.0.private_key_pem
   is_ca_certificate     = true
   validity_period_hours = "168"
@@ -38,7 +37,6 @@ resource "tls_private_key" "client_root_ingress" {
 
 resource "tls_self_signed_cert" "client_root_ingress" {
   count                 = length(tls_private_key.client_root_ingress)
-  key_algorithm         = tls_private_key.client_root_ingress.0.algorithm
   private_key_pem       = tls_private_key.client_root_ingress.0.private_key_pem
   is_ca_certificate     = true
   validity_period_hours = "168"
@@ -66,7 +64,6 @@ resource "tls_private_key" "ingress_private_key" {
 
 resource "tls_cert_request" "ingress_cert_request" {
   count           = length(tls_private_key.ingress_private_key)
-  key_algorithm   = tls_private_key.ingress_private_key.0.algorithm
   private_key_pem = tls_private_key.ingress_private_key.0.private_key_pem
   subject {
     country     = "France"
@@ -78,7 +75,6 @@ resource "tls_cert_request" "ingress_cert_request" {
 resource "tls_locally_signed_cert" "ingress_certificate" {
   count                 = length(tls_cert_request.ingress_cert_request)
   cert_request_pem      = tls_cert_request.ingress_cert_request.0.cert_request_pem
-  ca_key_algorithm      = tls_private_key.root_ingress.0.algorithm
   ca_private_key_pem    = tls_private_key.root_ingress.0.private_key_pem
   ca_cert_pem           = tls_self_signed_cert.root_ingress.0.cert_pem
   validity_period_hours = "168"
@@ -122,7 +118,6 @@ resource "random_string" "common_name" {
 
 resource "tls_cert_request" "ingress_client_cert_request" {
   count           = length(tls_private_key.ingress_client_private_key)
-  key_algorithm   = tls_private_key.ingress_client_private_key[count.index].algorithm
   private_key_pem = tls_private_key.ingress_client_private_key[count.index].private_key_pem
   subject {
     country     = "France"
@@ -134,7 +129,6 @@ resource "tls_cert_request" "ingress_client_cert_request" {
 resource "tls_locally_signed_cert" "ingress_client_certificate" {
   count                 = length(tls_cert_request.ingress_client_cert_request)
   cert_request_pem      = tls_cert_request.ingress_client_cert_request[count.index].cert_request_pem
-  ca_key_algorithm      = tls_private_key.client_root_ingress.0.algorithm
   ca_private_key_pem    = tls_private_key.client_root_ingress.0.private_key_pem
   ca_cert_pem           = tls_self_signed_cert.client_root_ingress.0.cert_pem
   validity_period_hours = "168"

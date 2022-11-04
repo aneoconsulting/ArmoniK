@@ -22,6 +22,17 @@ job_partitions_in_database = {
   annotations        = {}
 }
 
+# Job to insert authentication data in the database
+job_authentication_in_database = {
+  name               = "job-authentication-in-database"
+  image              = "rtsp/mongosh"
+  tag                = "1.5.4"
+  image_pull_policy  = "IfNotPresent"
+  image_pull_secrets = ""
+  node_selector      = {}
+  auth_config        = null
+}
+
 # Parameters of control plane
 control_plane = {
   name              = "control-plane"
@@ -192,7 +203,7 @@ ingress = {
   image_pull_secrets = ""
   node_selector      = {}
   annotations        = {}
-  tls                = false
-  mtls               = false
-  generate_client_cert_count = 0
+  tls                = true
+  mtls               = true
+  generate_client_cert = true
 }
