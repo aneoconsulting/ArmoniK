@@ -7,6 +7,7 @@ export KEDA_KUBERNETES_NAMESPACE?=default
 export METRICS_SERVER_KUBERNETES_NAMESPACE?=kube-system
 export TFSTATE_BUCKET_NAME=$(ARMONIK_BUCKET_NAME)-$(ARMONIK_SUFFIX)
 export KEDA=$(shell kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
+export METRICS_SERVER=$(shell kubectl get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
 
 CURRENT_DIR=$(shell pwd)
 VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/vpc/generated/vpc-output.json
@@ -100,9 +101,9 @@ clean-eks:
 ####################################
 
 create-namespace:
-	kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
-	kubectl create namespace $(KEDA_KUBERNETES_NAMESPACE) || true
-	kubectl create namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE) || true
+	@kubectl get namespace $(ARMONIK_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(ARMONIK_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE)
+	@kubectl get namespace $(KEDA_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(KEDA_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(KEDA_KUBERNETES_NAMESPACE)
+	@kubectl get namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 &&  echo "namespace : '$(METRICS_SERVER_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)
 
 delete-namespace:
 	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
