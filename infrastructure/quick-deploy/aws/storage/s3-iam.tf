@@ -1,7 +1,7 @@
 # Decrypt objects in S3
 data "aws_iam_policy_document" "decrypt_object" {
   statement {
-    sid     = "KMSAccess"
+    sid = "KMSAccess"
     actions = [
       "kms:Encrypt",
       "kms:Decrypt",
@@ -9,7 +9,7 @@ data "aws_iam_policy_document" "decrypt_object" {
       "kms:GenerateDataKey*",
       "kms:DescribeKey"
     ]
-    effect    = "Allow"
+    effect = "Allow"
     resources = [
       local.s3_fs_kms_key_id
     ]
@@ -31,11 +31,11 @@ resource "aws_iam_role_policy_attachment" "decrypt_object" {
 # Read objects in S3
 data "aws_iam_policy_document" "read_object" {
   statement {
-    sid     = "ReadFromS3"
+    sid = "ReadFromS3"
     actions = [
       "s3:GetObject"
     ]
-    effect    = "Allow"
+    effect = "Allow"
     resources = [
       "${module.s3_fs.arn}/*"
     ]
