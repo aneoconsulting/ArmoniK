@@ -46,11 +46,6 @@ resource "helm_release" "aws_node_termination_handler" {
     name  = "queueURL"
     value = module.aws_node_termination_handler_sqs.sqs_queue_id
   }*/
-
-  values = [
-    yamlencode(local.node_selector),
-    yamlencode(local.tolerations)
-  ]
   depends_on = [
     module.eks,
     null_resource.update_kubeconfig
