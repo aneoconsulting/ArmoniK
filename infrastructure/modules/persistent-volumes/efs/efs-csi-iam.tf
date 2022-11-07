@@ -66,7 +66,7 @@ resource "aws_iam_role" "efs_csi_driver" {
         Condition = {
           StringEquals = {
             #"${local.oidc_url}:aud" = "sts.amazonaws.com"
-            "${local.oidc_url}:sub" = "system:serviceaccount:${local.efs_csi_namespace}:efs-csi-driver"
+            "${local.oidc_url}:sub" = "system:serviceaccount:${local.efs_csi_namespace}:efs-csi-controller-sa"
           }
         }
       }
@@ -83,7 +83,7 @@ resource "aws_iam_role_policy_attachment" "efs_csi_driver" {
 
 resource "kubernetes_service_account" "efs_csi_driver" {
   metadata {
-    name = "efs-csi-driver"
+    name = "efs-csi-controller-sa"
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.efs_csi_driver.arn
     }

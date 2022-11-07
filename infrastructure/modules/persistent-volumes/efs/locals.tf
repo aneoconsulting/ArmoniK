@@ -45,22 +45,4 @@ locals {
       regionalStsEndpoints = false
     }
   }
-  node = {
-    node = {
-      logLevel       = 2
-      hostAliases    = {}
-      dnsPolicy      = "ClusterFirst"
-      dnsConfig      = {}
-      podAnnotations = {}
-      resources      = {}
-      nodeSelector   = var.csi_driver.node_selector
-      tolerations    = concat([{ operator = "Exists" }], local.tolerations)
-      serviceAccount = {
-        create      = true
-        name        = "efs-csi-node-sa"
-        annotations = {}
-      }
-      healthPort = 9809
-    }
-  }
 }

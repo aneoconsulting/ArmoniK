@@ -44,7 +44,6 @@ resource "helm_release" "efs_csi" {
   }
 
   values = [
-    yamlencode(local.controller),
-    yamlencode(local.node)
+    yamlencode(local.controller)
   ]
 }
