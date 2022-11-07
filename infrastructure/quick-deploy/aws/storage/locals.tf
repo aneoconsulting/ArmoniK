@@ -1,6 +1,7 @@
 # Current account
 data "aws_caller_identity" "current" {}
 
+# Random alphanumeric
 resource "random_string" "random_resources" {
   length  = 5
   special = false
@@ -17,6 +18,8 @@ locals {
   s3_fs_name                        = "${var.s3_fs.name}-${local.suffix}"
   elasticache_name                  = "${var.elasticache.name}-${local.suffix}"
   mq_name                           = "${var.mq.name}-${local.suffix}"
+  efs_name                          = "${var.pv_efs.efs.name}-${local.suffix}"
+  efs_csi_name                      = "efs-csi-driver-${local.suffix}"
   tags = merge(var.tags, {
     "application"        = "armonik"
     "deployment version" = local.suffix

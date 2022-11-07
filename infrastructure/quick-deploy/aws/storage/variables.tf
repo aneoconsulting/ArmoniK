@@ -77,20 +77,6 @@ variable "s3_fs" {
     kms_key_id                            = string
     sse_algorithm                         = string
   })
-  default = {
-    name                                  = "armonik-s3fs"
-    policy                                = ""
-    attach_policy                         = false
-    attach_deny_insecure_transport_policy = true
-    attach_require_latest_tls_policy      = true
-    attach_public_policy                  = false
-    block_public_acls                     = true
-    block_public_policy                   = true
-    ignore_public_acls                    = true
-    restrict_public_buckets               = true
-    kms_key_id                            = ""
-    sse_algorithm                         = ""
-  }
 }
 
 # AWS Elasticache
@@ -117,28 +103,6 @@ variable "elasticache" {
       log_kms_key_id = string
     })
   })
-  default = {
-    name                        = "armonik-elasticache"
-    engine                      = "redis"
-    engine_version              = "6.x"
-    node_type                   = "cache.r4.large"
-    apply_immediately           = false
-    multi_az_enabled            = false
-    automatic_failover_enabled  = true
-    num_cache_clusters          = 2
-    preferred_cache_cluster_azs = []
-    # The order of the availability zones in the list is considered. The first item in the list will be the primary node
-    data_tiering_enabled  = false # This parameter must be set to true when using r6gd nodes.
-    log_retention_in_days = 30
-    cloudwatch_log_groups = {
-      slow_log   = ""
-      engine_log = ""
-    }
-    encryption_keys = {
-      kms_key_id     = ""
-      log_kms_key_id = ""
-    }
-  }
 }
 
 # MQ parameters
@@ -156,19 +120,6 @@ variable "mq" {
     authentication_strategy = string
     publicly_accessible     = bool
   })
-  default = {
-    name               = "armonik-mq"
-    engine_type        = "ActiveMQ"
-    engine_version     = "5.16.3"
-    host_instance_type = "mq.m5.large"
-    apply_immediately  = false
-    deployment_mode    = "ACTIVE_STANDBY_MULTI_AZ"
-    # "SINGLE_INSTANCE" | "ACTIVE_STANDBY_MULTI_AZ" | "CLUSTER_MULTI_AZ"
-    storage_type            = "efs" #"ebs"
-    kms_key_id              = ""
-    authentication_strategy = "simple" #"ldap"
-    publicly_accessible     = false
-  }
 }
 
 # MQ Credentials
@@ -192,5 +143,56 @@ variable "mongodb" {
     tag                = string
     node_selector      = any
     image_pull_secrets = string
+  })
+}
+
+# AWS EFS as Persistent volume
+variable "pv_efs" {
+  description = "AWS EFS as Persistent volume"
+  type = object({
+    # AWS Elastic Filesystem Service
+    efs = object({
+      name                            = string
+      kms_key_id                      = string
+      performance_mode                = string # "generalPurpose" or "maxIO"
+      throughput_mode                 = string #  "bursting" or "provisioned"
+      provisioned_throughput_in_mibps = number
+      transition_to_ia                = string
+      # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+      access_point = list(string)
+    })
+    # EFS Container Storage Interface (CSI) Driver
+    csi_driver = object({
+      namespace          = string
+      image_pull_secrets = string
+      node_selector      = any
+      docker_images = object({
+        efs_csi = object({
+          image = string
+          tag   = string
+        })
+        livenessprobe = object({
+          image = string
+          tag   = string
+        })
+        node_driver_registrar = object({
+          image = string
+          tag   = string
+        })
+        external_provisioner = object({
+          image = string
+          tag   = string
+        })
+      })
+    })
+    # Resources for PVC
+    resources = object({
+      limits = object({
+        storage = string
+      })
+      requests = object({
+        storage = string
+      })
+    })
   })
 }
