@@ -219,6 +219,6 @@ variable "ingress" {
     annotations        = any
     tls                = bool
     mtls               = bool
-    generate_client_cert_count = number
+    generate_client_cert = bool
   })
 }

@@ -1,4 +1,8 @@
 resource "kubernetes_job" "authentication_in_database" {
+  depends_on = [
+    kubernetes_service.ingress
+  ]
+  count = (var.ingress != null ? var.ingress.mtls : false) ? 1 : 0
   metadata {
     name      = "authentication-in-database"
     namespace = var.namespace
@@ -75,6 +79,11 @@ resource "kubernetes_job" "authentication_in_database" {
               read_only  = true
             }
           }
+          volume_mount {
+            name       = "mongodb-script"
+            mount_path = "/mongodb/script"
+            read_only  = true
+          }
         }
         dynamic "volume" {
           for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
@@ -84,6 +93,13 @@ resource "kubernetes_job" "authentication_in_database" {
               secret_name = local.mongodb_certificates_secret
               optional    = false
             }
+          }
+        }
+        volume {
+          name = "mongodb-script"
+          config_map {
+            name     = kubernetes_config_map.authmongo.0.metadata[0].name
+            optional = false
           }
         }
       }
@@ -104,72 +120,70 @@ data "tls_certificate" "certificate_data"{
 
 locals {
   certificates_list = [for index, cert in data.tls_certificate.certificate_data : {
-      "\"Fingerprint\"" = "\"${cert.certificates[length(cert.certificates)-1].sha1_fingerprint}\""
-      "\"CN\"" = "\"${tls_cert_request.ingress_client_cert_request[index].subject.0.common_name}\""
-      "\"Username\"" = "${local.ingress_generated_cert.names[index]}"
+      "Fingerprint" = cert.certificates[length(cert.certificates)-1].sha1_fingerprint
+      "CN" = tls_cert_request.ingress_client_cert_request[index].subject.0.common_name
+      "Username" = local.ingress_generated_cert.names[index]
   }]
   users_list = [for index, cert in local.certificates_list : {
-      "\"Username\"" = cert["\"Username\""],
-      "\"Roles\"" = [cert["\"Username\""]]
+      "Username" = cert.Username,
+      "Roles" = [cert["Username"]]
       }]
   roles_list = [ for cert in local.certificates_list : {
-      "\"RoleName\"" = cert["\"Username\""],
-      "\"Permissions\"" = "${local.ingress_generated_cert.permissions[cert["\"Username\""]]}"
+      RoleName = cert["Username"],
+      Permissions = local.ingress_generated_cert.permissions[cert["Username"]]
       }]
-  authentication_script = <<EOF
-#!/bin/bash
-mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://${local.mongodb_host}:${local.mongodb_port}/database --eval "
+  auth_js = <<EOF
 var certs_list = ${jsonencode(local.certificates_list)};
 var users_list = ${jsonencode(local.users_list)};
 var roles_list = ${jsonencode(local.roles_list)};
 var aggregation_user = [
   {
-    '\$lookup': {
+    '$lookup': {
       'from': 'RoleData',
       'localField': 'Roles',
       'foreignField': 'RoleName',
       'as': 'RoleIds'
     }
   }, {
-    '\$project': {
+    '$project': {
       '_id': 0,
       'Username': 1,
-      'Roles': '\$RoleIds._id'
+      'Roles': '$RoleIds._id'
     }
   }, {
-    '\$out': 'UserData'
+    '$out': 'UserData'
   }
 ];
 var aggregation_certs = [
   {
-    '\$lookup': {
+    '$lookup': {
       'from': 'UserData',
       'localField': 'Username',
       'foreignField': 'Username',
       'as': 'UserId'
     }
   }, {
-    '\$match': {
+    '$match': {
       'UserId': {
-        '\$ne': null,
-        '\$not': {
-          '\$size': 0
+        '$ne': null,
+        '$not': {
+          '$size': 0
         }
       }
     }
   }, {
-    '\$project': {
+    '$project': {
       '_id': 0,
       'CN': 1,
       'Fingerprint': 1,
       'UserId': {
-        '\$arrayElemAt': [
-          '\$UserId._id', 0
+        '$arrayElemAt': [
+          '$UserId._id', 0
         ]
       }
     }
   }, {
-    '\$out': 'AuthData'
+    '$out': 'AuthData'
   }
 ];
 
@@ -191,6 +205,29 @@ db.Temp_AuthData.aggregate(aggregation_certs)
 
 //We drop the temporary tables
 db.Temp_UserData.drop();
-db.Temp_AuthData.drop();"
+db.Temp_AuthData.drop();
+  EOF
+
+  authentication_script = <<EOF
+#!/bin/bash
+mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://${local.mongodb_host}:${local.mongodb_port}/database /mongodb/script/initauth.js
 EOF
+}
+
+resource "kubernetes_config_map" "authmongo" {
+  count = (var.ingress != null ? var.ingress.mtls : false) ? 1 : 0
+  metadata {
+    name      = "mongodb-script"
+    namespace = var.namespace
+  }
+  data = {
+    "initauth.js" = local.auth_js
+  }
+}
+
+resource "local_file" "authmongo_js" {
+  count           = (var.ingress != null ? var.ingress.mtls : false) ? 1 : 0
+  content         = local.auth_js
+  filename        = "${path.root}/generated/configmaps/ingress/initauth.js"
+  file_permission = "0644"
 }
