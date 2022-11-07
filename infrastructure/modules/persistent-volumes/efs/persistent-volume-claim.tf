@@ -1,7 +1,7 @@
 resource "kubernetes_persistent_volume_claim" "efs_pvc" {
   metadata {
-    name      = "efs-pvc"
-    namespace = var.csi_driver.namespace
+    name = "efs-pvc"
+    #namespace = var.csi_driver.namespace
     labels = {
       app     = "persistent-volume"
       type    = "persistent-volume-claim"
