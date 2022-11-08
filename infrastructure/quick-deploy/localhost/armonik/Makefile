@@ -12,8 +12,8 @@ export STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/../storage/generated/storage-outp
 
 .PHONY: apply destroy
 
-all: init apply generate-certificate output
-deploy: init apply generate-certificate output
+all: init apply output
+deploy: init apply output
 destroy: init delete
 
 init:

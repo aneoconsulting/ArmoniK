@@ -66,7 +66,7 @@ variable "ingress" {
   }
   validation {
     error_message = "Client certificate generation requires mTLS to be enabled"
-    condition     = var.ingress != null ? !var.ingress.generate_client_cert || var.ingress.mtls  : true
+    condition     = var.ingress != null ? !var.ingress.generate_client_cert || var.ingress.mtls : true
   }
 }
 

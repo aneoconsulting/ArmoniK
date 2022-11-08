@@ -113,25 +113,25 @@ resource "kubernetes_job" "authentication_in_database" {
   }
 }
 
-data "tls_certificate" "certificate_data"{
-  count = length(tls_locally_signed_cert.ingress_client_certificate)
+data "tls_certificate" "certificate_data" {
+  count   = length(tls_locally_signed_cert.ingress_client_certificate)
   content = tls_locally_signed_cert.ingress_client_certificate[count.index].cert_pem
 }
 
 locals {
   certificates_list = [for index, cert in data.tls_certificate.certificate_data : {
-      "Fingerprint" = cert.certificates[length(cert.certificates)-1].sha1_fingerprint
-      "CN" = tls_cert_request.ingress_client_cert_request[index].subject.0.common_name
-      "Username" = local.ingress_generated_cert.names[index]
+    "Fingerprint" = cert.certificates[length(cert.certificates) - 1].sha1_fingerprint
+    "CN"          = tls_cert_request.ingress_client_cert_request[index].subject.0.common_name
+    "Username"    = local.ingress_generated_cert.names[index]
   }]
   users_list = [for index, cert in local.certificates_list : {
-      "Username" = cert.Username,
-      "Roles" = [cert["Username"]]
-      }]
-  roles_list = [ for cert in local.certificates_list : {
-      RoleName = cert["Username"],
-      Permissions = local.ingress_generated_cert.permissions[cert["Username"]]
-      }]
+    "Username" = cert.Username,
+    "Roles"    = [cert["Username"]]
+  }]
+  roles_list = [for cert in local.certificates_list : {
+    RoleName    = cert["Username"],
+    Permissions = local.ingress_generated_cert.permissions[cert["Username"]]
+  }]
   auth_js = <<EOF
 var certs_list = ${jsonencode(local.certificates_list)};
 var users_list = ${jsonencode(local.users_list)};

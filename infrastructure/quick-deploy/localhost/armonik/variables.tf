@@ -207,11 +207,11 @@ variable "ingress" {
       cpu    = string
       memory = string
     })
-    image_pull_secrets = string
-    node_selector      = any
-    annotations        = any
-    tls                = bool
-    mtls               = bool
+    image_pull_secrets   = string
+    node_selector        = any
+    annotations          = any
+    tls                  = bool
+    mtls                 = bool
     generate_client_cert = bool
   })
 }

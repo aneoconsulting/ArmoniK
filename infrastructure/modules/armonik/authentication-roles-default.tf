@@ -26,7 +26,7 @@ locals {
         "Tasks:GetResultIds",
         "Results:GetOwnerTaskId",
         "General:Impersonate"
-        ]
+      ]
       "Monitoring" = [
         "Submitter:GetServiceConfiguration",
         "Submitter:CountTasks",
@@ -40,7 +40,7 @@ locals {
         "Tasks:ListTasks",
         "Tasks:GetResultIds",
         "Results:GetOwnerTaskId"
-        ]
+      ]
     })
   }
 }

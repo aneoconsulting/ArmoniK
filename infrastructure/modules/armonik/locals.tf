@@ -27,7 +27,7 @@ locals {
   job_authentication_in_database_node_selector        = try(var.authentication.node_selector, {})
   job_authentication_in_database_node_selector_keys   = keys(local.job_authentication_in_database_node_selector)
   job_authentication_in_database_node_selector_values = values(local.job_authentication_in_database_node_selector)
-  
+
   # Authentication
   authentication_require_authentication = try(var.authentication.require_authentication, false)
   authentication_require_authorization  = try(var.authentication.require_authorization, false)

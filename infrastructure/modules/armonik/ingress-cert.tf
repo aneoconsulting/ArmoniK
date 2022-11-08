@@ -103,7 +103,7 @@ resource "kubernetes_secret" "ingress_certificate" {
 # Client Certificate
 #------------------------------------------------------------------------------
 resource "tls_private_key" "ingress_client_private_key" {
-  count       = (var.ingress != null ? var.ingress.mtls : false) ? length(tls_private_key.client_root_ingress)*(var.ingress.generate_client_cert ? length(local.ingress_generated_cert.names) : 1): 0
+  count       = (var.ingress != null ? var.ingress.mtls : false) ? length(tls_private_key.client_root_ingress) * (var.ingress.generate_client_cert ? length(local.ingress_generated_cert.names) : 1) : 0
   algorithm   = "RSA"
   ecdsa_curve = "P384"
   rsa_bits    = "4096"
@@ -142,11 +142,11 @@ resource "tls_locally_signed_cert" "ingress_client_certificate" {
 }
 
 resource "pkcs12_from_pem" "ingress_client_pkcs12" {
-  count = length(tls_locally_signed_cert.ingress_client_certificate)
-  password = ""
-  cert_pem = tls_locally_signed_cert.ingress_client_certificate[count.index].cert_pem
-  private_key_pem  = tls_private_key.ingress_client_private_key[count.index].private_key_pem
-  ca_pem = tls_self_signed_cert.client_root_ingress.0.cert_pem
+  count           = length(tls_locally_signed_cert.ingress_client_certificate)
+  password        = ""
+  cert_pem        = tls_locally_signed_cert.ingress_client_certificate[count.index].cert_pem
+  private_key_pem = tls_private_key.ingress_client_private_key[count.index].private_key_pem
+  ca_pem          = tls_self_signed_cert.client_root_ingress.0.cert_pem
 }
 
 resource "kubernetes_secret" "ingress_client_certificate" {
@@ -155,7 +155,7 @@ resource "kubernetes_secret" "ingress_client_certificate" {
     name      = "ingress-user-certificates-${lower(local.ingress_generated_cert.names[count.index])}"
     namespace = var.namespace
   }
-  data =  {
+  data = {
     "client.${lower(local.ingress_generated_cert.names[count.index])}.crt" = tls_locally_signed_cert.ingress_client_certificate[count.index].cert_pem
     "client.${lower(local.ingress_generated_cert.names[count.index])}.key" = tls_private_key.ingress_client_private_key[count.index].private_key_pem
     "client.${lower(local.ingress_generated_cert.names[count.index])}.p12" = pkcs12_from_pem.ingress_client_pkcs12[count.index].result
@@ -168,7 +168,7 @@ resource "kubernetes_secret" "ingress_client_certificate_authority" {
     namespace = var.namespace
   }
   data = length(tls_locally_signed_cert.ingress_client_certificate) > 0 ? {
-    "ca.pem"     = tls_self_signed_cert.client_root_ingress.0.cert_pem
+    "ca.pem" = tls_self_signed_cert.client_root_ingress.0.cert_pem
   } : {}
 }
 
