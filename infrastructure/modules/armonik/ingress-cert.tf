@@ -141,16 +141,33 @@ resource "tls_locally_signed_cert" "ingress_client_certificate" {
   ]
 }
 
+resource "pkcs12_from_pem" "ingress_client_pkcs12" {
+  count = length(tls_locally_signed_cert.ingress_client_certificate)
+  password = ""
+  cert_pem = tls_locally_signed_cert.ingress_client_certificate[count.index].cert_pem
+  private_key_pem  = tls_private_key.ingress_client_private_key[count.index].private_key_pem
+  ca_pem = tls_self_signed_cert.client_root_ingress.0.cert_pem
+}
+
 resource "kubernetes_secret" "ingress_client_certificate" {
+  count = length(tls_locally_signed_cert.ingress_client_certificate)
   metadata {
-    name      = "ingress-user-certificates"
+    name      = "ingress-user-certificates-${lower(local.ingress_generated_cert.names[count.index])}"
     namespace = var.namespace
   }
-  data = length(tls_locally_signed_cert.ingress_client_certificate) == 1 ? {
-    "ca.pem"     = tls_self_signed_cert.client_root_ingress.0.cert_pem
-    "client.crt" = tls_locally_signed_cert.ingress_client_certificate.0.cert_pem
-    "client.key" = tls_private_key.ingress_client_private_key.0.private_key_pem
-  } : length(tls_locally_signed_cert.ingress_client_certificate) > 1 ? {
+  data =  {
+    "client.${lower(local.ingress_generated_cert.names[count.index])}.crt" = tls_locally_signed_cert.ingress_client_certificate[count.index].cert_pem
+    "client.${lower(local.ingress_generated_cert.names[count.index])}.key" = tls_private_key.ingress_client_private_key[count.index].private_key_pem
+    "client.${lower(local.ingress_generated_cert.names[count.index])}.p12" = pkcs12_from_pem.ingress_client_pkcs12[count.index].result
+  }
+}
+
+resource "kubernetes_secret" "ingress_client_certificate_authority" {
+  metadata {
+    name      = "ingress-user-certificate-authority"
+    namespace = var.namespace
+  }
+  data = length(tls_locally_signed_cert.ingress_client_certificate) > 0 ? {
     "ca.pem"     = tls_self_signed_cert.client_root_ingress.0.cert_pem
   } : {}
 }
@@ -173,5 +190,12 @@ resource "local_sensitive_file" "ingress_client_key" {
   count           = length(tls_private_key.ingress_client_private_key)
   content         = tls_private_key.ingress_client_private_key[count.index].private_key_pem
   filename        = length(tls_private_key.ingress_client_private_key) > 1 ? "${path.root}/generated/certificates/ingress/client.${local.ingress_generated_cert.names[count.index]}.key" : "${path.root}/generated/certificates/ingress/client.key"
+  file_permission = "0600"
+}
+
+resource "local_sensitive_file" "ingress_client_p12" {
+  count           = length(pkcs12_from_pem.ingress_client_pkcs12)
+  content_base64  = pkcs12_from_pem.ingress_client_pkcs12[count.index].result
+  filename        = length(pkcs12_from_pem.ingress_client_pkcs12) > 1 ? "${path.root}/generated/certificates/ingress/client.${local.ingress_generated_cert.names[count.index]}.p12" : "${path.root}/generated/certificates/ingress/client.p12"
   file_permission = "0600"
 }

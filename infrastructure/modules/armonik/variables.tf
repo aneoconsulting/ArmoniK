@@ -49,11 +49,11 @@ variable "ingress" {
       cpu    = string
       memory = string
     })
-    image_pull_secrets = string
-    node_selector      = any
-    annotations        = any
-    tls                = bool
-    mtls               = bool
+    image_pull_secrets   = string
+    node_selector        = any
+    annotations          = any
+    tls                  = bool
+    mtls                 = bool
     generate_client_cert = bool
   })
   validation {
@@ -91,34 +91,6 @@ variable "job_partitions_in_database" {
     image_pull_secrets = string
     node_selector      = any
     annotations        = any
-  })
-}
-
-# Job to insert authentication data in the database
-variable "job_authentication_in_database" {
-  description = "Job to insert authentication data in the database"
-  type = object({
-    name               = string
-    image              = string
-    tag                = string
-    image_pull_policy  = string
-    image_pull_secrets = string
-    node_selector      = any
-    auth_config        = object({
-      roles = list(object({
-        rolename = string
-        permissions = list(string)
-      }))
-      users = list(object({
-        username = string
-        roles = list(string)
-      }))
-      certificates = list(object({
-        fingerprint = string
-        common_name = string
-        username = string
-      }))
-    })
   })
 }
 
@@ -235,5 +207,29 @@ variable "compute_plane" {
     }))
     hpa = any
   }))
+}
+
+# Job to insert authentication data in the database
+variable "authentication" {
+  description = "Job to insert authentication data in the database"
+  type = object({
+    name                    = string
+    image                   = string
+    tag                     = string
+    image_pull_policy       = string
+    image_pull_secrets      = string
+    node_selector           = any
+    authentication_datafile = string
+    require_authentication  = bool
+    require_authorization   = bool
+  })
+  validation {
+    error_message = "Authorization requires authentication to be activated"
+    condition     = var.authentication == null || var.authentication.require_authentication || !var.authentication.require_authorization
+  }
+  validation {
+    error_message = "File specified in authentication.authentication_datafile must be a valid json file if the field is not empty"
+    condition     = var.authentication == null || var.authentication.authentication_datafile == "" || try(fileexists(var.authentication.authentication_datafile), false) && can(jsondecode(file(var.authentication.authentication_datafile)))
+  }
 }
 

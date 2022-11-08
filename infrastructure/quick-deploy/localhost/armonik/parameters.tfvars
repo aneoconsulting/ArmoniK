@@ -22,24 +22,13 @@ job_partitions_in_database = {
   annotations        = {}
 }
 
-# Job to insert authentication data in the database
-job_authentication_in_database = {
-  name               = "job-authentication-in-database"
-  image              = "rtsp/mongosh"
-  tag                = "1.5.4"
-  image_pull_policy  = "IfNotPresent"
-  image_pull_secrets = ""
-  node_selector      = {}
-  auth_config        = null
-}
-
 # Parameters of control plane
 control_plane = {
   name              = "control-plane"
   service_type      = "ClusterIP"
   replicas          = 1
   image             = "dockerhubaneo/armonik_control"
-  tag               = "0.6.6"
+  tag               = "0.6.7-dbauthforgui.64.648e512a"
   image_pull_policy = "IfNotPresent"
   port              = 5001
   limits = {
@@ -86,7 +75,7 @@ admin_gui = {
   api = {
     name  = "admin-api"
     image = "dockerhubaneo/armonik_admin_api"
-    tag   = "0.7.0"
+    tag   = "pr-290"
     port  = 3333
     limits = {
       cpu    = "1000m"
@@ -100,7 +89,7 @@ admin_gui = {
   app = {
     name  = "admin-app"
     image = "dockerhubaneo/armonik_admin_app"
-    tag   = "0.7.0"
+    tag   = "pr-290"
     port  = 1080
     limits = {
       cpu    = "1000m"
@@ -138,7 +127,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.6.6"
+      tag               = "0.6.7-dbauthforgui.64.648e512a"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"  # set to null if you don't want to set it
@@ -190,20 +179,32 @@ compute_plane = {
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
 ingress = {
-  name               = "ingress"
-  service_type       = "LoadBalancer"
-  replicas           = 1
-  image              = "nginxinc/nginx-unprivileged"
-  tag                = "1.23.2"
-  image_pull_policy  = "IfNotPresent"
-  http_port          = 5000
-  grpc_port          = 5001
-  limits             = null
-  requests           = null
-  image_pull_secrets = ""
-  node_selector      = {}
-  annotations        = {}
-  tls                = false
-  mtls               = false
+  name                 = "ingress"
+  service_type         = "LoadBalancer"
+  replicas             = 1
+  image                = "nginxinc/nginx-unprivileged"
+  tag                  = "1.23.2"
+  image_pull_policy    = "IfNotPresent"
+  http_port            = 5000
+  grpc_port            = 5001
+  limits               = null
+  requests             = null
+  image_pull_secrets   = ""
+  node_selector        = {}
+  annotations          = {}
+  tls                  = false
+  mtls                 = false
   generate_client_cert = false
+}
+
+authentication = {
+  name                    = "job-authentication-in-database"
+  image                   = "rtsp/mongosh"
+  tag                     = "1.5.4"
+  image_pull_policy       = "IfNotPresent"
+  image_pull_secrets      = ""
+  node_selector           = {}
+  authentication_datafile = ""
+  require_authentication  = false
+  require_authorization   = false
 }

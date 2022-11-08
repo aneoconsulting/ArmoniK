@@ -2,7 +2,7 @@ resource "kubernetes_job" "authentication_in_database" {
   depends_on = [
     kubernetes_service.ingress
   ]
-  count = (var.ingress != null ? var.ingress.mtls : false) ? 1 : 0
+  count = local.authentication_require_authentication ? 1 : 0
   metadata {
     name      = "authentication-in-database"
     namespace = var.namespace
@@ -39,16 +39,16 @@ resource "kubernetes_job" "authentication_in_database" {
           }
         }
         dynamic "image_pull_secrets" {
-          for_each = (var.job_authentication_in_database.image_pull_secrets != "" ? [1] : [])
+          for_each = (var.authentication.image_pull_secrets != "" ? [1] : [])
           content {
-            name = var.job_authentication_in_database.image_pull_secrets
+            name = var.authentication.image_pull_secrets
           }
         }
         restart_policy = "OnFailure" # Always, OnFailure, Never
         container {
-          name              = var.job_authentication_in_database.name
-          image             = var.job_authentication_in_database.tag != "" ? "${var.job_authentication_in_database.image}:${var.job_authentication_in_database.tag}" : var.job_authentication_in_database.image
-          image_pull_policy = var.job_authentication_in_database.image_pull_policy
+          name              = var.authentication.name
+          image             = var.authentication.tag != "" ? "${var.authentication.image}:${var.authentication.tag}" : var.authentication.image
+          image_pull_policy = var.authentication.image_pull_policy
           command           = ["/bin/bash", "-c", local.authentication_script]
           env {
             name  = "MongoDB_Host"
@@ -215,7 +215,7 @@ EOF
 }
 
 resource "kubernetes_config_map" "authmongo" {
-  count = (var.ingress != null ? var.ingress.mtls : false) ? 1 : 0
+  count = local.authentication_require_authentication ? 1 : 0
   metadata {
     name      = "mongodb-script"
     namespace = var.namespace
@@ -223,11 +223,4 @@ resource "kubernetes_config_map" "authmongo" {
   data = {
     "initauth.js" = local.auth_js
   }
-}
-
-resource "local_file" "authmongo_js" {
-  count           = (var.ingress != null ? var.ingress.mtls : false) ? 1 : 0
-  content         = local.auth_js
-  filename        = "${path.root}/generated/configmaps/ingress/initauth.js"
-  file_permission = "0644"
 }

@@ -37,5 +37,7 @@ resource "kubernetes_config_map" "core_config" {
     Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
     Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
     Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+    Authenticator__RequireAuthentication       = local.authentication_require_authentication
+    Authenticator__RequireAuthorization        = local.authentication_require_authorization
   }
 }
