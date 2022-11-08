@@ -1,6 +1,18 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-10-12)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-11-08)
+
+## [v2.8.8](https://github.com/aneoconsulting/armonik/tree/v2.8.8) (2022-11-08)
+
+Changed
+-
+
+* Update Core version from 0.6.6 to 0.6.7
+
+Fixed
+-
+
+* Mark the pollster as failed when worker is unavailable
 
 ## [v2.8.7](https://github.com/aneoconsulting/armonik/tree/v2.8.7) (2022-10-12)
 
