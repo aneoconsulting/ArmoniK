@@ -119,23 +119,27 @@ data "tls_certificate" "certificate_data" {
 }
 
 locals {
-  certificates_list = [for index, cert in data.tls_certificate.certificate_data : {
-    "Fingerprint" = cert.certificates[length(cert.certificates) - 1].sha1_fingerprint
-    "CN"          = tls_cert_request.ingress_client_cert_request[index].subject.0.common_name
-    "Username"    = local.ingress_generated_cert.names[index]
-  }]
-  users_list = [for index, cert in local.certificates_list : {
-    "Username" = cert.Username,
-    "Roles"    = [cert["Username"]]
-  }]
-  roles_list = [for cert in local.certificates_list : {
-    RoleName    = cert["Username"],
-    Permissions = local.ingress_generated_cert.permissions[cert["Username"]]
-  }]
+  authentication_data = length(tls_locally_signed_cert.ingress_client_certificate) > 0 ? jsonencode({
+    certificates_list = [for index, cert in data.tls_certificate.certificate_data : {
+      "Fingerprint" = cert.certificates[length(cert.certificates) - 1].sha1_fingerprint
+      "CN"          = tls_cert_request.ingress_client_cert_request[index].subject.0.common_name
+      "Username"    = local.ingress_generated_cert.names[index]
+    }]
+    users_list = [for index, cert in data.tls_certificate.certificate_data : {
+      "Username" = local.ingress_generated_cert.names[index],
+      "Roles"    = [local.ingress_generated_cert.names[index]]
+    }]
+    roles_list = [for index, cert in data.tls_certificate.certificate_data : {
+      "RoleName"    = local.ingress_generated_cert.names[index],
+      "Permissions" = local.ingress_generated_cert.permissions[local.ingress_generated_cert.names[index]]
+    }]
+  }) : var.ingress != null && var.ingress.mtls ? file(var.authentication.authentication_datafile) : ""
+
   auth_js = <<EOF
-var certs_list = ${jsonencode(local.certificates_list)};
-var users_list = ${jsonencode(local.users_list)};
-var roles_list = ${jsonencode(local.roles_list)};
+var auth_data = ${local.authentication_data};
+var certs_list = auth_data['certificates_list'];
+var users_list = auth_data['users_list'];
+var roles_list = auth_data['roles_list'];
 var aggregation_user = [
   {
     '$lookup': {
@@ -223,4 +227,10 @@ resource "kubernetes_config_map" "authmongo" {
   data = {
     "initauth.js" = local.auth_js
   }
+}
+
+resource "local_sensitive_file" "initial_auth_config" {
+  content         = local.authentication_data
+  filename        = "${path.root}/generated/certificates/ingress/authentication_conf.json"
+  file_permission = "0600"
 }

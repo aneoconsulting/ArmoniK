@@ -29,7 +29,7 @@ resource "tls_self_signed_cert" "root_ingress" {
 # Client Certificate Authority
 #------------------------------------------------------------------------------
 resource "tls_private_key" "client_root_ingress" {
-  count       = (var.ingress != null ? var.ingress.mtls : false) ? 1 : 0
+  count       = (var.ingress != null ? var.ingress.mtls && var.ingress.custom_client_ca_file == "" : false) ? 1 : 0
   algorithm   = "RSA"
   ecdsa_curve = "P384"
   rsa_bits    = "4096"
@@ -169,6 +169,8 @@ resource "kubernetes_secret" "ingress_client_certificate_authority" {
   }
   data = length(tls_locally_signed_cert.ingress_client_certificate) > 0 ? {
     "ca.pem" = tls_self_signed_cert.client_root_ingress.0.cert_pem
+    } : var.ingress != null && var.ingress.custom_client_ca_file != "" && var.ingress.mtls ? {
+    "ca.pem" = file(var.ingress.custom_client_ca_file)
   } : {}
 }
 
@@ -176,6 +178,13 @@ resource "local_sensitive_file" "ingress_ca" {
   count           = length(tls_self_signed_cert.root_ingress)
   content         = tls_self_signed_cert.root_ingress.0.cert_pem
   filename        = "${path.root}/generated/certificates/ingress/ca.crt"
+  file_permission = "0600"
+}
+
+resource "local_sensitive_file" "ingress_client_ca" {
+  count           = length(tls_self_signed_cert.client_root_ingress)
+  content         = tls_self_signed_cert.client_root_ingress.0.cert_pem
+  filename        = "${path.root}/generated/certificates/ingress/client_ca.crt"
   file_permission = "0600"
 }
 

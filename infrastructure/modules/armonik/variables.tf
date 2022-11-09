@@ -49,12 +49,13 @@ variable "ingress" {
       cpu    = string
       memory = string
     })
-    image_pull_secrets   = string
-    node_selector        = any
-    annotations          = any
-    tls                  = bool
-    mtls                 = bool
-    generate_client_cert = bool
+    image_pull_secrets    = string
+    node_selector         = any
+    annotations           = any
+    tls                   = bool
+    mtls                  = bool
+    generate_client_cert  = bool
+    custom_client_ca_file = string
   })
   validation {
     error_message = "Ingress mTLS requires TLS to be enabled."
@@ -67,6 +68,10 @@ variable "ingress" {
   validation {
     error_message = "Client certificate generation requires mTLS to be enabled"
     condition     = var.ingress != null ? !var.ingress.generate_client_cert || var.ingress.mtls : true
+  }
+  validation {
+    error_message = "Cannot generate client certificates if the client CA is custom"
+    condition     = var.ingress == null || !var.ingress.mtls || var.ingress.custom_client_ca_file == "" || !var.ingress.generate_client_cert
   }
 }
 
@@ -209,9 +214,9 @@ variable "compute_plane" {
   }))
 }
 
-# Job to insert authentication data in the database
+# Authentication behavior
 variable "authentication" {
-  description = "Job to insert authentication data in the database"
+  description = "Authentication behavior"
   type = object({
     name                    = string
     image                   = string

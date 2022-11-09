@@ -207,18 +207,19 @@ variable "ingress" {
       cpu    = string
       memory = string
     })
-    image_pull_secrets   = string
-    node_selector        = any
-    annotations          = any
-    tls                  = bool
-    mtls                 = bool
-    generate_client_cert = bool
+    image_pull_secrets    = string
+    node_selector         = any
+    annotations           = any
+    tls                   = bool
+    mtls                  = bool
+    generate_client_cert  = bool
+    custom_client_ca_file = string
   })
 }
 
-# Job to insert authentication data in the database
+# Authentication behavior
 variable "authentication" {
-  description = "Job to insert authentication data in the database"
+  description = "Authentication behavior"
   type = object({
     name                    = string
     image                   = string
