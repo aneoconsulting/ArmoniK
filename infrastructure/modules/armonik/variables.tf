@@ -71,7 +71,7 @@ variable "ingress" {
   }
   validation {
     error_message = "Cannot generate client certificates if the client CA is custom"
-    condition     = var.ingress == null || !var.ingress.mtls || var.ingress.custom_client_ca_file == "" || !var.ingress.generate_client_cert
+    condition     = var.ingress != null ? !var.ingress.mtls || var.ingress.custom_client_ca_file == "" || !var.ingress.generate_client_cert : true
   }
 }
 
@@ -234,7 +234,7 @@ variable "authentication" {
   }
   validation {
     error_message = "File specified in authentication.authentication_datafile must be a valid json file if the field is not empty"
-    condition     = var.authentication == null || var.authentication.authentication_datafile == "" || try(fileexists(var.authentication.authentication_datafile), false) && can(jsondecode(file(var.authentication.authentication_datafile)))
+    condition     = var.authentication == null || !var.authentication.require_authentication || var.authentication.authentication_datafile == "" || try(fileexists(var.authentication.authentication_datafile), false) && can(jsondecode(file(var.authentication.authentication_datafile)))
   }
 }
 

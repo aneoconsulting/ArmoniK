@@ -169,9 +169,9 @@ resource "kubernetes_secret" "ingress_client_certificate_authority" {
   }
   data = length(tls_locally_signed_cert.ingress_client_certificate) > 0 ? {
     "ca.pem" = tls_self_signed_cert.client_root_ingress.0.cert_pem
-    } : var.ingress != null && var.ingress.custom_client_ca_file != "" && var.ingress.mtls ? {
+    } : var.ingress != null ? var.ingress.custom_client_ca_file != "" && var.ingress.mtls ? {
     "ca.pem" = file(var.ingress.custom_client_ca_file)
-  } : {}
+  } : {} : {}
 }
 
 resource "local_sensitive_file" "ingress_ca" {

@@ -133,7 +133,7 @@ locals {
       "RoleName"    = local.ingress_generated_cert.names[index],
       "Permissions" = local.ingress_generated_cert.permissions[local.ingress_generated_cert.names[index]]
     }]
-  }) : var.ingress != null && var.ingress.mtls ? file(var.authentication.authentication_datafile) : ""
+  }) : var.authentication.require_authentication ? file(var.authentication.authentication_datafile) : ""
 
   auth_js = <<EOF
 var auth_data = ${local.authentication_data};
