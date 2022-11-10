@@ -94,6 +94,7 @@ module "mongodb" {
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.image_pull_secrets
   }
+  pvc_name = module.efs.pvc_name
 }
 
 # AWS EFS as persistent volume
@@ -138,6 +139,9 @@ module "efs" {
       }
     }
   }
-  resources = var.pv_efs.resources
-  tags      = local.tags
+  pvc = {
+    namespace = var.namespace
+    resources = var.pv_efs.resources
+  }
+  tags = local.tags
 }

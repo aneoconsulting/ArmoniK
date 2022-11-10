@@ -49,6 +49,10 @@ resource "kubernetes_deployment" "mongodb" {
             name = var.mongodb.image_pull_secrets
           }
         }
+        /*security_context {
+          run_as_user = 999
+          fs_group    = 999
+        }*/
         container {
           name              = "mongodb"
           image             = "${var.mongodb.image}:${var.mongodb.tag}"
@@ -84,6 +88,10 @@ resource "kubernetes_deployment" "mongodb" {
             name       = "init-files"
             mount_path = "/docker-entrypoint-initdb.d/"
           }
+          /*volume_mount {
+            name       = "database"
+            mount_path = "/data/db"
+          }*/
         }
         volume {
           name = "init-files"
@@ -99,6 +107,12 @@ resource "kubernetes_deployment" "mongodb" {
             optional    = false
           }
         }
+        /*volume {
+          name = "database"
+          persistent_volume_claim {
+            claim_name = var.pvc_name
+          }
+        }*/
       }
     }
   }
@@ -116,7 +130,7 @@ resource "kubernetes_service" "mongodb" {
     }
   }
   spec {
-    type = "ClusterIP"
+    type = "LoadBalancer" #"ClusterIP"
     selector = {
       app     = kubernetes_deployment.mongodb.metadata.0.labels.app
       type    = kubernetes_deployment.mongodb.metadata.0.labels.type

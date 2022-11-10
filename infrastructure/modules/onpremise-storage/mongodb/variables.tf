@@ -21,3 +21,9 @@ variable "working_dir" {
   type        = string
   default     = "../.."
 }
+
+# Persistent volume claim name
+variable "pvc_name" {
+  description = "Persistent volume claim name"
+  type        = string
+}

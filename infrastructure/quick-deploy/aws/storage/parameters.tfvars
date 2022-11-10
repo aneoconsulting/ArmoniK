@@ -35,6 +35,7 @@ tags = {
   "Terraform"        = "true"
   "DST_Update"       = ""
 }
+
 # Kubernetes namespace
 namespace = "armonik"
 
@@ -144,7 +145,6 @@ pv_efs = {
       }
     }
   }
-  # Resources for PVC
   resources = {
     limits = null
     requests = {

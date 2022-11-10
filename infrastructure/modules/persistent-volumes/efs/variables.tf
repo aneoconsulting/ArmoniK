@@ -40,15 +40,18 @@ variable "csi_driver" {
   })
 }
 
-# Resources
-variable "resources" {
+# PVC
+variable "pvc" {
   description = "requests and limits for resources"
   type = object({
-    limits = object({
-      storage = string
-    })
-    requests = object({
-      storage = string
+    namespace = string
+    resources = object({
+      limits = object({
+        storage = string
+      })
+      requests = object({
+        storage = string
+      })
     })
   })
 }
