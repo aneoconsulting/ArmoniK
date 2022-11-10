@@ -213,7 +213,7 @@ ingress = {
 
 authentication = {
   name                    = "job-authentication-in-database"
-  image                   = "rtsp/mongosh"
+  image                   = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongosh"
   tag                     = "1.5.4"
   image_pull_policy       = "IfNotPresent"
   image_pull_secrets      = ""

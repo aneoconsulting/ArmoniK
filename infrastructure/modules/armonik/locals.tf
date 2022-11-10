@@ -149,20 +149,7 @@ locals {
   }
 
   # Credentials
-  pod_partitions_in_database_credentials = {
-    for key, value in {
-      MongoDB_User = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_username_key
-        name = local.mongodb_credentials_secret
-      } : { key = "", name = "" }
-      MongoDB_Password = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_password_key
-        name = local.mongodb_credentials_secret
-      } : { key = "", name = "" }
-    } : key => value if !contains(values(value), "")
-  }
-
-  pod_authentication_in_database_credentials = {
+  database_credentials = {
     for key, value in {
       MongoDB_User = local.mongodb_credentials_secret != "" ? {
         key  = local.mongodb_credentials_username_key

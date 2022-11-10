@@ -59,7 +59,7 @@ resource "kubernetes_job" "authentication_in_database" {
             value = local.mongodb_port
           }
           dynamic "env" {
-            for_each = local.pod_authentication_in_database_credentials
+            for_each = local.database_credentials
             content {
               name = env.key
               value_from {
@@ -72,17 +72,16 @@ resource "kubernetes_job" "authentication_in_database" {
             }
           }
           dynamic "volume_mount" {
-            for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
+            for_each = merge({
+              mongodb-script = "/mongodb/script",
+              }, local.mongodb_certificates_secret != "" ? {
+              mongodb-secret-volume = "/mongodb"
+            } : {})
             content {
-              name       = "mongodb-secret-volume"
-              mount_path = "/mongodb"
+              name       = volume_mount.key
+              mount_path = volume_mount.value
               read_only  = true
             }
-          }
-          volume_mount {
-            name       = "mongodb-script"
-            mount_path = "/mongodb/script"
-            read_only  = true
           }
         }
         dynamic "volume" {
@@ -114,26 +113,31 @@ resource "kubernetes_job" "authentication_in_database" {
 }
 
 data "tls_certificate" "certificate_data" {
-  count   = length(tls_locally_signed_cert.ingress_client_certificate)
-  content = tls_locally_signed_cert.ingress_client_certificate[count.index].cert_pem
+  for_each = tls_locally_signed_cert.ingress_client_certificate
+  content  = each.value.cert_pem
 }
 
 locals {
-  authentication_data = length(tls_locally_signed_cert.ingress_client_certificate) > 0 ? jsonencode({
-    certificates_list = [for index, cert in data.tls_certificate.certificate_data : {
-      "Fingerprint" = cert.certificates[length(cert.certificates) - 1].sha1_fingerprint
-      "CN"          = tls_cert_request.ingress_client_cert_request[index].subject.0.common_name
-      "Username"    = local.ingress_generated_cert.names[index]
+  authentication_data_default = jsonencode({
+    certificates_list = [for name, cert in data.tls_certificate.certificate_data : {
+      Fingerprint = cert.certificates[length(cert.certificates) - 1].sha1_fingerprint,
+      CN          = tls_cert_request.ingress_client_cert_request[name].subject.0.common_name,
+      Username    = name
     }]
-    users_list = [for index, cert in data.tls_certificate.certificate_data : {
-      "Username" = local.ingress_generated_cert.names[index],
-      "Roles"    = [local.ingress_generated_cert.names[index]]
+    users_list = [for name, cert in data.tls_certificate.certificate_data : {
+      Username = name,
+      Roles    = [name]
     }]
-    roles_list = [for index, cert in data.tls_certificate.certificate_data : {
-      "RoleName"    = local.ingress_generated_cert.names[index],
-      "Permissions" = local.ingress_generated_cert.permissions[local.ingress_generated_cert.names[index]]
+    roles_list = [for name, cert in data.tls_certificate.certificate_data : {
+      RoleName    = name,
+      Permissions = local.ingress_generated_cert.permissions[name]
     }]
-  }) : var.authentication.require_authentication ? file(var.authentication.authentication_datafile) : ""
+  })
+  authentication_data = (
+    length(tls_locally_signed_cert.ingress_client_certificate) > 0 ? local.authentication_data_default :
+    var.authentication.require_authentication ? file(var.authentication.authentication_datafile) :
+    ""
+  )
 
   auth_js = <<EOF
 var auth_data = ${local.authentication_data};
