@@ -177,6 +177,8 @@ runs:
             -kv admin_gui.app.tag=${{ inputs.admin-gui-tag }} \
             -kv logging_level=${{ inputs.log-level }} \
             -kv ingress=null \
+            -kv authentication.require_authentication=false \
+            -kv authentication.require_authorization=false \
             ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars \
             ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
         else
@@ -194,6 +196,9 @@ runs:
             -kv logging_level=${{ inputs.log-level }} \
             -kv ingress.tls=${{ inputs.tls }} \
             -kv ingress.mtls=${{ inputs.mtls }} \
+            -kv ingress.generate_client_cert=false \
+            -kv authentication.require_authentication=false \
+            -kv authentication.require_authorization=false \
             ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars \
             ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
         fi

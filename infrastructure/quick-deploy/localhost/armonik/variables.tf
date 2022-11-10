@@ -207,10 +207,28 @@ variable "ingress" {
       cpu    = string
       memory = string
     })
-    image_pull_secrets = string
-    node_selector      = any
-    annotations        = any
-    tls                = bool
-    mtls               = bool
+    image_pull_secrets    = string
+    node_selector         = any
+    annotations           = any
+    tls                   = bool
+    mtls                  = bool
+    generate_client_cert  = bool
+    custom_client_ca_file = string
+  })
+}
+
+# Authentication behavior
+variable "authentication" {
+  description = "Authentication behavior"
+  type = object({
+    name                    = string
+    image                   = string
+    tag                     = string
+    image_pull_policy       = string
+    image_pull_secrets      = string
+    node_selector           = any
+    authentication_datafile = string
+    require_authentication  = bool
+    require_authorization   = bool
   })
 }

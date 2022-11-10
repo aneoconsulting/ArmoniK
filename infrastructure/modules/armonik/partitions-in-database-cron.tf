@@ -71,7 +71,7 @@ resource "kubernetes_cron_job" "partitions_in_database" {
                 value = local.mongodb_port
               }
               dynamic "env" {
-                for_each = local.pod_partitions_in_database_credentials
+                for_each = local.database_credentials
                 content {
                   name = env.key
                   value_from {
