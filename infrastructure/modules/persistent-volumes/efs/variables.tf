@@ -40,22 +40,6 @@ variable "csi_driver" {
   })
 }
 
-# PVC
-variable "pvc" {
-  description = "requests and limits for resources"
-  type = object({
-    namespace = string
-    resources = object({
-      limits = object({
-        storage = string
-      })
-      requests = object({
-        storage = string
-      })
-    })
-  })
-}
-
 # VPC infos
 variable "vpc" {
   description = "AWS VPC info"

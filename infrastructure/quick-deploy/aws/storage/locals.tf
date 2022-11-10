@@ -20,6 +20,18 @@ locals {
   mq_name                           = "${var.mq.name}-${local.suffix}"
   efs_name                          = "${var.pv_efs.efs.name}-${local.suffix}"
   efs_csi_name                      = "efs-csi-driver-${local.suffix}"
+  persistent_volume = (var.mongodb.persistent_volume != null && var.mongodb.persistent_volume != {} && var.mongodb.persistent_volume != "" ? {
+    storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
+    resources           = var.mongodb.persistent_volume.resources
+    parameters = merge(var.mongodb.persistent_volume.parameters, {
+      provisioningMode = "efs-ap"
+      fileSystemId     = module.efs_persistent_volume.0.efs_id
+      directoryPerms   = "755"
+      gidRangeStart    = "999"      # optional
+      gidRangeEnd      = "2000"     # optional
+      basePath         = "/mongodb" # optional
+    })
+  } : null)
   tags = merge(var.tags, {
     "application"        = "armonik"
     "deployment version" = local.suffix

@@ -94,11 +94,13 @@ module "mongodb" {
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.image_pull_secrets
   }
-  pvc_name = module.efs.pvc_name
+  persistent_volume = local.persistent_volume
+  depends_on        = [module.efs_persistent_volume]
 }
 
 # AWS EFS as persistent volume
-module "efs" {
+module "efs_persistent_volume" {
+  count      = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
   source     = "../../../modules/persistent-volumes/efs"
   eks_issuer = var.eks.issuer
   vpc = {
@@ -138,10 +140,6 @@ module "efs" {
         tag   = var.pv_efs.csi_driver.docker_images.external_provisioner.tag
       }
     }
-  }
-  pvc = {
-    namespace = var.namespace
-    resources = var.pv_efs.resources
   }
   tags = local.tags
 }

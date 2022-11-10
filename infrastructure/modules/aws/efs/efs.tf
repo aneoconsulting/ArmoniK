@@ -33,7 +33,7 @@ resource "aws_efs_mount_target" "efs" {
 }
 
 resource "aws_efs_access_point" "efs" {
-  for_each       = toset(var.efs.access_point)
+  for_each       = (var.efs.access_point != null ? toset(var.efs.access_point) : toset([]))
   file_system_id = aws_efs_file_system.efs.id
   posix_user {
     gid = 1000

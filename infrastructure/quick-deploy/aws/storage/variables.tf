@@ -143,6 +143,19 @@ variable "mongodb" {
     tag                = string
     node_selector      = any
     image_pull_secrets = string
+    persistent_volume = object({
+      storage_provisioner = string
+      parameters          = map(string)
+      #Resources for PVC
+      resources = object({
+        limits = object({
+          storage = string
+        })
+        requests = object({
+          storage = string
+        })
+      })
+    })
   })
 }
 
@@ -183,15 +196,6 @@ variable "pv_efs" {
           image = string
           tag   = string
         })
-      })
-    })
-    # Resources for PVC
-    resources = object({
-      limits = object({
-        storage = string
-      })
-      requests = object({
-        storage = string
       })
     })
   })
