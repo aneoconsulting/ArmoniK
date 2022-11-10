@@ -23,6 +23,16 @@ locals {
   job_partitions_in_database_node_selector_keys   = keys(local.job_partitions_in_database_node_selector)
   job_partitions_in_database_node_selector_values = values(local.job_partitions_in_database_node_selector)
 
+  # Node selector for pod to insert authentication data in database
+  job_authentication_in_database_node_selector        = try(var.authentication.node_selector, {})
+  job_authentication_in_database_node_selector_keys   = keys(local.job_authentication_in_database_node_selector)
+  job_authentication_in_database_node_selector_values = values(local.job_authentication_in_database_node_selector)
+
+  # Authentication
+  authentication_require_authentication = try(var.authentication.require_authentication, false)
+  authentication_require_authorization  = try(var.authentication.require_authorization, false)
+  authentication_datafile               = try(var.authentication.authentication_datafile, "")
+
   # Annotations
   control_plane_annotations              = try(var.control_plane.annotations, {})
   compute_plane_annotations              = { for partition in local.partition_names : partition => try(var.compute_plane[partition].annotations, {}) }
@@ -139,7 +149,7 @@ locals {
   }
 
   # Credentials
-  pod_partitions_in_database_credentials = {
+  database_credentials = {
     for key, value in {
       MongoDB_User = local.mongodb_credentials_secret != "" ? {
         key  = local.mongodb_credentials_username_key
