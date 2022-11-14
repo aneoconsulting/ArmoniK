@@ -5,7 +5,7 @@ resource "random_string" "random_resources" {
   length  = 5
   special = false
   upper   = false
-  number  = true
+  numeric = true
 }
 
 locals {
@@ -13,7 +13,7 @@ locals {
   suffix        = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
   cluster_name  = try(var.vpc.eks_cluster_name, "armonik-eks-${local.suffix}")
   kms_name      = "armonik-kms-eks-${local.suffix}-${local.random_string}"
-  vpc = {
+  vpc           = {
     id                 = try(var.vpc.id, "")
     private_subnet_ids = try(var.vpc.private_subnet_ids, [])
     pods_subnet_ids    = try(var.vpc.pods_subnet_ids, [])
