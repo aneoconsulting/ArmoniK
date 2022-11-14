@@ -2,7 +2,7 @@ resource "random_string" "random_resources" {
   length  = 5
   special = false
   upper   = false
-  numeric  = true
+  numeric = true
 }
 
 locals {

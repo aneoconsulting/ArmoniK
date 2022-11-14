@@ -13,7 +13,7 @@ locals {
   cluster_name              = try(var.eks.name, "")
   kms_name                  = "armonik-kms-cloudwatch-${local.suffix}-${local.random_string}"
   cloudwatch_log_group_name = "/aws/containerinsights/${local.cluster_name}/application"
-  tags                      = merge(var.tags, {
+  tags = merge(var.tags, {
     "application"        = "armonik"
     "deployment version" = local.suffix
     "created by"         = data.aws_caller_identity.current.arn

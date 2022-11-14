@@ -2,7 +2,7 @@
 resource "random_string" "user" {
   length  = 8
   special = false
-  numeric  = false
+  numeric = false
 }
 
 # Generate password
@@ -11,7 +11,7 @@ resource "random_password" "password" {
   special          = true
   lower            = true
   upper            = true
-  numeric           = true
+  numeric          = true
   override_special = "!@#$%&*()-_=+[]{}<>:?"
 }
 

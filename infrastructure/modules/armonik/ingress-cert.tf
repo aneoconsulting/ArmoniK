@@ -119,7 +119,7 @@ resource "random_string" "common_name" {
   for_each = tls_private_key.ingress_client_private_key
   length   = 16
   special  = false
-  numeric   = false
+  numeric  = false
 }
 
 resource "tls_cert_request" "ingress_client_cert_request" {

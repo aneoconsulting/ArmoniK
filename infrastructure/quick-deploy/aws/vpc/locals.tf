@@ -14,7 +14,7 @@ locals {
   cluster_name  = "${var.cluster_name}-${local.suffix}"
   kms_name      = "armonik-kms-vpc-${local.suffix}-${local.random_string}"
   vpc_name      = "${var.vpc.name}-${local.suffix}"
-  tags          = merge(var.tags, {
+  tags = merge(var.tags, {
     "application"        = "armonik"
     "deployment version" = local.suffix
     "created by"         = data.aws_caller_identity.current.arn
