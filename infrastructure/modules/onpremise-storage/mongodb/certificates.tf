@@ -8,7 +8,6 @@ resource "tls_private_key" "root_mongodb" {
 }
 
 resource "tls_self_signed_cert" "root_mongodb" {
-  key_algorithm         = tls_private_key.root_mongodb.algorithm
   private_key_pem       = tls_private_key.root_mongodb.private_key_pem
   is_ca_certificate     = true
   validity_period_hours = "168"
@@ -34,7 +33,6 @@ resource "tls_private_key" "mongodb_private_key" {
 }
 
 resource "tls_cert_request" "mongodb_cert_request" {
-  key_algorithm   = tls_private_key.mongodb_private_key.algorithm
   private_key_pem = tls_private_key.mongodb_private_key.private_key_pem
   subject {
     country     = "France"
@@ -45,7 +43,6 @@ resource "tls_cert_request" "mongodb_cert_request" {
 
 resource "tls_locally_signed_cert" "mongodb_certificate" {
   cert_request_pem      = tls_cert_request.mongodb_cert_request.cert_request_pem
-  ca_key_algorithm      = tls_private_key.root_mongodb.algorithm
   ca_private_key_pem    = tls_private_key.root_mongodb.private_key_pem
   ca_cert_pem           = tls_self_signed_cert.root_mongodb.cert_pem
   validity_period_hours = "168"
