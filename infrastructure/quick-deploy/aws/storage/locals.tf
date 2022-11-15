@@ -20,7 +20,7 @@ locals {
   mq_name                           = "${var.mq.name}-${local.suffix}"
   efs_name                          = "${var.pv_efs.efs.name}-${local.suffix}"
   efs_csi_name                      = "efs-csi-driver-${local.suffix}"
-  persistent_volume = (var.mongodb.persistent_volume != null && var.mongodb.persistent_volume != {} && var.mongodb.persistent_volume != "" ? {
+  persistent_volume = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
     storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
     resources           = var.mongodb.persistent_volume.resources
     parameters = merge(var.mongodb.persistent_volume.parameters, {
@@ -32,6 +32,9 @@ locals {
       basePath         = "/mongodb" # optional
     })
   } : null)
+
+
+
   tags = merge(var.tags, {
     "application"        = "armonik"
     "deployment version" = local.suffix
