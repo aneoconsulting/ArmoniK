@@ -129,9 +129,81 @@ kubectl -n armonik get job authentication-in-database -o json | jq "del(.spec.se
 ```
 
 ### **Json authentication configuration example**
-The following json is an example defining 2 users, with one role each. The role ```Submitter``` has all permissions on all the current endpoints. The role ```Monitoring``` has all permissions related to monitoring duties, but cannot start or stop tasks or sessions. Each user has its own certificate.
+The following json is an example defining 2 users, with each their own roles. The role ```Submitter``` has all permissions on all the current endpoints. The role ```Monitoring``` has all permissions related to monitoring duties, but cannot start or stop tasks or sessions. Each user has its own certificate.
 ```json
-
+{
+  "certificates_list":[
+    {
+      "CN": "CNOfUserSubmitter", 
+      "Fingerprint" : "752c14ea195c369bac3c3b7896975ee9fd15eeb7", 
+      "Username": "UserSubmitter"
+    },
+    {
+      "CN": "CNOfUserMonitoring", 
+      "Fingerprint" : "c26dc0bf68e25099bc4a85b631efdb93d0768a20", 
+      "Username": "UserMonitoring"
+    }
+  ],
+  "users_list":[
+    {
+      "Username": "UserSubmitter",
+      "Roles": [
+        "Submitter", 
+        "Monitoring"
+        ] // Note here that the permissions of Monitoring are included in Submitter, thus Monitoring could be omitted here
+    },
+    {
+      "Username": "UserMonitoring",
+      "Roles": ["Monitoring"]
+    }
+  ],
+  "roles_list":[
+    {
+      "RoleName":"Submitter",
+      "Permissions": [
+        "Submitter:GetServiceConfiguration",
+        "Submitter:CancelSession",
+        "Submitter:CancelTasks",
+        "Submitter:CreateSession",
+        "Submitter:CreateSmallTasks",
+        "Submitter:CreateLargeTasks",
+        "Submitter:CountTasks",
+        "Submitter:TryGetResultStream",
+        "Submitter:WaitForCompletion",
+        "Submitter:TryGetTaskOutput",
+        "Submitter:WaitForAvailability",
+        "Submitter:GetTaskStatus",
+        "Submitter:GetResultStatus",
+        "Submitter:ListTasks",
+        "Submitter:ListSessions",
+        "Sessions:CancelSession",
+        "Sessions:GetSession",
+        "Sessions:ListSessions",
+        "Tasks:GetTask",
+        "Tasks:ListTasks",
+        "Tasks:GetResultIds",
+        "Results:GetOwnerTaskId"
+      ]
+    },
+    {
+      "RoleName":"Monitoring",
+      "Permissions": [
+        "Submitter:GetServiceConfiguration",
+        "Submitter:CountTasks",
+        "Submitter:GetTaskStatus",
+        "Submitter:GetResultStatus",
+        "Submitter:ListTasks",
+        "Submitter:ListSessions",
+        "Sessions:GetSession",
+        "Sessions:ListSessions",
+        "Tasks:GetTask",
+        "Tasks:ListTasks",
+        "Tasks:GetResultIds",
+        "Results:GetOwnerTaskId"
+      ]
+    }
+  ],
+}
 ```
 
 
