@@ -27,7 +27,7 @@ You can setup authentication in several ways when deploying ArmoniK :
 | Ingress + Control plane authentication, custom CA |          ❌           |           ✔️             |             ❌             |      ✔️     |         ✔️          |
 
 # **Deployment configuration**
-For each of the following configuration, the required parameters in your ```parameters.tfvars``` to specify are:
+For each of the following configuration, the required parameters in your [```armonik/parameters.tfvars```](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars) to specify are:
 - ingress.mTLS : Controls whether the ingress requires user certificates
 - ingress.generate_client_cert : Controls whether the deployment generates the default certificates with different roles
 - ingress.custom_client_ca_file : Empty if the ingress should use a generated self signed certificate authority, otherwise uses the certificate specified at the given path
@@ -97,33 +97,33 @@ Using this configuration, the specified ```ca.pem``` will be used to authenticat
 
 ### **How to create a Json authentication configuration file**
 
-The Json authentication configuration file must have the following format (note that the format is case sensitive) :
+The Json authentication configuration file must have the following format (note that the format is **case sensitive**) :
 ```json
 {
   "certificates_list":[
     {
-      "CN": string, //Common name of the certificate
-      "Fingerprint" : string or null, // Sha1 fingerprint of the certificate (if null, the user will be authenticated using ANY certificate with the given Common Name)
-      "Username": string // Username
+      "CN": "string", //Common name of the certificate
+      "Fingerprint" : "string" or null, // Sha1 fingerprint of the certificate (if null, the user will be authenticated using ANY certificate with the given Common Name)
+      "Username": "string" // Username
     }
   ],
   "users_list":[
     {
-      "Username": string, // Username
-      "Roles": [string] // RoleName of the user's list of roles
+      "Username": "string", // Username
+      "Roles": ["string"] // RoleName of the user's list of roles
     }
   ],
   "roles_list":[
     {
-      "RoleName":string, // Role name
-      "Permissions": [string] // List of permissions linked to that role.
+      "RoleName":"string", // Role name
+      "Permissions": ["string"] // List of permissions linked to that role.
     }
   ],
 }
 ```
 To know more about permission strings, please refer to [this document](https://github.com/aneoconsulting/ArmoniK.Core/blob/main/Documentation/articles/authentication.md#user-permissions). Please note that the Username and RoleName MUST be uniquely defined. A badly defined json may fail silently.
 
-The resulting configuration is stored in the MongoDB database. If the database is emptied and/or restarted, the database needs to be repopulated by relaunching the authentication-in-database job. In a local deployment, this can be achieved using the following shell command:
+The resulting configuration is stored in the MongoDB database. If the database is emptied, or restarted in case MongoDB isn't setup with a persistent volume, the database needs to be repopulated by relaunching the authentication-in-database job. In a local deployment, this can be achieved using the following shell command:
 ```bash
 kubectl -n armonik get job authentication-in-database -o json | jq "del(.spec.selector)" | jq "del(.spec.template.metadata.labels)" | kubectl -n armonik replace --force -f -
 ```
