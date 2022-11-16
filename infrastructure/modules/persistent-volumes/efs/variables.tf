@@ -45,8 +45,8 @@ variable "vpc" {
   description = "AWS VPC info"
   type = object({
     id          = string
-    cidr_blocks = list(string)
-    subnet_ids  = list(string)
+    cidr_blocks = set(string)
+    subnet_ids  = set(string)
   })
 }
 
