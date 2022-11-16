@@ -14,12 +14,12 @@ variable "efs" {
 # EFS Container Storage Interface (CSI) Driver
 variable "csi_driver" {
   description = "EFS CSI info"
-  type        = object({
+  type = object({
     name               = string
     namespace          = string
     image_pull_secrets = string
     node_selector      = any
-    docker_images      = object({
+    docker_images = object({
       efs_csi = object({
         image = string
         tag   = string
@@ -43,7 +43,7 @@ variable "csi_driver" {
 # VPC infos
 variable "vpc" {
   description = "AWS VPC info"
-  type        = object({
+  type = object({
     id          = string
     cidr_blocks = list(string)
     subnet_ids  = list(string)

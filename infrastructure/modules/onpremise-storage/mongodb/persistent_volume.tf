@@ -1,7 +1,7 @@
 resource "kubernetes_storage_class" "mongodb" {
   count = (var.persistent_volume != null && var.persistent_volume != "" ? 1 : 0)
   metadata {
-    name   = "mongodb"
+    name = "mongodb"
     labels = {
       app     = "mongodb"
       type    = "storage-class"
@@ -18,7 +18,7 @@ resource "kubernetes_persistent_volume_claim" "mongodb" {
   metadata {
     name      = "mongodb"
     namespace = var.namespace
-    labels    = {
+    labels = {
       app     = "mongodb"
       type    = "persistent-volume-claim"
       service = "persistent-volume"

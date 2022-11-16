@@ -27,7 +27,7 @@ locals {
       provisioningMode = "efs-ap"
       fileSystemId     = module.efs_persistent_volume.0.efs_id
       directoryPerms   = "755"
-      gidRangeStart    = "1000"      # optional
+      gidRangeStart    = "1000"     # optional
       gidRangeEnd      = "2000"     # optional
       basePath         = "/mongodb" # optional
     })
