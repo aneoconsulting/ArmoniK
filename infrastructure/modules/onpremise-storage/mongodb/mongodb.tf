@@ -50,8 +50,8 @@ resource "kubernetes_deployment" "mongodb" {
           }
         }
         security_context {
-          run_as_user = 999
-          fs_group    = 999
+          run_as_user = 1000
+          fs_group    = 1000
         }
         container {
           name              = "mongodb"
