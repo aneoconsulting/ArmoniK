@@ -1,6 +1,20 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-11-08)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-11-22)
+
+## [v2.8.9](https://github.com/aneoconsulting/armonik/tree/v2.8.9) (2022-11-22)
+
+Changed
+-
+
+* Update Extension.Csharp from version 0.7.4 to 0.7.5
+
+Fixed
+-
+
+* Fix a potential memory leak in the payload serialization
+* Raise an exception if the result payload is incomplete to improve diagnostic in case of failure
+* Release old dll from worker before a different one is loaded
 
 ## [v2.8.8](https://github.com/aneoconsulting/armonik/tree/v2.8.8) (2022-11-08)
 
