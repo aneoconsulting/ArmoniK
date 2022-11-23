@@ -12,17 +12,26 @@
         * the username which should be the username defined above
         * the password which should be the username defined above
         * the name of the branch that will be deployed
+    You can specify the variable `diskpath` to change the location of the virtual disk
 
     .EXAMPLE
     PS> Set-ExecutionPolicy Bypass -Scope Process -Force; .\armonik_dev_environnement.ps1
     PS> armonik_dev_environnement.ps1
+
+    .EXAMPLE
+    PS> Set-ExecutionPolicy Bypass -Scope Process -Force; .\armonik_dev_environnement.ps1
+    PS> armonik_dev_environnement.ps1 -diskpath D:\WSL
     
     #>
+
+param ($diskpath)
 
 # Use the version 1.23 for keda compatibility
 $k3s_version = "v1.23.9+k3s1"
 
 function Restart-Genie {
+    
+    $max_retries = 4
 
     # Stop wsl
     wsl --shutdown
@@ -31,11 +40,25 @@ function Restart-Genie {
     $job = Start-Job -ScriptBlock {
         wsl -d Ubuntu genie  -i
     }
-    Write-Host "5 sec Pause "
+    Write-Host "Checking Genie installation, 5 sec Pause"
     $job | Wait-Job -TimeoutSec 5
-
-    # Start the Ubuntu image if systemd is running
+    
+    For ($i=0; $i -lt $max_retries;)
+    {
+        $genie_run = wsl -d Ubuntu genie  -r
+        if ($genie_run -eq "running")
+        {
+            $i = $max_retries
+        }
+        else
+        {
+            $i++
+            Write-Host "WSL is not up, 5 sec Pause, retry $i / $max_retries"
+            Start-Sleep 5
+        }
+    }
     $genie_run = wsl -d Ubuntu genie  -r
+    # Start the Ubuntu image if systemd is running
     if ($genie_run -ne "running") {
         Write-Host "systemd not working on this Ubuntu installation. Please reinstall genie."
         Write-Host "This script should have done it but something didn'work."
@@ -43,6 +66,35 @@ function Restart-Genie {
         Write-Host "https://gist.github.com/djfdyuruiry/6720faa3f9fc59bfdf6284ee1f41f950\n"    
         Exit
     }
+}
+
+function Move-Disk {
+    # Stop wsl
+    wsl --shutdown
+
+    # Create directory, do nothing if it exists
+    MD $diskpath -Force
+
+    $tarpath = Join-Path -Path $diskpath -ChildPath tmp.tar
+
+    # Export to tar
+    Write-Host "Exporting to tar..."
+    wsl --export Ubuntu $tarpath
+
+    # Unregister old
+    wsl --unregister Ubuntu 
+
+    # Import in new path
+    Write-Host "Importing to new location..."
+    wsl --import Ubuntu $diskpath $tarpath
+
+    # Remove tar
+    Remove-Item $tarpath
+
+    # Change default user back to what it was
+    Push-Location $env:LOCALAPPDATA\Microsoft\WindowsApps
+    ubuntu config --default-user $ubuntu_user
+    Pop-Location
 }
 
 # Test if Powershell Core is installed
@@ -117,6 +169,12 @@ $armonik_branch = Read-Host -Prompt "Which branch do you want to use?"
 Write-Host "ArmoniK branch that will be use for the next steps: $armonik_branch"
 # TODO: parse the $available_branches, give a number using the actual one (with a * in front) as default
 
+## Move virtual disk if the option is specified
+if($diskpath) {
+    Write-Host "Moving installation to the specified disk path : $diskpath"
+    Move-Disk
+    Write-Host "WSL installation succesfully moved"
+}
 
 ## Install requirements
 
@@ -134,7 +192,6 @@ wsl -d Ubuntu rm /tmp/systemd_wsl.sh
 wsl -d Ubuntu bash -c "echo $ubuntu_password | sudo -S systemctl disable getty@tty1.service multipathd.service multipathd.socket ssh.service"
 wsl -d Ubuntu bash -c "echo $ubuntu_password | sudo -S systemctl mask systemd-remount-fs.service"
 
-wsl --shutdown
 Restart-Genie
 
 # ArmoniK

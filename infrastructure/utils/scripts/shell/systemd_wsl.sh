@@ -4,6 +4,6 @@ set -e
 
 cd /tmp
 wget --content-disposition \
-  "https://gist.githubusercontent.com/djfdyuruiry/6720faa3f9fc59bfdf6284ee1f41f950/raw/952347f805045ba0e6ef7868b18f4a9a8dd2e47a/install-sg.sh"
+  "https://gist.githubusercontent.com/dbrasseur-aneo/60afbd83e940ee07a4b2a23916c1e1ef/raw/47807776dbbe6b4fe13e6889c5bf1c15749b5a9d/install-sg.sh"
 chmod +x /tmp/install-sg.sh
 /tmp/install-sg.sh && rm /tmp/install-sg.sh
