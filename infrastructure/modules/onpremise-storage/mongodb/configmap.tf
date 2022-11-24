@@ -2,6 +2,7 @@
 locals {
   mongodb_js = <<EOF
 
+rs.initiate()
 db = db.getSiblingDB("database");
 db.createCollection("sample");
 db.sample.insert({test:1})
