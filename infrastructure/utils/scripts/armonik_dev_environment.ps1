@@ -39,24 +39,30 @@ param ($diskpath, $vmversion)
 # Use the version 1.23 for keda compatibility
 $k3s_version = "v1.23.9+k3s1"
 
+if (-Not $vmversion){
+    $vmversion = 'Ubuntu-20.04'
+}
+
 function Restart-Genie {
     
-    $max_retries = 4
+    $max_retries = 5
 
     # Stop wsl
     wsl --shutdown
 
     # Initialise genie (small workaround to avoid systemd unit not working)
     $job = Start-Job -ScriptBlock {
-        wsl -d Ubuntu genie  -i
-    }
+        param($vmversion)
+        wsl -d $vmversion genie -i
+    } -ArgumentList $vmversion
     Write-Host "Checking Genie installation, 5 sec Pause"
     $job | Wait-Job -TimeoutSec 5
     
     For ($i=0; $i -lt $max_retries;)
     {
-        $genie_run = wsl -d Ubuntu genie  -r
-        if ($genie_run -eq "running")
+        $genie_run = wsl -d $vmversion genie  -r
+        Write-Host $genie_run
+        if ($genie_run -like "running*")
         {
             $i = $max_retries
         }
@@ -67,13 +73,13 @@ function Restart-Genie {
             Start-Sleep 5
         }
     }
-    $genie_run = wsl -d Ubuntu genie  -r
+    $genie_run = wsl -d $vmversion genie  -r
     # Start the Ubuntu image if systemd is running
-    if ($genie_run -like "running*") {
+    if ($genie_run -notlike "running*") {
         Write-Host "systemd not working on this Ubuntu installation. Please reinstall genie."
-        Write-Host "This script should have done it but something didn'work."
+        Write-Host "This script should have done it but something didn't work."
         Write-Host "Try to rerun this script or install genie manually using the following link:"
-        Write-Host "https://gist.github.com/djfdyuruiry/6720faa3f9fc59bfdf6284ee1f41f950\n"    
+        Write-Host "https://gist.github.com/djfdyuruiry/6720faa3f9fc59bfdf6284ee1f41f950"    
         Exit
     }
 }
@@ -128,10 +134,6 @@ try {
     Exit
 }
 catch {}
-
-if (-Not $vmversion){
-    $vmversion = 'Ubuntu-20.04'
-}
 
 $available_installs = wsl --list --online
 $available_installs = $available_installs.split() -like "Ubuntu*" | Sort-Object | Get-Unique
