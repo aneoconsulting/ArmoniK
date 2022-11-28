@@ -33,7 +33,7 @@ Fixed
 Changed
 -
 
-* Update Core version from 0.6.7 to 0.7.0
+* Update Core version from 0.6.7 to 0.7.1
 
 Added
 -
