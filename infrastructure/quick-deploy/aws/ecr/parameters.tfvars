@@ -139,6 +139,26 @@ ecr = {
       name  = "keda-metrics-apiserver"
       image = "ghcr.io/kedacore/keda-metrics-apiserver"
       tag   = "2.8.0"
+    },
+    {
+      name  = "aws-efs-csi-driver"
+      image = "amazon/aws-efs-csi-driver"
+      tag   = "v1.4.3"
+    },
+    {
+      name  = "livenessprobe"
+      image = "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe"
+      tag   = "v2.2.0-eks-1-18-13"
+    },
+    {
+      name  = "node-driver-registrar"
+      image = "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar"
+      tag   = "v2.1.0-eks-1-18-13"
+    },
+    {
+      name  = "external-provisioner"
+      image = "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner"
+      tag   = "v2.1.1-eks-1-18-13"
     }
   ]
 }

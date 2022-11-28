@@ -1,7 +1,7 @@
 resource "random_string" "mq_admin_user" {
   length  = 8
   special = false
-  number  = false
+  numeric = false
 }
 
 resource "random_password" "mq_admin_password" {
@@ -12,7 +12,7 @@ resource "random_password" "mq_admin_password" {
 resource "random_string" "mq_application_user" {
   length  = 8
   special = false
-  number  = false
+  numeric = false
 }
 
 resource "random_password" "mq_application_password" {

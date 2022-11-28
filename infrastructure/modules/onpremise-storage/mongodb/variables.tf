@@ -21,3 +21,21 @@ variable "working_dir" {
   type        = string
   default     = "../.."
 }
+
+# Persistent volume
+variable "persistent_volume" {
+  description = "Persistent volume info"
+  type = object({
+    storage_provisioner = string
+    parameters          = map(string)
+    # Resources for PVC
+    resources = object({
+      limits = object({
+        storage = string
+      })
+      requests = object({
+        storage = string
+      })
+    })
+  })
+}

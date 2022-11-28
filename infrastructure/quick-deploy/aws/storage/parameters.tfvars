@@ -35,6 +35,7 @@ tags = {
   "Terraform"        = "true"
   "DST_Update"       = ""
 }
+
 # Kubernetes namespace
 namespace = "armonik"
 
@@ -105,4 +106,53 @@ mongodb = {
   tag                = "5.0.9"
   node_selector      = { "grid/type" = "Operator" }
   image_pull_secrets = ""
+  persistent_volume = {
+    storage_provisioner = "efs.csi.aws.com"
+    parameters          = null
+    resources = {
+      limits = null
+      requests = {
+        storage = "5Gi"
+      }
+    }
+  }
+}
+
+# AWS EFS as Persistent volume
+pv_efs = {
+  # AWS Elastic Filesystem Service
+  efs = {
+    name                            = "armonik-efs"
+    kms_key_id                      = ""
+    performance_mode                = "generalPurpose" # "generalPurpose" or "maxIO"
+    throughput_mode                 = "bursting"       #  "bursting" or "provisioned"
+    provisioned_throughput_in_mibps = null
+    transition_to_ia                = "AFTER_7_DAYS"
+    # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+    access_point = null #["mongo"]
+  }
+  # EFS Container Storage Interface (CSI) Driver
+  csi_driver = {
+    namespace          = "kube-system"
+    image_pull_secrets = ""
+    node_selector      = { "grid/type" = "Operator" }
+    docker_images = {
+      efs_csi = {
+        image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-efs-csi-driver"
+        tag   = "v1.4.3"
+      }
+      livenessprobe = {
+        image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/livenessprobe"
+        tag   = "v2.2.0-eks-1-18-13"
+      }
+      node_driver_registrar = {
+        image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/node-driver-registrar"
+        tag   = "v2.1.0-eks-1-18-13"
+      }
+      external_provisioner = {
+        image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/external-provisioner"
+        tag   = "v2.1.1-eks-1-18-13"
+      }
+    }
+  }
 }

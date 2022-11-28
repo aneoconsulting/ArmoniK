@@ -94,4 +94,52 @@ module "mongodb" {
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.image_pull_secrets
   }
+  persistent_volume = local.persistent_volume
+  depends_on        = [module.efs_persistent_volume]
+}
+
+# AWS EFS as persistent volume
+module "efs_persistent_volume" {
+  count      = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
+  source     = "../../../modules/persistent-volumes/efs"
+  eks_issuer = var.eks.issuer
+  vpc = {
+    id          = local.vpc.id
+    cidr_blocks = local.vpc.cidr_blocks
+    subnet_ids  = local.vpc.subnet_ids
+  }
+  efs = {
+    name                            = local.efs_name
+    kms_key_id                      = (var.pv_efs.efs.kms_key_id != "" && var.pv_efs.efs.kms_key_id != null ? var.pv_efs.efs.kms_key_id : module.kms.0.arn)
+    performance_mode                = var.pv_efs.efs.performance_mode
+    throughput_mode                 = var.pv_efs.efs.throughput_mode
+    provisioned_throughput_in_mibps = var.pv_efs.efs.provisioned_throughput_in_mibps
+    transition_to_ia                = var.pv_efs.efs.transition_to_ia
+    access_point                    = var.pv_efs.efs.access_point
+  }
+  csi_driver = {
+    name               = local.efs_csi_name
+    namespace          = var.pv_efs.csi_driver.namespace
+    image_pull_secrets = var.pv_efs.csi_driver.image_pull_secrets
+    node_selector      = var.pv_efs.csi_driver.node_selector
+    docker_images = {
+      efs_csi = {
+        image = var.pv_efs.csi_driver.docker_images.efs_csi.image
+        tag   = var.pv_efs.csi_driver.docker_images.efs_csi.tag
+      }
+      livenessprobe = {
+        image = var.pv_efs.csi_driver.docker_images.livenessprobe.image
+        tag   = var.pv_efs.csi_driver.docker_images.livenessprobe.tag
+      }
+      node_driver_registrar = {
+        image = var.pv_efs.csi_driver.docker_images.node_driver_registrar.image
+        tag   = var.pv_efs.csi_driver.docker_images.node_driver_registrar.tag
+      }
+      external_provisioner = {
+        image = var.pv_efs.csi_driver.docker_images.external_provisioner.image
+        tag   = var.pv_efs.csi_driver.docker_images.external_provisioner.tag
+      }
+    }
+  }
+  tags = local.tags
 }

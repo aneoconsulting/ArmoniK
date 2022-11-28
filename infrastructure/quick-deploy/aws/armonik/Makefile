@@ -18,10 +18,11 @@ export STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/../storage/generated/storage-outp
 
 all: init apply output
 deploy: init apply output
+destroy: init delete
 
 init:
 	mkdir -p $(GENERATED_DIR)
-	terraform init \
+	terraform init -upgrade \
 		-backend-config 'bucket=$(TFSTATE_BUCKET_NAME)' \
 		-backend-config 'region=$(REGION)' \
 		-backend-config 'key=$(STATE_FILE)' \
@@ -44,7 +45,7 @@ output:
 	@echo -n "}" >> $(OUTPUT_FILE)
 	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 
-destroy:
+delete:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(MONITORING_PARAMETERS_FILE) \

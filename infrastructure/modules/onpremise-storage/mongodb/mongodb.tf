@@ -49,6 +49,10 @@ resource "kubernetes_deployment" "mongodb" {
             name = var.mongodb.image_pull_secrets
           }
         }
+        security_context {
+          run_as_user = 999
+          fs_group    = 999
+        }
         container {
           name              = "mongodb"
           image             = "${var.mongodb.image}:${var.mongodb.tag}"
@@ -84,6 +88,13 @@ resource "kubernetes_deployment" "mongodb" {
             name       = "init-files"
             mount_path = "/docker-entrypoint-initdb.d/"
           }
+          dynamic "volume_mount" {
+            for_each = (var.persistent_volume != null && var.persistent_volume != "" ? [1] : [])
+            content {
+              name       = "database"
+              mount_path = "/data/db"
+            }
+          }
         }
         volume {
           name = "init-files"
@@ -97,6 +108,15 @@ resource "kubernetes_deployment" "mongodb" {
           secret {
             secret_name = kubernetes_secret.mongodb_certificate.metadata[0].name
             optional    = false
+          }
+        }
+        dynamic "volume" {
+          for_each = (var.persistent_volume != null && var.persistent_volume != "" ? [1] : [])
+          content {
+            name = "database"
+            persistent_volume_claim {
+              claim_name = kubernetes_persistent_volume_claim.mongodb.0.metadata.0.name
+            }
           }
         }
       }

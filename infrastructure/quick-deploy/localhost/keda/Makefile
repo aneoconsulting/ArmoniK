@@ -16,7 +16,7 @@ destroy: init delete
 
 init:
 	mkdir -p $(GENERATED_DIR)
-	terraform init
+	terraform init -upgrade
 
 apply:
 	terraform apply \

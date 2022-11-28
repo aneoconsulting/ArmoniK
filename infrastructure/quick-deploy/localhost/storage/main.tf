@@ -22,6 +22,7 @@ module "mongodb" {
     node_selector      = local.mongodb_node_selector
     image_pull_secrets = local.mongodb_image_pull_secrets
   }
+  persistent_volume = null
 }
 
 # Redis
