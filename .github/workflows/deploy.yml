@@ -592,4 +592,126 @@ jobs:
           tar -czf htcmock-without-tls-without-mtls.tar.gz htcmock-without-tls-without-mtls
           aws s3 cp htcmock-without-tls-without-mtls.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock-without-tls-without-mtls.tar.gz
 
+  benchWithoutIngress:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release jq python3 python-is-python3 python3-pip
+          pip install awscli
+
+      - name: Get Core Tag
+        id: core
+        run: |
+          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Get Admin GUI Tag
+        id: admin-gui
+        run: |
+          TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - uses: ./
+        name: Deploy infrastructure
+        id: deploy-infra
+        with:
+          metrics-exporter-image: dockerhubaneo/armonik_control_metrics
+          partition-metrics-exporter-image: dockerhubaneo/armonik_control_partition_metrics
+          control-plane-image: dockerhubaneo/armonik_control
+          polling-agent-image: dockerhubaneo/armonik_pollingagent
+          worker-image: dockerhubaneo/armonik_core_bench_test_worker
+          admin-api-image: dockerhubaneo/armonik_admin_api
+          admin-app-image: dockerhubaneo/armonik_admin_app
+          core-tag: ${{ steps.core.outputs.tag }}
+          worker-tag: ${{ steps.core.outputs.tag }}
+          admin-gui-tag: ${{ steps.admin-gui.outputs.tag }}
+          ingress: ''
+
+      - name: Test Bench - many tasks (200)
+        shell: bash
+        run: |
+          set -ex
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          docker run --rm \
+            -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
+            -e BenchOptions__NTasks=200 \
+            -e BenchOptions__TaskDurationMs=100 \
+            dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
+
+      - name: Test Bench - long tasks (10s)
+        shell: bash
+        run: |
+          set -ex
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          docker run --rm \
+            -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
+            -e BenchOptions__NTasks=2 \
+            -e BenchOptions__TaskDurationMs=10000 \
+            dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
+
+      - name: Test Bench - large payloads (10MB)
+        shell: bash
+        run: |
+          set -ex
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          docker run --rm \
+            -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
+            -e BenchOptions__NTasks=10 \
+            -e BenchOptions__TaskDurationMs=10 \
+            -e BenchOptions__ResultSize=1 \
+            -e BenchOptions__PayloadSize=10000 \
+            dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
+
+      - name: Test Bench - large results (10MB)
+        shell: bash
+        run: |
+          set -ex
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          docker run --rm \
+            -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
+            -e BenchOptions__NTasks=10 \
+            -e BenchOptions__TaskDurationMs=10 \
+            -e BenchOptions__ResultSize=10000 \
+            -e BenchOptions__PayloadSize=1 \
+            dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
+
+      - name: Show logs
+        if: always()
+        run: |
+          set -e
+          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          mkdir -p bench-without-ingress/infra/generated \
+            bench-without-ingress/infra/tfstates \
+            bench-without-ingress/app
+          cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \
+            infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \
+            infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \
+            infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \
+            bench-without-ingress/infra/generated
+          cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
+            infrastructure/quick-deploy/localhost/armonik/generated/backend/armonik-terraform.tfstate \
+            bench-without-ingress/infra/tfstates
+          sudo cp -rL /var/log/pods/armonik_* bench-without-ingress/app
+          sudo chown $USER -R bench-without-ingress
+          tar -czf bench-without-ingress.tar.gz bench-without-ingress
+          aws s3 cp bench-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/bench-without-ingress.tar.gz
 

@@ -28,6 +28,27 @@ Fixed
 
 * Mark the pollster as failed when worker is unavailable
 
+## [v2.9.0](https://github.com/aneoconsulting/armonik/tree/v2.9.0) (2022-12-01)
+
+Changed
+-
+
+* Update Core version from 0.6.7 to 0.7.0
+
+Added
+-
+
+* Core adapter for RabbitMQ
+* Core release images contains images for ARM and x64
+* New configurable benchamrks in Core
+* Authentification for GUI in Core
+* Support for grpc-web in Core
+
+Fixed
+-
+
+* Polling agent health check fail when worker is unavailable
+
 ## [v2.8.7](https://github.com/aneoconsulting/armonik/tree/v2.8.7) (2022-10-12)
 
 Changed
