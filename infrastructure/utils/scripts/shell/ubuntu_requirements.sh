@@ -10,11 +10,7 @@ set -e
 
 apt update
 apt -y dist-upgrade
-apt -y install lsb-release
-apt -y install jq
-apt -y install make
-apt -y install git
-apt -y install python3-pip
+apt -y install lsb-release jq make git python3-pip
 ln -s /usr/bin/python3 /usr/bin/python
 
 # Create docker group and add user

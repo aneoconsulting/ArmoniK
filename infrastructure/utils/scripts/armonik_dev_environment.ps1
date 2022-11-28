@@ -14,6 +14,12 @@
         * the name of the branch that will be deployed
     You can specify the variable `diskpath` to change the location of the virtual disk
 
+    .PARAMETER diskpath
+    Folder in which to install the virtual disk. If not specified, the default path is used.
+
+    .PARAMETER vmversion
+    Version of Ubuntu to install. If unspecified, the version used is `Ubuntu`.
+
     .EXAMPLE
     PS> Set-ExecutionPolicy Bypass -Scope Process -Force; .\armonik_dev_environnement.ps1
     PS> armonik_dev_environnement.ps1
@@ -21,10 +27,14 @@
     .EXAMPLE
     PS> Set-ExecutionPolicy Bypass -Scope Process -Force; .\armonik_dev_environnement.ps1
     PS> armonik_dev_environnement.ps1 -diskpath D:\WSL
+
+    .EXAMPLE
+    PS> Set-ExecutionPolicy Bypass -Scope Process -Force; .\armonik_dev_environnement.ps1
+    PS> armonik_dev_environnement.ps1 -diskpath D:\WSL -vmversion
     
     #>
 
-param ($diskpath)
+param ($diskpath, $vmversion)
 
 # Use the version 1.23 for keda compatibility
 $k3s_version = "v1.23.9+k3s1"
@@ -59,7 +69,7 @@ function Restart-Genie {
     }
     $genie_run = wsl -d Ubuntu genie  -r
     # Start the Ubuntu image if systemd is running
-    if ($genie_run -ne "running") {
+    if ($genie_run -like "running*") {
         Write-Host "systemd not working on this Ubuntu installation. Please reinstall genie."
         Write-Host "This script should have done it but something didn'work."
         Write-Host "Try to rerun this script or install genie manually using the following link:"
@@ -73,27 +83,29 @@ function Move-Disk {
     wsl --shutdown
 
     # Create directory, do nothing if it exists
-    MD $diskpath -Force
+    mkdir $diskpath -Force
 
     $tarpath = Join-Path -Path $diskpath -ChildPath tmp.tar
 
     # Export to tar
     Write-Host "Exporting to tar..."
-    wsl --export Ubuntu $tarpath
+    wsl --export $vmversion $tarpath
 
     # Unregister old
-    wsl --unregister Ubuntu 
+    wsl --unregister $vmversion 
 
     # Import in new path
     Write-Host "Importing to new location..."
-    wsl --import Ubuntu $diskpath $tarpath
+    wsl --import $vmversion $diskpath $tarpath
 
     # Remove tar
     Remove-Item $tarpath
 
+    $config_exe = $vmversion.Replace(".", "").Replace("-", "")
+
     # Change default user back to what it was
     Push-Location $env:LOCALAPPDATA\Microsoft\WindowsApps
-    ubuntu config --default-user $ubuntu_user
+    Invoke-expression "$config_exe config --default-user $ubuntu_user"
     Pop-Location
 }
 
@@ -117,15 +129,28 @@ try {
 }
 catch {}
 
+if (-Not $vmversion){
+    $vmversion = 'Ubuntu-20.04'
+}
+
+$available_installs = wsl --list --online
+$available_installs = $available_installs.split() -like "Ubuntu*" | Sort-Object | Get-Unique
+if($vmversion -notin $available_installs){
+    Write-Host "The demanded version $vmversion is not available"
+    Write-Host "This deployment script only supports Ubuntu installations"
+    Write-Host "Available installations are :" $available_installs -Separator "`n - "
+    Exit
+}
+
 # Test if WSL with ubuntu image has been previously installed
-$wsl_output = wsl --list | Out-String
-$ubuntu_exist = "Ubuntu" -in $wsl_output.Split()
+$wsl_output = wsl --list --quiet | Out-String
+$ubuntu_exist = $vmversion -in $wsl_output.Split()
 if ($ubuntu_exist) {
-    Write-Host "WSL Ubuntu exist. This script will not touch this installation."
+    Write-Host "WSL $vmversion exist. This script will not touch this installation."
     Write-Host "You can save it and re-install it with the commande:"
-    Write-Host "wsl --export Ubuntu <name of the saved wsl>.tar"
+    Write-Host "wsl --export $vmversion <name of the saved wsl>.tar"
     Write-Host "After saving it. You can unregister this WSL and use this script."
-    Write-Host "wsl --unregister Ubuntu" -ForegroundColor Green
+    Write-Host "wsl --unregister $vmversion" -ForegroundColor Green
     Exit
 }
 
@@ -151,8 +176,8 @@ $pathname = -join("/mnt/", $pathname, "/shell")
 #   It is advised to use the same username on the linux and 
 #   windows plateform or this script will have to be adapted.
 
-Write-Host "The script will create a Windows Subsytem Linux using an Ubuntu image."
-wsl --install -d Ubuntu 
+Write-Host "The script will create a Windows Subsytem Linux using the $vmversion image."
+wsl --install -d $vmversion 
 Write-Host "Wait until the WSL is configured to answer the question." -ForegroundColor Yellow
 $ubuntu_user = Read-Host -Prompt "Which username did you use for your wsl installation"
 Write-Host "Username that will be use for the next steps: $ubuntu_user"
@@ -179,45 +204,40 @@ if($diskpath) {
 ## Install requirements
 
 ## Note: the sed command is used to convert the end of line to unix ones
-wsl -d Ubuntu cp $pathname/ubuntu_requirements.sh /tmp
-wsl -d Ubuntu sed -i -e "'s/\r$//'" /tmp/ubuntu_requirements.sh 
-wsl -d Ubuntu bash -c "echo $ubuntu_password | sudo -S bash /tmp/ubuntu_requirements.sh $ubuntu_user"
-wsl -d Ubuntu rm /tmp/ubuntu_requirements.sh
+wsl -d $vmversion cp $pathname/ubuntu_requirements.sh /tmp
+wsl -d $vmversion sed -i -e "'s/\r$//'" /tmp/ubuntu_requirements.sh 
+wsl -d $vmversion bash -c "echo $ubuntu_password | sudo -S bash /tmp/ubuntu_requirements.sh $ubuntu_user"
+wsl -d $vmversion rm /tmp/ubuntu_requirements.sh
 
 # Genie installation to have a systemd on the Ubuntu wsl image
-wsl -d Ubuntu cp $pathname/systemd_wsl.sh /tmp
-wsl -d Ubuntu sed -i -e "'s/\r$//'" /tmp/systemd_wsl.sh
-wsl -d Ubuntu bash -c "echo $ubuntu_password | sudo -S bash /tmp/systemd_wsl.sh"
-wsl -d Ubuntu rm /tmp/systemd_wsl.sh
-wsl -d Ubuntu bash -c "echo $ubuntu_password | sudo -S systemctl disable getty@tty1.service multipathd.service multipathd.socket ssh.service"
-wsl -d Ubuntu bash -c "echo $ubuntu_password | sudo -S systemctl mask systemd-remount-fs.service"
+wsl -d $vmversion cp $pathname/systemd_wsl.sh /tmp
+wsl -d $vmversion sed -i -e "'s/\r$//'" /tmp/systemd_wsl.sh
+wsl -d $vmversion bash -c "echo $ubuntu_password | sudo -S bash /tmp/systemd_wsl.sh"
+wsl -d $vmversion rm /tmp/systemd_wsl.sh
+wsl -d $vmversion bash -c "echo $ubuntu_password | sudo -S systemctl disable getty@tty1.service multipathd.service multipathd.socket ssh.service"
+wsl -d $vmversion bash -c "echo $ubuntu_password | sudo -S systemctl mask systemd-remount-fs.service"
 
 Restart-Genie
 
 # ArmoniK
 Write-Host "ArmoniK requirements installation (docker, k3s, terraform)"
-wsl -d Ubuntu genie  -c cp $pathname/armonik_requirements.sh /tmp
-wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_requirements.sh
-wsl -d Ubuntu genie  -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/armonik_requirements.sh $ubuntu_user $k3s_version"
-wsl -d Ubuntu genie  -c rm /tmp/armonik_requirements.sh
-
-# wsl -d Ubuntu genie  -c cp -r $pathname/k3s_installation.sh /tmp
-# wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/k3s_installation.sh
-# wsl -d Ubuntu genie  -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/k3s_installation.sh $ubuntu_user $k3s_version"
-# wsl -d Ubuntu genie  -c rm /tmp/k3s_installation.sh
+wsl -d $vmversion genie  -c cp $pathname/armonik_requirements.sh /tmp
+wsl -d $vmversion genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_requirements.sh
+wsl -d $vmversion genie  -c bash -c "echo $ubuntu_password | sudo -S bash /tmp/armonik_requirements.sh $ubuntu_user $k3s_version"
+wsl -d $vmversion genie  -c rm /tmp/armonik_requirements.sh
 
 Write-Host "ArmoniK installation"
-wsl -d Ubuntu genie  -c cp $pathname/armonik_installation.sh /tmp 
-wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_installation.sh
-wsl -d Ubuntu genie  -c bash /tmp/armonik_installation.sh $armonik_branch
-wsl -d Ubuntu genie  -c rm /tmp/armonik_installation.sh
+wsl -d $vmversion genie  -c cp $pathname/armonik_installation.sh /tmp 
+wsl -d $vmversion genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_installation.sh
+wsl -d $vmversion genie  -c bash /tmp/armonik_installation.sh $armonik_branch
+wsl -d $vmversion genie  -c rm /tmp/armonik_installation.sh
 
 # Test installation
-wsl -d Ubuntu genie  -c kubectl get po -n armonik
-wsl -d Ubuntu genie  -c kubectl get svc -n armonik
+wsl -d $vmversion genie  -c kubectl get po -n armonik
+wsl -d $vmversion genie  -c kubectl get svc -n armonik
 
 # Get WSL host IP adress
-$wsl_ip = (wsl -d Ubuntu genie  -c hostname -I).trim().split()[0]
+$wsl_ip = (wsl -d $vmversion genie  -c hostname -I).trim().split()[0]
 Write-Host "WSL Machine IP: ""$wsl_ip"""
 
 # Open seq webserver in default browser
@@ -226,7 +246,7 @@ Start-Process $seq_url
 
 # Launch integrations tests
 Write-Host "Launch integration test"
-wsl -d Ubuntu genie  -c cp $pathname/test_armonik.sh /tmp 
-wsl -d Ubuntu genie  -c sed -i -e "'s/\r$//'" /tmp/test_armonik.sh
-wsl -d Ubuntu genie  -c bash /tmp/test_armonik.sh $armonik_branch
-wsl -d Ubuntu genie  -c rm /tmp/test_armonik.sh
+wsl -d $vmversion genie  -c cp $pathname/test_armonik.sh /tmp 
+wsl -d $vmversion genie  -c sed -i -e "'s/\r$//'" /tmp/test_armonik.sh
+wsl -d $vmversion genie  -c bash /tmp/test_armonik.sh $armonik_branch
+wsl -d $vmversion genie  -c rm /tmp/test_armonik.sh
