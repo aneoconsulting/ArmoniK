@@ -30,4 +30,5 @@ redis = {
   tag                = "6.2.7"
   node_selector      = {}
   image_pull_secrets = ""
+  max_memory         = "12000mb"
 }

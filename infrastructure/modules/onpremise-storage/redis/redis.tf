@@ -60,7 +60,9 @@ resource "kubernetes_deployment" "redis" {
             "--tls-cert-file /certificates/cert.pem",
             "--tls-key-file /certificates/key.pem",
             "--tls-auth-clients no",
-            "--requirepass ${random_password.redis_password.result}"
+            "--requirepass ${random_password.redis_password.result}",
+            "--maxmemory ${var.redis.max_memory}",
+            "--maxmemory-policy allkeys-lru"
           ]
           port {
             container_port = 6379

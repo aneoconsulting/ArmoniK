@@ -45,6 +45,7 @@ variable "monitoring" {
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
+      system_ram_target  = number
     })
     grafana = object({
       enabled            = bool

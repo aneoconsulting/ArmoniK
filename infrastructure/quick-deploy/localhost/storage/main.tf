@@ -35,5 +35,6 @@ module "redis" {
     tag                = local.redis_tag
     node_selector      = local.redis_node_selector
     image_pull_secrets = local.redis_image_pull_secrets
+    max_memory         = local.redis_max_memory
   }
 }
