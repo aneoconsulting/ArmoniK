@@ -7,12 +7,25 @@
 Changed
 -
 
-* Update Admin GUI version from 0.7.0 to 0.7.2
+* Update Core version from 0.6.7 to 0.7.1
+* Update GUI version from 0.7.0 to 0.7.2
+* Use grpc to cancel tasks and sessions in GUI
 
 Added
 -
 
-* Use gRPC to cancel tasks and sessions.
+* Core adapter for RabbitMQ
+* Core release images contains images for ARM and x64
+* New configurable benchamrks in Core
+* Authentification for GUI in Core
+* Support for grpc-web in Core
+* Use gRPC to cancel tasks and sessions form GUI.
+
+Fixed
+-
+
+* Polling agent health check fail when worker is unavailable
+
 
 ## [v2.8.9](https://github.com/aneoconsulting/armonik/tree/v2.8.9) (2022-11-22)
 
@@ -39,6 +52,7 @@ Fixed
 -
 
 * Mark the pollster as failed when worker is unavailable
+
 
 ## [v2.8.7](https://github.com/aneoconsulting/armonik/tree/v2.8.7) (2022-10-12)
 

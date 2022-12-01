@@ -34,14 +34,14 @@ locals {
 
   # Metrics exporter
   metrics_exporter_image              = try(var.monitoring.metrics_exporter.image, "dockerhubaneo/armonik_control_metrics")
-  metrics_exporter_tag                = try(var.monitoring.metrics_exporter.tag, "0.6.7")
+  metrics_exporter_tag                = try(var.monitoring.metrics_exporter.tag, "0.7.1")
   metrics_exporter_image_pull_secrets = try(var.monitoring.metrics_exporter.image_pull_secrets, "")
   metrics_exporter_service_type       = try(var.monitoring.metrics_exporter.service_type, "ClusterIP")
   metrics_exporter_node_selector      = try(var.monitoring.metrics_exporter.node_selector, {})
 
   # Partition metrics exporter
   partition_metrics_exporter_image              = try(var.monitoring.partition_metrics_exporter.image, "dockerhubaneo/armonik_control_partition_metrics")
-  partition_metrics_exporter_tag                = try(var.monitoring.partition_metrics_exporter.tag, "0.6.7")
+  partition_metrics_exporter_tag                = try(var.monitoring.partition_metrics_exporter.tag, "0.7.1")
   partition_metrics_exporter_image_pull_secrets = try(var.monitoring.partition_metrics_exporter.image_pull_secrets, "")
   partition_metrics_exporter_service_type       = try(var.monitoring.partition_metrics_exporter.service_type, "ClusterIP")
   partition_metrics_exporter_node_selector      = try(var.monitoring.partition_metrics_exporter.node_selector, {})
