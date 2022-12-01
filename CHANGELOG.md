@@ -2,6 +2,18 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-11-22)
 
+## [v2.9.0](https://github.com/aneoconsulting/armonik/tree/v2.9.0) (2022-12-01)
+
+Changed
+-
+
+* Update Admin GUI version from 0.7.0 to 0.7.2
+
+Added
+-
+
+* Use gRPC to cancel tasks and sessions.
+
 ## [v2.8.9](https://github.com/aneoconsulting/armonik/tree/v2.8.9) (2022-11-22)
 
 Changed
@@ -35,7 +47,6 @@ Changed
 
 * Update Core version from 0.6.5 to 0.6.6
 * Update Worker version from 0.7.3 to 0.7.4
-
 
 Fixed
 -
