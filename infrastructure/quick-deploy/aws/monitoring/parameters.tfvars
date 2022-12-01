@@ -54,7 +54,7 @@ monitoring = {
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
-    system_ram_target  = "0.2"
+    system_ram_target  = 0.2
   }
   grafana = {
     enabled            = true

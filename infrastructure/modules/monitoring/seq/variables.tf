@@ -50,5 +50,5 @@ variable "authentication" {
 # SEQ_CACHE_SYSTEMRAMTARGET
 variable "system_ram_target" {
   description = "Target RAM size"
-  type        = string
+  type        = number
 }

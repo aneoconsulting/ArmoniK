@@ -7,7 +7,7 @@ locals {
   seq_image_pull_secrets = try(var.monitoring.seq.image_pull_secrets, "")
   seq_service_type       = try(var.monitoring.seq.service_type, "LoadBalancer")
   seq_node_selector      = try(var.monitoring.seq.node_selector, {})
-  seq_system_ram_target  = try(var.monitoring.seq.system_ram_target, "0.2")
+  seq_system_ram_target  = try(var.monitoring.seq.system_ram_target, 0.2)
 
   # Grafana
   grafana_enabled            = tobool(try(var.monitoring.grafana.enabled, false))
