@@ -19,11 +19,13 @@ Added
 * New configurable benchamrks in Core
 * Authentification for GUI in Core
 * Support for grpc-web in Core
+* Use gRPC to cancel tasks and sessions form GUI.
 
 Fixed
 -
 
 * Polling agent health check fail when worker is unavailable
+
 
 ## [v2.8.9](https://github.com/aneoconsulting/armonik/tree/v2.8.9) (2022-11-22)
 
@@ -59,7 +61,6 @@ Changed
 
 * Update Core version from 0.6.5 to 0.6.6
 * Update Worker version from 0.7.3 to 0.7.4
-
 
 Fixed
 -

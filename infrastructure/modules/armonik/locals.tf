@@ -264,7 +264,7 @@ locals {
           metadata = {
             serverAddress = try(var.monitoring.prometheus.url, "")
             metricName    = "armonik_${partition}_tasks_queued"
-            threshold     = "1"
+            threshold     = tostring(try(trigger.threshold, "2"))
             namespace     = local.metrics_exporter_namespace
             query         = "armonik_${partition}_tasks_queued{job=\"${local.metrics_exporter_name}\"}"
           }

@@ -169,7 +169,8 @@ compute_plane = {
       }
       triggers = [
         {
-          type = "prometheus"
+          type      = "prometheus"
+          threshold = 2
         },
       ]
     }
