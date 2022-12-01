@@ -16,6 +16,7 @@ locals {
   redis_tag                = try(var.redis.tag, "bullseye")
   redis_node_selector      = try(var.redis.node_selector, {})
   redis_image_pull_secrets = try(var.redis.image_pull_secrets, {})
+  redis_max_memory         = try(var.redis.max_memory, "12000mb")
 
   # Shared storage
   shared_storage_host_path         = try(var.shared_storage.host_path, "/data")

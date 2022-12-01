@@ -59,5 +59,6 @@ variable "redis" {
     tag                = string
     node_selector      = any
     image_pull_secrets = string
+    max_memory         = string
   })
 }

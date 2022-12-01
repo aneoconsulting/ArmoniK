@@ -61,7 +61,7 @@ resource "kubernetes_deployment" "redis" {
             "--tls-key-file /certificates/key.pem",
             "--tls-auth-clients no",
             "--requirepass ${random_password.redis_password.result}",
-            "--maxmemory 12000mb",
+            "--maxmemory ${var.redis.max_memory}",
             "--maxmemory-policy allkeys-lru"
           ]
           port {

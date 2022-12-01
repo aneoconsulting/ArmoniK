@@ -60,7 +60,7 @@ resource "kubernetes_deployment" "seq" {
           }
           env {
             name  = "SEQ_CACHE_SYSTEMRAMTARGET"
-            value = "0.5"
+            value = var.system_ram_target
           }
           dynamic "env" {
             for_each = var.authentication ? [true] : []

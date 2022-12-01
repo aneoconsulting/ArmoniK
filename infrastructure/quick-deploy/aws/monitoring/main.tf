@@ -19,8 +19,9 @@ module "seq" {
     tag                = local.seq_tag
     image_pull_secrets = local.seq_image_pull_secrets
   }
-  working_dir    = "${path.root}/../../.."
-  authentication = var.authentication
+  working_dir       = "${path.root}/../../.."
+  authentication    = var.authentication
+  system_ram_target = local.seq_system_ram_target
 }
 
 # node exporter

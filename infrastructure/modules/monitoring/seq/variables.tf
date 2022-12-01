@@ -46,3 +46,9 @@ variable "authentication" {
   type        = bool
   default     = false
 }
+
+# SEQ_CACHE_SYSTEMRAMTARGET
+variable "system_ram_target" {
+  description = "Target RAM size"
+  type        = string
+}
