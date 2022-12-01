@@ -73,12 +73,12 @@ ecr = {
     {
       name  = "armonik-admin-api"
       image = "dockerhubaneo/armonik_admin_api"
-      tag   = "0.7.0"
+      tag   = "0.7.2"
     },
     {
       name  = "armonik-admin-app"
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.7.0"
+      tag   = "0.7.2"
     },
     {
       name  = "mongosh"
