@@ -58,6 +58,10 @@ resource "kubernetes_deployment" "seq" {
             name  = "ACCEPT_EULA"
             value = "Y"
           }
+          env {
+            name  = "SEQ_CACHE_SYSTEMRAMTARGET"
+            value = "0.5"
+          }
           dynamic "env" {
             for_each = var.authentication ? [true] : []
             content {
