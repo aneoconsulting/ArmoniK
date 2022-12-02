@@ -122,14 +122,6 @@ admin_gui = {
 # Parameters of the compute plane
 compute_plane = {
   default = {
-    partition_data = {
-      priority              = 1
-      reserved_pods         = 50
-      max_pods              = 100
-      preemption_percentage = 20
-      parent_partition_ids  = []
-      pod_configuration     = null
-    }
     # number of replicas for each deployment of compute plane
     replicas                         = 1
     termination_grace_period_seconds = 30

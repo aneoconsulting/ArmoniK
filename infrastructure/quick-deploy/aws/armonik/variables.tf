@@ -150,14 +150,6 @@ variable "admin_gui" {
 variable "compute_plane" {
   description = "Parameters of the compute plane"
   type = map(object({
-    partition_data = object({
-      priority              = number
-      reserved_pods         = number
-      max_pods              = number
-      preemption_percentage = number
-      parent_partition_ids  = list(string)
-      pod_configuration     = any
-    })
     replicas                         = number
     termination_grace_period_seconds = number
     image_pull_secrets               = string
