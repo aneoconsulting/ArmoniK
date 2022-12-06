@@ -45,7 +45,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/installations/all-in-one-deploy-linux.html",
-          "hash": "ncovnZyn6j/UuPvzdBZyK7voXbN5w7mj4qWcaZi8HJs="
+          "hash": "R82vLpMIVWAeONHTE6MVfngtVTSkGxVs1f0GYeqSujk="
         }
       },
       "is_incremental": false,
@@ -57,7 +57,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/installations/all-in-one-deploy-powershell.html",
-          "hash": "j0IROl4z54LFM2d5isPh/9UIwJo3gLLBTe2cvOTUCNE="
+          "hash": "1WVd6s8euuLeee7XpqqG5f+FTaL/VyCGyRhpmoSg9M4="
         }
       },
       "is_incremental": false,
@@ -69,7 +69,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/installations/aws_k3s_deploy.html",
-          "hash": "UUun09BKMacWAUeN7ne5S2Mo/OMn5+Y5KxBo93JrLGQ="
+          "hash": "J4zbjZcAFLC6pQPoswvjwSJtx2TAYB7mIrXpgXTBdFo="
         }
       },
       "is_incremental": false,
@@ -81,7 +81,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/installations/aws_kubeadm_deploy.html",
-          "hash": "KfPWTPxW9ZMjrqM/9eKXNDhVKnYEbzYTv1lV64Gze/I="
+          "hash": "7qQes+5TS+eT46cNj+B1lCtONwBtXmi4hGV/fi470nc="
         }
       },
       "is_incremental": false,
@@ -93,19 +93,19 @@
       "output": {
         ".html": {
           "relative_path": "articles/installations/k3s.html",
-          "hash": "XYLJ+cAX85NZotbhxuplrK8uVhetkM66xLYgJI2X7A4="
+          "hash": "476Y7QFTPYwxVTuQiz/5o5Gzbc/1OgPU9n1gt4sP0eY="
         }
       },
       "is_incremental": false,
       "version": ""
     },
     {
-      "type": "Toc",
-      "source_relative_path": "articles/installations/toc.yml",
+      "type": "Conceptual",
+      "source_relative_path": "articles/installations/overview.md",
       "output": {
         ".html": {
-          "relative_path": "articles/installations/toc.html",
-          "hash": "UeBIH4XorgeB/094NP8ZZb/QBTufv3e7bKjc7oKg36c="
+          "relative_path": "articles/installations/overview.html",
+          "hash": "rISU4ymIkWWyjBjEuk0ikQ7JJzGVOfWVQ6mE66O705U="
         }
       },
       "is_incremental": false,
@@ -129,7 +129,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/toc.html",
-          "hash": "oxRpL/vJ8QDgd0P61nuaY3qwPFp8Xm7MVNTZa9QkC80="
+          "hash": "L/Gwh50DPrpx2SBuc91AVFU4UKBOsOksBok5THO7lkc="
         }
       },
       "is_incremental": false,
@@ -251,7 +251,7 @@
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 9,
+          "total_file_count": 10,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {
