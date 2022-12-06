@@ -1,0 +1,66 @@
+name: DeployAWS
+
+on:
+  push:
+    branches: [ main ]
+    tags-ignore: [ '**' ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  deploy:
+    name: "Deploy"
+    runs-on: ubuntu-latest
+    outputs:
+      terraform-output: ${{ steps.deploy.outputs.terraform-output }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Dependencies
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@fl/test
+        with:
+          aws: true
+          terraform: true
+      - id: deploy
+        name: Deploy
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@fl/test
+        with:
+          type: aws
+
+  test:
+    name: "Test"
+    runs-on: ubuntu-latest
+    needs: deploy
+    env:
+      TERRAFORM_OUTPUT: ${{ needs.deploy.outputs.terraform-output }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Test
+        run: |
+          git status
+          git log
+      - name: Test
+        run: |
+          echo "$TERRAFORM_OUTPUT"
+
+  cleanup:
+    name: "Cleanup"
+    runs-on: ubuntu-latest
+    needs:
+      - deploy
+      - test
+    if: "always()"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Dependencies
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@fl/test
+        with:
+          aws: true
+          terraform: true
+      - id: destroy
+        name: Destroy deployment
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@fl/test
+        with:
+          type: aws
