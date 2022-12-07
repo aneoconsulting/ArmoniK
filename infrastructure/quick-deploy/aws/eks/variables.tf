@@ -105,3 +105,10 @@ variable "eks_worker_groups" {
   description = "List of EKS worker node groups"
   type        = any
 }
+
+# Enable EKS public access
+variable "enable_public_eks_access" {
+  description = "Enable EKS public access"
+  type        = string
+  default     = null
+}

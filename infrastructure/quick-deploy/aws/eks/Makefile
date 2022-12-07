@@ -8,8 +8,9 @@ export TF_DATA_DIR?=$(GENERATED_DIR)
 export SUFFIX?=main
 export REGION?=eu-west-3
 export PROFILE?=default
-export TFSTATE_BUCKET_NAME?=armonik-tfstate
+export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 export VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/../vpc/generated/vpc-output.json
+export PUBLIC_ACCESS_EKS=?true
 
 .PHONY: apply destroy
 
@@ -32,6 +33,7 @@ apply:
 		-var 'region=$(REGION)' \
 		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
+		-var 'enable_public_eks_access=$(PUBLIC_ACCESS_EKS)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 
@@ -48,6 +50,7 @@ delete:
 		-var 'region=$(REGION)' \
 		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
+		-var 'enable_public_eks_access=$(PUBLIC_ACCESS_EKS)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 

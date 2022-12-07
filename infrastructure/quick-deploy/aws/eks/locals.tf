@@ -9,11 +9,12 @@ resource "random_string" "random_resources" {
 }
 
 locals {
-  random_string = random_string.random_resources.result
-  suffix        = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
-  cluster_name  = try(var.vpc.eks_cluster_name, "armonik-eks-${local.suffix}")
-  kms_name      = "armonik-kms-eks-${local.suffix}-${local.random_string}"
-  vpc = {
+  random_string                  = random_string.random_resources.result
+  suffix                         = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
+  cluster_name                   = try(var.vpc.eks_cluster_name, "armonik-eks-${local.suffix}")
+  kms_name                       = "armonik-kms-eks-${local.suffix}-${local.random_string}"
+  cluster_endpoint_public_access = try(tobool(try(lower(var.enable_public_eks_access), false)), false)
+  vpc                            = {
     id                 = try(var.vpc.id, "")
     private_subnet_ids = try(var.vpc.private_subnet_ids, [])
     pods_subnet_ids    = try(var.vpc.pods_subnet_ids, [])

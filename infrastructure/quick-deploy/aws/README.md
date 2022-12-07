@@ -126,6 +126,8 @@ export ARMONIK_BUCKET_NAME=armonik-tfstate
 export ARMONIK_KUBERNETES_NAMESPACE=armonik
 export KEDA_KUBERNETES_NAMESPACE=default
 export METRICS_SERVER_KUBERNETES_NAMESPACE=kube-system
+export PUBLIC_VPC=true
+export PUBLIC_ACCESS_EKS=true
 ```
 
 where:
@@ -137,6 +139,8 @@ where:
 - `ARMONIK_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for ArmoniK
 - `KEDA_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for [KEDA](https://keda.sh/)
 - `METRICS_SERVER_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for metrics server
+- `PUBLIC_VPC`: is boolean defining whether the AWS VPC to be deployed should be public
+- `PUBLIC_ACCESS_EKS`: is boolean defining whether the AWS EKS to be deployed should have a public access
 
 **Warning:** `ARMONIK_SUFFIX` must be *UNIQUE* to allow resources to have unique name in AWS
 
