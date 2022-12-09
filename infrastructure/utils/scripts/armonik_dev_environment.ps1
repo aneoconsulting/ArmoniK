@@ -18,7 +18,8 @@
     Folder in which to install the virtual disk. If not specified, the default path is used.
 
     .PARAMETER vmversion
-    Version of Ubuntu to install. If unspecified, the version used is `Ubuntu`.
+    Version of Ubuntu to install. If unspecified, the version used is `Ubuntu-20.04`. You can check the list of available WSL versions with 
+    PS> wsl --list --online
 
     .EXAMPLE
     PS> Set-ExecutionPolicy Bypass -Scope Process -Force; .\armonik_dev_environnement.ps1
@@ -30,7 +31,7 @@
 
     .EXAMPLE
     PS> Set-ExecutionPolicy Bypass -Scope Process -Force; .\armonik_dev_environnement.ps1
-    PS> armonik_dev_environnement.ps1 -diskpath D:\WSL -vmversion
+    PS> armonik_dev_environnement.ps1 -diskpath D:\WSL -vmversion Ubuntu-22.04
     
     #>
 
