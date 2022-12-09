@@ -131,7 +131,7 @@ Fixed
 * Remove unused dependencies and update version when needed
 * Add more logs in worker
 
-## ## [v2.8.4](https://github.com/aneoconsulting/armonik/tree/v2.8.4) (2022-08-22)
+## [v2.8.4](https://github.com/aneoconsulting/armonik/tree/v2.8.4) (2022-08-22)
 
 Changed
 -
