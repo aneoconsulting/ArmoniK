@@ -1,6 +1,27 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-11-22)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-12-14)
+
+## [v2.10.0](https://github.com/aneoconsulting/armonik/tree/v2.10.0) (2022-12-14)
+
+Changed
+-
+
+* Update Core version from 0.7.1 to 0.8.1
+
+Added
+-
+
+* Remove payload from Object Storage when task is completed
+* Implement new APIs for GUI
+
+Fixed
+-
+
+* Use EphemeralMongo instead of Mongo2go because of issue with Mongo2go
+* Issue with each polling agent creating multiple connections to the message queue
+* Improve task acquisition when messages are duplicated
+* Put task in error when worker is unavailable during task execution #743
 
 ## [v2.9.0](https://github.com/aneoconsulting/armonik/tree/v2.9.0) (2022-12-01)
 
