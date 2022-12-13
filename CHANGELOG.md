@@ -35,7 +35,7 @@ Fixed
 -
 
 * Use EphemeralMongo instead of Mongo2go in unit tests because of issues with Mongo2go
-* Issue with each polling agent creating multiple connections to the message queue 
+* Issue with each polling agent creating multiple connections to the message queue
 * Improve task acquisition when messages are duplicated
 * Put task in error when worker is unavailable during task execution [#743](https://github.com/aneoconsulting/ArmoniK/issues/743)
 * `ArmoniK.DevelopmentKit.Worker.Unified.TaskSubmitterWorkerService` no longer exposes Symphony-like endpoints as it was never its intention
