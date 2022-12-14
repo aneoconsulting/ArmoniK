@@ -1,4 +1,4 @@
-core=0.8.2-altemporaryfixdotnetdockersdkv.2.e8c5106b
+core=0.8.2-altemporaryfixdotnetdockersdkv.3.654b15d1
 worker=0.8.0
 admin-gui=0.7.2
 samples=v2.9.0
