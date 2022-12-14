@@ -189,9 +189,7 @@ jobs:
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
             -e Partition="" \
-            --entrypoint dotnet \
-            dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }} \
-            test /app/build/ArmoniK.Extensions.Common.StreamWrapper.Tests.Client.dll
+            dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
 
       - name: Show logs
         if: always()
@@ -273,10 +271,7 @@ jobs:
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
             -e Partition="" \
-            --entrypoint dotnet \
-            dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }} \
-            test /app/build/ArmoniK.Extensions.Common.StreamWrapper.Tests.Client.dll
-            
+            dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
 
       - name: Show logs
         if: always()
