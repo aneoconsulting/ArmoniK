@@ -7,7 +7,7 @@
 Changed
 -
 
-* Update Core version from 0.7.1 to 0.8.1
+* Update Core version from 0.7.1 to 0.8.2
 * Update Extensions.Csharp version from 0.7.5 to 0.8.0
 * **Breaking** : Namespaces in Extensions.Csharp have changed : 
     * The namespaces are now organised in the following form : 
