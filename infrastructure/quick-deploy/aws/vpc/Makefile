@@ -9,6 +9,7 @@ export SUFFIX?=main
 export REGION?=eu-west-3
 export PROFILE?=default
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
+export PUBLIC_VPC?=true
 
 .PHONY: apply destroy
 
@@ -30,6 +31,7 @@ apply:
 		-var 'region=$(REGION)' \
 		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
+		-var 'enable_public_vpc=$(PUBLIC_VPC)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 
@@ -45,6 +47,7 @@ delete:
 		-var 'region=$(REGION)' \
 		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
+		-var 'enable_public_vpc=$(PUBLIC_VPC)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 
