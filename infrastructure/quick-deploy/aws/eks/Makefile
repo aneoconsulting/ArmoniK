@@ -10,7 +10,7 @@ export REGION?=eu-west-3
 export PROFILE?=default
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 export VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/../vpc/generated/vpc-output.json
-export PUBLIC_ACCESS_EKS=?true
+export PUBLIC_ACCESS_EKS?=true
 
 .PHONY: apply destroy
 

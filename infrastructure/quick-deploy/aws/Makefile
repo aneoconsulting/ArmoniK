@@ -8,8 +8,8 @@ export METRICS_SERVER_KUBERNETES_NAMESPACE?=kube-system
 export TFSTATE_BUCKET_NAME=$(ARMONIK_BUCKET_NAME)-$(ARMONIK_SUFFIX)
 export KEDA=$(shell kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
 export METRICS_SERVER=$(shell kubectl get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
-export PUBLIC_VPC=true
-export PUBLIC_ACCESS_EKS=true
+export PUBLIC_VPC?=true
+export PUBLIC_ACCESS_EKS?=true
 
 CURRENT_DIR=$(shell pwd)
 VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/vpc/generated/vpc-output.json

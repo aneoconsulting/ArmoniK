@@ -9,7 +9,7 @@ export SUFFIX?=main
 export REGION?=eu-west-3
 export PROFILE?=default
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
-export PUBLIC_VPC=?true
+export PUBLIC_VPC?=true
 
 .PHONY: apply destroy
 
