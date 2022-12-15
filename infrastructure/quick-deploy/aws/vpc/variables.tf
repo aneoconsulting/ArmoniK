@@ -59,6 +59,6 @@ variable "vpc" {
 # Enable public VPC
 variable "enable_public_vpc" {
   description = "Enable public VPC"
-  type        = string
-  default     = null
+  type        = bool
+  default     = true
 }
