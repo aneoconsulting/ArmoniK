@@ -27,7 +27,7 @@ Added
 
 * Remove payload from Object Storage when task is completed
 * Implement new APIs for GUI
-* Buffered task submission using Unified API, increasing overall task submission speed
+* Buffered task submission using Client Unified API, increasing overall task submission speed doc usage [Buffering submission](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/blob/0.8.1/Documentation/articles/buffersubmit.md)  
 * gRPC channel pooling in Extensions.Csharp to improve performance
 * NUnit testing in Extensions.Csharp to replace the old testing framework in a future release
 
