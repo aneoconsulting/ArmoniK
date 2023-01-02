@@ -9,9 +9,10 @@ variable "tags" {
 variable "vpc" {
   description = "AWS VPC info"
   type = object({
-    id          = string
-    cidr_blocks = list(string)
-    subnet_ids  = list(string)
+    id                 = string
+    cidr_blocks        = set(string)
+    cidr_block_private = set(string)
+    subnet_ids         = set(string)
   })
 }
 

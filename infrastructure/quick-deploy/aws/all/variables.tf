@@ -1,0 +1,298 @@
+# Prefix
+variable "prefix" {
+  description = "Prefix used to name all the resources"
+  type = string
+  default = null # random
+}
+
+# Profile
+variable "profile" {
+  description = "Profile of AWS credentials to deploy Terraform sources"
+  type        = string
+  default     = "default"
+}
+
+# Region
+variable "region" {
+  description = "AWS region where the infrastructure will be deployed"
+  type        = string
+  default     = "eu-west-3"
+}
+
+# Kubernetes namespace
+variable "namespace" {
+  description = "Kubernetes namespace for ArmoniK"
+  type        = string
+  default     = "armonik"
+}
+
+# Logging level
+variable "logging_level" {
+  description = "Logging level in ArmoniK"
+  type        = string
+  default     = "Information"
+}
+
+# KMS Key
+variable "kms_key" {
+  description = "KMS key id used to encrypt logs and storage"
+  type        = string
+  default     = null
+}
+
+# AWS TAGs
+variable "tags" {
+  description = "Tags for AWS resources"
+  type        = map(string)
+  default     = {}
+}
+
+# VPC
+variable "vpc" {
+  description = "Parameters of AWS VPC"
+  type = object({
+    # list of CIDR block associated with the private subnet
+    cidr_block_private = optional(list(string), ["10.0.0.0/18", "10.0.64.0/18", "10.0.128.0/18"])
+    # list of CIDR block associated with the public subnet
+    cidr_block_public = optional(list(string), ["10.0.192.0/24", "10.0.193.0/24", "10.0.194.0/24"])
+    # Main CIDR block associated to the VPC
+    main_cidr_block = optional(string, "10.0.0.0/16")
+    # cidr block associated with pod
+    pod_cidr_block_private                          = optional(list(string), ["10.1.0.0/16", "10.2.0.0/16", "10.3.0.0/16"])
+    enable_private_subnet                           = optional(bool, true)
+    flow_log_cloudwatch_log_group_retention_in_days = optional(number, 30)
+    peering = optional(object({
+      enabled      = optional(bool, false)
+      peer_vpc_ids = optional(list(string), [])
+    }), {})
+  })
+  default = {}
+}
+
+# AWS EKS
+variable "eks" {
+  description = "Parameters of AWS EKS"
+  type = object({
+    cluster_version                       = string
+    cluster_endpoint_private_access       = optional(bool, true) # vpc.enable_private_subnet
+    cluster_endpoint_private_access_cidrs = optional(list(string), [])
+    cluster_endpoint_private_access_sg    = optional(list(string), [])
+    cluster_endpoint_public_access        = optional(bool, false)
+    cluster_endpoint_public_access_cidrs  = optional(list(string), ["0.0.0.0/0"])
+    cluster_log_retention_in_days         = optional(number, 30)
+    docker_images = object({
+      cluster_autoscaler = object({
+        image = string
+        tag   = string
+      })
+      instance_refresh = object({
+        image = string
+        tag   = string
+      })
+    })
+    cluster_autoscaler = optional(object({
+      expander                              = optional(string, "random")
+      scale_down_enabled                    = optional(bool, true)
+      min_replica_count                     = optional(number, 0)
+      scale_down_utilization_threshold      = optional(number, 0.5)
+      scale_down_non_empty_candidates_count = optional(number, 30)
+      max_node_provision_time               = optional(string, "15m0s")
+      scan_interval                         = optional(string, "10s")
+      scale_down_delay_after_add            = optional(string, "2m")
+      scale_down_delay_after_delete         = optional(string, "0s")
+      scale_down_delay_after_failure        = optional(string, "3m")
+      scale_down_unneeded_time              = optional(string, "2m")
+      skip_nodes_with_system_pods           = optional(bool, true)
+      node_selector                         = optional(any, {})
+    }), {})
+    map_roles = optional(list(object({
+      rolearn  = string
+      username = string
+      groups   = list(string)
+    })), [])
+    map_users = optional(list(object({
+      userarn  = string
+      username = string
+      groups   = list(string)
+    })), [])
+  })
+}
+
+# Operational node groups for EKS
+variable "eks_operational_worker_groups" {
+  description = "List of EKS operational node groups"
+  type        = any
+}
+
+# EKS worker groups
+variable "eks_worker_groups" {
+  description = "List of EKS worker node groups"
+  type        = any
+}
+
+# Metrics Server
+variable "metrics_server" {
+  description = "Parameters of the metrics server"
+  type = object({
+    namespace          = optional(string, "kube-system"),
+    image_name         = optional(string, "k8s.gcr.io/metrics-server/metrics-server"),
+    image_tag          = optional(string, "v0.6.1"),
+    image_pull_secrets = optional(string, ""),
+    node_selector      = optional(any, {}),
+    args               = optional(list(string), [
+      "--cert-dir=/tmp",
+      "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname",
+      "--kubelet-use-node-status-port",
+      "--metric-resolution=15s",
+    ]),
+    host_network       = optional(bool, false),
+  })
+  default = {}
+}
+
+# Keda
+variable "keda" {
+  description = "Keda configuration"
+  type = object({
+    namespace            = optional(string, "default")
+    keda_image_name      = optional(string, "ghcr.io/kedacore/keda"),
+    keda_image_tag       = optional(string, "2.8.0"),
+    apiserver_image_name = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
+    apiserver_image_tag  = optional(string, "2.8.0"),
+    pull_secrets         = optional(string, ""),
+    node_selector        = optional(any, {})
+  })
+  default = {}
+}
+
+# S3 as shared storage
+variable "s3_fs" {
+  description = "AWS S3 bucket as shared storage"
+  type = object({
+    policy                                = optional(string, "")
+    attach_policy                         = optional(bool, false)
+    attach_deny_insecure_transport_policy = optional(bool, true)
+    attach_require_latest_tls_policy      = optional(bool, true)
+    attach_public_policy                  = optional(bool, false)
+    block_public_acls                     = optional(bool, true)
+    block_public_policy                   = optional(bool, true)
+    ignore_public_acls                    = optional(bool, true)
+    restrict_public_buckets               = optional(bool, true)
+    sse_algorithm                         = optional(string, "")
+  })
+  default = {}
+}
+
+# AWS Elasticache
+variable "elasticache" {
+  description = "Parameters of Elasticache"
+  type = object({
+    engine                      = string
+    engine_version              = string
+    node_type                   = string
+    apply_immediately           = optional(bool, true)
+    multi_az_enabled            = optional(bool, false)
+    automatic_failover_enabled  = optional(bool, true)
+    num_cache_clusters          = number
+    preferred_cache_cluster_azs = optional(list(string), [])
+    data_tiering_enabled        = optional(bool, false)
+    log_retention_in_days       = optional(number, 30)
+    cloudwatch_log_groups = optional(object({
+      slow_log   = optional(string, "")
+      engine_log = optional(string, "")
+    }), {})
+  })
+}
+
+# MQ parameters
+variable "mq" {
+  description = "MQ Service parameters"
+  type = object({
+    engine_type             = string
+    engine_version          = string
+    host_instance_type      = string
+    apply_immediately       = optional(bool, true)
+    deployment_mode         = optional(string, "SINGLE_INSTANCE")
+    storage_type            = optional(string, "ebs")
+    authentication_strategy = optional(string, "simple")
+    publicly_accessible     = optional(bool, false)
+  })
+}
+
+# MQ Credentials
+variable "mq_credentials" {
+  description = "Amazon MQ credentials"
+  type = object({
+    password = string
+    username = string
+  })
+  default = {
+    password = ""
+    username = ""
+  }
+}
+
+# Parameters for MongoDB
+variable "mongodb" {
+  description = "Parameters of MongoDB"
+  type = object({
+    image_name    = string
+    image_tag     = string
+    node_selector = optional(any, {})
+    pull_secrets  = optional(string, "")
+    persistent_volume = optional(object({
+      storage_provisioner = string
+      parameters          = optional(map(string), {})
+      #Resources for PVC
+      resources = optional(object({
+        limits = optional(object({
+          storage = optional(string)
+        }))
+        requests = optional(object({
+          storage = optional(string)
+        }))
+      }),  {})
+    }))
+  })
+}
+
+# AWS EFS as Persistent volume
+variable "pv_efs" {
+  description = "AWS EFS as Persistent volume"
+  type = object({
+    # AWS Elastic Filesystem Service
+    efs = optional(object({
+      performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
+      throughput_mode                 = optional(string, "bursting") #  "bursting" or "provisioned"
+      provisioned_throughput_in_mibps = optional(number, null)
+      transition_to_ia                = optional(string, "AFTER_7_DAYS")
+      # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+      access_point = optional(list(string), [])
+    }))
+    # EFS Container Storage Interface (CSI) Driver
+    csi_driver = object({
+      namespace     = optional(string, "kube-system")
+      pull_secrets  = optional(string, "")
+      node_selector = optional(any, {})
+      images = object({
+        efs_csi = object({
+          name = string
+          tag  = string
+        })
+        livenessprobe = object({
+          name = string
+          tag  = string
+        })
+        node_driver_registrar = object({
+          name = string
+          tag  = string
+        })
+        external_provisioner = object({
+          name = string
+          tag  = string
+        })
+      })
+    })
+  })
+  default = null
+}
