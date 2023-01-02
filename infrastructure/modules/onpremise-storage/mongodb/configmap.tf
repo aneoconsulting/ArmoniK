@@ -2,7 +2,15 @@
 locals {
   mongodb_js = <<EOF
 
-rs.initiate()
+rs.initiate(
+   {
+      _id: "rs0",
+      version: 1,
+      members: [
+         { _id: 0, host : "0.0.0.0:27017" }
+      ]
+   }
+)
 db = db.getSiblingDB("database");
 db.createCollection("sample");
 db.sample.insert({test:1})
