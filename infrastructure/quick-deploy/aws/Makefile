@@ -25,13 +25,15 @@ deploy-s3-of-backend:
 	$(MAKE) -C $(CURRENT_DIR)/backend deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
-		BUCKET_NAME=$(ARMONIK_BUCKET_NAME)
+		BUCKET_NAME=$(ARMONIK_BUCKET_NAME) \
+		PROFILE=$(ARMONIK_PROFILE)
 
 destroy-s3-of-backend:
 	$(MAKE) -C $(CURRENT_DIR)/backend destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
-		BUCKET_NAME=$(ARMONIK_BUCKET_NAME)
+		BUCKET_NAME=$(ARMONIK_BUCKET_NAME) \
+		PROFILE=$(ARMONIK_PROFILE)
 
 ####################################
 #             AWS VPC              #
