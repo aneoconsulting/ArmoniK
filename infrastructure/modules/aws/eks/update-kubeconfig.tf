@@ -9,23 +9,14 @@ resource "null_resource" "update_kubeconfig" {
   provisioner "local-exec" {
     when    = destroy
     command = "kubectl config delete-cluster ${self.triggers.cluster_arn}"
-    environment = {
-      KUBECONFIG = local.kubeconfig_output_path
-    }
   }
   provisioner "local-exec" {
     when    = destroy
     command = "kubectl config unset current-context"
-    environment = {
-      KUBECONFIG = local.kubeconfig_output_path
-    }
   }
   provisioner "local-exec" {
     when    = destroy
     command = "kubectl config delete-context ${self.triggers.cluster_arn}"
-    environment = {
-      KUBECONFIG = local.kubeconfig_output_path
-    }
   }
   depends_on = [
     module.eks
