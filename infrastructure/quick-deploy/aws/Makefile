@@ -127,8 +127,8 @@ deploy-keda:
         $(MAKE) -C $(CURRENT_DIR)/keda deploy \
         	NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE) \
         	SUFFIX=$(ARMONIK_SUFFIX) \
-			REGION=$(ARMONIK_REGION) \
-			PROFILE=$(ARMONIK_PROFILE);\
+        	REGION=$(ARMONIK_REGION) \
+        	PROFILE=$(ARMONIK_PROFILE);\
     fi
 
 destroy-keda:
