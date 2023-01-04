@@ -124,11 +124,19 @@ delete-namespace:
 
 deploy-keda:
 	@if [ "${KEDA}" = "" ]; then\
-        $(MAKE) -C $(CURRENT_DIR)/keda deploy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE);\
+        $(MAKE) -C $(CURRENT_DIR)/keda deploy \
+        	NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE) \
+        	SUFFIX=$(ARMONIK_SUFFIX) \
+			REGION=$(ARMONIK_REGION) \
+			PROFILE=$(ARMONIK_PROFILE);\
     fi
 
 destroy-keda:
-	$(MAKE) -C $(CURRENT_DIR)/keda destroy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE)
+	$(MAKE) -C $(CURRENT_DIR)/keda destroy \
+		NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE)
 
 clean-keda:
 	$(MAKE) -C $(CURRENT_DIR)/keda clean
@@ -138,10 +146,18 @@ clean-keda:
 ####################################
 
 deploy-metrics-server:
-	$(MAKE) -C $(CURRENT_DIR)/metrics-server deploy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE)
+	$(MAKE) -C $(CURRENT_DIR)/metrics-server deploy \
+		NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE)
 
 destroy-metrics-server:
-	$(MAKE) -C $(CURRENT_DIR)/metrics-server destroy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE)
+	$(MAKE) -C $(CURRENT_DIR)/metrics-server destroy \
+		NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE)
 
 clean-metrics-server:
 	$(MAKE) -C $(CURRENT_DIR)/metrics-server clean
