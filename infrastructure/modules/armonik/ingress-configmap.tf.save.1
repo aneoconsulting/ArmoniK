@@ -1,14 +1,17 @@
 # Envvars
-locals {
-  armonik_conf = <<EOF
-map $http_accept_language $accept_language {
-    ~*^en en;
-    ~*^fr fr;
+http {
+
 }
 
+locals {
+  armonik_conf = <<EOF
 map $http_upgrade $connection_upgrade {
     default upgrade;
     '' close;
+}
+
+    ~en en;
+    ~fr fr;
 }
 
 %{if var.ingress != null ? var.ingress.mtls : false~}
@@ -54,8 +57,8 @@ server {
     location = /admin {
         rewrite ^ $scheme://$http_host/admin/$accept_language permanent;
     }
-    location /admin/$accept_language {
-        proxy_pass ${local.admin_app_url}/$accept_language;
+    location /admin/(fr|en) {
+        proxy_pass ${local.admin_app_url};
     }
 
     location /api {
