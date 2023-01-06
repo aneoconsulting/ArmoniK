@@ -87,6 +87,7 @@ eks_operational_worker_groups = [
   {
     name                                     = "operational-worker-ondemand"
     spot_allocation_strategy                 = "capacity-optimized"
+    instance_type                            = "c5.xlarge"
     override_instance_types                  = ["c5.xlarge"]
     spot_instance_pools                      = 0
     asg_min_size                             = 1
@@ -103,6 +104,7 @@ eks_worker_groups = [
   {
     name                                     = "worker-c5.4xlarge-spot"
     spot_allocation_strategy                 = "capacity-optimized"
+    instance_type                            = "c5.xlarge"
     override_instance_types                  = ["c5.4xlarge"]
     spot_instance_pools                      = 0
     asg_min_size                             = 0

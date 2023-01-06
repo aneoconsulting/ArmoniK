@@ -83,6 +83,16 @@ clean-ecr:
 #             AWS EKS              #
 ####################################
 
+providers-eks:
+	$(MAKE) -C $(CURRENT_DIR)/eks providers \
+		SUFFIX=$(ARMONIK_SUFFIX) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE) \
+		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME) \
+		PUBLIC_ACCESS_EKS=$(PUBLIC_ACCESS_EKS)
+
+
 deploy-eks:
 	$(MAKE) -C $(CURRENT_DIR)/eks deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \

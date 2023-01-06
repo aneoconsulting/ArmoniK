@@ -37,6 +37,9 @@ apply:
 		-state $(STATE_FILE) \
 		-auto-approve
 
+providers:
+	terraform providers
+
 output:
 	@echo -n "{\"eks\":" > $(OUTPUT_FILE)
 	@terraform output -state=$(STATE_FILE) -json eks >> $(OUTPUT_FILE)
