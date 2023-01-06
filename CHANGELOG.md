@@ -1,6 +1,19 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2022-12-14)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2023-01-06)
+
+## [v2.10.1](https://github.com/aneoconsulting/armonik/tree/v2.10.1) (2023-01-06)
+
+Changed
+-
+
+* Update Core version from 0.8.2 to 0.8.3
+
+Fixed
+-
+
+* Correction of the metric used for scaling. more infos [here](https://github.com/aneoconsulting/ArmoniK/issues/811)
+
 
 ## [v2.10.0](https://github.com/aneoconsulting/armonik/tree/v2.10.0) (2022-12-14)
 
