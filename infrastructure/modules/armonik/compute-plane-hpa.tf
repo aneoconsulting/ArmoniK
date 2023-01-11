@@ -1,5 +1,5 @@
 resource "helm_release" "keda_hpa_compute_plane" {
-  for_each   = toset(local.partition_names)
+  for_each   = kubernetes_deployment.compute_plane
   name       = "compute-plane-${each.key}"
   namespace  = var.namespace
   chart      = "keda-hpa"
@@ -20,11 +20,11 @@ resource "helm_release" "keda_hpa_compute_plane" {
   }
   set {
     name  = "scaleTargetRef.name"
-    value = kubernetes_deployment.compute_plane[each.key].metadata.0.name
+    value = each.value.metadata.0.name
   }
   set {
     name  = "scaleTargetRef.envSourceContainerName"
-    value = kubernetes_deployment.compute_plane[each.key].spec.0.template.0.spec.0.container.0.name
+    value = each.value.spec.0.template.0.spec.0.container.0.name
   }
   set {
     name  = "pollingInterval"

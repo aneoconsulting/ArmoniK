@@ -175,44 +175,44 @@ module "fluent_bit" {
 
 locals {
   monitoring = {
-    seq = length(module.seq) > 0 ? {
+    seq = try({
       host    = module.seq.0.host
       port    = module.seq.0.port
       url     = module.seq.0.url
       web_url = module.seq.0.web_url
       enabled = true
-    } : {}
-    grafana = length(module.grafana) > 0 ? {
+    }, null)
+    grafana = try({
       host    = module.grafana.0.host
       port    = module.grafana.0.port
       url     = module.grafana.0.url
       enabled = true
-    } : {}
-    prometheus = {
+    }, null)
+    prometheus = try({
       host = module.prometheus.host
       port = module.prometheus.port
       url  = module.prometheus.url
-    }
-    metrics_exporter = {
+    }, null)
+    metrics_exporter = try({
       name      = module.metrics_exporter.name
       host      = module.metrics_exporter.host
       port      = module.metrics_exporter.port
       url       = module.metrics_exporter.url
       namespace = module.metrics_exporter.namespace
-    }
-    partition_metrics_exporter = length(module.partition_metrics_exporter) > 0 ? {
+    }, null)
+    partition_metrics_exporter = try({
       name      = module.partition_metrics_exporter.0.name
       host      = module.partition_metrics_exporter.0.host
       port      = module.partition_metrics_exporter.0.port
       url       = module.partition_metrics_exporter.0.url
       namespace = module.partition_metrics_exporter.0.namespace
-    } : null
-    cloudwatch = length(module.partition_metrics_exporter) > 0 ? {
+    }, null)
+    cloudwatch = try({
       name    = module.cloudwatch.0.name
       region  = var.region
       enabled = true
-    } : {}
-    fluent_bit = {
+    }, null)
+    fluent_bit = try({
       container_name = module.fluent_bit.container_name
       image          = module.fluent_bit.image
       tag            = module.fluent_bit.tag
@@ -221,6 +221,6 @@ locals {
         envvars = module.fluent_bit.configmaps.envvars
         config  = module.fluent_bit.configmaps.config
       }
-    }
+    }, null)
   }
 }
