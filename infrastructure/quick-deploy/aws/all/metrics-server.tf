@@ -2,7 +2,7 @@
 module "metrics_server" {
   source             = "../../../modules/monitoring/metrics-server"
   namespace          = var.metrics_server.namespace
-  docker_image       = local.ecr_images.metrics_server
+  docker_image       = local.ecr_images["${var.metrics_server.image_name}:${var.metrics_server.image_tag}"]
   image_pull_secrets = var.metrics_server.image_pull_secrets
   node_selector      = var.metrics_server.node_selector
   default_args       = var.metrics_server.args

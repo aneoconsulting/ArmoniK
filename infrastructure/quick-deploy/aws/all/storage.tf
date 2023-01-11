@@ -63,7 +63,7 @@ module "mq" {
   source    = "../../../modules/aws/mq"
   tags      = local.tags
   name      = "${local.prefix}-mq"
-  namespace = var.namespace
+  namespace = local.namespace
   vpc       = local.vpc
   user      = var.mq_credentials
   mq = {
@@ -82,11 +82,11 @@ module "mq" {
 # MongoDB
 module "mongodb" {
   source      = "../../../modules/onpremise-storage/mongodb"
-  namespace   = var.namespace
+  namespace   = local.namespace
   working_dir = "${path.root}/../../.."
   mongodb = {
-    image              = local.ecr_images.mongodb.name
-    tag                = local.ecr_images.mongodb.tag
+    image              = local.ecr_images["${var.mongodb.image_name}:${var.mongodb.image_tag}"].name
+    tag                = local.ecr_images["${var.mongodb.image_name}:${var.mongodb.image_tag}"].tag
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.pull_secrets
   }
@@ -114,10 +114,10 @@ module "efs_persistent_volume" {
     image_pull_secrets = var.pv_efs.csi_driver.pull_secrets
     node_selector      = var.pv_efs.csi_driver.node_selector
     docker_images = {
-      efs_csi               = local.ecr_images.efs_csi_driver
-      livenessprobe         = local.ecr_images.eks_csi_livenessprobe
-      node_driver_registrar = local.ecr_images.eks_csi_node_driver_registrar
-      external_provisioner  = local.ecr_images.eks_csi_external_provisioner
+      efs_csi               = local.ecr_images["${var.pv_efs.csi_driver.images.efs_csi.name}:${var.pv_efs.csi_driver.images.efs_csi.tag}"]
+      livenessprobe         = local.ecr_images["${var.pv_efs.csi_driver.images.livenessprobe.name}:${var.pv_efs.csi_driver.images.livenessprobe.tag}"]
+      node_driver_registrar = local.ecr_images["${var.pv_efs.csi_driver.images.node_driver_registrar.name}:${var.pv_efs.csi_driver.images.node_driver_registrar.tag}"]
+      external_provisioner  = local.ecr_images["${var.pv_efs.csi_driver.images.external_provisioner.name}:${var.pv_efs.csi_driver.images.external_provisioner.tag}"]
     }
   }
   tags = local.tags
@@ -180,4 +180,64 @@ resource "aws_iam_policy" "read_object" {
 resource "aws_iam_role_policy_attachment" "read_object_attachment" {
   policy_arn = aws_iam_policy.read_object.arn
   role       = module.eks.worker_iam_role_name
+}
+
+locals {
+  storage_endpoint_url = {
+    activemq = {
+      url                 = module.mq.activemq_endpoint_url.url
+      host                = module.mq.activemq_endpoint_url.host
+      port                = module.mq.activemq_endpoint_url.port
+      web_url             = module.mq.web_url
+      allow_host_mismatch = false
+      credentials = {
+        secret       = module.mq.user_credentials.secret
+        username_key = module.mq.user_credentials.username_key
+        password_key = module.mq.user_credentials.password_key
+      }
+      certificates = {
+        secret      = ""
+        ca_filename = ""
+      }
+    }
+    redis = {
+      url      = module.elasticache.redis_endpoint_url.url
+      host     = module.elasticache.redis_endpoint_url.host
+      port     = module.elasticache.redis_endpoint_url.port
+      timeout  = 3000
+      ssl_host = ""
+      credentials = {
+        secret       = ""
+        username_key = ""
+        password_key = ""
+      }
+      certificates = {
+        secret      = ""
+        ca_filename = ""
+      }
+    }
+    mongodb = {
+      url                = module.mongodb.url
+      host               = module.mongodb.host
+      port               = module.mongodb.port
+      allow_insecure_tls = true
+      credentials = {
+        secret       = module.mongodb.user_credentials.secret
+        username_key = module.mongodb.user_credentials.username_key
+        password_key = module.mongodb.user_credentials.password_key
+      }
+      certificates = {
+        secret      = module.mongodb.user_certificate.secret
+        ca_filename = module.mongodb.user_certificate.ca_filename
+      }
+    }
+    shared = {
+      service_url       = "https://s3.${var.region}.amazonaws.com"
+      kms_key_id        = module.s3_fs.kms_key_id
+      name              = module.s3_fs.s3_bucket_name
+      access_key_id     = ""
+      secret_access_key = ""
+      file_storage_type = "S3"
+    }
+  }
 }
