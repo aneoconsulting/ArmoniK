@@ -83,6 +83,12 @@ locals {
   mongodb_allow_insecure_tls   = try(var.storage_endpoint_url.mongodb.allow_insecure_tls, true)
   redis_timeout                = try(var.storage_endpoint_url.redis.timeout, 3000)
   redis_ssl_host               = try(var.storage_endpoint_url.redis.ssl_host, "")
+  minio_url                   = try(var.storage_endpoint_url.s3.url, "")
+  minio_login                 = try(var.storage_endpoint_url.s3.login, "")
+  minio_password              = try(var.storage_endpoint_url.s3.password, "")
+  minio_must_force_path_style = try(var.storage_endpoint_url.s3.must_force_path_style, "")
+  object_storage_adapter      = "ArmoniK.Adapters.${var.object_storage_adapter}.ObjectStorage"
+  deployed_object_storages    = try(var.storage_endpoint_url.deployed_object_storages, [])
 
   # Fluent-bit
   fluent_bit_is_daemonset      = try(var.monitoring.fluent_bit.is_daemonset, false)

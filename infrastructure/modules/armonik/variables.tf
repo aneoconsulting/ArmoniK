@@ -238,3 +238,17 @@ variable "authentication" {
   }
 }
 
+variable "object_storage_adapter" {
+  description = "storage plugin to use."
+  type = string
+  }
+
+variable "table_storage_adapter" {
+  description = "storage plugin to use."
+  type = string
+}
+
+variable "queue_storage_adapter" {
+  description = "storage plugin to use."
+  type = string
+}

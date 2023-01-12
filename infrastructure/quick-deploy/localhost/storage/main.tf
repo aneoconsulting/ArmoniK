@@ -38,3 +38,15 @@ module "redis" {
     max_memory         = local.redis_max_memory
   }
 }
+
+# minio
+module "minio" {
+  count = (contains([for each in var.object_storages_to_be_deployed : lower(each)], lower("s3"))) ? 1 : 0
+  source      = "../../../modules/onpremise-storage/minio"
+  namespace   = var.namespace
+  minio = {
+    image              = local.minio_image
+    tag                = local.minio_tag
+    node_selector      = local.minio_node_selector
+    }
+  }

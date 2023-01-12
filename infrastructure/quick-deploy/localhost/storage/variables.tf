@@ -62,3 +62,48 @@ variable "redis" {
     max_memory         = string
   })
 }
+
+# Parameters for minio
+variable "minio" {
+  description = "Parameters of minio"
+  type = object({
+    image              = string
+    tag                = string
+    node_selector      = any
+  })
+}
+
+
+
+/*locals{
+  possible_objectstorage_adapters = ["ArmoniK.Adapters.Redis.ObjectStorage", "ArmoniK.Adapters.S3Storage.ObjectStorage", "ArmoniK.Adapters.LocalStorage.ObjectStorage"]
+  to_be_deployed_objectstorage_adapters = ["ArmoniK.Adapters.Redis.ObjectStorage", "ArmoniK.Adapters.LocalStorage.ObjectStorage"]
+}
+
+variable "objectstorage_adapters_allowed_values" {
+  type = list(string)
+  default = ["ArmoniK.Adapters.Redis.ObjectStorage", "ArmoniK.Adapters.S3Storage.ObjectStorage", "ArmoniK.Adapters.LocalStorage.ObjectStorage"]
+}*/
+
+
+
+/*
+variable "list_object_storage" {
+  description = "storage plugin to use."
+  type = list(string)
+  default = ["ArmoniK.Adapters.Redis.ObjectStorage"]
+  validation {
+    codition = alltrue([for value in var.list_object_storage: contains(["ArmoniK.Adapters.MongoDB.ObjectStorage", "ArmoniK.Adapters.Redis.ObjectStorage", "ArmoniK.Adapters.S3Storage.ObjectStorage", "ArmoniK.Adapters.LocalStorage.ObjectStorage"], value)])
+    error_message = "Valid values for list_object_storage are \"ArmoniK.Adapters.MongoDB.ObjectStorage\" | \"ArmoniK.Adapters.Redis.ObjectStorage\" | \"ArmoniK.Adapters.S3Storage.ObjectStorage\" | \"ArmoniK.Adapters.LocalStorage.ObjectStorage\"."
+  }
+}
+*/
+
+variable "object_storages_to_be_deployed" {
+  description = "The list of object storage to be deployed"
+  type = list(string)
+  validation {
+    condition = alltrue([for value in var.object_storages_to_be_deployed: contains(["mongodb", "redis", "s3", "localstorage"], lower(value))])
+    error_message = "Valid values for object_storages_to_be_deployed are \"MongoDB\" | \"Redis\" | \"S3\" | \"LocalStorage\"."
+  }
+}
