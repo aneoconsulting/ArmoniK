@@ -1,8 +1,4 @@
 locals{
-    # minio configuration. will be also used in armonik module for setting configMap
-    host ="minio"
-    port = "9000"
-    url = "http://${local.host}:${local.port}/"
-    login = "minioadmin"
-    password = "minioadmin"
+  node_selector_keys   = keys(var.minioconfig.node_selector)
+  node_selector_values = values(var.minioconfig.node_selector)
 }

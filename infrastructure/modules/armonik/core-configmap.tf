@@ -31,6 +31,7 @@ resource "kubernetes_config_map" "core_config" {
     S3__Login                                  = try(var.storage_endpoint_url.s3.login, "")
     S3__Password                               = try(var.storage_endpoint_url.s3.password, "")
     S3__MustForcePathStyle                     = try(var.storage_endpoint_url.s3.must_force_path_style, false)
+    S3__BucketName                             = try(var.storage_endpoint_url.s3.bucket_name, "")
     Amqp__Host                                 = local.activemq_host
     Amqp__Port                                 = local.activemq_port
     Amqp__CaPath                               = (local.activemq_certificates_secret != "" ? "/amqp/${local.activemq_certificates_ca_filename}" : "")

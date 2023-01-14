@@ -87,6 +87,7 @@ locals {
   minio_login                 = try(var.storage_endpoint_url.s3.login, "")
   minio_password              = try(var.storage_endpoint_url.s3.password, "")
   minio_must_force_path_style = try(var.storage_endpoint_url.s3.must_force_path_style, "")
+  minio_bucket_name           = try(var.storage_endpoint_url.s3.bucket_name, "")
   object_storage_adapter      = "ArmoniK.Adapters.${var.object_storage_adapter}.ObjectStorage"
   deployed_object_storages    = try(var.storage_endpoint_url.deployed_object_storages, [])
 

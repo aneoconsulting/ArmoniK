@@ -1,22 +1,26 @@
 # S" Payloads
 output "host" {
-  value = local.host
+  value = var.minioconfig.host
 }
 
 output "port" {
-  value = local.port
+  value = var.minioconfig.port
 }
 
 output "url" {
-  value = local.url
+  value = "http://${var.minioconfig.host}:${var.minioconfig.port}"
 }
 
 output "login" {
-  value = local.login
+  value = var.minioconfig.login
 }
 
 output "password" {
-  value = local.password
+  value = var.minioconfig.password
+}
+
+output "bucket_name" {
+  value = var.minioconfig.bucket_name
 }
 
 output "must_force_path_style" {

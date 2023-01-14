@@ -40,6 +40,7 @@ output "storage_endpoint_url" {
       port = try(module.minio[0].port, "")
       login = try(module.minio[0].login, "")
       password = try(module.minio[0].password, "")
+      bucket_name = try(module.minio[0].bucket_name, "")
       must_force_path_style = try(module.minio[0].must_force_path_style, false)
     }
     deployed_object_storages = var.object_storages_to_be_deployed

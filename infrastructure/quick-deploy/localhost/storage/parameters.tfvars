@@ -34,7 +34,12 @@ redis = {
 }
 
 # Parameters for minio
-minio = {
+minioconfig = {
+  host               = "minio"
+  port               = 9000
+  login              = "minioadmin"
+  password           = "minioadmin"
+  bucket_name        = "minioBucket"
   image              = "quay.io/minio/minio"
   tag                = "latest"
   node_selector      = {}

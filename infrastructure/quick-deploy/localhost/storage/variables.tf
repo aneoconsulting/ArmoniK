@@ -64,11 +64,16 @@ variable "redis" {
 }
 
 # Parameters for minio
-variable "minio" {
+variable "minioconfig" {
   description = "Parameters of minio"
   type = object({
     image              = string
     tag                = string
+    host               = string
+    port               = string
+    login              = string
+    password           = string
+    bucket_name        = string
     node_selector      = any
   })
 }
