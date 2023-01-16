@@ -70,7 +70,7 @@ variable "compute_plane" {
 You can set a default partition in the parameters of the control plane `control_plane.default_partition`. The default partition must exist in the compute_plane.
 
 Here is an example in which 2 partitions are created:
-- `partition1`: default partition, use the image `my-application-1:0.7.5` without any node selector
+- `partition1`: default partition, use the image `my-application-1:0.8.1` without any node selector
 - `partition2`: use the image `my-application-2:0.3.2`, on spot nodes (preemptible nodes)
 
 ```hcl
@@ -97,7 +97,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "my-application-1"
-        tag               = "0.7.5"
+        tag               = "0.8.1"
         image_pull_policy = "IfNotPresent"
         limits            = null # no limit
         requests          = null # no request

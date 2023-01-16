@@ -9,6 +9,7 @@ module "kms" {
 # AWS EKS
 module "eks" {
   source        = "../../../modules/aws/eks"
+  profile       = var.profile
   tags          = local.tags
   name          = local.cluster_name
   node_selector = var.node_selector
@@ -23,7 +24,7 @@ module "eks" {
     cluster_endpoint_private_access       = var.eks.cluster_endpoint_private_access
     cluster_endpoint_private_access_cidrs = var.eks.cluster_endpoint_private_access_cidrs
     cluster_endpoint_private_access_sg    = var.eks.cluster_endpoint_private_access_sg
-    cluster_endpoint_public_access        = var.eks.cluster_endpoint_public_access
+    cluster_endpoint_public_access        = local.cluster_endpoint_public_access
     cluster_endpoint_public_access_cidrs  = var.eks.cluster_endpoint_public_access_cidrs
     cluster_log_retention_in_days         = var.eks.cluster_log_retention_in_days
     docker_images = {

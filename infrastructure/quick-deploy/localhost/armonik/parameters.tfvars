@@ -28,7 +28,7 @@ control_plane = {
   service_type      = "ClusterIP"
   replicas          = 1
   image             = "dockerhubaneo/armonik_control"
-  tag               = "0.8.1"
+  tag               = "0.8.3"
   image_pull_policy = "IfNotPresent"
   port              = 5001
   limits = {
@@ -127,7 +127,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.8.1"
+      tag               = "0.8.3"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"  # set to null if you don't want to set it
@@ -143,7 +143,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.7.5"
+        tag               = "0.8.1"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"  # set to null if you don't want to set it

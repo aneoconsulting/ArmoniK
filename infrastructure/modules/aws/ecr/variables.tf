@@ -1,3 +1,9 @@
+# Profile
+variable "profile" {
+  description = "Profile of AWS credentials to deploy Terraform sources"
+  type        = string
+}
+
 # Tags
 variable "tags" {
   description = "Tags for resource"

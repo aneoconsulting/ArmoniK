@@ -8,6 +8,8 @@ export METRICS_SERVER_KUBERNETES_NAMESPACE?=kube-system
 export TFSTATE_BUCKET_NAME=$(ARMONIK_BUCKET_NAME)-$(ARMONIK_SUFFIX)
 export KEDA=$(shell kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
 export METRICS_SERVER=$(shell kubectl get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
+export PUBLIC_VPC?=true
+export PUBLIC_ACCESS_EKS?=true
 
 CURRENT_DIR=$(shell pwd)
 VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/vpc/generated/vpc-output.json
@@ -23,13 +25,15 @@ deploy-s3-of-backend:
 	$(MAKE) -C $(CURRENT_DIR)/backend deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
-		BUCKET_NAME=$(ARMONIK_BUCKET_NAME)
+		BUCKET_NAME=$(ARMONIK_BUCKET_NAME) \
+		PROFILE=$(ARMONIK_PROFILE)
 
 destroy-s3-of-backend:
 	$(MAKE) -C $(CURRENT_DIR)/backend destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
-		BUCKET_NAME=$(ARMONIK_BUCKET_NAME)
+		BUCKET_NAME=$(ARMONIK_BUCKET_NAME) \
+		PROFILE=$(ARMONIK_PROFILE)
 
 ####################################
 #             AWS VPC              #
@@ -40,14 +44,16 @@ deploy-vpc:
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
-		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME) \
+		PUBLIC_VPC=$(PUBLIC_VPC)
 
 destroy-vpc:
 	$(MAKE) -C $(CURRENT_DIR)/vpc destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
-		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME) \
+		PUBLIC_VPC=$(PUBLIC_VPC)
 
 clean-vpc:
 	$(MAKE) -C $(CURRENT_DIR)/vpc clean
@@ -83,7 +89,8 @@ deploy-eks:
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
-		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME) \
+		PUBLIC_ACCESS_EKS=$(PUBLIC_ACCESS_EKS)
 
 destroy-eks:
 	$(MAKE) -C $(CURRENT_DIR)/eks destroy \
@@ -91,7 +98,8 @@ destroy-eks:
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
-		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
+		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME) \
+		PUBLIC_ACCESS_EKS=$(PUBLIC_ACCESS_EKS)
 
 clean-eks:
 	$(MAKE) -C $(CURRENT_DIR)/eks clean
@@ -116,11 +124,19 @@ delete-namespace:
 
 deploy-keda:
 	@if [ "${KEDA}" = "" ]; then\
-        $(MAKE) -C $(CURRENT_DIR)/keda deploy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE);\
+        $(MAKE) -C $(CURRENT_DIR)/keda deploy \
+        	NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE) \
+        	SUFFIX=$(ARMONIK_SUFFIX) \
+        	REGION=$(ARMONIK_REGION) \
+        	PROFILE=$(ARMONIK_PROFILE);\
     fi
 
 destroy-keda:
-	$(MAKE) -C $(CURRENT_DIR)/keda destroy NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE)
+	$(MAKE) -C $(CURRENT_DIR)/keda destroy \
+		NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE)
 
 clean-keda:
 	$(MAKE) -C $(CURRENT_DIR)/keda clean
@@ -130,10 +146,18 @@ clean-keda:
 ####################################
 
 deploy-metrics-server:
-	$(MAKE) -C $(CURRENT_DIR)/metrics-server deploy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE)
+	$(MAKE) -C $(CURRENT_DIR)/metrics-server deploy \
+		NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE)
 
 destroy-metrics-server:
-	$(MAKE) -C $(CURRENT_DIR)/metrics-server destroy NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE)
+	$(MAKE) -C $(CURRENT_DIR)/metrics-server destroy \
+		NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE) \
+		SUFFIX=$(ARMONIK_SUFFIX) \
+		REGION=$(ARMONIK_REGION) \
+		PROFILE=$(ARMONIK_PROFILE)
 
 clean-metrics-server:
 	$(MAKE) -C $(CURRENT_DIR)/metrics-server clean
