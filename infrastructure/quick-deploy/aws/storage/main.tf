@@ -143,3 +143,23 @@ module "efs_persistent_volume" {
   }
   tags = local.tags
 }
+
+# AWS S3 as objects storage
+module "s3_os" {
+  source = "../../../modules/aws/s3"
+  tags   = local.tags
+  name   = local.s3_os_name
+  s3 = {
+    policy                                = var.s3_os.policy
+    attach_policy                         = var.s3_os.attach_policy
+    attach_deny_insecure_transport_policy = var.s3_os.attach_deny_insecure_transport_policy
+    attach_require_latest_tls_policy      = var.s3_os.attach_require_latest_tls_policy
+    attach_public_policy                  = var.s3_os.attach_public_policy
+    block_public_acls                     = var.s3_os.attach_public_policy
+    block_public_policy                   = var.s3_os.block_public_acls
+    ignore_public_acls                    = var.s3_os.block_public_policy
+    restrict_public_buckets               = var.s3_os.restrict_public_buckets
+    kms_key_id                            = local.s3_os_kms_key_id
+    sse_algorithm                         = (var.s3_os.kms_key_id != "" ? var.s3_os.sse_algorithm : "aws:kms")
+  }
+}

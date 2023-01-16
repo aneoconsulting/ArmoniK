@@ -55,6 +55,23 @@ s3_fs = {
   sse_algorithm                         = ""
 }
 
+# S3 as shared storage
+s3_os = {
+  name                                  = "armonik-s3os"
+  policy                                = ""
+  attach_policy                         = false
+  attach_deny_insecure_transport_policy = true
+  attach_require_latest_tls_policy      = true
+  attach_public_policy                  = false
+  block_public_acls                     = true
+  block_public_policy                   = true
+  ignore_public_acls                    = true
+  restrict_public_buckets               = true
+  kms_key_id                            = ""
+  sse_algorithm                         = ""
+}
+
+
 # AWS Elasticache
 elasticache = {
   name                        = "armonik-elasticache"
@@ -147,3 +164,6 @@ pv_efs = {
     }
   }
 }
+
+# The list of object storage to be deployed
+object_storages_to_be_deployed = ["mongodb", "redis", "S3"]

@@ -215,3 +215,7 @@ authentication = {
   require_authentication  = false
   require_authorization   = false
 }
+
+object_storage_adapter = "S3"
+table_storage_adapter  = "ArmoniK.Adapters.MongoDB.TableStorage"
+queue_storage_adapter  = "ArmoniK.Adapters.Amqp.QueueStorage"

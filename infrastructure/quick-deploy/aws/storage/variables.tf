@@ -200,3 +200,32 @@ variable "pv_efs" {
     })
   })
 }
+
+
+# S3 as object storage
+variable "s3_os" {
+  description = "AWS S3 bucket as shared storage"
+  type = object({
+    name                                  = string
+    policy                                = string
+    attach_policy                         = bool
+    attach_deny_insecure_transport_policy = bool
+    attach_require_latest_tls_policy      = bool
+    attach_public_policy                  = bool
+    block_public_acls                     = bool
+    block_public_policy                   = bool
+    ignore_public_acls                    = bool
+    restrict_public_buckets               = bool
+    kms_key_id                            = string
+    sse_algorithm                         = string
+  })
+}
+
+variable "object_storages_to_be_deployed" {
+  description = "The list of storage objects storages to be deployed"
+  type = list(string)
+  validation {
+    condition = alltrue([for value in var.object_storages_to_be_deployed: contains(["mongodb", "redis", "s3"], lower(value))])
+    error_message = "Valid values for object_storages_to_be_deployed are \"MongoDB\" | \"Redis\" | \"S3\"."
+  }
+}
