@@ -91,6 +91,7 @@ module "mongodb" {
     image_pull_secrets = var.mongodb.pull_secrets
   }
   persistent_volume = local.mongodb_persistent_volume
+  depends_on        = [module.efs_persistent_volume]
 }
 
 # AWS EFS as persistent volume

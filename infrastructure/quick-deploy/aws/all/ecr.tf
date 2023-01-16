@@ -62,6 +62,7 @@ locals {
 # AWS ECR
 module "ecr" {
   source       = "../../../modules/aws/ecr"
+  profile      = var.profile
   tags         = local.tags
   kms_key_id   = local.kms_key
   repositories = local.ecr_repositories

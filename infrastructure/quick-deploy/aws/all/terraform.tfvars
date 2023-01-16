@@ -111,29 +111,29 @@ mongodb = {
   #  }
   #}
 }
-#pv_efs = {
-#  csi_driver = {
-#    node_selector      = { "grid/type" = "Operator" }
-#    images = {
-#      efs_csi = {
-#        name = "amazon/aws-efs-csi-driver"
-#        tag  = "v1.4.3"
-#      }
-#      livenessprobe = {
-#        name = "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe"
-#        tag  = "v2.2.0-eks-1-18-13"
-#      }
-#      node_driver_registrar = {
-#        name = "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar"
-#        tag  = "v2.1.0-eks-1-18-13"
-#      }
-#      external_provisioner = {
-#        name = "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner"
-#        tag  = "v2.1.1-eks-1-18-13"
-#      }
-#    }
-#  }
-#}
+pv_efs = {
+  csi_driver = {
+    node_selector      = { "grid/type" = "Operator" }
+    images = {
+      efs_csi = {
+        name = "amazon/aws-efs-csi-driver"
+        tag  = "v1.4.3"
+      }
+      livenessprobe = {
+        name = "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe"
+        tag  = "v2.2.0-eks-1-18-13"
+      }
+      node_driver_registrar = {
+        name = "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar"
+        tag  = "v2.1.0-eks-1-18-13"
+      }
+      external_provisioner = {
+        name = "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner"
+        tag  = "v2.1.1-eks-1-18-13"
+      }
+    }
+  }
+}
 
 seq = {
   image_name = "datalust/seq"
