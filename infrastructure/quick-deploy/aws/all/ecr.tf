@@ -23,34 +23,34 @@ locals {
     var.partition_metrics_exporter == null ? null : "${var.partition_metrics_exporter.image_name}:${var.partition_metrics_exporter.image_tag}",
     var.ingress == null ? null : "${var.ingress.image}:${var.ingress.tag}",
     var.authentication == null ? null : "${var.authentication.image}:${var.authentication.tag}",
-  ], [ for k, v in var.compute_plane:
+    ], [for k, v in var.compute_plane :
     "${v.polling_agent.image}:${v.polling_agent.tag}"
-  ], flatten([ for k, v in var.compute_plane:
-    [ for w in v.worker:
-      "${w.image}:${w.tag}"
-    ]
+    ], flatten([for k, v in var.compute_plane :
+      [for w in v.worker :
+        "${w.image}:${w.tag}"
+      ]
   ]))))
 
-  ecr_input_image_split = [ for image in local.ecr_input_images: {
-    key = image
+  ecr_input_image_split = [for image in local.ecr_input_images : {
+    key        = image
     components = split(":", image)
   }]
 
-  ecr_input_image_name_tag_component = [ for image in local.ecr_input_image_split: {
-    key = image.key
+  ecr_input_image_name_tag_component = [for image in local.ecr_input_image_split : {
+    key             = image.key
     name_components = split("/", image.components[0])
-    name = image.components[0]
-    tag = image.components[1]
+    name            = image.components[0]
+    tag             = image.components[1]
   }]
 
-  ecr_repositories = [ for image in local.ecr_input_image_name_tag_component: {
-    key = image.key,
-    name = replace("${local.prefix}-${substr(md5(image.key), 0, 8)}-${image.name_components[length(image.name_components) - 1]}", "_", "-")
+  ecr_repositories = [for image in local.ecr_input_image_name_tag_component : {
+    key   = image.key,
+    name  = replace("${local.prefix}-${substr(md5(image.key), 0, 8)}-${image.name_components[length(image.name_components) - 1]}", "_", "-")
     image = image.name
-    tag = image.tag
+    tag   = image.tag
   }]
 
-  ecr_images = { for i, rep in local.ecr_repositories:
+  ecr_images = { for i, rep in local.ecr_repositories :
     rep.key => {
       image = try(module.ecr.repositories[i], null),
       name  = try(module.ecr.repositories[i], null),

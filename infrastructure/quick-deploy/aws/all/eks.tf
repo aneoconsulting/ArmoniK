@@ -46,7 +46,7 @@ resource "null_resource" "eks_namespace" {
   }
 
   provisioner "local-exec" {
-    when = destroy
+    when    = destroy
     command = "kubectl delete namespace ${self.triggers.namespace}"
   }
 

@@ -83,7 +83,7 @@ module "metrics_exporter" {
 
 # Partition metrics exporter
 module "partition_metrics_exporter" {
-  count = var.partition_metrics_exporter != null ? 1 : 0
+  count                = var.partition_metrics_exporter != null ? 1 : 0
   source               = "../../../modules/monitoring/exporters/partition-metrics-exporter"
   namespace            = local.namespace
   service_type         = var.partition_metrics_exporter.service_type

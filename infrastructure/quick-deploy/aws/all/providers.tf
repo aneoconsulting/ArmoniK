@@ -7,7 +7,7 @@ provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.certificate_authority.0.data)
   token                  = module.eks.token
-  insecure = false
+  insecure               = false
 }
 
 # package manager for kubernetes
@@ -17,6 +17,6 @@ provider "helm" {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.certificate_authority.0.data)
     token                  = module.eks.token
-    insecure = false
+    insecure               = false
   }
 }

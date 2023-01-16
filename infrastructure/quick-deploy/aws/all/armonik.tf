@@ -17,21 +17,21 @@ module "armonik" {
       parent_partition_ids  = []
       pod_configuration     = null
     }
-  }, v, {
+    }, v, {
     polling_agent = merge(v.polling_agent, {
       image = local.ecr_images["${v.polling_agent.image}:${v.polling_agent.tag}"].name
       tag   = local.ecr_images["${v.polling_agent.image}:${v.polling_agent.tag}"].tag
     })
-    worker = [ for w in v.worker: merge(w, {
+    worker = [for w in v.worker : merge(w, {
       image = local.ecr_images["${w.image}:${w.tag}"].name
       tag   = local.ecr_images["${w.image}:${w.tag}"].tag
     })]
   }) }
-  control_plane              = merge(var.control_plane, {
+  control_plane = merge(var.control_plane, {
     image = local.ecr_images["${var.control_plane.image}:${var.control_plane.tag}"].name
     tag   = local.ecr_images["${var.control_plane.image}:${var.control_plane.tag}"].tag
   })
-  admin_gui                  = merge(var.admin_gui, {
+  admin_gui = merge(var.admin_gui, {
     api = merge(var.admin_gui.api, {
       image = local.ecr_images["${var.admin_gui.api.image}:${var.admin_gui.api.tag}"].name
       tag   = local.ecr_images["${var.admin_gui.api.image}:${var.admin_gui.api.tag}"].tag
@@ -41,7 +41,7 @@ module "armonik" {
       tag   = local.ecr_images["${var.admin_gui.app.image}:${var.admin_gui.app.tag}"].tag
     })
   })
-  ingress                    = merge(var.ingress, {
+  ingress = merge(var.ingress, {
     image = local.ecr_images["${var.ingress.image}:${var.ingress.tag}"].name
     tag   = local.ecr_images["${var.ingress.image}:${var.ingress.tag}"].tag
   })
@@ -49,7 +49,7 @@ module "armonik" {
     image = local.ecr_images["${var.job_partitions_in_database.image}:${var.job_partitions_in_database.tag}"].name
     tag   = local.ecr_images["${var.job_partitions_in_database.image}:${var.job_partitions_in_database.tag}"].tag
   })
-  authentication             = merge(var.authentication, {
+  authentication = merge(var.authentication, {
     image = local.ecr_images["${var.authentication.image}:${var.authentication.tag}"].name
     tag   = local.ecr_images["${var.authentication.image}:${var.authentication.tag}"].tag
   })

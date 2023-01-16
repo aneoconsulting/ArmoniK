@@ -17,7 +17,7 @@ module "armonik" {
       parent_partition_ids  = []
       pod_configuration     = null
     }
-  }, v)}
+  }, v) }
   control_plane              = var.control_plane
   admin_gui                  = var.admin_gui
   ingress                    = var.ingress

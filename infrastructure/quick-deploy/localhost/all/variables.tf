@@ -15,8 +15,8 @@ variable "k8s_config_context" {
 # Prefix
 variable "prefix" {
   description = "Prefix used to name all the resources"
-  type = string
-  default = null # random
+  type        = string
+  default     = null # random
 }
 
 # Kubernetes namespace
@@ -42,13 +42,13 @@ variable "metrics_server" {
     image_tag          = optional(string, "v0.6.1"),
     image_pull_secrets = optional(string, ""),
     node_selector      = optional(any, {}),
-    args               = optional(list(string), [
+    args = optional(list(string), [
       "--cert-dir=/tmp",
       "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname",
       "--kubelet-use-node-status-port",
       "--metric-resolution=15s",
     ]),
-    host_network       = optional(bool, false),
+    host_network = optional(bool, false),
   })
   default = null
 }
@@ -117,14 +117,14 @@ variable "redis" {
 variable "seq" {
   description = "Seq configuration"
   type = object({
-    image_name = string
-    image_tag = string
-    port = optional(number, 8080)
-    pull_secrets = optional(string, "")
-    service_type = optional(string, "ClusterIP")
-    node_selector = optional(any, {})
+    image_name        = string
+    image_tag         = string
+    port              = optional(number, 8080)
+    pull_secrets      = optional(string, "")
+    service_type      = optional(string, "ClusterIP")
+    node_selector     = optional(any, {})
     system_ram_target = optional(number, 0.2)
-    authentication = optional(bool, false)
+    authentication    = optional(bool, false)
   })
   default = null
 }
@@ -132,12 +132,12 @@ variable "seq" {
 variable "grafana" {
   description = "Grafana configuration"
   type = object({
-    image_name = string
-    image_tag = string
-    port = optional(number, 3000)
-    pull_secrets = optional(string, "")
-    service_type = optional(string, "ClusterIP")
-    node_selector = optional(any, {})
+    image_name     = string
+    image_tag      = string
+    port           = optional(number, 3000)
+    pull_secrets   = optional(string, "")
+    service_type   = optional(string, "ClusterIP")
+    node_selector  = optional(any, {})
     authentication = optional(bool, false)
   })
   default = null
@@ -146,10 +146,10 @@ variable "grafana" {
 variable "node_exporter" {
   description = "Node exporter configuration"
   type = object({
-    image_name = string
-    image_tag = string
-    pull_secrets = optional(string, "")
-    service_type = optional(string, "ClusterIP")
+    image_name    = string
+    image_tag     = string
+    pull_secrets  = optional(string, "")
+    service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
   default = null
@@ -158,10 +158,10 @@ variable "node_exporter" {
 variable "prometheus" {
   description = "Prometheus configuration"
   type = object({
-    image_name = string
-    image_tag = string
-    pull_secrets = optional(string, "")
-    service_type = optional(string, "ClusterIP")
+    image_name    = string
+    image_tag     = string
+    pull_secrets  = optional(string, "")
+    service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
 }
@@ -169,10 +169,10 @@ variable "prometheus" {
 variable "metrics_exporter" {
   description = "Metrics exporter configuration"
   type = object({
-    image_name = string
-    image_tag = string
-    pull_secrets = optional(string, "")
-    service_type = optional(string, "ClusterIP")
+    image_name    = string
+    image_tag     = string
+    pull_secrets  = optional(string, "")
+    service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
 }
@@ -180,10 +180,10 @@ variable "metrics_exporter" {
 variable "partition_metrics_exporter" {
   description = "Partition metrics exporter configuration"
   type = object({
-    image_name = string
-    image_tag = string
-    pull_secrets = optional(string, "")
-    service_type = optional(string, "ClusterIP")
+    image_name    = string
+    image_tag     = string
+    pull_secrets  = optional(string, "")
+    service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
   default = null
@@ -192,13 +192,13 @@ variable "partition_metrics_exporter" {
 variable "fluent_bit" {
   description = "Fluent bit configuration"
   type = object({
-    image_name = string
-    image_tag = string
-    pull_secrets = optional(string, "")
-    is_daemonset = optional(bool, true)
-    http_port = optional(number, 2020)
+    image_name     = string
+    image_tag      = string
+    pull_secrets   = optional(string, "")
+    is_daemonset   = optional(bool, true)
+    http_port      = optional(number, 2020)
     read_from_head = optional(bool, true)
-    node_selector = optional(any, {})
+    node_selector  = optional(any, {})
   })
 }
 

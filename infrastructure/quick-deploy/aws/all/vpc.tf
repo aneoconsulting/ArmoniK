@@ -20,9 +20,9 @@ module "vpc" {
 
 locals {
   vpc = {
-    id = module.vpc.id
+    id                 = module.vpc.id
     cidr_block_private = var.vpc.cidr_block_private
-    cidr_blocks = concat([module.vpc.cidr_block], module.vpc.pod_cidr_block_private)
-    subnet_ids = [ for i in range(length(var.vpc.cidr_block_private)): try(module.vpc.private_subnet_ids[i], null) ]
+    cidr_blocks        = concat([module.vpc.cidr_block], module.vpc.pod_cidr_block_private)
+    subnet_ids         = [for i in range(length(var.vpc.cidr_block_private)) : try(module.vpc.private_subnet_ids[i], null)]
   }
 }
