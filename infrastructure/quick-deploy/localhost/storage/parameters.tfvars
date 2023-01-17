@@ -46,4 +46,4 @@ minioconfig = {
 }
 
 # The list of object storage to be deployed
-object_storages_to_be_deployed = ["mongodb", "redis", "S3", "localstorage"]
+object_storages_to_be_deployed = ["MongoDB", "Redis", "S3", "LocalStorage"]
