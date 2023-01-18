@@ -6,7 +6,7 @@ module "armonik" {
   mongodb_polling_delay = var.mongodb_polling_delay
   storage_endpoint_url  = local.storage_endpoint_url
   monitoring            = local.monitoring
-  // If compute plance has no partition data, provides a default
+  // If compute plane has no partition data, provides a default
   // but always overrides the images
   compute_plane = { for k, v in var.compute_plane : k => merge({
     partition_data = {
