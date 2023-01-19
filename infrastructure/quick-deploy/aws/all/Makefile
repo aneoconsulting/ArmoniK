@@ -46,19 +46,20 @@ init:
 		-backend-config 'bucket=$(TFSTATE_BUCKET_NAME)' \
 		-backend-config 'region=$(REGION)' \
 		-backend-config 'key=$(STATE_FILE)' \
-		-backend-config 'profile=$(PROFILE)'
+		-backend-config 'profile=$(PROFILE)' \
+		-var-file=$(PARAMETERS_FILE) 	
 
 plan:
-	terraform plan -out=/dev/null
+	terraform plan -var-file=$(PARAMETERS_FILE) -out=/dev/null
 
 apply:
-	terraform apply -auto-approve
+	terraform apply -var-file=$(PARAMETERS_FILE) -auto-approve
 
 refresh:
-	terraform refersh -auto-approve
+	terraform refersh -var-file=$(PARAMETERS_FILE) -auto-approve
 
 delete:
-	terraform destroy -auto-approve
+	terraform destroy -var-file=$(PARAMETERS_FILE) -auto-approve
 
 output:
 	@echo -n "{\"armonik\":" > $(GENERATED_DIR)/armonik-output.json

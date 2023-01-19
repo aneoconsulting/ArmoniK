@@ -24,19 +24,19 @@ env:
 
 init:
 	mkdir -p $(GENERATED_DIR)
-	terraform init -upgrade
+	terraform init -upgrade -var-file=$(PARAMETERS_FILE)
 
 plan:
-	terraform plan -state $(STATE_FILE) -out=/dev/null
+	terraform plan -state $(STATE_FILE) -var-file=$(PARAMETERS_FILE) -out=/dev/null
 
 apply:
-	terraform apply -state $(STATE_FILE) -auto-approve
+	terraform apply -state $(STATE_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
 
 refresh:
-	terraform refresh -state $(STATE_FILE) -auto-approve
+	terraform refresh -state $(STATE_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
 
 delete:
-	terraform destroy -state $(STATE_FILE) -auto-approve
+	terraform destroy -state $(STATE_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
 
 output:
 	@echo -n "{\"armonik\":" > $(GENERATED_DIR)/armonik-output.json
