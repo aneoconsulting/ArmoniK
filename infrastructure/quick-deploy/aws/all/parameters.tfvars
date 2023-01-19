@@ -301,3 +301,10 @@ authentication = {
   image = "rtsp/mongosh"
   tag   = "1.5.4"
 }
+
+extra_conf = {
+  core = {
+    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+  }
+}

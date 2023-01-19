@@ -4,13 +4,6 @@ namespace = "armonik"
 # Logging level
 logging_level = "Information"
 
-# Polling delay to MongoDB
-# according to the size of the task and/or the application
-mongodb_polling_delay = {
-  min_polling_delay = "00:00:01"
-  max_polling_delay = "00:00:10"
-}
-
 # Job to insert partitions in the database
 job_partitions_in_database = {
   name               = "job-partitions-in-database"
@@ -209,4 +202,11 @@ authentication = {
   authentication_datafile = ""
   require_authentication  = false
   require_authorization   = false
+}
+
+extra_conf = {
+  core = {
+    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+  }
 }

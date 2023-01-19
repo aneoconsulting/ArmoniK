@@ -202,14 +202,16 @@ variable "fluent_bit" {
   })
 }
 
-
-# Polling delay to MongoDB
-# according to the size of the task and/or the application
-variable "mongodb_polling_delay" {
-  description = "Polling delay to MongoDB according to the size of the task and/or the application"
+# Extra configuration
+variable "extra_conf" {
+  description = "Add extra configuration in the configmaps"
   type = object({
-    min_polling_delay = optional(string, "00:00:01")
-    max_polling_delay = optional(string, "00:00:15")
+    compute = optional(map(string), {})
+    control = optional(map(string), {})
+    core    = optional(map(string), {})
+    log     = optional(map(string), {})
+    polling = optional(map(string), {})
+    worker  = optional(map(string), {})
   })
   default = {}
 }
