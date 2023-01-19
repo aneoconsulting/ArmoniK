@@ -31,7 +31,7 @@ module "elasticache" {
   source = "../../../modules/aws/elasticache"
   tags   = local.tags
   name   = local.elasticache_name
-  vpc = local.vpc
+  vpc    = local.vpc
   elasticache = {
     engine                      = var.elasticache.engine
     engine_version              = var.elasticache.engine_version
@@ -57,7 +57,7 @@ module "mq" {
   tags      = local.tags
   name      = local.mq_name
   namespace = var.namespace
-  vpc = local.vpc
+  vpc       = local.vpc
   user = {
     password = var.mq_credentials.password
     username = var.mq_credentials.username
@@ -95,7 +95,7 @@ module "efs_persistent_volume" {
   count      = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
   source     = "../../../modules/persistent-volumes/efs"
   eks_issuer = var.eks.issuer
-  vpc = local.vpc
+  vpc        = local.vpc
   efs = {
     name                            = local.efs_name
     kms_key_id                      = (var.pv_efs.efs.kms_key_id != "" && var.pv_efs.efs.kms_key_id != null ? var.pv_efs.efs.kms_key_id : module.kms.0.arn)
