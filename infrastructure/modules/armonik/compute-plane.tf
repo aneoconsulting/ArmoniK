@@ -48,7 +48,6 @@ resource "kubernetes_deployment" "compute_plane" {
         }
         termination_grace_period_seconds = each.value.termination_grace_period_seconds
         share_process_namespace          = false
-        security_context {}
         dynamic "image_pull_secrets" {
           for_each = (each.value.image_pull_secrets != "" ? [1] : [])
           content {
