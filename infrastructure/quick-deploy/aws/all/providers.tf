@@ -5,7 +5,7 @@ provider "aws" {
 
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.certificate_authority.0.data)
+  cluster_ca_certificate = base64decode(module.eks.certificate_authority[0].data)
   token                  = module.eks.token
   insecure               = false
 }
@@ -15,7 +15,7 @@ provider "helm" {
   helm_driver = "configmap"
   kubernetes {
     host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.certificate_authority.0.data)
+    cluster_ca_certificate = base64decode(module.eks.certificate_authority[0].data)
     token                  = module.eks.token
     insecure               = false
   }

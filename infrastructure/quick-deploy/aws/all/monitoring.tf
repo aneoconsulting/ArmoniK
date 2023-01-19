@@ -23,13 +23,13 @@ resource "aws_iam_policy" "send_logs_from_fluent_bit_to_cloudwatch_policy" {
   count       = var.cloudwatch != null ? 1 : 0
   name_prefix = "send-logs-from-fluent-bit-to-cloudwatch-${module.eks.cluster_id}"
   description = "Policy for allowing send logs from fluent-bit  ${module.eks.cluster_id} to cloudwatch"
-  policy      = data.aws_iam_policy_document.send_logs_from_fluent_bit_to_cloudwatch_document.0.json
+  policy      = data.aws_iam_policy_document.send_logs_from_fluent_bit_to_cloudwatch_document[0].json
   tags        = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "send_logs_from_fluent_bit_to_cloudwatch_attachment" {
   count      = length(aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy)
-  policy_arn = aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy.0.arn
+  policy_arn = aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy[0].arn
   role       = module.eks.worker_iam_role_name
 }
 
@@ -161,12 +161,12 @@ module "fluent_bit" {
     read_from_tail     = (var.fluent_bit.read_from_head ? "Off" : "On")
   }
   seq = length(module.seq) != 0 ? {
-    host    = module.seq.0.host
-    port    = module.seq.0.port
+    host    = module.seq[0].host
+    port    = module.seq[0].port
     enabled = true
   } : {}
   cloudwatch = length(module.cloudwatch) != 0 ? {
-    name    = module.cloudwatch.0.name
+    name    = module.cloudwatch[0].name
     region  = var.region
     enabled = true
   } : {}
@@ -176,16 +176,16 @@ module "fluent_bit" {
 locals {
   monitoring = {
     seq = try({
-      host    = module.seq.0.host
-      port    = module.seq.0.port
-      url     = module.seq.0.url
-      web_url = module.seq.0.web_url
+      host    = module.seq[0].host
+      port    = module.seq[0].port
+      url     = module.seq[0].url
+      web_url = module.seq[0].web_url
       enabled = true
     }, null)
     grafana = try({
-      host    = module.grafana.0.host
-      port    = module.grafana.0.port
-      url     = module.grafana.0.url
+      host    = module.grafana[0].host
+      port    = module.grafana[0].port
+      url     = module.grafana[0].url
       enabled = true
     }, null)
     prometheus = try({
@@ -201,14 +201,14 @@ locals {
       namespace = module.metrics_exporter.namespace
     }, null)
     partition_metrics_exporter = try({
-      name      = module.partition_metrics_exporter.0.name
-      host      = module.partition_metrics_exporter.0.host
-      port      = module.partition_metrics_exporter.0.port
-      url       = module.partition_metrics_exporter.0.url
-      namespace = module.partition_metrics_exporter.0.namespace
+      name      = module.partition_metrics_exporter[0].name
+      host      = module.partition_metrics_exporter[0].host
+      port      = module.partition_metrics_exporter[0].port
+      url       = module.partition_metrics_exporter[0].url
+      namespace = module.partition_metrics_exporter[0].namespace
     }, null)
     cloudwatch = try({
-      name    = module.cloudwatch.0.name
+      name    = module.cloudwatch[0].name
       region  = var.region
       enabled = true
     }, null)

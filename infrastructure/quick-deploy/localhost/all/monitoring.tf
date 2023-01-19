@@ -116,8 +116,8 @@ module "fluent_bit" {
     read_from_tail     = (var.fluent_bit.read_from_head ? "Off" : "On")
   }
   seq = length(module.seq) != 0 ? {
-    host    = module.seq.0.host
-    port    = module.seq.0.port
+    host    = module.seq[0].host
+    port    = module.seq[0].port
     enabled = true
   } : {}
 }
@@ -126,16 +126,16 @@ module "fluent_bit" {
 locals {
   monitoring = {
     seq = try({
-      host    = module.seq.0.host
-      port    = module.seq.0.port
-      url     = module.seq.0.url
-      web_url = module.seq.0.web_url
+      host    = module.seq[0].host
+      port    = module.seq[0].port
+      url     = module.seq[0].url
+      web_url = module.seq[0].web_url
       enabled = true
     }, null)
     grafana = try({
-      host    = module.grafana.0.host
-      port    = module.grafana.0.port
-      url     = module.grafana.0.url
+      host    = module.grafana[0].host
+      port    = module.grafana[0].port
+      url     = module.grafana[0].url
       enabled = true
     }, null)
     prometheus = try({
@@ -151,11 +151,11 @@ locals {
       namespace = module.metrics_exporter.namespace
     }, null)
     partition_metrics_exporter = try({
-      name      = module.partition_metrics_exporter.0.name
-      host      = module.partition_metrics_exporter.0.host
-      port      = module.partition_metrics_exporter.0.port
-      url       = module.partition_metrics_exporter.0.url
-      namespace = module.partition_metrics_exporter.0.namespace
+      name      = module.partition_metrics_exporter[0].name
+      host      = module.partition_metrics_exporter[0].host
+      port      = module.partition_metrics_exporter[0].port
+      url       = module.partition_metrics_exporter[0].url
+      namespace = module.partition_metrics_exporter[0].namespace
     }, null)
     fluent_bit = try({
       container_name = module.fluent_bit.container_name
