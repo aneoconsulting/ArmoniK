@@ -1,6 +1,6 @@
 # Agent deployment
 resource "kubernetes_deployment" "compute_plane" {
-  for_each = toset(local.partition_names)
+  for_each = var.compute_plane
   metadata {
     name      = "compute-plane-${each.key}"
     namespace = var.namespace
@@ -11,7 +11,7 @@ resource "kubernetes_deployment" "compute_plane" {
     }
   }
   spec {
-    replicas = var.compute_plane[each.key].replicas
+    replicas = each.value.replicas
     selector {
       match_labels = {
         app       = "armonik"
@@ -46,29 +46,28 @@ resource "kubernetes_deployment" "compute_plane" {
             effect   = "NoSchedule"
           }
         }
-        termination_grace_period_seconds = var.compute_plane[each.key].termination_grace_period_seconds
+        termination_grace_period_seconds = each.value.termination_grace_period_seconds
         share_process_namespace          = false
-        security_context {}
         dynamic "image_pull_secrets" {
-          for_each = (var.compute_plane[each.key].image_pull_secrets != "" ? [1] : [])
+          for_each = (each.value.image_pull_secrets != "" ? [1] : [])
           content {
-            name = var.compute_plane[each.key].image_pull_secrets
+            name = each.value.image_pull_secrets
           }
         }
         restart_policy = "Always" # Always, OnFailure, Never
         # Polling agent container
         container {
           name              = "polling-agent"
-          image             = var.compute_plane[each.key].polling_agent.tag != "" ? "${var.compute_plane[each.key].polling_agent.image}:${var.compute_plane[each.key].polling_agent.tag}" : var.compute_plane[each.key].polling_agent.image
-          image_pull_policy = var.compute_plane[each.key].polling_agent.image_pull_policy
+          image             = each.value.polling_agent.tag != "" ? "${var.compute_plane[each.key].polling_agent.image}:${var.compute_plane[each.key].polling_agent.tag}" : var.compute_plane[each.key].polling_agent.image
+          image_pull_policy = each.value.polling_agent.image_pull_policy
           security_context {
             capabilities {
               drop = ["SYS_PTRACE"]
             }
           }
           resources {
-            limits   = var.compute_plane[each.key].polling_agent.limits
-            requests = var.compute_plane[each.key].polling_agent.requests
+            limits   = each.value.polling_agent.limits
+            requests = each.value.polling_agent.requests
           }
           port {
             name           = "poll-agent-port"
@@ -138,7 +137,7 @@ resource "kubernetes_deployment" "compute_plane" {
         # Containers of worker
         dynamic "container" {
           iterator = worker
-          for_each = var.compute_plane[each.key].worker
+          for_each = each.value.worker
           content {
             name              = "${worker.value.name}-${worker.key}"
             image             = worker.value.tag != "" ? "${worker.value.image}:${worker.value.tag}" : worker.value.image
