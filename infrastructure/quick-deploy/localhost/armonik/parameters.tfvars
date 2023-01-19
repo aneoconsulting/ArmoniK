@@ -209,4 +209,7 @@ extra_conf = {
     MongoDB__TableStorage__PollingDelayMin = "00:00:01"
     MongoDB__TableStorage__PollingDelayMax = "00:00:10"
   }
+  control = {
+    Submitter__MaxErrorAllowed = 50
+  }
 }
