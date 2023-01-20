@@ -9,6 +9,7 @@ module "kms" {
 # AWS EKS
 module "eks" {
   source        = "../../../modules/aws/eks"
+  profile       = var.profile
   tags          = local.tags
   name          = local.cluster_name
   node_selector = var.node_selector

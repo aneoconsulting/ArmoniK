@@ -1,4 +1,4 @@
-resource "kubernetes_cron_job" "partitions_in_database" {
+resource "kubernetes_cron_job_v1" "partitions_in_database" {
   metadata {
     name      = "partitions-in-database"
     namespace = var.namespace

@@ -1,4 +1,4 @@
-core=0.8.2
+core=0.8.3
 worker=0.8.1
 admin-gui=0.7.2
 samples=v2.10.0
