@@ -4,12 +4,10 @@ resource "kubernetes_config_map" "core_config" {
     name      = "core-configmap"
     namespace = var.namespace
   }
-  data = {
+  data = merge(var.extra_conf.core, {
     Components__TableStorage                   = "ArmoniK.Adapters.MongoDB.TableStorage"
     Components__ObjectStorage                  = "ArmoniK.Adapters.Redis.ObjectStorage"
     Components__QueueStorage                   = "ArmoniK.Adapters.Amqp.QueueStorage"
-    MongoDB__TableStorage__PollingDelayMin     = local.mongodb_polling_min_delay
-    MongoDB__TableStorage__PollingDelayMax     = local.mongodb_polling_max_delay
     MongoDB__Host                              = local.mongodb_host
     MongoDB__Port                              = local.mongodb_port
     MongoDB__CAFile                            = (local.mongodb_certificates_secret != "" ? "/mongodb/${local.mongodb_certificates_ca_filename}" : "")
@@ -39,5 +37,5 @@ resource "kubernetes_config_map" "core_config" {
     Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
     Authenticator__RequireAuthentication       = local.authentication_require_authentication
     Authenticator__RequireAuthorization        = local.authentication_require_authorization
-  }
+  })
 }

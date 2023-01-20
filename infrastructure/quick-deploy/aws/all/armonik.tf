@@ -1,11 +1,11 @@
 module "armonik" {
-  source                = "../../../modules/armonik"
-  working_dir           = "${path.root}/../../.."
-  namespace             = local.namespace
-  logging_level         = var.logging_level
-  mongodb_polling_delay = var.mongodb_polling_delay
-  storage_endpoint_url  = local.storage_endpoint_url
-  monitoring            = local.monitoring
+  source               = "../../../modules/armonik"
+  working_dir          = "${path.root}/../../.."
+  namespace            = local.namespace
+  logging_level        = var.logging_level
+  storage_endpoint_url = local.storage_endpoint_url
+  monitoring           = local.monitoring
+  extra_conf           = var.extra_conf
   // If compute plane has no partition data, provides a default
   // but always overrides the images
   compute_plane = { for k, v in var.compute_plane : k => merge({

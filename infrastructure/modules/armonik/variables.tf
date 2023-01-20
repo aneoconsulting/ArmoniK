@@ -75,14 +75,25 @@ variable "ingress" {
   }
 }
 
-# Polling delay to MongoDB
-# according to the size of the task and/or the application
-variable "mongodb_polling_delay" {
-  description = "Polling delay to MongoDB according to the size of the task and/or the application"
+# Extra configuration
+variable "extra_conf" {
+  description = "Add extra configuration in the configmaps"
   type = object({
-    min_polling_delay = string
-    max_polling_delay = string
+    compute = map(string)
+    control = map(string)
+    core    = map(string)
+    log     = map(string)
+    polling = map(string)
+    worker  = map(string)
   })
+  default = {
+    compute = {}
+    control = {}
+    core    = {}
+    log     = {}
+    polling = {}
+    worker  = {}
+  }
 }
 
 # Job to insert partitions in the database
