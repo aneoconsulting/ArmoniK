@@ -41,7 +41,7 @@ module "redis" {
 
 # minio
 module "minio" {
-  count = (contains([for each in var.object_storages_to_be_deployed : lower(each)], lower("s3"))) ? 1 : 0
+  count       = (contains([for each in var.object_storages_to_be_deployed : lower(each)], lower("s3"))) ? 1 : 0
   source      = "../../../modules/onpremise-storage/minio"
   namespace   = var.namespace
   minioconfig = var.minioconfig

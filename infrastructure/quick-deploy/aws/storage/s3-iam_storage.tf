@@ -33,12 +33,12 @@ data "aws_iam_policy_document" "fullaccess_s3_storage_object" {
   statement {
     sid = "FullAccessFromS3"
     actions = [
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:ListBucket",
-        "s3:DeleteObject",
-        "s3:PutObjectAcl",
-        "s3:PutObjectTagging",
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:DeleteObject",
+      "s3:PutObjectAcl",
+      "s3:PutObjectTagging",
     ]
     effect = "Allow"
     resources = [

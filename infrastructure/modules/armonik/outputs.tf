@@ -61,10 +61,10 @@ output "ingress" {
   }
 }
 
-output "objects_storage_adapter_check"{
+output "objects_storage_adapter_check" {
   value = var.object_storage_adapter
-  precondition  {
-    condition       = contains(local.deployed_object_storages, var.object_storage_adapter)
-    error_message   = "can't use ${var.object_storage_adapter} because it has not been deployed. Deployed storages are : ${join(",", local.deployed_object_storages)}"
+  precondition {
+    condition     = contains(local.deployed_object_storages, var.object_storage_adapter)
+    error_message = "can't use ${var.object_storage_adapter} because it has not been deployed. Deployed storages are : ${join(",", local.deployed_object_storages)}"
   }
 }

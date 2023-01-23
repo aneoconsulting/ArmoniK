@@ -223,9 +223,9 @@ variable "s3_os" {
 
 variable "object_storages_to_be_deployed" {
   description = "The list of storage objects storages to be deployed"
-  type = list(string)
+  type        = list(string)
   validation {
-    condition = alltrue([for value in var.object_storages_to_be_deployed: contains(["mongodb", "redis", "s3"], lower(value))])
+    condition     = alltrue([for value in var.object_storages_to_be_deployed : contains(["mongodb", "redis", "s3"], lower(value))])
     error_message = "Valid values for object_storages_to_be_deployed are \"MongoDB\" | \"Redis\" | \"S3\"."
   }
 }
