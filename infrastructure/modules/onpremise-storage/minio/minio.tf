@@ -87,13 +87,13 @@ resource "kubernetes_service" "minio" {
       service = kubernetes_deployment.minio.metadata.0.labels.service
     }
     port {
-      name = "${kubernetes_deployment.minio.metadata.0.name}-${var.minioconfig.port}"
+      name        = "${kubernetes_deployment.minio.metadata.0.name}-${var.minioconfig.port}"
       port        = var.minioconfig.port
       target_port = var.minioconfig.port
       protocol    = "TCP"
     }
     port {
-      name = "${kubernetes_deployment.minio.metadata.0.name}-9001"
+      name        = "${kubernetes_deployment.minio.metadata.0.name}-9001"
       port        = 9001
       target_port = 9001
       protocol    = "TCP"
