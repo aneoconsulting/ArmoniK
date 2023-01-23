@@ -43,12 +43,7 @@ resource "kubernetes_deployment" "minio" {
             effect   = "NoSchedule"
           }
         }
-        # dynamic "image_pull_secrets" {
-        #   for_each = (var.minioconfig.image_pull_secrets != "" ? [1] : [])
-        #   content {
-        #     name = var.minioconfig.image_pull_secrets
-        #   }
-        # }
+
         container {
           name              = "minio"
           image             = "${var.minioconfig.image}:${var.minioconfig.tag}"
@@ -67,19 +62,7 @@ resource "kubernetes_deployment" "minio" {
                         container_port = 9001
                         protocol       = "TCP"
                     }     
-          # volume_mount {
-          #   name       = "redis-storage-secret-volume"
-          #   mount_path = "/certificates"
-          #   read_only  = true
-          # }
         }
-        # volume {
-        #   name = "redis-storage-secret-volume"
-        #   secret {
-        #     secret_name = kubernetes_secret.redis_certificate.metadata[0].name
-        #     optional    = false
-        #   }
-        # }
       }
     }
   }

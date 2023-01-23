@@ -39,7 +39,6 @@ data "aws_iam_policy_document" "fullaccess_s3_storage_object" {
         "s3:DeleteObject",
         "s3:PutObjectAcl",
         "s3:PutObjectTagging",
-        "S3:*"
     ]
     effect = "Allow"
     resources = [

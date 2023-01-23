@@ -1,4 +1,3 @@
-# S" Payloads
 output "host" {
   value = var.minioconfig.host
 }

@@ -18,11 +18,6 @@ locals {
   redis_image_pull_secrets = try(var.redis.image_pull_secrets, {})
   redis_max_memory         = try(var.redis.max_memory, "12000mb")
 
-  # S3 payload
-  #minio_image              = try(var.minioconfig.image, "quay.io/minio/minio")
-  #minio_tag                = try(var.minioconfig.tag, "latest")
-  #minio_node_selector      = try(var.minioconfig.node_selector, {})
-
   # Shared storage
   shared_storage_host_path         = try(var.shared_storage.host_path, "/data")
   shared_storage_file_storage_type = try(var.shared_storage.file_storage_type, "HostPath")
