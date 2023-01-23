@@ -54,14 +54,20 @@ variable "monitoring" {
   default     = {}
 }
 
-# Polling delay to MongoDB
-# according to the size of the task and/or the application
-variable "mongodb_polling_delay" {
-  description = "Polling delay to MongoDB according to the size of the task and/or the application"
-  type = object({
-    min_polling_delay = string
-    max_polling_delay = string
-  })
+
+# Extra configuration
+variable "extra_conf" {
+  description = "Add extra configuration in the configmaps"
+  #type = object({
+  #  compute = optional(map(string), {})
+  #  control = optional(map(string), {})
+  #  core    = optional(map(string), {})
+  #  log     = optional(map(string), {})
+  #  polling = optional(map(string), {})
+  #  worker  = optional(map(string), {})
+  #})
+  type    = any
+  default = {}
 }
 
 # Job to insert partitions in the database
