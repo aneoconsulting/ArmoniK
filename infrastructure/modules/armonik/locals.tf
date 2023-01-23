@@ -114,10 +114,6 @@ locals {
   # ingress ports
   ingress_ports = var.ingress != null ? distinct(compact([var.ingress.http_port, var.ingress.grpc_port])) : []
 
-  # Polling delay to MongoDB
-  mongodb_polling_min_delay = try(var.mongodb_polling_delay.min_polling_delay, "00:00:01")
-  mongodb_polling_max_delay = try(var.mongodb_polling_delay.max_polling_delay, "00:05:00")
-
   # Credentials
   credentials = {
     for key, value in {
