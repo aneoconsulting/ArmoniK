@@ -4,7 +4,8 @@ resource "kubernetes_config_map" "core_config" {
     name      = "core-configmap"
     namespace = var.namespace
   }
-  data = {
+
+  data = merge(var.extra_conf.core, {
     Components__TableStorage                   = var.table_storage_adapter
     Components__ObjectStorage                  = local.object_storage_adapter
     Components__QueueStorage                   = var.queue_storage_adapter
@@ -43,5 +44,5 @@ resource "kubernetes_config_map" "core_config" {
     Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
     Authenticator__RequireAuthentication       = local.authentication_require_authentication
     Authenticator__RequireAuthorization        = local.authentication_require_authorization
-  }
+  })
 }
