@@ -4,6 +4,7 @@ output "vpc" {
   value = {
     id                     = module.vpc.id
     cidr_block             = module.vpc.cidr_block
+    cidr_block_private     = var.vpc.cidr_block_private
     private_subnet_ids     = module.vpc.private_subnet_ids
     public_subnet_ids      = module.vpc.public_subnet_ids
     pods_subnet_ids        = module.vpc.pods_subnet_ids

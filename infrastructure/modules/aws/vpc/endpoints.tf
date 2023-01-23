@@ -5,9 +5,6 @@ module "vpc_endpoints" {
   security_group_ids = [module.vpc.default_security_group_id]
   create             = true
   tags               = local.tags
-  depends_on = [
-    module.vpc
-  ]
 
   endpoints = {
     s3 = {

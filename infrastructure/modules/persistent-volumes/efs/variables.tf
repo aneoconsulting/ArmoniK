@@ -44,9 +44,10 @@ variable "csi_driver" {
 variable "vpc" {
   description = "AWS VPC info"
   type = object({
-    id          = string
-    cidr_blocks = set(string)
-    subnet_ids  = set(string)
+    id                 = string
+    cidr_block_private = set(string)
+    cidr_blocks        = set(string)
+    subnet_ids         = set(string)
   })
 }
 

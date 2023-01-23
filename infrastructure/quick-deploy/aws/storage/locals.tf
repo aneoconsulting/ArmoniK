@@ -44,8 +44,9 @@ locals {
   s3_fs_kms_key_id = (var.s3_fs.kms_key_id != "" ? var.s3_fs.kms_key_id : module.kms.0.arn)
   s3_os_kms_key_id = (var.s3_os.kms_key_id != "" ? var.s3_os.kms_key_id : module.kms.0.arn)
   vpc = {
-    id          = try(var.vpc.id, "")
-    cidr_blocks = concat([try(var.vpc.cidr_block, "")], try(var.vpc.pod_cidr_block_private, []))
-    subnet_ids  = try(var.vpc.private_subnet_ids, [])
+    id                 = try(var.vpc.id, "")
+    cidr_block_private = var.vpc.cidr_block_private
+    cidr_blocks        = concat([try(var.vpc.cidr_block, "")], try(var.vpc.pod_cidr_block_private, []))
+    subnet_ids         = try(var.vpc.private_subnet_ids, [])
   }
 }
