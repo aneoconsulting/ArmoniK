@@ -8,8 +8,6 @@ resource "kubernetes_config_map" "core_config" {
     Components__TableStorage                   = var.table_storage_adapter
     Components__ObjectStorage                  = local.object_storage_adapter
     Components__QueueStorage                   = var.queue_storage_adapter
-    MongoDB__TableStorage__PollingDelayMin     = local.mongodb_polling_min_delay
-    MongoDB__TableStorage__PollingDelayMax     = local.mongodb_polling_max_delay
     MongoDB__Host                              = local.mongodb_host
     MongoDB__Port                              = local.mongodb_port
     MongoDB__CAFile                            = (local.mongodb_certificates_secret != "" ? "/mongodb/${local.mongodb_certificates_ca_filename}" : "")
