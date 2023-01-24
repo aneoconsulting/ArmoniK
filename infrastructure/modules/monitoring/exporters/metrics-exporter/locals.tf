@@ -10,13 +10,9 @@ locals {
   node_selector_values = values(var.node_selector)
 
   # Storage secrets
-  mongodb_certificates_secret      = try(var.storage_endpoint_url.mongodb.certificates.secret, "")
-  mongodb_credentials_secret       = try(var.storage_endpoint_url.mongodb.credentials.secret, "")
-  mongodb_endpoints_secret         = try(var.storage_endpoint_url.mongodb.endpoints.secret, "")
-  mongodb_certificates_ca_filename = try(var.storage_endpoint_url.mongodb.certificates.ca_filename, "")
-
-  # Options of storage
-  mongodb_allow_insecure_tls = try(var.storage_endpoint_url.mongodb.allow_insecure_tls, true)
+  mongodb_certificates_secret = try(var.storage_endpoint_url.mongodb.certificates.secret, "")
+  mongodb_credentials_secret  = try(var.storage_endpoint_url.mongodb.credentials.secret, "")
+  mongodb_endpoints_secret    = try(var.storage_endpoint_url.mongodb.endpoints.secret, "")
 
   # Credentials
   credentials = {

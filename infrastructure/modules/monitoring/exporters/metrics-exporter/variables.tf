@@ -4,12 +4,6 @@ variable "namespace" {
   type        = string
 }
 
-# Logging level
-variable "logging_level" {
-  description = "Logging level in ArmoniK"
-  type        = string
-}
-
 # Working dir
 variable "working_dir" {
   description = "Working directory"
@@ -22,11 +16,15 @@ variable "storage_endpoint_url" {
   description = "List of storage needed by ArmoniK"
   type        = any
   validation {
-    condition     = length(setsubtract(["username", "password"], try(var.storage_endpoint_url.mongodb.credentials.data_keys, []))) == 0
+    condition = length(setsubtract([
+      "username", "password"
+    ], try(var.storage_endpoint_url.mongodb.credentials.data_keys, []))) == 0
     error_message = "Kubernetes secret of MongoDB user credentials should have data keys: \"username\", \"password\""
   }
   validation {
-    condition     = length(setsubtract(["host", "port"], try(var.storage_endpoint_url.mongodb.endpoints.data_keys, []))) == 0
+    condition = length(setsubtract([
+      "host", "port"
+    ], try(var.storage_endpoint_url.mongodb.endpoints.data_keys, []))) == 0
     error_message = "Kubernetes secret of MongoDB endpoints should have data keys: \"host\", \"port\""
   }
 }
@@ -52,4 +50,11 @@ variable "node_selector" {
 variable "service_type" {
   description = "Service type which can be: ClusterIP, NodePort or LoadBalancer"
   type        = string
+}
+
+# Extra configuration
+variable "extra_conf" {
+  description = "Add extra configuration in the configmaps"
+  type        = map(string)
+  default     = {}
 }

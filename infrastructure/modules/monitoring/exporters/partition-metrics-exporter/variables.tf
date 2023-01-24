@@ -4,12 +4,6 @@ variable "namespace" {
   type        = string
 }
 
-# Logging level
-variable "logging_level" {
-  description = "Logging level in ArmoniK"
-  type        = string
-}
-
 # Working dir
 variable "working_dir" {
   description = "Working directory"
@@ -58,4 +52,11 @@ variable "node_selector" {
 variable "service_type" {
   description = "Service type which can be: ClusterIP, NodePort or LoadBalancer"
   type        = string
+}
+
+# Extra configuration
+variable "extra_conf" {
+  description = "Add extra configuration in the configmaps"
+  type        = map(string)
+  default     = {}
 }

@@ -51,6 +51,7 @@ module "metrics_exporter" {
     tag                = local.metrics_exporter_tag
     image_pull_secrets = local.metrics_exporter_image_pull_secrets
   }
+  xtra_conf   = local.metrics_exporter_extra_conf
   working_dir = "${path.root}/../../.."
 }
 
@@ -68,6 +69,7 @@ module "metrics_exporter" {
 #    tag                = local.partition_metrics_exporter_tag
 #    image_pull_secrets = local.partition_metrics_exporter_image_pull_secrets
 #  }
+#  extra_conf  = local.partition_metrics_exporter_extra_conf
 #  working_dir = "${path.root}/../../.."
 #  depends_on  = [module.metrics_exporter]
 #}

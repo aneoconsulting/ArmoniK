@@ -38,6 +38,7 @@ locals {
   metrics_exporter_image_pull_secrets = try(var.monitoring.metrics_exporter.image_pull_secrets, "")
   metrics_exporter_service_type       = try(var.monitoring.metrics_exporter.service_type, "ClusterIP")
   metrics_exporter_node_selector      = try(var.monitoring.metrics_exporter.node_selector, {})
+  metrics_exporter_extra_conf         = try(var.monitoring.metrics_exporter.extra_conf, {})
 
   # Partition metrics exporter
   partition_metrics_exporter_image              = try(var.monitoring.partition_metrics_exporter.image, "dockerhubaneo/armonik_control_partition_metrics")
@@ -45,6 +46,7 @@ locals {
   partition_metrics_exporter_image_pull_secrets = try(var.monitoring.partition_metrics_exporter.image_pull_secrets, "")
   partition_metrics_exporter_service_type       = try(var.monitoring.partition_metrics_exporter.service_type, "ClusterIP")
   partition_metrics_exporter_node_selector      = try(var.monitoring.partition_metrics_exporter.node_selector, {})
+  partition_metrics_exporter_extra_conf         = try(var.monitoring.partition_metrics_exporter.extra_conf, {})
 
   # Fluent-bit
   fluent_bit_image              = try(var.monitoring.fluent_bit.image, "fluent/fluent-bit")

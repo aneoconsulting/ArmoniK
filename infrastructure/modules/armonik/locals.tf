@@ -52,24 +52,18 @@ locals {
   check_file_storage_type = (local.lower_file_storage_type == "s3" ? "S3" : "FS")
 
   # Storage secrets
-  activemq_certificates_secret      = try(var.storage_endpoint_url.activemq.certificates.secret, "")
-  activemq_credentials_secret       = try(var.storage_endpoint_url.activemq.credentials.secret, "")
-  activemq_endpoints_secret         = try(var.storage_endpoint_url.activemq.endpoints.secret, "")
-  activemq_certificates_ca_filename = try(var.storage_endpoint_url.activemq.certificates.ca_filename, "")
-  mongodb_certificates_secret       = try(var.storage_endpoint_url.mongodb.certificates.secret, "")
-  mongodb_credentials_secret        = try(var.storage_endpoint_url.mongodb.credentials.secret, "")
-  mongodb_endpoints_secret          = try(var.storage_endpoint_url.mongodb.endpoints.secret, "")
-  mongodb_certificates_ca_filename  = try(var.storage_endpoint_url.mongodb.certificates.ca_filename, "")
-  redis_certificates_secret         = try(var.storage_endpoint_url.redis.certificates.secret, "")
-  redis_credentials_secret          = try(var.storage_endpoint_url.redis.credentials.secret, "")
-  redis_endpoints_secret            = try(var.storage_endpoint_url.redis.endpoints.secret, "")
-  redis_certificates_ca_filename    = try(var.storage_endpoint_url.redis.certificates.ca_filename, "")
-
-  # Options of storage
-  activemq_allow_host_mismatch = try(var.storage_endpoint_url.activemq.allow_host_mismatch, true)
-  mongodb_allow_insecure_tls   = try(var.storage_endpoint_url.mongodb.allow_insecure_tls, true)
-  redis_timeout                = try(var.storage_endpoint_url.redis.timeout, 3000)
-  redis_ssl_host               = try(var.storage_endpoint_url.redis.ssl_host, "")
+  activemq_certificates_secret = try(var.storage_endpoint_url.activemq.certificates.secret, "")
+  activemq_credentials_secret  = try(var.storage_endpoint_url.activemq.credentials.secret, "")
+  activemq_endpoints_secret    = try(var.storage_endpoint_url.activemq.endpoints.secret, "")
+  activemq_ca_filename         = "/amqp/chain.pem"
+  mongodb_certificates_secret  = try(var.storage_endpoint_url.mongodb.certificates.secret, "")
+  mongodb_credentials_secret   = try(var.storage_endpoint_url.mongodb.credentials.secret, "")
+  mongodb_endpoints_secret     = try(var.storage_endpoint_url.mongodb.endpoints.secret, "")
+  mongodb_ca_filename          = "/mongodb/chain.pem"
+  redis_certificates_secret    = try(var.storage_endpoint_url.redis.certificates.secret, "")
+  redis_credentials_secret     = try(var.storage_endpoint_url.redis.credentials.secret, "")
+  redis_endpoints_secret       = try(var.storage_endpoint_url.redis.endpoints.secret, "")
+  redis_ca_filename            = "/redis/chain.pem"
 
   # Fluent-bit
   fluent_bit_is_daemonset      = try(var.monitoring.fluent_bit.is_daemonset, false)

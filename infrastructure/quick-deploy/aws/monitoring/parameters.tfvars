@@ -13,9 +13,6 @@ k8s_config_context = "default"
 # Kubernetes namespace
 namespace = "armonik"
 
-# Logging level
-logging_level = "Information"
-
 tags = {
   "name"             = ""
   "env"              = ""
@@ -85,6 +82,11 @@ monitoring = {
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
+    extra_conf = {
+      MongoDB__AllowInsecureTls           = true
+      Serilog__MinimumLevel               = "Information"
+      MongoDB__TableStorage__PollingDelay = "00:00:01"
+    }
   }
   partition_metrics_exporter = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/partition-metrics-exporter"
@@ -92,6 +94,11 @@ monitoring = {
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
+    extra_conf = {
+      MongoDB__AllowInsecureTls           = true
+      Serilog__MinimumLevel               = "Information"
+      MongoDB__TableStorage__PollingDelay = "00:00:01"
+    }
   }
   cloudwatch = {
     enabled           = true

@@ -210,7 +210,7 @@ db.Temp_AuthData.drop();
 
   authentication_script = <<EOF
 #!/bin/bash
-mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database /mongodb/script/initauth.js
+mongosh --tlsCAFile ${local.mongodb_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database /mongodb/script/initauth.js
 EOF
 }
 

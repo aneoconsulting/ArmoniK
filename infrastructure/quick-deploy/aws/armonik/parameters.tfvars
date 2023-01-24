@@ -213,5 +213,9 @@ extra_conf = {
   core = {
     MongoDB__TableStorage__PollingDelayMin = "00:00:01"
     MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    Redis__Timeout                         = 3000
+    Amqp__AllowHostMismatch                = false
+    Redis__SslHost                         = ""
+    MongoDB__AllowInsecureTls              = true
   }
 }

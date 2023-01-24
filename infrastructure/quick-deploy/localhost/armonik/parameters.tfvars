@@ -208,6 +208,10 @@ extra_conf = {
   core = {
     MongoDB__TableStorage__PollingDelayMin = "00:00:01"
     MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    Redis__Timeout                         = 30000
+    Amqp__AllowHostMismatch                = true
+    Redis__SslHost                         = "127.0.0.1"
+    MongoDB__AllowInsecureTls              = true
   }
   control = {
     Submitter__MaxErrorAllowed = 50
