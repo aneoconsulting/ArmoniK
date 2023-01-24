@@ -36,6 +36,7 @@ output:
 delete:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
+		-var-file $(STORAGE_PARAMETERS_FILE) \
 		-var 'namespace=$(NAMESPACE)' \
 		-state $(STATE_FILE) \
 		-auto-approve

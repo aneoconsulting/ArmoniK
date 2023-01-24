@@ -25,18 +25,9 @@ output "storage_endpoint_url" {
       ssl_host = "127.0.0.1"
     }
     mongodb = {
-      url  = module.mongodb.url
-      host = module.mongodb.host
-      port = module.mongodb.port
-      credentials = {
-        secret       = module.mongodb.user_credentials.secret
-        username_key = module.mongodb.user_credentials.username_key
-        password_key = module.mongodb.user_credentials.password_key
-      }
-      certificates = {
-        secret      = module.mongodb.user_certificate.secret
-        ca_filename = module.mongodb.user_certificate.ca_filename
-      }
+      credentials        = module.mongodb.user_credentials
+      certificates       = module.mongodb.user_certificate
+      endpoints          = module.mongodb.endpoints
       allow_insecure_tls = true
     }
     shared = {

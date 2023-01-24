@@ -62,14 +62,6 @@ resource "kubernetes_cron_job_v1" "partitions_in_database" {
               image             = var.job_partitions_in_database.tag != "" ? "${var.job_partitions_in_database.image}:${var.job_partitions_in_database.tag}" : var.job_partitions_in_database.image
               image_pull_policy = var.job_partitions_in_database.image_pull_policy
               command           = ["/bin/bash", "-c", local.script_cron]
-              env {
-                name  = "MongoDB_Host"
-                value = local.mongodb_host
-              }
-              env {
-                name  = "MongoDB_Port"
-                value = local.mongodb_port
-              }
               dynamic "env" {
                 for_each = local.database_credentials
                 content {
@@ -113,9 +105,9 @@ resource "kubernetes_cron_job_v1" "partitions_in_database" {
 locals {
   script_cron = <<EOF
 #!/bin/bash
-export nbElements=$(mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://${local.mongodb_host}:${local.mongodb_port}/database --eval 'db.PartitionData.countDocuments()' --quiet)
+export nbElements=$(mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database --eval 'db.PartitionData.countDocuments()' --quiet)
 if [[ $nbElements != ${length(local.partition_names)} ]]; then
-  mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://${local.mongodb_host}:${local.mongodb_port}/database --eval 'db.PartitionData.insertMany(${jsonencode(local.partitions_data)})'
+  mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database --eval 'db.PartitionData.insertMany(${jsonencode(local.partitions_data)})'
 fi
 EOF
 }

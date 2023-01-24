@@ -50,14 +50,6 @@ resource "kubernetes_job" "authentication_in_database" {
           image             = var.authentication.tag != "" ? "${var.authentication.image}:${var.authentication.tag}" : var.authentication.image
           image_pull_policy = var.authentication.image_pull_policy
           command           = ["/bin/bash", "-c", local.authentication_script]
-          env {
-            name  = "MongoDB_Host"
-            value = local.mongodb_host
-          }
-          env {
-            name  = "MongoDB_Port"
-            value = local.mongodb_port
-          }
           dynamic "env" {
             for_each = local.database_credentials
             content {
@@ -218,7 +210,7 @@ db.Temp_AuthData.drop();
 
   authentication_script = <<EOF
 #!/bin/bash
-mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://${local.mongodb_host}:${local.mongodb_port}/database /mongodb/script/initauth.js
+mongosh --tlsCAFile /mongodb/${local.mongodb_certificates_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database /mongodb/script/initauth.js
 EOF
 }
 
