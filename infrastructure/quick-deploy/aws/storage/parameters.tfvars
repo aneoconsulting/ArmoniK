@@ -165,5 +165,5 @@ pv_efs = {
   }
 }
 
-# The list of object storage to be deployed
-object_storages_to_be_deployed = ["MongoDB", "Redis", "S3"]
+# The list of object storage to be deployed : "MongoDB", "Redis", "S3"
+object_storages_to_be_deployed = ["Redis"]
