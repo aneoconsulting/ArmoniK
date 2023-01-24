@@ -25,8 +25,6 @@ resource "kubernetes_config_map" "core_config" {
     Redis__ClientName                          = "ArmoniK.Core"
     Redis__Ssl                                 = "true"
     Redis__SslHost                             = local.redis_ssl_host
-    Amqp__Host                                 = local.activemq_host
-    Amqp__Port                                 = local.activemq_port
     Amqp__CaPath                               = (local.activemq_certificates_secret != "" ? "/amqp/${local.activemq_certificates_ca_filename}" : "")
     Amqp__Scheme                               = "AMQPS"
     Amqp__AllowHostMismatch                    = local.activemq_allow_host_mismatch

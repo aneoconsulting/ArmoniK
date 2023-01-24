@@ -1,21 +1,14 @@
-# Storage
 output "storage_endpoint_url" {
   description = "Storage endpoints URLs"
   value = {
     activemq = {
-      url     = module.activemq.url
-      host    = module.activemq.host
-      port    = module.activemq.port
-      web_url = module.activemq.web_url
-      credentials = {
-        secret       = module.activemq.user_credentials.secret
-        username_key = module.activemq.user_credentials.username_key
-        password_key = module.activemq.user_credentials.password_key
-      }
-      certificates = {
-        secret      = module.activemq.user_certificate.secret
-        ca_filename = module.activemq.user_certificate.ca_filename
-      }
+      url                 = module.activemq.url
+      host                = module.activemq.host
+      port                = module.activemq.port
+      web_url             = module.activemq.web_url
+      credentials         = module.activemq.user_credentials
+      certificates        = module.activemq.user_certificate
+      endpoints           = module.activemq.endpoints
       allow_host_mismatch = true
     }
     redis = {
@@ -55,4 +48,5 @@ output "storage_endpoint_url" {
       file_server_ip    = local.shared_storage_file_server_ip
     }
   }
+  sensitive = true
 }

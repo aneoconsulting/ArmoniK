@@ -21,6 +21,14 @@ variable "working_dir" {
 variable "storage_endpoint_url" {
   description = "List of storage needed by ArmoniK"
   type        = any
+  validation {
+    condition     = length(setsubtract(["username", "password"], try(var.storage_endpoint_url.activemq.credentials.data_keys, []))) == 0
+    error_message = "Kubernetes secret of ActiveMQ user credentials should have data keys: \"username\", \"password\""
+  }
+  validation {
+    condition     = length(setsubtract(["host", "port"], try(var.storage_endpoint_url.activemq.endpoints.data_keys, []))) == 0
+    error_message = "Kubernetes secret of ActiveMQ endpoints should have data keys: \"host\", \"port\""
+  }
 }
 
 # Monitoring

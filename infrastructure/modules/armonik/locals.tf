@@ -53,30 +53,30 @@ locals {
 
   # Storage secrets
   activemq_certificates_secret      = try(var.storage_endpoint_url.activemq.certificates.secret, "")
-  mongodb_certificates_secret       = try(var.storage_endpoint_url.mongodb.certificates.secret, "")
-  redis_certificates_secret         = try(var.storage_endpoint_url.redis.certificates.secret, "")
   activemq_credentials_secret       = try(var.storage_endpoint_url.activemq.credentials.secret, "")
-  mongodb_credentials_secret        = try(var.storage_endpoint_url.mongodb.credentials.secret, "")
-  redis_credentials_secret          = try(var.storage_endpoint_url.redis.credentials.secret, "")
+  activemq_endpoints_secret         = try(var.storage_endpoint_url.activemq.endpoints.secret, "")
   activemq_certificates_ca_filename = try(var.storage_endpoint_url.activemq.certificates.ca_filename, "")
-  mongodb_certificates_ca_filename  = try(var.storage_endpoint_url.mongodb.certificates.ca_filename, "")
-  redis_certificates_ca_filename    = try(var.storage_endpoint_url.redis.certificates.ca_filename, "")
-  activemq_credentials_username_key = try(var.storage_endpoint_url.activemq.credentials.username_key, "")
-  mongodb_credentials_username_key  = try(var.storage_endpoint_url.mongodb.credentials.username_key, "")
-  redis_credentials_username_key    = try(var.storage_endpoint_url.redis.credentials.username_key, "")
-  activemq_credentials_password_key = try(var.storage_endpoint_url.activemq.credentials.password_key, "")
-  mongodb_credentials_password_key  = try(var.storage_endpoint_url.mongodb.credentials.password_key, "")
-  redis_credentials_password_key    = try(var.storage_endpoint_url.redis.credentials.password_key, "")
+
+  mongodb_certificates_secret      = try(var.storage_endpoint_url.mongodb.certificates.secret, "")
+  redis_certificates_secret        = try(var.storage_endpoint_url.redis.certificates.secret, "")
+  mongodb_credentials_secret       = try(var.storage_endpoint_url.mongodb.credentials.secret, "")
+  redis_credentials_secret         = try(var.storage_endpoint_url.redis.credentials.secret, "")
+  mongodb_certificates_ca_filename = try(var.storage_endpoint_url.mongodb.certificates.ca_filename, "")
+  redis_certificates_ca_filename   = try(var.storage_endpoint_url.redis.certificates.ca_filename, "")
+  mongodb_credentials_username_key = try(var.storage_endpoint_url.mongodb.credentials.username_key, "")
+  redis_credentials_username_key   = try(var.storage_endpoint_url.redis.credentials.username_key, "")
+  mongodb_credentials_password_key = try(var.storage_endpoint_url.mongodb.credentials.password_key, "")
+  redis_credentials_password_key   = try(var.storage_endpoint_url.redis.credentials.password_key, "")
 
   # Endpoint urls storage
-  activemq_host     = try(var.storage_endpoint_url.activemq.host, "")
+  /*activemq_host     = try(var.storage_endpoint_url.activemq.host, "")
   activemq_port     = try(var.storage_endpoint_url.activemq.port, "")
   activemq_web_host = try(var.storage_endpoint_url.activemq.web_host, "")
   activemq_web_port = try(var.storage_endpoint_url.activemq.web_port, "")
-  activemq_web_url  = try(var.storage_endpoint_url.activemq.web_url, "")
-  mongodb_host      = try(var.storage_endpoint_url.mongodb.host, "")
-  mongodb_port      = try(var.storage_endpoint_url.mongodb.port, "")
-  redis_url         = try(var.storage_endpoint_url.redis.url, "")
+  activemq_web_url  = try(var.storage_endpoint_url.activemq.web_url, "")*/
+  mongodb_host = try(var.storage_endpoint_url.mongodb.host, "")
+  mongodb_port = try(var.storage_endpoint_url.mongodb.port, "")
+  redis_url    = try(var.storage_endpoint_url.redis.url, "")
 
   # Options of storage
   activemq_allow_host_mismatch = try(var.storage_endpoint_url.activemq.allow_host_mismatch, true)
@@ -118,12 +118,20 @@ locals {
   credentials = {
     for key, value in {
       Amqp__User = local.activemq_credentials_secret != "" ? {
-        key  = local.activemq_credentials_username_key
+        key  = "username"
         name = local.activemq_credentials_secret
       } : { key = "", name = "" }
       Amqp__Password = local.activemq_credentials_secret != "" ? {
-        key  = local.activemq_credentials_password_key
+        key  = "password"
         name = local.activemq_credentials_secret
+      } : { key = "", name = "" }
+      Amqp__Host = local.activemq_endpoints_secret != "" ? {
+        key  = "host"
+        name = local.activemq_endpoints_secret
+      } : { key = "", name = "" }
+      Amqp__Port = local.activemq_endpoints_secret != "" ? {
+        key  = "port"
+        name = local.activemq_endpoints_secret
       } : { key = "", name = "" }
       Redis__User = local.redis_credentials_secret != "" ? {
         key  = local.redis_credentials_username_key
