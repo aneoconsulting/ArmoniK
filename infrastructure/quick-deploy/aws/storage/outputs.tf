@@ -10,20 +10,11 @@ output "storage_endpoint_url" {
       endpoints           = module.mq.endpoints
     }
     redis = {
-      url      = module.elasticache.redis_endpoint_url.url
-      host     = module.elasticache.redis_endpoint_url.host
-      port     = module.elasticache.redis_endpoint_url.port
-      timeout  = 3000
-      ssl_host = ""
-      credentials = {
-        secret       = ""
-        username_key = ""
-        password_key = ""
-      }
-      certificates = {
-        secret      = ""
-        ca_filename = ""
-      }
+      timeout      = 3000
+      ssl_host     = ""
+      credentials  = null
+      certificates = null
+      endpoints    = module.elasticache.endpoints
     }
     mongodb = {
       credentials        = module.mongodb.user_credentials
