@@ -9,20 +9,11 @@ output "storage_endpoint_url" {
       allow_host_mismatch = true
     }
     redis = {
-      url  = module.redis.url
-      host = module.redis.host
-      port = module.redis.port
-      credentials = {
-        secret       = module.redis.user_credentials.secret
-        username_key = module.redis.user_credentials.username_key
-        password_key = module.redis.user_credentials.password_key
-      }
-      certificates = {
-        secret      = module.redis.user_certificate.secret
-        ca_filename = module.redis.user_certificate.ca_filename
-      }
-      timeout  = 30000
-      ssl_host = "127.0.0.1"
+      credentials  = module.redis.user_credentials
+      certificates = module.redis.user_certificate
+      endpoints    = module.redis.endpoints
+      timeout      = 30000
+      ssl_host     = "127.0.0.1"
     }
     mongodb = {
       credentials        = module.mongodb.user_credentials

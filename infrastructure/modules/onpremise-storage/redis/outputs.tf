@@ -15,15 +15,22 @@ output "user_certificate" {
   description = "User certificates of Redis"
   value = {
     secret      = kubernetes_secret.redis_client_certificate.metadata[0].name
-    ca_filename = "chain.pem"
+    ca_filename = keys(kubernetes_secret.redis_client_certificate.data)[0]
   }
 }
 
 output "user_credentials" {
   description = "User credentials of Redis"
   value = {
-    secret       = kubernetes_secret.redis_user.metadata[0].name
-    username_key = "username"
-    password_key = "password"
+    secret    = kubernetes_secret.redis_user.metadata[0].name
+    data_keys = [for key, value in kubernetes_secret.redis_user.data : key]
+  }
+}
+
+output "endpoints" {
+  description = "Endpoints of redis"
+  value = {
+    secret    = kubernetes_secret.redis_endpoints.metadata[0].name
+    data_keys = [for key, value in kubernetes_secret.redis_endpoints.data : key]
   }
 }

@@ -60,15 +60,10 @@ locals {
   mongodb_credentials_secret        = try(var.storage_endpoint_url.mongodb.credentials.secret, "")
   mongodb_endpoints_secret          = try(var.storage_endpoint_url.mongodb.endpoints.secret, "")
   mongodb_certificates_ca_filename  = try(var.storage_endpoint_url.mongodb.certificates.ca_filename, "")
-
-  redis_certificates_secret      = try(var.storage_endpoint_url.redis.certificates.secret, "")
-  redis_credentials_secret       = try(var.storage_endpoint_url.redis.credentials.secret, "")
-  redis_certificates_ca_filename = try(var.storage_endpoint_url.redis.certificates.ca_filename, "")
-  redis_credentials_username_key = try(var.storage_endpoint_url.redis.credentials.username_key, "")
-  redis_credentials_password_key = try(var.storage_endpoint_url.redis.credentials.password_key, "")
-
-  # Endpoint urls storage
-  redis_url = try(var.storage_endpoint_url.redis.url, "")
+  redis_certificates_secret         = try(var.storage_endpoint_url.redis.certificates.secret, "")
+  redis_credentials_secret          = try(var.storage_endpoint_url.redis.credentials.secret, "")
+  redis_endpoints_secret            = try(var.storage_endpoint_url.redis.endpoints.secret, "")
+  redis_certificates_ca_filename    = try(var.storage_endpoint_url.redis.certificates.ca_filename, "")
 
   # Options of storage
   activemq_allow_host_mismatch = try(var.storage_endpoint_url.activemq.allow_host_mismatch, true)
@@ -126,12 +121,16 @@ locals {
         name = local.activemq_endpoints_secret
       } : { key = "", name = "" }
       Redis__User = local.redis_credentials_secret != "" ? {
-        key  = local.redis_credentials_username_key
+        key  = "username"
         name = local.redis_credentials_secret
       } : { key = "", name = "" }
       Redis__Password = local.redis_credentials_secret != "" ? {
-        key  = local.redis_credentials_password_key
+        key  = "password"
         name = local.redis_credentials_secret
+      } : { key = "", name = "" }
+      Redis__EndpointUrl = local.redis_endpoints_secret != "" ? {
+        key  = "url"
+        name = local.redis_endpoints_secret
       } : { key = "", name = "" }
       MongoDB__User = local.mongodb_credentials_secret != "" ? {
         key  = "username"

@@ -16,7 +16,6 @@ resource "kubernetes_config_map" "core_config" {
     MongoDB__DirectConnection                  = "true"
     MongoDB__Tls                               = "true"
     MongoDB__TableStorage__PollingDelay        = "00:00:01"
-    Redis__EndpointUrl                         = local.redis_url
     Redis__CaPath                              = (local.redis_certificates_secret != "" ? "/redis/${local.redis_certificates_ca_filename}" : "")
     Redis__Timeout                             = local.redis_timeout
     Redis__InstanceName                        = "ArmoniKRedis"

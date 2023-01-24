@@ -37,6 +37,14 @@ variable "storage_endpoint_url" {
     condition     = length(setsubtract(["host", "port"], try(var.storage_endpoint_url.mongodb.endpoints.data_keys, []))) == 0
     error_message = "Kubernetes secret of MongoDB endpoints should have data keys: \"host\", \"port\""
   }
+  validation {
+    condition     = length(setsubtract(["username", "password"], try(var.storage_endpoint_url.redis.credentials.data_keys, []))) == 0
+    error_message = "Kubernetes secret of Redis user credentials should have data keys: \"username\", \"password\""
+  }
+  validation {
+    condition     = length(setsubtract(["url"], try(var.storage_endpoint_url.redis.endpoints.data_keys, []))) == 0
+    error_message = "Kubernetes secret of Redis endpoints should have data keys: \"url\""
+  }
 }
 
 # Monitoring
