@@ -3,20 +3,11 @@ output "storage_endpoint_url" {
   description = "Storage endpoints URLs"
   value = {
     activemq = {
-      url                 = module.mq.activemq_endpoint_url.url
-      host                = module.mq.activemq_endpoint_url.host
-      port                = module.mq.activemq_endpoint_url.port
       web_url             = module.mq.web_url
       allow_host_mismatch = false
-      credentials = {
-        secret       = module.mq.user_credentials.secret
-        username_key = module.mq.user_credentials.username_key
-        password_key = module.mq.user_credentials.password_key
-      }
-      certificates = {
-        secret      = ""
-        ca_filename = ""
-      }
+      credentials         = module.mq.user_credentials
+      certificates        = null
+      endpoints           = module.mq.endpoints
     }
     redis = {
       url      = module.elasticache.redis_endpoint_url.url
@@ -58,4 +49,5 @@ output "storage_endpoint_url" {
       file_storage_type = "S3"
     }
   }
+  sensitive = true
 }

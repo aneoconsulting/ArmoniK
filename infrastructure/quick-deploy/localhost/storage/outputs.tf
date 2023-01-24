@@ -2,9 +2,6 @@ output "storage_endpoint_url" {
   description = "Storage endpoints URLs"
   value = {
     activemq = {
-      url                 = module.activemq.url
-      host                = module.activemq.host
-      port                = module.activemq.port
       web_url             = module.activemq.web_url
       credentials         = module.activemq.user_credentials
       certificates        = module.activemq.user_certificate

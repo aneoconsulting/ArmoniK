@@ -69,11 +69,6 @@ locals {
   redis_credentials_password_key   = try(var.storage_endpoint_url.redis.credentials.password_key, "")
 
   # Endpoint urls storage
-  /*activemq_host     = try(var.storage_endpoint_url.activemq.host, "")
-  activemq_port     = try(var.storage_endpoint_url.activemq.port, "")
-  activemq_web_host = try(var.storage_endpoint_url.activemq.web_host, "")
-  activemq_web_port = try(var.storage_endpoint_url.activemq.web_port, "")
-  activemq_web_url  = try(var.storage_endpoint_url.activemq.web_url, "")*/
   mongodb_host = try(var.storage_endpoint_url.mongodb.host, "")
   mongodb_port = try(var.storage_endpoint_url.mongodb.port, "")
   redis_url    = try(var.storage_endpoint_url.redis.url, "")

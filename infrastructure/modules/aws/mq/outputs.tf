@@ -26,8 +26,15 @@ output "web_url" {
 output "user_credentials" {
   description = "User credentials of ActiveMQ"
   value = {
-    secret       = kubernetes_secret.activemq_user.metadata[0].name
-    username_key = "username"
-    password_key = "password"
+    secret    = kubernetes_secret.activemq_user.metadata[0].name
+    data_keys = [for key, value in kubernetes_secret.activemq_user.data : key]
+  }
+}
+
+output "endpoints" {
+  description = "Endpoints of ActiveMQ"
+  value = {
+    secret    = kubernetes_secret.activemq_endpoints.metadata[0].name
+    data_keys = [for key, value in kubernetes_secret.activemq_endpoints.data : key]
   }
 }
