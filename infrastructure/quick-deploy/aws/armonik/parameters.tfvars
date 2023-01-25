@@ -211,11 +211,18 @@ authentication = {
 
 extra_conf = {
   core = {
-    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
-    Redis__Timeout                         = 3000
-    Amqp__AllowHostMismatch                = false
-    Redis__SslHost                         = ""
-    MongoDB__AllowInsecureTls              = true
+    Amqp__AllowHostMismatch                    = false
+    Amqp__MaxPriority                          = "10"
+    Amqp__MaxRetries                           = "5"
+    Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
+    Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
+    Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+    MongoDB__TableStorage__PollingDelay        = "00:00:01"
+    MongoDB__DataRetention                     = "10.00:00:00"
+    MongoDB__AllowInsecureTls                  = true
+    Redis__Timeout                             = 3000
+    Redis__SslHost                             = ""
   }
 }

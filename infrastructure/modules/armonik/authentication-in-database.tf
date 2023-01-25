@@ -64,11 +64,10 @@ resource "kubernetes_job" "authentication_in_database" {
             }
           }
           dynamic "volume_mount" {
-            for_each = merge({
-              mongodb-script = "/mongodb/script",
-              }, local.mongodb_certificates_secret != "" ? {
+            for_each = {
+              mongodb-script        = "/mongodb/script"
               mongodb-secret-volume = "/mongodb"
-            } : {})
+            }
             content {
               name       = volume_mount.key
               mount_path = volume_mount.value
@@ -76,14 +75,11 @@ resource "kubernetes_job" "authentication_in_database" {
             }
           }
         }
-        dynamic "volume" {
-          for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
-          content {
-            name = "mongodb-secret-volume"
-            secret {
-              secret_name = local.mongodb_certificates_secret
-              optional    = false
-            }
+        volume {
+          name = "mongodb-secret-volume"
+          secret {
+            secret_name = local.secrets.mongodb.certificates_secret
+            optional    = false
           }
         }
         volume {
@@ -111,19 +107,25 @@ data "tls_certificate" "certificate_data" {
 
 locals {
   authentication_data_default = jsonencode({
-    certificates_list = [for name, cert in data.tls_certificate.certificate_data : {
-      Fingerprint = cert.certificates[length(cert.certificates) - 1].sha1_fingerprint,
-      CN          = tls_cert_request.ingress_client_cert_request[name].subject.0.common_name,
-      Username    = name
-    }]
-    users_list = [for name, cert in data.tls_certificate.certificate_data : {
-      Username = name,
-      Roles    = [name]
-    }]
-    roles_list = [for name, cert in data.tls_certificate.certificate_data : {
-      RoleName    = name,
-      Permissions = local.ingress_generated_cert.permissions[name]
-    }]
+    certificates_list = [
+      for name, cert in data.tls_certificate.certificate_data : {
+        Fingerprint = cert.certificates[length(cert.certificates) - 1].sha1_fingerprint,
+        CN          = tls_cert_request.ingress_client_cert_request[name].subject.0.common_name,
+        Username    = name
+      }
+    ]
+    users_list = [
+      for name, cert in data.tls_certificate.certificate_data : {
+        Username = name,
+        Roles    = [name]
+      }
+    ]
+    roles_list = [
+      for name, cert in data.tls_certificate.certificate_data : {
+        RoleName    = name,
+        Permissions = local.ingress_generated_cert.permissions[name]
+      }
+    ]
   })
   authentication_data = (
     length(tls_locally_signed_cert.ingress_client_certificate) > 0 ? local.authentication_data_default :
@@ -210,7 +212,7 @@ db.Temp_AuthData.drop();
 
   authentication_script = <<EOF
 #!/bin/bash
-mongosh --tlsCAFile ${local.mongodb_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database /mongodb/script/initauth.js
+mongosh --tlsCAFile ${local.secrets.mongodb.ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database /mongodb/script/initauth.js
 EOF
 }
 

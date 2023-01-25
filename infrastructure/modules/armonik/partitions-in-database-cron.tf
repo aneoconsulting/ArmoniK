@@ -75,23 +75,17 @@ resource "kubernetes_cron_job_v1" "partitions_in_database" {
                   }
                 }
               }
-              dynamic "volume_mount" {
-                for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
-                content {
-                  name       = "mongodb-secret-volume"
-                  mount_path = "/mongodb"
-                  read_only  = true
-                }
+              volume_mount {
+                name       = "mongodb-secret-volume"
+                mount_path = "/mongodb"
+                read_only  = true
               }
             }
-            dynamic "volume" {
-              for_each = (local.mongodb_certificates_secret != "" ? [1] : [])
-              content {
-                name = "mongodb-secret-volume"
-                secret {
-                  secret_name = local.mongodb_certificates_secret
-                  optional    = false
-                }
+            volume {
+              name = "mongodb-secret-volume"
+              secret {
+                secret_name = local.secrets.mongodb.certificates_secret
+                optional    = false
               }
             }
           }
@@ -105,9 +99,9 @@ resource "kubernetes_cron_job_v1" "partitions_in_database" {
 locals {
   script_cron = <<EOF
 #!/bin/bash
-export nbElements=$(mongosh --tlsCAFile ${local.mongodb_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database --eval 'db.PartitionData.countDocuments()' --quiet)
+export nbElements=$(mongosh --tlsCAFile ${local.secrets.mongodb.ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database --eval 'db.PartitionData.countDocuments()' --quiet)
 if [[ $nbElements != ${length(local.partition_names)} ]]; then
-  mongosh --tlsCAFile ${local.mongodb_ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database --eval 'db.PartitionData.insertMany(${jsonencode(local.partitions_data)})'
+  mongosh --tlsCAFile ${local.secrets.mongodb.ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database --eval 'db.PartitionData.insertMany(${jsonencode(local.partitions_data)})'
 fi
 EOF
 }
