@@ -22,4 +22,9 @@ locals {
   shared_storage_host_path         = try(var.shared_storage.host_path, "/data")
   shared_storage_file_storage_type = try(var.shared_storage.file_storage_type, "HostPath")
   shared_storage_file_server_ip    = try(var.shared_storage.file_server_ip, "")
+
+  shared_storage = {
+    secret    = kubernetes_secret.shared_storage.metadata[0].name
+    data_keys = keys(kubernetes_secret.shared_storage.data)
+  }
 }

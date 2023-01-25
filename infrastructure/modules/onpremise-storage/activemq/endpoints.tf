@@ -7,6 +7,6 @@ resource "kubernetes_secret" "activemq_endpoints" {
     host    = local.activemq_endpoints.ip
     port    = local.activemq_endpoints.port
     url     = local.activemq_url
-    web-url = local.activemq_web_url
+    web_url = local.activemq_web_url
   }
 }

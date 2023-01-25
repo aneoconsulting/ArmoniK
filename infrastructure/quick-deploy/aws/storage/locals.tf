@@ -48,14 +48,18 @@ locals {
   }
   elasticache_endpoints = {
     secret    = kubernetes_secret.elasticache_endpoints.metadata[0].name,
-    data_keys = [for key, value in kubernetes_secret.elasticache_endpoints.data : key]
+    data_keys = keys(kubernetes_secret.elasticache_endpoints.data)
   }
   mq_endpoints = {
     secret    = kubernetes_secret.mq_endpoints.metadata[0].name,
-    data_keys = [for key, value in kubernetes_secret.mq_endpoints.data : key]
+    data_keys = keys(kubernetes_secret.mq_endpoints.data)
   }
   mq_user_credentials = {
     secret    = kubernetes_secret.mq_user.metadata[0].name
-    data_keys = [for key, value in kubernetes_secret.mq_user.data : key]
+    data_keys = keys(kubernetes_secret.mq_user.data)
+  }
+  shared_storage_endpoints = {
+    secret    = kubernetes_secret.shared_storage.metadata[0].name
+    data_keys = keys(kubernetes_secret.shared_storage.data)
   }
 }

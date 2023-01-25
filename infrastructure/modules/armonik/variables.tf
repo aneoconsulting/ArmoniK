@@ -21,36 +21,14 @@ variable "working_dir" {
 variable "storage_endpoint_url" {
   description = "List of storage needed by ArmoniK"
   type        = any
-  validation {
-    condition     = length(setsubtract(["username", "password"], try(var.storage_endpoint_url.activemq.credentials.data_keys, []))) == 0
-    error_message = "Kubernetes secret of ActiveMQ user credentials should have data keys: \"username\", \"password\""
-  }
-  validation {
-    condition     = length(setsubtract(["host", "port"], try(var.storage_endpoint_url.activemq.endpoints.data_keys, []))) == 0
-    error_message = "Kubernetes secret of ActiveMQ endpoints should have data keys: \"host\", \"port\""
-  }
-  validation {
-    condition     = length(setsubtract(["username", "password"], try(var.storage_endpoint_url.mongodb.credentials.data_keys, []))) == 0
-    error_message = "Kubernetes secret of MongoDB user credentials should have data keys: \"username\", \"password\""
-  }
-  validation {
-    condition     = length(setsubtract(["host", "port"], try(var.storage_endpoint_url.mongodb.endpoints.data_keys, []))) == 0
-    error_message = "Kubernetes secret of MongoDB endpoints should have data keys: \"host\", \"port\""
-  }
-  validation {
-    condition     = length(setsubtract(["username", "password"], try(var.storage_endpoint_url.redis.credentials.data_keys, []))) == 0
-    error_message = "Kubernetes secret of Redis user credentials should have data keys: \"username\", \"password\""
-  }
-  validation {
-    condition     = length(setsubtract(["url"], try(var.storage_endpoint_url.redis.endpoints.data_keys, []))) == 0
-    error_message = "Kubernetes secret of Redis endpoints should have data keys: \"url\""
-  }
+  default     = {}
 }
 
 # Monitoring
 variable "monitoring" {
   description = "Monitoring info"
   type        = any
+  default     = {}
 }
 
 # Parameters of ingress

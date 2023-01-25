@@ -35,3 +35,17 @@ resource "kubernetes_secret" "mq_user" {
   }
   type = "kubernetes.io/basic-auth"
 }
+
+resource "kubernetes_secret" "shared_storage" {
+  metadata {
+    name = "shared-storage-endpoints"
+  }
+  data = {
+    service_url       = "https://s3.${var.region}.amazonaws.com"
+    kms_key_id        = module.s3_fs.kms_key_id
+    name              = module.s3_fs.s3_bucket_name
+    access_key_id     = ""
+    secret_access_key = ""
+    file_storage_type = "S3"
+  }
+}

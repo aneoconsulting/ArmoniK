@@ -180,22 +180,22 @@ resource "kubernetes_deployment" "compute_plane" {
           empty_dir {}
         }
         dynamic "volume" {
-          for_each = (local.lower_file_storage_type == "nfs" ? [1] : [])
+          for_each = (local.file_storage_type == "nfs" ? [1] : [])
           content {
             name = "shared-volume"
             nfs {
-              path      = local.host_path
-              server    = local.file_server_ip
+              path      = data.kubernetes_secret.shared_storage.data.host_path
+              server    = data.kubernetes_secret.shared_storage.data.file_server_ip
               read_only = true
             }
           }
         }
         dynamic "volume" {
-          for_each = (local.lower_file_storage_type == "hostpath" ? [1] : [])
+          for_each = (local.file_storage_type == "hostpath" ? [1] : [])
           content {
             name = "shared-volume"
             host_path {
-              path = local.host_path
+              path = data.kubernetes_secret.shared_storage.data.host_path
               type = "Directory"
             }
           }

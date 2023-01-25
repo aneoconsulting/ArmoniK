@@ -39,18 +39,6 @@ locals {
   ingress_annotations                    = try(var.ingress.annotations, {})
   job_partitions_in_database_annotations = try(var.job_partitions_in_database.annotations, {})
 
-  # Shared storage
-  service_url             = try(var.storage_endpoint_url.shared.service_url, "")
-  kms_key_id              = try(var.storage_endpoint_url.shared.kms_key_id, "")
-  name                    = try(var.storage_endpoint_url.shared.name, "")
-  access_key_id           = try(var.storage_endpoint_url.shared.access_key_id, "")
-  secret_access_key       = try(var.storage_endpoint_url.shared.secret_access_key, "")
-  file_server_ip          = try(var.storage_endpoint_url.shared.file_server_ip, "")
-  file_storage_type       = try(var.storage_endpoint_url.shared.file_storage_type, "")
-  host_path               = try(var.storage_endpoint_url.shared.host_path, "")
-  lower_file_storage_type = lower(local.file_storage_type)
-  check_file_storage_type = (local.lower_file_storage_type == "s3" ? "S3" : "FS")
-
   # Fluent-bit
   fluent_bit_is_daemonset      = try(var.monitoring.fluent_bit.is_daemonset, false)
   fluent_bit_container_name    = try(var.monitoring.fluent_bit.container_name.fluent-bit, "fluent-bit")
@@ -101,7 +89,18 @@ locals {
       endpoints_secret    = "redis-endpoints"
       ca_filename         = "/redis/chain.pem"
     }
+    shared_storage_secret = "shared-storage-endpoints"
   }
+
+  # Shared storage
+  file_storage_type       = lower(data.kubernetes_secret.shared_storage.data.file_storage_type)
+  check_file_storage_type = local.file_storage_type == "s3" ? "S3" : "FS"
+  file_storage_endpoints = local.check_file_storage_type == "S3" ? {
+    S3Storage__ServiceURL      = data.kubernetes_secret.shared_storage.data.service_url
+    S3Storage__AccessKeyId     = data.kubernetes_secret.shared_storage.data.access_key_id
+    S3Storage__SecretAccessKey = data.kubernetes_secret.shared_storage.data.secret_access_key
+    S3Storage__BucketName      = data.kubernetes_secret.shared_storage.data.name
+  } : {}
 
   # Credentials
   credentials = {
