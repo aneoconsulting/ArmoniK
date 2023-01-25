@@ -7,10 +7,10 @@ resource "kubernetes_config_map" "log_config" {
     name      = "log-configmap"
     namespace = var.namespace
   }
-  data = {
+  data = merge(var.extra_conf.log, {
     "Serilog__MinimumLevel" : var.logging_level,
     "Serilog__MinimumLevel__Override__Microsoft.AspNetCore.Hosting.Diagnostics" : local.logging_level_routing,
     "Serilog__MinimumLevel__Override__Microsoft.AspNetCore.Routing.EndpointMiddleware" : local.logging_level_routing,
     "Serilog__MinimumLevel__Override__Serilog.AspNetCore.RequestLoggingMiddleware" : local.logging_level_routing,
-  }
+  })
 }
