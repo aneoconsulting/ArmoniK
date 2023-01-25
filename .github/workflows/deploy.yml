@@ -108,8 +108,6 @@ jobs:
         if: always()
         run: |
           set -e
-          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           mkdir -p logs/infra/generated \
             logs/infra/tfstates \
             logs/app
@@ -127,6 +125,10 @@ jobs:
           sudo chown $USER -R logs
           tar -czf admin-gui.tar.gz logs
           aws s3 cp admin-gui.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/admin-gui.tar.gz
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
 
   coreStreamWithoutIngress:
     runs-on: ubuntu-latest
@@ -188,8 +190,6 @@ jobs:
         if: always()
         run: |
           set -e
-          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           mkdir -p core-stream-without-ingress/infra/generated \
             core-stream-without-ingress/infra/tfstates \
             core-stream-without-ingress/app
@@ -207,6 +207,10 @@ jobs:
           sudo chown $USER -R core-stream-without-ingress
           tar -czf core-stream-without-ingress.tar.gz core-stream-without-ingress
           aws s3 cp core-stream-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/core-stream-without-ingress.tar.gz
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
 
   coreStreamWithoutTlsMtls:
     runs-on: ubuntu-latest
@@ -267,8 +271,6 @@ jobs:
         if: always()
         run: |
           set -e
-          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           mkdir -p core-stream-without-tls-without-mtls/infra/generated \
             core-stream-without-tls-without-mtls/infra/tfstates \
             core-stream-without-tls-without-mtls/app
@@ -286,6 +288,10 @@ jobs:
           sudo chown $USER -R core-stream-without-tls-without-mtls
           tar -czf core-stream-without-tls-without-mtls.tar.gz core-stream-without-tls-without-mtls
           aws s3 cp core-stream-without-tls-without-mtls.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/core-stream-without-tls-without-mtls.tar.gz
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
 
   htcMockDisabledParametersWithoutIngress:
     runs-on: ubuntu-latest
@@ -388,8 +394,6 @@ jobs:
         if: always()
         run: |
           set -e
-          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           mkdir -p htcmock-disabled-parameters-without-ingress/infra/generated \
             htcmock-disabled-parameters-without-ingress/infra/tfstates \
             htcmock-disabled-parameters-without-ingress/app
@@ -407,6 +411,10 @@ jobs:
           sudo chown $USER -R htcmock-disabled-parameters-without-ingress
           tar -czf htcmock-disabled-parameters-without-ingress.tar.gz htcmock-disabled-parameters-without-ingress
           aws s3 cp htcmock-disabled-parameters-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock-disabled-parameters-without-ingress.tar.gz
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
 
   htcMockWithoutTlsMtls:
     runs-on: ubuntu-latest
@@ -474,8 +482,6 @@ jobs:
         if: always()
         run: |
           set -e
-          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           mkdir -p htcmock-without-tls-without-mtls/infra/generated \
             htcmock-without-tls-without-mtls/infra/tfstates \
             htcmock-without-tls-without-mtls/app
@@ -493,6 +499,10 @@ jobs:
           sudo chown $USER -R htcmock-without-tls-without-mtls
           tar -czf htcmock-without-tls-without-mtls.tar.gz htcmock-without-tls-without-mtls
           aws s3 cp htcmock-without-tls-without-mtls.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock-without-tls-without-mtls.tar.gz
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
 
   benchWithoutIngress:
     runs-on: ubuntu-latest
@@ -594,8 +604,6 @@ jobs:
         if: always()
         run: |
           set -e
-          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           mkdir -p bench-without-ingress/infra/generated \
             bench-without-ingress/infra/tfstates \
             bench-without-ingress/app
@@ -613,4 +621,8 @@ jobs:
           sudo chown $USER -R bench-without-ingress
           tar -czf bench-without-ingress.tar.gz bench-without-ingress
           aws s3 cp bench-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/bench-without-ingress.tar.gz
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
 
