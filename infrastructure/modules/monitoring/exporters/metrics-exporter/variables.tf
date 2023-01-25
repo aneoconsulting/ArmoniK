@@ -15,18 +15,7 @@ variable "working_dir" {
 variable "storage_endpoint_url" {
   description = "List of storage needed by ArmoniK"
   type        = any
-  validation {
-    condition = length(setsubtract([
-      "username", "password"
-    ], try(var.storage_endpoint_url.mongodb.credentials.data_keys, []))) == 0
-    error_message = "Kubernetes secret of MongoDB user credentials should have data keys: \"username\", \"password\""
-  }
-  validation {
-    condition = length(setsubtract([
-      "host", "port"
-    ], try(var.storage_endpoint_url.mongodb.endpoints.data_keys, []))) == 0
-    error_message = "Kubernetes secret of MongoDB endpoints should have data keys: \"host\", \"port\""
-  }
+  default     = {}
 }
 
 # Docker image

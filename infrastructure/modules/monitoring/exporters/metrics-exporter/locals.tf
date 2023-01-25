@@ -10,41 +10,42 @@ locals {
   node_selector_values = values(var.node_selector)
 
   # Storage secrets
-  mongodb_certificates_secret = try(var.storage_endpoint_url.mongodb.certificates.secret, "")
-  mongodb_credentials_secret  = try(var.storage_endpoint_url.mongodb.credentials.secret, "")
-  mongodb_endpoints_secret    = try(var.storage_endpoint_url.mongodb.endpoints.secret, "")
+  secrets = {
+    mongodb = {
+      certificates_secret = "mongodb-user-certificates"
+      credentials_secret  = "mongodb-user"
+      endpoints_secret    = "mongodb-endpoints"
+      ca_filename         = "/mongodb/chain.pem"
+    }
+  }
 
   # Credentials
   credentials = {
-    for key, value in {
-      MongoDB__User = local.mongodb_credentials_secret != "" ? {
-        key  = "username"
-        name = local.mongodb_credentials_secret
-      } : { key = "", name = "" }
-      MongoDB__Password = local.mongodb_credentials_secret != "" ? {
-        key  = "password"
-        name = local.mongodb_credentials_secret
-      } : { key = "", name = "" }
-      MongoDB__Host = local.mongodb_endpoints_secret != "" ? {
-        key  = "host"
-        name = local.mongodb_endpoints_secret
-      } : { key = "", name = "" }
-      MongoDB__Port = local.mongodb_endpoints_secret != "" ? {
-        key  = "port"
-        name = local.mongodb_endpoints_secret
-      } : { key = "", name = "" }
-    } : key => value if !contains(values(value), "")
+    MongoDB__User = {
+      key  = "username"
+      name = local.secrets.mongodb.credentials_secret
+    }
+    MongoDB__Password = {
+      key  = "password"
+      name = local.secrets.mongodb.credentials_secret
+    }
+    MongoDB__Host = {
+      key  = "host"
+      name = local.secrets.mongodb.endpoints_secret
+    }
+    MongoDB__Port = {
+      key  = "port"
+      name = local.secrets.mongodb.endpoints_secret
+    }
   }
 
   # Certificates
   certificates = {
-    for key, value in {
-      mongodb = local.mongodb_certificates_secret != "" ? {
-        name        = "mongodb-secret-volume"
-        mount_path  = "/mongodb"
-        secret_name = local.mongodb_certificates_secret
-      } : { name = "", mount_path = "", secret_name = "" }
-    } : key => value if !contains(values(value), "")
+    mongodb = {
+      name        = "mongodb-secret-volume"
+      mount_path  = "/mongodb"
+      secret_name = local.secrets.mongodb.certificates_secret
+    }
   }
 
   # Endpoint urls
