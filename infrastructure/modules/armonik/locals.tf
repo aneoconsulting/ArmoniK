@@ -39,37 +39,10 @@ locals {
   ingress_annotations                    = try(var.ingress.annotations, {})
   job_partitions_in_database_annotations = try(var.job_partitions_in_database.annotations, {})
 
-  # Fluent-bit
-  fluent_bit_is_daemonset      = try(var.monitoring.fluent_bit.is_daemonset, false)
-  fluent_bit_container_name    = try(var.monitoring.fluent_bit.container_name.fluent-bit, "fluent-bit")
-  fluent_bit_image             = try(var.monitoring.fluent_bit.image, "fluent/fluent-bit")
-  fluent_bit_tag               = try(var.monitoring.fluent_bit.tag, "1.7.2")
-  fluent_bit_envvars_configmap = try(var.monitoring.fluent_bit.configmaps.envvars, "")
-  fluent_bit_configmap         = try(var.monitoring.fluent_bit.configmaps.config, "")
-
-  # Seq
-  seq_host    = try(var.monitoring.seq.host, "")
-  seq_port    = try(var.monitoring.seq.port, "")
-  seq_url     = try(var.monitoring.seq.url, "")
-  seq_web_url = try(var.monitoring.seq.web_url, "")
-
-  # Grafana
-  grafana_host = try(var.monitoring.grafana.host, "")
-  grafana_port = try(var.monitoring.grafana.port, "")
-  grafana_url  = try(var.monitoring.grafana.url, "")
-
-  # Metrics exporter
-  metrics_exporter_name      = try(var.monitoring.metrics_exporter.name, "")
-  metrics_exporter_namespace = try(var.monitoring.metrics_exporter.namespace, "")
-
-  # Partition metrics exporter
-  partition_metrics_exporter_name      = try(var.monitoring.partition_metrics_exporter.name, "")
-  partition_metrics_exporter_namespace = try(var.monitoring.partition_metrics_exporter.namespace, "")
-
   # ingress ports
   ingress_ports = var.ingress != null ? distinct(compact([var.ingress.http_port, var.ingress.grpc_port])) : []
 
-  # Storage secrets
+  # Secrets
   secrets = {
     activemq = {
       certificates_secret = "activemq-user-certificates"
@@ -89,7 +62,12 @@ locals {
       endpoints_secret    = "redis-endpoints"
       ca_filename         = "/redis/chain.pem"
     }
-    shared_storage_secret = "shared-storage-endpoints"
+    shared_storage_secret             = "shared-storage-endpoints"
+    metrics_exporter_secret           = "metrics-exporter-endpoints"
+    partition_metrics_exporter_secret = "partition-metrics-exporter-endpoints"
+    fluent_bit_secret                 = "fluent-bit-endpoints"
+    seq_secret                        = "seq-endpoints"
+    grafana_secret                    = "grafana-endpoints"
   }
 
   # Shared storage
@@ -271,8 +249,8 @@ locals {
             serverAddress = try(var.monitoring.prometheus.url, "")
             metricName    = "armonik_${partition}_tasks_queued"
             threshold     = tostring(try(trigger.threshold, "2"))
-            namespace     = local.metrics_exporter_namespace
-            query         = "armonik_${partition}_tasks_queued{job=\"${local.metrics_exporter_name}\"}"
+            namespace     = data.kubernetes_secret.metrics_exporter.data.namespace
+            query         = "armonik_${partition}_tasks_queued{job=\"${data.kubernetes_secret.metrics_exporter.data.name}\"}"
           }
           } :
           (lower(try(trigger.type, "")) == "cpu" || lower(try(trigger.type, "")) == "memory" ? {

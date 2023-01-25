@@ -212,14 +212,14 @@ resource "kubernetes_deployment" "compute_plane" {
         }
         # Fluent-bit container
         dynamic "container" {
-          for_each = (!local.fluent_bit_is_daemonset ? [1] : [])
+          for_each = (!data.kubernetes_secret.fluent_bit.data.is_daemonset ? [1] : [])
           content {
-            name              = local.fluent_bit_container_name
-            image             = "${local.fluent_bit_image}:${local.fluent_bit_tag}"
+            name              = data.kubernetes_secret.fluent_bit.data.name
+            image             = "${data.kubernetes_secret.fluent_bit.data.image}:${data.kubernetes_secret.fluent_bit.data.tag}"
             image_pull_policy = "IfNotPresent"
             env_from {
               config_map_ref {
-                name = local.fluent_bit_envvars_configmap
+                name = data.kubernetes_secret.fluent_bit.data.envvars
               }
             }
             lifecycle {
@@ -258,7 +258,7 @@ resource "kubernetes_deployment" "compute_plane" {
             dynamic "config_map" {
               for_each = (volume.value.type == "config_map" ? [1] : [])
               content {
-                name = local.fluent_bit_configmap
+                name = data.kubernetes_secret.fluent_bit.data.config
               }
             }
           }

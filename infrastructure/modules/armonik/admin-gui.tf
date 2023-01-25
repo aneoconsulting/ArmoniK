@@ -70,17 +70,17 @@ resource "kubernetes_deployment" "admin_gui" {
             value = local.control_plane_url
           }
           dynamic "env" {
-            for_each = (local.grafana_url != "" ? [1] : [])
+            for_each = (data.kubernetes_secret.grafana.data.enabled ? [1] : [])
             content {
               name  = "Grafana__Endpoint"
-              value = local.grafana_url
+              value = data.kubernetes_secret.grafana.data.url
             }
           }
           dynamic "env" {
-            for_each = (local.seq_web_url != "" ? [1] : [])
+            for_each = (data.kubernetes_secret.seq.data.enabled ? [1] : [])
             content {
               name  = "Seq__Endpoint"
-              value = local.seq_web_url
+              value = data.kubernetes_secret.seq.data.web_url
             }
           }
           dynamic "env" {
@@ -128,17 +128,17 @@ resource "kubernetes_deployment" "admin_gui" {
             value = local.control_plane_url
           }
           dynamic "env" {
-            for_each = (local.grafana_url != "" ? [1] : [])
+            for_each = (data.kubernetes_secret.grafana.data.enabled != "" ? [1] : [])
             content {
               name  = "Grafana__Endpoint"
-              value = local.grafana_url
+              value = data.kubernetes_secret.grafana.data.url
             }
           }
           dynamic "env" {
-            for_each = (local.seq_web_url != "" ? [1] : [])
+            for_each = (data.kubernetes_secret.seq.data.enabled ? [1] : [])
             content {
               name  = "Seq__Endpoint"
-              value = local.seq_web_url
+              value = data.kubernetes_secret.seq.data.web_url
             }
           }
           dynamic "env" {

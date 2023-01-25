@@ -3,25 +3,20 @@ output "storage_endpoint_url" {
   description = "Storage endpoints URLs"
   value = {
     activemq = {
-      url          = module.mq.activemq_endpoint_url.url
-      web_url      = module.mq.web_url
-      credentials  = local.mq_user_credentials
-      certificates = null
-      endpoints    = local.mq_endpoints
+      url     = module.mq.activemq_endpoint_url.url
+      web_url = module.mq.web_url
     }
     redis = {
-      url          = module.elasticache.redis_endpoint_url.url
-      credentials  = null
-      certificates = null
-      endpoints    = local.elasticache_endpoints
+      url = module.elasticache.redis_endpoint_url.url
     }
     mongodb = {
-      url          = module.mongodb.url
-      credentials  = module.mongodb.user_credentials
-      certificates = module.mongodb.user_certificate
-      endpoints    = module.mongodb.endpoints
+      url = module.mongodb.url
     }
-    shared = local.shared_storage_endpoints
+    shared = {
+      service_url       = "https://s3.${var.region}.amazonaws.com"
+      kms_key_id        = module.s3_fs.kms_key_id
+      name              = module.s3_fs.s3_bucket_name
+      file_storage_type = "S3"
+    }
   }
-  sensitive = true
 }
