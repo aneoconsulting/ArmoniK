@@ -5,7 +5,7 @@ module "metrics_server" {
   namespace = var.metrics_server.namespace
   docker_image = {
     image = var.metrics_server.image_name
-    tag   = can(coalesce(var.metrics_server.image_tag)) ? var.metrics_server.image_tag : local.default_tags[var.metrics_server.image_name]
+    tag   = try(coalesce(var.metrics_server.image_tag), local.default_tags[var.metrics_server.image_name])
   }
   image_pull_secrets = var.metrics_server.image_pull_secrets
   node_selector      = var.metrics_server.node_selector

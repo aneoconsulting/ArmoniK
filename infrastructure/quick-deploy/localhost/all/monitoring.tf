@@ -8,7 +8,7 @@ module "seq" {
   node_selector = var.seq.node_selector
   docker_image = {
     image              = var.seq.image_name
-    tag                = can(coalesce(var.seq.image_tag)) ? var.seq.image_tag : local.default_tags[var.seq.image_name]
+    tag                = try(coalesce(var.seq.image_tag), local.default_tags[var.seq.image_name])
     image_pull_secrets = var.seq.pull_secrets
   }
   working_dir       = "${path.root}/../../.."
@@ -24,7 +24,7 @@ module "node_exporter" {
   node_selector = var.node_exporter.node_selector
   docker_image = {
     image              = var.node_exporter.image_name
-    tag                = can(coalesce(var.node_exporter.image_tag)) ? var.node_exporter.image_tag : local.default_tags[var.node_exporter.image_name]
+    tag                = try(coalesce(var.node_exporter.image_tag), local.default_tags[var.node_exporter.image_name])
     image_pull_secrets = var.node_exporter.pull_secrets
   }
   working_dir = "${path.root}/../../../.."
@@ -40,7 +40,7 @@ module "metrics_exporter" {
   storage_endpoint_url = local.storage_endpoint_url
   docker_image = {
     image              = var.metrics_exporter.image_name
-    tag                = can(coalesce(var.metrics_exporter.image_tag)) ? var.metrics_exporter.image_tag : local.default_tags[var.metrics_exporter.image_name]
+    tag                = try(coalesce(var.metrics_exporter.image_tag), local.default_tags[var.metrics_exporter.image_name])
     image_pull_secrets = var.metrics_exporter.pull_secrets
   }
   working_dir = "${path.root}/../../.."
@@ -58,7 +58,7 @@ module "partition_metrics_exporter" {
   metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
   docker_image = {
     image              = var.partition_metrics_exporter.image_name
-    tag                = can(coalesce(var.partition_metrics_exporter.image_tag)) ? var.partition_metrics_exporter.image_tag : local.default_tags[var.partition_metrics_exporter.image_name]
+    tag                = try(coalesce(var.partition_metrics_exporter.image_tag), local.default_tags[var.partition_metrics_exporter.image_name])
     image_pull_secrets = var.partition_metrics_exporter.pull_secrets
   }
   working_dir = "${path.root}/../../.."
@@ -75,7 +75,7 @@ module "prometheus" {
   partition_metrics_exporter_url = length(module.partition_metrics_exporter) == 1 ? "${module.partition_metrics_exporter[0].host}:${module.partition_metrics_exporter[0].port}" : null
   docker_image = {
     image              = var.prometheus.image_name
-    tag                = can(coalesce(var.prometheus.image_tag)) ? var.prometheus.image_tag : local.default_tags[var.prometheus.image_name]
+    tag                = try(coalesce(var.prometheus.image_tag), local.default_tags[var.prometheus.image_name])
     image_pull_secrets = var.prometheus.pull_secrets
   }
   working_dir = "${path.root}/../../.."
@@ -92,7 +92,7 @@ module "grafana" {
   prometheus_url = module.prometheus.url
   docker_image = {
     image              = var.grafana.image_name
-    tag                = can(coalesce(var.grafana.image_tag)) ? var.grafana.image_tag : local.default_tags[var.grafana.image_name]
+    tag                = try(coalesce(var.grafana.image_tag), local.default_tags[var.grafana.image_name])
     image_pull_secrets = var.grafana.pull_secrets
   }
   working_dir    = "${path.root}/../../.."
@@ -107,7 +107,7 @@ module "fluent_bit" {
   fluent_bit = {
     container_name     = "fluent-bit"
     image              = var.fluent_bit.image_name
-    tag                = can(coalesce(var.fluent_bit.image_tag)) ? var.fluent_bit.image_tag : local.default_tags[var.fluent_bit.image_name]
+    tag                = try(coalesce(var.fluent_bit.image_tag), local.default_tags[var.fluent_bit.image_name])
     image_pull_secrets = var.fluent_bit.pull_secrets
     is_daemonset       = var.fluent_bit.is_daemonset
     http_server        = (var.fluent_bit.http_port == 0 ? "Off" : "On")
