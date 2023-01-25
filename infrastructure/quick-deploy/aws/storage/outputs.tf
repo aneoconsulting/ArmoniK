@@ -4,14 +4,14 @@ output "storage_endpoint_url" {
   value = {
     activemq = {
       web_url      = module.mq.web_url
-      credentials  = module.mq.user_credentials
+      credentials  = local.mq_user_credentials
       certificates = null
-      endpoints    = module.mq.endpoints
+      endpoints    = local.mq_endpoints
     }
     redis = {
       credentials  = null
       certificates = null
-      endpoints    = module.elasticache.endpoints
+      endpoints    = local.elasticache_endpoints
     }
     mongodb = {
       credentials  = module.mongodb.user_credentials

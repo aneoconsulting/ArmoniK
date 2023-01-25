@@ -23,18 +23,11 @@ output "web_url" {
   value       = aws_mq_broker.mq.instances.0.console_url
 }
 
-output "user_credentials" {
-  description = "User credentials of ActiveMQ"
+output "user" {
+  description = "Credentials of MQ user"
   value = {
-    secret    = kubernetes_secret.activemq_user.metadata[0].name
-    data_keys = [for key, value in kubernetes_secret.activemq_user.data : key]
+    username = local.username
+    password = local.password
   }
-}
-
-output "endpoints" {
-  description = "Endpoints of ActiveMQ"
-  value = {
-    secret    = kubernetes_secret.activemq_endpoints.metadata[0].name
-    data_keys = [for key, value in kubernetes_secret.activemq_endpoints.data : key]
-  }
+  sensitive = true
 }

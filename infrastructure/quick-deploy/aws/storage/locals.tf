@@ -46,4 +46,16 @@ locals {
     cidr_blocks        = concat([try(var.vpc.cidr_block, "")], try(var.vpc.pod_cidr_block_private, []))
     subnet_ids         = try(var.vpc.private_subnet_ids, [])
   }
+  elasticache_endpoints = {
+    secret    = kubernetes_secret.elasticache_endpoints.metadata[0].name,
+    data_keys = [for key, value in kubernetes_secret.elasticache_endpoints.data : key]
+  }
+  mq_endpoints = {
+    secret    = kubernetes_secret.mq_endpoints.metadata[0].name,
+    data_keys = [for key, value in kubernetes_secret.mq_endpoints.data : key]
+  }
+  mq_user_credentials = {
+    secret    = kubernetes_secret.mq_user.metadata[0].name
+    data_keys = [for key, value in kubernetes_secret.mq_user.data : key]
+  }
 }

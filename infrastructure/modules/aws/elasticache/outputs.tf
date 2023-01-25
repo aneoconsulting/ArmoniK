@@ -17,11 +17,3 @@ output "kms_key_id" {
   description = "ARN of KMS used for Elasticache"
   value       = aws_elasticache_replication_group.elasticache.kms_key_id
 }
-
-output "endpoints" {
-  description = "Endpoints of Redis"
-  value = {
-    secret    = kubernetes_secret.redis_endpoints.metadata[0].name
-    data_keys = [for key, value in kubernetes_secret.redis_endpoints.data : key]
-  }
-}

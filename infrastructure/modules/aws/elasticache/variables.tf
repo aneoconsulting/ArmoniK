@@ -1,9 +1,3 @@
-# Kubernetes namespace
-variable "namespace" {
-  description = "Kubernetes namespace for ArmoniK"
-  type        = string
-}
-
 # Tags
 variable "tags" {
   description = "Tags for resource"
