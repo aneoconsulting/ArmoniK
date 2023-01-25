@@ -12,7 +12,6 @@ export NAMESPACE?=armonik
 export SUFFIX?=main
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 export MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/../monitoring/generated/monitoring-output.json
-export STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/../storage/generated/storage-output.json
 
 .PHONY: apply destroy
 
@@ -32,7 +31,6 @@ apply:
 	terraform apply \
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(MONITORING_PARAMETERS_FILE) \
-		-var-file $(STORAGE_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
@@ -49,7 +47,6 @@ delete:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(MONITORING_PARAMETERS_FILE) \
-		-var-file $(STORAGE_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
