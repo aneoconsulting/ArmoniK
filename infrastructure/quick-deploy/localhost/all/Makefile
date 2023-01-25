@@ -2,7 +2,7 @@ CURRENT_DIR:=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 INGRESS_CERTIFICATES_DIR=$(GENERATED_DIR)/certificates/ingress
 PARAMETERS_FILE?=parameters.tfvars
-VERSIONS_FILE?=../../../../versions.tf
+VERSIONS_FILE?=../../../../versions.tfvars.json
 STATE_FILE=$(GENERATED_DIR)/armonik-terraform.tfstate
 
 # Randomly generated string that is preserved accross calls
