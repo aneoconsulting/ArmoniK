@@ -161,13 +161,13 @@ prometheus = {
 
 metrics_exporter = {
   image_name    = "dockerhubaneo/armonik_control_metrics"
-  image_tag     = "0.8.1"
+  image_tag     = "0.8.3"
   node_selector = { "grid/type" = "Operator" }
 }
 
 //parition_metrics_exporter = {
 //  image_name = "dockerhubaneo/armonik_control_partition_metrics"
-//  image_tag = "0.8.1"
+//  image_tag = "0.8.3"
 //  node_selector = { "grid/type" = "Operator" }
 //}
 
@@ -253,7 +253,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_worker_dll"
-        tag   = "0.8.1"
+        tag   = "0.8.2"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
