@@ -36,23 +36,14 @@ module "eks" {
   eks_worker_groups             = var.eks_worker_groups
 }
 
-resource "null_resource" "eks_namespace" {
-  triggers = {
-    namespace = var.namespace
-  }
-
-  provisioner "local-exec" {
-    command = "kubectl create namespace ${self.triggers.namespace}"
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = "kubectl delete namespace ${self.triggers.namespace}"
+resource "kubernetes_namespace" "armonik" {
+  metadata {
+    name = var.namespace
   }
 
   depends_on = [module.eks]
 }
 
 locals {
-  namespace = null_resource.eks_namespace.triggers.namespace
+  namespace = kubernetes_namespace.armonik.metadata[0].name
 }
