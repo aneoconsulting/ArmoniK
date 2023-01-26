@@ -83,9 +83,10 @@ monitoring = {
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
     extra_conf = {
-      MongoDB__AllowInsecureTls           = true
-      Serilog__MinimumLevel               = "Information"
-      MongoDB__TableStorage__PollingDelay = "00:00:01"
+      MongoDB__AllowInsecureTls              = true
+      Serilog__MinimumLevel                  = "Information"
+      MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax = "00:00:10"
     }
   }
   partition_metrics_exporter = {
@@ -95,9 +96,10 @@ monitoring = {
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
     extra_conf = {
-      MongoDB__AllowInsecureTls           = true
-      Serilog__MinimumLevel               = "Information"
-      MongoDB__TableStorage__PollingDelay = "00:00:01"
+      MongoDB__AllowInsecureTls              = true
+      Serilog__MinimumLevel                  = "Information"
+      MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax = "00:00:10"
     }
   }
   cloudwatch = {
