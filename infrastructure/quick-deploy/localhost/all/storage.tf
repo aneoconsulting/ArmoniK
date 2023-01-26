@@ -1,7 +1,7 @@
 # ActiveMQ
 module "activemq" {
   source      = "../../../modules/onpremise-storage/activemq"
-  namespace   = var.namespace
+  namespace   = local.namespace
   working_dir = "${path.root}/../../.."
   activemq = {
     image              = var.activemq.image_name
@@ -14,7 +14,7 @@ module "activemq" {
 # MongoDB
 module "mongodb" {
   source      = "../../../modules/onpremise-storage/mongodb"
-  namespace   = var.namespace
+  namespace   = local.namespace
   working_dir = "${path.root}/../../.."
   mongodb = {
     image              = var.mongodb.image_name
@@ -28,7 +28,7 @@ module "mongodb" {
 # Redis
 module "redis" {
   source      = "../../../modules/onpremise-storage/redis"
-  namespace   = var.namespace
+  namespace   = local.namespace
   working_dir = "${path.root}/../../.."
   redis = {
     image              = var.redis.image_name
