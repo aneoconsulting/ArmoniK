@@ -2,6 +2,7 @@ CURRENT_DIR:=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 INGRESS_CERTIFICATES_DIR=$(GENERATED_DIR)/certificates/ingress
 PARAMETERS_FILE?=parameters.tfvars
+VERSIONS_FILE?=../../../../versions.tfvars.json
 STATE_FILE=armonik-terraform.tfstate
 
 # Randomly generated string that is preserved accross calls
@@ -47,19 +48,19 @@ init:
 		-backend-config 'region=$(REGION)' \
 		-backend-config 'key=$(STATE_FILE)' \
 		-backend-config 'profile=$(PROFILE)' \
-		-var-file=$(PARAMETERS_FILE) 	
+		-var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) 	
 
 plan:
-	terraform plan -var-file=$(PARAMETERS_FILE) -out=/dev/null
+	terraform plan -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -out=/dev/null
 
 apply:
-	terraform apply -var-file=$(PARAMETERS_FILE) -auto-approve
+	terraform apply -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
 
 refresh:
-	terraform refersh -var-file=$(PARAMETERS_FILE) -auto-approve
+	terraform refersh -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
 
 delete:
-	terraform destroy -var-file=$(PARAMETERS_FILE) -auto-approve
+	terraform destroy -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
 
 output:
 	@echo -n "{\"armonik\":" > $(GENERATED_DIR)/armonik-output.json

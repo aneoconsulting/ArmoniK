@@ -80,16 +80,16 @@ variable "eks" {
     cluster_endpoint_public_access        = optional(bool, false)
     cluster_endpoint_public_access_cidrs  = optional(list(string), ["0.0.0.0/0"])
     cluster_log_retention_in_days         = optional(number, 30)
-    docker_images = object({
-      cluster_autoscaler = object({
-        image = string
-        tag   = string
-      })
-      instance_refresh = object({
-        image = string
-        tag   = string
-      })
-    })
+    docker_images = optional(object({
+      cluster_autoscaler = optional(object({
+        image = optional(string, "k8s.gcr.io/autoscaling/cluster-autoscaler")
+        tag   = optional(string)
+      }), {})
+      instance_refresh = optional(object({
+        image = optional(string, "public.ecr.aws/aws-ec2/aws-node-termination-handler")
+        tag   = optional(string)
+      }), {})
+    }), {})
     cluster_autoscaler = optional(object({
       expander                              = optional(string, "random")
       scale_down_enabled                    = optional(bool, true)
@@ -136,7 +136,7 @@ variable "metrics_server" {
   type = object({
     namespace          = optional(string, "kube-system"),
     image_name         = optional(string, "k8s.gcr.io/metrics-server/metrics-server"),
-    image_tag          = optional(string, "v0.6.1"),
+    image_tag          = optional(string),
     image_pull_secrets = optional(string, ""),
     node_selector      = optional(any, {}),
     args = optional(list(string), [
@@ -156,9 +156,9 @@ variable "keda" {
   type = object({
     namespace            = optional(string, "default")
     keda_image_name      = optional(string, "ghcr.io/kedacore/keda"),
-    keda_image_tag       = optional(string, "2.8.0"),
+    keda_image_tag       = optional(string),
     apiserver_image_name = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
-    apiserver_image_tag  = optional(string, "2.8.0"),
+    apiserver_image_tag  = optional(string),
     pull_secrets         = optional(string, ""),
     node_selector        = optional(any, {})
   })
@@ -236,8 +236,8 @@ variable "mq_credentials" {
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type = object({
-    image_name    = string
-    image_tag     = string
+    image_name    = optional(string, "mongo")
+    image_tag     = optional(string)
     node_selector = optional(any, {})
     pull_secrets  = optional(string, "")
     persistent_volume = optional(object({
@@ -254,6 +254,7 @@ variable "mongodb" {
       }), {})
     }))
   })
+  default = {}
 }
 
 # AWS EFS as Persistent volume
@@ -270,39 +271,39 @@ variable "pv_efs" {
       access_point = optional(list(string), [])
     }), {})
     # EFS Container Storage Interface (CSI) Driver
-    csi_driver = object({
+    csi_driver = optional(object({
       namespace     = optional(string, "kube-system")
       pull_secrets  = optional(string, "")
       node_selector = optional(any, {})
-      images = object({
-        efs_csi = object({
-          name = string
-          tag  = string
-        })
-        livenessprobe = object({
-          name = string
-          tag  = string
-        })
-        node_driver_registrar = object({
-          name = string
-          tag  = string
-        })
-        external_provisioner = object({
-          name = string
-          tag  = string
-        })
-      })
-    })
+      images = optional(object({
+        efs_csi = optional(object({
+          name = optional(string, "amazon/aws-efs-csi-driver")
+          tag  = optional(string)
+        }), {})
+        livenessprobe = optional(object({
+          name = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe")
+          tag  = optional(string)
+        }), {})
+        node_driver_registrar = optional(object({
+          name = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar")
+          tag  = optional(string)
+        }), {})
+        external_provisioner = optional(object({
+          name = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner")
+          tag  = optional(string)
+        }), {})
+      }), {})
+    }), {})
   })
   default = null
 }
 
 
 variable "seq" {
-  description = "Seq configuration"
+  description = "Seq configuration (nullable)"
   type = object({
-    image_name        = string
-    image_tag         = string
+    image_name        = optional(string, "datalust/seq")
+    image_tag         = optional(string)
     port              = optional(number, 8080)
     pull_secrets      = optional(string, "")
     service_type      = optional(string, "ClusterIP")
@@ -314,10 +315,10 @@ variable "seq" {
 }
 
 variable "grafana" {
-  description = "Grafana configuration"
+  description = "Grafana configuration (nullable)"
   type = object({
-    image_name     = string
-    image_tag      = string
+    image_name     = optional(string, "grafana/grafana")
+    image_tag      = optional(string)
     port           = optional(number, 3000)
     pull_secrets   = optional(string, "")
     service_type   = optional(string, "ClusterIP")
@@ -328,10 +329,10 @@ variable "grafana" {
 }
 
 variable "node_exporter" {
-  description = "Node exporter configuration"
+  description = "Node exporter configuration (nullable)"
   type = object({
-    image_name    = string
-    image_tag     = string
+    image_name    = optional(string, "prom/node-exporter")
+    image_tag     = optional(string)
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
@@ -342,30 +343,32 @@ variable "node_exporter" {
 variable "prometheus" {
   description = "Prometheus configuration"
   type = object({
-    image_name    = string
-    image_tag     = string
+    image_name    = optional(string, "prom/prometheus")
+    image_tag     = optional(string)
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
+  default = {}
 }
 
 variable "metrics_exporter" {
   description = "Metrics exporter configuration"
   type = object({
-    image_name    = string
-    image_tag     = string
+    image_name    = optional(string, "dockerhubaneo/armonik_control_metrics")
+    image_tag     = optional(string)
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
+  default = {}
 }
 
 variable "partition_metrics_exporter" {
-  description = "Partition metrics exporter configuration"
+  description = "Partition metrics exporter configuration (nullable)"
   type = object({
-    image_name    = string
-    image_tag     = string
+    image_name    = optional(string, "dockerhubaneo/armonik_control_partition_metrics")
+    image_tag     = optional(string)
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
@@ -376,14 +379,15 @@ variable "partition_metrics_exporter" {
 variable "fluent_bit" {
   description = "Fluent bit configuration"
   type = object({
-    image_name     = string
-    image_tag      = string
+    image_name     = optional(string, "fluent/fluent-bit")
+    image_tag      = optional(string)
     pull_secrets   = optional(string, "")
     is_daemonset   = optional(bool, true)
     http_port      = optional(number, 2020)
     read_from_head = optional(bool, true)
     node_selector  = optional(any, {})
   })
+  default = {}
 }
 
 variable "cloudwatch" {
@@ -413,13 +417,14 @@ variable "job_partitions_in_database" {
   description = "Job to insert partitions IDs in the database"
   type = object({
     name               = optional(string, "job-partitions-in-database")
-    image              = string
-    tag                = string
+    image              = optional(string, "rtsp/mongosh")
+    tag                = optional(string)
     image_pull_policy  = optional(string, "IfNotPresent")
     image_pull_secrets = optional(string, "")
     node_selector      = optional(any, {})
     annotations        = optional(any, {})
   })
+  default = {}
 }
 
 # Parameters of control plane
@@ -429,8 +434,8 @@ variable "control_plane" {
     name              = optional(string, "control-plane")
     service_type      = optional(string, "ClusterIP")
     replicas          = optional(number, 2)
-    image             = string
-    tag               = string
+    image             = optional(string, "dockerhubaneo/armonik_control")
+    tag               = optional(string)
     image_pull_policy = optional(string, "IfNotPresent")
     port              = optional(number, 5001)
     limits = optional(object({
@@ -454,10 +459,10 @@ variable "control_plane" {
 variable "admin_gui" {
   description = "Parameters of the admin GUI"
   type = object({
-    api = object({
+    api = optional(object({
       name  = optional(string, "admin-api")
-      image = string
-      tag   = string
+      image = optional(string, "dockerhubaneo/armonik_admin_api")
+      tag   = optional(string)
       port  = optional(number, 3333)
       limits = optional(object({
         cpu    = optional(string)
@@ -467,11 +472,11 @@ variable "admin_gui" {
         cpu    = optional(string)
         memory = optional(string)
       }))
-    })
-    app = object({
+    }), {})
+    app = optional(object({
       name  = optional(string, "admin-app")
-      image = string
-      tag   = string
+      image = optional(string, "dockerhubaneo/armonik_admin_app")
+      tag   = optional(string)
       port  = optional(number, 1080)
       limits = optional(object({
         cpu    = optional(string)
@@ -481,13 +486,14 @@ variable "admin_gui" {
         cpu    = optional(string)
         memory = optional(string)
       }))
-    })
+    }), {})
     service_type       = optional(string, "ClusterIP")
     replicas           = optional(number, 1)
     image_pull_policy  = optional(string, "IfNotPresent")
     image_pull_secrets = optional(string, "")
     node_selector      = optional(any, {})
   })
+  default = {}
 }
 
 # Parameters of the compute plane
@@ -499,9 +505,9 @@ variable "compute_plane" {
     image_pull_secrets               = optional(string, "IfNotPresent")
     node_selector                    = optional(any, {})
     annotations                      = optional(any, {})
-    polling_agent = object({
-      image             = string
-      tag               = string
+    polling_agent = optional(object({
+      image             = optional(string, "dockerhubaneo/armonik_pollingagent")
+      tag               = optional(string)
       image_pull_policy = optional(string, "IfNotPresent")
       limits = optional(object({
         cpu    = optional(string)
@@ -511,11 +517,11 @@ variable "compute_plane" {
         cpu    = optional(string)
         memory = optional(string)
       }))
-    })
+    }), {})
     worker = list(object({
       name              = optional(string, "worker")
       image             = string
-      tag               = string
+      tag               = optional(string)
       image_pull_policy = optional(string, "IfNotPresent")
       limits = optional(object({
         cpu    = optional(string)
@@ -532,13 +538,13 @@ variable "compute_plane" {
 }
 
 variable "ingress" {
-  description = "Parameters of the ingress controller"
+  description = "Parameters of the ingress controller (nullable)"
   type = object({
     name              = optional(string, "ingress")
     service_type      = optional(string, "LoadBalancer")
     replicas          = optional(number, 1)
-    image             = string
-    tag               = string
+    image             = optional(string, "nginxinc/nginx-unprivileged")
+    tag               = optional(string)
     image_pull_policy = optional(string, "IfNotPresent")
     http_port         = optional(number, 5000)
     grpc_port         = optional(number, 5001)
@@ -558,6 +564,7 @@ variable "ingress" {
     generate_client_cert  = optional(bool, true)
     custom_client_ca_file = optional(string, "")
   })
+  default = {}
 }
 
 # Authentication behavior
@@ -565,8 +572,8 @@ variable "authentication" {
   description = "Authentication behavior"
   type = object({
     name                    = optional(string, "job-authentication-in-database")
-    image                   = string
-    tag                     = string
+    image                   = optional(string, "rtsp/mongosh")
+    tag                     = optional(string)
     image_pull_policy       = optional(string, "IfNotPresent")
     image_pull_secrets      = optional(string, "")
     node_selector           = optional(any, {})
@@ -574,4 +581,34 @@ variable "authentication" {
     require_authentication  = optional(bool, false)
     require_authorization   = optional(bool, false)
   })
+  default = {}
+}
+
+variable "armonik_versions" {
+  description = "Versions of all the ArmoniK components"
+  type = object({
+    infra     = string
+    core      = string
+    api       = string
+    gui       = string
+    extcsharp = string
+    samples   = string
+  })
+}
+
+variable "armonik_images" {
+  description = "Image names of all the ArmoniK components"
+  type = object({
+    infra     = set(string)
+    core      = set(string)
+    api       = set(string)
+    gui       = set(string)
+    extcsharp = set(string)
+    samples   = set(string)
+  })
+}
+
+variable "image_tags" {
+  description = "Tags of images used"
+  type        = map(string)
 }

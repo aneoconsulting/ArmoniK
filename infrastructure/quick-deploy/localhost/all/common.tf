@@ -12,6 +12,6 @@ resource "kubernetes_namespace" "armonik" {
 }
 
 locals {
-  prefix    = can(coalesce(var.prefix)) ? var.prefix : "armonik-${random_string.prefix.result}"
-  namespace = kubernetes_namespace.armonik.metadata[0].name
+  prefix    = try(coalesce(var.prefix), "armonik-${random_string.prefix.result}")
+  namespace = var.namespace
 }

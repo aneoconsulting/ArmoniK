@@ -39,7 +39,7 @@ variable "metrics_server" {
   type = object({
     namespace          = optional(string, "kube-system"),
     image_name         = optional(string, "k8s.gcr.io/metrics-server/metrics-server"),
-    image_tag          = optional(string, "v0.6.1"),
+    image_tag          = optional(string),
     image_pull_secrets = optional(string, ""),
     node_selector      = optional(any, {}),
     args = optional(list(string), [
@@ -59,9 +59,9 @@ variable "keda" {
   type = object({
     namespace            = optional(string, "default")
     keda_image_name      = optional(string, "ghcr.io/kedacore/keda"),
-    keda_image_tag       = optional(string, "2.8.0"),
+    keda_image_tag       = optional(string),
     apiserver_image_name = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
-    apiserver_image_tag  = optional(string, "2.8.0"),
+    apiserver_image_tag  = optional(string),
     pull_secrets         = optional(string, ""),
     node_selector        = optional(any, {})
   })
@@ -83,42 +83,45 @@ variable "shared_storage" {
 variable "activemq" {
   description = "Parameters of ActiveMQ"
   type = object({
-    image_name         = string
-    image_tag          = string
+    image_name         = optional(string, "symptoma/activemq")
+    image_tag          = optional(string)
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
   })
+  default = {}
 }
 
 # Parameters for MongoDB
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type = object({
-    image_name         = string
-    image_tag          = string
+    image_name         = optional(string, "mongo")
+    image_tag          = optional(string)
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
   })
+  default = {}
 }
 
 # Parameters for Redis
 variable "redis" {
   description = "Parameters of Redis"
   type = object({
-    image_name         = string
-    image_tag          = string
+    image_name         = optional(string, "redis")
+    image_tag          = optional(string)
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
     max_memory         = optional(string, "8000gb")
   })
+  default = {}
 }
 
 
 variable "seq" {
   description = "Seq configuration"
   type = object({
-    image_name        = string
-    image_tag         = string
+    image_name        = optional(string, "datalust/seq")
+    image_tag         = optional(string)
     port              = optional(number, 8080)
     pull_secrets      = optional(string, "")
     service_type      = optional(string, "ClusterIP")
@@ -126,28 +129,28 @@ variable "seq" {
     system_ram_target = optional(number, 0.2)
     authentication    = optional(bool, false)
   })
-  default = null
+  default = {}
 }
 
 variable "grafana" {
   description = "Grafana configuration"
   type = object({
-    image_name     = string
-    image_tag      = string
+    image_name     = optional(string, "grafana/grafana")
+    image_tag      = optional(string)
     port           = optional(number, 3000)
     pull_secrets   = optional(string, "")
     service_type   = optional(string, "ClusterIP")
     node_selector  = optional(any, {})
     authentication = optional(bool, false)
   })
-  default = null
+  default = {}
 }
 
 variable "node_exporter" {
   description = "Node exporter configuration"
   type = object({
-    image_name    = string
-    image_tag     = string
+    image_name    = optional(string, "prom/node-exporter")
+    image_tag     = optional(string)
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
@@ -158,30 +161,32 @@ variable "node_exporter" {
 variable "prometheus" {
   description = "Prometheus configuration"
   type = object({
-    image_name    = string
-    image_tag     = string
+    image_name    = optional(string, "prom/prometheus")
+    image_tag     = optional(string)
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
+  default = {}
 }
 
 variable "metrics_exporter" {
   description = "Metrics exporter configuration"
   type = object({
-    image_name    = string
-    image_tag     = string
+    image_name    = optional(string, "dockerhubaneo/armonik_control_metrics")
+    image_tag     = optional(string)
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
+  default = {}
 }
 
 variable "partition_metrics_exporter" {
   description = "Partition metrics exporter configuration"
   type = object({
-    image_name    = string
-    image_tag     = string
+    image_name    = optional(string, "dockerhubaneo/armonik_control_partition_metrics")
+    image_tag     = optional(string)
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
@@ -192,14 +197,15 @@ variable "partition_metrics_exporter" {
 variable "fluent_bit" {
   description = "Fluent bit configuration"
   type = object({
-    image_name     = string
-    image_tag      = string
+    image_name     = optional(string, "fluent/fluent-bit")
+    image_tag      = optional(string)
     pull_secrets   = optional(string, "")
     is_daemonset   = optional(bool, true)
     http_port      = optional(number, 2020)
     read_from_head = optional(bool, true)
     node_selector  = optional(any, {})
   })
+  default = {}
 }
 
 # Extra configuration
@@ -221,13 +227,14 @@ variable "job_partitions_in_database" {
   description = "Job to insert partitions IDs in the database"
   type = object({
     name               = optional(string, "job-partitions-in-database")
-    image              = string
-    tag                = string
+    image              = optional(string, "rtsp/mongosh")
+    tag                = optional(string)
     image_pull_policy  = optional(string, "IfNotPresent")
     image_pull_secrets = optional(string, "")
     node_selector      = optional(any, {})
     annotations        = optional(any, {})
   })
+  default = {}
 }
 
 # Parameters of control plane
@@ -237,8 +244,8 @@ variable "control_plane" {
     name              = optional(string, "control-plane")
     service_type      = optional(string, "ClusterIP")
     replicas          = optional(number, 2)
-    image             = string
-    tag               = string
+    image             = optional(string, "dockerhubaneo/armonik_control")
+    tag               = optional(string)
     image_pull_policy = optional(string, "IfNotPresent")
     port              = optional(number, 5001)
     limits = optional(object({
@@ -262,10 +269,10 @@ variable "control_plane" {
 variable "admin_gui" {
   description = "Parameters of the admin GUI"
   type = object({
-    api = object({
+    api = optional(object({
       name  = optional(string, "admin-api")
-      image = string
-      tag   = string
+      image = optional(string, "dockerhubaneo/armonik_admin_api")
+      tag   = optional(string)
       port  = optional(number, 3333)
       limits = optional(object({
         cpu    = optional(string)
@@ -275,11 +282,11 @@ variable "admin_gui" {
         cpu    = optional(string)
         memory = optional(string)
       }))
-    })
-    app = object({
+    }), {})
+    app = optional(object({
       name  = optional(string, "admin-app")
-      image = string
-      tag   = string
+      image = optional(string, "dockerhubaneo/armonik_admin_app")
+      tag   = optional(string)
       port  = optional(number, 1080)
       limits = optional(object({
         cpu    = optional(string)
@@ -289,13 +296,14 @@ variable "admin_gui" {
         cpu    = optional(string)
         memory = optional(string)
       }))
-    })
+    }), {})
     service_type       = optional(string, "ClusterIP")
     replicas           = optional(number, 1)
     image_pull_policy  = optional(string, "IfNotPresent")
     image_pull_secrets = optional(string, "")
     node_selector      = optional(any, {})
   })
+  default = {}
 }
 
 # Parameters of the compute plane
@@ -308,8 +316,8 @@ variable "compute_plane" {
     node_selector                    = optional(any, {})
     annotations                      = optional(any, {})
     polling_agent = object({
-      image             = string
-      tag               = string
+      image             = optional(string, "dockerhubaneo/armonik_pollingagent")
+      tag               = optional(string)
       image_pull_policy = optional(string, "IfNotPresent")
       limits = optional(object({
         cpu    = optional(string)
@@ -323,7 +331,7 @@ variable "compute_plane" {
     worker = list(object({
       name              = optional(string, "worker")
       image             = string
-      tag               = string
+      tag               = optional(string)
       image_pull_policy = optional(string, "IfNotPresent")
       limits = optional(object({
         cpu    = optional(string)
@@ -345,8 +353,8 @@ variable "ingress" {
     name              = optional(string, "ingress")
     service_type      = optional(string, "LoadBalancer")
     replicas          = optional(number, 1)
-    image             = string
-    tag               = string
+    image             = optional(string, "nginxinc/nginx-unprivileged")
+    tag               = optional(string)
     image_pull_policy = optional(string, "IfNotPresent")
     http_port         = optional(number, 5000)
     grpc_port         = optional(number, 5001)
@@ -366,6 +374,7 @@ variable "ingress" {
     generate_client_cert  = optional(bool, true)
     custom_client_ca_file = optional(string, "")
   })
+  default = {}
 }
 
 # Authentication behavior
@@ -373,8 +382,8 @@ variable "authentication" {
   description = "Authentication behavior"
   type = object({
     name                    = optional(string, "job-authentication-in-database")
-    image                   = string
-    tag                     = string
+    image                   = optional(string, "rtsp/mongosh")
+    tag                     = optional(string)
     image_pull_policy       = optional(string, "IfNotPresent")
     image_pull_secrets      = optional(string, "")
     node_selector           = optional(any, {})
@@ -382,4 +391,34 @@ variable "authentication" {
     require_authentication  = optional(bool, false)
     require_authorization   = optional(bool, false)
   })
+  default = {}
+}
+
+variable "armonik_versions" {
+  description = "Versions of all the ArmoniK components"
+  type = object({
+    infra     = string
+    core      = string
+    api       = string
+    gui       = string
+    extcsharp = string
+    samples   = string
+  })
+}
+
+variable "armonik_images" {
+  description = "Image names of all the ArmoniK components"
+  type = object({
+    infra     = set(string)
+    core      = set(string)
+    api       = set(string)
+    gui       = set(string)
+    extcsharp = set(string)
+    samples   = set(string)
+  })
+}
+
+variable "image_tags" {
+  description = "Tags of images used"
+  type        = map(string)
 }

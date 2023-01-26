@@ -9,7 +9,7 @@ resource "random_string" "prefix" {
 }
 
 locals {
-  prefix = can(coalesce(var.prefix)) ? var.prefix : "armonik-${random_string.prefix.result}"
+  prefix = try(coalesce(var.prefix), "armonik-${random_string.prefix.result}")
   tags = merge({
     "application"        = "armonik"
     "deployment version" = local.prefix
