@@ -5,6 +5,12 @@ resource "random_string" "prefix" {
   numeric = true
 }
 
+resource "kubernetes_namespace" "armonik" {
+  metadata {
+    name = var.namespace
+  }
+}
+
 locals {
   prefix    = try(coalesce(var.prefix), "armonik-${random_string.prefix.result}")
   namespace = var.namespace
