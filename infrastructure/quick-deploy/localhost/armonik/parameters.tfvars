@@ -204,6 +204,8 @@ authentication = {
   require_authorization   = false
 }
 
+object_storage_adapter = "Redis"
+
 extra_conf = {
   core = {
     MongoDB__TableStorage__PollingDelayMin = "00:00:01"
