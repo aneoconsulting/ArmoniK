@@ -5,7 +5,7 @@ module "activemq" {
   working_dir = "${path.root}/../../.."
   activemq = {
     image              = var.activemq.image_name
-    tag                = var.activemq.image_tag
+    tag                = try(coalesce(var.activemq.image_tag), local.default_tags[var.activemq.image_name])
     node_selector      = var.activemq.node_selector
     image_pull_secrets = var.activemq.image_pull_secrets
   }
@@ -18,7 +18,7 @@ module "mongodb" {
   working_dir = "${path.root}/../../.."
   mongodb = {
     image              = var.mongodb.image_name
-    tag                = var.mongodb.image_tag
+    tag                = try(coalesce(var.mongodb.image_tag), local.default_tags[var.mongodb.image_name])
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.image_pull_secrets
   }
@@ -32,7 +32,7 @@ module "redis" {
   working_dir = "${path.root}/../../.."
   redis = {
     image              = var.redis.image_name
-    tag                = var.redis.image_tag
+    tag                = try(coalesce(var.redis.image_tag), local.default_tags[var.redis.image_name])
     node_selector      = var.redis.node_selector
     image_pull_secrets = var.redis.image_pull_secrets
     max_memory         = var.redis.max_memory
@@ -43,7 +43,7 @@ module "redis" {
 resource "kubernetes_secret" "shared_storage" {
   metadata {
     name      = "shared-storage-endpoints"
-    namespace = var.namespace
+    namespace = local.namespace
   }
   data = {
     host_path         = abspath("data")
