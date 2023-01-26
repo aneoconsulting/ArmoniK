@@ -58,6 +58,18 @@ module "elasticache" {
   }
 }
 
+resource "kubernetes_secret" "elasticache_endpoints" {
+  metadata {
+    name      = "redis-endpoints"
+    namespace = var.namespace
+  }
+  data = {
+    host = module.elasticache.redis_endpoint_url.host
+    port = module.elasticache.redis_endpoint_url.port
+    url  = module.elasticache.redis_endpoint_url.url
+  }
+}
+
 # Amazon MQ
 module "mq" {
   source    = "../../../modules/aws/mq"
@@ -76,6 +88,47 @@ module "mq" {
     authentication_strategy = var.mq.authentication_strategy
     publicly_accessible     = var.mq.publicly_accessible
     kms_key_id              = local.kms_key
+  }
+}
+
+resource "kubernetes_secret" "mq_endpoints" {
+  metadata {
+    name      = "activemq-endpoints"
+    namespace = var.namespace
+  }
+  data = {
+    host    = module.mq.activemq_endpoint_url.host
+    port    = module.mq.activemq_endpoint_url.port
+    url     = module.mq.activemq_endpoint_url.url
+    web-url = module.mq.web_url
+  }
+}
+
+resource "kubernetes_secret" "mq_user" {
+  metadata {
+    name      = "activemq-user"
+    namespace = var.namespace
+  }
+  data = {
+    username = module.mq.user.username
+    password = module.mq.user.password
+  }
+  type = "kubernetes.io/basic-auth"
+}
+
+# Shared storage
+resource "kubernetes_secret" "shared_storage" {
+  metadata {
+    name      = "shared-storage-endpoints"
+    namespace = var.namespace
+  }
+  data = {
+    service_url       = "https://s3.${var.region}.amazonaws.com"
+    kms_key_id        = module.s3_fs.kms_key_id
+    name              = module.s3_fs.s3_bucket_name
+    access_key_id     = ""
+    secret_access_key = ""
+    file_storage_type = "S3"
   }
 }
 
@@ -123,9 +176,6 @@ module "efs_persistent_volume" {
   }
   tags = local.tags
 }
-
-
-
 
 # Decrypt objects in S3
 data "aws_iam_policy_document" "decrypt_object" {
@@ -192,9 +242,9 @@ locals {
       web_url             = module.mq.web_url
       allow_host_mismatch = false
       credentials = {
-        secret       = module.mq.user_credentials.secret
-        username_key = module.mq.user_credentials.username_key
-        password_key = module.mq.user_credentials.password_key
+        secret       = ""
+        username_key = ""
+        password_key = ""
       }
       certificates = {
         secret      = ""

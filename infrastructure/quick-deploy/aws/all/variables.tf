@@ -52,13 +52,19 @@ variable "vpc" {
   description = "Parameters of AWS VPC"
   type = object({
     # list of CIDR block associated with the private subnet
-    cidr_block_private = optional(list(string), ["10.0.0.0/18", "10.0.64.0/18", "10.0.128.0/18"])
+    cidr_block_private = optional(list(string), [
+      "10.0.0.0/18", "10.0.64.0/18", "10.0.128.0/18"
+    ])
     # list of CIDR block associated with the public subnet
-    cidr_block_public = optional(list(string), ["10.0.192.0/24", "10.0.193.0/24", "10.0.194.0/24"])
+    cidr_block_public = optional(list(string), [
+      "10.0.192.0/24", "10.0.193.0/24", "10.0.194.0/24"
+    ])
     # Main CIDR block associated to the VPC
     main_cidr_block = optional(string, "10.0.0.0/16")
     # cidr block associated with pod
-    pod_cidr_block_private                          = optional(list(string), ["10.1.0.0/16", "10.2.0.0/16", "10.3.0.0/16"])
+    pod_cidr_block_private = optional(list(string), [
+      "10.1.0.0/16", "10.2.0.0/16", "10.3.0.0/16"
+    ])
     enable_private_subnet                           = optional(bool, true)
     flow_log_cloudwatch_log_group_retention_in_days = optional(number, 30)
     peering = optional(object({
@@ -297,7 +303,6 @@ variable "pv_efs" {
   default = null
 }
 
-
 variable "seq" {
   description = "Seq configuration"
   type = object({
@@ -358,6 +363,7 @@ variable "metrics_exporter" {
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
+    extra_conf    = optional(map(string), {})
   })
 }
 
@@ -369,6 +375,7 @@ variable "partition_metrics_exporter" {
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
+    extra_conf    = optional(map(string), {})
   })
   default = null
 }

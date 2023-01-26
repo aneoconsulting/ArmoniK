@@ -163,13 +163,23 @@ metrics_exporter = {
   image_name    = "dockerhubaneo/armonik_control_metrics"
   image_tag     = "0.8.3"
   node_selector = { "grid/type" = "Operator" }
+  extra_conf = {
+    MongoDB__AllowInsecureTls           = true
+    Serilog__MinimumLevel               = "Information"
+    MongoDB__TableStorage__PollingDelay = "00:00:01"
+  }
 }
 
-//parition_metrics_exporter = {
-//  image_name = "dockerhubaneo/armonik_control_partition_metrics"
-//  image_tag = "0.8.3"
-//  node_selector = { "grid/type" = "Operator" }
-//}
+/*parition_metrics_exporter = {
+  image_name    = "dockerhubaneo/armonik_control_partition_metrics"
+  image_tag     = "0.8.3"
+  node_selector = { "grid/type" = "Operator" }
+  extra_conf    = {
+    MongoDB__AllowInsecureTls           = true
+    Serilog__MinimumLevel               = "Information"
+    MongoDB__TableStorage__PollingDelay = "00:00:01"
+  }
+}*/
 
 fluent_bit = {
   image_name   = "fluent/fluent-bit"
@@ -304,7 +314,18 @@ authentication = {
 
 extra_conf = {
   core = {
-    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    Amqp__AllowHostMismatch                    = false
+    Amqp__MaxPriority                          = "10"
+    Amqp__MaxRetries                           = "5"
+    Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
+    Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
+    Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+    MongoDB__TableStorage__PollingDelay        = "00:00:01"
+    MongoDB__DataRetention                     = "10.00:00:00"
+    MongoDB__AllowInsecureTls                  = true
+    Redis__Timeout                             = 3000
+    Redis__SslHost                             = ""
   }
 }

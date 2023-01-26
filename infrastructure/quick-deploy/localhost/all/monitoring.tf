@@ -16,6 +16,26 @@ module "seq" {
   system_ram_target = var.seq.system_ram_target
 }
 
+resource "kubernetes_secret" "seq" {
+  metadata {
+    name      = "seq-endpoints"
+    namespace = local.namespace
+  }
+  data = var.seq != null ? {
+    host    = module.seq.0.host
+    port    = module.seq.0.port
+    url     = module.seq.0.url
+    web_url = module.seq.0.web_url
+    enabled = true
+    } : {
+    host    = null
+    port    = null
+    url     = null
+    web_url = null
+    enabled = false
+  }
+}
+
 # node exporter
 module "node_exporter" {
   count         = var.node_exporter != null ? 1 : 0
@@ -36,14 +56,28 @@ module "metrics_exporter" {
   namespace            = local.namespace
   service_type         = var.metrics_exporter.service_type
   node_selector        = var.metrics_exporter.node_selector
-  logging_level        = var.logging_level
   storage_endpoint_url = local.storage_endpoint_url
   docker_image = {
     image              = var.metrics_exporter.image_name
     tag                = var.metrics_exporter.image_tag
     image_pull_secrets = var.metrics_exporter.pull_secrets
   }
+  extra_conf  = var.metrics_exporter.extra_conf
   working_dir = "${path.root}/../../.."
+}
+
+resource "kubernetes_secret" "metrics_exporter" {
+  metadata {
+    name      = "metrics-exporter-endpoints"
+    namespace = local.namespace
+  }
+  data = {
+    name      = module.metrics_exporter.name
+    host      = module.metrics_exporter.host
+    port      = module.metrics_exporter.port
+    url       = module.metrics_exporter.url
+    namespace = module.metrics_exporter.namespace
+  }
 }
 
 # Partition metrics exporter
@@ -53,7 +87,6 @@ module "partition_metrics_exporter" {
   namespace            = local.namespace
   service_type         = var.partition_metrics_exporter.service_type
   node_selector        = var.partition_metrics_exporter.node_selector
-  logging_level        = var.logging_level
   storage_endpoint_url = local.storage_endpoint_url
   metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
   docker_image = {
@@ -61,8 +94,29 @@ module "partition_metrics_exporter" {
     tag                = var.partition_metrics_exporter.image_tag
     image_pull_secrets = var.partition_metrics_exporter.pull_secrets
   }
+  extra_conf  = var.partition_metrics_exporter.extra_conf
   working_dir = "${path.root}/../../.."
   depends_on  = [module.metrics_exporter]
+}
+
+resource "kubernetes_secret" "partition_metrics_exporter" {
+  metadata {
+    name      = "partition-metrics-exporter-endpoints"
+    namespace = local.namespace
+  }
+  data = var.partition_metrics_exporter != null ? {
+    name      = module.partition_metrics_exporter.name
+    host      = module.partition_metrics_exporter.host
+    port      = module.partition_metrics_exporter.port
+    url       = module.partition_metrics_exporter.url
+    namespace = module.partition_metrics_exporter.namespace
+    } : {
+    name      = null
+    host      = null
+    port      = null
+    url       = null
+    namespace = null
+  }
 }
 
 # Prometheus
@@ -99,6 +153,24 @@ module "grafana" {
   authentication = var.grafana.authentication
 }
 
+resource "kubernetes_secret" "grafana" {
+  metadata {
+    name      = "grafana-endpoints"
+    namespace = local.namespace
+  }
+  data = var.grafana != null ? {
+    host    = module.grafana.0.host
+    port    = module.grafana.0.port
+    url     = module.grafana.0.url
+    enabled = true
+    } : {
+    host    = null
+    port    = null
+    url     = null
+    enabled = false
+  }
+}
+
 # Fluent-bit
 module "fluent_bit" {
   source        = "../../../modules/monitoring/fluent-bit"
@@ -122,6 +194,20 @@ module "fluent_bit" {
   } : {}
 }
 
+resource "kubernetes_secret" "fluent_bit" {
+  metadata {
+    name      = "fluent-bit-endpoints"
+    namespace = local.namespace
+  }
+  data = {
+    is_daemonset = module.fluent_bit.is_daemonset
+    name         = module.fluent_bit.container_name
+    image        = module.fluent_bit.image
+    tag          = module.fluent_bit.tag
+    envvars      = module.fluent_bit.configmaps.envvars
+    config       = module.fluent_bit.configmaps.config
+  }
+}
 
 locals {
   monitoring = {
