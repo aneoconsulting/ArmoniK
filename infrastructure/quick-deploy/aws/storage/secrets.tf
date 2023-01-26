@@ -1,4 +1,26 @@
 # Secrets
+resource "kubernetes_secret" "elasticache_client_certificate" {
+  metadata {
+    name      = "redis-user-certificates"
+    namespace = var.namespace
+  }
+  data = {
+    "chain.pem" = ""
+  }
+}
+
+resource "kubernetes_secret" "elasticache_user" {
+  metadata {
+    name      = "redis-user"
+    namespace = var.namespace
+  }
+  data = {
+    username = ""
+    password = ""
+  }
+  type = "kubernetes.io/basic-auth"
+}
+
 resource "kubernetes_secret" "elasticache_endpoints" {
   metadata {
     name      = "redis-endpoints"
@@ -11,16 +33,13 @@ resource "kubernetes_secret" "elasticache_endpoints" {
   }
 }
 
-resource "kubernetes_secret" "mq_endpoints" {
+resource "kubernetes_secret" "mq_client_certificate" {
   metadata {
-    name      = "activemq-endpoints"
+    name      = "activemq-user-certificates"
     namespace = var.namespace
   }
   data = {
-    host    = module.mq.activemq_endpoint_url.host
-    port    = module.mq.activemq_endpoint_url.port
-    url     = module.mq.activemq_endpoint_url.url
-    web-url = module.mq.web_url
+    "chain.pem" = ""
   }
 }
 
@@ -34,6 +53,19 @@ resource "kubernetes_secret" "mq_user" {
     password = module.mq.user.password
   }
   type = "kubernetes.io/basic-auth"
+}
+
+resource "kubernetes_secret" "mq_endpoints" {
+  metadata {
+    name      = "activemq-endpoints"
+    namespace = var.namespace
+  }
+  data = {
+    host    = module.mq.activemq_endpoint_url.host
+    port    = module.mq.activemq_endpoint_url.port
+    url     = module.mq.activemq_endpoint_url.url
+    web-url = module.mq.web_url
+  }
 }
 
 resource "kubernetes_secret" "shared_storage" {
