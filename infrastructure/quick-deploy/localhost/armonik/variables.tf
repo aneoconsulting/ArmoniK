@@ -238,9 +238,11 @@ variable "object_storage_adapter" {
 variable "table_storage_adapter" {
   description = "Table plugin to use."
   type        = string
+  default = "ArmoniK.Adapters.MongoDB.TableStorage"
 }
 
 variable "queue_storage_adapter" {
   description = "Queue plugin to use."
   type        = string
+  default = "ArmoniK.Adapters.Amqp.QueueStorage"
 }

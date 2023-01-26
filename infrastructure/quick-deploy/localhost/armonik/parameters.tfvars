@@ -205,8 +205,6 @@ authentication = {
 }
 
 object_storage_adapter = "Redis"
-table_storage_adapter  = "ArmoniK.Adapters.MongoDB.TableStorage"
-queue_storage_adapter  = "ArmoniK.Adapters.Amqp.QueueStorage"
 
 extra_conf = {
   core = {
