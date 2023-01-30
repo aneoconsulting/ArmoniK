@@ -27,6 +27,7 @@ module "mongodb" {
 
 # Redis
 module "redis" {
+  count       = var.redis != null ? 1 : 0
   source      = "../../../modules/onpremise-storage/redis"
   namespace   = local.namespace
   working_dir = "${path.root}/../../.."
@@ -39,9 +40,37 @@ module "redis" {
   }
 }
 
+# Minio
+module "minio" {
+  count     = var.minio != null ? 1 : 0
+  source    = "../../../modules/onpremise-storage/minio"
+  namespace = local.namespace
+  minioconfig = {
+    host          = var.minio.host
+    port          = var.minio.port
+    login         = var.minio.login
+    password      = var.minio.password
+    bucket_name   = var.minio.default_bucket
+    image         = var.minio.image_name
+    tag           = try(coalesce(var.minio.image_tag), local.default_tags[var.minio.image_name])
+    node_selector = var.minio.node_selector
+  }
+}
+
 # Storage
 locals {
+  object_storage_adapter = coalesce(
+    length(module.redis) > 0 ? "Redis" : null,
+    length(module.minio) > 0 ? "S3" : null,
+  )
+  table_storage_adapter = "ArmoniK.Adapters.MongoDB.TableStorage"
+  queue_storage_adapter = "ArmoniK.Adapters.Amqp.QueueStorage"
   storage_endpoint_url = {
+    deployed_object_storages = concat(
+      ["MongoDB"],
+      length(module.redis) > 0 ? ["Redis"] : [],
+      length(module.minio) > 0 ? ["S3"] : [],
+    )
     activemq = {
       url     = module.activemq.url
       host    = module.activemq.host
@@ -58,22 +87,31 @@ locals {
       }
       allow_host_mismatch = true
     }
-    redis = {
-      url  = module.redis.url
-      host = module.redis.host
-      port = module.redis.port
+    redis = length(module.redis) > 0 ? {
+      url  = module.redis[0].url
+      host = module.redis[0].host
+      port = module.redis[0].port
       credentials = {
-        secret       = module.redis.user_credentials.secret
-        username_key = module.redis.user_credentials.username_key
-        password_key = module.redis.user_credentials.password_key
+        secret       = module.redis[0].user_credentials.secret
+        username_key = module.redis[0].user_credentials.username_key
+        password_key = module.redis[0].user_credentials.password_key
       }
       certificates = {
-        secret      = module.redis.user_certificate.secret
-        ca_filename = module.redis.user_certificate.ca_filename
+        secret      = module.redis[0].user_certificate.secret
+        ca_filename = module.redis[0].user_certificate.ca_filename
       }
       timeout  = 30000
       ssl_host = "127.0.0.1"
-    }
+    } : null
+    s3 = length(module.minio) > 0 ? {
+      url                   = module.minio[0].url
+      host                  = module.minio[0].host
+      port                  = module.minio[0].port
+      login                 = module.minio[0].login
+      password              = module.minio[0].password
+      bucket_name           = module.minio[0].bucket_name
+      must_force_path_style = module.minio[0].must_force_path_style
+    } : null
     mongodb = {
       url  = module.mongodb.url
       host = module.mongodb.host
