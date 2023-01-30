@@ -20,8 +20,8 @@ module "eks" {
     cluster_endpoint_public_access_cidrs  = var.eks.cluster_endpoint_public_access_cidrs
     cluster_log_retention_in_days         = var.eks.cluster_log_retention_in_days
     docker_images = {
-      cluster_autoscaler = local.ecr_images["${var.eks.docker_images.cluster_autoscaler.image}:${var.eks.docker_images.cluster_autoscaler.tag}"]
-      instance_refresh   = local.ecr_images["${var.eks.docker_images.instance_refresh.image}:${var.eks.docker_images.instance_refresh.tag}"]
+      cluster_autoscaler = local.ecr_images["${var.eks.docker_images.cluster_autoscaler.image}:${try(coalesce(var.eks.docker_images.cluster_autoscaler.tag), "")}"]
+      instance_refresh   = local.ecr_images["${var.eks.docker_images.instance_refresh.image}:${try(coalesce(var.eks.docker_images.instance_refresh.tag), "")}"]
     }
     cluster_autoscaler = var.eks.cluster_autoscaler
     encryption_keys = {
@@ -36,23 +36,14 @@ module "eks" {
   eks_worker_groups             = var.eks_worker_groups
 }
 
-resource "null_resource" "eks_namespace" {
-  triggers = {
-    namespace = var.namespace
-  }
-
-  provisioner "local-exec" {
-    command = "kubectl create namespace ${self.triggers.namespace}"
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = "kubectl delete namespace ${self.triggers.namespace}"
+resource "kubernetes_namespace" "armonik" {
+  metadata {
+    name = var.namespace
   }
 
   depends_on = [module.eks]
 }
 
 locals {
-  namespace = null_resource.eks_namespace.triggers.namespace
+  namespace = kubernetes_namespace.armonik.metadata[0].name
 }

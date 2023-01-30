@@ -85,8 +85,8 @@ module "mongodb" {
   namespace   = local.namespace
   working_dir = "${path.root}/../../.."
   mongodb = {
-    image              = local.ecr_images["${var.mongodb.image_name}:${var.mongodb.image_tag}"].name
-    tag                = local.ecr_images["${var.mongodb.image_name}:${var.mongodb.image_tag}"].tag
+    image              = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
+    tag                = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.pull_secrets
   }
@@ -115,10 +115,10 @@ module "efs_persistent_volume" {
     image_pull_secrets = var.pv_efs.csi_driver.pull_secrets
     node_selector      = var.pv_efs.csi_driver.node_selector
     docker_images = {
-      efs_csi               = local.ecr_images["${var.pv_efs.csi_driver.images.efs_csi.name}:${var.pv_efs.csi_driver.images.efs_csi.tag}"]
-      livenessprobe         = local.ecr_images["${var.pv_efs.csi_driver.images.livenessprobe.name}:${var.pv_efs.csi_driver.images.livenessprobe.tag}"]
-      node_driver_registrar = local.ecr_images["${var.pv_efs.csi_driver.images.node_driver_registrar.name}:${var.pv_efs.csi_driver.images.node_driver_registrar.tag}"]
-      external_provisioner  = local.ecr_images["${var.pv_efs.csi_driver.images.external_provisioner.name}:${var.pv_efs.csi_driver.images.external_provisioner.tag}"]
+      efs_csi               = local.ecr_images["${var.pv_efs.csi_driver.images.efs_csi.name}:${try(coalesce(var.pv_efs.csi_driver.images.efs_csi.tag), "")}"]
+      livenessprobe         = local.ecr_images["${var.pv_efs.csi_driver.images.livenessprobe.name}:${try(coalesce(var.pv_efs.csi_driver.images.livenessprobe.tag), "")}"]
+      node_driver_registrar = local.ecr_images["${var.pv_efs.csi_driver.images.node_driver_registrar.name}:${try(coalesce(var.pv_efs.csi_driver.images.node_driver_registrar.tag), "")}"]
+      external_provisioner  = local.ecr_images["${var.pv_efs.csi_driver.images.external_provisioner.name}:${try(coalesce(var.pv_efs.csi_driver.images.external_provisioner.tag), "")}"]
     }
   }
   tags = local.tags
