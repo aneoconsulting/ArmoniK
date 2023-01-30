@@ -5,9 +5,9 @@ resource "kubernetes_config_map" "core_config" {
     namespace = var.namespace
   }
   data = merge(var.extra_conf.core, {
-    Components__TableStorage                   = "ArmoniK.Adapters.MongoDB.TableStorage"
-    Components__ObjectStorage                  = "ArmoniK.Adapters.Redis.ObjectStorage"
-    Components__QueueStorage                   = "ArmoniK.Adapters.Amqp.QueueStorage"
+    Components__TableStorage                   = var.table_storage_adapter
+    Components__ObjectStorage                  = local.object_storage_adapter
+    Components__QueueStorage                   = var.queue_storage_adapter
     MongoDB__Host                              = local.mongodb_host
     MongoDB__Port                              = local.mongodb_port
     MongoDB__CAFile                            = (local.mongodb_certificates_secret != "" ? "/mongodb/${local.mongodb_certificates_ca_filename}" : "")
@@ -25,6 +25,11 @@ resource "kubernetes_config_map" "core_config" {
     Redis__ClientName                          = "ArmoniK.Core"
     Redis__Ssl                                 = "true"
     Redis__SslHost                             = local.redis_ssl_host
+    S3__EndpointUrl                            = try(var.storage_endpoint_url.s3.url, "")
+    S3__Login                                  = try(var.storage_endpoint_url.s3.login, "")
+    S3__Password                               = try(var.storage_endpoint_url.s3.password, "")
+    S3__MustForcePathStyle                     = try(var.storage_endpoint_url.s3.must_force_path_style, false)
+    S3__BucketName                             = try(var.storage_endpoint_url.s3.bucket_name, "")
     Amqp__Host                                 = local.activemq_host
     Amqp__Port                                 = local.activemq_port
     Amqp__CaPath                               = (local.activemq_certificates_secret != "" ? "/amqp/${local.activemq_certificates_ca_filename}" : "")

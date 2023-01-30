@@ -42,8 +42,8 @@ module "seq" {
   port          = var.seq.port
   node_selector = var.seq.node_selector
   docker_image = {
-    image              = local.ecr_images["${var.seq.image_name}:${var.seq.image_tag}"].image
-    tag                = local.ecr_images["${var.seq.image_name}:${var.seq.image_tag}"].tag
+    image              = local.ecr_images["${var.seq.image_name}:${try(coalesce(var.seq.image_tag), "")}"].image
+    tag                = local.ecr_images["${var.seq.image_name}:${try(coalesce(var.seq.image_tag), "")}"].tag
     image_pull_secrets = var.seq.pull_secrets
   }
   working_dir       = "${path.root}/../../.."
@@ -58,8 +58,8 @@ module "node_exporter" {
   namespace     = local.namespace
   node_selector = var.node_exporter.node_selector
   docker_image = {
-    image              = local.ecr_images["${var.node_exporter.image_name}:${var.node_exporter.image_tag}"].image
-    tag                = local.ecr_images["${var.node_exporter.image_name}:${var.node_exporter.image_tag}"].tag
+    image              = local.ecr_images["${var.node_exporter.image_name}:${try(coalesce(var.node_exporter.image_tag), "")}"].image
+    tag                = local.ecr_images["${var.node_exporter.image_name}:${try(coalesce(var.node_exporter.image_tag), "")}"].tag
     image_pull_secrets = var.node_exporter.pull_secrets
   }
   working_dir = "${path.root}/../../../.."
@@ -74,8 +74,8 @@ module "metrics_exporter" {
   logging_level        = var.logging_level
   storage_endpoint_url = local.storage_endpoint_url
   docker_image = {
-    image              = local.ecr_images["${var.metrics_exporter.image_name}:${var.metrics_exporter.image_tag}"].image
-    tag                = local.ecr_images["${var.metrics_exporter.image_name}:${var.metrics_exporter.image_tag}"].tag
+    image              = local.ecr_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].image
+    tag                = local.ecr_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].tag
     image_pull_secrets = var.metrics_exporter.pull_secrets
   }
   working_dir = "${path.root}/../../.."
@@ -92,8 +92,8 @@ module "partition_metrics_exporter" {
   storage_endpoint_url = local.storage_endpoint_url
   metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
   docker_image = {
-    image              = local.ecr_images["${var.partition_metrics_exporter.image_name}:${var.partition_metrics_exporter.image_tag}"].image
-    tag                = local.ecr_images["${var.partition_metrics_exporter.image_name}:${var.partition_metrics_exporter.image_tag}"].tag
+    image              = local.ecr_images["${var.partition_metrics_exporter.image_name}:${try(coalesce(var.partition_metrics_exporter.image_tag), "")}"].image
+    tag                = local.ecr_images["${var.partition_metrics_exporter.image_name}:${try(coalesce(var.partition_metrics_exporter.image_tag), "")}"].tag
     image_pull_secrets = var.partition_metrics_exporter.pull_secrets
   }
   working_dir = "${path.root}/../../.."
@@ -109,8 +109,8 @@ module "prometheus" {
   metrics_exporter_url           = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
   partition_metrics_exporter_url = length(module.partition_metrics_exporter) == 1 ? "${module.partition_metrics_exporter[0].host}:${module.partition_metrics_exporter[0].port}" : null
   docker_image = {
-    image              = local.ecr_images["${var.prometheus.image_name}:${var.prometheus.image_tag}"].image
-    tag                = local.ecr_images["${var.prometheus.image_name}:${var.prometheus.image_tag}"].tag
+    image              = local.ecr_images["${var.prometheus.image_name}:${try(coalesce(var.prometheus.image_tag), "")}"].image
+    tag                = local.ecr_images["${var.prometheus.image_name}:${try(coalesce(var.prometheus.image_tag), "")}"].tag
     image_pull_secrets = var.prometheus.pull_secrets
   }
   working_dir = "${path.root}/../../.."
@@ -126,8 +126,8 @@ module "grafana" {
   node_selector  = var.grafana.node_selector
   prometheus_url = module.prometheus.url
   docker_image = {
-    image              = local.ecr_images["${var.grafana.image_name}:${var.grafana.image_tag}"].image
-    tag                = local.ecr_images["${var.grafana.image_name}:${var.grafana.image_tag}"].tag
+    image              = local.ecr_images["${var.grafana.image_name}:${try(coalesce(var.grafana.image_tag), "")}"].image
+    tag                = local.ecr_images["${var.grafana.image_name}:${try(coalesce(var.grafana.image_tag), "")}"].tag
     image_pull_secrets = var.grafana.pull_secrets
   }
   working_dir    = "${path.root}/../../.."
@@ -151,8 +151,8 @@ module "fluent_bit" {
   node_selector = var.fluent_bit.node_selector
   fluent_bit = {
     container_name     = "fluent-bit"
-    image              = local.ecr_images["${var.fluent_bit.image_name}:${var.fluent_bit.image_tag}"].image
-    tag                = local.ecr_images["${var.fluent_bit.image_name}:${var.fluent_bit.image_tag}"].tag
+    image              = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].image
+    tag                = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].tag
     image_pull_secrets = var.fluent_bit.pull_secrets
     is_daemonset       = var.fluent_bit.is_daemonset
     http_server        = (var.fluent_bit.http_port == 0 ? "Off" : "On")

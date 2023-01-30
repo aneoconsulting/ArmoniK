@@ -60,3 +60,11 @@ output "ingress" {
     admin_app_url     = local.admin_app_url
   }
 }
+
+output "objects_storage_adapter_check" {
+  value = var.object_storage_adapter
+  precondition {
+    condition     = contains(local.deployed_object_storages, var.object_storage_adapter)
+    error_message = "can't use ${var.object_storage_adapter} because it has not been deployed. Deployed storages are : ${join(",", local.deployed_object_storages)}"
+  }
+}

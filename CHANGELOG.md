@@ -2,6 +2,19 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main) (2023-01-06)
 
+## [v2.10.2](https://github.com/aneoconsulting/armonik/tree/v2.10.2) (2023-01-23)
+
+Changed
+-
+
+* Update Armonik.Extension.Csharp version from 0.8.1 to 0.8.2
+
+Fixed
+-
+
+* Correction of TaskId result with correct request for SubmitAsync call. more infos [here](https://github.com/aneoconsulting/ArmoniK/issues/833)
+
+
 ## [v2.10.1](https://github.com/aneoconsulting/armonik/tree/v2.10.1) (2023-01-06)
 
 Changed
