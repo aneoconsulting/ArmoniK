@@ -77,12 +77,14 @@ metrics_server = {
 keda = {
   node_selector = { "grid/type" = "Operator" }
 }
+# Object storage
 elasticache = {
   engine             = "redis"
   engine_version     = "6.x"
   node_type          = "cache.r4.large"
   num_cache_clusters = 2
 }
+#s3_os = {}
 mq = {
   engine_type        = "ActiveMQ"
   engine_version     = "5.16.4"
