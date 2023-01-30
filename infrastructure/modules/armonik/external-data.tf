@@ -76,7 +76,7 @@ locals {
   })
 
   admin_api_url = "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.api_port}/api"
-  admin_app_url = "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.app_port}/"
+  admin_app_url = "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.app_port}"
 }
 
 # Node IP of ingress pod
