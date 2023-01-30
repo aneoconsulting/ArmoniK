@@ -51,7 +51,7 @@ server {
     location = / {
         rewrite ^ $scheme://$http_host/admin/$accept_language/ permanent;
     }
-    location /admin {
+    location = /admin {
         rewrite ^ $scheme://$http_host/admin/$accept_language/ permanent;
     }
     location /admin/ {
