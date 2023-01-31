@@ -29,12 +29,7 @@ module "armonik" {
     tag = try(coalesce(var.control_plane.tag), local.default_tags[var.control_plane.image])
   })
   admin_gui = merge(var.admin_gui, {
-    api = merge(var.admin_gui.api, {
-      tag = try(coalesce(var.admin_gui.api.tag), local.default_tags[var.admin_gui.api.image])
-    })
-    app = merge(var.admin_gui.app, {
-      tag = try(coalesce(var.admin_gui.app.tag), local.default_tags[var.admin_gui.app.image])
-    })
+    tag = try(coalesce(var.admin_gui.tag), local.default_tags[var.admin_gui.image])
   })
   ingress = merge(var.ingress, {
     tag = try(coalesce(var.ingress.tag), local.default_tags[var.ingress.image])

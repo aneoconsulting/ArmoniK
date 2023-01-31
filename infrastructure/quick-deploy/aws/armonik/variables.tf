@@ -116,33 +116,17 @@ variable "control_plane" {
 variable "admin_gui" {
   description = "Parameters of the admin GUI"
   type = object({
-    api = object({
-      name  = string
-      image = string
-      tag   = string
-      port  = number
-      limits = object({
-        cpu    = string
-        memory = string
-      })
-      requests = object({
-        cpu    = string
-        memory = string
-      })
+    name  = string
+    image = string
+    tag   = string
+    port  = number
+    limits = object({
+      cpu    = string
+      memory = string
     })
-    app = object({
-      name  = string
-      image = string
-      tag   = string
-      port  = number
-      limits = object({
-        cpu    = string
-        memory = string
-      })
-      requests = object({
-        cpu    = string
-        memory = string
-      })
+    requests = object({
+      cpu    = string
+      memory = string
     })
     service_type       = string
     replicas           = number

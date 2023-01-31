@@ -48,10 +48,6 @@ server {
         proxy_pass ${local.admin_app_url};
     }
 
-    location /api {
-        proxy_pass ${local.admin_api_url};
-    }
-
 
     location ~* ^/armonik\. {
 %{if var.ingress != null ? var.ingress.mtls : false~}
