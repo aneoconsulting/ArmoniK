@@ -82,3 +82,28 @@ resource "kubernetes_secret" "shared_storage" {
     file_storage_type = "S3"
   }
 }
+
+resource "kubernetes_secret" "s3_endpoints" {
+  metadata {
+    name      = "s3-endpoints"
+    namespace = var.namespace
+  }
+  data = {
+    url                   = "https://s3.${var.region}.amazonaws.com"
+    kms_key_id            = module.s3_os.kms_key_id
+    login                 = ""
+    password              = ""
+    bucket_name           = module.s3_os.s3_bucket_name
+    must_force_path_style = false
+  }
+}
+
+resource "kubernetes_secret" "deployed_object_storage" {
+  metadata {
+    name      = "deployed-object-storage"
+    namespace = var.namespace
+  }
+  data = {
+    list = join(",", var.object_storages_to_be_deployed)
+  }
+}

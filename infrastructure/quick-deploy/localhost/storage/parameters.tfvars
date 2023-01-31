@@ -32,3 +32,16 @@ redis = {
   image_pull_secrets = ""
   max_memory         = "12000mb"
 }
+
+# Parameters for minio
+minio = {
+  host               = "minio"
+  bucket_name        = "minioBucket"
+  image              = "quay.io/minio/minio"
+  tag                = "latest"
+  image_pull_secrets = ""
+  node_selector      = {}
+}
+
+# The list of object storage to be deployed among : "MongoDB", "Redis", "S3", "LocalStorage"
+object_storages_to_be_deployed = ["Redis", "S3"]

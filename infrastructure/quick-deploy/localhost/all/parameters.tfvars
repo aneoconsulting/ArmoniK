@@ -1,3 +1,7 @@
+# The list of object storage to be deployed among : "MongoDB", "Redis", "S3", "LocalStorage"
+object_storages_to_be_deployed = ["Redis"]
+object_storage_adapter         = "Redis"
+
 # Uncomment to deploy metrics server
 #metrics_server = {}
 
@@ -17,6 +21,12 @@ mongodb = {
 redis = {
   image_name = "redis"
   image_tag  = "6.2.7"
+}
+
+# Parameters for minio
+minio = {
+  image_name = "quay.io/minio/minio"
+  image_tag  = "RELEASE.2023-01-18T04-36-38Z.fips"
 }
 
 seq = {

@@ -33,4 +33,7 @@ module "armonik" {
     kubernetes_secret.seq,
     kubernetes_secret.shared_storage
   ]
+  object_storage_adapter = var.object_storage_adapter
+  queue_storage_adapter  = var.queue_storage_adapter
+  table_storage_adapter  = var.table_storage_adapter
 }

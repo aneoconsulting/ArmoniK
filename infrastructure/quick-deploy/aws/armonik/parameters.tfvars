@@ -209,6 +209,8 @@ authentication = {
   require_authorization   = false
 }
 
+object_storage_adapter = "Redis"
+
 extra_conf = {
   core = {
     Amqp__AllowHostMismatch                    = false
@@ -226,3 +228,4 @@ extra_conf = {
     Redis__SslHost                             = ""
   }
 }
+

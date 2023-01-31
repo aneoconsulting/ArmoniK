@@ -52,6 +52,31 @@ resource "kubernetes_secret" "shared_storage" {
   }
 }
 
+# minio
+module "minio" {
+  count     = (contains([for each in var.object_storages_to_be_deployed : lower(each)], lower("s3"))) ? 1 : 0
+  source    = "../../../modules/onpremise-storage/minio"
+  namespace = var.namespace
+  minio = {
+    image              = var.minio.image_name
+    tag                = try(coalesce(var.minio.image_tag), local.default_tags[var.minio.image_name])
+    node_selector      = var.minio.node_selector
+    image_pull_secrets = var.minio.image_pull_secrets
+    host               = var.minio.host
+    bucket_name        = var.minio.bucket_name
+  }
+}
+
+resource "kubernetes_secret" "deployed_object_storage" {
+  metadata {
+    name      = "deployed-object-storage"
+    namespace = var.namespace
+  }
+  data = {
+    list = join(",", var.object_storages_to_be_deployed)
+  }
+}
+
 # Storage
 locals {
   storage_endpoint_url = {
@@ -89,5 +114,10 @@ locals {
       file_storage_type = "HostPath"
       file_server_ip    = ""
     }
+    s3 = {
+      url         = try(module.minio[0].url, "")
+      bucket_name = try(module.minio[0].bucket_name, "")
+    }
+    deployed_object_storages = var.object_storages_to_be_deployed
   }
 }

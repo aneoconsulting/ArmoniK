@@ -1,3 +1,10 @@
+data "kubernetes_secret" "deployed_object_storage" {
+  metadata {
+    name      = local.secrets.deployed_object_storage_secret
+    namespace = var.namespace
+  }
+}
+
 data "kubernetes_secret" "shared_storage" {
   metadata {
     name      = local.secrets.shared_storage_secret
@@ -36,6 +43,14 @@ data "kubernetes_secret" "seq" {
 data "kubernetes_secret" "grafana" {
   metadata {
     name      = local.secrets.grafana_secret
+    namespace = var.namespace
+  }
+}
+
+data "kubernetes_secret" "s3_endpoints" {
+  count = lower(var.object_storage_adapter) == "s3" ? 1 : 0
+  metadata {
+    name      = local.secrets.s3_secret
     namespace = var.namespace
   }
 }

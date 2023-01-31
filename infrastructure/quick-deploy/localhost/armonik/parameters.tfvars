@@ -204,6 +204,8 @@ authentication = {
   require_authorization   = false
 }
 
+object_storage_adapter = "S3"
+
 extra_conf = {
   core = {
     Amqp__AllowHostMismatch                    = true

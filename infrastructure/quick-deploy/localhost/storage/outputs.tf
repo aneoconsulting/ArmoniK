@@ -8,6 +8,11 @@ output "storage_endpoint_url" {
     redis = {
       url = module.redis.url
     }
+    s3 = {
+      url         = try(module.minio[0].url, "")
+      bucket_name = try(module.minio[0].bucket_name, "")
+    }
+    deployed_object_storages = var.object_storages_to_be_deployed
     mongodb = {
       url = module.mongodb.url
     }

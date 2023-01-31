@@ -5,7 +5,7 @@ PARAMETERS_FILE?=parameters.tfvars
 VERSIONS_FILE?=../../../../versions.tfvars.json
 STATE_FILE=armonik-terraform.tfstate
 
-# Randomly generated string that is preserved accross calls
+# Randomly generated string that is preserved across calls
 RANDOM_PREFIX != [ -e $(GENERATED_DIR)/.prefix ] || { mkdir -p $(GENERATED_DIR) && tr -dc '[a-z0-9]' </dev/urandom | head -c 10 > $(GENERATED_DIR)/.prefix ; } && cat $(GENERATED_DIR)/.prefix
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
