@@ -1,18 +1,18 @@
 output "storage_endpoint_url" {
   description = "Storage endpoints URLs"
   value = {
+    deployed_object_storages = var.object_storages_to_be_deployed
     activemq = {
       url     = module.activemq.url
       web_url = module.activemq.web_url
     }
     redis = {
-      url = module.redis.url
+      url = try(module.redis[0].url, "")
     }
     s3 = {
       url         = try(module.minio[0].url, "")
       bucket_name = try(module.minio[0].bucket_name, "")
     }
-    deployed_object_storages = var.object_storages_to_be_deployed
     mongodb = {
       url = module.mongodb.url
     }

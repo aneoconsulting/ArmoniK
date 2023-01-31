@@ -4,7 +4,7 @@ resource "kubernetes_config_map" "core_config" {
     name      = "core-configmap"
     namespace = var.namespace
   }
-  data = merge(var.extra_conf.core, {
+  data = merge(var.extra_conf.core, local.s3_object_storage, {
     Components__TableStorage             = "ArmoniK.Adapters.MongoDB.TableStorage"
     Components__ObjectStorage            = "ArmoniK.Adapters.Redis.ObjectStorage"
     Components__QueueStorage             = "ArmoniK.Adapters.Amqp.QueueStorage"

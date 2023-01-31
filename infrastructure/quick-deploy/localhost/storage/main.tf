@@ -27,6 +27,7 @@ module "mongodb" {
 
 # Redis
 module "redis" {
+  count       = (contains([for each in var.object_storages_to_be_deployed : lower(each)], lower("redis"))) ? 1 : 0
   source      = "../../../modules/onpremise-storage/redis"
   namespace   = var.namespace
   working_dir = "${path.root}/../../.."

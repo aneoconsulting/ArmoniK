@@ -37,11 +37,11 @@ redis = {
 minio = {
   host               = "minio"
   bucket_name        = "minioBucket"
-  image              = "quay.io/minio/minio"
-  tag                = "latest"
+  image              = "minio/minio"
+  tag                = "RELEASE.2023-01-25T00-19-54Z"
   image_pull_secrets = ""
   node_selector      = {}
 }
 
 # The list of object storage to be deployed among : "MongoDB", "Redis", "S3", "LocalStorage"
-object_storages_to_be_deployed = ["Redis", "S3"]
+object_storages_to_be_deployed = ["Redis"]

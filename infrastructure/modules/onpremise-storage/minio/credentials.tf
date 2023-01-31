@@ -11,7 +11,7 @@ resource "random_password" "minio_application_password" {
 
 resource "kubernetes_secret" "s3_endpoints" {
   metadata {
-    name      = "s3-endpoints"
+    name      = "s3-object-storage-endpoints"
     namespace = var.namespace
   }
   data = {

@@ -204,8 +204,6 @@ authentication = {
   require_authorization   = false
 }
 
-object_storage_adapter = "S3"
-
 extra_conf = {
   core = {
     Amqp__AllowHostMismatch                    = true
@@ -226,3 +224,5 @@ extra_conf = {
     Submitter__MaxErrorAllowed = 50
   }
 }
+
+object_storage_adapter = "Redis"

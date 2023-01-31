@@ -62,12 +62,14 @@ locals {
       endpoints_secret    = "redis-endpoints"
       ca_filename         = "/redis/chain.pem"
     }
+    s3_object_storage_secret          = "s3-object-storage-endpoints"
     shared_storage_secret             = "shared-storage-endpoints"
     metrics_exporter_secret           = "metrics-exporter-endpoints"
     partition_metrics_exporter_secret = "partition-metrics-exporter-endpoints"
     fluent_bit_secret                 = "fluent-bit-endpoints"
     seq_secret                        = "seq-endpoints"
     grafana_secret                    = "grafana-endpoints"
+    deployed_object_storage_secret    = "deployed-object-storage"
   }
 
   # Shared storage
@@ -80,52 +82,65 @@ locals {
     S3Storage__BucketName      = data.kubernetes_secret.shared_storage.data.name
   } : {}
 
+  # S3 as object storage
+  object_storage_adapter   = "ArmoniK.Adapters.${var.object_storage_adapter}.ObjectStorage"
+  deployed_object_storages = split(",", data.kubernetes_secret.deployed_object_storage.data.list)
+  s3_object_storage = lower(var.object_storage_adapter) == "s3" ? {
+    S3__EndpointUrl        = data.kubernetes_secret.s3_object_storage_endpoints[0].data.url
+    S3__Login              = data.kubernetes_secret.s3_object_storage_endpoints[0].data.login
+    S3__Password           = data.kubernetes_secret.s3_object_storage_endpoints[0].data.password
+    S3__MustForcePathStyle = data.kubernetes_secret.s3_object_storage_endpoints[0].data.must_force_path_style
+    S3__BucketName         = data.kubernetes_secret.s3_object_storage_endpoints[0].data.bucket_name
+  } : {}
+
   # Credentials
   credentials = {
-    Amqp__User = {
-      key  = "username"
-      name = local.secrets.activemq.credentials_secret
-    }
-    Amqp__Password = {
-      key  = "password"
-      name = local.secrets.activemq.credentials_secret
-    }
-    Amqp__Host = {
-      key  = "host"
-      name = local.secrets.activemq.endpoints_secret
-    }
-    Amqp__Port = {
-      key  = "port"
-      name = local.secrets.activemq.endpoints_secret
-    }
-    Redis__User = {
-      key  = "username"
-      name = local.secrets.redis.credentials_secret
-    }
-    Redis__Password = {
-      key  = "password"
-      name = local.secrets.redis.credentials_secret
-    }
-    Redis__EndpointUrl = {
-      key  = "url"
-      name = local.secrets.redis.endpoints_secret
-    }
-    MongoDB__User = {
-      key  = "username"
-      name = local.secrets.mongodb.credentials_secret
-    }
-    MongoDB__Password = {
-      key  = "password"
-      name = local.secrets.mongodb.credentials_secret
-    }
-    MongoDB__Host = {
-      key  = "host"
-      name = local.secrets.mongodb.endpoints_secret
-    }
-    MongoDB__Port = {
-      key  = "port"
-      name = local.secrets.mongodb.endpoints_secret
-    }
+    for key, value in {
+      Amqp__User = {
+        key  = "username"
+        name = local.secrets.activemq.credentials_secret
+      }
+      Amqp__Password = {
+        key  = "password"
+        name = local.secrets.activemq.credentials_secret
+      }
+      Amqp__Host = {
+        key  = "host"
+        name = local.secrets.activemq.endpoints_secret
+      }
+      Amqp__Port = {
+        key  = "port"
+        name = local.secrets.activemq.endpoints_secret
+      }
+      Redis__User = lower(var.object_storage_adapter) == "redis" ? {
+        key  = "username"
+        name = local.secrets.redis.credentials_secret
+      } : { key = "", name = "" }
+      Redis__Password = lower(var.object_storage_adapter) == "redis" ? {
+        key  = "password"
+        name = local.secrets.redis.credentials_secret
+      } : { key = "", name = "" }
+      Redis__EndpointUrl = lower(var.object_storage_adapter) == "redis" ? {
+        key  = "url"
+        name = local.secrets.redis.endpoints_secret
+      } : { key = "", name = "" }
+      MongoDB__User = {
+        key  = "username"
+        name = local.secrets.mongodb.credentials_secret
+      }
+      MongoDB__Password = {
+        key  = "password"
+        name = local.secrets.mongodb.credentials_secret
+      }
+      MongoDB__Host = {
+        key  = "host"
+        name = local.secrets.mongodb.endpoints_secret
+      }
+      MongoDB__Port = {
+        key  = "port"
+        name = local.secrets.mongodb.endpoints_secret
+      }
+    } : key => value if !contains(values(value), "")
   }
 
   # Credentials
@@ -150,21 +165,23 @@ locals {
 
   # Certificates
   certificates = {
-    activemq = {
-      name        = "activemq-secret-volume"
-      mount_path  = "/amqp"
-      secret_name = local.secrets.activemq.certificates_secret
-    }
-    redis = {
-      name        = "redis-secret-volume"
-      mount_path  = "/redis"
-      secret_name = local.secrets.redis.certificates_secret
-    }
-    mongodb = {
-      name        = "mongodb-secret-volume"
-      mount_path  = "/mongodb"
-      secret_name = local.secrets.mongodb.certificates_secret
-    }
+    for key, value in {
+      activemq = {
+        name        = "activemq-secret-volume"
+        mount_path  = "/amqp"
+        secret_name = local.secrets.activemq.certificates_secret
+      }
+      redis = lower(var.object_storage_adapter) == "redis" ? {
+        name        = "redis-secret-volume"
+        mount_path  = "/redis"
+        secret_name = local.secrets.redis.certificates_secret
+      } : { key = "", name = "" }
+      mongodb = {
+        name        = "mongodb-secret-volume"
+        mount_path  = "/mongodb"
+        secret_name = local.secrets.mongodb.certificates_secret
+      }
+    } : key => value if !contains(values(value), "")
   }
 
   # Fluent-bit volumes
