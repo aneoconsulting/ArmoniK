@@ -61,6 +61,7 @@ variable "redis" {
     image_pull_secrets = string
     max_memory         = string
   })
+  default = null
 }
 
 # Parameters for minio
@@ -71,20 +72,8 @@ variable "minio" {
     tag                = string
     image_pull_secrets = string
     host               = string
-    bucket_name        = string
+    default_bucket     = string
     node_selector      = any
   })
-}
-
-variable "object_storages_to_be_deployed" {
-  description = "The list of storage objects to be deployed"
-  type        = list(string)
-  validation {
-    condition = alltrue([
-      for value in var.object_storages_to_be_deployed : contains([
-        "mongodb", "redis", "s3", "localstorage"
-      ], lower(value))
-    ])
-    error_message = "Valid values for object_storages_to_be_deployed are \"MongoDB\" | \"Redis\" | \"S3\" | \"LocalStorage\"."
-  }
+  default = null
 }

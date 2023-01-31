@@ -16,6 +16,29 @@ resource "kubernetes_secret" "deployed_object_storage" {
     namespace = var.namespace
   }
   data = {
-    list = join(",", var.object_storages_to_be_deployed)
+    list    = join(",", local.deployed_object_storages)
+    adapter = local.object_storage_adapter
+  }
+}
+
+resource "kubernetes_secret" "deployed_table_storage" {
+  metadata {
+    name      = "deployed-table-storage"
+    namespace = var.namespace
+  }
+  data = {
+    list    = join(",", local.deployed_table_storages)
+    adapter = local.table_storage_adapter
+  }
+}
+
+resource "kubernetes_secret" "deployed_queue_storage" {
+  metadata {
+    name      = "deployed-queue-storage"
+    namespace = var.namespace
+  }
+  data = {
+    list    = join(",", local.deployed_queue_storages)
+    adapter = local.queue_storage_adapter
   }
 }
