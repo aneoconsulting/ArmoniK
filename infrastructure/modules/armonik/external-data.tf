@@ -69,7 +69,7 @@ locals {
     port = local.admin_gui_node_port.port
   })
 
-  admin_app_url = "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.port}/"
+  admin_gui_url = "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.port}/"
 }
 
 # Node IP of ingress pod

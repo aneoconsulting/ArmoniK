@@ -45,7 +45,7 @@ server {
         rewrite ^ $scheme://$http_host/admin/ permanent;
     }
     location /admin/ {
-        proxy_pass ${local.admin_app_url};
+        proxy_pass ${local.admin_gui_url};
     }
 
 

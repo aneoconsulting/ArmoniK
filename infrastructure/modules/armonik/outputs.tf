@@ -3,12 +3,12 @@ output "endpoint_urls" {
     control_plane_url = local.ingress_grpc_url != "" ? local.ingress_grpc_url : local.control_plane_url
     grafana_url       = local.grafana_url != "" ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/grafana/" : local.grafana_url) : ""
     seq_web_url       = local.seq_web_url != "" ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/seq/" : local.seq_web_url) : ""
-    admin_app_url     = local.ingress_http_url != "" ? "${local.ingress_http_url}/" : local.admin_app_url
+    admin_gui_url     = local.ingress_http_url != "" ? "${local.ingress_http_url}/" : local.admin_gui_url
     } : {
     control_plane_url = local.control_plane_url
     grafana_url       = local.grafana_url
     seq_web_url       = local.seq_web_url
-    admin_app_url     = local.admin_app_url
+    admin_gui_url     = local.admin_gui_url
   }
 }
 
@@ -21,9 +21,9 @@ output "control_plane_url" {
   value       = local.control_plane_url
 }
 # Armonik admin App
-output "admin_app_url" {
+output "admin_gui_url" {
   description = "Endpoint URL of ArmoniK admin GUI"
-  value       = local.admin_app_url
+  value       = local.admin_gui_url
 }
 
 output "ingress_DEPRECATED" {
@@ -41,14 +41,14 @@ output "ingress" {
     control_plane_url = local.ingress_grpc_url != "" ? local.ingress_grpc_url : local.control_plane_url
     grafana_url       = local.grafana_url != "" ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/grafana/" : local.grafana_url) : ""
     seq_web_url       = local.seq_web_url != "" ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/seq/" : local.seq_web_url) : ""
-    admin_app_url     = local.ingress_http_url != "" ? "${local.ingress_http_url}/" : local.admin_app_url
+    admin_gui_url     = local.ingress_http_url != "" ? "${local.ingress_http_url}/" : local.admin_gui_url
     } : {
     http              = ""
     grpc              = ""
     control_plane_url = local.control_plane_url
     grafana_url       = local.grafana_url
     seq_web_url       = local.seq_web_url
-    admin_app_url     = local.admin_app_url
+    admin_gui_url     = local.admin_gui_url
   }
 }
 
