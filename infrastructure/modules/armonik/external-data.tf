@@ -47,7 +47,7 @@ locals {
 
   admin_gui_load_balancer = (kubernetes_service.admin_gui.spec.0.type == "LoadBalancer" ? {
     ip   = (kubernetes_service.admin_gui.status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.admin_gui.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.admin_gui.status.0.load_balancer.0.ingress.0.ip)
-    port = kubernetes_service.admin_gui.spec.0.port.1.port
+    port = kubernetes_service.admin_gui.spec.0.port.0.port
     } : {
     ip   = ""
     port = ""
@@ -55,7 +55,7 @@ locals {
 
   admin_gui_node_port = (local.admin_gui_load_balancer.ip == "" && kubernetes_service.admin_gui.spec.0.type == "NodePort" ? {
     ip   = local.admin_gui_node_ip
-    port = kubernetes_service.admin_gui.spec.0.port.1.node_port
+    port = kubernetes_service.admin_gui.spec.0.port.0.node_port
     } : {
     ip   = local.admin_gui_load_balancer.ip
     port = local.admin_gui_load_balancer.port
@@ -63,7 +63,7 @@ locals {
 
   admin_gui_endpoints = (local.admin_gui_node_port.ip == "" && kubernetes_service.admin_gui.spec.0.type == "ClusterIP" ? {
     ip   = kubernetes_service.admin_gui.spec.0.cluster_ip
-    port = kubernetes_service.admin_gui.spec.0.port.1.port
+    port = kubernetes_service.admin_gui.spec.0.port.0.port
     } : {
     ip   = local.admin_gui_node_port.ip
     port = local.admin_gui_node_port.port
