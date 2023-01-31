@@ -254,14 +254,28 @@ variable "authentication" {
 variable "object_storage_adapter" {
   description = "storage plugin to use."
   type        = string
+  validation {
+    condition = can(coalesce(var.object_storage_adapter)) || contains([
+      "MongoDB", "Redis", "S3", "LocalStorage"
+    ], var.object_storage_adapter)
+    error_message = "\"object_storage_adapter\" must be non-null and non-empty-string. Valid values: \"MongoDB\" | \"Redis\" | \"S3\" | \"LocalStorage\""
+  }
 }
 
 variable "table_storage_adapter" {
   description = "storage plugin to use."
   type        = string
+  validation {
+    condition     = can(coalesce(var.table_storage_adapter))
+    error_message = "\"table_storage_adapter\" must be non-null and non-empty-string"
+  }
 }
 
 variable "queue_storage_adapter" {
   description = "storage plugin to use."
   type        = string
+  validation {
+    condition     = can(coalesce(var.queue_storage_adapter))
+    error_message = "\"queue_storage_adapter\" must be non-null and non-empty-string"
+  }
 }

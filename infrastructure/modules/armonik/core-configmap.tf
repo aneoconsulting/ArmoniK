@@ -4,16 +4,16 @@ resource "kubernetes_config_map" "core_config" {
     name      = "core-configmap"
     namespace = var.namespace
   }
-  data = merge(var.extra_conf.core, local.s3_object_storage, {
-    Components__TableStorage             = "ArmoniK.Adapters.MongoDB.TableStorage"
-    Components__ObjectStorage            = "ArmoniK.Adapters.Redis.ObjectStorage"
-    Components__QueueStorage             = "ArmoniK.Adapters.Amqp.QueueStorage"
+  data = merge(var.extra_conf.core, {
+    Components__TableStorage             = var.table_storage_adapter
+    Components__ObjectStorage            = local.object_storage_adapter
+    Components__QueueStorage             = var.queue_storage_adapter
     MongoDB__CAFile                      = local.secrets.mongodb.ca_filename
     MongoDB__ReplicaSetName              = "rs0"
     MongoDB__DatabaseName                = "database"
     MongoDB__DirectConnection            = "true"
     MongoDB__Tls                         = "true"
-    Redis__CaPath                        = local.secrets.redis.ca_filename
+    Redis__CaPath                        = lower(var.object_storage_adapter) == "redis" ? local.secrets.redis.ca_filename : ""
     Redis__InstanceName                  = "ArmoniKRedis"
     Redis__ClientName                    = "ArmoniK.Core"
     Redis__Ssl                           = "true"

@@ -58,6 +58,14 @@ resource "kubernetes_deployment" "minio" {
             "-c",
             "mkdir -p /data/${var.minio.bucket_name} && minio server /data --console-address :9001"
           ]
+          env {
+            name  = "MINIO_ROOT_USER"
+            value = random_string.minio_application_user.result
+          }
+          env {
+            name  = "MINIO_ROOT_PASSWORD"
+            value = random_password.minio_application_password.result
+          }
           port {
             container_port = local.port
             protocol       = "TCP"

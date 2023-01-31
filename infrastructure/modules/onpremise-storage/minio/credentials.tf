@@ -9,18 +9,14 @@ resource "random_password" "minio_application_password" {
   special = false
 }
 
-resource "kubernetes_secret" "s3_endpoints" {
+resource "kubernetes_secret" "s3_user" {
   metadata {
-    name      = "s3-object-storage-endpoints"
+    name      = "s3-user"
     namespace = var.namespace
   }
   data = {
-    url                   = "http://${var.minio.host}:${local.port}"
-    host                  = var.minio.host
-    port                  = local.port
-    login                 = random_string.minio_application_user.result
-    password              = random_password.minio_application_password.result
-    bucket_name           = var.minio.bucket_name
-    must_force_path_style = true
+    username = random_string.minio_application_user.result
+    password = random_password.minio_application_password.result
   }
+  type = "kubernetes.io/basic-auth"
 }

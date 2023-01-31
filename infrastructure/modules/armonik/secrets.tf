@@ -46,11 +46,3 @@ data "kubernetes_secret" "grafana" {
     namespace = var.namespace
   }
 }
-
-data "kubernetes_secret" "s3_object_storage_endpoints" {
-  count = lower(var.object_storage_adapter) == "s3" ? 1 : 0
-  metadata {
-    name      = local.secrets.s3_object_storage_secret
-    namespace = var.namespace
-  }
-}

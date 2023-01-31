@@ -27,7 +27,7 @@ module "mongodb" {
 
 # Redis
 module "redis" {
-  count       = (contains([for each in var.object_storages_to_be_deployed : lower(each)], "redis")) ? 1 : 0
+  count       = var.redis != null ? 1 : 0
   source      = "../../../modules/onpremise-storage/redis"
   namespace   = local.namespace
   working_dir = "${path.root}/../../.."
@@ -37,6 +37,21 @@ module "redis" {
     node_selector      = var.redis.node_selector
     image_pull_secrets = var.redis.image_pull_secrets
     max_memory         = var.redis.max_memory
+  }
+}
+
+# minio
+module "minio" {
+  count     = var.minio != null ? 1 : 0
+  source    = "../../../modules/onpremise-storage/minio"
+  namespace = local.namespace
+  minio = {
+    image              = var.minio.image_name
+    tag                = try(coalesce(var.minio.image_tag), local.default_tags[var.minio.image_name])
+    node_selector      = var.minio.node_selector
+    image_pull_secrets = var.minio.image_pull_secrets
+    host               = var.minio.host
+    bucket_name        = var.minio.default_bucket
   }
 }
 
@@ -53,34 +68,33 @@ resource "kubernetes_secret" "shared_storage" {
   }
 }
 
-# minio
-module "minio" {
-  count     = (contains([for each in var.object_storages_to_be_deployed : lower(each)], "s3")) ? 1 : 0
-  source    = "../../../modules/onpremise-storage/minio"
-  namespace = var.namespace
-  minio = {
-    image              = var.minio.image_name
-    tag                = try(coalesce(var.minio.image_tag), local.default_tags[var.minio.image_name])
-    node_selector      = var.minio.node_selector
-    image_pull_secrets = var.minio.image_pull_secrets
-    host               = var.minio.host
-    bucket_name        = var.minio.bucket_name
-  }
-}
-
 resource "kubernetes_secret" "deployed_object_storage" {
   metadata {
     name      = "deployed-object-storage"
     namespace = var.namespace
   }
   data = {
-    list = join(",", var.object_storages_to_be_deployed)
+    list = join(",", concat(
+      ["MongoDB"],
+      length(module.redis) > 0 ? ["Redis"] : [],
+      length(module.minio) > 0 ? ["S3"] : [],
+    ))
   }
 }
 
 # Storage
 locals {
+  object_storage_adapter = try(coalesce(
+    length(module.redis) > 0 ? "Redis" : null,
+    length(module.minio) > 0 ? "S3" : null,
+  ), "")
+  table_storage_adapter = "ArmoniK.Adapters.MongoDB.TableStorage"
+  queue_storage_adapter = "ArmoniK.Adapters.Amqp.QueueStorage"
   storage_endpoint_url = {
+    deployed_object_storages = concat(
+      length(module.redis) > 0 ? ["Redis"] : [],
+      length(module.minio) > 0 ? ["S3"] : [],
+    )
     activemq = {
       url                 = module.activemq.url
       host                = module.activemq.host
@@ -91,7 +105,7 @@ locals {
       endpoints           = module.activemq.endpoints
       allow_host_mismatch = true
     }
-    redis = {
+    redis = length(module.redis) > 0 ? {
       url          = module.redis[0].url
       host         = module.redis[0].host
       port         = module.redis[0].port
@@ -100,7 +114,7 @@ locals {
       endpoints    = module.redis[0].endpoints
       timeout      = 30000
       ssl_host     = "127.0.0.1"
-    }
+    } : null
     mongodb = {
       url                = module.mongodb.url
       host               = module.mongodb.host
@@ -115,10 +129,9 @@ locals {
       file_storage_type = "HostPath"
       file_server_ip    = ""
     }
-    s3 = {
+    s3 = length(module.minio) > 0 ? {
       url         = try(module.minio[0].url, "")
       bucket_name = try(module.minio[0].bucket_name, "")
-    }
-    deployed_object_storages = var.object_storages_to_be_deployed
+    } : null
   }
 }

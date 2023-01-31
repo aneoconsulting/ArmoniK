@@ -62,7 +62,10 @@ locals {
       endpoints_secret    = "redis-endpoints"
       ca_filename         = "/redis/chain.pem"
     }
-    s3_object_storage_secret          = "s3-object-storage-endpoints"
+    s3 = {
+      credentials_secret = "s3-user"
+      endpoints_secret   = "s3-endpoints"
+    }
     shared_storage_secret             = "shared-storage-endpoints"
     metrics_exporter_secret           = "metrics-exporter-endpoints"
     partition_metrics_exporter_secret = "partition-metrics-exporter-endpoints"
@@ -85,13 +88,6 @@ locals {
   # S3 as object storage
   object_storage_adapter   = "ArmoniK.Adapters.${var.object_storage_adapter}.ObjectStorage"
   deployed_object_storages = split(",", data.kubernetes_secret.deployed_object_storage.data.list)
-  s3_object_storage = lower(var.object_storage_adapter) == "s3" ? {
-    S3__EndpointUrl        = data.kubernetes_secret.s3_object_storage_endpoints[0].data.url
-    S3__Login              = data.kubernetes_secret.s3_object_storage_endpoints[0].data.login
-    S3__Password           = data.kubernetes_secret.s3_object_storage_endpoints[0].data.password
-    S3__MustForcePathStyle = data.kubernetes_secret.s3_object_storage_endpoints[0].data.must_force_path_style
-    S3__BucketName         = data.kubernetes_secret.s3_object_storage_endpoints[0].data.bucket_name
-  } : {}
 
   # Credentials
   credentials = {
@@ -140,6 +136,26 @@ locals {
         key  = "port"
         name = local.secrets.mongodb.endpoints_secret
       }
+      S3__Login = lower(var.object_storage_adapter) == "s3" ? {
+        key  = "username"
+        name = local.secrets.s3.credentials_secret
+      } : { key = "", name = "" }
+      S3__Password = lower(var.object_storage_adapter) == "s3" ? {
+        key  = "password"
+        name = local.secrets.s3.credentials_secret
+      } : { key = "", name = "" }
+      S3__EndpointUrl = lower(var.object_storage_adapter) == "s3" ? {
+        key  = "url"
+        name = local.secrets.s3.endpoints_secret
+      } : { key = "", name = "" }
+      S3__MustForcePathStyle = lower(var.object_storage_adapter) == "s3" ? {
+        key  = "must_force_path_style"
+        name = local.secrets.s3.endpoints_secret
+      } : { key = "", name = "" }
+      S3__BucketName = lower(var.object_storage_adapter) == "s3" ? {
+        key  = "bucket_name"
+        name = local.secrets.s3.endpoints_secret
+      } : { key = "", name = "" }
     } : key => value if !contains(values(value), "")
   }
 

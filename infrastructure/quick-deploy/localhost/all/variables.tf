@@ -118,29 +118,16 @@ variable "redis" {
 
 # Parameters for Minio
 variable "minio" {
-  description = "Parameters of minio"
+  description = "Parameters of Minio"
   type = object({
     image_name         = optional(string, "minio/minio")
     image_tag          = optional(string)
-    host               = optional(string, "minio")
-    bucket_name        = optional(string, "minioBucket")
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
+    default_bucket     = optional(string, "minioBucket")
+    host               = optional(string, "minio")
   })
   default = null
-}
-
-variable "object_storages_to_be_deployed" {
-  description = "The list of storage objects to be deployed"
-  type        = list(string)
-  validation {
-    condition = alltrue([
-      for value in var.object_storages_to_be_deployed : contains([
-        "mongodb", "redis", "s3", "localstorage"
-      ], lower(value))
-    ])
-    error_message = "Valid values for object_storages_to_be_deployed are \"MongoDB\" | \"Redis\" | \"S3\" | \"LocalStorage\"."
-  }
 }
 
 variable "seq" {
@@ -449,21 +436,4 @@ variable "armonik_images" {
 variable "image_tags" {
   description = "Tags of images used"
   type        = map(string)
-}
-
-variable "object_storage_adapter" {
-  description = "storage plugin to use."
-  type        = string
-}
-
-variable "table_storage_adapter" {
-  description = "Table plugin to use."
-  type        = string
-  default     = "ArmoniK.Adapters.MongoDB.TableStorage"
-}
-
-variable "queue_storage_adapter" {
-  description = "Queue plugin to use."
-  type        = string
-  default     = "ArmoniK.Adapters.Amqp.QueueStorage"
 }

@@ -1,57 +1,15 @@
-# The list of object storage to be deployed among : "MongoDB", "Redis", "S3", "LocalStorage"
-object_storages_to_be_deployed = ["Redis"]
-object_storage_adapter         = "Redis"
+# Logging level
+logging_level = "Information"
 
 # Uncomment to deploy metrics server
 #metrics_server = {}
 
-# Parameters for ActiveMQ
-activemq = {
-  image_name = "symptoma/activemq"
-  image_tag  = "5.16.4"
-}
-
-# Parameters for MongoDB
-mongodb = {
-  image_name = "mongo"
-  image_tag  = "5.0.9"
-}
-
-# Parameters for Redis
-redis = {
-  image_name = "redis"
-  image_tag  = "6.2.7"
-}
-
-# Parameters for minio
-minio = {
-  image_name = "quay.io/minio/minio"
-  image_tag  = "RELEASE.2023-01-18T04-36-38Z.fips"
-}
-
-seq = {
-  image_name = "datalust/seq"
-  image_tag  = "2022.1"
-}
-
-grafana = {
-  image_name = "grafana/grafana"
-  image_tag  = "9.2.1"
-}
-
-node_exporter = {
-  image_name = "prom/node-exporter"
-  image_tag  = "v1.3.1"
-}
-
-prometheus = {
-  image_name = "prom/prometheus"
-  image_tag  = "v2.36.1"
-}
+# Object storage
+# Uncomment either the `redis` or the `minio` parameter
+#redis = {}
+minio = {}
 
 metrics_exporter = {
-  image_name = "dockerhubaneo/armonik_control_metrics"
-  image_tag  = "0.8.3"
   extra_conf = {
     MongoDB__AllowInsecureTls              = true
     Serilog__MinimumLevel                  = "Information"
@@ -61,8 +19,6 @@ metrics_exporter = {
 }
 
 /*parition_metrics_exporter = {
-  image_name = "dockerhubaneo/armonik_control_partition_metrics"
-  image_tag  = "0.8.3"
   extra_conf = {
     MongoDB__AllowInsecureTls           = true
     Serilog__MinimumLevel               = "Information"
@@ -71,27 +27,8 @@ metrics_exporter = {
   }
 }*/
 
-fluent_bit = {
-  image_name   = "fluent/fluent-bit"
-  image_tag    = "1.9.9"
-  is_daemonset = true
-}
-
-
-# Logging level
-logging_level = "Information"
-
-
-# Job to insert partitions in the database
-job_partitions_in_database = {
-  image = "rtsp/mongosh"
-  tag   = "1.5.4"
-}
-
 # Parameters of control plane
 control_plane = {
-  image = "dockerhubaneo/armonik_control"
-  tag   = "0.8.3"
   limits = {
     cpu    = "1000m"
     memory = "2048Mi"
@@ -106,8 +43,6 @@ control_plane = {
 # Parameters of admin GUI
 admin_gui = {
   api = {
-    image = "dockerhubaneo/armonik_admin_api"
-    tag   = "0.7.2"
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
@@ -118,8 +53,6 @@ admin_gui = {
     }
   }
   app = {
-    image = "dockerhubaneo/armonik_admin_app"
-    tag   = "0.7.2"
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
@@ -138,8 +71,6 @@ compute_plane = {
     replicas = 1
     # ArmoniK polling agent
     polling_agent = {
-      image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.8.3"
       limits = {
         cpu    = "2000m"
         memory = "2048Mi"
@@ -153,7 +84,6 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_worker_dll"
-        tag   = "0.8.2"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -190,16 +120,9 @@ compute_plane = {
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
 ingress = {
-  image                = "nginxinc/nginx-unprivileged"
-  tag                  = "1.23.2"
   tls                  = false
   mtls                 = false
   generate_client_cert = false
-}
-
-authentication = {
-  image = "rtsp/mongosh"
-  tag   = "1.5.4"
 }
 
 extra_conf = {

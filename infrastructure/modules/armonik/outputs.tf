@@ -14,20 +14,10 @@ output "endpoint_urls" {
   }
 }
 
-output "control_plane_url" {
-  description = <<-EOT
-    [DEPRECATED] Endpoint URL of ArmoniK control plane
-    use endpoint_urls instead
-  EOT
-  value       = local.control_plane_url
-}
-# Armonik admin API
-output "admin_api_url" {
-  description = "Endpoint URL of ArmoniK admin API"
-  value       = local.admin_api_url
-}
-# Armonik admin App
-output "admin_app_url" {
-  description = "Endpoint URL of ArmoniK admin App"
-  value       = local.admin_app_url
+output "objects_storage_adapter_check" {
+  value = var.object_storage_adapter
+  precondition {
+    condition     = contains(local.deployed_object_storages, var.object_storage_adapter)
+    error_message = "can't use ${var.object_storage_adapter} because it has not been deployed. Deployed storages are : ${join(",", local.deployed_object_storages)}"
+  }
 }
