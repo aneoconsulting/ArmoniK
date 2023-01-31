@@ -21,10 +21,6 @@ inputs:
     description: 'Repository/image for partition metrics exporter docker image'
     required: false
     default: 'None'
-  admin-api-image:
-    description: 'Repository/image for Admi GUI API docker image'
-    required: false
-    default: 'None'
   admin-app-image:
     description: 'Repository/image for Admi GUI APP docker image'
     required: false
@@ -171,8 +167,6 @@ runs:
             -kv "compute_plane[default].polling_agent.tag=${{ inputs.core-tag }}" \
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
-            -kv admin_gui.api.image=${{ inputs.admin-api-image }} \
-            -kv admin_gui.api.tag=${{ inputs.admin-gui-tag }} \
             -kv admin_gui.app.image=${{ inputs.admin-app-image }} \
             -kv admin_gui.app.tag=${{ inputs.admin-gui-tag }} \
             -kv logging_level=${{ inputs.log-level }} \
@@ -189,8 +183,6 @@ runs:
             -kv "compute_plane[default].polling_agent.tag=${{ inputs.core-tag }}" \
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
-            -kv admin_gui.api.image=${{ inputs.admin-api-image }} \
-            -kv admin_gui.api.tag=${{ inputs.admin-gui-tag }} \
             -kv admin_gui.app.image=${{ inputs.admin-app-image }} \
             -kv admin_gui.app.tag=${{ inputs.admin-gui-tag }} \
             -kv logging_level=${{ inputs.log-level }} \

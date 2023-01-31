@@ -286,34 +286,18 @@ variable "control_plane" {
 variable "admin_gui" {
   description = "Parameters of the admin GUI"
   type = object({
-    api = optional(object({
-      name  = optional(string, "admin-api")
-      image = optional(string, "dockerhubaneo/armonik_admin_api")
-      tag   = optional(string)
-      port  = optional(number, 3333)
-      limits = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-      requests = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-    }), {})
-    app = optional(object({
-      name  = optional(string, "admin-app")
-      image = optional(string, "dockerhubaneo/armonik_admin_app")
-      tag   = optional(string)
-      port  = optional(number, 1080)
-      limits = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-      requests = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-    }), {})
+    name  = optional(string, "admin-app")
+    image = optional(string, "dockerhubaneo/armonik_admin_app")
+    tag   = optional(string)
+    port  = optional(number, 1080)
+    limits = optional(object({
+      cpu    = optional(string)
+      memory = optional(string)
+    }))
+    requests = optional(object({
+      cpu    = optional(string)
+      memory = optional(string)
+    }))
     service_type       = optional(string, "ClusterIP")
     replicas           = optional(number, 1)
     image_pull_policy  = optional(string, "IfNotPresent")

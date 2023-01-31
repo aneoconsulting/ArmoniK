@@ -40,7 +40,7 @@ The current version of ArmoniK uses the tags listed in [armonik-versions.txt](./
 
 * `core` is the ArmoniK Core tag used for container images of Control plane, Polling agent and Metrics exporter.
 * `worker` is the tag used for the container image of the workers
-* `admin-gui` is the tag used for the container images of ArmoniK AdminGUI (admin-api and admin-app)
+* `admin-gui` is the tag used for the container image  of ArmoniK AdminGUI
 * `samples` is the tag for ArmoniK Samples
 
 # ArmoniK deployment
