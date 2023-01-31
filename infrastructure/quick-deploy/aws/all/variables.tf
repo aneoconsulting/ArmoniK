@@ -183,6 +183,24 @@ variable "s3_fs" {
   default = {}
 }
 
+# S3 as object storage
+variable "s3_os" {
+  description = "AWS S3 bucket as shared storage"
+  type = object({
+    policy                                = optional(string, "")
+    attach_policy                         = optional(bool, false)
+    attach_deny_insecure_transport_policy = optional(bool, true)
+    attach_require_latest_tls_policy      = optional(bool, true)
+    attach_public_policy                  = optional(bool, false)
+    block_public_acls                     = optional(bool, true)
+    block_public_policy                   = optional(bool, true)
+    ignore_public_acls                    = optional(bool, true)
+    restrict_public_buckets               = optional(bool, true)
+    sse_algorithm                         = optional(string, "")
+  })
+  default = null
+}
+
 # AWS Elasticache
 variable "elasticache" {
   description = "Parameters of Elasticache"
@@ -202,6 +220,7 @@ variable "elasticache" {
       engine_log = optional(string, "")
     }), {})
   })
+  default = null
 }
 
 # MQ parameters
