@@ -45,4 +45,8 @@ module "armonik" {
   authentication = merge(var.authentication, {
     tag = try(coalesce(var.authentication.tag), local.default_tags[var.authentication.image])
   })
+
+  object_storage_adapter = local.object_storage_adapter
+  table_storage_adapter  = local.table_storage_adapter
+  queue_storage_adapter  = local.queue_storage_adapter
 }

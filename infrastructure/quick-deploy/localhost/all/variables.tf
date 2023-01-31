@@ -113,7 +113,24 @@ variable "redis" {
     image_pull_secrets = optional(string, "")
     max_memory         = optional(string, "8000gb")
   })
-  default = {}
+  default = null
+}
+
+# Parameters for Minio
+variable "minio" {
+  description = "Parameters of Minio"
+  type = object({
+    image_name         = optional(string, "minio/minio")
+    image_tag          = optional(string)
+    node_selector      = optional(any, {})
+    image_pull_secrets = optional(string, "")
+    default_bucket     = optional(string, "minioBucket")
+    host               = optional(string, "minio")
+    port               = optional(number, 9000)
+    login              = optional(string, "minioadmin")
+    password           = optional(string, "minioadmin")
+  })
+  default = null
 }
 
 

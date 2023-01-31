@@ -33,8 +33,30 @@ module "s3_fs" {
   }
 }
 
+# AWS S3 as object storage
+module "s3_os" {
+  count  = var.s3_os != null ? 1 : 0
+  source = "../../../modules/aws/s3"
+  tags   = local.tags
+  name   = "${local.prefix}-s3os"
+  s3 = {
+    policy                                = var.s3_os.policy
+    attach_policy                         = var.s3_os.attach_policy
+    attach_deny_insecure_transport_policy = var.s3_os.attach_deny_insecure_transport_policy
+    attach_require_latest_tls_policy      = var.s3_os.attach_require_latest_tls_policy
+    attach_public_policy                  = var.s3_os.attach_public_policy
+    block_public_acls                     = var.s3_os.attach_public_policy
+    block_public_policy                   = var.s3_os.block_public_acls
+    ignore_public_acls                    = var.s3_os.block_public_policy
+    restrict_public_buckets               = var.s3_os.restrict_public_buckets
+    kms_key_id                            = local.kms_key
+    sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_os.sse_algorithm : "aws:kms"
+  }
+}
+
 # AWS Elasticache
 module "elasticache" {
+  count  = var.elasticache != null ? 1 : 0
   source = "../../../modules/aws/elasticache"
   tags   = local.tags
   name   = "${local.prefix}-elasticache"
@@ -139,9 +161,10 @@ data "aws_iam_policy_document" "decrypt_object" {
       "kms:DescribeKey"
     ]
     effect = "Allow"
-    resources = [
-      local.kms_key
-    ]
+    resources = toset([
+      for _, s3 in local.aws_s3 :
+      s3.kms_key_id
+    ])
   }
 }
 
@@ -157,34 +180,75 @@ resource "aws_iam_role_policy_attachment" "decrypt_object" {
   role       = module.eks.worker_iam_role_name
 }
 
-# Read objects in S3
-data "aws_iam_policy_document" "read_object" {
+# object permissions for S3
+data "aws_iam_policy_document" "object" {
+  for_each = local.aws_s3
   statement {
-    sid = "ReadFromS3"
-    actions = [
-      "s3:GetObject"
-    ]
-    effect = "Allow"
+    sid     = each.value.permission_sid
+    actions = each.value.permission_actions
+    effect  = "Allow"
     resources = [
-      "${module.s3_fs.arn}/*"
+      "${each.value.arn}/*"
     ]
   }
 }
 
-resource "aws_iam_policy" "read_object" {
-  name_prefix = "${local.prefix}-s3-read"
-  description = "Policy for allowing read object in S3 ${module.eks.cluster_id}"
-  policy      = data.aws_iam_policy_document.read_object.json
+resource "aws_iam_policy" "object" {
+  for_each    = data.aws_iam_policy_document.object
+  name_prefix = "${local.prefix}-s3-${each.key}"
+  description = "Policy for allowing object access in ${each.key} S3 ${module.eks.cluster_id}"
+  policy      = each.value.json
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "read_object_attachment" {
-  policy_arn = aws_iam_policy.read_object.arn
+resource "aws_iam_role_policy_attachment" "object" {
+  for_each   = aws_iam_policy.object
+  policy_arn = each.value.arn
   role       = module.eks.worker_iam_role_name
 }
 
 locals {
+  aws_s3 = merge(
+    {
+      fs = merge(
+        module.s3_fs,
+        {
+          permission_sid = "ReadFromS3"
+          permission_actions = [
+            "s3:GetObject"
+          ]
+        }
+      )
+    },
+    length(module.s3_os) == 0 ? {} : {
+      os = merge(
+        module.s3_os[0],
+        {
+          permission_sid = "FullAccessFromS3"
+          permission_actions = [
+            "s3:PutObject",
+            "s3:GetObject",
+            "s3:ListBucket",
+            "s3:DeleteObject",
+            "s3:PutObjectAcl",
+            "s3:PutObjectTagging",
+          ]
+        }
+      )
+    },
+  )
+  object_storage_adapter = coalesce(
+    length(module.elasticache) > 0 ? "Redis" : null,
+    length(module.s3_os) > 0 ? "S3" : null,
+  )
+  table_storage_adapter = "ArmoniK.Adapters.MongoDB.TableStorage"
+  queue_storage_adapter = "ArmoniK.Adapters.Amqp.QueueStorage"
   storage_endpoint_url = {
+    deployed_object_storages = concat(
+      ["MongoDB"],
+      length(module.elasticache) > 0 ? ["Redis"] : [],
+      length(module.s3_os) > 0 ? ["S3"] : [],
+    )
     activemq = {
       url                 = module.mq.activemq_endpoint_url.url
       host                = module.mq.activemq_endpoint_url.host
@@ -201,10 +265,10 @@ locals {
         ca_filename = ""
       }
     }
-    redis = {
-      url      = module.elasticache.redis_endpoint_url.url
-      host     = module.elasticache.redis_endpoint_url.host
-      port     = module.elasticache.redis_endpoint_url.port
+    redis = length(module.elasticache) > 0 ? {
+      url      = module.elasticache[0].redis_endpoint_url.url
+      host     = module.elasticache[0].redis_endpoint_url.host
+      port     = module.elasticache[0].redis_endpoint_url.port
       timeout  = 3000
       ssl_host = ""
       credentials = {
@@ -216,7 +280,13 @@ locals {
         secret      = ""
         ca_filename = ""
       }
-    }
+    } : null
+    s3 = length(module.s3_os) > 0 ? {
+      url                   = "https://s3.${var.region}.amazonaws.com"
+      bucket_name           = module.s3_os[0].s3_bucket_name
+      must_force_path_style = false
+      kms_key_id            = module.s3_os[0].kms_key_id
+    } : null
     mongodb = {
       url                = module.mongodb.url
       host               = module.mongodb.host

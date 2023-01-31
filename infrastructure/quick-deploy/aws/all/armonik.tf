@@ -53,4 +53,8 @@ module "armonik" {
     image = local.ecr_images["${var.authentication.image}:${try(coalesce(var.authentication.tag), "")}"].name
     tag   = local.ecr_images["${var.authentication.image}:${try(coalesce(var.authentication.tag), "")}"].tag
   })
+
+  object_storage_adapter = local.object_storage_adapter
+  table_storage_adapter  = local.table_storage_adapter
+  queue_storage_adapter  = local.queue_storage_adapter
 }
