@@ -14,10 +14,50 @@ output "endpoint_urls" {
   }
 }
 
-output "objects_storage_adapter_check" {
-  value = var.object_storage_adapter
+output "object_storage_adapter" {
+  value = local.object_storage_adapter_from_secret
   precondition {
-    condition     = contains(local.deployed_object_storages, var.object_storage_adapter)
-    error_message = "can't use ${var.object_storage_adapter} because it has not been deployed. Deployed storages are : ${join(",", local.deployed_object_storages)}"
+    condition     = can(coalesce(local.object_storage_adapter_from_secret)) || contains(["mongodb", "redis", "s3", "localstorage"], local.object_storage_adapter_from_secret)
+    error_message = "Object storage adapter must be non-null and non-empty-string. Valid values: \"MongoDB\" | \"Redis\" | \"S3\" | \"LocalStorage\""
+  }
+}
+
+output "table_storage_adapter" {
+  value = local.table_storage_adapter_from_secret
+  precondition {
+    condition     = can(coalesce(local.table_storage_adapter_from_secret)) || contains(["mongodb"], local.table_storage_adapter_from_secret)
+    error_message = "Table storage adapter\" must be non-null and non-empty-string. Valid values: \"MongoDB\""
+  }
+}
+
+output "queue_storage_adapter" {
+  value = local.queue_storage_adapter_from_secret
+  precondition {
+    condition     = can(coalesce(local.queue_storage_adapter_from_secret)) || contains(["amqp"], local.queue_storage_adapter_from_secret)
+    error_message = "\"Queue storage adapter\" must be non-null and non-empty-string. Valid values: \"Amqp\""
+  }
+}
+
+output "object_storage_adapter_check" {
+  value = local.object_storage_adapter_from_secret
+  precondition {
+    condition     = contains([for each in local.deployed_object_storages : lower(each)], local.object_storage_adapter_from_secret)
+    error_message = "Can't use ${local.object_storage_adapter} because it has not been deployed. Deployed storages are : ${join(",", local.deployed_object_storages)}"
+  }
+}
+
+output "table_storage_adapter_check" {
+  value = local.table_storage_adapter_from_secret
+  precondition {
+    condition     = contains([for each in local.deployed_table_storages : lower(each)], local.table_storage_adapter_from_secret)
+    error_message = "Can't use ${local.table_storage_adapter} because it has not been deployed. Deployed storages are : ${join(",", local.deployed_table_storages)}"
+  }
+}
+
+output "queue_storage_adapter_check" {
+  value = local.queue_storage_adapter_from_secret
+  precondition {
+    condition     = contains([for each in local.deployed_queue_storages : lower(each)], local.queue_storage_adapter_from_secret)
+    error_message = "Can't use ${local.queue_storage_adapter} because it has not been deployed. Deployed storages are : ${join(",", local.deployed_queue_storages)}"
   }
 }

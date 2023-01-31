@@ -6,8 +6,8 @@ logging_level = "Information"
 
 # Object storage
 # Uncomment either the `redis` or the `minio` parameter
-#redis = {}
-minio = {}
+redis = {}
+#minio = {}
 
 metrics_exporter = {
   extra_conf = {

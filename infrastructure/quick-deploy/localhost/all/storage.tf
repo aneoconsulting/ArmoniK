@@ -74,27 +74,48 @@ resource "kubernetes_secret" "deployed_object_storage" {
     namespace = var.namespace
   }
   data = {
-    list = join(",", concat(
-      ["MongoDB"],
-      length(module.redis) > 0 ? ["Redis"] : [],
-      length(module.minio) > 0 ? ["S3"] : [],
-    ))
+    list    = join(",", local.storage_endpoint_url.deployed_object_storages)
+    adapter = local.storage_endpoint_url.object_storage_adapter
+  }
+}
+
+resource "kubernetes_secret" "deployed_table_storage" {
+  metadata {
+    name      = "deployed-table-storage"
+    namespace = var.namespace
+  }
+  data = {
+    list    = join(",", local.storage_endpoint_url.deployed_table_storages)
+    adapter = local.storage_endpoint_url.table_storage_adapter
+  }
+}
+
+resource "kubernetes_secret" "deployed_queue_storage" {
+  metadata {
+    name      = "deployed-queue-storage"
+    namespace = var.namespace
+  }
+  data = {
+    list    = join(",", local.storage_endpoint_url.deployed_queue_storages)
+    adapter = local.storage_endpoint_url.queue_storage_adapter
   }
 }
 
 # Storage
 locals {
-  object_storage_adapter = try(coalesce(
-    length(module.redis) > 0 ? "Redis" : null,
-    length(module.minio) > 0 ? "S3" : null,
-  ), "")
-  table_storage_adapter = "ArmoniK.Adapters.MongoDB.TableStorage"
-  queue_storage_adapter = "ArmoniK.Adapters.Amqp.QueueStorage"
   storage_endpoint_url = {
+    object_storage_adapter = try(coalesce(
+      length(module.redis) > 0 ? "Redis" : null,
+      length(module.minio) > 0 ? "S3" : null,
+    ), "")
+    table_storage_adapter = "MongoDB"
+    queue_storage_adapter = "Amqp"
     deployed_object_storages = concat(
       length(module.redis) > 0 ? ["Redis"] : [],
       length(module.minio) > 0 ? ["S3"] : [],
     )
+    deployed_table_storages = ["MongoDB"]
+    deployed_queue_storages = ["Amqp"]
     activemq = {
       url                 = module.activemq.url
       host                = module.activemq.host

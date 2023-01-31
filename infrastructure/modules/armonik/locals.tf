@@ -73,6 +73,8 @@ locals {
     seq_secret                        = "seq-endpoints"
     grafana_secret                    = "grafana-endpoints"
     deployed_object_storage_secret    = "deployed-object-storage"
+    deployed_table_storage_secret     = "deployed-table-storage"
+    deployed_queue_storage_secret     = "deployed-queue-storage"
   }
 
   # Shared storage
@@ -85,74 +87,85 @@ locals {
     S3Storage__BucketName      = data.kubernetes_secret.shared_storage.data.name
   } : {}
 
-  # S3 as object storage
-  object_storage_adapter   = "ArmoniK.Adapters.${var.object_storage_adapter}.ObjectStorage"
-  deployed_object_storages = split(",", data.kubernetes_secret.deployed_object_storage.data.list)
+  # Object storage
+  object_storage_adapter_from_secret = lower(data.kubernetes_secret.deployed_object_storage.data.adapter)
+  object_storage_adapter             = "ArmoniK.Adapters.${data.kubernetes_secret.deployed_object_storage.data.adapter}.ObjectStorage"
+  deployed_object_storages           = split(",", data.kubernetes_secret.deployed_object_storage.data.list)
+
+  # Table storage
+  table_storage_adapter_from_secret = lower(data.kubernetes_secret.deployed_table_storage.data.adapter)
+  table_storage_adapter             = "ArmoniK.Adapters.${data.kubernetes_secret.deployed_table_storage.data.adapter}.TableStorage"
+  deployed_table_storages           = split(",", data.kubernetes_secret.deployed_table_storage.data.list)
+
+  # Queue storage
+  queue_storage_adapter_from_secret = lower(data.kubernetes_secret.deployed_queue_storage.data.adapter)
+  queue_storage_adapter             = "ArmoniK.Adapters.${data.kubernetes_secret.deployed_queue_storage.data.adapter}.QueueStorage"
+  deployed_queue_storages           = split(",", data.kubernetes_secret.deployed_queue_storage.data.list)
 
   # Credentials
   credentials = {
     for key, value in {
-      Amqp__User = {
+      Amqp__User = local.queue_storage_adapter_from_secret == "amqp" ? {
         key  = "username"
         name = local.secrets.activemq.credentials_secret
-      }
-      Amqp__Password = {
+      } : { key = "", name = "" }
+      Amqp__Password = local.queue_storage_adapter_from_secret == "amqp" ? {
         key  = "password"
         name = local.secrets.activemq.credentials_secret
-      }
-      Amqp__Host = {
+      } : { key = "", name = "" }
+      Amqp__Host = local.queue_storage_adapter_from_secret == "amqp" ? {
         key  = "host"
         name = local.secrets.activemq.endpoints_secret
-      }
-      Amqp__Port = {
+      } : { key = "", name = "" }
+      Amqp__Port = local.queue_storage_adapter_from_secret == "amqp" ? {
         key  = "port"
         name = local.secrets.activemq.endpoints_secret
-      }
-      Redis__User = lower(var.object_storage_adapter) == "redis" ? {
+      } : { key = "", name = "" }
+      Redis__User = local.object_storage_adapter_from_secret == "redis" ? {
         key  = "username"
         name = local.secrets.redis.credentials_secret
       } : { key = "", name = "" }
-      Redis__Password = lower(var.object_storage_adapter) == "redis" ? {
+      Redis__Password = local.object_storage_adapter_from_secret == "redis" ? {
         key  = "password"
         name = local.secrets.redis.credentials_secret
       } : { key = "", name = "" }
-      Redis__EndpointUrl = lower(var.object_storage_adapter) == "redis" ? {
+      Redis__EndpointUrl = local.object_storage_adapter_from_secret == "redis" ? {
         key  = "url"
         name = local.secrets.redis.endpoints_secret
       } : { key = "", name = "" }
-      MongoDB__User = {
+      MongoDB__User = local.table_storage_adapter_from_secret == "mongodb" ? {
         key  = "username"
         name = local.secrets.mongodb.credentials_secret
-      }
-      MongoDB__Password = {
+      } : { key = "", name = "" }
+      MongoDB__Password = local.table_storage_adapter_from_secret == "mongodb" ? {
         key  = "password"
         name = local.secrets.mongodb.credentials_secret
-      }
-      MongoDB__Host = {
+      } : { key = "", name = "" }
+      MongoDB__Host = local.table_storage_adapter_from_secret == "mongodb" ? {
         key  = "host"
         name = local.secrets.mongodb.endpoints_secret
-      }
-      MongoDB__Port = {
+      } : { key = "", name = "" }
+      MongoDB__Port = local.table_storage_adapter_from_secret == "mongodb" ? {
         key  = "port"
         name = local.secrets.mongodb.endpoints_secret
-      }
-      S3__Login = lower(var.object_storage_adapter) == "s3" ? {
+      } : { key = "", name = "" }
+      S3__Login = local.object_storage_adapter_from_secret == "s3" ? {
         key  = "username"
         name = local.secrets.s3.credentials_secret
       } : { key = "", name = "" }
-      S3__Password = lower(var.object_storage_adapter) == "s3" ? {
+      S3__Password = local.object_storage_adapter_from_secret == "s3" ? {
         key  = "password"
         name = local.secrets.s3.credentials_secret
       } : { key = "", name = "" }
-      S3__EndpointUrl = lower(var.object_storage_adapter) == "s3" ? {
+      S3__EndpointUrl = local.object_storage_adapter_from_secret == "s3" ? {
         key  = "url"
         name = local.secrets.s3.endpoints_secret
       } : { key = "", name = "" }
-      S3__MustForcePathStyle = lower(var.object_storage_adapter) == "s3" ? {
+      S3__MustForcePathStyle = local.object_storage_adapter_from_secret == "s3" ? {
         key  = "must_force_path_style"
         name = local.secrets.s3.endpoints_secret
       } : { key = "", name = "" }
-      S3__BucketName = lower(var.object_storage_adapter) == "s3" ? {
+      S3__BucketName = local.object_storage_adapter_from_secret == "s3" ? {
         key  = "bucket_name"
         name = local.secrets.s3.endpoints_secret
       } : { key = "", name = "" }
@@ -161,42 +174,44 @@ locals {
 
   # Credentials
   database_credentials = {
-    MongoDB_User = {
-      key  = "username"
-      name = local.secrets.mongodb.credentials_secret
-    }
-    MongoDB_Password = {
-      key  = "password"
-      name = local.secrets.mongodb.credentials_secret
-    }
-    MongoDB_Host = {
-      key  = "host"
-      name = local.secrets.mongodb.endpoints_secret
-    }
-    MongoDB_Port = {
-      key  = "port"
-      name = local.secrets.mongodb.endpoints_secret
-    }
+    for key, value in {
+      MongoDB_User = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "username"
+        name = local.secrets.mongodb.credentials_secret
+      } : { key = "", name = "" }
+      MongoDB_Password = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "password"
+        name = local.secrets.mongodb.credentials_secret
+      } : { key = "", name = "" }
+      MongoDB_Host = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "host"
+        name = local.secrets.mongodb.endpoints_secret
+      } : { key = "", name = "" }
+      MongoDB_Port = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "port"
+        name = local.secrets.mongodb.endpoints_secret
+      } : { key = "", name = "" }
+    } : key => value if !contains(values(value), "")
   }
 
   # Certificates
   certificates = {
     for key, value in {
-      activemq = {
+      activemq = local.queue_storage_adapter_from_secret == "amqp" ? {
         name        = "activemq-secret-volume"
         mount_path  = "/amqp"
         secret_name = local.secrets.activemq.certificates_secret
-      }
-      redis = lower(var.object_storage_adapter) == "redis" ? {
+      } : { key = "", name = "" }
+      redis = local.object_storage_adapter_from_secret == "redis" ? {
         name        = "redis-secret-volume"
         mount_path  = "/redis"
         secret_name = local.secrets.redis.certificates_secret
       } : { key = "", name = "" }
-      mongodb = {
+      mongodb = local.table_storage_adapter_from_secret == "mongodb" ? {
         name        = "mongodb-secret-volume"
         mount_path  = "/mongodb"
         secret_name = local.secrets.mongodb.certificates_secret
-      }
+      } : { key = "", name = "" }
     } : key => value if !contains(values(value), "")
   }
 
