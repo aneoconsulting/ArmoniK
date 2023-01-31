@@ -27,6 +27,7 @@ module "mongodb" {
 
 # Redis
 module "redis" {
+  count       = (contains([for each in var.object_storages_to_be_deployed : lower(each)], "redis")) ? 1 : 0
   source      = "../../../modules/onpremise-storage/redis"
   namespace   = local.namespace
   working_dir = "${path.root}/../../.."
@@ -54,7 +55,7 @@ resource "kubernetes_secret" "shared_storage" {
 
 # minio
 module "minio" {
-  count     = (contains([for each in var.object_storages_to_be_deployed : lower(each)], lower("s3"))) ? 1 : 0
+  count     = (contains([for each in var.object_storages_to_be_deployed : lower(each)], "s3")) ? 1 : 0
   source    = "../../../modules/onpremise-storage/minio"
   namespace = var.namespace
   minio = {
@@ -91,12 +92,12 @@ locals {
       allow_host_mismatch = true
     }
     redis = {
-      url          = module.redis.url
-      host         = module.redis.host
-      port         = module.redis.port
-      credentials  = module.redis.user_credentials
-      certificates = module.redis.user_certificate
-      endpoints    = module.redis.endpoints
+      url          = module.redis[0].url
+      host         = module.redis[0].host
+      port         = module.redis[0].port
+      credentials  = module.redis[0].user_credentials
+      certificates = module.redis[0].user_certificate
+      endpoints    = module.redis[0].endpoints
       timeout      = 30000
       ssl_host     = "127.0.0.1"
     }

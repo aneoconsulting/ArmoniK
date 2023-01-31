@@ -113,21 +113,21 @@ variable "redis" {
     image_pull_secrets = optional(string, "")
     max_memory         = optional(string, "8000gb")
   })
-  default = {}
+  default = null
 }
 
-# Parameters for minio
+# Parameters for Minio
 variable "minio" {
   description = "Parameters of minio"
   type = object({
-    image_name         = optional(string, "quay.io/minio/minio")
+    image_name         = optional(string, "minio/minio")
     image_tag          = optional(string)
     host               = optional(string, "minio")
     bucket_name        = optional(string, "minioBucket")
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
   })
-  default = {}
+  default = null
 }
 
 variable "object_storages_to_be_deployed" {

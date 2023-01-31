@@ -25,15 +25,16 @@ module "armonik" {
   ingress                    = var.ingress
   job_partitions_in_database = var.job_partitions_in_database
   authentication             = var.authentication
+  object_storage_adapter     = var.object_storage_adapter
+  queue_storage_adapter      = var.queue_storage_adapter
+  table_storage_adapter      = var.table_storage_adapter
   depends_on = [
     kubernetes_secret.fluent_bit,
     kubernetes_secret.grafana,
     kubernetes_secret.metrics_exporter,
     kubernetes_secret.partition_metrics_exporter,
     kubernetes_secret.seq,
-    kubernetes_secret.shared_storage
+    kubernetes_secret.shared_storage,
+    kubernetes_secret.deployed_object_storage
   ]
-  object_storage_adapter = var.object_storage_adapter
-  queue_storage_adapter  = var.queue_storage_adapter
-  table_storage_adapter  = var.table_storage_adapter
 }
