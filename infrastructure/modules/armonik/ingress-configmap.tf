@@ -55,9 +55,9 @@ server {
         rewrite ^ $scheme://$http_host/admin/$accept_language/ permanent;
     }
     location = /admin/ {
-	rewrite ^ $scheme://$http_host/admin/$accept_language/ permanent;
+        rewrite ^ $scheme://$http_host/admin/$accept_language/ permanent;
     }
-    location ~ /admin/(fr|en) {
+    location /admin/ {
         proxy_pass ${local.admin_app_url};
     }
 
