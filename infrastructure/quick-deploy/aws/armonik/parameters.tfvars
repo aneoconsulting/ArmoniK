@@ -33,7 +33,7 @@ control_plane = {
   service_type      = "ClusterIP"
   replicas          = 1
   image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag               = "0.8.3"
+  tag               = "0.9.1"
   image_pull_policy = "IfNotPresent"
   port              = 5001
   limits = {
@@ -124,7 +124,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.8.3"
+      tag               = "0.9.1"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"
@@ -140,7 +140,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.8.2"
+        tag               = "0.8.3"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
@@ -209,8 +209,6 @@ authentication = {
   require_authorization   = false
 }
 
-object_storage_adapter = "Redis"
-
 extra_conf = {
   core = {
     Amqp__AllowHostMismatch                    = false
@@ -226,6 +224,9 @@ extra_conf = {
     MongoDB__AllowInsecureTls                  = true
     Redis__Timeout                             = 3000
     Redis__SslHost                             = ""
+  }
+  control = {
+    Submitter__MaxErrorAllowed = 50
   }
 }
 

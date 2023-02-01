@@ -42,7 +42,7 @@ output "object_storage_adapter_check" {
   value = local.object_storage_adapter_from_secret
   precondition {
     condition     = contains([for each in local.deployed_object_storages : lower(each)], local.object_storage_adapter_from_secret)
-    error_message = "Can't use ${local.object_storage_adapter} because it has not been deployed. Deployed storages are : ${join(",", local.deployed_object_storages)}"
+    error_message = "Can't use ${nonsensitive(local.object_storage_adapter)} because it has not been deployed. Deployed storages are : ${join(",", nonsensitive(local.deployed_object_storages))}"
   }
 }
 
@@ -50,7 +50,7 @@ output "table_storage_adapter_check" {
   value = local.table_storage_adapter_from_secret
   precondition {
     condition     = contains([for each in local.deployed_table_storages : lower(each)], local.table_storage_adapter_from_secret)
-    error_message = "Can't use ${local.table_storage_adapter} because it has not been deployed. Deployed storages are : ${join(",", local.deployed_table_storages)}"
+    error_message = "Can't use ${nonsensitive(local.table_storage_adapter)} because it has not been deployed. Deployed storages are : ${join(",", nonsensitive(local.deployed_table_storages))}"
   }
 }
 
@@ -58,6 +58,6 @@ output "queue_storage_adapter_check" {
   value = local.queue_storage_adapter_from_secret
   precondition {
     condition     = contains([for each in local.deployed_queue_storages : lower(each)], local.queue_storage_adapter_from_secret)
-    error_message = "Can't use ${local.queue_storage_adapter} because it has not been deployed. Deployed storages are : ${join(",", local.deployed_queue_storages)}"
+    error_message = "Can't use ${nonsensitive(local.queue_storage_adapter)} because it has not been deployed. Deployed storages are : ${join(",", nonsensitive(local.deployed_queue_storages))}"
   }
 }

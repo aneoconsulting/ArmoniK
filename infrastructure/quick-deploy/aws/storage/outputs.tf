@@ -2,20 +2,25 @@
 output "storage_endpoint_url" {
   description = "Storage endpoints URLs"
   value = {
+    object_storage_adapter   = local.object_storage_adapter
+    table_storage_adapter    = local.table_storage_adapter
+    queue_storage_adapter    = local.queue_storage_adapter
+    deployed_object_storages = local.deployed_object_storages
+    deployed_table_storages  = local.deployed_table_storages
+    deployed_queue_storages  = local.deployed_queue_storages
     activemq = {
       url     = module.mq.activemq_endpoint_url.url
       web_url = module.mq.web_url
     }
-    redis = {
-      url = module.elasticache.redis_endpoint_url.url
-    }
-    s3 = {
+    redis = length(module.elasticache) > 0 ? {
+      url = module.elasticache[0].redis_endpoint_url.url
+    } : null
+    s3 = length(module.s3_os) > 0 ? {
       url                   = "https://s3.${var.region}.amazonaws.com"
-      bucket_name           = module.s3_os.s3_bucket_name
+      bucket_name           = module.s3_os[0].s3_bucket_name
       must_force_path_style = false
-      kms_key_id            = module.s3_os.kms_key_id
-    }
-    deployed_object_storages = var.object_storages_to_be_deployed
+      kms_key_id            = module.s3_os[0].kms_key_id
+    } : null
     mongodb = {
       url = module.mongodb.url
     }

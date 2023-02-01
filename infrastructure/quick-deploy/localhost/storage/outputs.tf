@@ -11,13 +11,13 @@ output "storage_endpoint_url" {
       url     = module.activemq.url
       web_url = module.activemq.web_url
     }
-    redis = {
-      url = try(module.redis[0].url, "")
-    }
-    s3 = {
+    redis = length(module.redis) > 0 ? {
+      url = module.redis[0].url
+    } : null
+    s3 = length(module.minio) > 0 ? {
       url         = try(module.minio[0].url, "")
       bucket_name = try(module.minio[0].bucket_name, "")
-    }
+    } : null
     mongodb = {
       url = module.mongodb.url
     }

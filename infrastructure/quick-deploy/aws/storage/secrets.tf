@@ -1,5 +1,6 @@
 # Secrets
 resource "kubernetes_secret" "elasticache_client_certificate" {
+  count = length(module.elasticache) > 0 ? 1 : 0
   metadata {
     name      = "redis-user-certificates"
     namespace = var.namespace
@@ -10,6 +11,7 @@ resource "kubernetes_secret" "elasticache_client_certificate" {
 }
 
 resource "kubernetes_secret" "elasticache_user" {
+  count = length(module.elasticache) > 0 ? 1 : 0
   metadata {
     name      = "redis-user"
     namespace = var.namespace
@@ -22,14 +24,15 @@ resource "kubernetes_secret" "elasticache_user" {
 }
 
 resource "kubernetes_secret" "elasticache_endpoints" {
+  count = length(module.elasticache) > 0 ? 1 : 0
   metadata {
     name      = "redis-endpoints"
     namespace = var.namespace
   }
   data = {
-    host = module.elasticache.redis_endpoint_url.host
-    port = module.elasticache.redis_endpoint_url.port
-    url  = module.elasticache.redis_endpoint_url.url
+    host = module.elasticache[0].redis_endpoint_url.host
+    port = module.elasticache[0].redis_endpoint_url.port
+    url  = module.elasticache[0].redis_endpoint_url.url
   }
 }
 
@@ -83,17 +86,29 @@ resource "kubernetes_secret" "shared_storage" {
   }
 }
 
+resource "kubernetes_secret" "s3_user" {
+  count = length(module.s3_os) > 0 ? 1 : 0
+  metadata {
+    name      = "s3-user"
+    namespace = var.namespace
+  }
+  data = {
+    username = ""
+    password = ""
+  }
+  type = "kubernetes.io/basic-auth"
+}
+
 resource "kubernetes_secret" "s3_endpoints" {
+  count = length(module.s3_os) > 0 ? 1 : 0
   metadata {
     name      = "s3-endpoints"
     namespace = var.namespace
   }
   data = {
     url                   = "https://s3.${var.region}.amazonaws.com"
-    kms_key_id            = module.s3_os.kms_key_id
-    login                 = ""
-    password              = ""
-    bucket_name           = module.s3_os.s3_bucket_name
+    bucket_name           = module.s3_os[0].s3_bucket_name
+    kms_key_id            = module.s3_os[0].kms_key_id
     must_force_path_style = false
   }
 }
@@ -104,6 +119,29 @@ resource "kubernetes_secret" "deployed_object_storage" {
     namespace = var.namespace
   }
   data = {
-    list = join(",", var.object_storages_to_be_deployed)
+    list    = join(",", local.deployed_object_storages)
+    adapter = local.object_storage_adapter
+  }
+}
+
+resource "kubernetes_secret" "deployed_table_storage" {
+  metadata {
+    name      = "deployed-table-storage"
+    namespace = var.namespace
+  }
+  data = {
+    list    = join(",", local.deployed_table_storages)
+    adapter = local.table_storage_adapter
+  }
+}
+
+resource "kubernetes_secret" "deployed_queue_storage" {
+  metadata {
+    name      = "deployed-queue-storage"
+    namespace = var.namespace
+  }
+  data = {
+    list    = join(",", local.deployed_queue_storages)
+    adapter = local.queue_storage_adapter
   }
 }
