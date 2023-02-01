@@ -49,13 +49,13 @@ server {
     }
 
     location = / {
-        rewrite ^ $scheme://$http_host/admin/$accept_language/ permanent;
+        rewrite ^ $scheme://$http_host/admin/$accept_language/;
     }
     location = /admin {
-        rewrite ^ $scheme://$http_host/admin/$accept_language/ permanent;
+        rewrite ^ $scheme://$http_host/admin/$accept_language/;
     }
     location = /admin/ {
-        rewrite ^ $scheme://$http_host/admin/$accept_language/ permanent;
+        rewrite ^ $scheme://$http_host/admin/$accept_language/;
     }
     location /admin/ {
         proxy_pass ${local.admin_app_url};
