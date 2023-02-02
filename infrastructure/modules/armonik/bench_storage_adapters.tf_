@@ -1,0 +1,119 @@
+# Control plane deployment
+resource "kubernetes_job" "bench_job" {
+  metadata {
+    name      = "bench-plane"
+    namespace = var.namespace
+    labels = {
+      app     = "armonik"
+      service = "bench-plane"
+    }
+  }
+  spec {
+#   replicas = 1
+    template {
+      metadata {
+        name      = "bench-plane"
+        labels = {
+          app     = "armonik"
+          service = "bench-plane"
+        }
+        annotations = local.control_plane_annotations
+      }
+      spec {
+        node_selector = local.control_plane_node_selector
+        dynamic "toleration" {
+          for_each = (local.control_plane_node_selector != {} ? [
+            for index in range(0, length(local.control_plane_node_selector_keys)) : {
+              key   = local.control_plane_node_selector_keys[index]
+              value = local.control_plane_node_selector_values[index]
+            }
+          ] : [])
+          content {
+            key      = toleration.value.key
+            operator = "Equal"
+            value    = toleration.value.value
+            effect   = "NoSchedule"
+          }
+        }
+        dynamic "image_pull_secrets" {
+          for_each = (var.control_plane.image_pull_secrets != "" ? [1] : [])
+          content {
+            name = var.control_plane.image_pull_secrets
+          }
+        }
+        restart_policy = "Never" # Always, OnFailure, Never
+        # Control plane container
+        container {
+          name              = "bench"
+          image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/bench:1.13"
+          image_pull_policy = "IfNotPresent"
+          command           = ["dotnet", "run", "--project", "Bench.csproj", "-c", "release"]
+
+          dynamic "env_from" {
+            for_each = local.control_plane_configmaps
+            content {
+              config_map_ref {
+                name = env_from.value
+              }
+            }
+          }
+          dynamic "env" {
+            for_each = local.credentials
+            content {
+              name = env.key
+              value_from {
+                secret_key_ref {
+                  key      = env.value.key
+                  name     = env.value.name
+                  optional = false
+                }
+              }
+            }
+          }
+          dynamic "volume_mount" {
+            for_each = local.certificates
+            content {
+              name       = volume_mount.value.name
+              mount_path = volume_mount.value.mount_path
+              read_only  = true
+            }
+          }
+        }
+        dynamic "volume" {
+          for_each = local.certificates
+          content {
+            name = volume.value.name
+            secret {
+              secret_name = volume.value.secret_name
+              optional    = false
+            }
+          }
+        }
+        dynamic "volume" {
+          for_each = local.fluent_bit_volumes
+          content {
+            name = volume.key
+            dynamic "host_path" {
+              for_each = (volume.value.type == "host_path" ? [1] : [])
+              content {
+                path = volume.value.mount_path
+              }
+            }
+            dynamic "config_map" {
+              for_each = (volume.value.type == "config_map" ? [1] : [])
+              content {
+                name = local.fluent_bit_configmap
+              }
+            }
+          }
+        }
+      }
+    }
+        backoff_limit = 4
+  }
+    wait_for_completion = true
+  timeouts {
+    create = "10m"
+    update = "10m"
+  }
+}

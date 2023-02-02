@@ -204,7 +204,8 @@ authentication = {
   require_authorization   = false
 }
 
-object_storage_adapter = "Redis"
+object_storage_adapter = "S3"
+#object_storage_adapter = "Redis"
 
 extra_conf = {
   core = {
