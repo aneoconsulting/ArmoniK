@@ -6,7 +6,7 @@ VERSIONS_FILE?=../../../../versions.tfvars.json
 STATE_FILE=armonik-terraform.tfstate
 
 # Randomly generated string that is preserved across calls
-RANDOM_PREFIX != [ -e $(GENERATED_DIR)/.prefix ] || { mkdir -p $(GENERATED_DIR) && tr -dc '[a-z0-9]' </dev/urandom | head -c 10 > $(GENERATED_DIR)/.prefix ; } && cat $(GENERATED_DIR)/.prefix
+RANDOM_PREFIX != [ -e $(GENERATED_DIR)/.prefix ] || { mkdir -p $(GENERATED_DIR) && tr -dc a-z0-9 </dev/urandom | head -c 10 > $(GENERATED_DIR)/.prefix ; } && cat $(GENERATED_DIR)/.prefix
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export REGION?=eu-west-3
@@ -31,6 +31,7 @@ env:
 
 bootstrap-deploy: $(YAML_SRC)
 	@mkdir -p $(GENERATED_DIR)
+	echo $(PREFIX)
 	aws cloudformation create-stack --stack-name $(PREFIX) --region $(REGION) --template-body file://$(CURRENT_DIR)/bootstrap.yml --parameters ParameterKey=BucketName,ParameterValue=$(TFSTATE_BUCKET_NAME)
 	@echo "Waiting for cloud formation successful deployment"
 	@aws cloudformation wait stack-create-complete --stack-name $(PREFIX) --region $(REGION)

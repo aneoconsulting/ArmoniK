@@ -71,7 +71,7 @@ resource "kubernetes_secret" "shared_storage" {
 resource "kubernetes_secret" "deployed_object_storage" {
   metadata {
     name      = "deployed-object-storage"
-    namespace = var.namespace
+    namespace = local.namespace
   }
   data = {
     list    = join(",", local.storage_endpoint_url.deployed_object_storages)
@@ -82,7 +82,7 @@ resource "kubernetes_secret" "deployed_object_storage" {
 resource "kubernetes_secret" "deployed_table_storage" {
   metadata {
     name      = "deployed-table-storage"
-    namespace = var.namespace
+    namespace = local.namespace
   }
   data = {
     list    = join(",", local.storage_endpoint_url.deployed_table_storages)
@@ -93,7 +93,7 @@ resource "kubernetes_secret" "deployed_table_storage" {
 resource "kubernetes_secret" "deployed_queue_storage" {
   metadata {
     name      = "deployed-queue-storage"
-    namespace = var.namespace
+    namespace = local.namespace
   }
   data = {
     list    = join(",", local.storage_endpoint_url.deployed_queue_storages)

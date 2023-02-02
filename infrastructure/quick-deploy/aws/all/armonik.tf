@@ -63,6 +63,9 @@ module "armonik" {
     kubernetes_secret.metrics_exporter,
     kubernetes_secret.partition_metrics_exporter,
     kubernetes_secret.seq,
-    kubernetes_secret.shared_storage
+    kubernetes_secret.shared_storage,
+    kubernetes_secret.deployed_object_storage,
+    kubernetes_secret.deployed_table_storage,
+    kubernetes_secret.deployed_queue_storage
   ]
 }

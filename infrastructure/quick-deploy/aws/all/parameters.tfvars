@@ -27,7 +27,6 @@ tags = {
   "DST_Update"       = ""
 }
 
-
 vpc = {
   enable_private_subnet = false
 }
@@ -81,23 +80,32 @@ eks_worker_groups = [
     on_demand_percentage_above_base_capacity = 0
   }
 ]
+
 metrics_server = {
   node_selector = { "grid/type" = "Operator" }
 }
+
 keda = {
   node_selector = { "grid/type" = "Operator" }
 }
+
+# Object storage
+# Uncomment either the `elasticache` or the `s3_os` parameter
 elasticache = {
   engine             = "redis"
   engine_version     = "6.x"
   node_type          = "cache.r4.large"
   num_cache_clusters = 2
 }
+
+#s3_os = {}
+
 mq = {
   engine_type        = "ActiveMQ"
   engine_version     = "5.16.4"
   host_instance_type = "mq.m5.xlarge"
 }
+
 mongodb = {
   image_name    = "mongo"
   image_tag     = "5.0.9"
@@ -111,6 +119,7 @@ mongodb = {
   #  }
   #}
 }
+
 pv_efs = {
   csi_driver = {
     node_selector = { "grid/type" = "Operator" }
@@ -161,7 +170,7 @@ prometheus = {
 
 metrics_exporter = {
   image_name    = "dockerhubaneo/armonik_control_metrics"
-  image_tag     = "0.8.3"
+  image_tag     = "0.9.1"
   node_selector = { "grid/type" = "Operator" }
   extra_conf = {
     MongoDB__AllowInsecureTls              = true
@@ -173,7 +182,7 @@ metrics_exporter = {
 
 /*parition_metrics_exporter = {
   image_name    = "dockerhubaneo/armonik_control_partition_metrics"
-  image_tag     = "0.8.3"
+  image_tag     = "0.9.1"
   node_selector = { "grid/type" = "Operator" }
   extra_conf    = {
     MongoDB__AllowInsecureTls           = true
@@ -189,10 +198,8 @@ fluent_bit = {
   is_daemonset = true
 }
 
-
 # Logging level
 logging_level = "Information"
-
 
 # Job to insert partitions in the database
 job_partitions_in_database = {
@@ -203,7 +210,7 @@ job_partitions_in_database = {
 # Parameters of control plane
 control_plane = {
   image = "dockerhubaneo/armonik_control"
-  tag   = "0.8.3"
+  tag   = "0.9.1"
   limits = {
     cpu    = "1000m"
     memory = "2048Mi"
@@ -251,7 +258,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.8.3"
+      tag   = "0.9.1"
       limits = {
         cpu    = "2000m"
         memory = "2048Mi"
@@ -265,7 +272,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_worker_dll"
-        tag   = "0.8.2"
+        tag   = "0.8.3"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -329,5 +336,8 @@ extra_conf = {
     MongoDB__AllowInsecureTls                  = true
     Redis__Timeout                             = 3000
     Redis__SslHost                             = ""
+  }
+  control = {
+    Submitter__MaxErrorAllowed = 50
   }
 }
