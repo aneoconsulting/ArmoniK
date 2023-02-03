@@ -1,6 +1,14 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2023-01-06)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2023-02-08)
+
+## [v2.11.0](https://github.com/aneoconsulting/armonik/tree/v2.11.0) (2023-02-08)
+
+Changed
+-
+
+* Store logins, passwords, endpoints and other data of a resource or a service in Kubernetes secrets (impacted modules:
+  Monitoring, Storage and ArmoniK).
 
 ## [v2.10.2](https://github.com/aneoconsulting/armonik/tree/v2.10.2) (2023-01-23)
 
@@ -12,8 +20,8 @@ Changed
 Fixed
 -
 
-* Correction of TaskId result with correct request for SubmitAsync call. more infos [here](https://github.com/aneoconsulting/ArmoniK/issues/833)
-
+* Correction of TaskId result with correct request for SubmitAsync call. more
+  infos [here](https://github.com/aneoconsulting/ArmoniK/issues/833)
 
 ## [v2.10.1](https://github.com/aneoconsulting/armonik/tree/v2.10.1) (2023-01-06)
 
@@ -27,7 +35,6 @@ Fixed
 
 * Correction of the metric used for scaling. more infos [here](https://github.com/aneoconsulting/ArmoniK/issues/811)
 
-
 ## [v2.10.0](https://github.com/aneoconsulting/armonik/tree/v2.10.0) (2022-12-14)
 
 Changed
@@ -35,25 +42,29 @@ Changed
 
 * Update Core version from 0.7.1 to 0.8.2
 * Update Extensions.Csharp version from 0.7.5 to 0.8.1
-* **Breaking** : Namespaces in Extensions.Csharp have changed : 
-    * The namespaces are now organised in the following form : 
-    `ArmoniK.DevelopmentKit.[Common|Client|Worker].[Common|Symphony|GridServer|Unified]`
-    * For example, this means that the namespace `ArmoniK.DevelopmentKit.SymphonyApi.Client` is now `ArmoniK.DevelopmentKit.Client.Symphony`
-    * Unified api is now explicitely named as Unified (`ArmoniK.DevelopmentKit.Worker[.Grid]` is now `ArmoniK.DevelopmentKit.Worker.Unified`, and `ArmoniK.DevelopmentKit.Client` is now `ArmoniK.DevelopmentKit.Worker.Unified`)
+* **Breaking** : Namespaces in Extensions.Csharp have changed :
+    * The namespaces are now organised in the following form :
+      `ArmoniK.DevelopmentKit.[Common|Client|Worker].[Common|Symphony|GridServer|Unified]`
+    * For example, this means that the namespace `ArmoniK.DevelopmentKit.SymphonyApi.Client` is
+      now `ArmoniK.DevelopmentKit.Client.Symphony`
+    * Unified api is now explicitely named as Unified (`ArmoniK.DevelopmentKit.Worker[.Grid]` is
+      now `ArmoniK.DevelopmentKit.Worker.Unified`, and `ArmoniK.DevelopmentKit.Client` is
+      now `ArmoniK.DevelopmentKit.Worker.Unified`)
     * Namespace `ArmoniK.DevelopmentKit.WorkerApi.Common` is now `ArmoniK.DevelopmentKit.Worker.Common`
     * As a result, the nuget names have changed
-    * The motivations and details for this change are available [here](https://github.com/aneoconsulting/ArmoniK/issues/537)
+    * The motivations and details for this change are
+      available [here](https://github.com/aneoconsulting/ArmoniK/issues/537)
     * Some classes have been moved around to reduce repetition and to conform better to the new organisation
 * Changed engine type name enum values to reflect namespace changes
 * Renamed status code StatusCode.Canceled in StatusCode.Cancelled inside Armonik.Api
-
 
 Added
 -
 
 * Remove payload from Object Storage when task is completed
 * Implement new APIs for GUI
-* Buffered task submission using Client Unified API, increasing overall task submission speed doc usage [Buffering submission](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/blob/0.8.1/Documentation/articles/buffersubmit.md)  
+* Buffered task submission using Client Unified API, increasing overall task submission speed doc
+  usage [Buffering submission](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/blob/0.8.1/Documentation/articles/buffersubmit.md)
 * gRPC channel pooling in Extensions.Csharp to improve performance
 * NUnit testing in Extensions.Csharp to replace the old testing framework in a future release
 
@@ -63,8 +74,10 @@ Fixed
 * Use EphemeralMongo instead of Mongo2go in unit tests because of issues with Mongo2go
 * Issue with each polling agent creating multiple connections to the message queue
 * Improve task acquisition when messages are duplicated
-* Put task in error when worker is unavailable during task execution [#743](https://github.com/aneoconsulting/ArmoniK/issues/743)
-* `ArmoniK.DevelopmentKit.Worker.Unified.TaskSubmitterWorkerService` no longer exposes Symphony-like endpoints as it was never its intention
+* Put task in error when worker is unavailable during task
+  execution [#743](https://github.com/aneoconsulting/ArmoniK/issues/743)
+* `ArmoniK.DevelopmentKit.Worker.Unified.TaskSubmitterWorkerService` no longer exposes Symphony-like endpoints as it was
+  never its intention
 * Fixed null or empty argument list in payload causing UndefinedReferenceException in some cases
 * TaskOptions are now fed on worker side [#764](https://github.com/aneoconsulting/ArmoniK/issues/764)
 
@@ -92,7 +105,6 @@ Fixed
 
 * Polling agent health check fail when worker is unavailable
 
-
 ## [v2.8.9](https://github.com/aneoconsulting/armonik/tree/v2.8.9) (2022-11-22)
 
 Changed
@@ -118,7 +130,6 @@ Fixed
 -
 
 * Mark the pollster as failed when worker is unavailable
-
 
 ## [v2.8.7](https://github.com/aneoconsulting/armonik/tree/v2.8.7) (2022-10-12)
 
