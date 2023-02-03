@@ -1,6 +1,6 @@
 resource "kubernetes_secret" "shared_storage" {
   metadata {
-    name      = "shared-storage-endpoints"
+    name      = "shared-storage"
     namespace = var.namespace
   }
   data = {

@@ -30,7 +30,7 @@ output "user_credentials" {
 output "endpoints" {
   description = "Endpoints of redis"
   value = {
-    secret    = kubernetes_secret.redis_endpoints.metadata[0].name
-    data_keys = keys(kubernetes_secret.redis_endpoints.data)
+    secret    = kubernetes_secret.redis.metadata[0].name
+    data_keys = keys(kubernetes_secret.redis.data)
   }
 }

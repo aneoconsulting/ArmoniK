@@ -81,9 +81,9 @@ elasticache = {
     log_kms_key_id = ""
   }
 }
-/*
+
 # S3 as shared storage
-s3_os = {
+/*s3_os = {
   name                                  = "armonik-s3os"
   policy                                = ""
   attach_policy                         = false
@@ -96,8 +96,8 @@ s3_os = {
   restrict_public_buckets               = true
   kms_key_id                            = ""
   sse_algorithm                         = ""
-}
-*/
+}*/
+
 # MQ parameters
 mq = {
   name                    = "armonik-mq"

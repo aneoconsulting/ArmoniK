@@ -36,7 +36,7 @@ module "s3_fs" {
 # Shared storage
 resource "kubernetes_secret" "shared_storage" {
   metadata {
-    name      = "shared-storage-endpoints"
+    name      = "shared-storage"
     namespace = local.namespace
   }
   data = {
@@ -47,7 +47,6 @@ resource "kubernetes_secret" "shared_storage" {
     secret_access_key = ""
     file_storage_type = "S3"
   }
-  depends_on = [module.eks]
 }
 
 # AWS S3 as object storage
@@ -71,33 +70,20 @@ module "s3_os" {
   }
 }
 
-resource "kubernetes_secret" "s3_user" {
+resource "kubernetes_secret" "s3" {
   count = length(module.s3_os) > 0 ? 1 : 0
   metadata {
-    name      = "s3-user"
+    name      = "s3"
     namespace = local.namespace
   }
   data = {
-    username = ""
-    password = ""
-  }
-  type = "kubernetes.io/basic-auth"
-  depends_on = [module.eks]
-}
-
-resource "kubernetes_secret" "s3_endpoints" {
-  count = length(module.s3_os) > 0 ? 1 : 0
-  metadata {
-    name      = "s3-endpoints"
-    namespace = local.namespace
-  }
-  data = {
+    username              = ""
+    password              = ""
     url                   = "https://s3.${var.region}.amazonaws.com"
     bucket_name           = module.s3_os[0].s3_bucket_name
     kms_key_id            = module.s3_os[0].kms_key_id
     must_force_path_style = false
   }
-  depends_on = [module.eks]
 }
 
 # AWS Elasticache
@@ -126,44 +112,20 @@ module "elasticache" {
   }
 }
 
-resource "kubernetes_secret" "elasticache_client_certificate" {
+resource "kubernetes_secret" "elasticache" {
   count = length(module.elasticache) > 0 ? 1 : 0
   metadata {
-    name      = "redis-user-certificates"
+    name      = "redis"
     namespace = local.namespace
   }
   data = {
     "chain.pem" = ""
+    username    = ""
+    password    = ""
+    host        = module.elasticache[0].redis_endpoint_url.host
+    port        = module.elasticache[0].redis_endpoint_url.port
+    url         = module.elasticache[0].redis_endpoint_url.url
   }
-  depends_on = [module.eks]
-}
-
-resource "kubernetes_secret" "elasticache_user" {
-  count = length(module.elasticache) > 0 ? 1 : 0
-  metadata {
-    name      = "redis-user"
-    namespace = local.namespace
-  }
-  data = {
-    username = ""
-    password = ""
-  }
-  type = "kubernetes.io/basic-auth"
-  depends_on = [module.eks]
-}
-
-resource "kubernetes_secret" "elasticache_endpoints" {
-  count = length(module.elasticache) > 0 ? 1 : 0
-  metadata {
-    name      = "redis-endpoints"
-    namespace = local.namespace
-  }
-  data = {
-    host = module.elasticache[0].redis_endpoint_url.host
-    port = module.elasticache[0].redis_endpoint_url.port
-    url  = module.elasticache[0].redis_endpoint_url.url
-  }
-  depends_on = [module.eks]
 }
 
 # Amazon MQ
@@ -187,42 +149,20 @@ module "mq" {
   }
 }
 
-resource "kubernetes_secret" "mq_client_certificate" {
+resource "kubernetes_secret" "mq" {
   metadata {
-    name      = "activemq-user-certificates"
+    name      = "activemq"
     namespace = local.namespace
   }
   data = {
     "chain.pem" = ""
+    username    = module.mq.user.username
+    password    = module.mq.user.password
+    host        = module.mq.activemq_endpoint_url.host
+    port        = module.mq.activemq_endpoint_url.port
+    url         = module.mq.activemq_endpoint_url.url
+    web-url     = module.mq.web_url
   }
-  depends_on = [module.eks]
-}
-
-resource "kubernetes_secret" "mq_user" {
-  metadata {
-    name      = "activemq-user"
-    namespace = local.namespace
-  }
-  data = {
-    username = module.mq.user.username
-    password = module.mq.user.password
-  }
-  type = "kubernetes.io/basic-auth"
-  depends_on = [module.eks]
-}
-
-resource "kubernetes_secret" "mq_endpoints" {
-  metadata {
-    name      = "activemq-endpoints"
-    namespace = local.namespace
-  }
-  data = {
-    host    = module.mq.activemq_endpoint_url.host
-    port    = module.mq.activemq_endpoint_url.port
-    url     = module.mq.activemq_endpoint_url.url
-    web-url = module.mq.web_url
-  }
-  depends_on = [module.eks]
 }
 
 # MongoDB
@@ -237,7 +177,7 @@ module "mongodb" {
     image_pull_secrets = var.mongodb.pull_secrets
   }
   persistent_volume = local.mongodb_persistent_volume
-  depends_on        = [module.efs_persistent_volume, module.eks]
+  depends_on        = [module.efs_persistent_volume]
 }
 
 # AWS EFS as persistent volume
@@ -268,7 +208,6 @@ module "efs_persistent_volume" {
     }
   }
   tags = local.tags
-  depends_on = [module.eks]
 }
 
 # Decrypt objects in S3
@@ -338,7 +277,6 @@ resource "kubernetes_secret" "deployed_object_storage" {
     list    = join(",", local.storage_endpoint_url.deployed_object_storages)
     adapter = local.storage_endpoint_url.object_storage_adapter
   }
-  depends_on = [module.eks]
 }
 
 resource "kubernetes_secret" "deployed_table_storage" {
@@ -350,7 +288,6 @@ resource "kubernetes_secret" "deployed_table_storage" {
     list    = join(",", local.storage_endpoint_url.deployed_table_storages)
     adapter = local.storage_endpoint_url.table_storage_adapter
   }
-  depends_on = [module.eks]
 }
 
 resource "kubernetes_secret" "deployed_queue_storage" {
@@ -362,7 +299,6 @@ resource "kubernetes_secret" "deployed_queue_storage" {
     list    = join(",", local.storage_endpoint_url.deployed_queue_storages)
     adapter = local.storage_endpoint_url.queue_storage_adapter
   }
-  depends_on = [module.eks]
 }
 
 locals {

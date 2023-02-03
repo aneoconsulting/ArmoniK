@@ -33,7 +33,7 @@ output "user_credentials" {
 output "endpoints" {
   description = "Endpoints of MongoDB"
   value = {
-    secret    = kubernetes_secret.mongodb_endpoints.metadata[0].name
-    data_keys = keys(kubernetes_secret.mongodb_endpoints.data)
+    secret    = kubernetes_secret.mongodb.metadata[0].name
+    data_keys = keys(kubernetes_secret.mongodb.data)
   }
 }

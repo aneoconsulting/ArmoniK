@@ -16,10 +16,8 @@ locals {
   # Storage secrets
   secrets = {
     mongodb = {
-      certificates_secret = "mongodb-user-certificates"
-      credentials_secret  = "mongodb-user"
-      endpoints_secret    = "mongodb-endpoints"
-      ca_filename         = "/mongodb/chain.pem"
+      name        = "mongodb"
+      ca_filename = "/mongodb/chain.pem"
     }
   }
 
@@ -27,19 +25,19 @@ locals {
   credentials = {
     MongoDB__User = {
       key  = "username"
-      name = local.secrets.mongodb.credentials_secret
+      name = local.secrets.mongodb.name
     }
     MongoDB__Password = {
       key  = "password"
-      name = local.secrets.mongodb.credentials_secret
+      name = local.secrets.mongodb.name
     }
     MongoDB__Host = {
       key  = "host"
-      name = local.secrets.mongodb.endpoints_secret
+      name = local.secrets.mongodb.name
     }
     MongoDB__Port = {
       key  = "port"
-      name = local.secrets.mongodb.endpoints_secret
+      name = local.secrets.mongodb.name
     }
   }
 
@@ -48,7 +46,7 @@ locals {
     mongodb = {
       name        = "mongodb-secret-volume"
       mount_path  = "/mongodb"
-      secret_name = local.secrets.mongodb.certificates_secret
+      secret_name = local.secrets.mongodb.name
     }
   }
 

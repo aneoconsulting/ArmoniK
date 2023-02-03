@@ -1,79 +1,39 @@
 # Secrets
-resource "kubernetes_secret" "elasticache_client_certificate" {
+resource "kubernetes_secret" "elasticache" {
   count = length(module.elasticache) > 0 ? 1 : 0
   metadata {
-    name      = "redis-user-certificates"
+    name      = "redis"
     namespace = var.namespace
   }
   data = {
     "chain.pem" = ""
+    username    = ""
+    password    = ""
+    host        = module.elasticache[0].redis_endpoint_url.host
+    port        = module.elasticache[0].redis_endpoint_url.port
+    url         = module.elasticache[0].redis_endpoint_url.url
   }
 }
 
-resource "kubernetes_secret" "elasticache_user" {
-  count = length(module.elasticache) > 0 ? 1 : 0
+resource "kubernetes_secret" "mq" {
   metadata {
-    name      = "redis-user"
-    namespace = var.namespace
-  }
-  data = {
-    username = ""
-    password = ""
-  }
-  type = "kubernetes.io/basic-auth"
-}
-
-resource "kubernetes_secret" "elasticache_endpoints" {
-  count = length(module.elasticache) > 0 ? 1 : 0
-  metadata {
-    name      = "redis-endpoints"
-    namespace = var.namespace
-  }
-  data = {
-    host = module.elasticache[0].redis_endpoint_url.host
-    port = module.elasticache[0].redis_endpoint_url.port
-    url  = module.elasticache[0].redis_endpoint_url.url
-  }
-}
-
-resource "kubernetes_secret" "mq_client_certificate" {
-  metadata {
-    name      = "activemq-user-certificates"
+    name      = "activemq"
     namespace = var.namespace
   }
   data = {
     "chain.pem" = ""
-  }
-}
-
-resource "kubernetes_secret" "mq_user" {
-  metadata {
-    name      = "activemq-user"
-    namespace = var.namespace
-  }
-  data = {
-    username = module.mq.user.username
-    password = module.mq.user.password
-  }
-  type = "kubernetes.io/basic-auth"
-}
-
-resource "kubernetes_secret" "mq_endpoints" {
-  metadata {
-    name      = "activemq-endpoints"
-    namespace = var.namespace
-  }
-  data = {
-    host    = module.mq.activemq_endpoint_url.host
-    port    = module.mq.activemq_endpoint_url.port
-    url     = module.mq.activemq_endpoint_url.url
-    web-url = module.mq.web_url
+    username    = module.mq.user.username
+    password    = module.mq.user.password
+    host        = module.mq.activemq_endpoint_url.host
+    port        = module.mq.activemq_endpoint_url.port
+    url         = module.mq.activemq_endpoint_url.url
+    web-url     = module.mq.web_url
   }
 }
 
 resource "kubernetes_secret" "shared_storage" {
   metadata {
-    name      = "shared-storage-endpoints"
+    name      = "shared-storage"
     namespace = var.namespace
   }
   data = {
@@ -86,26 +46,15 @@ resource "kubernetes_secret" "shared_storage" {
   }
 }
 
-resource "kubernetes_secret" "s3_user" {
+resource "kubernetes_secret" "s3" {
   count = length(module.s3_os) > 0 ? 1 : 0
   metadata {
-    name      = "s3-user"
+    name      = "s3"
     namespace = var.namespace
   }
   data = {
-    username = ""
-    password = ""
-  }
-  type = "kubernetes.io/basic-auth"
-}
-
-resource "kubernetes_secret" "s3_endpoints" {
-  count = length(module.s3_os) > 0 ? 1 : 0
-  metadata {
-    name      = "s3-endpoints"
-    namespace = var.namespace
-  }
-  data = {
+    username              = ""
+    password              = ""
     url                   = "https://s3.${var.region}.amazonaws.com"
     bucket_name           = module.s3_os[0].s3_bucket_name
     kms_key_id            = module.s3_os[0].kms_key_id

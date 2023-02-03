@@ -1,6 +1,6 @@
 resource "kubernetes_secret" "metrics_exporter" {
   metadata {
-    name      = "metrics-exporter-endpoints"
+    name      = "metrics-exporter"
     namespace = var.namespace
   }
   data = {
@@ -14,7 +14,7 @@ resource "kubernetes_secret" "metrics_exporter" {
 
 resource "kubernetes_secret" "partition_metrics_exporter" {
   metadata {
-    name      = "partition-metrics-exporter-endpoints"
+    name      = "partition-metrics-exporter"
     namespace = var.namespace
   }
   data = {
@@ -28,7 +28,7 @@ resource "kubernetes_secret" "partition_metrics_exporter" {
 
 resource "kubernetes_secret" "fluent_bit" {
   metadata {
-    name      = "fluent-bit-endpoints"
+    name      = "fluent-bit"
     namespace = var.namespace
   }
   data = {
@@ -43,7 +43,7 @@ resource "kubernetes_secret" "fluent_bit" {
 
 resource "kubernetes_secret" "seq" {
   metadata {
-    name      = "seq-endpoints"
+    name      = "seq"
     namespace = var.namespace
   }
   data = local.seq_enabled ? {
@@ -63,7 +63,7 @@ resource "kubernetes_secret" "seq" {
 
 resource "kubernetes_secret" "grafana" {
   metadata {
-    name      = "grafana-endpoints"
+    name      = "grafana"
     namespace = var.namespace
   }
   data = local.grafana_enabled ? {

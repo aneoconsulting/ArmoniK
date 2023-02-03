@@ -49,12 +49,11 @@ module "seq" {
   working_dir       = "${path.root}/../../.."
   authentication    = var.seq.authentication
   system_ram_target = var.seq.system_ram_target
-  depends_on = [module.eks]
 }
 
 resource "kubernetes_secret" "seq" {
   metadata {
-    name      = "seq-endpoints"
+    name      = "seq"
     namespace = local.namespace
   }
   data = var.seq != null ? {
@@ -70,7 +69,6 @@ resource "kubernetes_secret" "seq" {
     web_url = null
     enabled = false
   }
-  depends_on = [module.eks]
 }
 
 # node exporter
@@ -85,7 +83,6 @@ module "node_exporter" {
     image_pull_secrets = var.node_exporter.pull_secrets
   }
   working_dir = "${path.root}/../../../.."
-  depends_on = [module.eks]
 }
 
 # Metrics exporter
@@ -102,12 +99,11 @@ module "metrics_exporter" {
   }
   extra_conf  = var.metrics_exporter.extra_conf
   working_dir = "${path.root}/../../.."
-  depends_on = [module.eks]
 }
 
 resource "kubernetes_secret" "metrics_exporter" {
   metadata {
-    name      = "metrics-exporter-endpoints"
+    name      = "metrics-exporter"
     namespace = local.namespace
   }
   data = {
@@ -117,7 +113,6 @@ resource "kubernetes_secret" "metrics_exporter" {
     url       = module.metrics_exporter.url
     namespace = module.metrics_exporter.namespace
   }
-  depends_on = [module.eks]
 }
 
 # Partition metrics exporter
@@ -136,12 +131,12 @@ module "partition_metrics_exporter" {
   }
   extra_conf  = var.partition_metrics_exporter.extra_conf
   working_dir = "${path.root}/../../.."
-  depends_on  = [module.metrics_exporter, module.eks]
+  depends_on  = [module.metrics_exporter]
 }
 
 resource "kubernetes_secret" "partition_metrics_exporter" {
   metadata {
-    name      = "partition-metrics-exporter-endpoints"
+    name      = "partition-metrics-exporter"
     namespace = local.namespace
   }
   data = var.partition_metrics_exporter != null ? {
@@ -157,7 +152,6 @@ resource "kubernetes_secret" "partition_metrics_exporter" {
     url       = null
     namespace = null
   }
-  depends_on = [module.eks]
 }
 
 # Prometheus
@@ -174,7 +168,6 @@ module "prometheus" {
     image_pull_secrets = var.prometheus.pull_secrets
   }
   working_dir = "${path.root}/../../.."
-  depends_on = [module.eks]
 }
 
 # Grafana
@@ -193,12 +186,11 @@ module "grafana" {
   }
   working_dir    = "${path.root}/../../.."
   authentication = var.grafana.authentication
-  depends_on = [module.eks]
 }
 
 resource "kubernetes_secret" "grafana" {
   metadata {
-    name      = "grafana-endpoints"
+    name      = "grafana"
     namespace = local.namespace
   }
   data = var.grafana != null ? {
@@ -212,7 +204,6 @@ resource "kubernetes_secret" "grafana" {
     url     = null
     enabled = false
   }
-  depends_on = [module.eks]
 }
 
 # CloudWatch
@@ -251,12 +242,11 @@ module "fluent_bit" {
     region  = var.region
     enabled = true
   } : {}
-  depends_on = [module.eks]
 }
 
 resource "kubernetes_secret" "fluent_bit" {
   metadata {
-    name      = "fluent-bit-endpoints"
+    name      = "fluent-bit"
     namespace = local.namespace
   }
   data = {
@@ -267,7 +257,6 @@ resource "kubernetes_secret" "fluent_bit" {
     envvars      = module.fluent_bit.configmaps.envvars
     config       = module.fluent_bit.configmaps.config
   }
-  depends_on = [module.eks]
 }
 
 locals {
