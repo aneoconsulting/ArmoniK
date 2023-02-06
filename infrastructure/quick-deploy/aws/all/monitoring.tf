@@ -6,13 +6,13 @@ locals {
 data "aws_iam_policy_document" "send_logs_from_fluent_bit_to_cloudwatch_document" {
   count = var.cloudwatch != null ? 1 : 0
   statement {
-    sid = "SendLogsFromFluentBitToCloudWatch"
+    sid     = "SendLogsFromFluentBitToCloudWatch"
     actions = [
       "logs:CreateLogStream",
       "logs:CreateLogGroup",
       "logs:PutLogEvents",
     ]
-    effect = "Allow"
+    effect    = "Allow"
     resources = [
       "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:${local.cloudwatch_log_group_name}:*"
     ]
@@ -41,7 +41,7 @@ module "seq" {
   service_type  = var.seq.service_type
   port          = var.seq.port
   node_selector = var.seq.node_selector
-  docker_image = {
+  docker_image  = {
     image              = local.ecr_images["${var.seq.image_name}:${try(coalesce(var.seq.image_tag), "")}"].image
     tag                = local.ecr_images["${var.seq.image_name}:${try(coalesce(var.seq.image_tag), "")}"].tag
     image_pull_secrets = var.seq.pull_secrets
@@ -62,13 +62,7 @@ resource "kubernetes_secret" "seq" {
     url     = module.seq.0.url
     web_url = module.seq.0.web_url
     enabled = true
-    } : {
-    host    = null
-    port    = null
-    url     = null
-    web_url = null
-    enabled = false
-  }
+  } : {}
 }
 
 # node exporter
@@ -77,7 +71,7 @@ module "node_exporter" {
   source        = "../../../modules/monitoring/exporters/node-exporter"
   namespace     = local.namespace
   node_selector = var.node_exporter.node_selector
-  docker_image = {
+  docker_image  = {
     image              = local.ecr_images["${var.node_exporter.image_name}:${try(coalesce(var.node_exporter.image_tag), "")}"].image
     tag                = local.ecr_images["${var.node_exporter.image_name}:${try(coalesce(var.node_exporter.image_tag), "")}"].tag
     image_pull_secrets = var.node_exporter.pull_secrets
@@ -92,7 +86,7 @@ module "metrics_exporter" {
   service_type         = var.metrics_exporter.service_type
   node_selector        = var.metrics_exporter.node_selector
   storage_endpoint_url = local.storage_endpoint_url
-  docker_image = {
+  docker_image         = {
     image              = local.ecr_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].image
     tag                = local.ecr_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].tag
     image_pull_secrets = var.metrics_exporter.pull_secrets
@@ -124,7 +118,7 @@ module "partition_metrics_exporter" {
   node_selector        = var.partition_metrics_exporter.node_selector
   storage_endpoint_url = local.storage_endpoint_url
   metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  docker_image = {
+  docker_image         = {
     image              = local.ecr_images["${var.partition_metrics_exporter.image_name}:${try(coalesce(var.partition_metrics_exporter.image_tag), "")}"].image
     tag                = local.ecr_images["${var.partition_metrics_exporter.image_name}:${try(coalesce(var.partition_metrics_exporter.image_tag), "")}"].tag
     image_pull_secrets = var.partition_metrics_exporter.pull_secrets
@@ -145,13 +139,7 @@ resource "kubernetes_secret" "partition_metrics_exporter" {
     port      = module.partition_metrics_exporter.port
     url       = module.partition_metrics_exporter.url
     namespace = module.partition_metrics_exporter.namespace
-    } : {
-    name      = null
-    host      = null
-    port      = null
-    url       = null
-    namespace = null
-  }
+  } : {}
 }
 
 # Prometheus
@@ -162,7 +150,7 @@ module "prometheus" {
   node_selector                  = var.prometheus.node_selector
   metrics_exporter_url           = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
   partition_metrics_exporter_url = length(module.partition_metrics_exporter) == 1 ? "${module.partition_metrics_exporter[0].host}:${module.partition_metrics_exporter[0].port}" : null
-  docker_image = {
+  docker_image                   = {
     image              = local.ecr_images["${var.prometheus.image_name}:${try(coalesce(var.prometheus.image_tag), "")}"].image
     tag                = local.ecr_images["${var.prometheus.image_name}:${try(coalesce(var.prometheus.image_tag), "")}"].tag
     image_pull_secrets = var.prometheus.pull_secrets
@@ -179,7 +167,7 @@ module "grafana" {
   port           = var.grafana.port
   node_selector  = var.grafana.node_selector
   prometheus_url = module.prometheus.url
-  docker_image = {
+  docker_image   = {
     image              = local.ecr_images["${var.grafana.image_name}:${try(coalesce(var.grafana.image_tag), "")}"].image
     tag                = local.ecr_images["${var.grafana.image_name}:${try(coalesce(var.grafana.image_tag), "")}"].tag
     image_pull_secrets = var.grafana.pull_secrets
@@ -198,12 +186,7 @@ resource "kubernetes_secret" "grafana" {
     port    = module.grafana.0.port
     url     = module.grafana.0.url
     enabled = true
-    } : {
-    host    = null
-    port    = null
-    url     = null
-    enabled = false
-  }
+  } : {}
 }
 
 # CloudWatch
@@ -221,7 +204,7 @@ module "fluent_bit" {
   source        = "../../../modules/monitoring/fluent-bit"
   namespace     = local.namespace
   node_selector = var.fluent_bit.node_selector
-  fluent_bit = {
+  fluent_bit    = {
     container_name     = "fluent-bit"
     image              = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].image
     tag                = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].tag
@@ -303,7 +286,7 @@ locals {
       image          = module.fluent_bit.image
       tag            = module.fluent_bit.tag
       is_daemonset   = module.fluent_bit.is_daemonset
-      configmaps = {
+      configmaps     = {
         envvars = module.fluent_bit.configmaps.envvars
         config  = module.fluent_bit.configmaps.config
       }
