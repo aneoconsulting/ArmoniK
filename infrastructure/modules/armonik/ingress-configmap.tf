@@ -44,14 +44,14 @@ server {
     location = /admin {
         rewrite ^ $scheme://$http_host/admin/ permanent;
     }
+%{if var.admin_gui != null~}
     location /admin/ {
         proxy_pass ${local.admin_app_url};
     }
-
     location /api {
         proxy_pass ${local.admin_api_url};
     }
-
+%{endif~}
 
     location ~* ^/armonik\. {
 %{if var.ingress != null ? var.ingress.mtls : false~}

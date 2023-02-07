@@ -182,34 +182,34 @@ resource "kubernetes_deployment" "admin_gui" {
 
 # Admin GUI service
 resource "kubernetes_service" "admin_gui" {
+  count = length(kubernetes_deployment.admin_gui) > 0 ? 1 : 0
   metadata {
-    name      = kubernetes_deployment.admin_gui.metadata.0.name
-    namespace = kubernetes_deployment.admin_gui.metadata.0.namespace
+    name      = kubernetes_deployment.admin_gui[0].metadata.0.name
+    namespace = kubernetes_deployment.admin_gui[0].metadata.0.namespace
     labels = {
-      app     = kubernetes_deployment.admin_gui.metadata.0.labels.app
-      service = kubernetes_deployment.admin_gui.metadata.0.labels.service
+      app     = kubernetes_deployment.admin_gui[0].metadata.0.labels.app
+      service = kubernetes_deployment.admin_gui[0].metadata.0.labels.service
     }
   }
   spec {
     type = var.admin_gui.service_type
     selector = {
-      app     = kubernetes_deployment.admin_gui.metadata.0.labels.app
-      service = kubernetes_deployment.admin_gui.metadata.0.labels.service
+      app     = kubernetes_deployment.admin_gui[0].metadata.0.labels.app
+      service = kubernetes_deployment.admin_gui[0].metadata.0.labels.service
     }
     port {
-      name        = kubernetes_deployment.admin_gui.spec.0.template.0.spec.0.container.0.port.0.name
+      name        = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.0.port.0.name
       port        = var.admin_gui.api.port
-      target_port = kubernetes_deployment.admin_gui.spec.0.template.0.spec.0.container.0.port.0.container_port
+      target_port = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.0.port.0.container_port
       protocol    = "TCP"
     }
     port {
-      name        = kubernetes_deployment.admin_gui.spec.0.template.0.spec.0.container.1.port.0.name
+      name        = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.1.port.0.name
       port        = var.admin_gui.app.port
-      target_port = kubernetes_deployment.admin_gui.spec.0.template.0.spec.0.container.1.port.0.container_port
+      target_port = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.1.port.0.container_port
       protocol    = "TCP"
     }
   }
-
   timeouts {
     create = "2m"
   }

@@ -3,14 +3,14 @@ output "endpoint_urls" {
     control_plane_url = local.ingress_grpc_url != "" ? local.ingress_grpc_url : local.control_plane_url
     grafana_url       = data.kubernetes_secret.grafana.data.enabled ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/grafana/" : nonsensitive(data.kubernetes_secret.grafana.data.url)) : ""
     seq_web_url       = data.kubernetes_secret.seq.data.enabled ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/seq/" : nonsensitive(data.kubernetes_secret.seq.data.web_url)) : ""
-    admin_api_url     = var.admin_gui != null ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/api" : local.admin_api_url) : null
-    admin_app_url     = var.admin_gui != null ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/" : local.admin_app_url) : null
+    admin_api_url     = local.ingress_http_url != "" ? "${local.ingress_http_url}/api" : local.admin_api_url
+    admin_app_url     = local.ingress_http_url != "" ? "${local.ingress_http_url}/" : local.admin_app_url
     } : {
     control_plane_url = local.control_plane_url
     grafana_url       = nonsensitive(data.kubernetes_secret.grafana.data.url)
     seq_web_url       = nonsensitive(data.kubernetes_secret.seq.data.web_url)
-    admin_api_url     = var.admin_gui != null ? local.admin_api_url : null
-    admin_app_url     = var.admin_gui != null ? local.admin_app_url : null
+    admin_api_url     = local.admin_api_url
+    admin_app_url     = local.admin_app_url
   }
 }
 
