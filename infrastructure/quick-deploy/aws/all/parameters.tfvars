@@ -157,9 +157,6 @@ fluent_bit = {
 # Logging level
 logging_level = "Information"
 
-# Job to insert partitions in the database
-job_partitions_in_database = {}
-
 # Parameters of control plane
 control_plane = {
   limits = {
@@ -217,7 +214,6 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_worker_dll"
-        tag   = "0.8.3"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -258,8 +254,6 @@ ingress = {
   mtls                 = false
   generate_client_cert = false
 }
-
-authentication = {}
 
 extra_conf = {
   core = {
