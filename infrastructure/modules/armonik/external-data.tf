@@ -37,7 +37,7 @@ locals {
 
 # Node IP of admin GUI pod
 data "external" "admin_gui_node_ip" {
-  count       = length(kubernetes_service.admin_gui) > 0 ? 1 : 0
+  count       = length(kubernetes_service.admin_gui)
   depends_on  = [kubernetes_service.admin_gui]
   program     = ["bash", "get_node_ip.sh", "admin-gui", var.namespace]
   working_dir = "${var.working_dir}/utils/scripts"

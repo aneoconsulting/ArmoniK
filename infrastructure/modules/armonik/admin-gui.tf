@@ -182,7 +182,7 @@ resource "kubernetes_deployment" "admin_gui" {
 
 # Admin GUI service
 resource "kubernetes_service" "admin_gui" {
-  count = length(kubernetes_deployment.admin_gui) > 0 ? 1 : 0
+  count = length(kubernetes_deployment.admin_gui)
   metadata {
     name      = kubernetes_deployment.admin_gui[0].metadata.0.name
     namespace = kubernetes_deployment.admin_gui[0].metadata.0.namespace
