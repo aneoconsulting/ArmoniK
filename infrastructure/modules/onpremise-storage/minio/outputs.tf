@@ -1,25 +1,27 @@
 output "host" {
-  value = var.minioconfig.host
+  value = var.minio.host
 }
 
 output "port" {
-  value = var.minioconfig.port
+  value = local.port
 }
 
 output "url" {
-  value = "http://${var.minioconfig.host}:${var.minioconfig.port}"
+  value = "http://${var.minio.host}:${local.port}"
 }
 
 output "login" {
-  value = var.minioconfig.login
+  value     = random_string.minio_application_user.result
+  sensitive = true
 }
 
 output "password" {
-  value = var.minioconfig.password
+  value     = random_password.minio_application_password.result
+  sensitive = true
 }
 
 output "bucket_name" {
-  value = var.minioconfig.bucket_name
+  value = var.minio.bucket_name
 }
 
 output "must_force_path_style" {

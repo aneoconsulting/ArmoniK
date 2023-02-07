@@ -27,6 +27,7 @@ module "mongodb" {
 
 # Redis
 module "redis" {
+  count       = var.redis != null ? 1 : 0
   source      = "../../../modules/onpremise-storage/redis"
   namespace   = var.namespace
   working_dir = "${path.root}/../../.."
@@ -41,8 +42,15 @@ module "redis" {
 
 # minio
 module "minio" {
-  count       = (contains([for each in var.object_storages_to_be_deployed : lower(each)], lower("s3"))) ? 1 : 0
-  source      = "../../../modules/onpremise-storage/minio"
-  namespace   = var.namespace
-  minioconfig = var.minioconfig
+  count     = var.minio != null ? 1 : 0
+  source    = "../../../modules/onpremise-storage/minio"
+  namespace = var.namespace
+  minio = {
+    image              = local.minio_image
+    tag                = local.minio_tag
+    image_pull_secrets = local.minio_image_pull_secrets
+    host               = local.minio_host
+    bucket_name        = local.minio_bucket_name
+    node_selector      = local.minio_node_selector
+  }
 }

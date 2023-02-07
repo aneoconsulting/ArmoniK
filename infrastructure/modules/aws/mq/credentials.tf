@@ -15,15 +15,3 @@ resource "random_password" "password" {
   numeric          = true
   override_special = "!@#$%&*()-_+.{}<>?"
 }
-
-resource "kubernetes_secret" "activemq_user" {
-  metadata {
-    name      = "activemq-user"
-    namespace = var.namespace
-  }
-  data = {
-    username = local.username
-    password = local.password
-  }
-  type = "kubernetes.io/basic-auth"
-}

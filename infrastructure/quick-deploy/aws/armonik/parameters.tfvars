@@ -33,7 +33,7 @@ control_plane = {
   service_type      = "ClusterIP"
   replicas          = 1
   image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag               = "0.8.3"
+  tag               = "0.9.1"
   image_pull_policy = "IfNotPresent"
   port              = 5001
   limits = {
@@ -76,7 +76,8 @@ control_plane = {
 }
 
 # Parameters of admin GUI
-admin_gui = {
+# Put to null if we not want deploy it
+/*admin_gui = {
   api = {
     name  = "admin-api"
     image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-api"
@@ -110,7 +111,7 @@ admin_gui = {
   image_pull_policy  = "IfNotPresent"
   image_pull_secrets = ""
   node_selector      = {}
-}
+}*/
 
 # Parameters of the compute plane
 compute_plane = {
@@ -124,7 +125,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.8.3"
+      tag               = "0.9.1"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"
@@ -140,7 +141,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.8.2"
+        tag               = "0.8.3"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
@@ -209,12 +210,24 @@ authentication = {
   require_authorization   = false
 }
 
-object_storage_adapter = "Redis"
-
 extra_conf = {
   core = {
-    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    Amqp__AllowHostMismatch                    = false
+    Amqp__MaxPriority                          = "10"
+    Amqp__MaxRetries                           = "5"
+    Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
+    Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
+    Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+    MongoDB__TableStorage__PollingDelay        = "00:00:01"
+    MongoDB__DataRetention                     = "10.00:00:00"
+    MongoDB__AllowInsecureTls                  = true
+    Redis__Timeout                             = 3000
+    Redis__SslHost                             = ""
+  }
+  control = {
+    Submitter__MaxErrorAllowed = 50
   }
 }
 

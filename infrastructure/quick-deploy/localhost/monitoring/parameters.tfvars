@@ -1,9 +1,6 @@
 # Kubernetes namespace
 namespace = "armonik"
 
-# Logging level
-logging_level = "Information"
-
 # Monitoring infos
 monitoring = {
   seq = {
@@ -41,17 +38,29 @@ monitoring = {
   }
   metrics_exporter = {
     image              = "dockerhubaneo/armonik_control_metrics"
-    tag                = "0.8.3"
+    tag                = "0.9.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
+    extra_conf = {
+      MongoDB__AllowInsecureTls              = true
+      Serilog__MinimumLevel                  = "Information"
+      MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    }
   }
   partition_metrics_exporter = {
     image              = "dockerhubaneo/armonik_control_partition_metrics"
-    tag                = "0.8.3"
+    tag                = "0.9.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
+    extra_conf = {
+      MongoDB__AllowInsecureTls              = true
+      Serilog__MinimumLevel                  = "Information"
+      MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    }
   }
   fluent_bit = {
     image              = "fluent/fluent-bit"

@@ -1,6 +1,16 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2023-01-06)
+## [main](https://github.com/aneoconsulting/armonik/tree/main) (2023-02-08)
+
+## [v2.11.0](https://github.com/aneoconsulting/armonik/tree/v2.11.0) (2023-02-08)
+
+Changed
+-
+
+* Store logins, passwords, endpoints and other data of a resource or a service in Kubernetes secrets (impacted modules:
+  Monitoring, Storage and ArmoniK).
+* Update Armonik.Extension.Csharp version from 0.8.1 to 0.8.3
+* Update Armonik.Core version from 0.8.2 to 0.9.1
 
 ## [v2.10.2](https://github.com/aneoconsulting/armonik/tree/v2.10.2) (2023-01-23)
 

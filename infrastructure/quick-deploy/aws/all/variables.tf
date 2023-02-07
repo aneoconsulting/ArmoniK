@@ -52,13 +52,19 @@ variable "vpc" {
   description = "Parameters of AWS VPC"
   type = object({
     # list of CIDR block associated with the private subnet
-    cidr_block_private = optional(list(string), ["10.0.0.0/18", "10.0.64.0/18", "10.0.128.0/18"])
+    cidr_block_private = optional(list(string), [
+      "10.0.0.0/18", "10.0.64.0/18", "10.0.128.0/18"
+    ])
     # list of CIDR block associated with the public subnet
-    cidr_block_public = optional(list(string), ["10.0.192.0/24", "10.0.193.0/24", "10.0.194.0/24"])
+    cidr_block_public = optional(list(string), [
+      "10.0.192.0/24", "10.0.193.0/24", "10.0.194.0/24"
+    ])
     # Main CIDR block associated to the VPC
     main_cidr_block = optional(string, "10.0.0.0/16")
     # cidr block associated with pod
-    pod_cidr_block_private                          = optional(list(string), ["10.1.0.0/16", "10.2.0.0/16", "10.3.0.0/16"])
+    pod_cidr_block_private = optional(list(string), [
+      "10.1.0.0/16", "10.2.0.0/16", "10.3.0.0/16"
+    ])
     enable_private_subnet                           = optional(bool, true)
     flow_log_cloudwatch_log_group_retention_in_days = optional(number, 30)
     peering = optional(object({
@@ -183,23 +189,6 @@ variable "s3_fs" {
   default = {}
 }
 
-# S3 as object storage
-variable "s3_os" {
-  description = "AWS S3 bucket as shared storage"
-  type = object({
-    policy                                = optional(string, "")
-    attach_policy                         = optional(bool, false)
-    attach_deny_insecure_transport_policy = optional(bool, true)
-    attach_require_latest_tls_policy      = optional(bool, true)
-    attach_public_policy                  = optional(bool, false)
-    block_public_acls                     = optional(bool, true)
-    block_public_policy                   = optional(bool, true)
-    ignore_public_acls                    = optional(bool, true)
-    restrict_public_buckets               = optional(bool, true)
-    sse_algorithm                         = optional(string, "")
-  })
-  default = null
-}
 
 # AWS Elasticache
 variable "elasticache" {
@@ -219,6 +208,24 @@ variable "elasticache" {
       slow_log   = optional(string, "")
       engine_log = optional(string, "")
     }), {})
+  })
+  default = null
+}
+
+# S3 as object storage
+variable "s3_os" {
+  description = "AWS S3 bucket as shared storage"
+  type = object({
+    policy                                = optional(string, "")
+    attach_policy                         = optional(bool, false)
+    attach_deny_insecure_transport_policy = optional(bool, true)
+    attach_require_latest_tls_policy      = optional(bool, true)
+    attach_public_policy                  = optional(bool, false)
+    block_public_acls                     = optional(bool, true)
+    block_public_policy                   = optional(bool, true)
+    ignore_public_acls                    = optional(bool, true)
+    restrict_public_buckets               = optional(bool, true)
+    sse_algorithm                         = optional(string, "")
   })
   default = null
 }
@@ -317,7 +324,6 @@ variable "pv_efs" {
   default = null
 }
 
-
 variable "seq" {
   description = "Seq configuration (nullable)"
   type = object({
@@ -379,6 +385,7 @@ variable "metrics_exporter" {
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
+    extra_conf    = optional(map(string), {})
   })
   default = {}
 }
@@ -391,6 +398,7 @@ variable "partition_metrics_exporter" {
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
+    extra_conf    = optional(map(string), {})
   })
   default = null
 }

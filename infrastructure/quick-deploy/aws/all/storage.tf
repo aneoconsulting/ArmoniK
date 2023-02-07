@@ -33,6 +33,22 @@ module "s3_fs" {
   }
 }
 
+# Shared storage
+resource "kubernetes_secret" "shared_storage" {
+  metadata {
+    name      = "shared-storage"
+    namespace = local.namespace
+  }
+  data = {
+    service_url       = "https://s3.${var.region}.amazonaws.com"
+    kms_key_id        = module.s3_fs.kms_key_id
+    name              = module.s3_fs.s3_bucket_name
+    access_key_id     = ""
+    secret_access_key = ""
+    file_storage_type = "S3"
+  }
+}
+
 # AWS S3 as object storage
 module "s3_os" {
   count  = var.s3_os != null ? 1 : 0
@@ -51,6 +67,22 @@ module "s3_os" {
     restrict_public_buckets               = var.s3_os.restrict_public_buckets
     kms_key_id                            = local.kms_key
     sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_os.sse_algorithm : "aws:kms"
+  }
+}
+
+resource "kubernetes_secret" "s3" {
+  count = length(module.s3_os) > 0 ? 1 : 0
+  metadata {
+    name      = "s3"
+    namespace = local.namespace
+  }
+  data = {
+    username              = ""
+    password              = ""
+    url                   = "https://s3.${var.region}.amazonaws.com"
+    bucket_name           = module.s3_os[0].s3_bucket_name
+    kms_key_id            = module.s3_os[0].kms_key_id
+    must_force_path_style = false
   }
 }
 
@@ -80,6 +112,22 @@ module "elasticache" {
   }
 }
 
+resource "kubernetes_secret" "elasticache" {
+  count = length(module.elasticache) > 0 ? 1 : 0
+  metadata {
+    name      = "redis"
+    namespace = local.namespace
+  }
+  data = {
+    "chain.pem" = ""
+    username    = ""
+    password    = ""
+    host        = module.elasticache[0].redis_endpoint_url.host
+    port        = module.elasticache[0].redis_endpoint_url.port
+    url         = module.elasticache[0].redis_endpoint_url.url
+  }
+}
+
 # Amazon MQ
 module "mq" {
   source    = "../../../modules/aws/mq"
@@ -98,6 +146,22 @@ module "mq" {
     authentication_strategy = var.mq.authentication_strategy
     publicly_accessible     = var.mq.publicly_accessible
     kms_key_id              = local.kms_key
+  }
+}
+
+resource "kubernetes_secret" "mq" {
+  metadata {
+    name      = "activemq"
+    namespace = local.namespace
+  }
+  data = {
+    "chain.pem" = ""
+    username    = module.mq.user.username
+    password    = module.mq.user.password
+    host        = module.mq.activemq_endpoint_url.host
+    port        = module.mq.activemq_endpoint_url.port
+    url         = module.mq.activemq_endpoint_url.url
+    web-url     = module.mq.web_url
   }
 }
 
@@ -145,9 +209,6 @@ module "efs_persistent_volume" {
   }
   tags = local.tags
 }
-
-
-
 
 # Decrypt objects in S3
 data "aws_iam_policy_document" "decrypt_object" {
@@ -207,6 +268,39 @@ resource "aws_iam_role_policy_attachment" "object" {
   role       = module.eks.worker_iam_role_name
 }
 
+resource "kubernetes_secret" "deployed_object_storage" {
+  metadata {
+    name      = "deployed-object-storage"
+    namespace = local.namespace
+  }
+  data = {
+    list    = join(",", local.storage_endpoint_url.deployed_object_storages)
+    adapter = local.storage_endpoint_url.object_storage_adapter
+  }
+}
+
+resource "kubernetes_secret" "deployed_table_storage" {
+  metadata {
+    name      = "deployed-table-storage"
+    namespace = local.namespace
+  }
+  data = {
+    list    = join(",", local.storage_endpoint_url.deployed_table_storages)
+    adapter = local.storage_endpoint_url.table_storage_adapter
+  }
+}
+
+resource "kubernetes_secret" "deployed_queue_storage" {
+  metadata {
+    name      = "deployed-queue-storage"
+    namespace = local.namespace
+  }
+  data = {
+    list    = join(",", local.storage_endpoint_url.deployed_queue_storages)
+    adapter = local.storage_endpoint_url.queue_storage_adapter
+  }
+}
+
 locals {
   aws_s3 = merge(
     {
@@ -237,78 +331,38 @@ locals {
       )
     },
   )
-  object_storage_adapter = coalesce(
-    length(module.elasticache) > 0 ? "Redis" : null,
-    length(module.s3_os) > 0 ? "S3" : null,
-  )
-  table_storage_adapter = "ArmoniK.Adapters.MongoDB.TableStorage"
-  queue_storage_adapter = "ArmoniK.Adapters.Amqp.QueueStorage"
   storage_endpoint_url = {
+    object_storage_adapter = try(coalesce(
+      length(module.elasticache) > 0 ? "Redis" : null,
+      length(module.s3_os) > 0 ? "S3" : null,
+    ), "")
+    table_storage_adapter = "MongoDB"
+    queue_storage_adapter = "Amqp"
     deployed_object_storages = concat(
-      ["MongoDB"],
       length(module.elasticache) > 0 ? ["Redis"] : [],
       length(module.s3_os) > 0 ? ["S3"] : [],
     )
+    deployed_table_storages = ["MongoDB"]
+    deployed_queue_storages = ["Amqp"]
     activemq = {
-      url                 = module.mq.activemq_endpoint_url.url
-      host                = module.mq.activemq_endpoint_url.host
-      port                = module.mq.activemq_endpoint_url.port
-      web_url             = module.mq.web_url
-      allow_host_mismatch = false
-      credentials = {
-        secret       = module.mq.user_credentials.secret
-        username_key = module.mq.user_credentials.username_key
-        password_key = module.mq.user_credentials.password_key
-      }
-      certificates = {
-        secret      = ""
-        ca_filename = ""
-      }
+      url     = module.mq.activemq_endpoint_url.url
+      web_url = module.mq.web_url
     }
     redis = length(module.elasticache) > 0 ? {
-      url      = module.elasticache[0].redis_endpoint_url.url
-      host     = module.elasticache[0].redis_endpoint_url.host
-      port     = module.elasticache[0].redis_endpoint_url.port
-      timeout  = 3000
-      ssl_host = ""
-      credentials = {
-        secret       = ""
-        username_key = ""
-        password_key = ""
-      }
-      certificates = {
-        secret      = ""
-        ca_filename = ""
-      }
+      url = module.elasticache[0].redis_endpoint_url.url
     } : null
     s3 = length(module.s3_os) > 0 ? {
-      url                   = "https://s3.${var.region}.amazonaws.com"
-      bucket_name           = module.s3_os[0].s3_bucket_name
-      must_force_path_style = false
-      kms_key_id            = module.s3_os[0].kms_key_id
+      url         = "https://s3.${var.region}.amazonaws.com"
+      bucket_name = module.s3_os[0].s3_bucket_name
+      kms_key_id  = module.s3_os[0].kms_key_id
     } : null
     mongodb = {
-      url                = module.mongodb.url
-      host               = module.mongodb.host
-      port               = module.mongodb.port
-      allow_insecure_tls = true
-      credentials = {
-        secret       = module.mongodb.user_credentials.secret
-        username_key = module.mongodb.user_credentials.username_key
-        password_key = module.mongodb.user_credentials.password_key
-      }
-      certificates = {
-        secret      = module.mongodb.user_certificate.secret
-        ca_filename = module.mongodb.user_certificate.ca_filename
-      }
+      url = module.mongodb.url
     }
     shared = {
-      service_url       = "https://s3.${var.region}.amazonaws.com"
-      kms_key_id        = module.s3_fs.kms_key_id
-      name              = module.s3_fs.s3_bucket_name
-      access_key_id     = ""
-      secret_access_key = ""
-      file_storage_type = "S3"
+      service_url = "https://s3.${var.region}.amazonaws.com"
+      kms_key_id  = module.s3_fs.kms_key_id
+      name        = module.s3_fs.s3_bucket_name
     }
   }
 }

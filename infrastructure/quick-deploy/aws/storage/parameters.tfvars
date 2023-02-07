@@ -55,23 +55,8 @@ s3_fs = {
   sse_algorithm                         = ""
 }
 
-# S3 as shared storage
-s3_os = {
-  name                                  = "armonik-s3os"
-  policy                                = ""
-  attach_policy                         = false
-  attach_deny_insecure_transport_policy = true
-  attach_require_latest_tls_policy      = true
-  attach_public_policy                  = false
-  block_public_acls                     = true
-  block_public_policy                   = true
-  ignore_public_acls                    = true
-  restrict_public_buckets               = true
-  kms_key_id                            = ""
-  sse_algorithm                         = ""
-}
-
-
+# Object storage
+# Uncomment either the `Elasticache` or the `S3` parameter
 # AWS Elasticache
 elasticache = {
   name                        = "armonik-elasticache"
@@ -96,6 +81,22 @@ elasticache = {
     log_kms_key_id = ""
   }
 }
+
+# S3 as shared storage
+/*s3_os = {
+  name                                  = "armonik-s3os"
+  policy                                = ""
+  attach_policy                         = false
+  attach_deny_insecure_transport_policy = true
+  attach_require_latest_tls_policy      = true
+  attach_public_policy                  = false
+  block_public_acls                     = true
+  block_public_policy                   = true
+  ignore_public_acls                    = true
+  restrict_public_buckets               = true
+  kms_key_id                            = ""
+  sse_algorithm                         = ""
+}*/
 
 # MQ parameters
 mq = {
@@ -123,7 +124,8 @@ mongodb = {
   tag                = "5.0.9"
   node_selector      = { "grid/type" = "Operator" }
   image_pull_secrets = ""
-  persistent_volume  = null # example: {storage_provisioner="efs.csi.aws.com",parameters=null,resources={limits=null,requests={storage="5Gi"}}}
+  persistent_volume  = null
+  # example: {storage_provisioner="efs.csi.aws.com",parameters=null,resources={limits=null,requests={storage="5Gi"}}}
 }
 
 # AWS EFS as Persistent volume
@@ -164,6 +166,3 @@ pv_efs = {
     }
   }
 }
-
-# The list of object storage to be deployed : "MongoDB", "Redis", "S3"
-object_storages_to_be_deployed = ["Redis"]

@@ -21,12 +21,14 @@ variable "working_dir" {
 variable "storage_endpoint_url" {
   description = "List of storage needed by ArmoniK"
   type        = any
+  default     = {}
 }
 
 # Monitoring
 variable "monitoring" {
   description = "Monitoring info"
   type        = any
+  default     = {}
 }
 
 # Parameters of ingress
@@ -175,6 +177,7 @@ variable "admin_gui" {
     image_pull_secrets = string
     node_selector      = any
   })
+  default = null
 }
 
 # Parameters of the compute plane
@@ -247,19 +250,4 @@ variable "authentication" {
     error_message = "File specified in authentication.authentication_datafile must be a valid json file if the field is not empty."
     condition     = var.authentication == null || !var.authentication.require_authentication || var.authentication.authentication_datafile == "" || try(fileexists(var.authentication.authentication_datafile), false) && can(jsondecode(file(var.authentication.authentication_datafile)))
   }
-}
-
-variable "object_storage_adapter" {
-  description = "storage plugin to use."
-  type        = string
-}
-
-variable "table_storage_adapter" {
-  description = "storage plugin to use."
-  type        = string
-}
-
-variable "queue_storage_adapter" {
-  description = "storage plugin to use."
-  type        = string
 }

@@ -24,6 +24,8 @@ mongodb = {
   image_pull_secrets = ""
 }
 
+# Object storage
+# Uncomment either the `redis` or the `minio` parameter
 # Parameters for Redis
 redis = {
   image              = "redis"
@@ -34,16 +36,11 @@ redis = {
 }
 
 # Parameters for minio
-minioconfig = {
-  host          = "minio"
-  port          = 9000
-  login         = "minioadmin"
-  password      = "minioadmin"
-  bucket_name   = "minioBucket"
-  image         = "quay.io/minio/minio"
-  tag           = "latest"
-  node_selector = {}
-}
-
-# The list of object storage to be deployed among : "MongoDB", "Redis", "S3", "LocalStorage"
-object_storages_to_be_deployed = ["Redis"]
+/*minio = {
+  host               = "minio"
+  default_bucket     = "minioBucket"
+  image              = "minio/minio"
+  tag                = "RELEASE.2023-01-25T00-19-54Z"
+  image_pull_secrets = ""
+  node_selector      = {}
+}*/

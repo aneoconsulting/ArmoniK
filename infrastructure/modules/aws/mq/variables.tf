@@ -1,10 +1,3 @@
-# Region
-variable "region" {
-  description = "AWS region where the infrastructure will be deployed"
-  type        = string
-  default     = "eu-west-3"
-}
-
 # Tags
 variable "tags" {
   description = "Tags for resource"

@@ -126,13 +126,9 @@ variable "minio" {
     image_pull_secrets = optional(string, "")
     default_bucket     = optional(string, "minioBucket")
     host               = optional(string, "minio")
-    port               = optional(number, 9000)
-    login              = optional(string, "minioadmin")
-    password           = optional(string, "minioadmin")
   })
   default = null
 }
-
 
 variable "seq" {
   description = "Seq configuration"
@@ -195,6 +191,7 @@ variable "metrics_exporter" {
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
+    extra_conf    = optional(map(string), {})
   })
   default = {}
 }
@@ -207,6 +204,7 @@ variable "partition_metrics_exporter" {
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
+    extra_conf    = optional(map(string), {})
   })
   default = null
 }

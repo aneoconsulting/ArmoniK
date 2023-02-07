@@ -10,84 +10,40 @@ locals {
   node_selector_values = values(var.node_selector)
 
   # Storage secrets
-  activemq_certificates_secret      = try(var.storage_endpoint_url.activemq.certificates.secret, "")
-  mongodb_certificates_secret       = try(var.storage_endpoint_url.mongodb.certificates.secret, "")
-  redis_certificates_secret         = try(var.storage_endpoint_url.redis.certificates.secret, "")
-  activemq_credentials_secret       = try(var.storage_endpoint_url.activemq.credentials.secret, "")
-  mongodb_credentials_secret        = try(var.storage_endpoint_url.mongodb.credentials.secret, "")
-  redis_credentials_secret          = try(var.storage_endpoint_url.redis.credentials.secret, "")
-  activemq_certificates_ca_filename = try(var.storage_endpoint_url.activemq.certificates.ca_filename, "")
-  mongodb_certificates_ca_filename  = try(var.storage_endpoint_url.mongodb.certificates.ca_filename, "")
-  redis_certificates_ca_filename    = try(var.storage_endpoint_url.redis.certificates.ca_filename, "")
-  activemq_credentials_username_key = try(var.storage_endpoint_url.activemq.credentials.username_key, "")
-  mongodb_credentials_username_key  = try(var.storage_endpoint_url.mongodb.credentials.username_key, "")
-  redis_credentials_username_key    = try(var.storage_endpoint_url.redis.credentials.username_key, "")
-  activemq_credentials_password_key = try(var.storage_endpoint_url.activemq.credentials.password_key, "")
-  mongodb_credentials_password_key  = try(var.storage_endpoint_url.mongodb.credentials.password_key, "")
-  redis_credentials_password_key    = try(var.storage_endpoint_url.redis.credentials.password_key, "")
-
-  # Endpoint urls storage
-  activemq_host = try(var.storage_endpoint_url.activemq.host, "")
-  activemq_port = try(var.storage_endpoint_url.activemq.port, "")
-  mongodb_host  = try(var.storage_endpoint_url.mongodb.host, "")
-  mongodb_port  = try(var.storage_endpoint_url.mongodb.port, "")
-  redis_url     = try(var.storage_endpoint_url.redis.url, "")
-
-  # Options of storage
-  activemq_allow_host_mismatch = try(var.storage_endpoint_url.activemq.allow_host_mismatch, true)
-  mongodb_allow_insecure_tls   = try(var.storage_endpoint_url.mongodb.allow_insecure_tls, true)
-  redis_timeout                = try(var.storage_endpoint_url.redis.timeout, 3000)
-  redis_ssl_host               = try(var.storage_endpoint_url.redis.ssl_host, "")
+  secrets = {
+    mongodb = {
+      name        = "mongodb"
+      ca_filename = "/mongodb/chain.pem"
+    }
+  }
 
   # Credentials
   credentials = {
-    for key, value in {
-      Amqp__User = local.activemq_credentials_secret != "" ? {
-        key  = local.activemq_credentials_username_key
-        name = local.activemq_credentials_secret
-      } : { key = "", name = "" }
-      Amqp__Password = local.activemq_credentials_secret != "" ? {
-        key  = local.activemq_credentials_password_key
-        name = local.activemq_credentials_secret
-      } : { key = "", name = "" }
-      Redis__User = local.redis_credentials_secret != "" ? {
-        key  = local.redis_credentials_username_key
-        name = local.redis_credentials_secret
-      } : { key = "", name = "" }
-      Redis__Password = local.redis_credentials_secret != "" ? {
-        key  = local.redis_credentials_password_key
-        name = local.redis_credentials_secret
-      } : { key = "", name = "" }
-      MongoDB__User = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_username_key
-        name = local.mongodb_credentials_secret
-      } : { key = "", name = "" }
-      MongoDB__Password = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_password_key
-        name = local.mongodb_credentials_secret
-      } : { key = "", name = "" }
-    } : key => value if !contains(values(value), "")
+    MongoDB__User = {
+      key  = "username"
+      name = local.secrets.mongodb.name
+    }
+    MongoDB__Password = {
+      key  = "password"
+      name = local.secrets.mongodb.name
+    }
+    MongoDB__Host = {
+      key  = "host"
+      name = local.secrets.mongodb.name
+    }
+    MongoDB__Port = {
+      key  = "port"
+      name = local.secrets.mongodb.name
+    }
   }
 
   # Certificates
   certificates = {
-    for key, value in {
-      activemq = local.activemq_certificates_secret != "" ? {
-        name        = "activemq-secret-volume"
-        mount_path  = "/amqp"
-        secret_name = local.activemq_certificates_secret
-      } : { name = "", mount_path = "", secret_name = "" }
-      redis = local.redis_certificates_secret != "" ? {
-        name        = "redis-secret-volume"
-        mount_path  = "/redis"
-        secret_name = local.redis_certificates_secret
-      } : { name = "", mount_path = "", secret_name = "" }
-      mongodb = local.mongodb_certificates_secret != "" ? {
-        name        = "mongodb-secret-volume"
-        mount_path  = "/mongodb"
-        secret_name = local.mongodb_certificates_secret
-      } : { name = "", mount_path = "", secret_name = "" }
-    } : key => value if !contains(values(value), "")
+    mongodb = {
+      name        = "mongodb-secret-volume"
+      mount_path  = "/mongodb"
+      secret_name = local.secrets.mongodb.name
+    }
   }
 
   # Endpoint urls

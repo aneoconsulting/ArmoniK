@@ -28,10 +28,10 @@ resource "kubernetes_deployment" "minio" {
         }
       }
       spec {
-        node_selector = var.minioconfig.node_selector
+        node_selector = var.minio.node_selector
         dynamic "toleration" {
-          for_each = (var.minioconfig.node_selector != {} ? [
-            for index in range(0, length(var.minioconfig.node_selector_keys)) : {
+          for_each = (var.minio.node_selector != {} ? [
+            for index in range(0, length(local.node_selector_keys)) : {
               key   = local.node_selector_keys[index]
               value = local.node_selector_values[index]
             }
@@ -43,21 +43,33 @@ resource "kubernetes_deployment" "minio" {
             effect   = "NoSchedule"
           }
         }
-
+        dynamic "image_pull_secrets" {
+          for_each = (var.minio.image_pull_secrets != "" ? [1] : [])
+          content {
+            name = var.minio.image_pull_secrets
+          }
+        }
         container {
           name              = "minio"
-          image             = "${var.minioconfig.image}:${var.minioconfig.tag}"
+          image             = "${var.minio.image}:${var.minio.tag}"
           image_pull_policy = "IfNotPresent"
           command           = ["/bin/bash"]
           args = [
             "-c",
-            "mkdir -p /data/${var.minioconfig.bucket_name} && minio server /data --console-address :9001"
+            "mkdir -p /data/${var.minio.bucket_name} && minio server /data --console-address :9001"
           ]
+          env {
+            name  = "MINIO_ROOT_USER"
+            value = random_string.minio_application_user.result
+          }
+          env {
+            name  = "MINIO_ROOT_PASSWORD"
+            value = random_password.minio_application_password.result
+          }
           port {
-            container_port = var.minioconfig.port
+            container_port = local.port
             protocol       = "TCP"
           }
-
           port {
             container_port = 9001
             protocol       = "TCP"
@@ -87,9 +99,9 @@ resource "kubernetes_service" "minio" {
       service = kubernetes_deployment.minio.metadata.0.labels.service
     }
     port {
-      name        = "${kubernetes_deployment.minio.metadata.0.name}-${var.minioconfig.port}"
-      port        = var.minioconfig.port
-      target_port = var.minioconfig.port
+      name        = "${kubernetes_deployment.minio.metadata.0.name}-${local.port}"
+      port        = local.port
+      target_port = local.port
       protocol    = "TCP"
     }
     port {

@@ -1,14 +1,31 @@
-# Uncomment to deploy metrics server
-#metrics_server = {}
-
 # Logging level
 logging_level = "Information"
 
+# Uncomment to deploy metrics server
+#metrics_server = {}
+
 # Object storage
 # Uncomment either the `redis` or the `minio` parameter
-#redis = {}
-minio = {}
+redis = {}
+#minio = {}
 
+metrics_exporter = {
+  extra_conf = {
+    MongoDB__AllowInsecureTls              = true
+    Serilog__MinimumLevel                  = "Information"
+    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+  }
+}
+
+/*parition_metrics_exporter = {
+  extra_conf = {
+    MongoDB__AllowInsecureTls           = true
+    Serilog__MinimumLevel               = "Information"
+    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+  }
+}*/
 
 # Parameters of control plane
 control_plane = {
@@ -110,7 +127,21 @@ ingress = {
 
 extra_conf = {
   core = {
-    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    Amqp__AllowHostMismatch                    = true
+    Amqp__MaxPriority                          = "10"
+    Amqp__MaxRetries                           = "5"
+    Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
+    Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
+    Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+    MongoDB__AllowInsecureTls                  = true
+    MongoDB__TableStorage__PollingDelay        = "00:00:01"
+    MongoDB__DataRetention                     = "10.00:00:00"
+    Redis__Timeout                             = 30000
+    Redis__SslHost                             = "127.0.0.1"
+  }
+  control = {
+    Submitter__MaxErrorAllowed = 50
   }
 }

@@ -40,91 +40,109 @@ module "redis" {
   }
 }
 
-# Minio
+# minio
 module "minio" {
   count     = var.minio != null ? 1 : 0
   source    = "../../../modules/onpremise-storage/minio"
   namespace = local.namespace
-  minioconfig = {
-    host          = var.minio.host
-    port          = var.minio.port
-    login         = var.minio.login
-    password      = var.minio.password
-    bucket_name   = var.minio.default_bucket
-    image         = var.minio.image_name
-    tag           = try(coalesce(var.minio.image_tag), local.default_tags[var.minio.image_name])
-    node_selector = var.minio.node_selector
+  minio = {
+    image              = var.minio.image_name
+    tag                = try(coalesce(var.minio.image_tag), local.default_tags[var.minio.image_name])
+    node_selector      = var.minio.node_selector
+    image_pull_secrets = var.minio.image_pull_secrets
+    host               = var.minio.host
+    bucket_name        = var.minio.default_bucket
+  }
+}
+
+# Shared storage
+resource "kubernetes_secret" "shared_storage" {
+  metadata {
+    name      = "shared-storage"
+    namespace = local.namespace
+  }
+  data = {
+    host_path         = abspath("data")
+    file_storage_type = "HostPath"
+    file_server_ip    = ""
+  }
+}
+
+resource "kubernetes_secret" "deployed_object_storage" {
+  metadata {
+    name      = "deployed-object-storage"
+    namespace = local.namespace
+  }
+  data = {
+    list    = join(",", local.storage_endpoint_url.deployed_object_storages)
+    adapter = local.storage_endpoint_url.object_storage_adapter
+  }
+}
+
+resource "kubernetes_secret" "deployed_table_storage" {
+  metadata {
+    name      = "deployed-table-storage"
+    namespace = local.namespace
+  }
+  data = {
+    list    = join(",", local.storage_endpoint_url.deployed_table_storages)
+    adapter = local.storage_endpoint_url.table_storage_adapter
+  }
+}
+
+resource "kubernetes_secret" "deployed_queue_storage" {
+  metadata {
+    name      = "deployed-queue-storage"
+    namespace = local.namespace
+  }
+  data = {
+    list    = join(",", local.storage_endpoint_url.deployed_queue_storages)
+    adapter = local.storage_endpoint_url.queue_storage_adapter
   }
 }
 
 # Storage
 locals {
-  object_storage_adapter = coalesce(
-    length(module.redis) > 0 ? "Redis" : null,
-    length(module.minio) > 0 ? "S3" : null,
-  )
-  table_storage_adapter = "ArmoniK.Adapters.MongoDB.TableStorage"
-  queue_storage_adapter = "ArmoniK.Adapters.Amqp.QueueStorage"
   storage_endpoint_url = {
+    object_storage_adapter = try(coalesce(
+      length(module.redis) > 0 ? "Redis" : null,
+      length(module.minio) > 0 ? "S3" : null,
+    ), "")
+    table_storage_adapter = "MongoDB"
+    queue_storage_adapter = "Amqp"
     deployed_object_storages = concat(
-      ["MongoDB"],
       length(module.redis) > 0 ? ["Redis"] : [],
       length(module.minio) > 0 ? ["S3"] : [],
     )
+    deployed_table_storages = ["MongoDB"]
+    deployed_queue_storages = ["Amqp"]
     activemq = {
-      url     = module.activemq.url
-      host    = module.activemq.host
-      port    = module.activemq.port
-      web_url = module.activemq.web_url
-      credentials = {
-        secret       = module.activemq.user_credentials.secret
-        username_key = module.activemq.user_credentials.username_key
-        password_key = module.activemq.user_credentials.password_key
-      }
-      certificates = {
-        secret      = module.activemq.user_certificate.secret
-        ca_filename = module.activemq.user_certificate.ca_filename
-      }
+      url                 = module.activemq.url
+      host                = module.activemq.host
+      port                = module.activemq.port
+      web_url             = module.activemq.web_url
+      credentials         = module.activemq.user_credentials
+      certificates        = module.activemq.user_certificate
+      endpoints           = module.activemq.endpoints
       allow_host_mismatch = true
     }
     redis = length(module.redis) > 0 ? {
-      url  = module.redis[0].url
-      host = module.redis[0].host
-      port = module.redis[0].port
-      credentials = {
-        secret       = module.redis[0].user_credentials.secret
-        username_key = module.redis[0].user_credentials.username_key
-        password_key = module.redis[0].user_credentials.password_key
-      }
-      certificates = {
-        secret      = module.redis[0].user_certificate.secret
-        ca_filename = module.redis[0].user_certificate.ca_filename
-      }
-      timeout  = 30000
-      ssl_host = "127.0.0.1"
-    } : null
-    s3 = length(module.minio) > 0 ? {
-      url                   = module.minio[0].url
-      host                  = module.minio[0].host
-      port                  = module.minio[0].port
-      login                 = module.minio[0].login
-      password              = module.minio[0].password
-      bucket_name           = module.minio[0].bucket_name
-      must_force_path_style = module.minio[0].must_force_path_style
+      url          = module.redis[0].url
+      host         = module.redis[0].host
+      port         = module.redis[0].port
+      credentials  = module.redis[0].user_credentials
+      certificates = module.redis[0].user_certificate
+      endpoints    = module.redis[0].endpoints
+      timeout      = 30000
+      ssl_host     = "127.0.0.1"
     } : null
     mongodb = {
-      url  = module.mongodb.url
-      host = module.mongodb.host
-      port = module.mongodb.port
-      credentials = {
-        secret       = module.mongodb.user_credentials.secret
-        username_key = module.mongodb.user_credentials.username_key
-        password_key = module.mongodb.user_credentials.password_key
-      }
-      certificates = {
-        secret      = module.mongodb.user_certificate.secret
-        ca_filename = module.mongodb.user_certificate.ca_filename
-      }
+      url                = module.mongodb.url
+      host               = module.mongodb.host
+      port               = module.mongodb.port
+      credentials        = module.mongodb.user_credentials
+      certificates       = module.mongodb.user_certificate
+      endpoints          = module.mongodb.endpoints
       allow_insecure_tls = true
     }
     shared = var.shared_storage != null ? var.shared_storage : {
@@ -132,5 +150,9 @@ locals {
       file_storage_type = "HostPath"
       file_server_ip    = ""
     }
+    s3 = length(module.minio) > 0 ? {
+      url         = try(module.minio[0].url, "")
+      bucket_name = try(module.minio[0].bucket_name, "")
+    } : null
   }
 }

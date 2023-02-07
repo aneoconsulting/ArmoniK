@@ -26,13 +26,6 @@ variable "storage_endpoint_url" {
   default     = {}
 }
 
-# Logging level
-variable "logging_level" {
-  description = "Logging level in ArmoniK"
-  type        = string
-  default     = "Information"
-}
-
 # Monitoring infos
 variable "monitoring" {
   description = "Monitoring infos"
@@ -76,6 +69,7 @@ variable "monitoring" {
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
+      extra_conf         = map(string)
     })
     partition_metrics_exporter = object({
       image              = string
@@ -83,6 +77,7 @@ variable "monitoring" {
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
+      extra_conf         = map(string)
     })
     fluent_bit = object({
       image              = string

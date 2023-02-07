@@ -150,6 +150,7 @@ variable "admin_gui" {
     image_pull_secrets = string
     node_selector      = any
   })
+  default = null
 }
 
 # Parameters of the compute plane
@@ -236,21 +237,4 @@ variable "authentication" {
     require_authentication  = bool
     require_authorization   = bool
   })
-}
-
-variable "object_storage_adapter" {
-  description = "storage plugin to use."
-  type        = string
-}
-
-variable "table_storage_adapter" {
-  description = "Table plugin to use."
-  type        = string
-  default     = "ArmoniK.Adapters.MongoDB.TableStorage"
-}
-
-variable "queue_storage_adapter" {
-  description = "Queue plugin to use."
-  type        = string
-  default     = "ArmoniK.Adapters.Amqp.QueueStorage"
 }

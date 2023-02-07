@@ -27,7 +27,6 @@ tags = {
   "DST_Update"       = ""
 }
 
-
 vpc = {
   enable_private_subnet = false
 }
@@ -71,12 +70,15 @@ eks_worker_groups = [
     on_demand_percentage_above_base_capacity = 0
   }
 ]
+
 metrics_server = {
   node_selector = { "grid/type" = "Operator" }
 }
+
 keda = {
   node_selector = { "grid/type" = "Operator" }
 }
+
 # Object storage
 # Uncomment either the `elasticache` or the `s3_os` parameter
 elasticache = {
@@ -85,6 +87,7 @@ elasticache = {
   node_type          = "cache.r4.large"
   num_cache_clusters = 2
 }
+
 #s3_os = {}
 
 mq = {
@@ -92,6 +95,7 @@ mq = {
   engine_version     = "5.16.4"
   host_instance_type = "mq.m5.xlarge"
 }
+
 mongodb = {
   node_selector = { "grid/type" = "Operator" }
   #persistent_volume = {
@@ -103,6 +107,7 @@ mongodb = {
   #  }
   #}
 }
+
 pv_efs = {
   csi_driver = {
     node_selector = { "grid/type" = "Operator" }
@@ -127,16 +132,27 @@ prometheus = {
 
 metrics_exporter = {
   node_selector = { "grid/type" = "Operator" }
+  extra_conf = {
+    MongoDB__AllowInsecureTls              = true
+    Serilog__MinimumLevel                  = "Information"
+    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+  }
 }
 
-//parition_metrics_exporter = {
-//  node_selector = { "grid/type" = "Operator" }
-//}
+/*parition_metrics_exporter = {
+  node_selector = { "grid/type" = "Operator" }
+  extra_conf    = {
+    MongoDB__AllowInsecureTls           = true
+    Serilog__MinimumLevel               = "Information"
+    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+  }
+}*/
 
 fluent_bit = {
   is_daemonset = true
 }
-
 
 # Logging level
 logging_level = "Information"
@@ -241,7 +257,21 @@ ingress = {
 
 extra_conf = {
   core = {
-    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    Amqp__AllowHostMismatch                    = false
+    Amqp__MaxPriority                          = "10"
+    Amqp__MaxRetries                           = "5"
+    Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
+    Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
+    Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+    MongoDB__TableStorage__PollingDelay        = "00:00:01"
+    MongoDB__DataRetention                     = "10.00:00:00"
+    MongoDB__AllowInsecureTls                  = true
+    Redis__Timeout                             = 3000
+    Redis__SslHost                             = ""
+  }
+  control = {
+    Submitter__MaxErrorAllowed = 50
   }
 }
