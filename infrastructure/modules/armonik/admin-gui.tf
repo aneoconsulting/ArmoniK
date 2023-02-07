@@ -1,5 +1,6 @@
 # Control plane deployment
 resource "kubernetes_deployment" "admin_gui" {
+  count = var.admin_gui != null ? 1 : 0
   metadata {
     name      = "admin-gui"
     namespace = var.namespace

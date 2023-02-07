@@ -150,6 +150,7 @@ variable "admin_gui" {
     image_pull_secrets = string
     node_selector      = any
   })
+  default = null
 }
 
 # Parameters of the compute plane
