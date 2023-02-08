@@ -49,11 +49,16 @@ resource "kubernetes_job" "stresstest_job" {
         # Control plane container
         container {
           name              = "stresstest"
-          image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/stresstest:1.0"
+          image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/stresstest:1.03"
           image_pull_policy = "IfNotPresent"
+          resources {
+            requests = {
+              memory = "2Gi"
+            }
+          }          
           env {
             name = "Grpc__Endpoint"
-            value = "http://$controlplaneServiceName:5001"
+            value = "http://${local.controlplaneServiceName}:5001"
           }
           dynamic "env_from" {
             for_each = local.control_plane_configmaps

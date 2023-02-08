@@ -45,7 +45,7 @@ resource "kubernetes_job" "bench_job" {
         # Control plane container
         container {
           name              = "bench"
-          image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/bench:1.13"
+          image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/bench:1.01"
           image_pull_policy = "IfNotPresent"
           command           = ["dotnet", "run", "--project", "Bench.csproj", "-c", "release"]
 

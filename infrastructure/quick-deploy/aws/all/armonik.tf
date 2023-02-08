@@ -12,7 +12,7 @@ module "armonik" {
     partition_data = {
       priority              = 1
       reserved_pods         = 1
-      max_pods              = 100
+      max_pods              = 300
       preemption_percentage = 50
       parent_partition_ids  = []
       pod_configuration     = null

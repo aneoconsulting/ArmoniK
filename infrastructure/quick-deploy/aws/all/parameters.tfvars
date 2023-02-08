@@ -82,10 +82,11 @@ keda = {
 elasticache = {
   engine             = "redis"
   engine_version     = "6.x"
-  node_type          = "cache.r4.large"
+# node_type          = "cache.r4.large"
+  node_type          = "cache.r4.4xlarge"
   num_cache_clusters = 2
 }
-#s3_os = {}
+s3_os = {}
 
 mq = {
   engine_type        = "ActiveMQ"
@@ -213,7 +214,7 @@ compute_plane = {
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 1
-      max_replica_count = 100
+      max_replica_count = 300
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
