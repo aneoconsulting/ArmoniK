@@ -7,6 +7,10 @@ on:
         description: "Prefix for the deployment"
         required: false
         default: "armonik-cicd"
+      bootstrap:
+        description: "Deploy the S3 for the tfstate"
+        required: false
+        default: true
       core-version:
         description: "Version of core to deploy"
         required: false
@@ -19,17 +23,6 @@ on:
         description: "Version of Extension Csharp to deploy"
         required: false
         default: ""
-      tls:
-        description: "Enable TLS"
-        type: boolean
-        required: false
-        default: false
-      mtls:
-        description: "Enable mTLS"
-        type: boolean
-        required: false
-        default: false
-  push:
 
 jobs:
   deploy:
@@ -47,6 +40,13 @@ jobs:
           terraform: true
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - if: ${{ inputs.bootstrap && inputs.bootstrap != 'false' }}
+        id: bootstrap-deploy
+        name: Deploy Bootstrap
+        uses: aneoconsulting/ArmoniK.Action.Deploy/bootstrap-deploy@fl/test
+        with:
+          type: aws
+          prefix: ${{ inputs.prefix }}
       - id: deploy
         name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@fl/test
@@ -56,5 +56,3 @@ jobs:
           core-version: ${{ inputs.core-version }}
           gui-version: ${{ inputs.gui-version }}
           ext-csharp-version: ${{ inputs.ext-csharp-version }}
-          tls: ${{ inputs.tls }}
-          mtls: ${{ inputs.mtls }}

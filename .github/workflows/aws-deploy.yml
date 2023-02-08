@@ -19,21 +19,6 @@ on:
         description: "Version of Extension Csharp to deploy"
         required: false
         default: ""
-      tls:
-        description: "Enable TLS"
-        type: boolean
-        required: false
-        default: false
-      mtls:
-        description: "Enable mTLS"
-        type: boolean
-        required: false
-        default: false
-  push:
-    branches: [ main ]
-    tags-ignore: [ '**' ]
-  pull_request:
-    types: [opened, synchronize, reopened]
 
 jobs:
   deploy:
@@ -60,8 +45,6 @@ jobs:
           core-version: ${{ inputs.core-version }}
           gui-version: ${{ inputs.gui-version }}
           ext-csharp-version: ${{ inputs.ext-csharp-version }}
-          tls: ${{ inputs.tls }}
-          mtls: ${{ inputs.mtls }}
 
   test:
     name: "Test"

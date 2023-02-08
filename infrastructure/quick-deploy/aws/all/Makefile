@@ -38,13 +38,19 @@ bootstrap-deploy: $(YAML_SRC)
 	@aws cloudformation describe-stacks --stack-name $(PREFIX) --region $(REGION) --query 'Stacks[0]' > $(GENERATED_DIR)/output.json
 
 bootstrap-destroy:
+	aws s3api delete-objects \
+		--bucket "${TFSTATE_BUCKET_NAME}" \
+		--delete "`aws s3api list-object-versions \
+		--bucket "${TFSTATE_BUCKET_NAME}" \
+		--output=json \
+		--query='{Objects: Versions[].{Key:Key,VersionId:VersionId}}'`"
 	aws cloudformation delete-stack --stack-name $(PREFIX) --region $(REGION)
 	aws cloudformation wait stack-delete-complete --stack-name $(shell aws cloudformation describe-stacks --region $(REGION) --stack-name $(PREFIX) --query 'Stacks[0].StackId' --output text) --region $(REGION)
 
 
 init:
 	mkdir -p $(GENERATED_DIR)
-	terraform init -upgrade \
+	terraform init -upgrade -reconfigure \
 		-backend-config 'bucket=$(TFSTATE_BUCKET_NAME)' \
 		-backend-config 'region=$(REGION)' \
 		-backend-config 'key=$(STATE_FILE)' \
@@ -58,7 +64,7 @@ apply:
 	terraform apply -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
 
 refresh:
-	terraform refersh -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
+	terraform refresh -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE)
 
 delete:
 	terraform destroy -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
