@@ -12,6 +12,10 @@ Changed
 * Update Armonik.Extension.Csharp version from 0.8.1 to 0.8.3
 * Update Armonik.Core version from 0.8.2 to 0.9.1
 
+Added
+-
+* Use S3 as object storage for ArmoniK to replace Redis (AWS Elasticache).
+
 ## [v2.10.2](https://github.com/aneoconsulting/armonik/tree/v2.10.2) (2023-01-23)
 
 Changed
