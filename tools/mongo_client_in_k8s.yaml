@@ -10,8 +10,8 @@ spec:
   containers:
   - name: mongosh
     image: rtsp/mongosh
-    command: ["bash", "-c"]
-    args: ["sleep 3600"]
+    command: ["tail", "-f"]
+    args: ["/dev/null"]
 #    command: [mongosh]
 #    args: ["--tlsCAFile /mongodb/chain.pem","--tlsAllowInvalidCertificates", "--tlsAllowInvalidHostnames", "--tls", "-u $MONGO_INITDB_ROOT_USERNAME", "-p $MONGO_INITDB_ROOT_PASSWORD", "mongodb://mongodb:27017"]
     env:
