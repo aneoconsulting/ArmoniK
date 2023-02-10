@@ -20,10 +20,72 @@ more informations here : https://www.mongodb.com/docs/manual/reference/method/db
 
 EOF
 
-kubectl replace --force -f mongo_client_in_k8s.yaml
-echo "Waiting for pod to be in Ready state..."
-
-kubectl wait -n armonik pod/mongoshclient --for=condition=Ready
-kubectl exec -it -n armonik mongoshclient -- bash -c 'mongosh --tlsCAFile /mongodb/chain.pem --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_INITDB_ROOT_PASSWORD" mongodb://mongodb:27017'
-kubectl delete -f mongo_client_in_k8s.yaml
-
+kubectl run -it --rm -n armonik mongoshclient --image=rtsp/mongosh --overrides='
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "creationTimestamp": null,
+    "labels": {
+      "run": "mongoshclient"
+    },
+    "name": "mongoshclient",
+    "namespace": "armonik"
+  },
+  "spec": {
+    "containers": [
+      {
+        "name": "mongosh",
+        "image": "rtsp/mongosh",
+        "stdin": true,
+        "tty": true,
+        "command": [
+          "bash",
+          "-c"
+        ],
+        "args": [
+          "mongosh --tlsCAFile /mongodb/chain.pem --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD mongodb://mongodb:27017"
+        ],
+        "env": [
+          {
+            "name": "MONGO_INITDB_ROOT_USERNAME",
+            "valueFrom": {
+              "secretKeyRef": {
+                "name": "mongodb-admin",
+                "key": "username"
+              }
+            }
+          },
+          {
+            "name": "MONGO_INITDB_ROOT_PASSWORD",
+            "valueFrom": {
+              "secretKeyRef": {
+                "name": "mongodb-admin",
+                "key": "password"
+              }
+            }
+          }
+        ],
+        "volumeMounts": [
+          {
+            "name": "mongodb-secret-volume",
+            "mountPath": "/mongodb/"
+          }
+        ],
+        "resources": {}
+      }
+    ],
+    "volumes": [
+      {
+        "name": "mongodb-secret-volume",
+        "secret": {
+          "secretName": "mongodb"
+        }
+      }
+    ],
+    "dnsPolicy": "ClusterFirst",
+    "restartPolicy": "Always"
+  },
+  "status": {}
+}
+'
