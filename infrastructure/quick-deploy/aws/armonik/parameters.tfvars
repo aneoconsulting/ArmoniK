@@ -77,7 +77,7 @@ control_plane = {
 
 # Parameters of admin GUI
 # Put to null if we not want deploy it
-/*admin_gui = {
+admin_gui = {
   api = {
     name  = "admin-api"
     image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-api"
@@ -111,7 +111,7 @@ control_plane = {
   image_pull_policy  = "IfNotPresent"
   image_pull_secrets = ""
   node_selector      = {}
-}*/
+}
 
 # Parameters of the compute plane
 compute_plane = {
