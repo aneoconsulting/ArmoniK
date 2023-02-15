@@ -24,10 +24,14 @@ resource "null_resource" "copy_images" {
     command = <<-EOT
       aws ecr get-login-password --profile ${var.profile} --region ${local.region}  | docker login --username AWS --password-stdin ${data.aws_caller_identity.current.account_id}.dkr.ecr.${local.region}.amazonaws.com
       aws ecr-public get-login-password --profile ${var.profile} --region us-east-1  | docker login --username AWS --password-stdin public.ecr.aws
-      if ! docker pull ${var.repositories[count.index].image}:${var.repositories[count.index].tag}
+      
+      if [ "$(docker images -q '${var.repositories[count.index].image}:${var.repositories[count.index].tag}')" == "" ]
       then
-        echo "cannot download image ${var.repositories[count.index].image}:${var.repositories[count.index].tag}"
-        exit 1
+        if ! docker pull ${var.repositories[count.index].image}:${var.repositories[count.index].tag}
+        then
+          echo "cannot download image ${var.repositories[count.index].image}:${var.repositories[count.index].tag}"
+          exit 1
+        fi
       fi
       if ! docker tag ${var.repositories[count.index].image}:${var.repositories[count.index].tag} ${data.aws_caller_identity.current.account_id}.dkr.ecr.${local.region}.amazonaws.com/${var.repositories[count.index].name}:${var.repositories[count.index].tag}
       then
