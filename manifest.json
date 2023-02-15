@@ -12,7 +12,6 @@
           "hash": "5MLDp2eqcOC8k3H3KjKxaLnlnpC1Kxh9sidQmv7Mvto="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -24,7 +23,6 @@
           "hash": "zJDqJHO1V/5G+TQS9Rip7IeW5kRRYhAGHjFgNWHaY2E="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -36,7 +34,6 @@
           "hash": "rQMRBibffOEeJG2qutturMW79aRRCo0V/1N9i9PhQvw="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -48,7 +45,6 @@
           "hash": "5x6e7wG9aaNb2Xz6hXGzxgtoIN+NaF1YMVF+jOrwZzg="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -60,7 +56,6 @@
           "hash": "ZOfJkyg9yj1iG0/AY+gLjKgvB0bEjaYMVTmGnMv1nw8="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -72,7 +67,6 @@
           "hash": "zjlgVvWA5jTBg5jyfEDA0+T1dYkXNPv2i1+s325yt2g="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -84,7 +78,6 @@
           "hash": "1oA/24/d71WXa6gwsLZtDNvokPYKExeOweYTti/zuZM="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -96,7 +89,6 @@
           "hash": "xz3o0ShWGFBv8SR9SZJ+XsnFgl9rtYZ+zgGiwahMEMI="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -108,7 +100,6 @@
           "hash": "dIYe5mfR+RtkHTYLhzw8RqdHgY0AmYsAHNQ0aPSogrg="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -120,7 +111,6 @@
           "hash": "wi4hGTUGNHeD/zQU7fryaws93VCtt3h5vMm1oQ3Br4M="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -132,7 +122,6 @@
           "hash": "86QOk9zyAyzL1/z/AE7JwtqmOOrJ3uk1bwVchmPOAHE="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -143,7 +132,6 @@
           "relative_path": "images/Tests/seq.png"
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -154,7 +142,6 @@
           "relative_path": "images/Tests/seq_auth.png"
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -165,7 +152,6 @@
           "relative_path": "images/installations/ports.png"
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -176,7 +162,6 @@
           "relative_path": "images/installations/wsl_armonik1.png"
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -187,7 +172,6 @@
           "relative_path": "images/installations/wsl_armonik2.png"
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -198,7 +182,6 @@
           "relative_path": "images/installations/wsl_armonik3.png"
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -209,7 +192,6 @@
           "relative_path": "images/installations/wsl_armonik4.png"
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -221,7 +203,6 @@
           "hash": "7zoRTbQOUZf2kuBzbsNR6D+pSDKeFPgvlr+MboPj4Ec="
         }
       },
-      "is_incremental": false,
       "version": ""
     },
     {
@@ -233,52 +214,7 @@
           "hash": "26gkccrz4bulFa5TDgPGGYSnO8DBoYI8llSnyzOuhgk="
         }
       },
-      "is_incremental": false,
       "version": ""
-    }
-  ],
-  "incremental_info": [
-    {
-      "status": {
-        "can_incremental": false,
-        "details": "Cannot build incrementally because last build info is missing.",
-        "incrementalPhase": "build",
-        "total_file_count": 0,
-        "skipped_file_count": 0,
-        "full_build_reason_code": "NoAvailableBuildCache"
-      },
-      "processors": {
-        "ConceptualDocumentProcessor": {
-          "can_incremental": false,
-          "incrementalPhase": "build",
-          "total_file_count": 10,
-          "skipped_file_count": 0
-        },
-        "ResourceDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build",
-          "total_file_count": 0,
-          "skipped_file_count": 0
-        },
-        "TocDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build",
-          "total_file_count": 0,
-          "skipped_file_count": 0
-        }
-      }
-    },
-    {
-      "status": {
-        "can_incremental": false,
-        "details": "Cannot support incremental post processing, the reason is: last post processor info is null.",
-        "incrementalPhase": "postProcessing",
-        "total_file_count": 0,
-        "skipped_file_count": 0
-      },
-      "processors": {}
     }
   ],
   "version_info": {},
