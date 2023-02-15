@@ -8,3 +8,12 @@ output "armonik" {
     admin_app_url     = module.armonik.endpoint_urls.admin_app_url
   }
 }
+
+output "eks" {
+  description = "EKS cluster"
+  value = {
+    arn    = module.eks.arn
+    name   = module.eks.name
+    region = var.region
+  }
+}
