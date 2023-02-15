@@ -9,6 +9,7 @@ on:
         default: "armonik-cicd"
       bootstrap:
         description: "Deploy the S3 for the tfstate"
+        type: boolean
         required: false
         default: true
 
@@ -33,7 +34,7 @@ jobs:
         with:
           type: aws
           prefix: ${{ inputs.prefix }}
-      - if: ${{ inputs.bootstrap && inputs.bootstrap != 'false' }}
+      - if: ${{ inputs.bootstrap }}
         id: bootstrap-destroy
         name: Destroy Bootstrap
         uses: aneoconsulting/ArmoniK.Action.Deploy/bootstrap-destroy@main
