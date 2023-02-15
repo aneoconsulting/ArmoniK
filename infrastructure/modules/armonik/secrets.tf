@@ -60,3 +60,10 @@ data "kubernetes_secret" "grafana" {
     namespace = var.namespace
   }
 }
+
+data "kubernetes_secret" "prometheus" {
+  metadata {
+    name      = local.secrets.prometheus
+    namespace = var.namespace
+  }
+}

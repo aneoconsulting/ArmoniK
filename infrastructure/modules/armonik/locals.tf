@@ -63,6 +63,7 @@ locals {
     fluent_bit                     = "fluent-bit"
     seq                            = "seq"
     grafana                        = "grafana"
+    prometheus                     = "prometheus"
     deployed_object_storage_secret = "deployed-object-storage"
     deployed_table_storage_secret  = "deployed-table-storage"
     deployed_queue_storage_secret  = "deployed-queue-storage"
@@ -285,7 +286,7 @@ locals {
         (lower(try(trigger.type, "")) == "prometheus" ? {
           type = "prometheus"
           metadata = {
-            serverAddress = try(var.monitoring.prometheus.url, "")
+            serverAddress = data.kubernetes_secret.prometheus.data.url
             metricName    = "armonik_${partition}_tasks_queued"
             threshold     = tostring(try(trigger.threshold, "2"))
             namespace     = data.kubernetes_secret.metrics_exporter.data.namespace
