@@ -41,6 +41,18 @@ resource "kubernetes_secret" "fluent_bit" {
   }
 }
 
+resource "kubernetes_secret" "prometheus" {
+  metadata {
+    name      = "prometheus"
+    namespace = var.namespace
+  }
+  data = {
+    host = module.prometheus.host
+    port = module.prometheus.port
+    url  = module.prometheus.url
+  }
+}
+
 resource "kubernetes_secret" "seq" {
   metadata {
     name      = "seq"

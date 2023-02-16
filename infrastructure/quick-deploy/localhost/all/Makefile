@@ -40,10 +40,7 @@ delete:
 	terraform destroy -state $(STATE_FILE) -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
 
 output:
-	@echo -n "{\"armonik\":" > $(GENERATED_DIR)/armonik-output.json
-	@terraform output -state=$(STATE_FILE) -json armonik >> $(GENERATED_DIR)/armonik-output.json
-	@echo -n "}" >> $(GENERATED_DIR)/armonik-output.json
-	@echo "\nOUTPUT FILE: $(GENERATED_DIR)/armonik-output.json"
+	terraform output -state=$(STATE_FILE) -json | jq 'map_values(.value)' > $(GENERATED_DIR)/armonik-output.json
 
 clean:
 	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform

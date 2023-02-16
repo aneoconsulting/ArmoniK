@@ -135,6 +135,18 @@ module "prometheus" {
   working_dir = "${path.root}/../../.."
 }
 
+resource "kubernetes_secret" "prometheus" {
+  metadata {
+    name      = "prometheus"
+    namespace = local.namespace
+  }
+  data = {
+    host = module.prometheus.host
+    port = module.prometheus.port
+    url  = module.prometheus.url
+  }
+}
+
 # Grafana
 module "grafana" {
   count          = var.grafana != null ? 1 : 0

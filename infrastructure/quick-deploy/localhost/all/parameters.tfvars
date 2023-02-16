@@ -66,6 +66,7 @@ admin_gui = {
 
 # Parameters of the compute plane
 compute_plane = {
+  # Default partition that uses the C# extension for the worker
   default = {
     # number of replicas for each deployment of compute plane
     replicas = 1
@@ -76,7 +77,7 @@ compute_plane = {
         memory = "2048Mi"
       }
       requests = {
-        cpu    = "1000m"
+        cpu    = "500m"
         memory = "256Mi"
       }
     }
@@ -84,6 +85,156 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_worker_dll"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "500m"
+          memory = "512Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 100
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  # Partition for the stream worker
+  stream = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "500m"
+        memory = "256Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "dockerhubaneo/armonik_core_stream_test_worker"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "500m"
+          memory = "512Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 100
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  # Partition for the htcmock worker
+  htcmock = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "500m"
+        memory = "256Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "dockerhubaneo/armonik_core_htcmock_test_worker"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "500m"
+          memory = "512Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 100
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  # Partition for the bench worker
+  bench = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "500m"
+        memory = "256Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "dockerhubaneo/armonik_core_bench_test_worker"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
