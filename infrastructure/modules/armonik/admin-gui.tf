@@ -119,61 +119,6 @@ resource "kubernetes_deployment" "admin_gui" {
             name           = "app-port"
             container_port = 1080
           }
-          env_from {
-            config_map_ref {
-              name = kubernetes_config_map.core_config.metadata.0.name
-            }
-          }
-          env {
-            name  = "ControlPlane__Endpoint"
-            value = local.control_plane_url
-          }
-          dynamic "env" {
-            for_each = (data.kubernetes_secret.grafana.data.enabled != "" ? [1] : [])
-            content {
-              name  = "Grafana__Endpoint"
-              value = data.kubernetes_secret.grafana.data.url
-            }
-          }
-          dynamic "env" {
-            for_each = (data.kubernetes_secret.seq.data.enabled ? [1] : [])
-            content {
-              name  = "Seq__Endpoint"
-              value = data.kubernetes_secret.seq.data.web_url
-            }
-          }
-          dynamic "env" {
-            for_each = local.credentials
-            content {
-              name = env.key
-              value_from {
-                secret_key_ref {
-                  key      = env.value.key
-                  name     = env.value.name
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic "volume_mount" {
-            for_each = local.certificates
-            content {
-              name       = volume_mount.value.name
-              mount_path = volume_mount.value.mount_path
-              read_only  = true
-            }
-          }
-        }
-        # Secrets volumes
-        dynamic "volume" {
-          for_each = local.certificates
-          content {
-            name = volume.value.name
-            secret {
-              secret_name = volume.value.secret_name
-              optional    = false
-            }
-          }
         }
       }
     }
