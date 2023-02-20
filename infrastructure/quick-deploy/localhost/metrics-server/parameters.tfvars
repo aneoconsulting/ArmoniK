@@ -3,8 +3,8 @@ namespace = "kube-system"
 
 # metrics server info
 docker_image = {
-  image = "k8s.gcr.io/metrics-server/metrics-server"
-  tag   = "v0.6.1"
+  image = "registry.k8s.io/metrics-server/metrics-server"
+  tag   = "v0.6.2"
 }
 
 # Image pull secret

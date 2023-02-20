@@ -11,7 +11,7 @@ shared_storage = {
 # Parameters for ActiveMQ
 activemq = {
   image              = "symptoma/activemq"
-  tag                = "5.16.4"
+  tag                = "5.17.0"
   node_selector      = {}
   image_pull_secrets = ""
 }
@@ -19,7 +19,7 @@ activemq = {
 # Parameters for MongoDB
 mongodb = {
   image              = "mongo"
-  tag                = "5.0.9"
+  tag                = "6.0.1"
   node_selector      = {}
   image_pull_secrets = ""
 }
@@ -29,7 +29,7 @@ mongodb = {
 # Parameters for Redis
 redis = {
   image              = "redis"
-  tag                = "6.2.7"
+  tag                = "7.0.8"
   node_selector      = {}
   image_pull_secrets = ""
   max_memory         = "12000mb"
@@ -40,7 +40,7 @@ redis = {
   host               = "minio"
   default_bucket     = "minioBucket"
   image              = "minio/minio"
-  tag                = "RELEASE.2023-01-25T00-19-54Z"
+  tag                = "RELEASE.2023-02-10T18-48-39Z"
   image_pull_secrets = ""
   node_selector      = {}
 }*/

@@ -43,7 +43,7 @@ ecr = {
     {
       name  = "mongodb"
       image = "mongo"
-      tag   = "5.0.9"
+      tag   = "6.0.1"
     },
     {
       name  = "armonik-control-plane"
@@ -83,52 +83,52 @@ ecr = {
     {
       name  = "mongosh"
       image = "rtsp/mongosh"
-      tag   = "1.5.4"
+      tag   = "1.6.2"
     },
     {
       name  = "seq"
       image = "datalust/seq"
-      tag   = "2022.1"
+      tag   = "2023.1"
     },
     {
       name  = "grafana"
       image = "grafana/grafana"
-      tag   = "9.2.1"
+      tag   = "9.3.6"
     },
     {
       name  = "prometheus"
       image = "prom/prometheus"
-      tag   = "v2.36.1"
+      tag   = "v2.42.0"
     },
     {
       name  = "cluster-autoscaler"
-      image = "k8s.gcr.io/autoscaling/cluster-autoscaler"
+      image = "registry.k8s.io/autoscaling/cluster-autoscaler"
       tag   = "v1.23.0"
     },
     {
       name  = "aws-node-termination-handler"
       image = "public.ecr.aws/aws-ec2/aws-node-termination-handler"
-      tag   = "v1.15.0"
+      tag   = "v1.19.0"
     },
     {
       name  = "metrics-server"
-      image = "k8s.gcr.io/metrics-server/metrics-server"
-      tag   = "v0.6.1"
+      image = "registry.k8s.io/metrics-server/metrics-server"
+      tag   = "v0.6.2"
     },
     {
       name  = "fluent-bit"
       image = "fluent/fluent-bit"
-      tag   = "1.9.9"
+      tag   = "2.0.9"
     },
     {
       name  = "node-exporter"
       image = "prom/node-exporter"
-      tag   = "v1.3.1"
+      tag   = "v1.5.0"
     },
     {
       name  = "nginx"
       image = "nginxinc/nginx-unprivileged"
-      tag   = "1.23.2"
+      tag   = "1.23.3"
     },
     {
       name  = "keda"

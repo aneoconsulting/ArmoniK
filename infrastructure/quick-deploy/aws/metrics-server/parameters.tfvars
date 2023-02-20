@@ -10,7 +10,7 @@ namespace = "kube-system"
 # metrics server info
 docker_image = {
   image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/metrics-server"
-  tag   = "v0.6.1"
+  tag   = "v0.6.2"
 }
 
 # Image pull secret
