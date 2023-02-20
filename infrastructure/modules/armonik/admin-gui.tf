@@ -108,6 +108,64 @@ resource "kubernetes_deployment" "admin_gui" {
         }
         # App container
         container {
+          name              = var.admin_gui.old.name
+          image             = var.admin_gui.old.tag != "" ? "${var.admin_gui.old.image}:${var.admin_gui.old.tag}" : var.admin_gui.old.image
+          image_pull_policy = var.admin_gui.image_pull_policy
+          resources {
+            limits   = var.admin_gui.old.limits
+            requests = var.admin_gui.old.requests
+          }
+          port {
+            name           = "old-port"
+            container_port = 1081
+          }
+          env_from {
+            config_map_ref {
+              name = kubernetes_config_map.core_config.metadata.0.name
+            }
+          }
+          env {
+            name  = "ControlPlane__Endpoint"
+            value = local.control_plane_url
+          }
+          dynamic "env" {
+            for_each = (data.kubernetes_secret.grafana.data.enabled != "" ? [1] : [])
+            content {
+              name  = "Grafana__Endpoint"
+              value = data.kubernetes_secret.grafana.data.url
+            }
+          }
+          dynamic "env" {
+            for_each = (data.kubernetes_secret.seq.data.enabled ? [1] : [])
+            content {
+              name  = "Seq__Endpoint"
+              value = data.kubernetes_secret.seq.data.web_url
+            }
+          }
+          dynamic "env" {
+            for_each = local.credentials
+            content {
+              name = env.key
+              value_from {
+                secret_key_ref {
+                  key      = env.value.key
+                  name     = env.value.name
+                  optional = false
+                }
+              }
+            }
+          }
+          dynamic "volume_mount" {
+            for_each = local.certificates
+            content {
+              name       = volume_mount.value.name
+              mount_path = volume_mount.value.mount_path
+              read_only  = true
+            }
+          }
+        }
+
+        container {
           name              = var.admin_gui.app.name
           image             = var.admin_gui.app.tag != "" ? "${var.admin_gui.app.image}:${var.admin_gui.app.tag}" : var.admin_gui.app.image
           image_pull_policy = var.admin_gui.image_pull_policy

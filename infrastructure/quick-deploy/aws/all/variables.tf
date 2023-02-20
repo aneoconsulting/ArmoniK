@@ -514,6 +514,20 @@ variable "admin_gui" {
         memory = optional(string)
       }))
     }), {})
+    old = optional(object({
+      name  = optional(string, "admin-old")
+      image = optional(string, "dockerhubaneo/armonik_admin_app")
+      tag   = "0.7.2"
+      port  = optional(number, 1081)
+      limits = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+      requests = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+    }), {})
     service_type       = optional(string, "ClusterIP")
     replicas           = optional(number, 1)
     image_pull_policy  = optional(string, "IfNotPresent")

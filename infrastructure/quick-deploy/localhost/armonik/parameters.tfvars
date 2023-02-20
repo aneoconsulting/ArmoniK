@@ -93,6 +93,20 @@ admin_gui = {
       memory = "128Mi"
     }
   }
+  old = {
+    name  = "admin-old"
+    image = "dockerhubaneo/armonik_admin_app"
+    tag   = "0.7.2"
+    port  = 1081
+    limits = {
+      cpu    = "1000m"
+      memory = "1024Mi"
+    }
+    requests = {
+      cpu    = "100m"
+      memory = "128Mi"
+    }
+  }
   service_type       = "ClusterIP"
   replicas           = 1
   image_pull_policy  = "IfNotPresent"

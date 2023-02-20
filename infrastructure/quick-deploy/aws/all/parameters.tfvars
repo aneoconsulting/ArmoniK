@@ -192,6 +192,17 @@ admin_gui = {
       memory = "128Mi"
     }
   }
+
+    old = {
+    limits = {
+      cpu    = "1000m"
+      memory = "1024Mi"
+    }
+    requests = {
+      cpu    = "100m"
+      memory = "128Mi"
+    }
+  }
 }
 
 # Parameters of the compute plane

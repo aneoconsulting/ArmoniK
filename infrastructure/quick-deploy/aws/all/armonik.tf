@@ -40,6 +40,10 @@ module "armonik" {
       image = local.ecr_images["${var.admin_gui.app.image}:${try(coalesce(var.admin_gui.app.tag), "")}"].name
       tag   = local.ecr_images["${var.admin_gui.app.image}:${try(coalesce(var.admin_gui.app.tag), "")}"].tag
     })
+    old = merge(var.admin_gui.old, {
+      image = local.ecr_images["${var.admin_gui.old.image}:${try(coalesce(var.admin_gui.old.tag), "")}"].name
+      tag   = local.ecr_images["${var.admin_gui.old.image}:${try(coalesce(var.admin_gui.old.tag), "")}"].tag
+    })
   })
   ingress = merge(var.ingress, {
     image = local.ecr_images["${var.ingress.image}:${try(coalesce(var.ingress.tag), "")}"].name

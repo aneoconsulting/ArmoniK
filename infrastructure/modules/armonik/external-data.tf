@@ -50,33 +50,40 @@ locals {
     ip       = (kubernetes_service.admin_gui[0].status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.admin_gui[0].status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.admin_gui[0].status.0.load_balancer.0.ingress.0.ip)
     api_port = kubernetes_service.admin_gui[0].spec.0.port.0.port
     app_port = kubernetes_service.admin_gui[0].spec.0.port.1.port
+    old_port = kubernetes_service.admin_gui[0].spec.0.port.2.port
     } : {
     ip       = ""
     api_port = ""
     app_port = ""
+    old_port = ""
   }) : null
 
   admin_gui_node_port = length(kubernetes_service.admin_gui) > 0 ? (local.admin_gui_load_balancer.ip == "" && kubernetes_service.admin_gui[0].spec.0.type == "NodePort" ? {
     ip       = local.admin_gui_node_ip
     api_port = kubernetes_service.admin_gui[0].spec.0.port.0.node_port
     app_port = kubernetes_service.admin_gui[0].spec.0.port.1.node_port
+    old_port = kubernetes_service.admin_gui[0].spec.0.port.2.node_port
     } : {
     ip       = local.admin_gui_load_balancer.ip
     api_port = local.admin_gui_load_balancer.api_port
     app_port = local.admin_gui_load_balancer.app_port
+    old_port = local.admin_gui_load_balancer.old_port
   }) : null
 
   admin_gui_endpoints = length(kubernetes_service.admin_gui) > 0 ? (local.admin_gui_node_port.ip == "" && kubernetes_service.admin_gui[0].spec.0.type == "ClusterIP" ? {
     ip       = kubernetes_service.admin_gui[0].spec.0.cluster_ip
     api_port = kubernetes_service.admin_gui[0].spec.0.port.0.port
     app_port = kubernetes_service.admin_gui[0].spec.0.port.1.port
+    old_port = kubernetes_service.admin_gui[0].spec.0.port.2.port
     } : {
     ip       = local.admin_gui_node_port.ip
     api_port = local.admin_gui_node_port.api_port
     app_port = local.admin_gui_node_port.app_port
+    old_port = local.admin_gui_node_port.old_port
   }) : null
 
   admin_api_url = length(kubernetes_service.admin_gui) > 0 ? "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.api_port}/api" : null
+  admin_old_url = length(kubernetes_service.admin_gui) > 0 ? "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.old_port}/old" : null
   admin_app_url = length(kubernetes_service.admin_gui) > 0 ? "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.app_port}/" : null
 }
 

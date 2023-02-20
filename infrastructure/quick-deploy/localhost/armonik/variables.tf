@@ -136,6 +136,20 @@ variable "admin_gui" {
         memory = string
       })
     })
+    old = object({
+      name  = string
+      image = string
+      tag   = string
+      port  = number
+      limits = object({
+        cpu    = string
+        memory = string
+      })
+      requests = object({
+        cpu    = string
+        memory = string
+      })
+    })
     service_type       = string
     replicas           = number
     image_pull_policy  = string
