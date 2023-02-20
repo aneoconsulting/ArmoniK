@@ -3,9 +3,9 @@ resource "helm_release" "cluster_autoscaler" {
   name      = "armonik"
   namespace = "kube-system"
   chart     = "cluster-autoscaler"
-  #repository = "https://kubernetes.github.io/autoscaler"
-  repository = "${path.module}/charts"
-  version    = "9.14.0"
+  repository = "https://kubernetes.github.io/autoscaler"
+  #repository = "${path.module}/charts"
+  version    = "9.24.0"
 
   # Method 1 - Using Autodiscovery
   set {
