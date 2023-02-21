@@ -64,7 +64,7 @@ monitoring = {
   }
   fluent_bit = {
     image              = "fluent/fluent-bit"
-    tag                =  "2.0.9"
+    tag                = "2.0.9"
     image_pull_secrets = ""
     is_daemonset       = true
     http_port          = 2020 # 0 or 2020
