@@ -143,22 +143,22 @@ ecr = {
     {
       name  = "aws-efs-csi-driver"
       image = "amazon/aws-efs-csi-driver"
-      tag   = "v1.4.3"
+      tag   = "v1.5.1"
     },
     {
       name  = "livenessprobe"
       image = "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe"
-      tag   = "v2.2.0-eks-1-18-13"
+      tag   = "v2.9.0-eks-1-22-19"
     },
     {
       name  = "node-driver-registrar"
       image = "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar"
-      tag   = "v2.1.0-eks-1-18-13"
+      tag   = "v2.7.0-eks-1-22-19"
     },
     {
       name  = "external-provisioner"
       image = "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner"
-      tag   = "v2.1.1-eks-1-18-13"
+      tag   = "v3.4.0-eks-1-22-19"
     }
   ]
 }
