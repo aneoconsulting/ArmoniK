@@ -63,6 +63,5 @@ module "armonik" {
     kubernetes_secret.deployed_object_storage,
     kubernetes_secret.deployed_table_storage,
     kubernetes_secret.deployed_queue_storage,
-    module.mongodb
   ]
 }
