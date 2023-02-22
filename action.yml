@@ -80,20 +80,26 @@ runs:
       name: Install docker
       shell: bash
       run: |
-        cd ${{ github.action_path }}
-        sh tools/install/docker.sh
+        if ! which docker 2>/dev/null; then
+          cd ${{ github.action_path }}
+          sh tools/install/docker.sh
+        fi  
 
     - name: Install kubectl
       shell: bash
       run: |
-        cd ${{ github.action_path }}
-        sh tools/install/kubectl.sh
+        if ! which kubectl 2>/dev/null; then
+          cd ${{ github.action_path }}
+          sh tools/install/kubectl.sh
+        fi  
 
     - name: Install terraform
       shell: bash
       run: |
-        cd ${{ github.action_path }}
-        sh tools/install/terraform.sh
+        if ! which terraform 2>/dev/null; then
+          cd ${{ github.action_path }}
+          sh tools/install/terraform.sh
+        fi  
 
     - name: Install K3s
       shell: bash
