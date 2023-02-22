@@ -38,6 +38,8 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
         with:
           aws: true
+          docker: true
+          k3s: true
           terraform: true
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
