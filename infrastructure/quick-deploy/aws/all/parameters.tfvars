@@ -33,7 +33,7 @@ vpc = {
 
 # AWS EKS
 eks = {
-  cluster_version = "1.22"
+  cluster_version = "1.24"
   cluster_autoscaler = {
     node_selector = { "grid/type" = "Operator" }
   }
