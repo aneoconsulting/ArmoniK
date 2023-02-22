@@ -44,7 +44,10 @@ jobs:
           fetch-depth: 0
 
       - name: Install terraform
-        run: sh tools/install/terraform.sh
+        run: |
+          if ! which terraform 2>/dev/null; then
+            sh tools/install/terraform.sh
+          fi   
 
       - name: Check Format
         run: terraform fmt -check -recursive -diff
@@ -65,8 +68,11 @@ jobs:
           fetch-depth: 0
 
       - name: Install AWS CLI
-        run: sh tools/install/aws-cli.sh
-
+        run: |
+          if ! which aws 2>/dev/null; then
+            sh tools/install/aws-cli.sh
+          fi   
+        
       - name: Get Core Tag
         id: core
         run: |
