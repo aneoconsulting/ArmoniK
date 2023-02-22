@@ -56,7 +56,7 @@ eks = {
     }
     instance_refresh = {
       image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-node-termination-handler"
-      tag   = "v1.15.0"
+      tag   = "v1.19.0"
     }
   }
   cluster_autoscaler = {
