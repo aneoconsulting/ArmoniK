@@ -83,7 +83,7 @@ ecr = {
     {
       name  = "mongosh"
       image = "rtsp/mongosh"
-      tag   = "1.6.2"
+      tag   = "1.7.1"
     },
     {
       name  = "seq"
