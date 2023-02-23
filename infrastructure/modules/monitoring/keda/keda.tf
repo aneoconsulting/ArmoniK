@@ -2,9 +2,8 @@ resource "helm_release" "keda" {
   name      = "keda"
   namespace = var.namespace
   chart     = "keda"
-  #repository = "https://kedacore.github.io/charts"
-  repository = "${path.module}/charts"
-  version    = "2.8.0"
+  repository = "https://kedacore.github.io/charts"
+  version    = "2.9.4"
 
   set {
     name  = "image.keda.repository"

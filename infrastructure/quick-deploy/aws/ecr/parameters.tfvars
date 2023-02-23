@@ -133,12 +133,12 @@ ecr = {
     {
       name  = "keda"
       image = "ghcr.io/kedacore/keda"
-      tag   = "2.8.0"
+      tag   = "2.9.3"
     },
     {
       name  = "keda-metrics-apiserver"
       image = "ghcr.io/kedacore/keda-metrics-apiserver"
-      tag   = "2.8.0"
+      tag   = "2.9.3"
     },
     {
       name  = "aws-efs-csi-driver"
