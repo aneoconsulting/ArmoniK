@@ -38,7 +38,7 @@ variable "metrics_server" {
   description = "Parameters of the metrics server"
   type = object({
     namespace          = optional(string, "kube-system"),
-    image_name         = optional(string, "k8s.gcr.io/metrics-server/metrics-server"),
+    image_name         = optional(string, "registry.k8s.io/metrics-server/metrics-server"),
     image_tag          = optional(string),
     image_pull_secrets = optional(string, ""),
     node_selector      = optional(any, {}),
@@ -168,7 +168,7 @@ variable "node_exporter" {
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
-  default = null
+  default = {}
 }
 
 variable "prometheus" {
