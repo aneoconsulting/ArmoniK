@@ -222,6 +222,10 @@ wsl -d $vmversion bash -c "echo $ubuntu_password | sudo -S systemctl mask system
 
 Restart-Genie
 
+$pathname="shell"
+$vmversion="Ubuntu-20.04"
+$armonik_branch="armonik_demo"
+
 # ArmoniK
 Write-Host "ArmoniK requirements installation (docker, k3s, terraform)"
 wsl -d $vmversion genie  -c cp $pathname/armonik_requirements.sh /tmp
@@ -232,7 +236,7 @@ wsl -d $vmversion genie  -c rm /tmp/armonik_requirements.sh
 Write-Host "ArmoniK installation"
 wsl -d $vmversion genie  -c cp $pathname/armonik_installation.sh /tmp 
 wsl -d $vmversion genie  -c sed -i -e "'s/\r$//'" /tmp/armonik_installation.sh
-wsl -d $vmversion genie  -c bash /tmp/armonik_installation.sh $armonik_branch
+wsl -d $vmversion genie  -c bash /tmp/armonik_installation.sh $armonik_branch > ~/armonik_installation.log 2>&1
 wsl -d $vmversion genie  -c rm /tmp/armonik_installation.sh
 
 # Test installation
@@ -244,12 +248,12 @@ $wsl_ip = (wsl -d $vmversion genie  -c hostname -I).trim().split()[0]
 Write-Host "WSL Machine IP: ""$wsl_ip"""
 
 # Open seq webserver in default browser
-$seq_url = -join("http://", $wsl_ip, ":5000/seq")
-Start-Process $seq_url
+$gui_url = -join("http://", $wsl_ip, ":5000/")
+Start-Process $gui_url
 
 # Launch integrations tests
 Write-Host "Launch integration test"
-wsl -d $vmversion genie  -c cp $pathname/test_armonik.sh /tmp 
-wsl -d $vmversion genie  -c sed -i -e "'s/\r$//'" /tmp/test_armonik.sh
-wsl -d $vmversion genie  -c bash /tmp/test_armonik.sh $armonik_branch
-wsl -d $vmversion genie  -c rm /tmp/test_armonik.sh
+wsl -d $vmversion genie  -c cp $pathname/test_armonik_htcmock.sh /tmp 
+wsl -d $vmversion genie  -c sed -i -e "'s/\r$//'" /tmp/test_armonik_htcmock.sh
+wsl -d $vmversion genie  -c bash /tmp/test_armonik_htcmock.sh $armonik_branch
+wsl -d $vmversion genie  -c rm /tmp/test_armonik_htcmock.sh

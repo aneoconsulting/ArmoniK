@@ -168,7 +168,7 @@ variable "node_exporter" {
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
-  default = null
+  default = {}
 }
 
 variable "prometheus" {

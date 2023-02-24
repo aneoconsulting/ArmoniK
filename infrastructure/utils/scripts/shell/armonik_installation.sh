@@ -1,6 +1,9 @@
 #!/bin/bash
 # usage: armonik_installation.sh <git branch to use>
 
+# initialise terraform to get the needed plugins
+terraform init
+
 if [ -z "$1" ]
 then
     echo "Usage: $0 <git branch name>"
@@ -11,11 +14,12 @@ fi
 git config --global core.autocrlf
 if [ ! -d $HOME/ArmoniK ] 
 then
-    git clone --recurse-submodules https://github.com/aneoconsulting/ArmoniK $HOME/ArmoniK
+    git clone https://github.com/aneoconsulting/ArmoniK $HOME/ArmoniK
 fi
 cd $HOME/ArmoniK
 
-git checkout -b arm_install $1
+echo "Checkout to $1 branch"
+git checkout -b armonik_deployment origin/$1
 
 # change branch
 #while ! git rev-parse --quiet --verify $branch_name > /dev/null 
@@ -28,7 +32,7 @@ git checkout -b arm_install $1
 #done
 
 # Change directory to use Makefile for quick deployement
-cd $HOME/ArmoniK/infrastructure/quick-deploy/localhost
+cd $HOME/ArmoniK/infrastructure/quick-deploy/localhost/all
 
 # source envvars.sh
 export ARMONIK_KUBERNETES_NAMESPACE=armonik
@@ -40,22 +44,8 @@ export METRICS_SERVER_KUBERNETES_NAMESPACE=kube-system
 
 # Created shared storage
 mkdir -p "${ARMONIK_SHARED_HOST_PATH}"
+
 # ArmoniK installation
 # ArmoniK full deployment
 
-#make deploy-all  # does not work with version v2.8.4
-
-echo "Kubernetes name space creation"
-make create-namespace
-
-echo "Keda deployment"
-make deploy-keda
-
-echo "Storage creation: ActiveMQ, MongoDB, Redis"
-make deploy-storage
-echo "ArmoniK storage information are store in $PWD'/storage/generated/storage-output.json'"
-echo "Monitoring deployment"
-make deploy-monitoring
-echo "ArmoniK monitoring information are store in $PWD'/monitoring/generated/monitoring-output.json'"
-echo "Deploy ArmoniK"
-make deploy-armonik
+make
