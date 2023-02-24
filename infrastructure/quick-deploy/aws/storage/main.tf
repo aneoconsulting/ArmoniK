@@ -132,6 +132,8 @@ module "efs_persistent_volume" {
     namespace          = var.pv_efs.csi_driver.namespace
     image_pull_secrets = var.pv_efs.csi_driver.image_pull_secrets
     node_selector      = var.pv_efs.csi_driver.node_selector
+    repository         = var.pv_efs.csi_driver.repository
+    version            = var.pv_efs.csi_driver.version
     docker_images = {
       efs_csi = {
         image = var.pv_efs.csi_driver.docker_images.efs_csi.image

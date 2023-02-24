@@ -146,6 +146,8 @@ pv_efs = {
     namespace          = "kube-system"
     image_pull_secrets = ""
     node_selector      = { "grid/type" = "Operator" }
+    repository         = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
+    version            = "2.3.0"
     docker_images = {
       efs_csi = {
         image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-efs-csi-driver"
