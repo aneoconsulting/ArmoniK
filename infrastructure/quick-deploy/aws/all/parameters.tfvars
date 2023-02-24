@@ -192,8 +192,7 @@ admin_gui = {
       memory = "128Mi"
     }
   }
-
-    old = {
+  old = {
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
