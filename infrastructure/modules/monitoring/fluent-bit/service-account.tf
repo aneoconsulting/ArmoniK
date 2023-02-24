@@ -6,9 +6,6 @@
     name      = "fluent-bit"
     namespace = var.namespace
   }
-  secret {
-    name = ""
-  }
 }
 */
 
