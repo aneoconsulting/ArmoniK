@@ -2,8 +2,8 @@ resource "helm_release" "efs_csi" {
   name       = "efs-csi"
   namespace  = kubernetes_service_account.efs_csi_driver.metadata.0.namespace
   chart      = "aws-efs-csi-driver"
-  repository = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
-  version    = "2.3.8"
+  repository = var.csi_driver.repository
+  version    = var.csi_driver.version
 
   set {
     name  = "image.repository"

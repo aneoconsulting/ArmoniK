@@ -110,6 +110,14 @@ variable "eks" {
       scale_down_unneeded_time              = optional(string, "2m")
       skip_nodes_with_system_pods           = optional(bool, true)
       node_selector                         = optional(any, {})
+      version                               = optional(string, "9.24.0")
+      repository                            = optional(string, "https://kubernetes.github.io/autoscaler")
+      namespace                             = optional(string, "kube-system")
+    }), {})
+    instance_refresh = optional(object({
+      namespace  = optional(string, "kube-system")
+      repository = optional(string, "https://aws.github.io/eks-charts")
+      version    = optional(string, "0.21.0")
     }), {})
     map_roles = optional(list(object({
       rolearn  = string
@@ -151,7 +159,9 @@ variable "metrics_server" {
       "--kubelet-use-node-status-port",
       "--metric-resolution=15s",
     ]),
-    host_network = optional(bool, false),
+    host_network          = optional(bool, false),
+    helm_chart_repository = optional(string, "https://kubernetes-sigs.github.io/metrics-server/")
+    helm_chart_version    = optional(string, "3.8.3")
   })
   default = {}
 }
@@ -160,13 +170,15 @@ variable "metrics_server" {
 variable "keda" {
   description = "Keda configuration"
   type = object({
-    namespace            = optional(string, "default")
-    keda_image_name      = optional(string, "ghcr.io/kedacore/keda"),
-    keda_image_tag       = optional(string),
-    apiserver_image_name = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
-    apiserver_image_tag  = optional(string),
-    pull_secrets         = optional(string, ""),
-    node_selector        = optional(any, {})
+    namespace             = optional(string, "default")
+    keda_image_name       = optional(string, "ghcr.io/kedacore/keda"),
+    keda_image_tag        = optional(string),
+    apiserver_image_name  = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
+    apiserver_image_tag   = optional(string),
+    pull_secrets          = optional(string, ""),
+    node_selector         = optional(any, {})
+    helm_chart_repository = optional(string, "https://kedacore.github.io/charts")
+    helm_chart_version    = optional(string, "2.9.4")
   })
   default = {}
 }
@@ -301,6 +313,8 @@ variable "pv_efs" {
       namespace     = optional(string, "kube-system")
       pull_secrets  = optional(string, "")
       node_selector = optional(any, {})
+      repository    = optional(string, "https://kubernetes-sigs.github.io/aws-efs-csi-driver/")
+      version       = optional(string, "2.3.0")
       images = optional(object({
         efs_csi = optional(object({
           name = optional(string, "amazon/aws-efs-csi-driver")

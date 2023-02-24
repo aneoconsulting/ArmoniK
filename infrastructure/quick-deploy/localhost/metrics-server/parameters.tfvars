@@ -23,3 +23,9 @@ args = [
 
 # Host network
 host_network = false
+
+# Repository of helm chart
+helm_chart_repository = "https://kubernetes-sigs.github.io/metrics-server/"
+
+# Version of helm chart
+helm_chart_version = "3.8.3"

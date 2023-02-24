@@ -7,4 +7,6 @@ locals {
   keda_metricsApiServer_tag   = try(var.keda.docker_image.metricsApiServer.tag, "2.6.1")
   keda_image_pull_secrets     = try(var.keda.image_pull_secrets, "")
   keda_node_selector          = try(var.keda.node_selector, {})
+  keda_chart_repository       = try(coalesce(var.keda.helm_chart_repository), "https://kedacore.github.io/charts")
+  keda_chart_version          = try(coalesce(var.keda.helm_chart_version), "2.9.4")
 }
