@@ -30,3 +30,15 @@ variable "node_selector" {
   description = "Node selector for Keda"
   type        = any
 }
+
+# Repository of keda helm chart
+variable "helm_chart_repository" {
+  description = "Path to helm chart repository for keda"
+  type        = string
+}
+
+# Version of helm chart
+variable "helm_chart_version" {
+  description = "Version of chart helm for keda"
+  type        = string
+}

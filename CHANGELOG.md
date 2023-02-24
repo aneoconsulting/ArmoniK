@@ -1,6 +1,18 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2023-02-08)
+## [main](https://github.com/aneoconsulting/armonik/tree/main)
+
+## [v2.11.1](https://github.com/aneoconsulting/armonik/tree/v2.11.1) (2023-02-24)
+
+Changed
+-
+
+* Update Armonik.Core version from 0.9.1 to 0.9.2
+
+Fixed
+-
+
+* Too many queries on mongodb from metrics exporter
 
 ## [v2.11.0](https://github.com/aneoconsulting/armonik/tree/v2.11.0) (2023-02-08)
 

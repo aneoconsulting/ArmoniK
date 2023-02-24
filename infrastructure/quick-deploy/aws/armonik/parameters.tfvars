@@ -33,7 +33,7 @@ control_plane = {
   service_type      = "ClusterIP"
   replicas          = 1
   image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag               = "0.9.1"
+  tag               = "0.9.2"
   image_pull_policy = "IfNotPresent"
   port              = 5001
   limits = {
@@ -125,7 +125,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.9.1"
+      tag               = "0.9.2"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"

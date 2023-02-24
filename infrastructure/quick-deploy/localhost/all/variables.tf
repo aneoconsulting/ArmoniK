@@ -38,7 +38,7 @@ variable "metrics_server" {
   description = "Parameters of the metrics server"
   type = object({
     namespace          = optional(string, "kube-system"),
-    image_name         = optional(string, "k8s.gcr.io/metrics-server/metrics-server"),
+    image_name         = optional(string, "registry.k8s.io/metrics-server/metrics-server"),
     image_tag          = optional(string),
     image_pull_secrets = optional(string, ""),
     node_selector      = optional(any, {}),
@@ -48,7 +48,9 @@ variable "metrics_server" {
       "--kubelet-use-node-status-port",
       "--metric-resolution=15s",
     ]),
-    host_network = optional(bool, false),
+    host_network          = optional(bool, false),
+    helm_chart_repository = optional(string, "https://kubernetes-sigs.github.io/metrics-server/")
+    helm_chart_version    = optional(string, "3.8.3")
   })
   default = null
 }
@@ -57,13 +59,15 @@ variable "metrics_server" {
 variable "keda" {
   description = "Keda configuration"
   type = object({
-    namespace            = optional(string, "default")
-    keda_image_name      = optional(string, "ghcr.io/kedacore/keda"),
-    keda_image_tag       = optional(string),
-    apiserver_image_name = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
-    apiserver_image_tag  = optional(string),
-    pull_secrets         = optional(string, ""),
-    node_selector        = optional(any, {})
+    namespace             = optional(string, "default")
+    keda_image_name       = optional(string, "ghcr.io/kedacore/keda"),
+    keda_image_tag        = optional(string),
+    apiserver_image_name  = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
+    apiserver_image_tag   = optional(string),
+    pull_secrets          = optional(string, ""),
+    node_selector         = optional(any, {})
+    helm_chart_repository = optional(string, "https://kedacore.github.io/charts")
+    helm_chart_version    = optional(string, "2.9.4")
   })
   default = {}
 }
@@ -168,7 +172,7 @@ variable "node_exporter" {
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
-  default = null
+  default = {}
 }
 
 variable "prometheus" {

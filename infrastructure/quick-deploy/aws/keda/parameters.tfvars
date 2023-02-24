@@ -19,6 +19,8 @@ keda = {
       tag   = "2.9.3"
     }
   }
-  image_pull_secrets = ""
-  node_selector      = { "grid/type" = "Operator" }
+  image_pull_secrets    = ""
+  node_selector         = { "grid/type" = "Operator" }
+  helm_chart_repository = "https://kedacore.github.io/charts"
+  helm_chart_version    = "2.9.4"
 }

@@ -75,6 +75,14 @@ variable "eks" {
       scale_down_delay_after_failure        = string
       scale_down_unneeded_time              = string
       skip_nodes_with_system_pods           = bool
+      version                               = optional(string, "9.24.0")
+      repository                            = optional(string, "https://kubernetes.github.io/autoscaler")
+      namespace                             = optional(string, "kube-system")
+    })
+    instance_refresh = object({
+      namespace  = optional(string, "kube-system")
+      repository = optional(string, "https://aws.github.io/eks-charts")
+      version    = optional(string, "0.21.0")
     })
     encryption_keys = object({
       cluster_log_kms_key_id    = string
