@@ -24,6 +24,7 @@ module "eks" {
       instance_refresh   = local.ecr_images["${var.eks.docker_images.instance_refresh.image}:${try(coalesce(var.eks.docker_images.instance_refresh.tag), "")}"]
     }
     cluster_autoscaler = var.eks.cluster_autoscaler
+    instance_refresh   = var.eks.instance_refresh
     encryption_keys = {
       cluster_log_kms_key_id    = local.kms_key
       cluster_encryption_config = local.kms_key

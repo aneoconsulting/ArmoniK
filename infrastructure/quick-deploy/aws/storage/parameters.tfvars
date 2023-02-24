@@ -124,7 +124,8 @@ mongodb = {
   tag                = "6.0.1"
   node_selector      = { "grid/type" = "Operator" }
   image_pull_secrets = ""
-  persistent_volume  = null
+  #persistent_volume  = null
+  persistent_volume = { storage_provisioner = "efs.csi.aws.com", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
   # example: {storage_provisioner="efs.csi.aws.com",parameters=null,resources={limits=null,requests={storage="5Gi"}}}
 }
 
@@ -146,6 +147,8 @@ pv_efs = {
     namespace          = "kube-system"
     image_pull_secrets = ""
     node_selector      = { "grid/type" = "Operator" }
+    repository         = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
+    version            = "2.3.0"
     docker_images = {
       efs_csi = {
         image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-efs-csi-driver"
