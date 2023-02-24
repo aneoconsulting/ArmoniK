@@ -216,8 +216,8 @@ variable "partition_metrics_exporter" {
 variable "fluent_bit" {
   description = "Fluent bit configuration"
   type = object({
-    image_name = optional(string, "fluent/fluent-bit")
-    image_tag  = optional(string)
+    image_name     = optional(string, "fluent/fluent-bit")
+    image_tag      = optional(string)
     pull_secrets   = optional(string, "")
     is_daemonset   = optional(bool, true)
     http_port      = optional(number, 2020)
