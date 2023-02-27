@@ -9,7 +9,6 @@ resource "kubernetes_deployment" "admin_old_gui" {
       service = "admin-old-gui"
     }
   }
-
   spec {
     replicas = var.admin_gui.replicas
     selector {
@@ -18,7 +17,6 @@ resource "kubernetes_deployment" "admin_old_gui" {
         service = "admin-old-gui"
       }
     }
-
     template {
       metadata {
         name      = "admin-old-gui"
@@ -28,7 +26,6 @@ resource "kubernetes_deployment" "admin_old_gui" {
           service = "admin-old-gui"
         }
       }
-
       spec {
         dynamic "toleration" {
           for_each = (local.admin_gui_node_selector != {} ? [
@@ -51,7 +48,6 @@ resource "kubernetes_deployment" "admin_old_gui" {
           }
         }
         restart_policy = "Always" # Always, OnFailure, Never
-
         # API container, only needed for old GUI
         container {
           name              = var.admin_gui.api.name
@@ -110,7 +106,6 @@ resource "kubernetes_deployment" "admin_old_gui" {
             }
           }
         }
-
         # Old GUI container
         container {
           name              = var.admin_gui.old.name
@@ -169,7 +164,6 @@ resource "kubernetes_deployment" "admin_old_gui" {
             }
           }
         }
-
         # Secrets volumes
         dynamic "volume" {
           for_each = local.certificates
@@ -188,10 +182,10 @@ resource "kubernetes_deployment" "admin_old_gui" {
 
 # Admin old GUI service
 resource "kubernetes_service" "admin_old_gui" {
-  count = length(kubernetes_deployment.admin_gui)
+  count = length(kubernetes_deployment.admin_old_gui)
   metadata {
-    name      = kubernetes_deployment.admin_gui[0].metadata.0.name
-    namespace = kubernetes_deployment.admin_gui[0].metadata.0.namespace
+    name      = kubernetes_deployment.admin_old_gui[0].metadata.0.name
+    namespace = kubernetes_deployment.admin_old_gui[0].metadata.0.namespace
     labels = {
       app     = kubernetes_deployment.admin_old_gui[0].metadata.0.labels.app
       service = kubernetes_deployment.admin_old_gui[0].metadata.0.labels.service
@@ -204,15 +198,15 @@ resource "kubernetes_service" "admin_old_gui" {
       service = kubernetes_deployment.admin_old_gui[0].metadata.0.labels.service
     }
     port {
-      name        = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.0.port.0.name
+      name        = kubernetes_deployment.admin_old_gui[0].spec.0.template.0.spec.0.container.0.port.0.name
       port        = var.admin_gui.api.port
-      target_port = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.0.port.0.container_port
+      target_port = kubernetes_deployment.admin_old_gui[0].spec.0.template.0.spec.0.container.0.port.0.container_port
       protocol    = "TCP"
     }
     port {
-      name        = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.2.port.0.name
+      name        = kubernetes_deployment.admin_old_gui[0].spec.0.template.0.spec.0.container.1.port.0.name
       port        = var.admin_gui.old.port
-      target_port = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.2.port.0.container_port
+      target_port = kubernetes_deployment.admin_old_gui[0].spec.0.template.0.spec.0.container.1.port.0.container_port
       protocol    = "TCP"
     }
   }
