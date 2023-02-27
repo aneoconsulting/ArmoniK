@@ -78,20 +78,6 @@ control_plane = {
 # Parameters of admin GUI
 # Put to null if we not want deploy it
 admin_gui = {
-  api = {
-    name  = "admin-api"
-    image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-api"
-    tag   = "0.7.2"
-    port  = 3333
-    limits = {
-      cpu    = "1000m"
-      memory = "1024Mi"
-    }
-    requests = {
-      cpu    = "100m"
-      memory = "128Mi"
-    }
-  }
   app = {
     name  = "admin-app"
     image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app"
@@ -106,8 +92,22 @@ admin_gui = {
       memory = "128Mi"
     }
   }
+  api = {
+    name  = "admin-api"
+    image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-api"
+    tag   = "0.7.2"
+    port  = 3333
+    limits = {
+      cpu    = "1000m"
+      memory = "1024Mi"
+    }
+    requests = {
+      cpu    = "100m"
+      memory = "128Mi"
+    }
+  }
   old = {
-    name  = "admin-old"
+    name  = "admin-old-gui"
     image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app"
     tag   = "0.7.2"
     port  = 1081
