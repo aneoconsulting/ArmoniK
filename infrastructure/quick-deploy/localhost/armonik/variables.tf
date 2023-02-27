@@ -108,7 +108,7 @@ variable "control_plane" {
 variable "admin_gui" {
   description = "Parameters of the admin GUI"
   type = object({
-    api = object({
+    app = object({
       name  = string
       image = string
       tag   = string
@@ -122,7 +122,7 @@ variable "admin_gui" {
         memory = string
       })
     })
-    app = object({
+    api = object({
       name  = string
       image = string
       tag   = string

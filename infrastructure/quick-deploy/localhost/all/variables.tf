@@ -284,20 +284,6 @@ variable "control_plane" {
 variable "admin_gui" {
   description = "Parameters of the admin GUI"
   type = object({
-    api = optional(object({
-      name  = optional(string, "admin-api")
-      image = optional(string, "dockerhubaneo/armonik_admin_api")
-      tag   = optional(string)
-      port  = optional(number, 3333)
-      limits = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-      requests = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-    }), {})
     app = optional(object({
       name  = optional(string, "admin-app")
       image = optional(string, "dockerhubaneo/armonik_admin_app")
@@ -312,11 +298,25 @@ variable "admin_gui" {
         memory = optional(string)
       }))
     }), {})
+    api = optional(object({
+      name  = optional(string, "admin-api")
+      image = optional(string, "dockerhubaneo/armonik_admin_api")
+      tag   = optional(string)
+      port  = optional(number, 3333)
+      limits = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+      requests = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+    }), {})
     old = optional(object({
-      name  = optional(string, "admin-old")
-      image = optional(string, "dockerhubaneo/armonik_admin_app")
+      name  = "admin-old-gui"
+      image = "dockerhubaneo/armonik_admin_app"
       tag   = "0.7.2"
-      port  = optional(number, 1081)
+      port  = 1081
       limits = optional(object({
         cpu    = optional(string)
         memory = optional(string)
