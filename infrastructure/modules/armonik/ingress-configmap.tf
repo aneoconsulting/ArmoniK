@@ -44,6 +44,9 @@ server {
     location = /admin {
         rewrite ^ $scheme://$http_host/admin/ permanent;
     }
+    location = /old {
+        rewrite ^ $scheme://$http_host/old/ permanent;
+    }
 %{if var.admin_gui != null~}
     location /old/ {
         proxy_pass ${local.admin_old_url};
