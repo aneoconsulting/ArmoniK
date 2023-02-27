@@ -32,8 +32,8 @@ module "armonik" {
     tag   = local.ecr_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].tag
   })
   admin_gui = merge(var.admin_gui.app, {
-      image = local.ecr_images["${var.admin_gui.app.image}:${try(coalesce(var.admin_gui.app.tag), "")}"].name
-      tag   = local.ecr_images["${var.admin_gui.app.image}:${try(coalesce(var.admin_gui.app.tag), "")}"].tag
+    image = local.ecr_images["${var.admin_gui.app.image}:${try(coalesce(var.admin_gui.app.tag), "")}"].name
+    tag   = local.ecr_images["${var.admin_gui.app.image}:${try(coalesce(var.admin_gui.app.tag), "")}"].tag
   })
   admin_old_gui = merge(var.admin_gui, {
     api = merge(var.admin_gui.api, {
