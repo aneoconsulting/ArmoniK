@@ -200,6 +200,8 @@ module "efs_persistent_volume" {
     namespace          = var.pv_efs.csi_driver.namespace
     image_pull_secrets = var.pv_efs.csi_driver.pull_secrets
     node_selector      = var.pv_efs.csi_driver.node_selector
+    repository         = var.pv_efs.csi_driver.repository
+    version            = var.pv_efs.csi_driver.version
     docker_images = {
       efs_csi               = local.ecr_images["${var.pv_efs.csi_driver.images.efs_csi.name}:${try(coalesce(var.pv_efs.csi_driver.images.efs_csi.tag), "")}"]
       livenessprobe         = local.ecr_images["${var.pv_efs.csi_driver.images.livenessprobe.name}:${try(coalesce(var.pv_efs.csi_driver.images.livenessprobe.tag), "")}"]
