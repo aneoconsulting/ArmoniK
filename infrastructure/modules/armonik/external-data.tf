@@ -83,7 +83,6 @@ data "external" "admin_old_gui_node_ip" {
 
 locals {
   admin_old_gui_node_ip = try(tomap(data.external.admin_old_gui_node_ip[0].result).node_ip, "")
-  
   admin_old_gui_load_balancer = length(kubernetes_service.admin_old_gui) > 0 ? (kubernetes_service.admin_old_gui[0].spec.0.type == "LoadBalancer" ? {
     ip       = (kubernetes_service.admin_old_gui[0].status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.admin_old_gui[0].status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.admin_old_gui[0].status.0.load_balancer.0.ingress.0.ip)
     api_port = kubernetes_service.admin_old_gui[0].spec.0.port.0.port
