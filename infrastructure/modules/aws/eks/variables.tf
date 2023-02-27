@@ -69,6 +69,14 @@ variable "eks" {
       scale_down_delay_after_failure        = string
       scale_down_unneeded_time              = string
       skip_nodes_with_system_pods           = bool
+      version                               = string
+      repository                            = string
+      namespace                             = string
+    })
+    instance_refresh = object({
+      namespace  = string
+      repository = string
+      version    = string
     })
     encryption_keys = object({
       cluster_log_kms_key_id    = string
@@ -87,6 +95,7 @@ variable "eks" {
     }))
   })
 }
+
 
 # Operational node groups for EKS
 variable "eks_operational_worker_groups" {

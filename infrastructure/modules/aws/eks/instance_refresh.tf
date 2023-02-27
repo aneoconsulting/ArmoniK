@@ -1,11 +1,10 @@
 # Based on the official aws-node-termination-handler setup guide at https://github.com/aws/aws-node-termination-handler#infrastructure-setup
 resource "helm_release" "aws_node_termination_handler" {
-  name      = "aws-node-termination-handler"
-  namespace = "kube-system"
-  chart     = "aws-node-termination-handler"
-  #repository       = "https://aws.github.io/eks-charts"
-  repository       = "${path.module}/charts"
-  version          = "0.17.0"
+  name             = "aws-node-termination-handler"
+  namespace        = var.eks.instance_refresh.namespace
+  chart            = "aws-node-termination-handler"
+  repository       = var.eks.instance_refresh.repository
+  version          = var.eks.instance_refresh.version
   create_namespace = true
 
   set {

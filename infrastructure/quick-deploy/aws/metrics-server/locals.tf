@@ -11,5 +11,7 @@ locals {
     "--kubelet-use-node-status-port",
     "--metric-resolution=15s"
   ] : var.args
-  host_network = try(var.host_network, false)
+  host_network          = try(var.host_network, false)
+  helm_chart_repository = try(coalesce(var.helm_chart_repository), "https://kubernetes-sigs.github.io/metrics-server/")
+  helm_chart_version    = try(coalesce(var.helm_chart_version), "3.8.3")
 }

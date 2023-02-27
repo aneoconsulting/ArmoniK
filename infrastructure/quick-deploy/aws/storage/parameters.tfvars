@@ -121,7 +121,7 @@ mq_credentials = {
 # Parameters for MongoDB
 mongodb = {
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongodb"
-  tag                = "5.0.9"
+  tag                = "6.0.1"
   node_selector      = { "grid/type" = "Operator" }
   image_pull_secrets = ""
   persistent_volume  = null
@@ -146,22 +146,24 @@ pv_efs = {
     namespace          = "kube-system"
     image_pull_secrets = ""
     node_selector      = { "grid/type" = "Operator" }
+    repository         = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
+    version            = "2.3.0"
     docker_images = {
       efs_csi = {
         image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-efs-csi-driver"
-        tag   = "v1.4.3"
+        tag   = "v1.5.1"
       }
       livenessprobe = {
         image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/livenessprobe"
-        tag   = "v2.2.0-eks-1-18-13"
+        tag   = "v2.9.0-eks-1-22-19"
       }
       node_driver_registrar = {
         image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/node-driver-registrar"
-        tag   = "v2.1.0-eks-1-18-13"
+        tag   = "v2.7.0-eks-1-22-19"
       }
       external_provisioner = {
         image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/external-provisioner"
-        tag   = "v2.1.1-eks-1-18-13"
+        tag   = "v3.4.0-eks-1-22-19"
       }
     }
   }
