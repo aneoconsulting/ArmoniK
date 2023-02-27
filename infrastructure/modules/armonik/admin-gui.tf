@@ -48,7 +48,6 @@ resource "kubernetes_deployment" "admin_gui" {
           }
         }
         restart_policy = "Always" # Always, OnFailure, Never
-         
         # App container
         container {
           name              = var.admin_gui.app.name
