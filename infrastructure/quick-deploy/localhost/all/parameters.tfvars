@@ -37,7 +37,7 @@ control_plane = {
     cpu    = "200m"
     memory = "500Mi"
   }
-  replicas = 1
+  replicas          = 1
   default_partition = "default"
 }
 
@@ -116,7 +116,7 @@ compute_plane = {
         },
       ]
     }
-  },/*
+  }, /*
   # Partition for the stream worker
   stream = {
     # number of replicas for each deployment of compute plane
