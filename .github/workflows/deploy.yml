@@ -90,6 +90,7 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
           type: localhost
+          prefix:  
 
       - name: Test ping AdminGUI
         shell: bash
@@ -108,11 +109,7 @@ jobs:
           mkdir -p logs/infra/generated \
             logs/infra/tfstates \
             logs/app
-          #cp infrastructure/quick-deploy/localhost/keda/generated/keda-output.json \*
-          #  infrastructure/quick-deploy/localhost/storage/generated/storage-output.json \*
-          #  infrastructure/quick-deploy/localhost/monitoring/generated/monitoring-output.json \*
-          #  infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json \*
-          #  logs/infra/generated
+          cp infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json  logs/infra/generated
           cp infrastructure/quick-deploy/localhost/keda/generated/backend/keda-terraform.tfstate \
             infrastructure/quick-deploy/localhost/storage/generated/backend/storage-terraform.tfstate \
             infrastructure/quick-deploy/localhost/monitoring/generated/backend/monitoring-terraform.tfstate \
