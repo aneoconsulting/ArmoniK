@@ -37,6 +37,7 @@ control_plane = {
     cpu    = "200m"
     memory = "500Mi"
   }
+  replicas = 1
   default_partition = "default"
 }
 
@@ -100,7 +101,7 @@ compute_plane = {
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 1
-      max_replica_count = 100
+      max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
@@ -115,7 +116,7 @@ compute_plane = {
         },
       ]
     }
-  },
+  },/*
   # Partition for the stream worker
   stream = {
     # number of replicas for each deployment of compute plane
@@ -150,7 +151,7 @@ compute_plane = {
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 1
-      max_replica_count = 100
+      max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
@@ -200,7 +201,7 @@ compute_plane = {
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 1
-      max_replica_count = 100
+      max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
@@ -250,7 +251,7 @@ compute_plane = {
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 1
-      max_replica_count = 100
+      max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
@@ -265,7 +266,7 @@ compute_plane = {
         },
       ]
     }
-  },
+  },*/
 }
 
 # Deploy ingress
