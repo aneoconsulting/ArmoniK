@@ -180,6 +180,8 @@ variable "pv_efs" {
       namespace          = string
       image_pull_secrets = string
       node_selector      = any
+      repository         = optional(string, "https://kubernetes-sigs.github.io/aws-efs-csi-driver/")
+      version            = optional(string, "2.3.0")
       docker_images = object({
         efs_csi = object({
           image = string

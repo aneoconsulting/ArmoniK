@@ -1,9 +1,9 @@
-resource "helm_release" "metrics_exporter" {
+resource "helm_release" "metrics_server" {
   name       = "metrics-server"
   namespace  = var.namespace
   chart      = "metrics-server"
-  repository = "https://kubernetes-sigs.github.io/metrics-server/"
-  version    = "3.8.3"
+  repository = var.helm_chart_repository
+  version    = var.helm_chart_version
 
   set {
     name  = "image.repository"
