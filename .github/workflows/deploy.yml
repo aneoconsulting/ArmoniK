@@ -110,7 +110,7 @@ jobs:
             logs/infra/tfstates \
             logs/app
           cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json  logs/infra/generated
-          cp infrastructure/quick-deploy/localhost/all/generated/backend/armonik-terraform.tfstate logs/infra/tfstates
+          cp infrastructure/quick-deploy/localhost/all/generated/armonik-terraform.tfstate logs/infra/tfstates
           sudo cp -rL /var/log/pods/armonik_* logs/app
           sudo chown $USER -R logs
           tar -czf admin-gui.tar.gz logs
