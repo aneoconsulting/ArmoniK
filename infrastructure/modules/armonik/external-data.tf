@@ -114,7 +114,7 @@ locals {
   }) : null
 
   admin_api_url = length(kubernetes_service.admin_old_gui) > 0 ? "http://${local.admin_old_gui_endpoints.ip}:${local.admin_old_gui_endpoints.api_port}/api" : null
-  admin_old_url = length(kubernetes_service.admin_old_gui) > 0 ? "http://${local.admin_old_gui_endpoints.ip}:${local.admin_old_gui_endpoints.app_port}/" : null
+  admin_old_url = length(kubernetes_service.admin_old_gui) > 0 ? "http://${local.admin_old_gui_endpoints.ip}:${local.admin_old_gui_endpoints.app_port}/admin/" : null
 }
 
 # Node IP of ingress pod

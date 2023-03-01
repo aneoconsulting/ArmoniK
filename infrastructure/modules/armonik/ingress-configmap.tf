@@ -52,8 +52,8 @@ server {
         proxy_pass ${local.admin_app_url};
     }
     location /old/ {
-        rewrite ^ $scheme://$http_host/admin/ break;
         proxy_pass ${local.admin_old_url};
+        proxy_redirect ${local.admin_old_url} /old/;
     }
     location /api {
         proxy_pass ${local.admin_api_url};
