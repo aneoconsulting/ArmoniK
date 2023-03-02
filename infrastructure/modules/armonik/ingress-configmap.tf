@@ -39,21 +39,20 @@ server {
     sendfile on;
 
     location = / {
-        rewrite ^ $scheme://$http_host/admin/ permanent;
+        rewrite ^ $scheme://$http_host/admin/;
     }
     location = /admin {
-        rewrite ^ $scheme://$http_host/admin/ permanent;
+        rewrite ^ $scheme://$http_host/admin/;
     }
-    location = /old {
-        rewrite ^ $scheme://$http_host/old/ permanent;
+    location = /old-admin {
+        rewrite ^ $scheme://$http_host/old-admin/;
     }
 %{if var.admin_gui != null~}
     location /admin/ {
         proxy_pass ${local.admin_app_url};
     }
-    location /old/ {
+    location /old-admin/ {
         proxy_pass ${local.admin_old_url};
-        proxy_redirect ${local.admin_old_url} /old/;
     }
     location /api {
         proxy_pass ${local.admin_api_url};

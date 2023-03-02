@@ -532,7 +532,7 @@ variable "admin_gui" {
       name  = "admin-old-gui"
       image = "dockerhubaneo/armonik_admin_app"
       tag   = "0.7.2"
-      port  = 1081
+      port  = 1080
       limits = optional(object({
         cpu    = optional(string)
         memory = optional(string)

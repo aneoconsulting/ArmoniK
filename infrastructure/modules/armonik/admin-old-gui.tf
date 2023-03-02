@@ -117,7 +117,7 @@ resource "kubernetes_deployment" "admin_old_gui" {
           }
           port {
             name           = "old-port"
-            container_port = 1081
+            container_port = 1080
           }
           env_from {
             config_map_ref {
