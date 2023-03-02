@@ -19,5 +19,4 @@ python3 cleaner.py
 #get the cleaned data and create graphs
 python3 wjson.py
 
-cp 100p.json data/data_100p.json
-rm 100p.json
+mv 100p.json data/data_100p.json
