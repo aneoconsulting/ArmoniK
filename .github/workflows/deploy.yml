@@ -349,6 +349,7 @@ jobs:
         shell: bash
         run: |
           set -ex
+          kubectl get deployment -n armonik -o jsonpath='{range .items[*]} {.metadata.name} {":\n"} {range .spec.template.spec.containers[*]} {"\t"}{.name}{"\t"} {"\t"} {"\t"} {"\t"} {.image}{"\n"}{end}{end}'
           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \

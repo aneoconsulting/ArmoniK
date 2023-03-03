@@ -1,4 +1,5 @@
 # Service account and role for Fluent-bit
+# For Kubernetes 1.23 and later, otherwise use kubernetes_manifest
 resource "kubernetes_service_account" "fluent_bit" {
   count = (local.fluent_bit_is_daemonset ? 1 : 0)
   metadata {
@@ -8,6 +9,7 @@ resource "kubernetes_service_account" "fluent_bit" {
 }
 
 /*
+## To use kubernetes_manifest, you should have Kubernetes already installed !!
 ## Issue: https://github.com/hashicorp/terraform-provider-kubernetes/issues/1724
 ## This should be rolled back once the kubernetes provider for terraform has been updated.
 resource "kubernetes_manifest" "service_account_fluent_bit" {
@@ -22,7 +24,6 @@ resource "kubernetes_manifest" "service_account_fluent_bit" {
   }
 }
 */
-
 resource "kubernetes_cluster_role" "fluent_bit_role" {
   count = (local.fluent_bit_is_daemonset ? 1 : 0)
   metadata {
@@ -50,7 +51,8 @@ resource "kubernetes_cluster_role_binding" "fluent_bit_role_binding" {
     name      = kubernetes_cluster_role.fluent_bit_role.0.metadata.0.name
   }
   subject {
-    kind      = "ServiceAccount"
+    kind = "ServiceAccount"
+    # To use kubernetes_manifest, you should have Kubernetes already installed !!
     name      = kubernetes_service_account.fluent_bit.0.metadata.0.name
     namespace = kubernetes_service_account.fluent_bit.0.metadata.0.namespace
     #name      = kubernetes_manifest.service_account_fluent_bit.0.manifest.metadata.name
