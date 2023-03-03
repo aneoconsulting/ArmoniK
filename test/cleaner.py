@@ -25,5 +25,5 @@ def clean_file(file):
 
 #clean the file with 100 pods
 #file = "10k_100p.json"
-file = "100K_100p.json"
+file = "100k_100p.json"
 clean_file(file)
