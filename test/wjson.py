@@ -19,34 +19,74 @@ def median(dataset):
     # If the dataset is even
     return (data[index - 1] + data[index]) / 2
 
+######################################################################
+#                      TREAT 10K TASKS 100 PODS                      #
+######################################################################
 
-#open p100 file
-with open('10k_100p.json') as my_bench_file:
-    data_10k_100 = my_bench_file.read()
+#open 10k tasks on 100 pods file
+# with open('data/data_10k_100p.json') as my_bench_file:
+#     data_10k_100 = my_bench_file.read()
 
-print(type(data_10k_100))
-runs = json.loads(data_10k_100)
+# print(type(data_10k_100))
+# runs = json.loads(data_10k_100)
+# print(runs)
+# print(type(runs))
+
+# #store data for 10k tasks on 100 pods
+# nbtasks_10k_100p = []
+# time_10k_100p = []
+# pods_10k_100p = []
+
+# for run in runs:
+#     nbtasks_10k_100p.append(run["stats"]["TotalTasks"])
+#     time_10k_100p.append(float(parse(run["stats"]["ElapsedTime"])))
+#     pods_10k_100p.append(100)
+
+# print(nbtasks_10k_100p)
+# print(time_10k_100p)
+# print(pods_10k_100p)
+
+# mean_time_10k_100=mean(time_10k_100p)
+# median_time_10k_100=median(time_10k_100p)
+# print('mean time for 10K tasks on 100 pods is : '+ str(mean_time_10k_100) +' s')
+# print('median time for 10K tasks on 100 pods is : '+ str(median_time_10k_100) +' s')
+
+######################################################################
+#                      TREAT 100K TASKS 100 PODS                     #
+######################################################################
+
+#open 100k tasks on 100 pods file
+with open('data/data_100k_100p.json') as my_bench_file:
+    data_100k_100 = my_bench_file.read()
+
+print(type(data_100k_100))
+runs = json.loads(data_100k_100)
 print(runs)
 print(type(runs))
 
-#store data for 100 pods
-nbtasks_10k_100p = []
-time_10k_100p = []
-pods_10k_100p = []
+#store data for 10k tasks on 100 pods
+nbtasks_100k_100p = []
+time_100k_100p = []
+pods_100k_100p = []
 
 for run in runs:
-    nbtasks_10k_100p.append(run["stats"]["TotalTasks"])
-    time_10k_100p.append(float(parse(run["stats"]["ElapsedTime"])))
-    pods_10k_100p.append(100)
+    nbtasks_100k_100p.append(run["stats"]["TotalTasks"])
+    time_100k_100p.append(float(parse(run["stats"]["ElapsedTime"])))
+    pods_100k_100p.append(100)
 
-print(nbtasks_10k_100p)
-print(time_10k_100p)
-print(pods_10k_100p)
+print(nbtasks_100k_100p)
+print(time_100k_100p)
+print(pods_100k_100p)
 
-mean_time_100=mean(time_10k_100p)
-median_time_100=median(time_10k_100p)
-print('mean time for 100 pods is : '+ str(mean_time_100) +' s')
-print('median time for 100 pods is : '+ str(median_time_100) +' s')
+mean_time_100k_100p=mean(time_100k_100p)
+median_time_100k_100p=median(time_100k_100p)
+print('mean time for 100K tasks on 100 pods is : '+ str(mean_time_100k_100p) +' s')
+print('median time for 100K tasks in 100 pods is : '+ str(median_time_100k_100p) +' s')
+
+
+###############################################################
+#                           PLOT                              #
+###############################################################
 
 #plot graph
 
