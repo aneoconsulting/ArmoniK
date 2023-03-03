@@ -75,14 +75,14 @@ jobs:
            echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
         with:
            docker: true
            terraform: true
            k3s: true
 
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
         with:
           type: localhost
           partition: default
@@ -117,6 +117,6 @@ jobs:
           AWS_EC2_METADATA_DISABLED: true
 
       - name: Destroy deployment
-        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@IA/cicd_pipeline
         with:
            type: localhost
