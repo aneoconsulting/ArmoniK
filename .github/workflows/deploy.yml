@@ -68,15 +68,10 @@ jobs:
       - name: Install AWS CLI
         run: sh tools/install/aws-cli.sh
 
-      - name: Get Core Tag
-        id: core
+      - name: Get Worker Tag
+        id: worker
         run: |
-           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-           echo "tag=$TAG" >> $GITHUB_OUTPUT
-      - name: Get Admin GUI Tag
-        id: admin-gui
-        run: |
-           TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+           TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.extcsharp')
            echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Install Dependencies
@@ -90,7 +85,8 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
           type: localhost
-          prefix:  
+          partition: default
+          ext-csharp-version: ${{ steps.worker.outputs.tag}}
 
       - name: Test ping AdminGUI
         shell: bash
