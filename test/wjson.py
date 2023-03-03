@@ -21,121 +21,32 @@ def median(dataset):
 
 
 #open p100 file
-with open('100p.json') as my_bench_file:
-    data_100 = my_bench_file.read()
+with open('10k_100p.json') as my_bench_file:
+    data_10k_100 = my_bench_file.read()
 
-print(type(data_100))
-runs = json.loads(data_100)
+print(type(data_10k_100))
+runs = json.loads(data_10k_100)
 print(runs)
 print(type(runs))
 
 #store data for 100 pods
-nbtasks_100p = []
-time_100p = []
-pods_100p = []
+nbtasks_10k_100p = []
+time_10k_100p = []
+pods_10k_100p = []
 
 for run in runs:
-    nbtasks_100p.append(run["stats"]["TotalTasks"])
-    time_100p.append(float(parse(run["stats"]["ElapsedTime"])))
-    #pods.append(run["pods"])
-    pods_100p.append(100)
+    nbtasks_10k_100p.append(run["stats"]["TotalTasks"])
+    time_10k_100p.append(float(parse(run["stats"]["ElapsedTime"])))
+    pods_10k_100p.append(100)
 
-print(nbtasks_100p)
-print(time_100p)
-print(pods_100p)
+print(nbtasks_10k_100p)
+print(time_10k_100p)
+print(pods_10k_100p)
 
-mean_time_100=mean(time_100p)
-median_time_100=median(time_100p)
+mean_time_100=mean(time_10k_100p)
+median_time_100=median(time_10k_100p)
 print('mean time for 100 pods is : '+ str(mean_time_100) +' s')
 print('median time for 100 pods is : '+ str(median_time_100) +' s')
-
-
-
-#plot graph
-
-#plt.plot(nbtasks_100p,time_100p,color="green")
-
-#plt.xlabel('tasks')
-#plt.ylabel('time(ms)')
-#plt.title('Bench test with ArmoniK(2.11.0) on 100 pods')
-
-#plt.show()
-#plt.savefig("graphs/100pods.png")
-
-
-"""
-#open p500 file
-with open('500p.json') as my_bench_file:
-    data_500 = my_bench_file.read()
-
-print(type(data_500))
-runs = json.loads(data_500)
-print(runs)
-print(type(runs))
-
-#store data for 500p
-nbtasks_500p = []
-time_500p = []
-pods_500p = []
-
-for run in runs:
-    nbtasks_500p.append(run["stats"]["TotalTasks"])
-    time_500p.append(float(parse(run["stats"]["ElapsedTime"])))
-    #pods.append(run["pods"])
-    pods_500p.append(500)
-
-print(nbtasks_500p)
-print(time_500p)
-print(pods_500p)
-
-#open p1000 file
-with open('1000p.json') as my_bench_file:
-    data_1000 = my_bench_file.read()
-
-print(type(data_1000))
-runs = json.loads(data_1000)
-print(runs)
-print(type(runs))
-
-#store data for 1000p
-nbtasks_1000p = []
-time_1000p = []
-pods_1000p = []
-
-for run in runs:
-    nbtasks_1000p.append(run["stats"]["TotalTasks"])
-    time_1000p.append(float(parse(run["stats"]["ElapsedTime"])))
-    #pods.append(run["pods"])
-    pods_1000p.append(1000)
-
-print(nbtasks_1000p)
-print(time_1000p)
-print(pods_1000p)
-
-#open p10000 file
-with open('10000p.json') as my_bench_file:
-    data_10000 = my_bench_file.read()
-
-print(type(data_10000))
-runs = json.loads(data_10000)
-print(runs)
-print(type(runs))
-
-#store data for 1000p
-nbtasks_10000p = []
-time_10000p = []
-pods_10000p = []
-
-for run in runs:
-    nbtasks_10000p.append(run["stats"]["TotalTasks"])
-    time_10000p.append(float(parse(run["stats"]["ElapsedTime"])))
-    #pods.append(run["pods"])
-    pods_10000p.append(10000)
-
-print(nbtasks_10000p)
-print(time_10000p)
-print(pods_10000p)
-"""
 
 #plot graph
 
