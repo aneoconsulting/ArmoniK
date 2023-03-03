@@ -115,7 +115,7 @@ compute_plane = {
         },
       ]
     }
-  }, 
+  },
   # Partition for the stream worker
   stream = {
     # number of replicas for each deployment of compute plane
