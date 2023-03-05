@@ -86,7 +86,7 @@ jobs:
         with:
           type: localhost
           partition: default
-          ext-csharp-version: ${{ steps.worker.outputs.tag}}
+          ext-csharp-version: ${{ steps.worker.outputs.tag }}
 
       - name: Test ping AdminGUI
         shell: bash
