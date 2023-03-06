@@ -131,8 +131,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-            ref: ${{ github.head_ref }}
-            fetch-depth: 0
+           ref: ${{ github.head_ref }}
+           fetch-depth: 0
   
       - name: Install AWS CLI
         run: sh tools/install/aws-cli.sh
@@ -140,16 +140,16 @@ jobs:
       - name: Get Core Tag
         id: core
         run: |
-            TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-            echo "tag=$TAG" >> $GITHUB_OUTPUT
+          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Get Admin GUI Tag
         id: admin-gui
         run: |
-            TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-            echo "tag=$TAG" >> $GITHUB_OUTPUT
+          TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Install Dependencies
-       uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
-       with:
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
+        with:
            docker: true
            terraform: true
            k3s: true
