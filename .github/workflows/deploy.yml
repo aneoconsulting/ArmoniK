@@ -5,7 +5,6 @@ on:
     branches: [ '**' ]
     tags-ignore: [ '**' ]
 
-
 jobs:
   versioning:
     name: "Versioning"
@@ -24,7 +23,6 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-
       - name: Generate Version
         id: genver
         run: |
@@ -33,6 +31,7 @@ jobs:
           echo $VERSION
           echo "Version :" >> $GITHUB_STEP_SUMMARY
           echo "$VERSION" >> $GITHUB_STEP_SUMMARY
+
   format:
     runs-on: ubuntu-latest
     steps:
@@ -41,15 +40,13 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-
       - name: Install terraform
         run: sh tools/install/terraform.sh
-
       - name: Check Format
         run: terraform fmt -check -recursive -diff
+
   AdminGUI:
     runs-on: ubuntu-latest
-
     #  output
     outputs:
      terraform-output: ${{ steps.deploy.outputs.terraform-output }}
@@ -64,30 +61,25 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-
       - name: Install AWS CLI
         run: sh tools/install/aws-cli.sh
-
       - name: Get Worker Tag
         id: worker
         run: |
            TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.extcsharp')
            echo "tag=$TAG" >> $GITHUB_OUTPUT
-
       - name: Install Dependencies
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
         with:
            docker: true
            terraform: true
            k3s: true
-
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
         with:
           type: localhost
           partition: default
           ext-csharp-version: ${{ steps.worker.outputs.tag }}
-
       - name: Test ping AdminGUI
         shell: bash
         run: |
@@ -97,7 +89,6 @@ jobs:
           : "Add -f again when a success endpoint has been implemented"
           curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
           curl -fsSL "${ADMIN_APP_URL}" -o /dev/null || true "in v2.7.2, there is no app endpoint"
-
       - name: Show logs
         if: always()
         run: |
@@ -115,11 +106,11 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
-
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@IA/cicd_pipeline
         with:
            type: localhost  
+
   coreStream:
     runs-on: ubuntu-latest
     steps:
@@ -133,34 +124,20 @@ jobs:
         with:
            ref: ${{ github.head_ref }}
            fetch-depth: 0
-  
       - name: Install AWS CLI
         run: sh tools/install/aws-cli.sh
-  
-      - name: Get Core Tag
-        id: core
-        run: |
-          TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-      - name: Get Admin GUI Tag
-        id: admin-gui
-        run: |
-          TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Install Dependencies
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
         with:
            docker: true
            terraform: true
            k3s: true
-    
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
         with:
            type: localhost
            partition: stream
            ext-csharp-version: ${{ steps.worker.outputs.tag }}
-
       - name: Test Core Stream
         shell: bash
         run: |
@@ -168,7 +145,7 @@ jobs:
            export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
            docker run --rm \
              -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
-             -e Partition="" \
+             -e Partition="stream" \
              dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
         
         #   core-stream-without-ingress
@@ -257,6 +234,7 @@ jobs:
               -e HtcMock__EnableUseLowMem=false \
               -e HtcMock__EnableSmallOutput=false \
               -e HtcMock__EnableFastCompute=false \
+              -e HtcMock__Partition="htcmock" \
               dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
   
       - name: Test HTC Mock - 1 level
@@ -274,6 +252,7 @@ jobs:
               -e HtcMock__EnableUseLowMem=true \
               -e HtcMock__EnableSmallOutput=true \
               -e HtcMock__EnableFastCompute=true \
+              -e HtcMock__Partition="htcmock" \
               dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
       - name: Test HTC Mock - 5 levels
         shell: bash
@@ -290,6 +269,7 @@ jobs:
               -e HtcMock__EnableUseLowMem=true \
               -e HtcMock__EnableSmallOutput=true \
               -e HtcMock__EnableFastCompute=true \
+              -e HtcMock__Partition="htcmock" \
               dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
       - name: Test HTC Mock - 20 levels
         shell: bash
@@ -306,6 +286,7 @@ jobs:
               -e HtcMock__EnableUseLowMem=true \
               -e HtcMock__EnableSmallOutput=true \
               -e HtcMock__EnableFastCompute=true \
+              -e HtcMock__Partition="htcmock" \
               dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
        
       #  htcmock-disabled-parameters-without-ingress
@@ -389,6 +370,7 @@ jobs:
                -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
                -e BenchOptions__NTasks=200 \
                -e BenchOptions__TaskDurationMs=100 \
+               -e BenchOptions__Partition= "bench"\
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
       - name: Test Bench - long tasks (10s)
         shell: bash
@@ -399,6 +381,7 @@ jobs:
                -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
                -e BenchOptions__NTasks=2 \
                -e BenchOptions__TaskDurationMs=10000 \
+               -e BenchOptions__Partition= "bench"\
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
       - name: Test Bench - large payloads (10MB)
         shell: bash
@@ -411,6 +394,7 @@ jobs:
                -e BenchOptions__TaskDurationMs=10 \
                -e BenchOptions__ResultSize=1 \
                -e BenchOptions__PayloadSize=10000 \
+               -e BenchOptions__Partition= "bench"\
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
       - name: Test Bench - large results (10MB)
         shell: bash
@@ -423,6 +407,7 @@ jobs:
                -e BenchOptions__TaskDurationMs=10 \
                -e BenchOptions__ResultSize=10000 \
                -e BenchOptions__PayloadSize=1 \
+               -e BenchOptions__Partition= "bench"\
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
       - name: Show logs
         if: always()
