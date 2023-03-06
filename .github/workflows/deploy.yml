@@ -227,19 +227,19 @@ jobs:
             echo "tag=$TAG" >> $GITHUB_OUTPUT
   
         - name: Install Dependencies
-         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
-         with:
-           docker: true
-           terraform: true
-           k3s: true
+          uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
+          with:
+             docker: true
+             terraform: true
+             k3s: true
           
         # id deploy supp
         - name: Deploy
-         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
-         with:
-           type: localhost
-           partition: htcmock
-           ext-csharp-version: ${{ steps.worker.outputs.tag }}
+          uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
+          with:
+            type: localhost
+            partition: htcmock
+            ext-csharp-version: ${{ steps.worker.outputs.tag }}
 
 
         - name: Test HTC Mock
@@ -331,8 +331,8 @@ jobs:
 
         # id destroy supp
          - name: Destroy deployment
-             uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
-             with:
+           uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+           with:
                type: localhost
 
 
