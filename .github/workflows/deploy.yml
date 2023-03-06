@@ -201,50 +201,50 @@ jobs:
   htcMock:
     runs-on: ubuntu-latest
     steps:
-        - name: Get type of VM
-          run: |
-            lscpu
-            uname -a
-            grep MemTotal /proc/meminfo
-        - name: Checkout
-          uses: actions/checkout@v3
-          with:
-            ref: ${{ github.head_ref }}
-            fetch-depth: 0
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
   
-        - name: Install AWS CLI
-          run: sh tools/install/aws-cli.sh
+      - name: Install AWS CLI
+        run: sh tools/install/aws-cli.sh
   
-        - name: Get Core Tag
-          id: core
-          run: |
-            TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-            echo "tag=$TAG" >> $GITHUB_OUTPUT
-        - name: Get Admin GUI Tag
-          id: admin-gui
-          run: |
+      - name: Get Core Tag
+        id: core
+        run: |
+           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+           echo "tag=$TAG" >> $GITHUB_OUTPUT
+      - name: Get Admin GUI Tag
+         id: admin-gui
+        run: |
             TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
             echo "tag=$TAG" >> $GITHUB_OUTPUT
   
-        - name: Install Dependencies
-          uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
-          with:
-             docker: true
-             terraform: true
-             k3s: true
+      - name: Install Dependencies
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
+        with:
+            docker: true
+            terraform: true
+            k3s: true
           
         # id deploy supp
-        - name: Deploy
-          uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
-          with:
-            type: localhost
-            partition: htcmock
-            ext-csharp-version: ${{ steps.worker.outputs.tag }}
+      - name: Deploy
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
+        with:
+           type: localhost
+           partition: htcmock
+           ext-csharp-version: ${{ steps.worker.outputs.tag }}
 
 
-        - name: Test HTC Mock
-          shell: bash
-          run: |
+      - name: Test HTC Mock
+        shell: bash
+        run: |
             set -ex
             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
             docker run --rm \
@@ -259,9 +259,9 @@ jobs:
               -e HtcMock__EnableFastCompute=false \
               dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
   
-        - name: Test HTC Mock - 1 level
-          shell: bash
-          run: |
+      - name: Test HTC Mock - 1 level
+        shell: bash
+        run: |
             set -ex
             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
             docker run --rm \
@@ -275,9 +275,9 @@ jobs:
               -e HtcMock__EnableSmallOutput=true \
               -e HtcMock__EnableFastCompute=true \
               dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
-        - name: Test HTC Mock - 5 levels
-          shell: bash
-          run: |
+      - name: Test HTC Mock - 5 levels
+        shell: bash
+        run: |
             set -ex
             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
             docker run --rm \
@@ -291,9 +291,9 @@ jobs:
               -e HtcMock__EnableSmallOutput=true \
               -e HtcMock__EnableFastCompute=true \
               dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
-        - name: Test HTC Mock - 20 levels
-          shell: bash
-          run: |
+      - name: Test HTC Mock - 20 levels
+        shell: bash
+        run: |
             set -ex
             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
             docker run --rm \
@@ -309,9 +309,9 @@ jobs:
               dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
        
       #  htcmock-disabled-parameters-without-ingress
-        - name: Show logs
-          if: always()
-          run: |
+      - name: Show logs
+        if: always()
+        run: |
             set -e
             mkdir -p htcmock-disabled-parameters-without-ingress/infra/generated \
               htcmock-disabled-parameters-without-ingress/infra/tfstates \
@@ -322,17 +322,17 @@ jobs:
             sudo chown $USER -R htcmock-disabled-parameters-without-ingress
             tar -czf htcmock-disabled-parameters-without-ingress.tar.gz htcmock-disabled-parameters-without-ingress
             aws s3 cp htcmock-disabled-parameters-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock-disabled-parameters-without-ingress.tar.gz
-          env:
-            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            AWS_EC2_METADATA_DISABLED: true
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
   
 
 
         # id destroy supp
-         - name: Destroy deployment
-           uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
-           with:
+      - name: Destroy deployment
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        with:
                type: localhost
 
 
