@@ -1,7 +1,7 @@
 CURRENT_DIR:=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 INGRESS_CERTIFICATES_DIR=$(GENERATED_DIR)/certificates/ingress
-PARAMETERS_FILE?=$(CURRENT_DIR)/parameters.tfvars.json
+PARAMETERS_FILE?=parameters.tfvars.json
 VERSIONS_FILE?=../../../../versions.tfvars.json
 STATE_FILE=$(GENERATED_DIR)/armonik-terraform.tfstate
 
