@@ -2,6 +2,18 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.11.1](https://github.com/aneoconsulting/armonik/tree/v2.11.2) (2023-03-06)
+
+Changed
+-
+
+* Update Armonik.Core version from 0.9.2 to 0.9.3
+
+Fixed
+-
+
+* DB queries for ResultTable
+
 ## [v2.11.1](https://github.com/aneoconsulting/armonik/tree/v2.11.1) (2023-02-24)
 
 Changed
