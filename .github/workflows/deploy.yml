@@ -119,6 +119,11 @@ jobs:
             lscpu
             uname -a
             grep MemTotal /proc/meminfo
+      - name: Get Core Tag
+        id: core
+        run: |
+            TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -137,7 +142,6 @@ jobs:
         with:
            type: localhost
            partition: stream
-           ext-csharp-version: ${{ steps.worker.outputs.tag }}
       - name: Test Core Stream
         shell: bash
         run: |
@@ -147,8 +151,6 @@ jobs:
              -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
              -e Partition="stream" \
              dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
-        
-        #   core-stream-without-ingress
       - name: Show logs
         if: always()
         run: |
@@ -166,14 +168,10 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
-
-
-        # id destroy supp
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
            type: localhost
-
 
   htcMock:
     runs-on: ubuntu-latest
@@ -188,37 +186,24 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-  
       - name: Install AWS CLI
         run: sh tools/install/aws-cli.sh
-  
       - name: Get Core Tag
         id: core
         run: |
-           TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-           echo "tag=$TAG" >> $GITHUB_OUTPUT
-      - name: Get Admin GUI Tag
-        id: admin-gui
-        run: |
-            TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
+            TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
             echo "tag=$TAG" >> $GITHUB_OUTPUT
-  
       - name: Install Dependencies
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
         with:
             docker: true
             terraform: true
             k3s: true
-          
-        # id deploy supp
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
         with:
            type: localhost
            partition: htcmock
-           ext-csharp-version: ${{ steps.worker.outputs.tag }}
-
-
       - name: Test HTC Mock
         shell: bash
         run: |
@@ -235,8 +220,7 @@ jobs:
               -e HtcMock__EnableSmallOutput=false \
               -e HtcMock__EnableFastCompute=false \
               -e HtcMock__Partition="htcmock" \
-              dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
-  
+              dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}  
       - name: Test HTC Mock - 1 level
         shell: bash
         run: |
@@ -288,8 +272,6 @@ jobs:
               -e HtcMock__EnableFastCompute=true \
               -e HtcMock__Partition="htcmock" \
               dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
-       
-      #  htcmock-disabled-parameters-without-ingress
       - name: Show logs
         if: always()
         run: |
@@ -307,15 +289,10 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
-  
-
-
-        # id destroy supp
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
                type: localhost
-
 
   benchWithoutIngress:
     runs-on: ubuntu-latest
@@ -332,35 +309,24 @@ jobs:
         with:
              ref: ${{ github.head_ref }}
              fetch-depth: 0
-   
       - name: Install AWS CLI
         run: sh tools/install/aws-cli.sh
-   
       - name: Get Core Tag
         id: core
         run: |
-             TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-             echo "tag=$TAG" >> $GITHUB_OUTPUT
-      - name: Get Admin GUI Tag
-        id: admin-gui
-        run: |
-             TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
-             echo "tag=$TAG" >> $GITHUB_OUTPUT
+            TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Install Dependencies
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
         with:
                docker: true
                terraform: true
                k3s: true
-              
-            # id deploy supp
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
         with:
             type: localhost
             partition: bench  
-            ext-csharp-version: ${{ steps.worker.outputs.tag }}
-
       - name: Test Bench - many tasks (200)
         shell: bash
         run: |
@@ -370,7 +336,7 @@ jobs:
                -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
                -e BenchOptions__NTasks=200 \
                -e BenchOptions__TaskDurationMs=100 \
-               -e BenchOptions__Partition= "bench"\
+               -e BenchOptions__Partition="bench"\
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
       - name: Test Bench - long tasks (10s)
         shell: bash
@@ -381,7 +347,7 @@ jobs:
                -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
                -e BenchOptions__NTasks=2 \
                -e BenchOptions__TaskDurationMs=10000 \
-               -e BenchOptions__Partition= "bench"\
+               -e BenchOptions__Partition="bench"\
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
       - name: Test Bench - large payloads (10MB)
         shell: bash
@@ -394,7 +360,7 @@ jobs:
                -e BenchOptions__TaskDurationMs=10 \
                -e BenchOptions__ResultSize=1 \
                -e BenchOptions__PayloadSize=10000 \
-               -e BenchOptions__Partition= "bench"\
+               -e BenchOptions__Partition="bench"\
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
       - name: Test Bench - large results (10MB)
         shell: bash
@@ -407,7 +373,7 @@ jobs:
                -e BenchOptions__TaskDurationMs=10 \
                -e BenchOptions__ResultSize=10000 \
                -e BenchOptions__PayloadSize=1 \
-               -e BenchOptions__Partition= "bench"\
+               -e BenchOptions__Partition="bench"\
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
       - name: Show logs
         if: always()
@@ -426,8 +392,6 @@ jobs:
              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
              AWS_EC2_METADATA_DISABLED: true
-        
-      # id destroy supp
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
