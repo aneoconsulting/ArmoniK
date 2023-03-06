@@ -221,7 +221,7 @@ jobs:
            TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
            echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Get Admin GUI Tag
-         id: admin-gui
+        id: admin-gui
         run: |
             TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
             echo "tag=$TAG" >> $GITHUB_OUTPUT
@@ -341,48 +341,48 @@ jobs:
     strategy:
            fail-fast: false
     steps:
-         - name: Get type of VM
-           run: |
+      - name: Get type of VM
+        run: |
              lscpu
              uname -a
              grep MemTotal /proc/meminfo
-         - name: Checkout
-           uses: actions/checkout@v3
-           with:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
              ref: ${{ github.head_ref }}
              fetch-depth: 0
    
-         - name: Install AWS CLI
-           run: sh tools/install/aws-cli.sh
+      - name: Install AWS CLI
+        run: sh tools/install/aws-cli.sh
    
-         - name: Get Core Tag
-           id: core
-           run: |
+      - name: Get Core Tag
+        id: core
+        run: |
              TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
              echo "tag=$TAG" >> $GITHUB_OUTPUT
-         - name: Get Admin GUI Tag
-           id: admin-gui
-           run: |
+      - name: Get Admin GUI Tag
+        id: admin-gui
+        run: |
              TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
              echo "tag=$TAG" >> $GITHUB_OUTPUT
-         - name: Install Dependencies
-             uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
-             with:
+      - name: Install Dependencies
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
+        with:
                docker: true
                terraform: true
                k3s: true
               
             # id deploy supp
-         - name: Deploy
-          uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
-          with:
+      - name: Deploy
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
+        with:
             type: localhost
             partition: bench  
             ext-csharp-version: ${{ steps.worker.outputs.tag }}
 
-         - name: Test Bench - many tasks (200)
-           shell: bash
-           run: |
+      - name: Test Bench - many tasks (200)
+        shell: bash
+        run: |
              set -ex
              export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
              docker run --rm \
@@ -390,9 +390,9 @@ jobs:
                -e BenchOptions__NTasks=200 \
                -e BenchOptions__TaskDurationMs=100 \
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
-         - name: Test Bench - long tasks (10s)
-           shell: bash
-           run: |
+      - name: Test Bench - long tasks (10s)
+        shell: bash
+        run: |
              set -ex
              export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
              docker run --rm \
@@ -400,9 +400,9 @@ jobs:
                -e BenchOptions__NTasks=2 \
                -e BenchOptions__TaskDurationMs=10000 \
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
-         - name: Test Bench - large payloads (10MB)
-           shell: bash
-           run: |
+      - name: Test Bench - large payloads (10MB)
+        shell: bash
+        run: |
              set -ex
              export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
              docker run --rm \
@@ -412,9 +412,9 @@ jobs:
                -e BenchOptions__ResultSize=1 \
                -e BenchOptions__PayloadSize=10000 \
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
-         - name: Test Bench - large results (10MB)
-           shell: bash
-           run: |
+      - name: Test Bench - large results (10MB)
+        shell: bash
+        run: |
              set -ex
               export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
              docker run --rm \
@@ -424,9 +424,9 @@ jobs:
                -e BenchOptions__ResultSize=10000 \
                -e BenchOptions__PayloadSize=1 \
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
-         - name: Show logs
-           if: always()
-           run: |
+      - name: Show logs
+        if: always()
+        run: |
              set -e
              mkdir -p bench-without-ingress/infra/generated \
                bench-without-ingress/infra/tfstates \
@@ -437,13 +437,13 @@ jobs:
              sudo chown $USER -R bench-without-ingress
              tar -czf bench-without-ingress.tar.gz bench-without-ingress
              aws s3 cp bench-without-ingress.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/bench-without-ingress.tar.gz
-           env:
+        env:
              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
              AWS_EC2_METADATA_DISABLED: true
         
       # id destroy supp
-       - name: Destroy deployment
-           uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
-           with:
+      - name: Destroy deployment
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        with:
              type: localhost
