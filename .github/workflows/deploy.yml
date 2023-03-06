@@ -119,51 +119,51 @@ jobs:
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@IA/cicd_pipeline
         with:
-           type: localhost
+           type: localhost  
   coreStream:
     runs-on: ubuntu-latest
     steps:
-        - name: Get type of VM
-          run: |
+      - name: Get type of VM
+        run: |
             lscpu
             uname -a
             grep MemTotal /proc/meminfo
-        - name: Checkout
-          uses: actions/checkout@v3
-          with:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
             ref: ${{ github.head_ref }}
             fetch-depth: 0
   
-        - name: Install AWS CLI
-          run: sh tools/install/aws-cli.sh
+      - name: Install AWS CLI
+        run: sh tools/install/aws-cli.sh
   
-        - name: Get Core Tag
-          id: core
-          run: |
+      - name: Get Core Tag
+        id: core
+        run: |
             TAG=$(grep "core" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
             echo "tag=$TAG" >> $GITHUB_OUTPUT
-        - name: Get Admin GUI Tag
-          id: admin-gui
-          run: |
+      - name: Get Admin GUI Tag
+        id: admin-gui
+        run: |
             TAG=$(grep "admin-gui" armonik-versions.txt | tail -1 | cut -d "=" -f 2)
             echo "tag=$TAG" >> $GITHUB_OUTPUT
-        - name: Install Dependencies
-         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
-         with:
+      - name: Install Dependencies
+       uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
+       with:
            docker: true
            terraform: true
            k3s: true
     
-        - name: Deploy
-         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
-         with:
+      - name: Deploy
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
+        with:
            type: localhost
            partition: stream
            ext-csharp-version: ${{ steps.worker.outputs.tag }}
 
-        - name: Test Core Stream
-         shell: bash
-         run: |
+      - name: Test Core Stream
+        shell: bash
+        run: |
            set -ex
            export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
            docker run --rm \
@@ -172,7 +172,7 @@ jobs:
              dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
         
         #   core-stream-without-ingress
-        - name: Show logs
+      - name: Show logs
         if: always()
         run: |
           set -e
