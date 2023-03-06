@@ -193,9 +193,9 @@ jobs:
 
         # id destroy supp
       - name: Destroy deployment
-           uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
-           with:
-             type: localhost
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        with:
+           type: localhost
 
 
   htcMock:
