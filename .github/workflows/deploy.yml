@@ -159,7 +159,7 @@ jobs:
             core-stream-without-ingress/infra/tfstates \
             core-stream-without-ingress/app
           cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json  core-stream-without-ingress/infra/generated
-          cp infrastructure/quick-deploy/localhost/all/generated/armonik-terraform.tfstat core-stream-without-ingress/infra/tfstates
+          cp infrastructure/quick-deploy/localhost/all/generated/armonik-terraform.tfstate core-stream-without-ingress/infra/tfstates
           sudo cp -rL /var/log/pods/armonik_* core-stream-without-ingress/app
           sudo chown $USER -R core-stream-without-ingress
           tar -czf core-stream-without-ingress.tar.gz core-stream-without-ingress
