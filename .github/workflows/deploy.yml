@@ -119,16 +119,16 @@ jobs:
             lscpu
             uname -a
             grep MemTotal /proc/meminfo
-      - name: Get Core Tag
-        id: core
-        run: |
-            TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
-            echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Checkout
         uses: actions/checkout@v3
         with:
            ref: ${{ github.head_ref }}
            fetch-depth: 0
+      - name: Get Core Tag
+        id: core
+        run: |
+            TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
+            echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Install AWS CLI
         run: sh tools/install/aws-cli.sh
       - name: Install Dependencies
