@@ -69,13 +69,13 @@ jobs:
            TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.extcsharp')
            echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
         with:
            docker: true
            terraform: true
            k3s: true
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
           type: localhost
           partition: default
@@ -107,7 +107,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
       - name: Destroy deployment
-        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@IA/cicd_pipeline
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
            type: localhost  
 
@@ -132,13 +132,13 @@ jobs:
       - name: Install AWS CLI
         run: sh tools/install/aws-cli.sh
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
         with:
            docker: true
            terraform: true
            k3s: true
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
            type: localhost
            partition: stream
@@ -194,13 +194,13 @@ jobs:
             TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
             echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
         with:
             docker: true
             terraform: true
             k3s: true
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
            type: localhost
            partition: htcmock
@@ -317,13 +317,13 @@ jobs:
             TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
             echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@IA/cicd_pipeline
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
         with:
                docker: true
                terraform: true
                k3s: true
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@IA/cicd_pipeline
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
             type: localhost
             partition: bench  
