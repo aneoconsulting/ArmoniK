@@ -69,7 +69,7 @@ compute_plane = {
   # Default partition that uses the C# extension for the worker
   default = {
     # number of replicas for each deployment of compute plane
-    replicas = 1
+    replicas = 0
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -99,7 +99,7 @@ compute_plane = {
       type              = "prometheus"
       polling_interval  = 15
       cooldown_period   = 300
-      min_replica_count = 1
+      min_replica_count = 0
       max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
@@ -119,7 +119,7 @@ compute_plane = {
   # Partition for the stream worker
   stream = {
     # number of replicas for each deployment of compute plane
-    replicas = 1
+    replicas = 0
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -149,7 +149,7 @@ compute_plane = {
       type              = "prometheus"
       polling_interval  = 15
       cooldown_period   = 300
-      min_replica_count = 1
+      min_replica_count = 0
       max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
@@ -169,7 +169,7 @@ compute_plane = {
   # Partition for the htcmock worker
   htcmock = {
     # number of replicas for each deployment of compute plane
-    replicas = 1
+    replicas = 0
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -199,7 +199,7 @@ compute_plane = {
       type              = "prometheus"
       polling_interval  = 15
       cooldown_period   = 300
-      min_replica_count = 1
+      min_replica_count = 0
       max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
@@ -219,7 +219,7 @@ compute_plane = {
   # Partition for the bench worker
   bench = {
     # number of replicas for each deployment of compute plane
-    replicas = 1
+    replicas = 0
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -249,7 +249,7 @@ compute_plane = {
       type              = "prometheus"
       polling_interval  = 15
       cooldown_period   = 300
-      min_replica_count = 1
+      min_replica_count = 0
       max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
