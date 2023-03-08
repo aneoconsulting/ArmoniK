@@ -75,11 +75,11 @@ jobs:
         run: |
             TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
             echo "tag=$TAG" >> $GITHUB_OUTPUT
-        - name: Save artifacts
-          uses: actions/upload-artifact@v3
-          with:
-            name: deployed-files
-            path: /path/to/deployed/files
+      - name: Save artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployed-files
+          path: /path/to/deployed/files
 
 
   AdminGUI:
