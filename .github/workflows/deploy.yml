@@ -75,20 +75,34 @@ jobs:
         run: |
             TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
             echo "tag=$TAG" >> $GITHUB_OUTPUT
+        - name: Save artifacts
+          uses: actions/upload-artifact@v3
+          with:
+            name: deployed-files
+            path: /path/to/deployed/files
+
 
   AdminGUI:
     runs-on: ubuntu-latest
     needs: Deployment
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+       - name: Download artifacts
+        uses: actions/download-artifact@v3
         with:
-           ref: ${{ github.head_ref }}
-           fetch-depth: 0
+          name: deployed-files
+      # Run the application using remote execution
+      - name: Run application
+        uses: appleboy/ssh-action@main
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          port: ${{ secrets.REMOTE_PORT }}
       - name: Test ping AdminGUI
         shell: bash
         run: |
           set -ex
+          cd /path/to/deployed/files
           export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
           export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
           : "Add -f again when a success endpoint has been implemented"
@@ -98,6 +112,7 @@ jobs:
         if: always()
         run: |
           set -e
+          cd /path/to/deployed/files
           mkdir -p logs/infra/generated \
             logs/infra/tfstates \
             logs/app
@@ -116,11 +131,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: Deployment
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+       - name: Download artifacts
+        uses: actions/download-artifact@v3
         with:
-           ref: ${{ github.head_ref }}
-           fetch-depth: 0
+          name: deployed-files
+      # Run the application using remote execution
+      - name: Run application
+        uses: appleboy/ssh-action@main
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          port: ${{ secrets.REMOTE_PORT }}
       - name: Get Core Tag
         id: core
         run: |
