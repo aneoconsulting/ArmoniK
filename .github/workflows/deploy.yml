@@ -92,7 +92,7 @@ jobs:
           name: deployed-files
       # Run the application using remote execution
       - name: Run application
-        uses: appleboy/ssh-action@main
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
@@ -137,7 +137,7 @@ jobs:
           name: deployed-files
       # Run the application using remote execution
       - name: Run application
-        uses: appleboy/ssh-action@main
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
