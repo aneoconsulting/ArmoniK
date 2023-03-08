@@ -78,7 +78,6 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
           type: localhost
-          partition: default
           ext-csharp-version: ${{ steps.worker.outputs.tag }}
       - name: Test ping AdminGUI
         shell: bash
@@ -141,7 +140,6 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
            type: localhost
-           partition: stream
       - name: Test Core Stream
         shell: bash
         run: |
@@ -203,7 +201,6 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
            type: localhost
-           partition: htcmock
       - name: Test HTC Mock
         shell: bash
         run: |
@@ -325,8 +322,7 @@ jobs:
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
-            type: localhost
-            partition: bench  
+            type: localhost 
       - name: Test Bench - many tasks (200)
         shell: bash
         run: |
