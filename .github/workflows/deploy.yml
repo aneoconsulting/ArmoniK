@@ -317,6 +317,7 @@ jobs:
   DestroyDeployment:
     runs-on: ubuntu-latest
     needs: [Htcmock,AdminGUI,BenchWithoutIngress,CoreStream]  
+    steps:
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
