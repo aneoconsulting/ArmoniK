@@ -79,7 +79,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: deployed
-          path: ArmoniK/
+          path: infrastructure/quick-deploy/localhost/all/generated/armonik-output.json
 
 
   AdminGUI:
@@ -100,7 +100,7 @@ jobs:
           port: ${{ secrets.REMOTE_PORT }}
           script: |
             set -ex
-            cd /path/to/deployed/files
+            cd deployed
             export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
             export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
             : "Add -f again when a success endpoint has been implemented"
