@@ -78,8 +78,8 @@ jobs:
       - name: Save artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: deployed-files
-          path: /path/to/deployed/files
+          name: deployed
+          path: ArmoniK/
 
 
   AdminGUI:
@@ -91,23 +91,21 @@ jobs:
         with:
           name: deployed-files
       # Run the application using remote execution
-      - name: Run application
+      - name: Test ping AdminGUI
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           password: ${{ secrets.REMOTE_PASSWORD }}
           port: ${{ secrets.REMOTE_PORT }}
-      - name: Test ping AdminGUI
-        shell: bash
-        run: |
-          set -ex
-          cd /path/to/deployed/files
-          export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
-          export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
-          : "Add -f again when a success endpoint has been implemented"
-          curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
-          curl -fsSL "${ADMIN_APP_URL}" -o /dev/null || true "in v2.7.2, there is no app endpoint"
+          script: |
+            set -ex
+            cd /path/to/deployed/files
+            export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
+            export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
+            : "Add -f again when a success endpoint has been implemented"
+            curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
+            curl -fsSL "${ADMIN_APP_URL}" -o /dev/null || true "in v2.7.2, there is no app endpoint"
       - name: Show logs
         if: always()
         run: |
