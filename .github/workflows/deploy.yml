@@ -79,8 +79,6 @@ jobs:
   AdminGUI:
     runs-on: ubuntu-latest
     needs: dependencies
-    outputs:
-    terraform-output: ${{ steps.deploy.outputs.terraform-output }}
     steps:
       - name: Test ping AdminGUI
         shell: bash
