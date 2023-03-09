@@ -87,17 +87,17 @@ eks = {
     ebs_kms_key_id            = ""
   }
   map_roles = [
-     {
-      rolearn = "arn:aws:iam::125796369274:role/eks-dev-role"
+    {
+      rolearn  = "arn:aws:iam::125796369274:role/eks-dev-role"
       username = "lzianekhodja"
-      groups = ["system:bootstrappers", "system:nodes", "ANEO-DEV"]
-     }
+      groups   = ["system:bootstrappers", "system:nodes", "ANEO-DEV"]
+    }
   ]
   map_users = [
     {
-     userarn = "arn:aws:iam::125796369274:user/lzianekhodja" 
-     username = "lzianekhodja"
-     groups = ["system:masters", "system:bootstrappers", "system:nodes", "ANEO-DEV"]
+      userarn  = "arn:aws:iam::125796369274:user/lzianekhodja"
+      username = "lzianekhodja"
+      groups   = ["system:masters", "system:bootstrappers", "system:nodes", "ANEO-DEV"]
     }
   ]
 }
