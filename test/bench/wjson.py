@@ -27,35 +27,41 @@ def median(dataset):
 with open('data/data_10k_100p.json') as my_bench_file:
     data_10k_100 = my_bench_file.read()
 
-print(type(data_10k_100))
+# print(type(data_10k_100))
 runs = json.loads(data_10k_100)
-print(runs)
-print(type(runs))
+# print(runs)
+# print(type(runs))
 
 #store data for 10k tasks on 100 pods
 nbtasks_10k_100p = []
 time_10k_100p = []
+sub_time_10k_100p = []
+retrv_time_10k_100p = []
 pods_10k_100p = []
 throughput_10k_100p = []
 
 for run in runs:
     nbtasks_10k_100p.append(run["stats"]["TotalTasks"])
     time_10k_100p.append(float(parse(run["stats"]["ElapsedTime"])))
+    sub_time_10k_100p.append(float(parse(run["stats"]["SubmissionTime"])))
+    retrv_time_10k_100p.append(float(parse(run["stats"]["ResultRetrievingTime"])))
     throughput_10k_100p.append(float(run["throughput"]["sessionThroughput"]))
     pods_10k_100p.append(100)
 
-print(nbtasks_10k_100p)
-print(time_10k_100p)
-print(pods_10k_100p)
-print(throughput_10k_100p)
+# print(nbtasks_10k_100p)
+# print(time_10k_100p)
+# print(pods_10k_100p)
+# print(throughput_10k_100p)
 
 mean_time_10k_100=mean(time_10k_100p)
-median_time_10k_100=median(time_10k_100p)
+mean_sub_time_10k_100=mean(sub_time_10k_100p)
+mean_retrv_time_10k_100=mean(retrv_time_10k_100p)
 mean_throughput_10k_100=mean(throughput_10k_100p)
 
-print('mean time for 10K tasks on 100 pods is : '+ str(mean_time_10k_100) +' s')
-print('median time for 10K tasks on 100 pods is : '+ str(median_time_10k_100) +' s')
-print('mean throughput for 10K tasks on 100 pods is : '+ str(mean_throughput_10k_100)+" tasks/s")
+print('mean total time of the execution of 10K tasks on 100 pods is : '+ str(mean_time_10k_100) +' s')
+print('mean time of the submission of 10K tasks on 100 pods is : '+ str(mean_sub_time_10k_100) +' s')
+print('mean time of the retrieving of 10K tasks on 100 pods is : '+ str(mean_retrv_time_10k_100) +' s')
+print('mean throughput for 10K tasks on 100 pods is : '+ str(mean_throughput_10k_100)+" tasks/s \n")
 
 ######################################################################
 #                      TREAT 10K TASKS 1000 PODS                      #
@@ -73,12 +79,16 @@ print('mean throughput for 10K tasks on 100 pods is : '+ str(mean_throughput_10k
 # #store data for 10k tasks on 1000 pods
 # nbtasks_10k_1000p = []
 # time_10k_1000p = []
+# sub_time_10k_1000p = []
+# retrv_time_10k_1000p = []
 # pods_10k_1000p = []
 # throughput_10k_1000p = []
 
 # for run in runs:
 #     nbtasks_10k_1000p.append(run["stats"]["TotalTasks"])
 #     time_10k_1000p.append(float(parse(run["stats"]["ElapsedTime"])))
+#     sub_time_10k_1000p.append(float(parse(run["stats"]["SubmissionTime"])))
+#     retrv_time_10k_1000p.append(float(parse(run["stats"]["ResultRetrievingTime"])))
 #     throughput_10k_1000p.append(float(parse(run["throughput"]["sessionThroughput"])))
 #     pods_10k_1000p.append(1000)
 
@@ -88,12 +98,14 @@ print('mean throughput for 10K tasks on 100 pods is : '+ str(mean_throughput_10k
 # print(throughput_10k_1000p)
 
 # mean_time_10k_1000=mean(time_10k_1000p)
-# median_time_10k_1000=median(time_10k_1000p)
+# mean_sub_time_10k_1000=mean(sub_time_10k_1000p)
+# mean_retrv_time_10k_1000=mean(retrv_time_10k_1000p)
 # mean_throughput_10k_1000=mean(throughput_10k_1000p)
 
 # print('mean time for 10K tasks on 1000 pods is : '+ str(mean_time_10k_1000) +' s')
-# print('median time for 10K tasks on 1000 pods is : '+ str(median_time_10k_1000) +' s')
-# print('mean throughput for 10K tasks on 1000 pods is : '+ str(mean_throughput_10k_1000))
+# print('mean time of the submission of 10K tasks on 1000 pods is : '+ str(mean_sub_time_10k_1000) +' s')
+# print('mean time of the retrieving of 10K tasks on 1000 pods is : '+ str(mean_retrv_time_10k_1000) +' s')
+# print('mean throughput for 10K tasks on 1000 pods is : '+ str(mean_throughput_10k_1000)+" tasks/s \n")
 
 
 ###############################################################
