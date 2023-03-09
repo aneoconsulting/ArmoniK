@@ -9,7 +9,7 @@ export CONTROL_PLANE_URL=http://a24fc0af6e62547d6b9b26d86873fd36-1938019023.eu-w
 docker run --rm \
 	-e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
 	-e BenchOptions__nTasks=10000 \
-	-e BenchOptions__TaskDurationMs=10 \
+	-e BenchOptions__TaskDurationMs=500 \
 	-e BenchOptions__PaloadSize=100 \
 	-e BenchOptions__ResultSize=100 \
 	-e BenchOptions__Partition=default \
