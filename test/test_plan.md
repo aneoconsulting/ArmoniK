@@ -64,3 +64,4 @@ The purpose of those tests is to have a reference numbers and performance of thi
     - The tasks durations
     - The payload size
     - The result size
+    - 80k tasks, 1s per task, 1cpu per worker
