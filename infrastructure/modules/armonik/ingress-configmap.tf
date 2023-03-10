@@ -39,13 +39,13 @@ server {
     sendfile on;
 
     location = / {
-        rewrite ^ $scheme://$http_host/admin/;
+        rewrite ^ $scheme://$http_host/admin/ permanent;
     }
     location = /admin {
-        rewrite ^ $scheme://$http_host/admin/;
+        rewrite ^ $scheme://$http_host/admin/ permanent;
     }
     location = /old-admin {
-        rewrite ^ $scheme://$http_host/old-admin/;
+        rewrite ^ $scheme://$http_host/old-admin/ permanent;
     }
 %{if var.admin_gui != null~}
     location /admin/ {

@@ -50,12 +50,12 @@ resource "kubernetes_deployment" "admin_gui" {
         restart_policy = "Always" # Always, OnFailure, Never
         # App container
         container {
-          name              = var.admin_gui.app.name
-          image             = var.admin_gui.app.tag != "" ? "${var.admin_gui.app.image}:${var.admin_gui.app.tag}" : var.admin_gui.app.image
+          name              = var.admin_gui.name
+          image             = var.admin_gui.tag != "" ? "${var.admin_gui.image}:${var.admin_gui.tag}" : var.admin_gui.image
           image_pull_policy = var.admin_gui.image_pull_policy
           resources {
-            limits   = var.admin_gui.app.limits
-            requests = var.admin_gui.app.requests
+            limits   = var.admin_gui.limits
+            requests = var.admin_gui.requests
           }
           port {
             name           = "app-port"
@@ -141,7 +141,7 @@ resource "kubernetes_service" "admin_gui" {
     }
     port {
       name        = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.0.port.0.name
-      port        = var.admin_gui.app.port
+      port        = var.admin_gui.port
       target_port = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.0.port.0.container_port
       protocol    = "TCP"
     }

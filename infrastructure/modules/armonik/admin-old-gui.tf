@@ -1,6 +1,6 @@
 # Control plane deployment
 resource "kubernetes_deployment" "admin_old_gui" {
-  count = var.admin_gui != null ? 1 : 0
+  count = var.admin_old_gui != null ? 1 : 0
   metadata {
     name      = "admin-old-gui"
     namespace = var.namespace
@@ -10,7 +10,7 @@ resource "kubernetes_deployment" "admin_old_gui" {
     }
   }
   spec {
-    replicas = var.admin_gui.replicas
+    replicas = var.admin_old_gui.replicas
     selector {
       match_labels = {
         app     = "armonik"
@@ -42,20 +42,20 @@ resource "kubernetes_deployment" "admin_old_gui" {
           }
         }
         dynamic "image_pull_secrets" {
-          for_each = (var.admin_gui.image_pull_secrets != "" ? [1] : [])
+          for_each = (var.admin_old_gui.image_pull_secrets != "" ? [1] : [])
           content {
-            name = var.admin_gui.image_pull_secrets
+            name = var.admin_old_gui.image_pull_secrets
           }
         }
         restart_policy = "Always" # Always, OnFailure, Never
         # API container, only needed for old GUI
         container {
-          name              = var.admin_gui.api.name
-          image             = var.admin_gui.api.tag != "" ? "${var.admin_gui.api.image}:${var.admin_gui.api.tag}" : var.admin_gui.api.image
-          image_pull_policy = var.admin_gui.image_pull_policy
+          name              = var.admin_old_gui.api.name
+          image             = var.admin_old_gui.api.tag != "" ? "${var.admin_old_gui.api.image}:${var.admin_old_gui.api.tag}" : var.admin_old_gui.api.image
+          image_pull_policy = var.admin_old_gui.image_pull_policy
           resources {
-            limits   = var.admin_gui.api.limits
-            requests = var.admin_gui.api.requests
+            limits   = var.admin_old_gui.api.limits
+            requests = var.admin_old_gui.api.requests
           }
           port {
             name           = "api-port"
@@ -108,12 +108,12 @@ resource "kubernetes_deployment" "admin_old_gui" {
         }
         # Old GUI container
         container {
-          name              = var.admin_gui.old.name
-          image             = var.admin_gui.old.tag != "" ? "${var.admin_gui.old.image}:${var.admin_gui.old.tag}" : var.admin_gui.old.image
-          image_pull_policy = var.admin_gui.image_pull_policy
+          name              = var.admin_old_gui.old.name
+          image             = var.admin_old_gui.old.tag != "" ? "${var.admin_old_gui.old.image}:${var.admin_old_gui.old.tag}" : var.admin_old_gui.old.image
+          image_pull_policy = var.admin_old_gui.image_pull_policy
           resources {
-            limits   = var.admin_gui.old.limits
-            requests = var.admin_gui.old.requests
+            limits   = var.admin_old_gui.old.limits
+            requests = var.admin_old_gui.old.requests
           }
           port {
             name           = "old-port"
@@ -192,20 +192,20 @@ resource "kubernetes_service" "admin_old_gui" {
     }
   }
   spec {
-    type = var.admin_gui.service_type
+    type = var.admin_old_gui.service_type
     selector = {
       app     = kubernetes_deployment.admin_old_gui[0].metadata.0.labels.app
       service = kubernetes_deployment.admin_old_gui[0].metadata.0.labels.service
     }
     port {
       name        = kubernetes_deployment.admin_old_gui[0].spec.0.template.0.spec.0.container.0.port.0.name
-      port        = var.admin_gui.api.port
+      port        = var.admin_old_gui.api.port
       target_port = kubernetes_deployment.admin_old_gui[0].spec.0.template.0.spec.0.container.0.port.0.container_port
       protocol    = "TCP"
     }
     port {
       name        = kubernetes_deployment.admin_old_gui[0].spec.0.template.0.spec.0.container.1.port.0.name
-      port        = var.admin_gui.old.port
+      port        = var.admin_old_gui.old.port
       target_port = kubernetes_deployment.admin_old_gui[0].spec.0.template.0.spec.0.container.1.port.0.container_port
       protocol    = "TCP"
     }

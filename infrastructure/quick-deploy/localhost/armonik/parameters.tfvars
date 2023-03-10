@@ -65,20 +65,27 @@ control_plane = {
 
 # Parameters of admin GUI
 admin_gui = {
-  app = {
-    name  = "admin-app"
-    image = "dockerhubaneo/armonik_admin_app"
-    tag   = "0.7.2"
-    port  = 1080
-    limits = {
-      cpu    = "1000m"
-      memory = "1024Mi"
-    }
-    requests = {
-      cpu    = "100m"
-      memory = "128Mi"
-    }
+  name  = "admin-app"
+  image = "dockerhubaneo/armonik_admin_app"
+  tag   = "0.7.2"
+  port  = 1080
+  limits = {
+    cpu    = "1000m"
+    memory = "1024Mi"
   }
+  requests = {
+    cpu    = "100m"
+    memory = "128Mi"
+  }
+  service_type       = "ClusterIP"
+  replicas           = 1
+  image_pull_policy  = "IfNotPresent"
+  image_pull_secrets = ""
+  node_selector      = {}
+}
+
+# Parameters of old admin GUI
+admin_old_gui = {
   api = {
     name  = "admin-api"
     image = "dockerhubaneo/armonik_admin_api"
@@ -94,7 +101,7 @@ admin_gui = {
     }
   }
   old = {
-    name  = "admin-old"
+    name  = "admin-old-gui"
     image = "dockerhubaneo/armonik_admin_app"
     tag   = "0.8.0"
     port  = 1080

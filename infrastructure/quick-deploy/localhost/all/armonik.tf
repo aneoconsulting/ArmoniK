@@ -32,15 +32,15 @@ module "armonik" {
   control_plane = merge(var.control_plane, {
     tag = try(coalesce(var.control_plane.tag), local.default_tags[var.control_plane.image])
   })
-  admin_gui = merge(var.admin_gui.app, {
-    tag = try(coalesce(var.admin_gui.app.tag), local.default_tags[var.admin_gui.app.image])
+  admin_gui = merge(var.admin_gui, {
+    tag = try(coalesce(var.admin_gui.tag), local.default_tags[var.admin_gui.image])
   })
-  admin_old_gui = merge(var.admin_gui, {
-    api = merge(var.admin_gui.api, {
-      tag = try(coalesce(var.admin_gui.api.tag), local.default_tags[var.admin_gui.api.image])
+  admin_old_gui = merge(var.admin_old_gui, {
+    api = merge(var.admin_old_gui.api, {
+      tag = try(coalesce(var.admin_old_gui.api.tag), local.default_tags[var.admin_old_gui.api.image])
     })
-    old = merge(var.admin_gui.old, {
-      tag = try(coalesce(var.admin_gui.old.tag), local.default_tags[var.admin_gui.old.image])
+    old = merge(var.admin_old_gui.old, {
+      tag = try(coalesce(var.admin_old_gui.old.tag), local.default_tags[var.admin_old_gui.old.image])
     })
   })
   ingress = merge(var.ingress, {
