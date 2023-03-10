@@ -8,6 +8,8 @@ resource "random_string" "random_resources" {
   numeric = true
 }
 
+resource "time_static" "creation_date" {}
+
 locals {
   random_string = random_string.random_resources.result
   suffix        = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
@@ -17,6 +19,6 @@ locals {
     "application"        = "armonik"
     "deployment version" = local.suffix
     "created by"         = data.aws_caller_identity.current.arn
-    "date"               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
+    "date"               = time_static.creation_date.rfc3339
   }, var.tags)
 }
