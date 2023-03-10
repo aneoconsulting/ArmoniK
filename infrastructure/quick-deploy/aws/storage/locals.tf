@@ -41,7 +41,7 @@ locals {
     "application"        = "armonik"
     "deployment version" = local.suffix
     "created by"         = data.aws_caller_identity.current.arn
-    "date"               = time_static.creation_date.rfc3339
+    "creation date"               = time_static.creation_date.rfc3339
   })
   s3_fs_kms_key_id = (var.s3_fs.kms_key_id != "" ? var.s3_fs.kms_key_id : module.kms.0.arn)
   s3_os_kms_key_id = (can(coalesce(var.s3_os.kms_key_id)) ? var.s3_os.kms_key_id : module.kms.0.arn)

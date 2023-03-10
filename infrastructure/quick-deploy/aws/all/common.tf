@@ -18,6 +18,6 @@ locals {
     "application"        = "armonik"
     "deployment version" = local.prefix
     "created by"         = data.aws_caller_identity.current.arn
-    "date"               = time_static.creation_date.rfc3339
+    "creation date"               = time_static.creation_date.rfc3339
   }, var.tags)
 }
