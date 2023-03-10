@@ -56,7 +56,7 @@ The purpose of those tests is to have a reference numbers and performance of thi
     - 100k tasks on : 100 pods, 1000 pods, and 10000 pods
     - 1M tasks on : 100 pods, 1000 pods, and 10000 pods
     ## with
-    - The tasks duration : 10 ms
+    - The tasks duration : 500 ms
     - The payload size : 100 KB
     - The result size : 100 KB
 
