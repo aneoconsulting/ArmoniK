@@ -8,12 +8,16 @@ resource "random_string" "prefix" {
   numeric = true
 }
 
+
+resource "time_static" "creation_date" {}
+
+
 locals {
   prefix = try(coalesce(var.prefix), "armonik-${random_string.prefix.result}")
   tags = merge({
     "application"        = "armonik"
     "deployment version" = local.prefix
     "created by"         = data.aws_caller_identity.current.arn
-    "date"               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
+    "creation date"      = time_static.creation_date.rfc3339
   }, var.tags)
 }
