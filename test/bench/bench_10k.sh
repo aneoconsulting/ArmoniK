@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #ArmoniK "2.11.0"
-export CONTROL_PLANE_URL=http://a24fc0af6e62547d6b9b26d86873fd36-1938019023.eu-west-3.elb.amazonaws.com:5001/
+export CONTROL_PLANE_URL=http://ad806ebb1bc00400abb24329f929bdb6-1498426612.eu-west-3.elb.amazonaws.com:5001/
 
 #nb_pods=100
 
@@ -10,7 +10,7 @@ docker run --rm \
 	-e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
 	-e BenchOptions__nTasks=10000 \
 	-e BenchOptions__TaskDurationMs=500 \
-	-e BenchOptions__PaloadSize=100 \
+	-e BenchOptions__PayloadSize=100 \
 	-e BenchOptions__ResultSize=100 \
 	-e BenchOptions__Partition=default \
     -e BenchOptions__ShowEvents=true \
