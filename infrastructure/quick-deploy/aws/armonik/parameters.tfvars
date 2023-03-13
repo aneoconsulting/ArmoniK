@@ -78,6 +78,27 @@ control_plane = {
 # Parameters of admin GUI
 # Put to null if we not want deploy it
 admin_gui = {
+  name  = "admin-app"
+  image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app"
+  tag   = "0.7.2"
+  port  = 1080
+  limits = {
+    cpu    = "1000m"
+    memory = "1024Mi"
+  }
+  requests = {
+    cpu    = "100m"
+    memory = "128Mi"
+  }
+  service_type       = "ClusterIP"
+  replicas           = 1
+  image_pull_policy  = "IfNotPresent"
+  image_pull_secrets = ""
+  node_selector      = {}
+}
+
+#Parameters of old admin GUI
+admin_old_gui = {
   api = {
     name  = "admin-api"
     image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-api"
@@ -92,10 +113,10 @@ admin_gui = {
       memory = "128Mi"
     }
   }
-  app = {
-    name  = "admin-app"
+  old = {
+    name  = "admin-old-gui"
     image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app"
-    tag   = "0.7.2"
+    tag   = "0.8.0"
     port  = 1080
     limits = {
       cpu    = "1000m"
