@@ -2,66 +2,32 @@
 output "storage_endpoint_url" {
   description = "Storage endpoints URLs"
   value = {
+    object_storage_adapter   = local.object_storage_adapter
+    table_storage_adapter    = local.table_storage_adapter
+    queue_storage_adapter    = local.queue_storage_adapter
+    deployed_object_storages = local.deployed_object_storages
+    deployed_table_storages  = local.deployed_table_storages
+    deployed_queue_storages  = local.deployed_queue_storages
     activemq = {
-      url                 = module.mq.activemq_endpoint_url.url
-      host                = module.mq.activemq_endpoint_url.host
-      port                = module.mq.activemq_endpoint_url.port
-      web_url             = module.mq.web_url
-      allow_host_mismatch = false
-      credentials = {
-        secret       = module.mq.user_credentials.secret
-        username_key = module.mq.user_credentials.username_key
-        password_key = module.mq.user_credentials.password_key
-      }
-      certificates = {
-        secret      = ""
-        ca_filename = ""
-      }
+      url     = module.mq.activemq_endpoint_url.url
+      web_url = module.mq.web_url
     }
-    redis = {
-      url      = module.elasticache.redis_endpoint_url.url
-      host     = module.elasticache.redis_endpoint_url.host
-      port     = module.elasticache.redis_endpoint_url.port
-      timeout  = 3000
-      ssl_host = ""
-      credentials = {
-        secret       = ""
-        username_key = ""
-        password_key = ""
-      }
-      certificates = {
-        secret      = ""
-        ca_filename = ""
-      }
-    }
-    s3 = {
+    redis = length(module.elasticache) > 0 ? {
+      url = module.elasticache[0].redis_endpoint_url.url
+    } : null
+    s3 = length(module.s3_os) > 0 ? {
       url                   = "https://s3.${var.region}.amazonaws.com"
-      bucket_name           = module.s3_os.s3_bucket_name
+      bucket_name           = module.s3_os[0].s3_bucket_name
       must_force_path_style = false
-      kms_key_id            = module.s3_os.kms_key_id
-    }
-    deployed_object_storages = var.object_storages_to_be_deployed
+      kms_key_id            = module.s3_os[0].kms_key_id
+    } : null
     mongodb = {
-      url                = module.mongodb.url
-      host               = module.mongodb.host
-      port               = module.mongodb.port
-      allow_insecure_tls = true
-      credentials = {
-        secret       = module.mongodb.user_credentials.secret
-        username_key = module.mongodb.user_credentials.username_key
-        password_key = module.mongodb.user_credentials.password_key
-      }
-      certificates = {
-        secret      = module.mongodb.user_certificate.secret
-        ca_filename = module.mongodb.user_certificate.ca_filename
-      }
+      url = module.mongodb.url
     }
     shared = {
       service_url       = "https://s3.${var.region}.amazonaws.com"
       kms_key_id        = module.s3_fs.kms_key_id
       name              = module.s3_fs.s3_bucket_name
-      access_key_id     = ""
-      secret_access_key = ""
       file_storage_type = "S3"
     }
   }

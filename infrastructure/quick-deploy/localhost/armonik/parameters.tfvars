@@ -8,7 +8,7 @@ logging_level = "Information"
 job_partitions_in_database = {
   name               = "job-partitions-in-database"
   image              = "rtsp/mongosh"
-  tag                = "1.5.4"
+  tag                = "1.7.1"
   image_pull_policy  = "IfNotPresent"
   image_pull_secrets = ""
   node_selector      = {}
@@ -21,7 +21,7 @@ control_plane = {
   service_type      = "ClusterIP"
   replicas          = 1
   image             = "dockerhubaneo/armonik_control"
-  tag               = "0.8.3"
+  tag               = "0.11.1"
   image_pull_policy = "IfNotPresent"
   port              = 5001
   limits = {
@@ -65,6 +65,27 @@ control_plane = {
 
 # Parameters of admin GUI
 admin_gui = {
+  name  = "admin-app"
+  image = "dockerhubaneo/armonik_admin_app"
+  tag   = "0.7.2"
+  port  = 1080
+  limits = {
+    cpu    = "1000m"
+    memory = "1024Mi"
+  }
+  requests = {
+    cpu    = "100m"
+    memory = "128Mi"
+  }
+  service_type       = "ClusterIP"
+  replicas           = 1
+  image_pull_policy  = "IfNotPresent"
+  image_pull_secrets = ""
+  node_selector      = {}
+}
+
+# Parameters of old admin GUI
+admin_old_gui = {
   api = {
     name  = "admin-api"
     image = "dockerhubaneo/armonik_admin_api"
@@ -79,10 +100,10 @@ admin_gui = {
       memory = "128Mi"
     }
   }
-  app = {
-    name  = "admin-app"
+  old = {
+    name  = "admin-old-gui"
     image = "dockerhubaneo/armonik_admin_app"
-    tag   = "0.7.2"
+    tag   = "0.8.0"
     port  = 1080
     limits = {
       cpu    = "1000m"
@@ -120,7 +141,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.8.3"
+      tag               = "0.11.1"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"  # set to null if you don't want to set it
@@ -136,7 +157,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.8.2"
+        tag               = "0.9.1"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"  # set to null if you don't want to set it
@@ -177,7 +198,7 @@ ingress = {
   service_type          = "LoadBalancer"
   replicas              = 1
   image                 = "nginxinc/nginx-unprivileged"
-  tag                   = "1.23.2"
+  tag                   = "1.23.3"
   image_pull_policy     = "IfNotPresent"
   http_port             = 5000
   grpc_port             = 5001
@@ -195,7 +216,7 @@ ingress = {
 authentication = {
   name                    = "job-authentication-in-database"
   image                   = "rtsp/mongosh"
-  tag                     = "1.5.4"
+  tag                     = "1.7.1"
   image_pull_policy       = "IfNotPresent"
   image_pull_secrets      = ""
   node_selector           = {}
@@ -204,12 +225,21 @@ authentication = {
   require_authorization   = false
 }
 
-object_storage_adapter = "Redis"
-
 extra_conf = {
   core = {
-    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    Amqp__AllowHostMismatch                    = true
+    Amqp__MaxPriority                          = "10"
+    Amqp__MaxRetries                           = "5"
+    Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
+    Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
+    Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+    MongoDB__AllowInsecureTls                  = true
+    MongoDB__TableStorage__PollingDelay        = "00:00:01"
+    MongoDB__DataRetention                     = "10.00:00:00"
+    Redis__Timeout                             = 30000
+    Redis__SslHost                             = "127.0.0.1"
   }
   control = {
     Submitter__MaxErrorAllowed = 50

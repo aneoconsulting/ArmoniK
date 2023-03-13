@@ -10,7 +10,6 @@ export PROFILE?=default
 export NAMESPACE?=armonik
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 export EKS_PARAMETERS_FILE?=$(CURRENT_DIR)/../eks/generated/eks-output.json
-export STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/../storage/generated/storage-output.json
 
 .PHONY: apply destroy
 
@@ -30,7 +29,6 @@ apply:
 	terraform apply \
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(EKS_PARAMETERS_FILE) \
-		-var-file $(STORAGE_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
@@ -47,7 +45,6 @@ delete:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(EKS_PARAMETERS_FILE) \
-		-var-file $(STORAGE_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \

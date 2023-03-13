@@ -50,3 +50,15 @@ variable "host_network" {
   description = "Host network for metrics server"
   type        = bool
 }
+
+# Repository of helm chart
+variable "helm_chart_repository" {
+  description = "Path to helm chart helm repository for metrics server"
+  type        = string
+}
+
+# Version of helm chart
+variable "helm_chart_version" {
+  description = "Version of chart helm repository for metrics server"
+  type        = string
+}

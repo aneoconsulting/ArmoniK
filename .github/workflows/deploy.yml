@@ -44,7 +44,10 @@ jobs:
           fetch-depth: 0
 
       - name: Install terraform
-        run: sh tools/install/terraform.sh
+        run: |
+          if ! which terraform 2>/dev/null; then
+            sh tools/install/terraform.sh
+          fi   
 
       - name: Check Format
         run: terraform fmt -check -recursive -diff
@@ -65,8 +68,11 @@ jobs:
           fetch-depth: 0
 
       - name: Install AWS CLI
-        run: sh tools/install/aws-cli.sh
-
+        run: |
+          if ! which aws 2>/dev/null; then
+            sh tools/install/aws-cli.sh
+          fi   
+        
       - name: Get Core Tag
         id: core
         run: |
@@ -343,6 +349,7 @@ jobs:
         shell: bash
         run: |
           set -ex
+          kubectl get deployment -n armonik -o jsonpath='{range .items[*]} {.metadata.name} {":\n"} {range .spec.template.spec.containers[*]} {"\t"}{.name}{"\t"} {"\t"} {"\t"} {"\t"} {.image}{"\n"}{end}{end}'
           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           docker run --rm \
             -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \

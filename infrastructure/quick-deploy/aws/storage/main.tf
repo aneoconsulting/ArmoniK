@@ -1,6 +1,6 @@
 # AWS KMS
 module "kms" {
-  count  = (var.s3_fs.kms_key_id != "" && var.elasticache.encryption_keys.kms_key_id != "" && var.elasticache.encryption_keys.log_kms_key_id != "" && var.mq.kms_key_id != "" ? 0 : 1)
+  count  = (can(coalesce(var.s3_fs.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.log_kms_key_id)) && can(coalesce(var.s3_os.kms_key_id)) && can(coalesce(var.mq.kms_key_id)) ? 0 : 1)
   source = "../../../modules/aws/kms"
   name   = local.kms_name
   tags   = local.tags
@@ -28,6 +28,7 @@ module "s3_fs" {
 
 # AWS Elasticache
 module "elasticache" {
+  count  = var.elasticache != null ? 1 : 0
   source = "../../../modules/aws/elasticache"
   tags   = local.tags
   name   = local.elasticache_name
@@ -48,6 +49,27 @@ module "elasticache" {
       kms_key_id     = (var.elasticache.encryption_keys.kms_key_id != "" ? var.elasticache.encryption_keys.kms_key_id : module.kms.0.arn)
       log_kms_key_id = (var.elasticache.encryption_keys.log_kms_key_id != "" ? var.elasticache.encryption_keys.log_kms_key_id : module.kms.0.arn)
     }
+  }
+}
+
+# AWS S3 as objects storage
+module "s3_os" {
+  count  = var.s3_os != null ? 1 : 0
+  source = "../../../modules/aws/s3"
+  tags   = local.tags
+  name   = local.s3_os_name
+  s3 = {
+    policy                                = var.s3_os.policy
+    attach_policy                         = var.s3_os.attach_policy
+    attach_deny_insecure_transport_policy = var.s3_os.attach_deny_insecure_transport_policy
+    attach_require_latest_tls_policy      = var.s3_os.attach_require_latest_tls_policy
+    attach_public_policy                  = var.s3_os.attach_public_policy
+    block_public_acls                     = var.s3_os.attach_public_policy
+    block_public_policy                   = var.s3_os.block_public_acls
+    ignore_public_acls                    = var.s3_os.block_public_policy
+    restrict_public_buckets               = var.s3_os.restrict_public_buckets
+    kms_key_id                            = local.s3_os_kms_key_id
+    sse_algorithm                         = (var.s3_os.kms_key_id != "" ? var.s3_os.sse_algorithm : "aws:kms")
   }
 }
 
@@ -110,6 +132,8 @@ module "efs_persistent_volume" {
     namespace          = var.pv_efs.csi_driver.namespace
     image_pull_secrets = var.pv_efs.csi_driver.image_pull_secrets
     node_selector      = var.pv_efs.csi_driver.node_selector
+    repository         = var.pv_efs.csi_driver.repository
+    version            = var.pv_efs.csi_driver.version
     docker_images = {
       efs_csi = {
         image = var.pv_efs.csi_driver.docker_images.efs_csi.image
@@ -131,24 +155,3 @@ module "efs_persistent_volume" {
   }
   tags = local.tags
 }
-
-# AWS S3 as objects storage
-module "s3_os" {
-  source = "../../../modules/aws/s3"
-  tags   = local.tags
-  name   = local.s3_os_name
-  s3 = {
-    policy                                = var.s3_os.policy
-    attach_policy                         = var.s3_os.attach_policy
-    attach_deny_insecure_transport_policy = var.s3_os.attach_deny_insecure_transport_policy
-    attach_require_latest_tls_policy      = var.s3_os.attach_require_latest_tls_policy
-    attach_public_policy                  = var.s3_os.attach_public_policy
-    block_public_acls                     = var.s3_os.attach_public_policy
-    block_public_policy                   = var.s3_os.block_public_acls
-    ignore_public_acls                    = var.s3_os.block_public_policy
-    restrict_public_buckets               = var.s3_os.restrict_public_buckets
-    kms_key_id                            = local.s3_os_kms_key_id
-    sse_algorithm                         = (var.s3_os.kms_key_id != "" ? var.s3_os.sse_algorithm : "aws:kms")
-  }
-}
-

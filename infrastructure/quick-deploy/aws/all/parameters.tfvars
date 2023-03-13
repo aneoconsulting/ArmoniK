@@ -27,14 +27,13 @@ tags = {
   "DST_Update"       = ""
 }
 
-
 vpc = {
   enable_private_subnet = false
 }
 
 # AWS EKS
 eks = {
-  cluster_version = "1.22"
+  cluster_version = "1.25"
   cluster_autoscaler = {
     node_selector = { "grid/type" = "Operator" }
   }
@@ -71,12 +70,15 @@ eks_worker_groups = [
     on_demand_percentage_above_base_capacity = 0
   }
 ]
+
 metrics_server = {
   node_selector = { "grid/type" = "Operator" }
 }
+
 keda = {
   node_selector = { "grid/type" = "Operator" }
 }
+
 # Object storage
 # Uncomment either the `elasticache` or the `s3_os` parameter
 elasticache = {
@@ -85,6 +87,7 @@ elasticache = {
   node_type          = "cache.r4.large"
   num_cache_clusters = 2
 }
+
 #s3_os = {}
 
 mq = {
@@ -92,6 +95,7 @@ mq = {
   engine_version     = "5.16.4"
   host_instance_type = "mq.m5.xlarge"
 }
+
 mongodb = {
   node_selector = { "grid/type" = "Operator" }
   #persistent_volume = {
@@ -103,6 +107,7 @@ mongodb = {
   #  }
   #}
 }
+
 pv_efs = {
   csi_driver = {
     node_selector = { "grid/type" = "Operator" }
@@ -127,16 +132,27 @@ prometheus = {
 
 metrics_exporter = {
   node_selector = { "grid/type" = "Operator" }
+  extra_conf = {
+    MongoDB__AllowInsecureTls              = true
+    Serilog__MinimumLevel                  = "Information"
+    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+  }
 }
 
-//parition_metrics_exporter = {
-//  node_selector = { "grid/type" = "Operator" }
-//}
+/*parition_metrics_exporter = {
+  node_selector = { "grid/type" = "Operator" }
+  extra_conf    = {
+    MongoDB__AllowInsecureTls           = true
+    Serilog__MinimumLevel               = "Information"
+    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+  }
+}*/
 
 fluent_bit = {
   is_daemonset = true
 }
-
 
 # Logging level
 logging_level = "Information"
@@ -156,6 +172,16 @@ control_plane = {
 
 # Parameters of admin GUI
 admin_gui = {
+  app = {
+    limits = {
+      cpu    = "1000m"
+      memory = "1024Mi"
+    }
+    requests = {
+      cpu    = "100m"
+      memory = "128Mi"
+    }
+  }
   api = {
     limits = {
       cpu    = "1000m"
@@ -166,7 +192,7 @@ admin_gui = {
       memory = "128Mi"
     }
   }
-  app = {
+  old = {
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
@@ -180,6 +206,7 @@ admin_gui = {
 
 # Parameters of the compute plane
 compute_plane = {
+  # Default partition that uses the C# extension for the worker
   default = {
     # number of replicas for each deployment of compute plane
     replicas = 1
@@ -190,7 +217,7 @@ compute_plane = {
         memory = "2048Mi"
       }
       requests = {
-        cpu    = "1000m"
+        cpu    = "500m"
         memory = "256Mi"
       }
     }
@@ -198,6 +225,156 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_worker_dll"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "500m"
+          memory = "512Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 100
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  # Partition for the stream worker
+  stream = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "500m"
+        memory = "256Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "dockerhubaneo/armonik_core_stream_test_worker"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "500m"
+          memory = "512Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 100
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  # Partition for the htcmock worker
+  htcmock = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "500m"
+        memory = "256Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "dockerhubaneo/armonik_core_htcmock_test_worker"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "500m"
+          memory = "512Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 100
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  # Partition for the bench worker
+  bench = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "500m"
+        memory = "256Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "dockerhubaneo/armonik_core_bench_test_worker"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -241,7 +418,21 @@ ingress = {
 
 extra_conf = {
   core = {
-    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    Amqp__AllowHostMismatch                    = false
+    Amqp__MaxPriority                          = "10"
+    Amqp__MaxRetries                           = "5"
+    Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
+    Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
+    Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+    MongoDB__TableStorage__PollingDelay        = "00:00:01"
+    MongoDB__DataRetention                     = "10.00:00:00"
+    MongoDB__AllowInsecureTls                  = true
+    Redis__Timeout                             = 3000
+    Redis__SslHost                             = ""
+  }
+  control = {
+    Submitter__MaxErrorAllowed = 50
   }
 }

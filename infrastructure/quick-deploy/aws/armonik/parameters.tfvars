@@ -20,7 +20,7 @@ logging_level = "Information"
 job_partitions_in_database = {
   name               = "job-partitions-in-database"
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongosh"
-  tag                = "1.5.4"
+  tag                = "1.7.1"
   image_pull_policy  = "IfNotPresent"
   image_pull_secrets = ""
   node_selector      = {}
@@ -33,7 +33,7 @@ control_plane = {
   service_type      = "ClusterIP"
   replicas          = 1
   image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag               = "0.8.3"
+  tag               = "0.11.1"
   image_pull_policy = "IfNotPresent"
   port              = 5001
   limits = {
@@ -76,7 +76,29 @@ control_plane = {
 }
 
 # Parameters of admin GUI
+# Put to null if we not want deploy it
 admin_gui = {
+  name  = "admin-app"
+  image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app"
+  tag   = "0.7.2"
+  port  = 1080
+  limits = {
+    cpu    = "1000m"
+    memory = "1024Mi"
+  }
+  requests = {
+    cpu    = "100m"
+    memory = "128Mi"
+  }
+  service_type       = "ClusterIP"
+  replicas           = 1
+  image_pull_policy  = "IfNotPresent"
+  image_pull_secrets = ""
+  node_selector      = {}
+}
+
+#Parameters of old admin GUI
+admin_old_gui = {
   api = {
     name  = "admin-api"
     image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-api"
@@ -91,10 +113,10 @@ admin_gui = {
       memory = "128Mi"
     }
   }
-  app = {
-    name  = "admin-app"
+  old = {
+    name  = "admin-old-gui"
     image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app"
-    tag   = "0.7.2"
+    tag   = "0.8.0"
     port  = 1080
     limits = {
       cpu    = "1000m"
@@ -124,7 +146,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.8.3"
+      tag               = "0.11.1"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"
@@ -140,7 +162,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.8.2"
+        tag               = "0.9.1"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
@@ -182,7 +204,7 @@ ingress = {
   service_type          = "LoadBalancer"
   replicas              = 1
   image                 = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/nginx"
-  tag                   = "1.23.2"
+  tag                   = "1.23.3"
   image_pull_policy     = "IfNotPresent"
   http_port             = 5000
   grpc_port             = 5001
@@ -200,7 +222,7 @@ ingress = {
 authentication = {
   name                    = "job-authentication-in-database"
   image                   = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongosh"
-  tag                     = "1.5.4"
+  tag                     = "1.7.1"
   image_pull_policy       = "IfNotPresent"
   image_pull_secrets      = ""
   node_selector           = {}
@@ -209,12 +231,24 @@ authentication = {
   require_authorization   = false
 }
 
-object_storage_adapter = "Redis"
-
 extra_conf = {
   core = {
-    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    Amqp__AllowHostMismatch                    = false
+    Amqp__MaxPriority                          = "10"
+    Amqp__MaxRetries                           = "5"
+    Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
+    Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
+    Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+    MongoDB__TableStorage__PollingDelay        = "00:00:01"
+    MongoDB__DataRetention                     = "10.00:00:00"
+    MongoDB__AllowInsecureTls                  = true
+    Redis__Timeout                             = 3000
+    Redis__SslHost                             = ""
+  }
+  control = {
+    Submitter__MaxErrorAllowed = 50
   }
 }
 

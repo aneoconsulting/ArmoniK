@@ -108,6 +108,29 @@ variable "control_plane" {
 variable "admin_gui" {
   description = "Parameters of the admin GUI"
   type = object({
+    name  = string
+    image = string
+    tag   = string
+    port  = number
+    limits = object({
+      cpu    = string
+      memory = string
+    })
+    requests = object({
+      cpu    = string
+      memory = string
+    })
+    service_type       = string
+    replicas           = number
+    image_pull_policy  = string
+    image_pull_secrets = string
+    node_selector      = any
+  })
+}
+
+variable "admin_old_gui" {
+  description = "Parameters of the admin GUI"
+  type = object({
     api = object({
       name  = string
       image = string
@@ -122,7 +145,7 @@ variable "admin_gui" {
         memory = string
       })
     })
-    app = object({
+    old = object({
       name  = string
       image = string
       tag   = string
@@ -228,21 +251,4 @@ variable "authentication" {
     require_authentication  = bool
     require_authorization   = bool
   })
-}
-
-variable "object_storage_adapter" {
-  description = "storage plugin to use."
-  type        = string
-}
-
-variable "table_storage_adapter" {
-  description = "Table plugin to use."
-  type        = string
-  default     = "ArmoniK.Adapters.MongoDB.TableStorage"
-}
-
-variable "queue_storage_adapter" {
-  description = "Queue plugin to use."
-  type        = string
-  default     = "ArmoniK.Adapters.Amqp.QueueStorage"
 }

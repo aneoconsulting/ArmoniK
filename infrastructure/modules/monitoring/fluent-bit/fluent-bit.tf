@@ -132,7 +132,8 @@ resource "kubernetes_daemonset" "fluent_bit" {
         dns_policy                       = "ClusterFirstWithHostNet"
         termination_grace_period_seconds = 10
         service_account_name             = kubernetes_service_account.fluent_bit.0.metadata.0.name
-        #service_account_name             = kubernetes_manifest.service_account_fluent_bit.0.manifest.metadata.name
+        # To use kubernetes_manifest, you should have Kubernetes already installed !!
+        #service_account_name = kubernetes_manifest.service_account_fluent_bit.0.manifest.metadata.name
         toleration {
           key      = "node-role.kubernetes.io/master"
           operator = "Exists"

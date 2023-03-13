@@ -1,63 +1,25 @@
-# Storage
 output "storage_endpoint_url" {
   description = "Storage endpoints URLs"
   value = {
+    object_storage_adapter   = local.object_storage_adapter
+    table_storage_adapter    = local.table_storage_adapter
+    queue_storage_adapter    = local.queue_storage_adapter
+    deployed_object_storages = local.deployed_object_storages
+    deployed_table_storages  = local.deployed_table_storages
+    deployed_queue_storages  = local.deployed_queue_storages
     activemq = {
       url     = module.activemq.url
-      host    = module.activemq.host
-      port    = module.activemq.port
       web_url = module.activemq.web_url
-      credentials = {
-        secret       = module.activemq.user_credentials.secret
-        username_key = module.activemq.user_credentials.username_key
-        password_key = module.activemq.user_credentials.password_key
-      }
-      certificates = {
-        secret      = module.activemq.user_certificate.secret
-        ca_filename = module.activemq.user_certificate.ca_filename
-      }
-      allow_host_mismatch = true
     }
-    redis = {
-      url  = module.redis.url
-      host = module.redis.host
-      port = module.redis.port
-      credentials = {
-        secret       = module.redis.user_credentials.secret
-        username_key = module.redis.user_credentials.username_key
-        password_key = module.redis.user_credentials.password_key
-      }
-      certificates = {
-        secret      = module.redis.user_certificate.secret
-        ca_filename = module.redis.user_certificate.ca_filename
-      }
-      timeout  = 30000
-      ssl_host = "127.0.0.1"
-    }
-    s3 = {
-      url                   = try(module.minio[0].url, "")
-      host                  = try(module.minio[0].host, "")
-      port                  = try(module.minio[0].port, "")
-      login                 = try(module.minio[0].login, "")
-      password              = try(module.minio[0].password, "")
-      bucket_name           = try(module.minio[0].bucket_name, "")
-      must_force_path_style = try(module.minio[0].must_force_path_style, false)
-    }
-    deployed_object_storages = var.object_storages_to_be_deployed
+    redis = length(module.redis) > 0 ? {
+      url = module.redis[0].url
+    } : null
+    s3 = length(module.minio) > 0 ? {
+      url         = try(module.minio[0].url, "")
+      bucket_name = try(module.minio[0].bucket_name, "")
+    } : null
     mongodb = {
-      url  = module.mongodb.url
-      host = module.mongodb.host
-      port = module.mongodb.port
-      credentials = {
-        secret       = module.mongodb.user_credentials.secret
-        username_key = module.mongodb.user_credentials.username_key
-        password_key = module.mongodb.user_credentials.password_key
-      }
-      certificates = {
-        secret      = module.mongodb.user_certificate.secret
-        ca_filename = module.mongodb.user_certificate.ca_filename
-      }
-      allow_insecure_tls = true
+      url = module.mongodb.url
     }
     shared = {
       host_path         = local.shared_storage_host_path

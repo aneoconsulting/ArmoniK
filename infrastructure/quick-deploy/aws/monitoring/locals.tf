@@ -7,6 +7,8 @@ resource "random_string" "random_resources" {
   numeric = true
 }
 
+resource "time_static" "creation_date" {}
+
 locals {
   random_string             = random_string.random_resources.result
   suffix                    = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
@@ -17,7 +19,7 @@ locals {
     "application"        = "armonik"
     "deployment version" = local.suffix
     "created by"         = data.aws_caller_identity.current.arn
-    "date"               = formatdate("EEE-DD-MMM-YY-hh:mm:ss:ZZZ", tostring(timestamp()))
+    "creation date"      = time_static.creation_date.rfc3339
   })
 
   # Seq
@@ -57,17 +59,19 @@ locals {
 
   # Metrics exporter
   metrics_exporter_image              = try(var.monitoring.metrics_exporter.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter")
-  metrics_exporter_tag                = try(var.monitoring.metrics_exporter.tag, "0.8.3")
+  metrics_exporter_tag                = try(var.monitoring.metrics_exporter.tag, "0.11.1")
   metrics_exporter_image_pull_secrets = try(var.monitoring.metrics_exporter.image_pull_secrets, "")
   metrics_exporter_service_type       = try(var.monitoring.metrics_exporter.service_type, "ClusterIP")
   metrics_exporter_node_selector      = try(var.monitoring.metrics_exporter.node_selector, {})
+  metrics_exporter_extra_conf         = try(var.monitoring.metrics_exporter.extra_conf, {})
 
   # Partition metrics exporter
   partition_metrics_exporter_image              = try(var.monitoring.partition_metrics_exporter.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/partition-metrics-exporter")
-  partition_metrics_exporter_tag                = try(var.monitoring.partition_metrics_exporter.tag, "0.8.3")
+  partition_metrics_exporter_tag                = try(var.monitoring.partition_metrics_exporter.tag, "0.11.1")
   partition_metrics_exporter_image_pull_secrets = try(var.monitoring.partition_metrics_exporter.image_pull_secrets, "")
   partition_metrics_exporter_service_type       = try(var.monitoring.partition_metrics_exporter.service_type, "ClusterIP")
   partition_metrics_exporter_node_selector      = try(var.monitoring.partition_metrics_exporter.node_selector, {})
+  partition_metrics_exporter_extra_conf         = try(var.monitoring.partition_metrics_exporter.extra_conf, {})
 
   # CloudWatch
   cloudwatch_enabled           = tobool(try(var.monitoring.cloudwatch.enabled, false))

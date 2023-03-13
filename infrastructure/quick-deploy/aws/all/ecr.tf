@@ -12,6 +12,7 @@ locals {
     [var.job_partitions_in_database.image, var.job_partitions_in_database.tag],
     [var.admin_gui.api.image, var.admin_gui.api.tag],
     [var.admin_gui.app.image, var.admin_gui.app.tag],
+    [var.admin_gui.old.image, var.admin_gui.old.tag],
     [var.control_plane.image, var.control_plane.tag],
     var.pv_efs == null ? null : [var.pv_efs.csi_driver.images.efs_csi.name, var.pv_efs.csi_driver.images.efs_csi.tag],
     var.pv_efs == null ? null : [var.pv_efs.csi_driver.images.livenessprobe.name, var.pv_efs.csi_driver.images.livenessprobe.tag],

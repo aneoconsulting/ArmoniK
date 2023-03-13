@@ -55,23 +55,8 @@ s3_fs = {
   sse_algorithm                         = ""
 }
 
-# S3 as shared storage
-s3_os = {
-  name                                  = "armonik-s3os"
-  policy                                = ""
-  attach_policy                         = false
-  attach_deny_insecure_transport_policy = true
-  attach_require_latest_tls_policy      = true
-  attach_public_policy                  = false
-  block_public_acls                     = true
-  block_public_policy                   = true
-  ignore_public_acls                    = true
-  restrict_public_buckets               = true
-  kms_key_id                            = ""
-  sse_algorithm                         = ""
-}
-
-
+# Object storage
+# Uncomment either the `Elasticache` or the `S3` parameter
 # AWS Elasticache
 elasticache = {
   name                        = "armonik-elasticache"
@@ -97,6 +82,22 @@ elasticache = {
   }
 }
 
+# S3 as shared storage
+/*s3_os = {
+  name                                  = "armonik-s3os"
+  policy                                = ""
+  attach_policy                         = false
+  attach_deny_insecure_transport_policy = true
+  attach_require_latest_tls_policy      = true
+  attach_public_policy                  = false
+  block_public_acls                     = true
+  block_public_policy                   = true
+  ignore_public_acls                    = true
+  restrict_public_buckets               = true
+  kms_key_id                            = ""
+  sse_algorithm                         = ""
+}*/
+
 # MQ parameters
 mq = {
   name                    = "armonik-mq"
@@ -120,10 +121,11 @@ mq_credentials = {
 # Parameters for MongoDB
 mongodb = {
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongodb"
-  tag                = "5.0.9"
+  tag                = "6.0.1"
   node_selector      = { "grid/type" = "Operator" }
   image_pull_secrets = ""
-  persistent_volume  = null # example: {storage_provisioner="efs.csi.aws.com",parameters=null,resources={limits=null,requests={storage="5Gi"}}}
+  persistent_volume  = null
+  # example: {storage_provisioner="efs.csi.aws.com",parameters=null,resources={limits=null,requests={storage="5Gi"}}}
 }
 
 # AWS EFS as Persistent volume
@@ -144,26 +146,25 @@ pv_efs = {
     namespace          = "kube-system"
     image_pull_secrets = ""
     node_selector      = { "grid/type" = "Operator" }
+    repository         = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
+    version            = "2.3.0"
     docker_images = {
       efs_csi = {
         image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-efs-csi-driver"
-        tag   = "v1.4.3"
+        tag   = "v1.5.1"
       }
       livenessprobe = {
         image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/livenessprobe"
-        tag   = "v2.2.0-eks-1-18-13"
+        tag   = "v2.9.0-eks-1-22-19"
       }
       node_driver_registrar = {
         image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/node-driver-registrar"
-        tag   = "v2.1.0-eks-1-18-13"
+        tag   = "v2.7.0-eks-1-22-19"
       }
       external_provisioner = {
         image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/external-provisioner"
-        tag   = "v2.1.1-eks-1-18-13"
+        tag   = "v3.4.0-eks-1-22-19"
       }
     }
   }
 }
-
-# The list of object storage to be deployed : "MongoDB", "Redis", "S3"
-object_storages_to_be_deployed = ["Redis"]

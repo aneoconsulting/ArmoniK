@@ -37,46 +37,84 @@ locals {
 
 # Node IP of admin GUI pod
 data "external" "admin_gui_node_ip" {
+  count       = length(kubernetes_service.admin_gui)
   depends_on  = [kubernetes_service.admin_gui]
   program     = ["bash", "get_node_ip.sh", "admin-gui", var.namespace]
   working_dir = "${var.working_dir}/utils/scripts"
 }
 
 locals {
-  admin_gui_node_ip = try(tomap(data.external.admin_gui_node_ip.result).node_ip, "")
+  admin_gui_node_ip = try(tomap(data.external.admin_gui_node_ip[0].result).node_ip, "")
 
-  admin_gui_load_balancer = (kubernetes_service.admin_gui.spec.0.type == "LoadBalancer" ? {
-    ip       = (kubernetes_service.admin_gui.status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.admin_gui.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.admin_gui.status.0.load_balancer.0.ingress.0.ip)
-    api_port = kubernetes_service.admin_gui.spec.0.port.0.port
-    app_port = kubernetes_service.admin_gui.spec.0.port.1.port
+  admin_gui_load_balancer = length(kubernetes_service.admin_gui) > 0 ? (kubernetes_service.admin_gui[0].spec.0.type == "LoadBalancer" ? {
+    ip       = (kubernetes_service.admin_gui[0].status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.admin_gui[0].status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.admin_gui[0].status.0.load_balancer.0.ingress.0.ip)
+    app_port = kubernetes_service.admin_gui[0].spec.0.port.0.port
+    } : {
+    ip       = ""
+    app_port = ""
+  }) : null
+
+  admin_gui_node_port = length(kubernetes_service.admin_gui) > 0 ? (local.admin_gui_load_balancer.ip == "" && kubernetes_service.admin_gui[0].spec.0.type == "NodePort" ? {
+    ip       = local.admin_gui_node_ip
+    app_port = kubernetes_service.admin_gui[0].spec.0.port.0.node_port
+    } : {
+    ip       = local.admin_gui_load_balancer.ip
+    app_port = local.admin_gui_load_balancer.app_port
+  }) : null
+
+  admin_gui_endpoints = length(kubernetes_service.admin_gui) > 0 ? (local.admin_gui_node_port.ip == "" && kubernetes_service.admin_gui[0].spec.0.type == "ClusterIP" ? {
+    ip       = kubernetes_service.admin_gui[0].spec.0.cluster_ip
+    app_port = kubernetes_service.admin_gui[0].spec.0.port.0.port
+    } : {
+    ip       = local.admin_gui_node_port.ip
+    app_port = local.admin_gui_node_port.app_port
+  }) : null
+
+  admin_app_url = length(kubernetes_service.admin_gui) > 0 ? "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.app_port}" : null
+}
+
+# Node IP of admin old GUI pod
+data "external" "admin_old_gui_node_ip" {
+  count       = length(kubernetes_service.admin_old_gui)
+  depends_on  = [kubernetes_service.admin_old_gui]
+  program     = ["bash", "get_node_ip.sh", "admin-old-gui", var.namespace]
+  working_dir = "${var.working_dir}/utils/scripts"
+}
+
+locals {
+  admin_old_gui_node_ip = try(tomap(data.external.admin_old_gui_node_ip[0].result).node_ip, "")
+  admin_old_gui_load_balancer = length(kubernetes_service.admin_old_gui) > 0 ? (kubernetes_service.admin_old_gui[0].spec.0.type == "LoadBalancer" ? {
+    ip       = (kubernetes_service.admin_old_gui[0].status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.admin_old_gui[0].status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.admin_old_gui[0].status.0.load_balancer.0.ingress.0.ip)
+    api_port = kubernetes_service.admin_old_gui[0].spec.0.port.0.port
+    app_port = kubernetes_service.admin_old_gui[0].spec.0.port.1.port
     } : {
     ip       = ""
     api_port = ""
     app_port = ""
-  })
+  }) : null
 
-  admin_gui_node_port = (local.admin_gui_load_balancer.ip == "" && kubernetes_service.admin_gui.spec.0.type == "NodePort" ? {
+  admin_old_gui_node_port = length(kubernetes_service.admin_old_gui) > 0 ? (local.admin_gui_load_balancer.ip == "" && kubernetes_service.admin_old_gui[0].spec.0.type == "NodePort" ? {
     ip       = local.admin_gui_node_ip
-    api_port = kubernetes_service.admin_gui.spec.0.port.0.node_port
-    app_port = kubernetes_service.admin_gui.spec.0.port.1.node_port
+    api_port = kubernetes_service.admin_old_gui[0].spec.0.port.0.node_port
+    app_port = kubernetes_service.admin_old_gui[0].spec.0.port.1.node_port
     } : {
-    ip       = local.admin_gui_load_balancer.ip
-    api_port = local.admin_gui_load_balancer.api_port
-    app_port = local.admin_gui_load_balancer.app_port
-  })
+    ip       = local.admin_old_gui_load_balancer.ip
+    api_port = local.admin_old_gui_load_balancer.api_port
+    app_port = local.admin_old_gui_load_balancer.app_port
+  }) : null
 
-  admin_gui_endpoints = (local.admin_gui_node_port.ip == "" && kubernetes_service.admin_gui.spec.0.type == "ClusterIP" ? {
-    ip       = kubernetes_service.admin_gui.spec.0.cluster_ip
-    api_port = kubernetes_service.admin_gui.spec.0.port.0.port
-    app_port = kubernetes_service.admin_gui.spec.0.port.1.port
+  admin_old_gui_endpoints = length(kubernetes_service.admin_old_gui) > 0 ? (local.admin_gui_node_port.ip == "" && kubernetes_service.admin_old_gui[0].spec.0.type == "ClusterIP" ? {
+    ip       = kubernetes_service.admin_old_gui[0].spec.0.cluster_ip
+    api_port = kubernetes_service.admin_old_gui[0].spec.0.port.0.port
+    app_port = kubernetes_service.admin_old_gui[0].spec.0.port.1.port
     } : {
-    ip       = local.admin_gui_node_port.ip
-    api_port = local.admin_gui_node_port.api_port
-    app_port = local.admin_gui_node_port.app_port
-  })
+    ip       = local.admin_old_gui_node_port.ip
+    api_port = local.admin_old_gui_node_port.api_port
+    app_port = local.admin_old_gui_node_port.app_port
+  }) : null
 
-  admin_api_url = "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.api_port}/api"
-  admin_app_url = "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.app_port}"
+  admin_api_url = length(kubernetes_service.admin_old_gui) > 0 ? "http://${local.admin_old_gui_endpoints.ip}:${local.admin_old_gui_endpoints.api_port}/api" : null
+  admin_old_url = length(kubernetes_service.admin_old_gui) > 0 ? "http://${local.admin_old_gui_endpoints.ip}:${local.admin_old_gui_endpoints.app_port}/" : null
 }
 
 # Node IP of ingress pod
