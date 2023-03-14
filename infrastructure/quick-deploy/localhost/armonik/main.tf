@@ -25,7 +25,6 @@ module "armonik" {
   }, v) }
   control_plane              = var.control_plane
   admin_gui                  = var.admin_gui
-  admin_old_gui              = var.admin_old_gui
   ingress                    = var.ingress
   job_partitions_in_database = var.job_partitions_in_database
   authentication             = var.authentication

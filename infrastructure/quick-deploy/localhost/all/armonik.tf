@@ -35,14 +35,6 @@ module "armonik" {
   admin_gui = merge(var.admin_gui, {
     tag = try(coalesce(var.admin_gui.tag), local.default_tags[var.admin_gui.image])
   })
-  admin_old_gui = merge(var.admin_old_gui, {
-    api = merge(var.admin_old_gui.api, {
-      tag = try(coalesce(var.admin_old_gui.api.tag), local.default_tags[var.admin_old_gui.api.image])
-    })
-    old = merge(var.admin_old_gui.old, {
-      tag = try(coalesce(var.admin_old_gui.old.tag), local.default_tags[var.admin_old_gui.old.image])
-    })
-  })
   ingress = merge(var.ingress, {
     tag = try(coalesce(var.ingress.tag), local.default_tags[var.ingress.image])
   })

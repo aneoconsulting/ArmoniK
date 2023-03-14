@@ -128,45 +128,6 @@ variable "admin_gui" {
   })
 }
 
-variable "admin_old_gui" {
-  description = "Parameters of the admin GUI"
-  type = object({
-    api = object({
-      name  = string
-      image = string
-      tag   = string
-      port  = number
-      limits = object({
-        cpu    = string
-        memory = string
-      })
-      requests = object({
-        cpu    = string
-        memory = string
-      })
-    })
-    old = object({
-      name  = string
-      image = string
-      tag   = string
-      port  = number
-      limits = object({
-        cpu    = string
-        memory = string
-      })
-      requests = object({
-        cpu    = string
-        memory = string
-      })
-    })
-    service_type       = string
-    replicas           = number
-    image_pull_policy  = string
-    image_pull_secrets = string
-    node_selector      = any
-  })
-}
-
 # Parameters of the compute plane
 variable "compute_plane" {
   description = "Parameters of the compute plane"

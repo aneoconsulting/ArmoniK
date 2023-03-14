@@ -309,46 +309,6 @@ variable "admin_gui" {
   default = {}
 }
 
-variable "admin_old_gui" {
-  description = "Parameters of the old admin GUI"
-  type = object({
-    api = optional(object({
-      name  = optional(string, "admin-api")
-      image = optional(string, "dockerhubaneo/armonik_admin_api")
-      tag   = optional(string)
-      port  = optional(number, 3333)
-      limits = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-      requests = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-    }), {})
-    old = optional(object({
-      name  = optional(string, "admin-old-gui")
-      image = optional(string, "dockerhubaneo/armonik_admin_app")
-      tag   = optional(string, "0.8.0")
-      port  = optional(number, 1080)
-      limits = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-      requests = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-    }), {})
-    service_type       = optional(string, "ClusterIP")
-    replicas           = optional(number, 1)
-    image_pull_policy  = optional(string, "IfNotPresent")
-    image_pull_secrets = optional(string, "")
-    node_selector      = optional(any, {})
-  })
-  default = {}
-}
-
 # Parameters of the compute plane
 variable "compute_plane" {
   description = "Parameters of the compute plane"

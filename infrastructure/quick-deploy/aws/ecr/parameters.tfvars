@@ -76,11 +76,6 @@ ecr = {
       tag   = "0.7.2"
     },
     {
-      name  = "armonik-admin-old"
-      image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.8.0"
-    },
-    {
       name  = "mongosh"
       image = "rtsp/mongosh"
       tag   = "1.7.1"
