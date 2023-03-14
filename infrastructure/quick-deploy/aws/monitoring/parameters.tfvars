@@ -13,9 +13,6 @@ k8s_config_context = "default"
 # Kubernetes namespace
 namespace = "armonik"
 
-# Logging level
-logging_level = "Information"
-
 tags = {
   "name"             = ""
   "env"              = ""
@@ -49,7 +46,7 @@ monitoring = {
   seq = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
-    tag                = "2022.1"
+    tag                = "2023.1"
     port               = 8080
     image_pull_secrets = ""
     service_type       = "ClusterIP"
@@ -59,7 +56,7 @@ monitoring = {
   grafana = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/grafana"
-    tag                = "9.2.1"
+    tag                = "9.3.6"
     port               = 3000
     image_pull_secrets = ""
     service_type       = "ClusterIP"
@@ -68,30 +65,42 @@ monitoring = {
   node_exporter = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/node-exporter"
-    tag                = "v1.3.1"
+    tag                = "v1.5.0"
     image_pull_secrets = ""
     node_selector      = { "grid/type" = "Operator" }
   }
   prometheus = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus"
-    tag                = "v2.36.1"
+    tag                = "v2.42.0"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
   }
   metrics_exporter = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter"
-    tag                = "0.8.3"
+    tag                = "0.11.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
+    extra_conf = {
+      MongoDB__AllowInsecureTls              = true
+      Serilog__MinimumLevel                  = "Information"
+      MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    }
   }
   partition_metrics_exporter = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/partition-metrics-exporter"
-    tag                = "0.8.3"
+    tag                = "0.11.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
+    extra_conf = {
+      MongoDB__AllowInsecureTls              = true
+      Serilog__MinimumLevel                  = "Information"
+      MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    }
   }
   cloudwatch = {
     enabled           = true
@@ -100,7 +109,7 @@ monitoring = {
   }
   fluent_bit = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"
-    tag                = "1.9.9"
+    tag                = "2.0.9"
     image_pull_secrets = ""
     is_daemonset       = true
     http_port          = 2020 # 0 or 2020

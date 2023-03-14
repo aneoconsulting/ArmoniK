@@ -44,10 +44,20 @@ server {
     location = /admin {
         rewrite ^ $scheme://$http_host/admin/ permanent;
     }
-    location /admin/ {
-        proxy_pass ${local.admin_gui_url};
+    location = /old-admin {
+        rewrite ^ $scheme://$http_host/old-admin/ permanent;
     }
-
+%{if var.admin_gui != null~}
+    location /admin/ {
+        proxy_pass ${local.admin_app_url};
+    }
+    location /old-admin/ {
+        proxy_pass ${local.admin_old_url};
+    }
+    location /api {
+        proxy_pass ${local.admin_api_url};
+    }
+%{endif~}
 
     location ~* ^/armonik\. {
 %{if var.ingress != null ? var.ingress.mtls : false~}
@@ -68,7 +78,7 @@ server {
         grpc_send_timeout 1d;
     }
 
-%{if local.seq_web_url != ""~}
+%{if data.kubernetes_secret.seq.data.enabled~}
     location = /seq {
         rewrite ^ $scheme://$http_host/seq/ permanent;
     }
@@ -80,13 +90,13 @@ server {
         proxy_set_header Host $http_host;
         proxy_set_header Accept-Encoding "";
         rewrite  ^/seq/(.*)  /$1 break;
-        proxy_pass ${local.seq_web_url}/;
+        proxy_pass ${data.kubernetes_secret.seq.data.web_url}/;
         sub_filter '<head>' '<head><base href="$${scheme}://$${http_host}/seq/">';
         sub_filter_once on;
         proxy_hide_header content-security-policy;
     }
 %{endif~}
-%{if local.grafana_url != ""~}
+%{if data.kubernetes_secret.grafana.data.enabled != ""~}
     location = /grafana {
         rewrite ^ $scheme://$http_host/grafana/ permanent;
     }
@@ -96,7 +106,7 @@ server {
         proxy_set_header X-Certificate-Client-Fingerprint $ssl_client_fingerprint;
 %{endif~}
         proxy_set_header Host $http_host;
-        proxy_pass ${local.grafana_url}/;
+        proxy_pass ${data.kubernetes_secret.grafana.data.url}/;
         sub_filter '<head>' '<head><base href="$${scheme}://$${http_host}/grafana/">';
         sub_filter_once on;
         proxy_intercept_errors on;
@@ -114,7 +124,7 @@ server {
 %{endif~}
         proxy_http_version 1.1;
         proxy_set_header Host $http_host;
-        proxy_pass ${local.grafana_url}/;
+        proxy_pass ${data.kubernetes_secret.grafana.data.url}/;
     }
 %{endif~}
 }

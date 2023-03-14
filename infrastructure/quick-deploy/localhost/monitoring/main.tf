@@ -36,13 +36,13 @@ module "metrics_exporter" {
   namespace            = var.namespace
   service_type         = local.metrics_exporter_service_type
   node_selector        = local.metrics_exporter_node_selector
-  logging_level        = var.logging_level
   storage_endpoint_url = var.storage_endpoint_url
   docker_image = {
     image              = local.metrics_exporter_image
     tag                = local.metrics_exporter_tag
     image_pull_secrets = local.metrics_exporter_image_pull_secrets
   }
+  extra_conf  = local.metrics_exporter_extra_conf
   working_dir = "${path.root}/../../.."
 }
 
@@ -60,6 +60,7 @@ module "metrics_exporter" {
 #    tag                = local.partition_metrics_exporter_tag
 #    image_pull_secrets = local.partition_metrics_exporter_image_pull_secrets
 #  }
+#  extra_conf  = local.partition_metrics_exporter_extra_conf
 #  working_dir = "${path.root}/../../.."
 #  depends_on  = [module.metrics_exporter]
 #}

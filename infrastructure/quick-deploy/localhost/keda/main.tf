@@ -12,6 +12,8 @@ module "keda" {
       tag   = local.keda_metricsApiServer_tag
     }
   }
-  image_pull_secrets = local.keda_image_pull_secrets
-  node_selector      = local.keda_node_selector
+  image_pull_secrets    = local.keda_image_pull_secrets
+  node_selector         = local.keda_node_selector
+  helm_chart_repository = var.keda.helm_chart_repository
+  helm_chart_version    = var.keda.helm_chart_version
 }

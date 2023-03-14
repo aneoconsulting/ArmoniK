@@ -52,13 +52,19 @@ variable "vpc" {
   description = "Parameters of AWS VPC"
   type = object({
     # list of CIDR block associated with the private subnet
-    cidr_block_private = optional(list(string), ["10.0.0.0/18", "10.0.64.0/18", "10.0.128.0/18"])
+    cidr_block_private = optional(list(string), [
+      "10.0.0.0/18", "10.0.64.0/18", "10.0.128.0/18"
+    ])
     # list of CIDR block associated with the public subnet
-    cidr_block_public = optional(list(string), ["10.0.192.0/24", "10.0.193.0/24", "10.0.194.0/24"])
+    cidr_block_public = optional(list(string), [
+      "10.0.192.0/24", "10.0.193.0/24", "10.0.194.0/24"
+    ])
     # Main CIDR block associated to the VPC
     main_cidr_block = optional(string, "10.0.0.0/16")
     # cidr block associated with pod
-    pod_cidr_block_private                          = optional(list(string), ["10.1.0.0/16", "10.2.0.0/16", "10.3.0.0/16"])
+    pod_cidr_block_private = optional(list(string), [
+      "10.1.0.0/16", "10.2.0.0/16", "10.3.0.0/16"
+    ])
     enable_private_subnet                           = optional(bool, true)
     flow_log_cloudwatch_log_group_retention_in_days = optional(number, 30)
     peering = optional(object({
@@ -82,7 +88,7 @@ variable "eks" {
     cluster_log_retention_in_days         = optional(number, 30)
     docker_images = optional(object({
       cluster_autoscaler = optional(object({
-        image = optional(string, "k8s.gcr.io/autoscaling/cluster-autoscaler")
+        image = optional(string, "registry.k8s.io/autoscaling/cluster-autoscaler")
         tag   = optional(string)
       }), {})
       instance_refresh = optional(object({
@@ -104,6 +110,14 @@ variable "eks" {
       scale_down_unneeded_time              = optional(string, "2m")
       skip_nodes_with_system_pods           = optional(bool, true)
       node_selector                         = optional(any, {})
+      version                               = optional(string, "9.24.0")
+      repository                            = optional(string, "https://kubernetes.github.io/autoscaler")
+      namespace                             = optional(string, "kube-system")
+    }), {})
+    instance_refresh = optional(object({
+      namespace  = optional(string, "kube-system")
+      repository = optional(string, "https://aws.github.io/eks-charts")
+      version    = optional(string, "0.21.0")
     }), {})
     map_roles = optional(list(object({
       rolearn  = string
@@ -135,7 +149,7 @@ variable "metrics_server" {
   description = "Parameters of the metrics server"
   type = object({
     namespace          = optional(string, "kube-system"),
-    image_name         = optional(string, "k8s.gcr.io/metrics-server/metrics-server"),
+    image_name         = optional(string, "registry.k8s.io/metrics-server/metrics-server"),
     image_tag          = optional(string),
     image_pull_secrets = optional(string, ""),
     node_selector      = optional(any, {}),
@@ -145,7 +159,9 @@ variable "metrics_server" {
       "--kubelet-use-node-status-port",
       "--metric-resolution=15s",
     ]),
-    host_network = optional(bool, false),
+    host_network          = optional(bool, false),
+    helm_chart_repository = optional(string, "https://kubernetes-sigs.github.io/metrics-server/")
+    helm_chart_version    = optional(string, "3.8.3")
   })
   default = {}
 }
@@ -154,13 +170,15 @@ variable "metrics_server" {
 variable "keda" {
   description = "Keda configuration"
   type = object({
-    namespace            = optional(string, "default")
-    keda_image_name      = optional(string, "ghcr.io/kedacore/keda"),
-    keda_image_tag       = optional(string),
-    apiserver_image_name = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
-    apiserver_image_tag  = optional(string),
-    pull_secrets         = optional(string, ""),
-    node_selector        = optional(any, {})
+    namespace             = optional(string, "default")
+    keda_image_name       = optional(string, "ghcr.io/kedacore/keda"),
+    keda_image_tag        = optional(string),
+    apiserver_image_name  = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
+    apiserver_image_tag   = optional(string),
+    pull_secrets          = optional(string, ""),
+    node_selector         = optional(any, {})
+    helm_chart_repository = optional(string, "https://kedacore.github.io/charts")
+    helm_chart_version    = optional(string, "2.9.4")
   })
   default = {}
 }
@@ -183,23 +201,6 @@ variable "s3_fs" {
   default = {}
 }
 
-# S3 as object storage
-variable "s3_os" {
-  description = "AWS S3 bucket as shared storage"
-  type = object({
-    policy                                = optional(string, "")
-    attach_policy                         = optional(bool, false)
-    attach_deny_insecure_transport_policy = optional(bool, true)
-    attach_require_latest_tls_policy      = optional(bool, true)
-    attach_public_policy                  = optional(bool, false)
-    block_public_acls                     = optional(bool, true)
-    block_public_policy                   = optional(bool, true)
-    ignore_public_acls                    = optional(bool, true)
-    restrict_public_buckets               = optional(bool, true)
-    sse_algorithm                         = optional(string, "")
-  })
-  default = null
-}
 
 # AWS Elasticache
 variable "elasticache" {
@@ -219,6 +220,24 @@ variable "elasticache" {
       slow_log   = optional(string, "")
       engine_log = optional(string, "")
     }), {})
+  })
+  default = null
+}
+
+# S3 as object storage
+variable "s3_os" {
+  description = "AWS S3 bucket as shared storage"
+  type = object({
+    policy                                = optional(string, "")
+    attach_policy                         = optional(bool, false)
+    attach_deny_insecure_transport_policy = optional(bool, true)
+    attach_require_latest_tls_policy      = optional(bool, true)
+    attach_public_policy                  = optional(bool, false)
+    block_public_acls                     = optional(bool, true)
+    block_public_policy                   = optional(bool, true)
+    ignore_public_acls                    = optional(bool, true)
+    restrict_public_buckets               = optional(bool, true)
+    sse_algorithm                         = optional(string, "")
   })
   default = null
 }
@@ -294,6 +313,8 @@ variable "pv_efs" {
       namespace     = optional(string, "kube-system")
       pull_secrets  = optional(string, "")
       node_selector = optional(any, {})
+      repository    = optional(string, "https://kubernetes-sigs.github.io/aws-efs-csi-driver/")
+      version       = optional(string, "2.3.0")
       images = optional(object({
         efs_csi = optional(object({
           name = optional(string, "amazon/aws-efs-csi-driver")
@@ -316,7 +337,6 @@ variable "pv_efs" {
   })
   default = null
 }
-
 
 variable "seq" {
   description = "Seq configuration (nullable)"
@@ -379,6 +399,7 @@ variable "metrics_exporter" {
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
+    extra_conf    = optional(map(string), {})
   })
   default = {}
 }
@@ -391,6 +412,7 @@ variable "partition_metrics_exporter" {
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
+    extra_conf    = optional(map(string), {})
   })
   default = null
 }
@@ -490,6 +512,46 @@ variable "admin_gui" {
       cpu    = optional(string)
       memory = optional(string)
     }))
+    service_type       = optional(string, "ClusterIP")
+    replicas           = optional(number, 1)
+    image_pull_policy  = optional(string, "IfNotPresent")
+    image_pull_secrets = optional(string, "")
+    node_selector      = optional(any, {})
+  })
+  default = {}
+}
+
+variable "admin_old_gui" {
+  description = "Parameters of the old admin GUI"
+  type = object({
+    api = optional(object({
+      name  = optional(string, "admin-api")
+      image = optional(string, "dockerhubaneo/armonik_admin_api")
+      tag   = optional(string)
+      port  = optional(number, 3333)
+      limits = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+      requests = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+    }), {})
+    old = optional(object({
+      name  = optional(string, "admin-old-gui")
+      image = optional(string, "dockerhubaneo/armonik_admin_app")
+      tag   = optional(string, "0.8.0")
+      port  = optional(number, 1080)
+      limits = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+      requests = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+    }), {})
     service_type       = optional(string, "ClusterIP")
     replicas           = optional(number, 1)
     image_pull_policy  = optional(string, "IfNotPresent")

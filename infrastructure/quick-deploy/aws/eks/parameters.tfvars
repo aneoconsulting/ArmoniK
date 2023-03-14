@@ -42,7 +42,7 @@ node_selector = { "grid/type" = "Operator" }
 # AWS EKS
 eks = {
   name                                  = "armonik-eks"
-  cluster_version                       = "1.22"
+  cluster_version                       = "1.25"
   cluster_endpoint_private_access       = true # vpc.enable_private_subnet
   cluster_endpoint_private_access_cidrs = []
   cluster_endpoint_private_access_sg    = []
@@ -56,7 +56,7 @@ eks = {
     }
     instance_refresh = {
       image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/aws-node-termination-handler"
-      tag   = "v1.15.0"
+      tag   = "v1.19.0"
     }
   }
   cluster_autoscaler = {
@@ -72,6 +72,14 @@ eks = {
     scale_down_delay_after_failure        = "3m"
     scale_down_unneeded_time              = "2m"
     skip_nodes_with_system_pods           = true
+    version                               = "9.24.0"
+    repository                            = "https://kubernetes.github.io/autoscaler"
+    namespace                             = "kube-system"
+  }
+  instance_refresh = {
+    namespace  = "kube-system"
+    repository = "https://aws.github.io/eks-charts"
+    version    = "0.21.0"
   }
   encryption_keys = {
     cluster_log_kms_key_id    = ""

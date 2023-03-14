@@ -103,6 +103,7 @@ variable "elasticache" {
       log_kms_key_id = string
     })
   })
+  default = null
 }
 
 # MQ parameters
@@ -179,6 +180,8 @@ variable "pv_efs" {
       namespace          = string
       image_pull_secrets = string
       node_selector      = any
+      repository         = optional(string, "https://kubernetes-sigs.github.io/aws-efs-csi-driver/")
+      version            = optional(string, "2.3.0")
       docker_images = object({
         efs_csi = object({
           image = string
@@ -201,7 +204,6 @@ variable "pv_efs" {
   })
 }
 
-
 # S3 as object storage
 variable "s3_os" {
   description = "AWS S3 bucket as shared storage"
@@ -219,13 +221,5 @@ variable "s3_os" {
     kms_key_id                            = string
     sse_algorithm                         = string
   })
-}
-
-variable "object_storages_to_be_deployed" {
-  description = "The list of storage objects storages to be deployed"
-  type        = list(string)
-  validation {
-    condition     = alltrue([for value in var.object_storages_to_be_deployed : contains(["mongodb", "redis", "s3"], lower(value))])
-    error_message = "Valid values for object_storages_to_be_deployed are \"MongoDB\" | \"Redis\" | \"S3\"."
-  }
+  default = null
 }

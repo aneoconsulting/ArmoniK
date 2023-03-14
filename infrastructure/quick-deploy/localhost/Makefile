@@ -8,8 +8,6 @@ export KEDA=$(shell kubectl get deploy -A -l app=keda-operator --no-headers=true
 export METRICS_SERVER=$(shell kubectl get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
 
 CURRENT_DIR=$(shell pwd)
-STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/storage/generated/storage-output.json
-MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/monitoring/generated/monitoring-output.json
 
 ####################################
 #       Kubernetes namespace       #
@@ -82,13 +80,11 @@ clean-storage:
 
 deploy-monitoring:
 	$(MAKE) -C $(CURRENT_DIR)/monitoring deploy \
-		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
-		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE)
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE)
 
 destroy-monitoring:
 	$(MAKE) -C $(CURRENT_DIR)/monitoring destroy \
-		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
-		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE)
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE)
 
 clean-monitoring:
 	$(MAKE) -C $(CURRENT_DIR)/monitoring clean
@@ -99,15 +95,11 @@ clean-monitoring:
 
 deploy-armonik:
 	$(MAKE) -C $(CURRENT_DIR)/armonik deploy \
-		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
-		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
-		MONITORING_PARAMETERS_FILE=$(MONITORING_PARAMETERS_FILE)
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE)
 
 destroy-armonik:
 	$(MAKE) -C $(CURRENT_DIR)/armonik destroy \
-		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
-		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
-		MONITORING_PARAMETERS_FILE=$(MONITORING_PARAMETERS_FILE)
+		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE)
 
 clean-armonik:
 	$(MAKE) -C $(CURRENT_DIR)/armonik clean

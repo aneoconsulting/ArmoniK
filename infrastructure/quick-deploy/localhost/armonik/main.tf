@@ -25,10 +25,8 @@ module "armonik" {
   }, v) }
   control_plane              = var.control_plane
   admin_gui                  = var.admin_gui
+  admin_old_gui              = var.admin_old_gui
   ingress                    = var.ingress
   job_partitions_in_database = var.job_partitions_in_database
   authentication             = var.authentication
-  object_storage_adapter     = var.object_storage_adapter
-  table_storage_adapter      = var.table_storage_adapter
-  queue_storage_adapter      = var.queue_storage_adapter
 }

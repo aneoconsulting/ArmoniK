@@ -1,0 +1,60 @@
+name: "Deploy AWS"
+
+on:
+  workflow_dispatch:
+    inputs:
+      prefix:
+        description: "Prefix for the deployment"
+        required: false
+        default: "armonik-cicd"
+      bootstrap:
+        description: "Deploy the S3 for the tfstate"
+        type: boolean
+        required: false
+        default: true
+      core-version:
+        description: "Version of core to deploy"
+        required: false
+        default: ""
+      gui-version:
+        description: "Version of gui to deploy"
+        required: false
+        default: ""
+      ext-csharp-version:
+        description: "Version of Extension Csharp to deploy"
+        required: false
+        default: ""
+
+jobs:
+  deploy:
+    name: "Deploy"
+    runs-on: ubuntu-latest
+    outputs:
+      terraform-output: ${{ steps.deploy.outputs.terraform-output }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Dependencies
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        with:
+          aws: true
+          terraform: true
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-west-3
+      - if: ${{ inputs.bootstrap }}
+        id: bootstrap-deploy
+        name: Deploy Bootstrap
+        uses: aneoconsulting/ArmoniK.Action.Deploy/bootstrap-deploy@main
+        with:
+          type: aws
+          prefix: ${{ inputs.prefix }}
+      - id: deploy
+        name: Deploy
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        with:
+          type: aws
+          prefix: ${{ inputs.prefix }}
+          core-version: ${{ inputs.core-version }}
+          gui-version: ${{ inputs.gui-version }}
+          ext-csharp-version: ${{ inputs.ext-csharp-version }}

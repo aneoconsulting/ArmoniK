@@ -39,114 +39,127 @@ locals {
   ingress_annotations                    = try(var.ingress.annotations, {})
   job_partitions_in_database_annotations = try(var.job_partitions_in_database.annotations, {})
 
-  # Shared storage
-  service_url             = try(var.storage_endpoint_url.shared.service_url, "")
-  kms_key_id              = try(var.storage_endpoint_url.shared.kms_key_id, "")
-  name                    = try(var.storage_endpoint_url.shared.name, "")
-  access_key_id           = try(var.storage_endpoint_url.shared.access_key_id, "")
-  secret_access_key       = try(var.storage_endpoint_url.shared.secret_access_key, "")
-  file_server_ip          = try(var.storage_endpoint_url.shared.file_server_ip, "")
-  file_storage_type       = try(var.storage_endpoint_url.shared.file_storage_type, "")
-  host_path               = try(var.storage_endpoint_url.shared.host_path, "")
-  lower_file_storage_type = lower(local.file_storage_type)
-  check_file_storage_type = (local.lower_file_storage_type == "s3" ? "S3" : "FS")
-
-  # Storage secrets
-  activemq_certificates_secret      = try(var.storage_endpoint_url.activemq.certificates.secret, "")
-  mongodb_certificates_secret       = try(var.storage_endpoint_url.mongodb.certificates.secret, "")
-  redis_certificates_secret         = try(var.storage_endpoint_url.redis.certificates.secret, "")
-  activemq_credentials_secret       = try(var.storage_endpoint_url.activemq.credentials.secret, "")
-  mongodb_credentials_secret        = try(var.storage_endpoint_url.mongodb.credentials.secret, "")
-  redis_credentials_secret          = try(var.storage_endpoint_url.redis.credentials.secret, "")
-  activemq_certificates_ca_filename = try(var.storage_endpoint_url.activemq.certificates.ca_filename, "")
-  mongodb_certificates_ca_filename  = try(var.storage_endpoint_url.mongodb.certificates.ca_filename, "")
-  redis_certificates_ca_filename    = try(var.storage_endpoint_url.redis.certificates.ca_filename, "")
-  activemq_credentials_username_key = try(var.storage_endpoint_url.activemq.credentials.username_key, "")
-  mongodb_credentials_username_key  = try(var.storage_endpoint_url.mongodb.credentials.username_key, "")
-  redis_credentials_username_key    = try(var.storage_endpoint_url.redis.credentials.username_key, "")
-  activemq_credentials_password_key = try(var.storage_endpoint_url.activemq.credentials.password_key, "")
-  mongodb_credentials_password_key  = try(var.storage_endpoint_url.mongodb.credentials.password_key, "")
-  redis_credentials_password_key    = try(var.storage_endpoint_url.redis.credentials.password_key, "")
-
-  # Endpoint urls storage
-  activemq_host     = try(var.storage_endpoint_url.activemq.host, "")
-  activemq_port     = try(var.storage_endpoint_url.activemq.port, "")
-  activemq_web_host = try(var.storage_endpoint_url.activemq.web_host, "")
-  activemq_web_port = try(var.storage_endpoint_url.activemq.web_port, "")
-  activemq_web_url  = try(var.storage_endpoint_url.activemq.web_url, "")
-  mongodb_host      = try(var.storage_endpoint_url.mongodb.host, "")
-  mongodb_port      = try(var.storage_endpoint_url.mongodb.port, "")
-  redis_url         = try(var.storage_endpoint_url.redis.url, "")
-
-  # Options of storage
-  activemq_allow_host_mismatch = try(var.storage_endpoint_url.activemq.allow_host_mismatch, true)
-  mongodb_allow_insecure_tls   = try(var.storage_endpoint_url.mongodb.allow_insecure_tls, true)
-  redis_timeout                = try(var.storage_endpoint_url.redis.timeout, 3000)
-  redis_ssl_host               = try(var.storage_endpoint_url.redis.ssl_host, "")
-  minio_url                    = try(var.storage_endpoint_url.s3.url, "")
-  minio_login                  = try(var.storage_endpoint_url.s3.login, "")
-  minio_password               = try(var.storage_endpoint_url.s3.password, "")
-  minio_must_force_path_style  = try(var.storage_endpoint_url.s3.must_force_path_style, "")
-  minio_bucket_name            = try(var.storage_endpoint_url.s3.bucket_name, "")
-  object_storage_adapter       = "ArmoniK.Adapters.${var.object_storage_adapter}.ObjectStorage"
-  deployed_object_storages     = try(var.storage_endpoint_url.deployed_object_storages, [])
-
-  # Fluent-bit
-  fluent_bit_is_daemonset      = try(var.monitoring.fluent_bit.is_daemonset, false)
-  fluent_bit_container_name    = try(var.monitoring.fluent_bit.container_name.fluent-bit, "fluent-bit")
-  fluent_bit_image             = try(var.monitoring.fluent_bit.image, "fluent/fluent-bit")
-  fluent_bit_tag               = try(var.monitoring.fluent_bit.tag, "1.7.2")
-  fluent_bit_envvars_configmap = try(var.monitoring.fluent_bit.configmaps.envvars, "")
-  fluent_bit_configmap         = try(var.monitoring.fluent_bit.configmaps.config, "")
-
-  # Seq
-  seq_host    = try(var.monitoring.seq.host, "")
-  seq_port    = try(var.monitoring.seq.port, "")
-  seq_url     = try(var.monitoring.seq.url, "")
-  seq_web_url = try(var.monitoring.seq.web_url, "")
-
-  # Grafana
-  grafana_host = try(var.monitoring.grafana.host, "")
-  grafana_port = try(var.monitoring.grafana.port, "")
-  grafana_url  = try(var.monitoring.grafana.url, "")
-
-  # Metrics exporter
-  metrics_exporter_name      = try(var.monitoring.metrics_exporter.name, "")
-  metrics_exporter_namespace = try(var.monitoring.metrics_exporter.namespace, "")
-
-  # Partition metrics exporter
-  partition_metrics_exporter_name      = try(var.monitoring.partition_metrics_exporter.name, "")
-  partition_metrics_exporter_namespace = try(var.monitoring.partition_metrics_exporter.namespace, "")
-
   # ingress ports
   ingress_ports = var.ingress != null ? distinct(compact([var.ingress.http_port, var.ingress.grpc_port])) : []
+
+  # Secrets
+  secrets = {
+    activemq = {
+      name        = "activemq"
+      ca_filename = "/amqp/chain.pem"
+    }
+    mongodb = {
+      name        = "mongodb"
+      ca_filename = "/mongodb/chain.pem"
+    }
+    redis = {
+      name        = "redis"
+      ca_filename = "/redis/chain.pem"
+    }
+    s3                             = "s3"
+    shared_storage                 = "shared-storage"
+    metrics_exporter               = "metrics-exporter"
+    partition_metrics_exporter     = "partition-metrics-exporter"
+    fluent_bit                     = "fluent-bit"
+    seq                            = "seq"
+    grafana                        = "grafana"
+    prometheus                     = "prometheus"
+    deployed_object_storage_secret = "deployed-object-storage"
+    deployed_table_storage_secret  = "deployed-table-storage"
+    deployed_queue_storage_secret  = "deployed-queue-storage"
+  }
+
+  # Shared storage
+  file_storage_type       = lower(data.kubernetes_secret.shared_storage.data.file_storage_type)
+  check_file_storage_type = local.file_storage_type == "s3" ? "S3" : "FS"
+  file_storage_endpoints = local.check_file_storage_type == "S3" ? {
+    S3Storage__ServiceURL      = data.kubernetes_secret.shared_storage.data.service_url
+    S3Storage__AccessKeyId     = data.kubernetes_secret.shared_storage.data.access_key_id
+    S3Storage__SecretAccessKey = data.kubernetes_secret.shared_storage.data.secret_access_key
+    S3Storage__BucketName      = data.kubernetes_secret.shared_storage.data.name
+  } : {}
+
+  # Object storage
+  object_storage_adapter_from_secret = lower(data.kubernetes_secret.deployed_object_storage.data.adapter)
+  object_storage_adapter             = "ArmoniK.Adapters.${data.kubernetes_secret.deployed_object_storage.data.adapter}.ObjectStorage"
+  deployed_object_storages           = split(",", data.kubernetes_secret.deployed_object_storage.data.list)
+
+  # Table storage
+  table_storage_adapter_from_secret = lower(data.kubernetes_secret.deployed_table_storage.data.adapter)
+  table_storage_adapter             = "ArmoniK.Adapters.${data.kubernetes_secret.deployed_table_storage.data.adapter}.TableStorage"
+  deployed_table_storages           = split(",", data.kubernetes_secret.deployed_table_storage.data.list)
+
+  # Queue storage
+  queue_storage_adapter_from_secret = lower(data.kubernetes_secret.deployed_queue_storage.data.adapter)
+  queue_storage_adapter             = "ArmoniK.Adapters.${data.kubernetes_secret.deployed_queue_storage.data.adapter}.QueueStorage"
+  deployed_queue_storages           = split(",", data.kubernetes_secret.deployed_queue_storage.data.list)
 
   # Credentials
   credentials = {
     for key, value in {
-      Amqp__User = local.activemq_credentials_secret != "" ? {
-        key  = local.activemq_credentials_username_key
-        name = local.activemq_credentials_secret
+      Amqp__User = local.queue_storage_adapter_from_secret == "amqp" ? {
+        key  = "username"
+        name = local.secrets.activemq.name
       } : { key = "", name = "" }
-      Amqp__Password = local.activemq_credentials_secret != "" ? {
-        key  = local.activemq_credentials_password_key
-        name = local.activemq_credentials_secret
+      Amqp__Password = local.queue_storage_adapter_from_secret == "amqp" ? {
+        key  = "password"
+        name = local.secrets.activemq.name
       } : { key = "", name = "" }
-      Redis__User = local.redis_credentials_secret != "" ? {
-        key  = local.redis_credentials_username_key
-        name = local.redis_credentials_secret
+      Amqp__Host = local.queue_storage_adapter_from_secret == "amqp" ? {
+        key  = "host"
+        name = local.secrets.activemq.name
       } : { key = "", name = "" }
-      Redis__Password = local.redis_credentials_secret != "" ? {
-        key  = local.redis_credentials_password_key
-        name = local.redis_credentials_secret
+      Amqp__Port = local.queue_storage_adapter_from_secret == "amqp" ? {
+        key  = "port"
+        name = local.secrets.activemq.name
       } : { key = "", name = "" }
-      MongoDB__User = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_username_key
-        name = local.mongodb_credentials_secret
+      Redis__User = local.object_storage_adapter_from_secret == "redis" ? {
+        key  = "username"
+        name = local.secrets.redis.name
       } : { key = "", name = "" }
-      MongoDB__Password = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_password_key
-        name = local.mongodb_credentials_secret
+      Redis__Password = local.object_storage_adapter_from_secret == "redis" ? {
+        key  = "password"
+        name = local.secrets.redis.name
+      } : { key = "", name = "" }
+      Redis__EndpointUrl = local.object_storage_adapter_from_secret == "redis" ? {
+        key  = "url"
+        name = local.secrets.redis.name
+      } : { key = "", name = "" }
+      MongoDB__User = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "username"
+        name = local.secrets.mongodb.name
+      } : { key = "", name = "" }
+      MongoDB__Password = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "password"
+        name = local.secrets.mongodb.name
+      } : { key = "", name = "" }
+      MongoDB__Host = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "host"
+        name = local.secrets.mongodb.name
+      } : { key = "", name = "" }
+      MongoDB__Port = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "port"
+        name = local.secrets.mongodb.name
+      } : { key = "", name = "" }
+      S3__Login = local.object_storage_adapter_from_secret == "s3" ? {
+        key  = "username"
+        name = local.secrets.s3
+      } : { key = "", name = "" }
+      S3__Password = local.object_storage_adapter_from_secret == "s3" ? {
+        key  = "password"
+        name = local.secrets.s3
+      } : { key = "", name = "" }
+      S3__EndpointUrl = local.object_storage_adapter_from_secret == "s3" ? {
+        key  = "url"
+        name = local.secrets.s3
+      } : { key = "", name = "" }
+      S3__MustForcePathStyle = local.object_storage_adapter_from_secret == "s3" ? {
+        key  = "must_force_path_style"
+        name = local.secrets.s3
+      } : { key = "", name = "" }
+      S3__BucketName = local.object_storage_adapter_from_secret == "s3" ? {
+        key  = "bucket_name"
+        name = local.secrets.s3
       } : { key = "", name = "" }
     } : key => value if !contains(values(value), "")
   }
@@ -154,13 +167,21 @@ locals {
   # Credentials
   database_credentials = {
     for key, value in {
-      MongoDB_User = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_username_key
-        name = local.mongodb_credentials_secret
+      MongoDB_User = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "username"
+        name = local.secrets.mongodb.name
       } : { key = "", name = "" }
-      MongoDB_Password = local.mongodb_credentials_secret != "" ? {
-        key  = local.mongodb_credentials_password_key
-        name = local.mongodb_credentials_secret
+      MongoDB_Password = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "password"
+        name = local.secrets.mongodb.name
+      } : { key = "", name = "" }
+      MongoDB_Host = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "host"
+        name = local.secrets.mongodb.name
+      } : { key = "", name = "" }
+      MongoDB_Port = local.table_storage_adapter_from_secret == "mongodb" ? {
+        key  = "port"
+        name = local.secrets.mongodb.name
       } : { key = "", name = "" }
     } : key => value if !contains(values(value), "")
   }
@@ -168,21 +189,21 @@ locals {
   # Certificates
   certificates = {
     for key, value in {
-      activemq = local.activemq_certificates_secret != "" ? {
+      activemq = local.queue_storage_adapter_from_secret == "amqp" ? {
         name        = "activemq-secret-volume"
         mount_path  = "/amqp"
-        secret_name = local.activemq_certificates_secret
-      } : { name = "", mount_path = "", secret_name = "" }
-      redis = local.redis_certificates_secret != "" ? {
+        secret_name = local.secrets.activemq.name
+      } : { key = "", name = "" }
+      redis = local.object_storage_adapter_from_secret == "redis" ? {
         name        = "redis-secret-volume"
         mount_path  = "/redis"
-        secret_name = local.redis_certificates_secret
-      } : { name = "", mount_path = "", secret_name = "" }
-      mongodb = local.mongodb_certificates_secret != "" ? {
+        secret_name = local.secrets.redis.name
+      } : { key = "", name = "" }
+      mongodb = local.table_storage_adapter_from_secret == "mongodb" ? {
         name        = "mongodb-secret-volume"
         mount_path  = "/mongodb"
-        secret_name = local.mongodb_certificates_secret
-      } : { name = "", mount_path = "", secret_name = "" }
+        secret_name = local.secrets.mongodb.name
+      } : { key = "", name = "" }
     } : key => value if !contains(values(value), "")
   }
 
@@ -265,11 +286,11 @@ locals {
         (lower(try(trigger.type, "")) == "prometheus" ? {
           type = "prometheus"
           metadata = {
-            serverAddress = try(var.monitoring.prometheus.url, "")
+            serverAddress = data.kubernetes_secret.prometheus.data.url
             metricName    = "armonik_${partition}_tasks_queued"
             threshold     = tostring(try(trigger.threshold, "2"))
-            namespace     = local.metrics_exporter_namespace
-            query         = "armonik_${partition}_tasks_queued{job=\"${local.metrics_exporter_name}\"}"
+            namespace     = data.kubernetes_secret.metrics_exporter.data.namespace
+            query         = "armonik_${partition}_tasks_queued{job=\"${data.kubernetes_secret.metrics_exporter.data.name}\"}"
           }
           } :
           (lower(try(trigger.type, "")) == "cpu" || lower(try(trigger.type, "")) == "memory" ? {

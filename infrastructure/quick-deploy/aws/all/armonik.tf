@@ -35,6 +35,16 @@ module "armonik" {
     image = local.ecr_images["${var.admin_gui.image}:${try(coalesce(var.admin_gui.tag), "")}"].name
     tag   = local.ecr_images["${var.admin_gui.image}:${try(coalesce(var.admin_gui.tag), "")}"].tag
   })
+  admin_old_gui = merge(var.admin_old_gui, {
+    api = merge(var.admin_old_gui.api, {
+      image = local.ecr_images["${var.admin_old_gui.api.image}:${try(coalesce(var.admin_old_gui.api.tag), "")}"].name
+      tag   = local.ecr_images["${var.admin_old_gui.api.image}:${try(coalesce(var.admin_old_gui.api.tag), "")}"].tag
+    })
+    old = merge(var.admin_old_gui.old, {
+      image = local.ecr_images["${var.admin_old_gui.old.image}:${try(coalesce(var.admin_old_gui.old.tag), "")}"].name
+      tag   = local.ecr_images["${var.admin_old_gui.old.image}:${try(coalesce(var.admin_old_gui.old.tag), "")}"].tag
+    })
+  })
   ingress = merge(var.ingress, {
     image = local.ecr_images["${var.ingress.image}:${try(coalesce(var.ingress.tag), "")}"].name
     tag   = local.ecr_images["${var.ingress.image}:${try(coalesce(var.ingress.tag), "")}"].tag
@@ -47,8 +57,15 @@ module "armonik" {
     image = local.ecr_images["${var.authentication.image}:${try(coalesce(var.authentication.tag), "")}"].name
     tag   = local.ecr_images["${var.authentication.image}:${try(coalesce(var.authentication.tag), "")}"].tag
   })
-
-  object_storage_adapter = local.object_storage_adapter
-  table_storage_adapter  = local.table_storage_adapter
-  queue_storage_adapter  = local.queue_storage_adapter
+  depends_on = [
+    kubernetes_secret.fluent_bit,
+    kubernetes_secret.grafana,
+    kubernetes_secret.metrics_exporter,
+    kubernetes_secret.partition_metrics_exporter,
+    kubernetes_secret.seq,
+    kubernetes_secret.shared_storage,
+    kubernetes_secret.deployed_object_storage,
+    kubernetes_secret.deployed_table_storage,
+    kubernetes_secret.deployed_queue_storage,
+  ]
 }

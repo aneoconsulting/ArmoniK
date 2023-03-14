@@ -76,25 +76,31 @@ runs:
       name: Install docker
       shell: bash
       run: |
-        cd ${{ github.action_path }}
-        sh tools/install/docker.sh
+        if ! which docker 2>/dev/null; then
+          cd ${{ github.action_path }}
+          sh tools/install/docker.sh
+        fi  
 
     - name: Install kubectl
       shell: bash
       run: |
-        cd ${{ github.action_path }}
-        sh tools/install/kubectl.sh
+        if ! which kubectl 2>/dev/null; then
+          cd ${{ github.action_path }}
+          sh tools/install/kubectl.sh
+        fi  
 
     - name: Install terraform
       shell: bash
       run: |
-        cd ${{ github.action_path }}
-        sh tools/install/terraform.sh
+        if ! which terraform 2>/dev/null; then
+          cd ${{ github.action_path }}
+          sh tools/install/terraform.sh
+        fi  
 
     - name: Install K3s
       shell: bash
       run: |
-        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.23.8+k3s1" sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.25.6+k3s1" sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
 
     - name: Set the name path of the shared storage
       id: sethostpath

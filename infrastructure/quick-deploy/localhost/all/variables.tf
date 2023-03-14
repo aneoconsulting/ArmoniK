@@ -38,7 +38,7 @@ variable "metrics_server" {
   description = "Parameters of the metrics server"
   type = object({
     namespace          = optional(string, "kube-system"),
-    image_name         = optional(string, "k8s.gcr.io/metrics-server/metrics-server"),
+    image_name         = optional(string, "registry.k8s.io/metrics-server/metrics-server"),
     image_tag          = optional(string),
     image_pull_secrets = optional(string, ""),
     node_selector      = optional(any, {}),
@@ -48,7 +48,9 @@ variable "metrics_server" {
       "--kubelet-use-node-status-port",
       "--metric-resolution=15s",
     ]),
-    host_network = optional(bool, false),
+    host_network          = optional(bool, false),
+    helm_chart_repository = optional(string, "https://kubernetes-sigs.github.io/metrics-server/")
+    helm_chart_version    = optional(string, "3.8.3")
   })
   default = null
 }
@@ -57,13 +59,15 @@ variable "metrics_server" {
 variable "keda" {
   description = "Keda configuration"
   type = object({
-    namespace            = optional(string, "default")
-    keda_image_name      = optional(string, "ghcr.io/kedacore/keda"),
-    keda_image_tag       = optional(string),
-    apiserver_image_name = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
-    apiserver_image_tag  = optional(string),
-    pull_secrets         = optional(string, ""),
-    node_selector        = optional(any, {})
+    namespace             = optional(string, "default")
+    keda_image_name       = optional(string, "ghcr.io/kedacore/keda"),
+    keda_image_tag        = optional(string),
+    apiserver_image_name  = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
+    apiserver_image_tag   = optional(string),
+    pull_secrets          = optional(string, ""),
+    node_selector         = optional(any, {})
+    helm_chart_repository = optional(string, "https://kedacore.github.io/charts")
+    helm_chart_version    = optional(string, "2.9.4")
   })
   default = {}
 }
@@ -126,13 +130,9 @@ variable "minio" {
     image_pull_secrets = optional(string, "")
     default_bucket     = optional(string, "minioBucket")
     host               = optional(string, "minio")
-    port               = optional(number, 9000)
-    login              = optional(string, "minioadmin")
-    password           = optional(string, "minioadmin")
   })
   default = null
 }
-
 
 variable "seq" {
   description = "Seq configuration"
@@ -172,7 +172,7 @@ variable "node_exporter" {
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
   })
-  default = null
+  default = {}
 }
 
 variable "prometheus" {
@@ -195,6 +195,7 @@ variable "metrics_exporter" {
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
+    extra_conf    = optional(map(string), {})
   })
   default = {}
 }
@@ -207,6 +208,7 @@ variable "partition_metrics_exporter" {
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
+    extra_conf    = optional(map(string), {})
   })
   default = null
 }
@@ -298,6 +300,46 @@ variable "admin_gui" {
       cpu    = optional(string)
       memory = optional(string)
     }))
+    service_type       = optional(string, "ClusterIP")
+    replicas           = optional(number, 1)
+    image_pull_policy  = optional(string, "IfNotPresent")
+    image_pull_secrets = optional(string, "")
+    node_selector      = optional(any, {})
+  })
+  default = {}
+}
+
+variable "admin_old_gui" {
+  description = "Parameters of the old admin GUI"
+  type = object({
+    api = optional(object({
+      name  = optional(string, "admin-api")
+      image = optional(string, "dockerhubaneo/armonik_admin_api")
+      tag   = optional(string)
+      port  = optional(number, 3333)
+      limits = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+      requests = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+    }), {})
+    old = optional(object({
+      name  = optional(string, "admin-old-gui")
+      image = optional(string, "dockerhubaneo/armonik_admin_app")
+      tag   = optional(string, "0.8.0")
+      port  = optional(number, 1080)
+      limits = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+      requests = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+    }), {})
     service_type       = optional(string, "ClusterIP")
     replicas           = optional(number, 1)
     image_pull_policy  = optional(string, "IfNotPresent")
