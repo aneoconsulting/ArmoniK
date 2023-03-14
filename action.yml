@@ -173,8 +173,8 @@ runs:
             -kv "compute_plane[default].polling_agent.tag=${{ inputs.core-tag }}" \
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
-            -kv admin_gui.app.image=${{ inputs.admin-app-image }} \
-            -kv admin_gui.app.tag=${{ inputs.admin-gui-tag }} \
+            -kv admin_gui.image=${{ inputs.admin-app-image }} \
+            -kv admin_gui.tag=${{ inputs.admin-gui-tag }} \
             -kv logging_level=${{ inputs.log-level }} \
             -kv ingress=null \
             -kv authentication.require_authentication=false \
@@ -189,8 +189,8 @@ runs:
             -kv "compute_plane[default].polling_agent.tag=${{ inputs.core-tag }}" \
             -kv control_plane.image=${{ inputs.control-plane-image }} \
             -kv control_plane.tag=${{ inputs.core-tag }} \
-            -kv admin_gui.app.image=${{ inputs.admin-app-image }} \
-            -kv admin_gui.app.tag=${{ inputs.admin-gui-tag }} \
+            -kv admin_gui.image=${{ inputs.admin-app-image }} \
+            -kv admin_gui.tag=${{ inputs.admin-gui-tag }} \
             -kv logging_level=${{ inputs.log-level }} \
             -kv ingress.tls=${{ inputs.tls }} \
             -kv ingress.mtls=${{ inputs.mtls }} \
