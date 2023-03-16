@@ -117,4 +117,4 @@ The following directory tree represents the structure of the different modules o
 │    └── redis
 └── utils
     └── default-images
-``
+```
