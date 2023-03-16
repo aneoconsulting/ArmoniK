@@ -51,7 +51,8 @@ The following directory tree represents the structure of the different modules o
 ││├── log-analytics
 ││└── monitor
 │├── gcp
-││└── stackdriver
+││├── cloud-logging
+││└── cloud-monitoring
 │└── onpremise
 │    ├── grafana
 │    ├── prometheus
