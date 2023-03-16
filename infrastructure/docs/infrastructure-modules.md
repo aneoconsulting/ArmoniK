@@ -87,6 +87,7 @@ The following directory tree represents the structure of the different modules o
 ││├── amazon-mq
 ││├── aurora
 ││├── documentdb
+││├── dynamodb
 ││├── efs
 ││├── elasticache
 ││├── memorydb
