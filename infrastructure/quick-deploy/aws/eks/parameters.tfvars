@@ -86,20 +86,8 @@ eks = {
     cluster_encryption_config = ""
     ebs_kms_key_id            = ""
   }
-  map_roles = [
-    {
-      rolearn  = "arn:aws:iam::125796369274:role/eks-dev-role"
-      username = "lzianekhodja"
-      groups   = ["system:bootstrappers", "system:nodes", "ANEO-DEV"]
-    }
-  ]
-  map_users = [
-    {
-      userarn  = "arn:aws:iam::125796369274:user/lzianekhodja"
-      username = "lzianekhodja"
-      groups   = ["system:masters", "system:bootstrappers", "system:nodes", "ANEO-DEV"]
-    }
-  ]
+  map_roles = []
+  map_users = []
 }
 
 # Operational node groups for EKS
@@ -123,7 +111,7 @@ eks_worker_groups = [
   {
     name                                     = "worker-c5.4xlarge-spot"
     spot_allocation_strategy                 = "capacity-optimized"
-    override_instance_types                  = ["c5.24xlarge"]
+    override_instance_types                  = ["c5.4xlarge"]
     spot_instance_pools                      = 0
     asg_min_size                             = 0
     asg_max_size                             = 1000

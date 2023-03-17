@@ -25,7 +25,7 @@ The purpose of those tests is to have a reference numbers and performance of thi
 
 # The product and the functionalities to test
 ## Products
-- Bench "0.11.2" on ArmoniK "2.11.0"
+- Bench "0.11.4" on ArmoniK "2.11.0"
 
 
 # Prerequisite and exigences
@@ -42,6 +42,7 @@ The purpose of those tests is to have a reference numbers and performance of thi
 
 # Tests environment
 - ArmoniK deployed on AWS via WSL2
+- Object storag: Redis / S3
 
 # Exploited ressources
 - ressources AWS(eks "1.25","elasticache","amazonMQ")
@@ -66,4 +67,4 @@ The purpose of those tests is to have a reference numbers and performance of thi
     - The payload size
     - The result size
     - 80k tasks, 1s per task, 1cpu per worker
-    - redis vs s3 (core 0.11.2 vs 0.11.3)
+    - redis vs s3

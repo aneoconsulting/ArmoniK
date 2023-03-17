@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #ArmoniK "2.11.0"
-export CONTROL_PLANE_URL=http://a7507fe39bd80428e90d474478b13353-418506214.eu-west-3.elb.amazonaws.com:5001/
+export CONTROL_PLANE_URL=http://ab52de83041174907b555aabff366290-801613365.eu-west-3.elb.amazonaws.com:5001/
 
 #run  10000 tasks on 100 pods
 docker run --rm \
@@ -14,5 +14,5 @@ docker run --rm \
     -e BenchOptions__ShowEvents=false \
 	-e BenchOptions__BatchSize=50 \
 	-e BenchOptions__MaxRetries=5 \
-	-e BenchOptions__DegreeOfParallelism=10 \
+	-e BenchOptions__DegreeOfParallelism=5 \
 	dockerhubaneo/armonik_core_bench_test_client:0.11.4-jgbench.13.e5bd3b7c

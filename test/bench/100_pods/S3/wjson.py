@@ -34,13 +34,14 @@ def f_reader(file):
     d_parallel = []
 
     for run in runs:
-        nbtasks.append(run["TotalTasks"])
-        time.append(float(parse(run["ElapsedTime"])))
-        exec_time.append(float(parse(run["TasksExecutionTime"])))
-        sub_time.append(float(parse(run["SubmissionTime"])))
-        retrv_time.append(float(parse(run["ResultRetrievingTime"])))
-        throughput.append(float(run["throughput"]))
-        d_parallel.append(run["DegreeOfParallelism"])
+        if(run["nb_pods"]==100):
+            nbtasks.append(run["TotalTasks"])
+            time.append(float(parse(run["ElapsedTime"])))
+            exec_time.append(float(parse(run["TasksExecutionTime"])))
+            sub_time.append(float(parse(run["SubmissionTime"])))
+            retrv_time.append(float(parse(run["ResultRetrievingTime"])))
+            throughput.append(float(run["throughput"]))
+            d_parallel.append(run["DegreeOfParallelism"])
 
 
     return nbtasks, time, exec_time, sub_time, retrv_time, throughput, d_parallel
@@ -50,7 +51,8 @@ def f_reader(file):
 ######################################################################
 
 #open 10k tasks on 100 pods file
-file = 'data/data_10k_100p_0.11.4.json'
+# file = 'data/data_10k_100p_0.11.4.json'
+file = '10k.json'
 
 #store the runs stats
 nbtasks_10k_100p = []
@@ -77,7 +79,6 @@ print('mean time of the execution of 10K tasks on 100 pods is : '+ str(mean_exec
 print('mean time of the submission of 10K tasks on 100 pods is : '+ str(mean_sub_time_10k_100) +' s')
 print('mean time of the retrieving of 10K tasks on 100 pods is : '+ str(mean_retrv_time_10k_100) +' s')
 print('mean throughput for 10K tasks on 100 pods is : '+ str(mean_throughput_10k_100)+" tasks/s \n")
-
 
 ###############################################################
 #                           PLOT                              #

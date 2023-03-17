@@ -58,7 +58,7 @@ s3_fs = {
 # Object storage
 # Uncomment either the `Elasticache` or the `S3` parameter
 # AWS Elasticache
-/*elasticache = {
+elasticache = {
   name                        = "armonik-elasticache"
   engine                      = "redis"
   engine_version              = "6.x"
@@ -80,10 +80,10 @@ s3_fs = {
     kms_key_id     = ""
     log_kms_key_id = ""
   }
-}*/
+}
 
 # S3 as shared storage
-s3_os = {
+/*s3_os = {
   name                                  = "armonik-s3os"
   policy                                = ""
   attach_policy                         = false
@@ -96,7 +96,7 @@ s3_os = {
   restrict_public_buckets               = true
   kms_key_id                            = ""
   sse_algorithm                         = ""
-}
+}*/
 
 # MQ parameters
 mq = {
