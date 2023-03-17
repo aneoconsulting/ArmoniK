@@ -11,7 +11,7 @@ docker run --rm \
 	-e BenchOptions__PayloadSize=100 \
 	-e BenchOptions__ResultSize=100 \
 	-e BenchOptions__Partition=bench \
-    -e BenchOptions__ShowEvents=false \
+    	-e BenchOptions__ShowEvents=false \
 	-e BenchOptions__BatchSize=50 \
 	-e BenchOptions__MaxRetries=5 \
 	-e BenchOptions__DegreeOfParallelism=5 \
