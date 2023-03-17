@@ -10,6 +10,9 @@ resource "aws_ecr_repository" "ecr" {
     kms_key         = var.kms_key_id
   }
   tags = local.tags
+  force_delete = true #(Optional) If true, will delete the repository even if it contains images. Defaults to false.
+  #TODO: Arnaud : if repo is shared, it must be false => maybe it can destroy images of other people
+  # if repo is not shared it can help to set it to true. it may avoid make destroy errors
 }
 
 # Copy images

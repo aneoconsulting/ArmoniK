@@ -57,6 +57,11 @@ module "armonik" {
     image = local.ecr_images["${var.authentication.image}:${try(coalesce(var.authentication.tag), "")}"].name
     tag   = local.ecr_images["${var.authentication.image}:${try(coalesce(var.authentication.tag), "")}"].tag
   })
+
+  #depends_on_fake = [null_resource.dependency ? "" : ""]
+
+#TODO: Arnaud.L this must be done by implicit dependencies (see florian for hack null_resource.trigger)
+# it avoid to use tags 
   depends_on = [
     kubernetes_secret.fluent_bit,
     kubernetes_secret.grafana,

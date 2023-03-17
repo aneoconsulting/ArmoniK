@@ -1,3 +1,10 @@
+#V17 sample was there : https://github.dev/terraform-aws-modules/terraform-aws-eks/tree/v17.24.0
+#V19 sample is now here : https://github.com/terraform-aws-modules/terraform-aws-eks/blob/20af82846b4a1f23f3787a8c455f39c0b6164d80/examples/irsa_autoscale_refresh/charts.tf
+
+locals{
+  asg_names = concat(module.eks.eks_managed_node_groups_autoscaling_group_names, module.eks.self_managed_node_groups_autoscaling_group_names)
+}
+
 # Based on the official aws-node-termination-handler setup guide at https://github.com/aws/aws-node-termination-handler#infrastructure-setup
 resource "helm_release" "aws_node_termination_handler" {
   name             = "aws-node-termination-handler"
@@ -51,6 +58,10 @@ resource "helm_release" "aws_node_termination_handler" {
   ]
 }
 
+data "aws_autoscaling_groups" "groups" {
+  names = local.asg_names
+}
+
 data "aws_iam_policy_document" "aws_node_termination_handler" {
   statement {
     effect = "Allow"
@@ -68,7 +79,7 @@ data "aws_iam_policy_document" "aws_node_termination_handler" {
     actions = [
       "autoscaling:CompleteLifecycleAction",
     ]
-    resources = module.eks.workers_asg_arns
+    resources = data.aws_autoscaling_groups.groups.arns
   }
   /*statement {
     effect    = "Allow"
@@ -110,7 +121,7 @@ resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_asg" {
       "detail-type" : [
         "EC2 Instance-terminate Lifecycle Action"
       ]
-      "resources" : module.eks.workers_asg_arns
+      "resources" : data.aws_autoscaling_groups.groups.arns
     }
   )
   tags = local.tags
@@ -127,7 +138,7 @@ resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
       "detail-type" : [
         "EC2 Spot Instance Interruption Warning"
       ]
-      "resources" : module.eks.workers_asg_arns
+      "resources" : data.aws_autoscaling_groups.groups.arns
     }
   )
   tags = local.tags
@@ -137,12 +148,16 @@ resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
 # ensures that node termination does not require the lifecycle action to be completed,
 # and thus allows the ASG to be destroyed cleanly.
 resource "aws_autoscaling_lifecycle_hook" "aws_node_termination_handler" {
-  count                  = length(module.eks.workers_asg_names)
+  #count                  = length(module.eks.self_managed_node_groups_autoscaling_group_names)
+  count                  = length(local.eks_worker_group)
   name                   = "aws-node-termination-handler"
-  autoscaling_group_name = module.eks.workers_asg_names[count.index]
+  autoscaling_group_name = module.eks.self_managed_node_groups_autoscaling_group_names[count.index]
   lifecycle_transition   = "autoscaling:EC2_INSTANCE_TERMINATING"
   heartbeat_timeout      = 300
   default_result         = "CONTINUE"
+  depends_on = [
+  module.eks
+  ]
 }
 
 
