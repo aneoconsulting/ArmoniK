@@ -1,17 +1,12 @@
 # MongoDB
 output "host" {
   description = "Hostname or IP address of MongoDB server"
-  value       = local.mongodb_endpoints.ip
+  value       = local.mongodb_dns
 }
 
 output "port" {
   description = "Port of MongoDB server"
-  value       = local.mongodb_endpoints.port
-}
-
-output "url" {
-  description = "Endpoint URL of MongoDB server"
-  value       = local.mongodb_url
+  value       = local.mongodb_port
 }
 
 output "user_certificate" {
