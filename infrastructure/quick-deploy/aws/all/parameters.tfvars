@@ -41,35 +41,39 @@ eks = {
 }
 
 # Operational node groups for EKS
-eks_operational_worker_groups = [
-  {
-    name                                     = "operational-worker-ondemand"
-    spot_allocation_strategy                 = "capacity-optimized"
-    override_instance_types                  = ["c5.xlarge"]
-    spot_instance_pools                      = 0
-    asg_min_size                             = 1
-    asg_max_size                             = 5
-    asg_desired_capacity                     = 1
-    on_demand_base_capacity                  = 1
-    on_demand_percentage_above_base_capacity = 100
-    kubelet_extra_args                       = "--node-labels=grid/type=Operator --register-with-taints=grid/type=Operator:NoSchedule"
-  }
-]
+eks_operational_worker_groups = {
+    eks_operational_worker_groups = {
+      name                                     = "operational-worker"
+      spot_allocation_strategy                 = "capacity-optimized"
+      instance_type                            = "c5.4xlarge"
+      #override_instance_types                 = ["c5.xlarge"]
+      spot_instance_pools                      = 0
+      asg_min_size                             = 1
+      asg_max_size                             = 5
+      asg_desired_capacity                     = 1
+      on_demand_base_capacity                  = 1
+      on_demand_percentage_above_base_capacity = 100
+      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=grid/type=Operator --register-with-taints=grid/type=Operator:NoSchedule'"
+    }
+}
 
 # EKS worker groups
-eks_worker_groups = [
-  {
-    name                                     = "worker-c5.4xlarge-spot"
-    spot_allocation_strategy                 = "capacity-optimized"
-    override_instance_types                  = ["c5.4xlarge"]
-    spot_instance_pools                      = 0
-    asg_min_size                             = 0
-    asg_max_size                             = 1000
-    asg_desired_capacity                     = 0
-    on_demand_base_capacity                  = 0
-    on_demand_percentage_above_base_capacity = 0
-  }
-]
+eks_worker_groups = {
+      linux = {
+      name                                     = "worker-c5.4xlarge-spot"
+      spot_allocation_strategy                 = "capacity-optimized"
+      instance_type                            = "c5.4xlarge"
+      spot_instance_pools                      = 0
+      asg_min_size                             = 0
+      asg_max_size                             = 1000
+      asg_desired_capacity                     = 0
+      on_demand_base_capacity                  = 0
+      on_demand_percentage_above_base_capacity = 0
+
+      iam_role_name            = "self-managed-node-group-worker-linux"
+      iam_role_description     = "self-managed-node-group-worker-linux"
+    }
+}
 
 metrics_server = {
   node_selector = { "grid/type" = "Operator" }
