@@ -79,30 +79,3 @@ print('mean time of the execution of 10K tasks on 100 pods is : '+ str(mean_exec
 print('mean time of the submission of 10K tasks on 100 pods is : '+ str(mean_sub_time_10k_100) +' s')
 print('mean time of the retrieving of 10K tasks on 100 pods is : '+ str(mean_retrv_time_10k_100) +' s')
 print('mean throughput for 10K tasks on 100 pods is : '+ str(mean_throughput_10k_100)+" tasks/s \n")
-
-###############################################################
-#                           PLOT                              #
-###############################################################
-
-#plot graph
-
-#plt.plot(nbtasks_500p,time_500p,color="blue")
-#plt.hist(pods_100p[0],mean_time_100)
-#plt.xlabel('pods')
-#plt.ylabel('time(s)')
-#plt.title('Bench test with ArmoniK(2.11.0) on 100p with '+nbtasks_100p[0]+' tasks')
-
-#plt.show()
-#plt.savefig("graphs/500pods.png")
-
-#plt.figure(figsize=(5, 2.7), layout='constrained')
-#plt.plot(pods_100p,time_100p,color='r', label='Bench on 100 pods')
-#plt.plot(pods_500p,time_500p,color='g', label='Bench on 500 pods')
-#plt.plot(pods_1000p,time_1000p,color='r', label='Bench on 1000 pods')
-#plt.plot(pods_10000p,time_10000p,color='g', label='Bench on 10000 pods')
-#plt.xlabel('pods')
-#plt.ylabel('time(s)')
-#plt.yticks(np.linspace(0,60,5,endpoint=True))
-#plt.title('Bench test : run 500000 with ArmoniK(2.11.0) on 100p')
-#plt.legend()
-#plt.savefig("graphs/100p.png")
