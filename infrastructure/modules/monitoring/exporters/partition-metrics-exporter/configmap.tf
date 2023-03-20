@@ -9,7 +9,7 @@ resource "kubernetes_config_map" "partition_metrics_exporter_config" {
     MongoDB__ReplicaSetName   = "rs0"
     MongoDB__DatabaseName     = "database"
     MongoDB__DataRetention    = "10.00:00:00"
-    MongoDB__DirectConnection = "true"
+    MongoDB__DirectConnection = "false"
     MongoDB__Tls              = "true"
     MetricsExporter__Host     = "http://${local.metrics_exporter_host}"
     MetricsExporter__Port     = local.metrics_exporter_port

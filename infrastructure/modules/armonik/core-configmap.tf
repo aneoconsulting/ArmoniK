@@ -11,7 +11,7 @@ resource "kubernetes_config_map" "core_config" {
     MongoDB__CAFile                      = local.table_storage_adapter_from_secret == "mongodb" ? local.secrets.mongodb.ca_filename : ""
     MongoDB__ReplicaSetName              = "rs0"
     MongoDB__DatabaseName                = "database"
-    MongoDB__DirectConnection            = "true"
+    MongoDB__DirectConnection            = "false"
     MongoDB__Tls                         = "true"
     Redis__CaPath                        = local.object_storage_adapter_from_secret == "redis" ? local.secrets.redis.ca_filename : ""
     Redis__InstanceName                  = "ArmoniKRedis"
