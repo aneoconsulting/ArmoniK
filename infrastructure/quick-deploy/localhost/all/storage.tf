@@ -21,7 +21,7 @@ module "mongodb" {
     tag                = try(coalesce(var.mongodb.image_tag), local.default_tags[var.mongodb.image_name])
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.image_pull_secrets
-    replicas_number    = 1
+    replicas_number    = 2
   }
   persistent_volume = null
 }
