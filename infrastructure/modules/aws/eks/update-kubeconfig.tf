@@ -18,7 +18,4 @@ resource "null_resource" "update_kubeconfig" {
     when    = destroy
     command = "kubectl config delete-context ${self.triggers.cluster_arn}"
   }
-  depends_on = [
-    module.eks
-  ]
 }

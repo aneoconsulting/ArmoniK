@@ -148,16 +148,12 @@ resource "aws_cloudwatch_event_rule" "aws_node_termination_handler_spot" {
 # ensures that node termination does not require the lifecycle action to be completed,
 # and thus allows the ASG to be destroyed cleanly.
 resource "aws_autoscaling_lifecycle_hook" "aws_node_termination_handler" {
-  #count                  = length(module.eks.self_managed_node_groups_autoscaling_group_names)
   count                  = length(local.eks_worker_group)
   name                   = "aws-node-termination-handler"
   autoscaling_group_name = module.eks.self_managed_node_groups_autoscaling_group_names[count.index]
   lifecycle_transition   = "autoscaling:EC2_INSTANCE_TERMINATING"
   heartbeat_timeout      = 300
   default_result         = "CONTINUE"
-  depends_on = [
-  module.eks
-  ]
 }
 
 

@@ -130,7 +130,3 @@ self_managed_node_groups = local.eks_worker_group
     workers_role_name                                  = ""
   */
 }
-
-# Configure the Amazon VPC CNI to support Windows IPAM.
-# See: https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html#enable-windows-support
-# for windows we will need amazon_vpc_cni resource
