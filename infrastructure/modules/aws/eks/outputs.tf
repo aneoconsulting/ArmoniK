@@ -15,12 +15,12 @@ output "aws_eks_module" {
 
 output "cluster_certificate_authority_data" {
   description = "cluster_certificate_authority_data"
-  value = module.eks.cluster_certificate_authority_data
+  value       = module.eks.cluster_certificate_authority_data
 }
 
 output "cluster_name" {
   description = "cluster_name"
-  value = module.eks.cluster_name
+  value       = module.eks.cluster_name
 }
 
 output "name" {
@@ -45,7 +45,7 @@ output "worker_iam_role_name" {
   description = "EKS worker IAM role name"
   #value       = module.eks.self_managed_node_groups["worker-c5.4xlarge-spot"].iam_role_name
   #value =       try(values(module.eks.self_managed_node_groups).1.iam_role_name, "")
-  value       = module.eks.cluster_iam_role_name
+  value = module.eks.cluster_iam_role_name
 }
 
 output "eks_managed_node_groups" {

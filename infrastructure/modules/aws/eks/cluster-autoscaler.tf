@@ -168,7 +168,7 @@ resource "aws_iam_policy" "worker_autoscaling_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "workers_autoscaling_attach" {
-  for_each = module.eks.self_managed_node_groups
+  for_each   = module.eks.self_managed_node_groups
   policy_arn = aws_iam_policy.worker_autoscaling_policy.arn
   role       = each.value.iam_role_name
 }

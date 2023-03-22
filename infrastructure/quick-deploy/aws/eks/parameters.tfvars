@@ -92,18 +92,18 @@ eks = {
 
 # Operational node groups for EKS
 eks_operational_worker_groups = {
-    eks_operational_worker_groups = {
-      name                                     = "operational-worker"
-      spot_allocation_strategy                 = "capacity-optimized"
-      instance_type                            = "c5.4xlarge"
-      spot_instance_pools                      = 0
-      asg_min_size                             = 1
-      asg_max_size                             = 5
-      asg_desired_capacity                     = 1
-      on_demand_base_capacity                  = 1
-      on_demand_percentage_above_base_capacity = 100
-      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=grid/type=Operator --register-with-taints=grid/type=Operator:NoSchedule'"
-    }
+  eks_operational_worker_groups = {
+    name                                     = "operational-worker"
+    spot_allocation_strategy                 = "capacity-optimized"
+    instance_type                            = "c5.4xlarge"
+    spot_instance_pools                      = 0
+    asg_min_size                             = 1
+    asg_max_size                             = 5
+    asg_desired_capacity                     = 1
+    on_demand_base_capacity                  = 1
+    on_demand_percentage_above_base_capacity = 100
+    bootstrap_extra_args                     = "--kubelet-extra-args '--node-labels=grid/type=Operator --register-with-taints=grid/type=Operator:NoSchedule'"
+  }
 }
 
 # EKS worker groups
@@ -118,5 +118,5 @@ eks_worker_groups = {
     asg_desired_capacity                     = 0
     on_demand_base_capacity                  = 0
     on_demand_percentage_above_base_capacity = 0
-    }
+  }
 }

@@ -1,7 +1,7 @@
 #V17 sample was there : https://github.dev/terraform-aws-modules/terraform-aws-eks/tree/v17.24.0
 #V19 sample is now here : https://github.com/terraform-aws-modules/terraform-aws-eks/blob/20af82846b4a1f23f3787a8c455f39c0b6164d80/examples/irsa_autoscale_refresh/charts.tf
 
-locals{
+locals {
   asg_names = concat(module.eks.eks_managed_node_groups_autoscaling_group_names, module.eks.self_managed_node_groups_autoscaling_group_names)
 }
 
