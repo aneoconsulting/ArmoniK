@@ -42,7 +42,7 @@ eks = {
 
 # Operational node groups for EKS
 eks_operational_worker_groups = {
-    eks_operational_worker_groups = {
+    eks_operational_worker = {
       name                                     = "operational-worker"
       spot_allocation_strategy                 = "capacity-optimized"
       instance_type                            = "c5.4xlarge"
