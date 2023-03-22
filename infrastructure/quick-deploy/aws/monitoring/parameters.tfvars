@@ -13,6 +13,9 @@ k8s_config_context = "default"
 # Kubernetes namespace
 namespace = "armonik"
 
+# SUFFIX
+suffix = "main"
+
 tags = {
   "name"             = ""
   "env"              = ""
@@ -119,3 +122,19 @@ monitoring = {
 }
 
 authentication = false
+
+# S3 bucket to store logs from fluent bit
+s3_logs = {
+  name                                  = "armonik-s3logs"
+  policy                                = ""
+  attach_policy                         = false
+  attach_deny_insecure_transport_policy = true
+  attach_require_latest_tls_policy      = true
+  attach_public_policy                  = false
+  block_public_acls                     = true
+  block_public_policy                   = true
+  ignore_public_acls                    = true
+  restrict_public_buckets               = true
+  kms_key_id                            = ""
+  sse_algorithm                         = ""
+}

@@ -13,7 +13,7 @@ locals {
   random_string             = random_string.random_resources.result
   suffix                    = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
   cluster_name              = try(var.eks.name, "")
-  kms_name                  = "armonik-kms-cloudwatch-${local.suffix}-${local.random_string}"
+  kms_name                  = "armonik-kms-monitoring-${local.suffix}-${local.random_string}"
   cloudwatch_log_group_name = "/aws/containerinsights/${local.cluster_name}/application"
   tags = merge(var.tags, {
     "application"        = "armonik"
@@ -86,4 +86,9 @@ locals {
   fluent_bit_http_port          = tonumber(try(var.monitoring.fluent_bit.http_port, 0))
   fluent_bit_read_from_head     = tobool(try(var.monitoring.fluent_bit.read_from_head, true))
   fluent_bit_node_selector      = try(var.monitoring.fluent_bit.node_selector, {})
+
+  # S3 for logs
+  s3_logs_name                                 = var.s3_logs != null ? "${var.s3_logs.name}-${local.suffix}" : ""
+  iam_s3_logs_decrypt_s3_policy_name           = "s3-logs-encrypt-decrypt-${local.suffix}"
+  s3_logs_kms_key_id                           = (can(coalesce(var.s3_logs.kms_key_id)) ? var.s3_logs.kms_key_id : module.kms.0.arn)
 }

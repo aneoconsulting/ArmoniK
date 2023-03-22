@@ -1,6 +1,6 @@
 # AWS KMS
 module "kms" {
-  count  = (local.cloudwatch_kms_key_id == "" && local.cloudwatch_enabled ? 1 : 0)
+  count  = ((local.cloudwatch_kms_key_id == "" && local.cloudwatch_enabled) || !can(coalesce(var.s3_logs.kms_key_id)) ? 1 : 0)
   source = "../../../modules/aws/kms"
   name   = local.kms_name
   tags   = local.tags
@@ -121,6 +121,27 @@ module "cloudwatch" {
   tags              = local.tags
 }
 
+# AWS S3 bucket to store logs from fluent bit
+module "s3_logs" {
+  count  = var.s3_logs != null ? 1 : 0
+  source = "../../../modules/aws/s3"
+  tags   = local.tags
+  name   = local.s3_logs_name
+  s3 = {
+    policy                                = var.s3_logs.policy
+    attach_policy                         = var.s3_logs.attach_policy
+    attach_deny_insecure_transport_policy = var.s3_logs.attach_deny_insecure_transport_policy
+    attach_require_latest_tls_policy      = var.s3_logs.attach_require_latest_tls_policy
+    attach_public_policy                  = var.s3_logs.attach_public_policy
+    block_public_acls                     = var.s3_logs.attach_public_policy
+    block_public_policy                   = var.s3_logs.block_public_acls
+    ignore_public_acls                    = var.s3_logs.block_public_policy
+    restrict_public_buckets               = var.s3_logs.restrict_public_buckets
+    kms_key_id                            = local.s3_logs_kms_key_id
+    sse_algorithm                         = (var.s3_logs.kms_key_id != "" ? var.s3_logs.sse_algorithm : "aws:kms")
+  }
+}
+
 # Fluent-bit
 module "fluent_bit" {
   source        = "../../../modules/monitoring/fluent-bit"
@@ -147,4 +168,9 @@ module "fluent_bit" {
     region  = var.region
     enabled = true
   } : {})
+  s3 = (var.s3_logs != null ? {
+      name    = var.s3_logs.name
+      region  = var.region
+      enabled = true
+    } : {})
 }

@@ -21,4 +21,9 @@ locals {
   cloudwatch_name    = try(var.cloudwatch.name, "")
   cloudwatch_region  = try(var.cloudwatch.region, "")
   cloudwatch_enabled = tobool(try(var.cloudwatch.enabled, false))
+
+  #S3
+  s3_name    = try(var.s3.name, "")
+  s3_region  = try(var.s3.region, "")
+  s3_enabled = tobool(try(var.s3.enabled, false))
 }
