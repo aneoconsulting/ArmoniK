@@ -744,10 +744,3 @@ variable "s3_secret_name" {
   type        = string
   default     = "s3"
 }
-
-
-
-
-
-
-
