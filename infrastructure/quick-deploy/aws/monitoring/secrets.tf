@@ -92,7 +92,7 @@ resource "kubernetes_secret" "grafana" {
 }
 
 resource "kubernetes_secret" "s3_logs" {
-  count = length(module.s3_logs) > 0 ? 1 : 0 
+  count = length(module.s3_logs) > 0 ? 1 : 0
   metadata {
     name      = "s3-logs"
     namespace = var.namespace

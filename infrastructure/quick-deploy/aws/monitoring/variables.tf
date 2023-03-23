@@ -119,6 +119,21 @@ variable "monitoring" {
       kms_key_id        = string
       retention_in_days = number
     })
+    s3 = object({
+      enabled                               = bool
+      name                                  = string
+      policy                                = string
+      attach_policy                         = bool
+      attach_deny_insecure_transport_policy = bool
+      attach_require_latest_tls_policy      = bool
+      attach_public_policy                  = bool
+      block_public_acls                     = bool
+      block_public_policy                   = bool
+      ignore_public_acls                    = bool
+      restrict_public_buckets               = bool
+      kms_key_id                            = string
+      sse_algorithm                         = string
+    })
     fluent_bit = object({
       image              = string
       tag                = string
@@ -136,24 +151,4 @@ variable "authentication" {
   description = "Enable authentication form in seq and grafana"
   type        = bool
   default     = false
-}
-
-# AWS S3 bucket to store logs from fluent bit
-variable "s3_logs" {
-  description = "AWS S3 bucket to store logs from fluent bit"
-  type = object({
-    name                                  = string
-    policy                                = string
-    attach_policy                         = bool
-    attach_deny_insecure_transport_policy = bool
-    attach_require_latest_tls_policy      = bool
-    attach_public_policy                  = bool
-    block_public_acls                     = bool
-    block_public_policy                   = bool
-    ignore_public_acls                    = bool
-    restrict_public_buckets               = bool
-    kms_key_id                            = string
-    sse_algorithm                         = string
-  })
-  default = null
 }

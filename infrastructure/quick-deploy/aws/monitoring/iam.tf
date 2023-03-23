@@ -30,7 +30,7 @@ resource "aws_iam_role_policy_attachment" "send_logs_from_fluent_bit_to_cloudwat
 }
 
 # Decrypt objects in S3
-data "aws_iam_policy_document" "decrypt_s3_logs" {
+data "aws_iam_policy_document" "decrypt_object" {
   count = length(module.s3_logs) > 0 ? 1 : 0
   statement {
     sid = "KMSAccess"
@@ -43,32 +43,32 @@ data "aws_iam_policy_document" "decrypt_s3_logs" {
     ]
     effect = "Allow"
     resources = [
-      local.s3_logs_kms_key_id
+      module.s3_logs[0].arn
     ]
   }
 }
 
-resource "aws_iam_policy" "decrypt_s3_logs" {
+resource "aws_iam_policy" "decrypt_object" {
   count       = length(module.s3_logs) > 0 ? 1 : 0
-  name_prefix = local.iam_s3_logs_decrypt_s3_policy_name
-  description = "Policy for alowing decryption of encrypted object in S3 ${var.eks.cluster_id}"
-  policy      = data.aws_iam_policy_document.decrypt_s3_logs[0].json
+  name_prefix = "s3-logs-encrypt-decrypt-${local.suffix}"
+  description = "Policy for alowing decryption of encrypted object in S3 logs"
+  policy      = data.aws_iam_policy_document.decrypt_object[0].json
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "decrypt_s3_logs" {
+resource "aws_iam_role_policy_attachment" "decrypt_object" {
   count      = length(module.s3_logs) > 0 ? 1 : 0
-  policy_arn = aws_iam_policy.decrypt_s3_logs[0].arn
+  policy_arn = aws_iam_policy.decrypt_object[0].arn
   role       = var.eks.worker_iam_role_name
 }
 
 # Write objects in S3
-data "aws_iam_policy_document" "writeaccess_s3_logs" {
+data "aws_iam_policy_document" "write_object" {
   count = length(module.s3_logs) > 0 ? 1 : 0
   statement {
-    sid = "WriteAccessInS3"
+    sid = "WriteFromS3"
     actions = [
-      "s3:PutObject",
+      "s3:PutObject"
     ]
     effect = "Allow"
     resources = [
@@ -77,16 +77,16 @@ data "aws_iam_policy_document" "writeaccess_s3_logs" {
   }
 }
 
-resource "aws_iam_policy" "writeaccess_s3_logs" {
+resource "aws_iam_policy" "write_object" {
   count       = length(module.s3_logs) > 0 ? 1 : 0
-  name_prefix = "s3-writeaccess-${var.eks.cluster_id}"
-  description = "Policy for allowing read/write/delete object in S3 ${var.eks.cluster_id}"
-  policy      = data.aws_iam_policy_document.writeaccess_s3_logs[0].json
+  name_prefix = "s3-logs-write-${local.suffix}"
+  description = "Policy for allowing read object in S3 logs"
+  policy      = data.aws_iam_policy_document.write_object[0].json
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "writeaccess_s3_logs_attachment" {
+resource "aws_iam_role_policy_attachment" "write_object_attachment" {
   count      = length(module.s3_logs) > 0 ? 1 : 0
-  policy_arn = aws_iam_policy.writeaccess_s3_logs[0].arn
+  policy_arn = aws_iam_policy.write_object[0].arn
   role       = var.eks.worker_iam_role_name
 }

@@ -1,6 +1,6 @@
 # AWS KMS
 module "kms" {
-  count  = ((local.cloudwatch_kms_key_id == "" && local.cloudwatch_enabled) || !can(coalesce(var.s3_logs.kms_key_id)) ? 1 : 0)
+  count  = (local.cloudwatch_enabled && local.cloudwatch_kms_key_id == "") || (local.s3_enabled && local.s3_kms_key_id == "") ? 1 : 0
   source = "../../../modules/aws/kms"
   name   = local.kms_name
   tags   = local.tags
@@ -79,7 +79,8 @@ module "prometheus" {
   service_type                   = local.prometheus_service_type
   node_selector                  = local.prometheus_node_selector
   metrics_exporter_url           = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  partition_metrics_exporter_url = null #"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
+  partition_metrics_exporter_url = null
+  #"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
   docker_image = {
     image              = local.prometheus_image
     tag                = local.prometheus_tag
@@ -123,22 +124,22 @@ module "cloudwatch" {
 
 # AWS S3 bucket to store logs from fluent bit
 module "s3_logs" {
-  count  = var.s3_logs != null ? 1 : 0
+  count  = (local.s3_enabled ? 1 : 0)
   source = "../../../modules/aws/s3"
   tags   = local.tags
-  name   = local.s3_logs_name
+  name   = local.s3_name
   s3 = {
-    policy                                = var.s3_logs.policy
-    attach_policy                         = var.s3_logs.attach_policy
-    attach_deny_insecure_transport_policy = var.s3_logs.attach_deny_insecure_transport_policy
-    attach_require_latest_tls_policy      = var.s3_logs.attach_require_latest_tls_policy
-    attach_public_policy                  = var.s3_logs.attach_public_policy
-    block_public_acls                     = var.s3_logs.attach_public_policy
-    block_public_policy                   = var.s3_logs.block_public_acls
-    ignore_public_acls                    = var.s3_logs.block_public_policy
-    restrict_public_buckets               = var.s3_logs.restrict_public_buckets
-    kms_key_id                            = local.s3_logs_kms_key_id
-    sse_algorithm                         = (var.s3_logs.kms_key_id != "" ? var.s3_logs.sse_algorithm : "aws:kms")
+    policy                                = var.monitoring.s3.policy
+    attach_policy                         = var.monitoring.s3.attach_policy
+    attach_deny_insecure_transport_policy = var.monitoring.s3.attach_deny_insecure_transport_policy
+    attach_require_latest_tls_policy      = var.monitoring.s3.attach_require_latest_tls_policy
+    attach_public_policy                  = var.monitoring.s3.attach_public_policy
+    block_public_acls                     = var.monitoring.s3.attach_public_policy
+    block_public_policy                   = var.monitoring.s3.block_public_acls
+    ignore_public_acls                    = var.monitoring.s3.block_public_policy
+    restrict_public_buckets               = var.monitoring.s3.restrict_public_buckets
+    kms_key_id                            = local.s3_kms_key_id
+    sse_algorithm                         = (local.s3_kms_key_id != "" ? var.monitoring.s3.sse_algorithm : "aws:kms")
   }
 }
 
@@ -168,9 +169,9 @@ module "fluent_bit" {
     region  = var.region
     enabled = true
   } : {})
-  s3 = (var.s3_logs != null ? {
-      name    = var.s3_logs.name
-      region  = var.region
-      enabled = true
-    } : {})
+  s3 = (local.s3_enabled ? {
+    name    = local.s3_name
+    region  = var.region
+    enabled = true
+  } : {})
 }
