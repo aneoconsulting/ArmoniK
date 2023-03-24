@@ -68,65 +68,12 @@ module "eks" {
   # it replaces previously created role in iam.tf 
   iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    # "eks-vpc-resource-access" = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
   }
 
   # Worker groups
+  # module input from doc : https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest?tab=inputs#optional-inputs
+  # variables from module code : https://github.dev/terraform-aws-modules/terraform-aws-eks/tree/v19.10.0
+  # sample usages : https://github.com/Jitsusama/example-terraform-eks-mixed-os-cluster/blob/main/cluster.tf#L91
+  #                 https://github.dev/terraform-aws-modules/terraform-aws-eks/tree/v19.10.0
   self_managed_node_groups = local.eks_worker_group
-  /*
-  module input from doc : https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest?tab=inputs#optional-inputs
-  variables from module code : https://github.dev/terraform-aws-modules/terraform-aws-eks/tree/v19.10.0
-  sample usages : https://github.com/Jitsusama/example-terraform-eks-mixed-os-cluster/blob/main/cluster.tf#L91
-                  https://github.dev/terraform-aws-modules/terraform-aws-eks/tree/v19.10.0
-
-
-
-    # Required
-    cluster_service_ipv4_cidr             = ""
-    fargate_pod_execution_role_name       = ""
-    permissions_boundary                  = ""
-
-    # Optional
-    attach_worker_cni_policy                           = true
-    aws_auth_additional_labels                         = {}
-    cluster_egress_cidrs                               = ["0.0.0.0/0"]
-    cluster_iam_role_name                              = ""
-    cluster_security_group_id                          = ""
-    cluster_create_timeout                             = "30m"
-    cluster_delete_timeout                             = "15m"
-    cluster_update_timeout                             = "60m"
-    create_fargate_pod_execution_role                  = true
-    default_platform                                   = "linux"
-    eks_oidc_root_ca_thumbprint                        = "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
-    enable_irsa                                        = false
-    fargate_profiles                                   = {}
-    fargate_subnets                                    = []
-    iam_path                                           = "/"
-    kubeconfig_aws_authenticator_additional_args       = []
-    kubeconfig_aws_authenticator_env_variables         = {}
-    kubeconfig_output_path                             = "./"
-    manage_aws_auth                                    = true
-    manage_cluster_iam_resources                       = true
-    manage_worker_iam_resources                        = true
-    map_accounts                                       = []
-    node_groups                                        = {}
-    node_groups_defaults                               = {}
-    openid_connect_audiences                           = []
-    wait_for_cluster_timeout                           = 300
-    worker_additional_security_group_ids               = []
-    worker_ami_name_filter                             = ""
-    worker_ami_name_filter_windows                     = ""
-    worker_ami_owner_id                                = "amazon"
-    worker_ami_owner_id_windows                        = "amazon"
-    worker_create_cluster_primary_security_group_rules = false
-    worker_create_initial_lifecycle_hooks              = false
-    worker_create_security_group                       = true
-    worker_groups                                      = []
-    worker_security_group_id                           = ""
-    worker_sg_ingress_from_port                        = 1025
-    workers_additional_policies                        = []
-    workers_egress_cidrs                               = ["0.0.0.0/0"]
-    workers_group_defaults                             = {}
-    workers_role_name                                  = ""
-  */
 }

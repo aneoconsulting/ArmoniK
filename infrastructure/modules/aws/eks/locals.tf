@@ -79,10 +79,6 @@ locals {
       for k, v in var.eks_worker_groups : k =>
       merge(v,
         {
-          # launch_template_name            = "self-managed-ex-spot"
-          # launch_template_use_name_prefix = true
-          # launch_template_description     = "Self managed node group example launch template"
-
           root_encrypted                       = true
           root_kms_key_id                      = var.eks.encryption_keys.ebs_kms_key_id
           additional_userdata                  = <<-EOT
@@ -91,12 +87,6 @@ locals {
           metadata_http_endpoint               = "enabled"  # The state of the metadata service: enabled, disabled.
           metadata_http_tokens                 = "required" # If session tokens are required: optional, required.
           metadata_http_put_response_hop_limit = 2
-          # The desired HTTP PUT response hop limit for instance metadata requests.
-          # tags = merge(try(v.tags, {}), {
-          #   "k8s.io/cluster-autoscaler/enabled" = true
-          #   "k8s.io/cluster-autoscaler/${var.name}" = true
-          #   "aws-node-termination-handler/managed" = true
-          # })
         }
       )
     }
@@ -115,12 +105,7 @@ locals {
         EOT
           metadata_http_endpoint               = "enabled"  # The state of the metadata service: enabled, disabled.
           metadata_http_tokens                 = "required" # If session tokens are required: optional, required.
-          metadata_http_put_response_hop_limit = 2
-          # tags = merge(try(v.tags, {}), {
-          #   "k8s.io/cluster-autoscaler/enabled" = true
-          #   "k8s.io/cluster-autoscaler/${var.name}" = "owned"
-          #   "aws-node-termination-handler/managed" = true
-          # })        
+          metadata_http_put_response_hop_limit = 2     
       })
     }
   )
