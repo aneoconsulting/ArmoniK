@@ -140,6 +140,7 @@ module "s3_logs" {
     restrict_public_buckets               = var.monitoring.s3.restrict_public_buckets
     kms_key_id                            = local.s3_kms_key_id
     sse_algorithm                         = (local.s3_kms_key_id != "" ? var.monitoring.s3.sse_algorithm : "aws:kms")
+    retention_in_days                     = var.monitoring.s3.retention_in_days
   }
 }
 

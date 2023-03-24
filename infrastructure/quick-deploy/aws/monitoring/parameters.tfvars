@@ -124,6 +124,7 @@ monitoring = {
     restrict_public_buckets               = true
     kms_key_id                            = ""
     sse_algorithm                         = ""
+    retention_in_days                     = 21
   }
   fluent_bit = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"

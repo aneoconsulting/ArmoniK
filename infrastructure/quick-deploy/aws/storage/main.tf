@@ -23,6 +23,7 @@ module "s3_fs" {
     restrict_public_buckets               = var.s3_fs.restrict_public_buckets
     kms_key_id                            = local.s3_fs_kms_key_id
     sse_algorithm                         = (var.s3_fs.kms_key_id != "" ? var.s3_fs.sse_algorithm : "aws:kms")
+    retention_in_days                     = var.s3_fs.retention_in_days 
   }
 }
 
@@ -70,6 +71,7 @@ module "s3_os" {
     restrict_public_buckets               = var.s3_os.restrict_public_buckets
     kms_key_id                            = local.s3_os_kms_key_id
     sse_algorithm                         = (var.s3_os.kms_key_id != "" ? var.s3_os.sse_algorithm : "aws:kms")
+    retention_in_days                     = var.s3_os.retention_in_days
   }
 }
 
