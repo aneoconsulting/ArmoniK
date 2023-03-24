@@ -57,4 +57,15 @@ module "armonik" {
     image = local.ecr_images["${var.authentication.image}:${try(coalesce(var.authentication.tag), "")}"].name
     tag   = local.ecr_images["${var.authentication.image}:${try(coalesce(var.authentication.tag), "")}"].tag
   })
+  depends_on = [
+    kubernetes_secret.fluent_bit,
+    kubernetes_secret.grafana,
+    kubernetes_secret.metrics_exporter,
+    kubernetes_secret.partition_metrics_exporter,
+    kubernetes_secret.seq,
+    kubernetes_secret.shared_storage,
+    kubernetes_secret.deployed_object_storage,
+    kubernetes_secret.deployed_table_storage,
+    kubernetes_secret.deployed_queue_storage,
+  ]
 }
