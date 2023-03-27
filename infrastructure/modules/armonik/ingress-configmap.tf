@@ -45,7 +45,7 @@ server {
     sendfile on;
 
     if ($accept_language ~ "^$") {
-	set $accept_language "en";
+        set $accept_language "en";
     }
 
     location = / {
@@ -56,6 +56,12 @@ server {
     }
     location = /admin/ {
         rewrite ^ $scheme://$http_host/admin/$accept_language/;
+    }
+    location = /admin/en {
+        rewrite ^ $scheme://$http_host/admin/en/;
+    }
+    location = /admin/fr {
+        rewrite ^ $scheme://$http_host/admin/fr/;
     }
     location = /old-admin {
         rewrite ^ $scheme://$http_host/old-admin/ permanent;
