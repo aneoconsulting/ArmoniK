@@ -11,7 +11,7 @@ do
 done
 
 #clean the output file
-python3 cleaner.py
+./cleaner.py
 
 #print the test stats and plot graphs
-python3 wjson.py
+./wjson.py
