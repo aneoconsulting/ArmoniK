@@ -1,6 +1,3 @@
-locals {
-  cluster_iam_role_arn = module.eks.cluster_iam_role_arn
-}
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   version         = "19.10.0"
@@ -35,19 +32,12 @@ module "eks" {
   }
 
   # Tags
-  #TODO: Arnaud.L tags must be added back - pb with depends_on on module 'bug'
   tags         = local.tags
   cluster_tags = local.tags
 
   # IAM
   # used to allow other users to interact with our cluster
-  aws_auth_roles = concat([
-    {
-      rolearn  = local.cluster_iam_role_arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups   = ["system:bootstrappers", "system:nodes"]
-    }
-  ], var.eks.map_roles)
+  aws_auth_roles = var.eks.map_roles
   aws_auth_users = concat([
     {
       userarn  = "arn:aws:iam::${data.aws_caller_identity.current.arn}:user/admin"

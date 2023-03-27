@@ -1,5 +1,5 @@
 locals {
-  cloudwatch_log_group_name = "/aws/containerinsights/${module.eks.name}/application"
+  cloudwatch_log_group_name = "/aws/containerinsights/${module.eks.cluster_name}/application"
 }
 
 # Send logs in cloudwatch

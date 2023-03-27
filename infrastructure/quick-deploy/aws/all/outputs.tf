@@ -14,7 +14,7 @@ output "eks" {
   description = "EKS cluster"
   value = {
     arn    = module.eks.arn
-    name   = module.eks.name
+    name   = module.eks.cluster_name
     region = var.region
   }
 }

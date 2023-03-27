@@ -19,14 +19,15 @@ output "cluster_certificate_authority_data" {
 }
 
 output "cluster_name" {
-  description = "cluster_name"
+  description = "EKS cluster name"
   value       = module.eks.cluster_name
 }
 
-output "name" {
-  description = "Name of EKS cluster"
+output "cluster_id" {
+  description = "EKS cluster ID  used for backword compatibility : https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-19.0.md#list-of-backwards-incompatible-changes"
   value       = module.eks.cluster_name
 }
+
 
 output "kms_key_id" {
   description = "ARN of KMS used for EKS"
@@ -48,17 +49,29 @@ output "worker_iam_role_name" {
   value = module.eks.cluster_iam_role_name
 }
 
+output "self_managed_worker_iam_role_names"{
+  description = "list of the self managed workers IAM role names"
+  value = values(module.eks.self_managed_node_groups)[*].iam_role_name
+}
+
+output "cluster_iam_role_name"{
+  description = "Cluster IAM role name"
+  value = module.eks.cluster_iam_role_name
+}
+
 output "eks_managed_node_groups" {
+  description = "List of EKS managed group nodes"
   value = module.eks.eks_managed_node_groups
 }
 
 output "self_managed_node_groups" {
+  description = "List of self managed node groups"
   value = module.eks.self_managed_node_groups
 }
 
-output "cluster_id" {
-  description = "EKS cluster ID"
-  value       = module.eks.cluster_name
+output "fargate_profiles" {
+  description = "List of fargate profiles"
+  value = module.eks.fargate_profiles
 }
 
 output "issuer" {
