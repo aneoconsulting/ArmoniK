@@ -66,5 +66,6 @@ The purpose of those tests is to have a reference numbers and performance of thi
     - The tasks durations
     - The payload size
     - The result size
-    - 80k tasks, 1s per task, 1cpu per worker
+- Other tests : 
+    - 80k cores for 1 million tasks, 1s per task, 1cpu per worker with 1K payload and 1k result
     - Storage( redis vs s3 )
