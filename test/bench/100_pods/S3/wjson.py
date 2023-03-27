@@ -3,22 +3,6 @@ from pytimeparse import parse
 import matplotlib.pyplot as plt
 import numpy as np
 
-#function to calculate mean
-def mean(dataset):
-    return sum(dataset)/len(dataset)
-
-#function to calculate the median
-def median(dataset):
-    data = sorted(dataset)
-    index = len(data) // 2
-    
-    # If the dataset is odd  
-    if len(dataset) % 2 != 0:
-        return data[index]
-    
-    # If the dataset is even
-    return (data[index - 1] + data[index]) / 2
-
 #function to read file and stock the data in lists
 def f_reader(file):
     with open(file) as my_bench_file:
@@ -66,11 +50,11 @@ d_parallel_10k_100p = []
 nbtasks_10k_100p, time_10k_100p, exec_time_10k_100p, sub_time_10k_100p, retrv_time_10k_100p, throughput_10k_100p, d_parallel_10k_100p = f_reader(file)
 
 #calculte the mean times of the runs
-mean_time_10k_100=mean(time_10k_100p)
-mean_exec_time_10k_100p=mean(exec_time_10k_100p)
-mean_sub_time_10k_100=mean(sub_time_10k_100p)
-mean_retrv_time_10k_100=mean(retrv_time_10k_100p)
-mean_throughput_10k_100=mean(throughput_10k_100p)
+mean_time_10k_100=np.mean(time_10k_100p)
+mean_exec_time_10k_100p=np.mean(exec_time_10k_100p)
+mean_sub_time_10k_100=np.mean(sub_time_10k_100p)
+mean_retrv_time_10k_100=np.mean(retrv_time_10k_100p)
+mean_throughput_10k_100=np.mean(throughput_10k_100p)
 
 #print the perf stats
 print('Degree of parallelism of retrieving time is : '+ str(d_parallel_10k_100p[0]))
