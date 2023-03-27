@@ -18,3 +18,16 @@ output "eks" {
     region = var.region
   }
 }
+
+output "s3_bucket_name" {
+  description = "Name of S3 bucket"
+  value       = module.s3_fs.s3_bucket_name
+}
+
+output "module_eks_self_managed_worker_iam_role_names" {
+  value = module.eks.self_managed_worker_iam_role_names
+}
+
+output "aws_iam_policy_decrypt_object_arn" {
+  value = aws_iam_policy.decrypt_object.arn
+}

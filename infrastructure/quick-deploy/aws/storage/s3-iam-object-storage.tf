@@ -25,10 +25,16 @@ resource "aws_iam_policy" "decrypt_s3_storage_object" {
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "decrypt_s3_storage_object" {
+# resource "aws_iam_role_policy_attachment" "decrypt_s3_storage_object" {
+#   count      = length(module.s3_os) > 0 ? 1 : 0
+#   policy_arn = aws_iam_policy.decrypt_s3_storage_object[0].arn
+#   role       = var.eks.worker_iam_role_name
+# }
+
+resource "aws_iam_policy_attachment" "decrypt_s3_storage_object" {
   count      = length(module.s3_os) > 0 ? 1 : 0
   policy_arn = aws_iam_policy.decrypt_s3_storage_object[0].arn
-  role       = var.eks.worker_iam_role_name
+  role       = var.eks.self_managed_worker_iam_role_names
 }
 
 # Read objects in S3
@@ -59,8 +65,8 @@ resource "aws_iam_policy" "fullaccess_s3_storage_object" {
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "fullaccess_s3_storage_object_attachment" {
+resource "aws_iam_policy_attachment" "fullaccess_s3_storage_object_attachment" {
   count      = length(module.s3_os) > 0 ? 1 : 0
   policy_arn = aws_iam_policy.fullaccess_s3_storage_object[0].arn
-  role       = var.eks.worker_iam_role_name
+  role       = var.eks.self_managed_worker_iam_role_names
 }

@@ -23,9 +23,14 @@ resource "aws_iam_policy" "decrypt_object" {
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "decrypt_object" {
+# resource "aws_iam_role_policy_attachment" "decrypt_object" {
+#   policy_arn = aws_iam_policy.decrypt_object.arn
+#   role       = var.eks.worker_iam_role_name
+# }
+
+resource "aws_iam_policy_attachment" "decrypt_object" {
   policy_arn = aws_iam_policy.decrypt_object.arn
-  role       = var.eks.worker_iam_role_name
+  role       = var.eks.self_managed_worker_iam_role_names
 }
 
 # Read objects in S3
@@ -49,7 +54,7 @@ resource "aws_iam_policy" "read_object" {
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "read_object_attachment" {
+resource "aws_iam_policy_attachment" "read_object_attachment" {
   policy_arn = aws_iam_policy.read_object.arn
-  role       = var.eks.worker_iam_role_name
+  role       = var.eks.self_managed_worker_iam_role_names
 }

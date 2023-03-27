@@ -39,9 +39,6 @@ output "kms_key_id" {
 }
 
 
-# TODO: ARNAUD.L : we must return list of iam_role_name,
-# 1 for each group in : self_managed_node_groups
-# and maybe todo later : 1 more for each group in eks_managed_node_groups
 output "worker_iam_role_name" {
   description = "EKS worker IAM role name"
   #value       = module.eks.self_managed_node_groups["worker-c5.4xlarge-spot"].iam_role_name

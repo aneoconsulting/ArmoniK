@@ -238,9 +238,10 @@ resource "aws_iam_policy" "decrypt_object" {
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "decrypt_object" {
+resource "aws_iam_policy_attachment" "decrypt_object" {
+  name       = "${local.prefix}-s3-encrypt-decrypt"
+  roles      = module.eks.self_managed_worker_iam_role_names
   policy_arn = aws_iam_policy.decrypt_object.arn
-  role       = module.eks.worker_iam_role_name
 }
 
 # object permissions for S3
@@ -264,10 +265,11 @@ resource "aws_iam_policy" "object" {
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "object" {
+resource "aws_iam_policy_attachment" "object" {
   for_each   = aws_iam_policy.object
+  name       = "${local.prefix}-permissions-on-s3-${each.key}"
+  roles      = module.eks.self_managed_worker_iam_role_names
   policy_arn = each.value.arn
-  role       = module.eks.worker_iam_role_name
 }
 
 resource "kubernetes_secret" "deployed_object_storage" {
