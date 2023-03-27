@@ -32,36 +32,39 @@ def f_reader(file):
 
     return nbtasks, time, exec_time, sub_time, retrv_time, throughput, d_parallel
 
+
+if __name__ == "__main__":
+
 ######################################################################
 #                      TREAT 10K TASKS 100 PODS                      #
 ######################################################################
 
-#open 10k tasks on 100 pods file
-# file = 'data/data_10k_100p_0.11.4.json'
-file = '10k.json'
+    #open 10k tasks on 100 pods file
+    # file = 'data/data_10k_100p_0.11.4.json'
+    file = '10k.json'
 
-#store the runs stats
-nbtasks_10k_100p = []
-time_10k_100p = []
-exec_time_10k_100p = []
-sub_time_10k_100p = []
-retrv_time_10k_100p = []
-throughput_10k_100p = []
-d_parallel_10k_100p = []
+    #store the runs stats
+    nbtasks_10k_100p = []
+    time_10k_100p = []
+    exec_time_10k_100p = []
+    sub_time_10k_100p = []
+    retrv_time_10k_100p = []
+    throughput_10k_100p = []
+    d_parallel_10k_100p = []
 
-nbtasks_10k_100p, time_10k_100p, exec_time_10k_100p, sub_time_10k_100p, retrv_time_10k_100p, throughput_10k_100p, d_parallel_10k_100p = f_reader(file)
+    nbtasks_10k_100p, time_10k_100p, exec_time_10k_100p, sub_time_10k_100p, retrv_time_10k_100p, throughput_10k_100p, d_parallel_10k_100p = f_reader(file)
 
-#calculte the mean times of the runs
-mean_time_10k_100=np.mean(time_10k_100p)
-mean_exec_time_10k_100p=np.mean(exec_time_10k_100p)
-mean_sub_time_10k_100=np.mean(sub_time_10k_100p)
-mean_retrv_time_10k_100=np.mean(retrv_time_10k_100p)
-mean_throughput_10k_100=np.mean(throughput_10k_100p)
+    #calculte the mean times of the runs
+    mean_time_10k_100=np.mean(time_10k_100p)
+    mean_exec_time_10k_100p=np.mean(exec_time_10k_100p)
+    mean_sub_time_10k_100=np.mean(sub_time_10k_100p)
+    mean_retrv_time_10k_100=np.mean(retrv_time_10k_100p)
+    mean_throughput_10k_100=np.mean(throughput_10k_100p)
 
-#print the perf stats
-print('Degree of parallelism of retrieving time is : '+ str(d_parallel_10k_100p[0]))
-print('mean total time for treatement of 10K tasks on 100 pods is : '+ str(mean_time_10k_100) +' s')
-print('mean time of the execution of 10K tasks on 100 pods is : '+ str(mean_exec_time_10k_100p) +' s')
-print('mean time of the submission of 10K tasks on 100 pods is : '+ str(mean_sub_time_10k_100) +' s')
-print('mean time of the retrieving of 10K tasks on 100 pods is : '+ str(mean_retrv_time_10k_100) +' s')
-print('mean throughput for 10K tasks on 100 pods is : '+ str(mean_throughput_10k_100)+" tasks/s \n")
+    #print the perf stats
+    print('Degree of parallelism of retrieving time is : '+ str(d_parallel_10k_100p[0]))
+    print('mean total time for treatement of 10K tasks on 100 pods is : '+ str(mean_time_10k_100) +' s')
+    print('mean time of the execution of 10K tasks on 100 pods is : '+ str(mean_exec_time_10k_100p) +' s')
+    print('mean time of the submission of 10K tasks on 100 pods is : '+ str(mean_sub_time_10k_100) +' s')
+    print('mean time of the retrieving of 10K tasks on 100 pods is : '+ str(mean_retrv_time_10k_100) +' s')
+    print('mean throughput for 10K tasks on 100 pods is : '+ str(mean_throughput_10k_100)+" tasks/s \n")
