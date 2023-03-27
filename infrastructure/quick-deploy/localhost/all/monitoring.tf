@@ -11,6 +11,11 @@ module "seq" {
     tag                = try(coalesce(var.seq.image_tag), local.default_tags[var.seq.image_name])
     image_pull_secrets = var.seq.pull_secrets
   }
+  docker_image_cron = {
+    image              = var.seq.image_name
+    tag                = try(coalesce(var.seq.image_tag), local.default_tags[var.seq.image_name])
+    image_pull_secrets = var.seq.pull_secrets
+  }
   working_dir       = "${path.root}/../../.."
   authentication    = var.seq.authentication
   system_ram_target = var.seq.system_ram_target
