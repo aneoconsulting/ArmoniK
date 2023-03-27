@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 import json
 from pytimeparse import parse
 import matplotlib.pyplot as plt
