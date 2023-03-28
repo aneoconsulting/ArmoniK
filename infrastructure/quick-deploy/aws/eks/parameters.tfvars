@@ -118,9 +118,8 @@ eks_worker_groups = {
     asg_desired_capacity                     = 0
     on_demand_base_capacity                  = 0
     on_demand_percentage_above_base_capacity = 0
-  }
-  ,
-      linux_mixed = {
+  },
+  linux_mixed = {
       name = "mixed"
       min_size     = 1
       max_size     = 5
@@ -141,7 +140,7 @@ eks_worker_groups = {
           {
             instance_type     = "c5.2xlarge"
             weighted_capacity = "2"
-          },
+          }
         ]
       }
     }
