@@ -38,6 +38,8 @@ eks = {
     node_selector = { "grid/type" = "Operator" }
   }
   cluster_endpoint_public_access = true
+  map_roles = []
+  map_users = []
 }
 
 # Operational node groups for EKS
@@ -87,11 +89,11 @@ eks_worker_groups = {
         }
         override = [
           {
-            instance_type     = "m5.large"
+            instance_type     = "c5.4xlarge"
             weighted_capacity = "1"
           },
           {
-            instance_type     = "m6i.large"
+            instance_type     = "c5.2xlarge"
             weighted_capacity = "2"
           },
         ]

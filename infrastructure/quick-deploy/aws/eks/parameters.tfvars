@@ -119,4 +119,30 @@ eks_worker_groups = {
     on_demand_base_capacity                  = 0
     on_demand_percentage_above_base_capacity = 0
   }
+  ,
+      linux_mixed = {
+      name = "mixed"
+      min_size     = 1
+      max_size     = 5
+      desired_size = 2
+      bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+      use_mixed_instances_policy = true
+      mixed_instances_policy = {
+        instances_distribution = {
+          on_demand_base_capacity                  = 0
+          on_demand_percentage_above_base_capacity = 20
+          spot_allocation_strategy                 = "capacity-optimized"
+        }
+        override = [
+          {
+            instance_type     = "c5.4xlarge"
+            weighted_capacity = "1"
+          },
+          {
+            instance_type     = "c5.2xlarge"
+            weighted_capacity = "2"
+          },
+        ]
+      }
+    }
 }

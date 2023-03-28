@@ -53,12 +53,12 @@ module "eks" {
       "k8s.io/cluster-autoscaler/${var.name}" : "owned"
       "aws-node-termination-handler/managed" : true
     }
+    # it replaces previously created role in iam.tf
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
   }
 
-  # it replaces previously created role in iam.tf 
-  iam_role_additional_policies = {
-    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  }
 
   # Worker groups
   # module input from doc : https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest?tab=inputs#optional-inputs

@@ -27,12 +27,6 @@ resource "aws_iam_policy" "send_logs_from_fluent_bit_to_cloudwatch_policy" {
   tags        = local.tags
 }
 
-# resource "aws_iam_role_policy_attachment" "send_logs_from_fluent_bit_to_cloudwatch_attachment" {
-#   count      = length(aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy)
-#   policy_arn = aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy[0].arn
-#   role       = module.eks.worker_iam_role_name
-# }
-
 resource "aws_iam_policy_attachment" "send_logs_from_fluent_bit_to_cloudwatch_attachment" {
   count      = length(aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy)
   name       = "${local.prefix}-send-logs-from-fluent-bit-to-cloudwatch-${module.eks.cluster_id}"
