@@ -20,12 +20,17 @@ This test plan describes the performance tests of ArmoniK. The purpose of those 
 - Measure the execution time of different numbers of submitted tasks and different size of the tasks.
 - Test the strong scalability.
 
-The purpose of those tests is to have a reference numbers and performance of this version of ArmoniK to know exactly what ArmoniK can do now. Also keep the numbers in order to compare them with a future realisations of ArmoniK.
-
+The purpose of those tests is to have a reference numbers and performance of the versions of ArmoniK.
 
 # The product and the functionalities to test
 ## Products
-- Bench "0.11.4" on ArmoniK "2.11.0"
+- Bench "0.11.4" , Stresstest " v samples" on ArmoniK "2.11.0"
+- The Duration of submission 
+- The Duration of processing 
+- The Duration of retrieving results 
+- The Throughtput for submission 
+- The Throughput for processing 
+- The Throughtput for retrieving results 
 
 
 # Prerequisite and exigences
@@ -42,30 +47,95 @@ The purpose of those tests is to have a reference numbers and performance of thi
 
 # Tests environment
 - ArmoniK deployed on AWS via WSL2
-- Object storag: Redis / S3
 
 # Exploited ressources
-- Ressources AWS(eks "1.25","elasticache","amazonMQ")
+- Kubernetes : AWS EKS "1.25"
+- The object storage type : AWS S3
+- The storage queue type : Amazon MQ, broker : ActiveMQ "5.16.4"
+- The storage table type : MongoDB "6.0.1"
+- the OS type : Linux ""
+- Instance Type : c24.xlarge
 
 # The estimated results
 - More pods -> faster treatement 
 
 # Tests to do
-## Bench
-- Scalability tests:
-    - 10k tasks on : 100 pods, 1000 pods, and 10000 pods
-    - 100k tasks on : 100 pods, 1000 pods, and 10000 pods
-    - 1M tasks on : 100 pods, 1000 pods, and 10000 pods
-    ## with
-    - The tasks duration : 500 ms
-    - The payload size : 100 KB
-    - The result size : 100 KB
+## Throughput scalability tests
 
-- Performance tests with a fix number of pods (100 pods) with and variable parameters:
-    - The number of tasks
-    - The tasks durations
-    - The payload size
-    - The result size
-- Other tests : 
-    - 80k cores for 50 millions tasks, 1s per task, 1cpu per worker with 1K payload and 1k result
-    - Storage( redis vs s3 )
+- 1000 tasks on : 100 pods, 1000 pods, and 10000 pods
+- 5000 tasks on : 100 pods, 1000 pods, and 10000 pods
+- 10k tasks on : 100 pods, 1000 pods, and 10000 pods
+- 100k tasks on : 100 pods, 1000 pods, and 10000 pods
+- 1M tasks on : 100 pods, 1000 pods, and 10000 pods
+### with
+- The tasks duration : 1 ms
+- The payload size : 8B
+- The result size : 8B
+
+#### StressTest
+
+| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) |Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) |Download speed (s) |
+| :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B  |  |  |  |  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+
+#### Bench
+
+| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | SubmissionTime (s) | Throughtput (tasks/s) | TasksExecutionTime (s) | ResultRetrievingTime (s) |
+| :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |
+
+
+## Submission scalability tests
+- Number of pods : 1000
+- The tasks duration : 500 ms
+- The result size : 100KB
+
+#### StressTest
+
+| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | input payload | nb channels | nb buffers per channel| Duration of submission (s) |Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) |Download speed (s) |
+| :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+
+
+
+## Other tests : 
+    
+| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) |Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) |Download speed (s) |
+| :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 80K | 200m  | 1000m | 1000m | 2000m | 1 | 2000m | 300M | 1s | 1KB | 1KB |  |  |  |  |  |  |  |  |
