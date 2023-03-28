@@ -149,6 +149,21 @@ variable "seq" {
   default = {}
 }
 
+variable "seqcli" {
+  description = "Seqcli configuration"
+  type = object({
+    image_name        = optional(string, "datalust/seqcli")
+    image_tag         = optional(string)
+    port              = optional(number, 8080)
+    pull_secrets      = optional(string, "")
+    service_type      = optional(string, "ClusterIP")
+    node_selector     = optional(any, {})
+    system_ram_target = optional(number, 0.2)
+    authentication    = optional(bool, false)
+  })
+  default = {}
+}
+
 variable "grafana" {
   description = "Grafana configuration"
   type = object({

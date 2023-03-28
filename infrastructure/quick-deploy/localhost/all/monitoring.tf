@@ -12,9 +12,9 @@ module "seq" {
     image_pull_secrets = var.seq.pull_secrets
   }
   docker_image_cron = {
-    image              = var.seq.image_name
-    tag                = try(coalesce(var.seq.image_tag), local.default_tags[var.seq.image_name])
-    image_pull_secrets = var.seq.pull_secrets
+    image              = var.seqcli.image_name
+    tag                = try(coalesce(var.seqcli.image_tag), local.default_tags[var.seqcli.image_name])
+    image_pull_secrets = var.seqcli.pull_secrets
   }
   working_dir       = "${path.root}/../../.."
   authentication    = var.seq.authentication
