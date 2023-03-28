@@ -24,14 +24,10 @@ The purpose of those tests is to have a reference numbers and performance of the
 
 # The product and the functionalities to test
 ## Products
-- Bench "0.11.4" , Stresstest " v samples" on ArmoniK "2.11.0"
-- The Duration of submission 
-- The Duration of processing 
-- The Duration of retrieving results 
-- The Throughtput for submission 
-- The Throughput for processing 
-- The Throughtput for retrieving results 
-
+- Bench "0.11.4" , Stresstest "2.12.0" on ArmoniK "2.11.0"
+- The submission of the tasks
+- The processing of the tasks
+- The retrieving of the results 
 
 # Prerequisite and exigences
 - Deploy ArmoniK with different partitions of bench (different number of pods in each partition)
