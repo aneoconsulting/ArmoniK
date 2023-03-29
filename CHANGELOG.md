@@ -9,11 +9,15 @@ Changed
 * Upgrade versions of docker images for ArmoniK (see [versions.tfvars.json](./versions.tfvars.json)):
   * Core version from `0.11.1` to `0.12.2`.
   * Extension C# version from `0.9.1` to `0.9.2`.
-  * Admin GUI version from `0.7.2` to `0.9.0`.
   * API version from `3.5.2` to `3.6.0`
 * Upgrade versions of docker images for third party applications [versions.tfvars.json](./versions.tfvars.json).
 * Upgrade versions of Helm charts of third party applications : KEDA, AWS cluster-autoscaler, Metrics Server, AWS node termination handler and AWS EFS csi driver.
 * Upgrade version of AWS EKS from `1.22` to `1.25`.
+* * Upgrade Admin GUI: from `0.7.2` to `0.9.0`.
+    * New dashboard
+    * GUI localization (fr, en)
+    * Remove gui backend
+* Add URL for the old Admin GUI: `/old-admin/`
 
 Fixed
 - 
