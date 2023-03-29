@@ -105,7 +105,7 @@ locals {
         EOT
           metadata_http_endpoint               = "enabled"  # The state of the metadata service: enabled, disabled.
           metadata_http_tokens                 = "required" # If session tokens are required: optional, required.
-          metadata_http_put_response_hop_limit = 2     
+          metadata_http_put_response_hop_limit = 2
       })
     }
   )
