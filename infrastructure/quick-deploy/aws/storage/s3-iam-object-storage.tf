@@ -29,7 +29,7 @@ resource "aws_iam_policy_attachment" "decrypt_s3_storage_object" {
   count      = length(module.s3_os) > 0 ? 1 : 0
   name       = "s3-encrypt-decrypt"
   policy_arn = aws_iam_policy.decrypt_s3_storage_object[0].arn
-  roles       = var.eks.self_managed_worker_iam_role_names
+  roles      = var.eks.self_managed_worker_iam_role_names
 }
 
 # Read objects in S3
@@ -62,7 +62,7 @@ resource "aws_iam_policy" "fullaccess_s3_storage_object" {
 
 resource "aws_iam_policy_attachment" "fullaccess_s3_storage_object_attachment" {
   count      = length(module.s3_os) > 0 ? 1 : 0
-  name = "s3-fullAccess-${var.eks.cluster_id}"
+  name       = "s3-fullAccess-${var.eks.cluster_id}"
   policy_arn = aws_iam_policy.fullaccess_s3_storage_object[0].arn
-  roles       = var.eks.self_managed_worker_iam_role_names
+  roles      = var.eks.self_managed_worker_iam_role_names
 }

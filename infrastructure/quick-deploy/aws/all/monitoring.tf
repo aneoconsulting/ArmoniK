@@ -31,7 +31,7 @@ resource "aws_iam_policy_attachment" "send_logs_from_fluent_bit_to_cloudwatch_at
   count      = length(aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy)
   name       = "${local.prefix}-send-logs-from-fluent-bit-to-cloudwatch-${module.eks.cluster_id}"
   policy_arn = aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy[0].arn
-  roles       = module.eks.self_managed_worker_iam_role_names
+  roles      = module.eks.self_managed_worker_iam_role_names
 }
 
 # Seq
