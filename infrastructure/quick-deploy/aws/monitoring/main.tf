@@ -19,9 +19,15 @@ module "seq" {
     tag                = local.seq_tag
     image_pull_secrets = local.seq_image_pull_secrets
   }
+  docker_image_cron = {
+    image              = local.cli_seq_image
+    tag                = local.cli_seq_tag
+    image_pull_secrets = local.cli_seq_image_pull_secrets
+  }
   working_dir       = "${path.root}/../../.."
   authentication    = var.authentication
   system_ram_target = local.seq_system_ram_target
+  retention_in_days = local.retention_in_days
 }
 
 # node exporter

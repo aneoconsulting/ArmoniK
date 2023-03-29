@@ -59,9 +59,9 @@ resource "kubernetes_cron_job_v1" "retention_job_in_seq" {
             restart_policy = "OnFailure" # Always, OnFailure, Never
             container {
               name             = "retention-job"
-              image             = var.docker_image_cron.image
+              image             = var.docker_image_cron.tag != "" ? "${var.docker_image_cron.image}:${var.docker_image_cron.tag}" : var.docker_image_cron.image
               image_pull_policy = var.docker_image_cron.image_pull_secrets
-              command           = ["/bin/bash", "-c", local.script_cron]
+              #command           = ["/bin/bash", "-c", local.script_cron]
             }
           }
         }
@@ -74,6 +74,6 @@ resource "kubernetes_cron_job_v1" "retention_job_in_seq" {
 locals {
   script_cron = <<EOF
 #!/bin/bash
-apikey list --json
+seqcli apikey list --json
 EOF
 }

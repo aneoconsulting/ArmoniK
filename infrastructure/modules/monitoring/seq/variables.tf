@@ -63,3 +63,9 @@ variable "system_ram_target" {
   description = "Target RAM size"
   type        = number
 }
+
+# Retention of Seq logs in days
+variable "retention_in_days" {
+  description = "Retention of Seq logs in days"
+  type        = string
+}

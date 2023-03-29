@@ -145,21 +145,10 @@ variable "seq" {
     node_selector     = optional(any, {})
     system_ram_target = optional(number, 0.2)
     authentication    = optional(bool, false)
-  })
-  default = {}
-}
-
-variable "seqcli" {
-  description = "Seqcli configuration"
-  type = object({
-    image_name        = optional(string, "datalust/seqcli")
-    image_tag         = optional(string)
-    port              = optional(number, 8080)
-    pull_secrets      = optional(string, "")
-    service_type      = optional(string, "ClusterIP")
-    node_selector     = optional(any, {})
-    system_ram_target = optional(number, 0.2)
-    authentication    = optional(bool, false)
+    cli_image_name        = optional(string, "datalust/seqcli")
+    cli_image_tag         = optional(string)
+    cli_pull_secrets      = optional(string, "")
+    retention_in_days = optional(string, "2d")
   })
   default = {}
 }

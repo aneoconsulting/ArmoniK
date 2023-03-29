@@ -23,14 +23,18 @@ locals {
   })
 
   # Seq
-  seq_enabled            = tobool(try(var.monitoring.seq.enabled, false))
-  seq_image              = try(var.monitoring.seq.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/seq")
-  seq_tag                = try(var.monitoring.seq.tag, "2021.4")
-  seq_port               = try(var.monitoring.seq.port, 8080)
-  seq_image_pull_secrets = try(var.monitoring.seq.image_pull_secrets, "")
-  seq_service_type       = try(var.monitoring.seq.service_type, "LoadBalancer")
-  seq_node_selector      = try(var.monitoring.seq.node_selector, {})
-  seq_system_ram_target  = try(var.monitoring.seq.system_ram_target, 0.2)
+  seq_enabled                = tobool(try(var.monitoring.seq.enabled, false))
+  seq_image                  = try(var.monitoring.seq.image, "${data.aws_caller_identity.current.id}.dkr.ecr.eu-west-3.amazonaws.com/seq")
+  seq_tag                    = try(var.monitoring.seq.tag, "2021.4")
+  seq_port                   = try(var.monitoring.seq.port, 8080)
+  seq_image_pull_secrets     = try(var.monitoring.seq.image_pull_secrets, "")
+  seq_service_type           = try(var.monitoring.seq.service_type, "LoadBalancer")
+  seq_node_selector          = try(var.monitoring.seq.node_selector, {})
+  seq_system_ram_target      = try(var.monitoring.seq.system_ram_target, 0.2)
+  cli_seq_image              = try(var.monitoring.seq.cli_image, "datalust/seqcli")
+  cli_seq_tag                = try(var.monitoring.seq.cli_tag, "2021.4")
+  cli_seq_image_pull_secrets = try(var.monitoring.seq.cli_image_pull_secrets, "")
+  retention_in_days  = try(var.monitoring.seq.retention_in_days, "2d")
 
   # Grafana
   grafana_enabled            = tobool(try(var.monitoring.grafana.enabled, false))

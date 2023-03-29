@@ -12,13 +12,14 @@ module "seq" {
     image_pull_secrets = var.seq.pull_secrets
   }
   docker_image_cron = {
-    image              = var.seqcli.image_name
-    tag                = try(coalesce(var.seqcli.image_tag), local.default_tags[var.seqcli.image_name])
-    image_pull_secrets = var.seqcli.pull_secrets
+    image              = var.seq.cli_image_name
+    tag                = try(coalesce(var.seq.cli_image_tag), local.default_tags[var.seq.cli_image_name])
+    image_pull_secrets = var.seq.cli_pull_secrets
   }
   working_dir       = "${path.root}/../../.."
   authentication    = var.seq.authentication
   system_ram_target = var.seq.system_ram_target
+  retention_in_days = var.seq.retention_in_days
 }
 
 resource "kubernetes_secret" "seq" {

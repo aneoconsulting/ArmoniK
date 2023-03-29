@@ -55,6 +55,10 @@ monitoring = {
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
     system_ram_target  = 0.2
+    cli_image              = "datalust/seqcli"
+    cli_tag                = "2023.1"
+    cli_image_pull_secrets = ""
+    retention_in_days      = "2d"
   }
   grafana = {
     enabled            = true
