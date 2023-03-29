@@ -70,7 +70,7 @@ locals {
     app_port = local.admin_gui_node_port.app_port
   }) : null
 
-  admin_app_url = length(kubernetes_service.admin_gui) > 0 ? "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.app_port}/" : null
+  admin_app_url = length(kubernetes_service.admin_gui) > 0 ? "http://${local.admin_gui_endpoints.ip}:${local.admin_gui_endpoints.app_port}" : null
 }
 
 # Node IP of admin old GUI pod

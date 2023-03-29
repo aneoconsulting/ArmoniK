@@ -1,6 +1,15 @@
 # Changelog
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+Changed
+-
+
+* Upgrade Admin GUI: from 0.7.2 to 0.9.0
+    * New dashboard
+    * GUI localization (fr, en)
+    * Remove gui backend
+* Add url for the old Admin GUI: `/old-admin/`
+
 ## [v2.12.0](https://github.com/aneoconsulting/armonik/tree/v2.12.0) (2023-02-27)
 
 Changed
