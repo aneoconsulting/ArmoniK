@@ -1,4 +1,4 @@
- # Test plan of Armonik "2.11.0"
+ # Test plan of Armonik "2.12.0"
 -[Introduction](#Introduction)
 
 -[The product and the functionalities to test](#the-product-and-the-functionalities-to-test)
@@ -24,7 +24,7 @@ The purpose of those tests is to have a reference numbers and performance of the
 
 # The product and the functionalities to test
 ## Products
-- Bench "0.11.4" , Stresstest "2.12.0" on ArmoniK "2.11.0"
+- Bench "0.11.4" , Stresstest "2.12.0" on ArmoniK "2.12.0"
 - The submission of the tasks
 - The processing of the tasks
 - The retrieving of the results 
@@ -70,43 +70,43 @@ The purpose of those tests is to have a reference numbers and performance of the
 
 #### StressTest
 
-| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) |Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) |Download speed (s) |
-| :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B  |  |  |  |  |  |  |  |  |
-| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| Date | Infra version | Core version | API version  | Extension c# version | Instance type | nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) |Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) |Download speed (s) |
+| :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B  |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
 
 #### Bench
 
-| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | SubmissionTime (s) | Throughtput (tasks/s) | TasksExecutionTime (s) | ResultRetrievingTime (s) |
-| :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B  |  |  |  |  |
-| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
-| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
-| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |
-| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
-| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |
-| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
-| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
-| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |
-| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
-| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |
+| Date | Infra version | Core version | API version  | Extension c# version | Instance type | nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | SubmissionTime (s) | Throughtput (tasks/s) | TasksExecutionTime (s) | ResultRetrievingTime (s) |
+| :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |
 
 
 ## Submission scalability tests
@@ -116,22 +116,22 @@ The purpose of those tests is to have a reference numbers and performance of the
 
 #### StressTest
 
-| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | input payload | nb channels | nb buffers per channel| Duration of submission (s) |Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) |Download speed (s) |
-| :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
-| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| Date | Infra version | Core version | API version  | Extension c# version | Instance type | nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | input payload | nb channels | nb buffers per channel| Duration of submission (s) |Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) |Download speed (s) |
+| :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
 
 
 
 ## Other tests : 
     
-| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) |Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) |Download speed (s) |
-| :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 80K | 200m  | 1000m | 1000m | 2000m | 1 | 2000m | 300M | 1s | 1KB | 1KB |  |  |  |  |  |  |  |  |
+| Date | Infra version | Core version | API version  | Extension c# version | Instance type | nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) |Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) |Download speed (s) |
+| :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge | 80K | 200m  | 1000m | 1000m | 2000m | 1 | 2000m | 300M | 1s | 1KB | 1KB |  |  |  |  |  |  |  |  |
