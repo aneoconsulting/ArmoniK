@@ -103,6 +103,7 @@ variable "mongodb" {
     image_tag          = optional(string)
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
+    replicas_number    = optional(number, 1)
   })
   default = {}
 }
