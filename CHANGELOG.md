@@ -1,35 +1,36 @@
 # Changelog
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.12.0](https://github.com/aneoconsulting/armonik/tree/v2.12.0) (2023-03-29)
+
 Changed
 -
 
-* Upgrade Admin GUI: from 0.7.2 to 0.9.0
+* Upgrade versions of docker images for ArmoniK (see [versions.tfvars.json](./versions.tfvars.json)):
+  * Core version from `0.11.1` to `0.12.2`.
+  * Extension C# version from `0.9.1` to `0.9.2`.
+  * API version from `3.5.2` to `3.6.0`
+* Upgrade versions of docker images for third party applications [versions.tfvars.json](./versions.tfvars.json).
+* Upgrade versions of Helm charts of third party applications : KEDA, AWS cluster-autoscaler, Metrics Server, AWS node termination handler and AWS EFS csi driver.
+* Upgrade version of AWS EKS from `1.22` to `1.25`.
+* * Upgrade Admin GUI: from `0.7.2` to `0.9.0`.
     * New dashboard
     * GUI localization (fr, en)
     * Remove gui backend
-* Add url for the old Admin GUI: `/old-admin/`
-
-## [v2.12.0](https://github.com/aneoconsulting/armonik/tree/v2.12.0) (2023-02-27)
-
-Changed
--
-
-* Upgrade versions of docker images of third party applications [versions.tfvars.json](./versions.tfvars.json).
-* Upgrade versions of Helm charts of third party applications : KEDA, AWS cluster-autoscaler, Metrics Server, AWS node termination handler and AWS EFS csi driver.
-* Upgrade version of AWS EKS from `1.22` to `1.25`.
+* Add URL for the old Admin GUI: `/old-admin/`
 
 Fixed
 - 
 
+* Extensions.Csharp client no longer waits for missing tasks.
 * Starting from version `1.24.0` by default Kubernetes does not automatically generate tokens (`default_secret_name`) for service accounts [See here](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#urgent-upgrade-notes-1). So modifications are done in the Fluent-bit module to fix the following warning:
 ```bash
 ╷
 │ Warning: "default_secret_name" is no longer applicable for Kubernetes v1.24.0 and above
 │
-│   with module.fluent_bit.kubernetes_service_account.fluent_bit[0],
-│   on ../../../modules/monitoring/fluent-bit/service-account.tf line 2, in resource "kubernetes_service_account" "fluent_bit":
-│    2: resource "kubernetes_service_account" "fluent_bit" {
+│ with module.fluent_bit.kubernetes_service_account.fluent_bit[0],
+│ on ../../../modules/monitoring/fluent-bit/service-account.tf line 2, in resource "kubernetes_service_account" "fluent_bit":
+│ 2: resource "kubernetes_service_account" "fluent_bit" {
 │
 │ Starting from version 1.24.0 Kubernetes does not automatically generate a token for service accounts, in this case, "default_secret_name" will be empty
 ```
