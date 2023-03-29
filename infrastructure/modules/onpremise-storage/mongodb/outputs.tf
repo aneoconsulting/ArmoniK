@@ -9,6 +9,11 @@ output "port" {
   value       = local.mongodb_port
 }
 
+output "url" {
+  description = "URL of mongodb server"
+  value       = local.mongodb_url
+}
+
 output "user_certificate" {
   description = "User certificates of MongoDB"
   value = {
