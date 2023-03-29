@@ -175,6 +175,7 @@ module "mongodb" {
     tag                = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.pull_secrets
+    replicas_number    = var.mongodb.replicas_number
   }
   persistent_volume = local.mongodb_persistent_volume
   depends_on        = [module.efs_persistent_volume]

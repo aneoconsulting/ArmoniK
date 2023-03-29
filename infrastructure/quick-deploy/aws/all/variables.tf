@@ -278,6 +278,7 @@ variable "mongodb" {
     image_tag     = optional(string)
     node_selector = optional(any, {})
     pull_secrets  = optional(string, "")
+    replicas_number    = optional(number, 1)
     persistent_volume = optional(object({
       storage_provisioner = string
       parameters          = optional(map(string), {})
