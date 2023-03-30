@@ -56,14 +56,17 @@ The purpose of those tests is to have a reference numbers and performance of the
 
 - ArmoniK deployed on AWS via WSL2
 
+| Date | Infra version | Core version | API version  | Extension c# version | Instance type | Instance caracteristics | CPU frequency | nb vCPUs | RAM (GB) | Network bandwidth (Gbps) | EBS Bandwidth (Mbps) |
+| :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---   |  :---   |
+| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 |
+
+- [Config file](https://github.com/aneoconsulting/ArmoniK/blob/874-benchmarking/versions.tfvars.json) with all the versions of Armonik
+
 # Exploited ressources
 
-- Kubernetes : AWS EKS "1.25"
-- The object storage type : AWS S3
-- The storage queue type : Amazon MQ, broker : ActiveMQ "5.16.4"
-- The storage table type : MongoDB "6.0.1"
-- the OS type : Linux ""
-- Instance Type : c24.xlarge
+| Kubernetes | object storage type | storage queue type | storage table type | OS |
+| :---    | :---    | :---    | :---    | :---    |
+| AWS EKS "1.25" | AWS S3 | Amazon MQ, broker : ActiveMQ "5.16.4" | MongoDB "6.0.1" | Linux |
 
 # The estimated results
 
@@ -87,43 +90,43 @@ The purpose of those tests is to have a reference numbers and performance of the
 
 #### StressTest
 
-| Date | Infra version | Core version | API version  | Extension c# version | Instance type | Instance caracteristics | CPU frequency | nb vCPUs | RAM (GB) | Network bandwidth (Gbps) | EBS Bandwidth (Mbps) | nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) | Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
-| :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---   |  :---    | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B  |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) | Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
+| :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B  |  |  |  |  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
 
 #### Bench
 
-| Date | Infra version | Core version | API version  | Extension c# version | Instance type | Instance caracteristics | CPU frequency | nb vCPUs | RAM (GB) | Network bandwidth (Gbps) | EBS Bandwidth (Mbps) | nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) | Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
-| :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---   |  :---    | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |
+| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) | Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
+| :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1 ms | 8B | 8B|  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |
 
 
 ## Submission scalability tests
@@ -134,22 +137,42 @@ The purpose of those tests is to have a reference numbers and performance of the
 
 #### StressTest
 
-| Date | Infra version | Core version | API version  | Extension c# version | Instance type | Instance caracteristics | CPU frequency | nb vCPUs | RAM (GB) | Network bandwidth (Gbps) | EBS Bandwidth (Mbps) | nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) | Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
-| :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---   |  :---    | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) | Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
+| :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+
+
+
+- Number of pods : 1000
+- The tasks duration : 500 ms
+- The result size : 100KB
+
+#### StressTest
+
+| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) | Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
+| :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
 
 
 
 ## Other tests
     
-| Date | Infra version | Core version | API version  | Extension c# version | Instance type | Instance caracteristics | CPU frequency | nb vCPUs | RAM (GB) | Network bandwidth (Gbps) | EBS Bandwidth (Mbps) | nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) | Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
-| :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---    | :---   |  :---    | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 03/29/2023 | 2.12.0 | 0.11.1 | 3.5.2 | 0.9.1 | c24.xlarge |  Intel Xeon de 2e (Cascade Lake) | 3.6 GHz - 3.9 GHz | 96 | 192 | 25 | 19000 | 80K | 200m  | 1000m | 1000m | 2000m | 1 | 2000m | 300M | 1s | 1KB | 1KB |  |  |  |  |  |  |  |  |
+| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | task duration | input payload | result payload | Duration of submission (s) | Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
+| :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 80K | 200m  | 1000m | 1000m | 2000m | 1 | 2000m | 300M | 1s | 1KB | 1KB |  |  |  |  |  |  |  |  |
