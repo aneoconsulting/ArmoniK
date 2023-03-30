@@ -107,7 +107,7 @@ module "mongodb" {
     tag                = var.mongodb.tag
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.image_pull_secrets
-    replicas_number = var.mongodb.replicas_number
+    replicas_number    = var.mongodb.replicas_number
   }
   persistent_volume = local.persistent_volume
   depends_on        = [module.efs_persistent_volume]
