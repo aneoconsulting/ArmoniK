@@ -26,6 +26,19 @@ module "eks" {
   cloudwatch_log_group_kms_key_id        = var.eks.encryption_keys.cluster_log_kms_key_id
   cloudwatch_log_group_retention_in_days = var.eks.cluster_log_retention_in_days
   create_cluster_security_group          = true
+
+  # Extend node-to-node security group rules
+  node_security_group_additional_rules = {
+    ingress_self_all = {
+      description = "Node to node port 80 ingress"
+      protocol    = "tcp"
+      from_port   = 80
+      to_port     = 80
+      type        = "ingress"
+      self        = true
+    }
+  }
+
   cluster_encryption_config = {
     provider_key_arn = var.eks.encryption_keys.cluster_encryption_config
     resources        = ["secrets"]
