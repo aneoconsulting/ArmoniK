@@ -19,7 +19,8 @@ output "storage_endpoint_url" {
       bucket_name = try(module.minio[0].bucket_name, "")
     } : null
     mongodb = {
-      url = module.mongodb.url
+      url                = module.mongodb.url
+      number_of_replicas = module.mongodb.number_of_replicas
     }
     shared = {
       host_path         = local.shared_storage_host_path

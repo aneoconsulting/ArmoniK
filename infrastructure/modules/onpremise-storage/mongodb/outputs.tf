@@ -10,8 +10,13 @@ output "port" {
 }
 
 output "url" {
-  description = "URL of mongodb server"
+  description = "URL of MongoDB server"
   value       = local.mongodb_url
+}
+
+output "number_of_replicas" {
+  description = "Number of replicas of MongoDB"
+  value       = local.mongodb_number_of_replicas
 }
 
 output "user_certificate" {
