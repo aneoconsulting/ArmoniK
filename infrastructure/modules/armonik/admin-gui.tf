@@ -48,72 +48,14 @@ resource "kubernetes_deployment" "admin_gui" {
           }
         }
         restart_policy = "Always" # Always, OnFailure, Never
-        # API container
-        container {
-          name              = var.admin_gui.api.name
-          image             = var.admin_gui.api.tag != "" ? "${var.admin_gui.api.image}:${var.admin_gui.api.tag}" : var.admin_gui.api.image
-          image_pull_policy = var.admin_gui.image_pull_policy
-          resources {
-            limits   = var.admin_gui.api.limits
-            requests = var.admin_gui.api.requests
-          }
-          port {
-            name           = "api-port"
-            container_port = 3333
-          }
-          env_from {
-            config_map_ref {
-              name = kubernetes_config_map.core_config.metadata.0.name
-            }
-          }
-          env {
-            name  = "ControlPlane__Endpoint"
-            value = local.control_plane_url
-          }
-          dynamic "env" {
-            for_each = (data.kubernetes_secret.grafana.data.enabled ? [1] : [])
-            content {
-              name  = "Grafana__Endpoint"
-              value = data.kubernetes_secret.grafana.data.url
-            }
-          }
-          dynamic "env" {
-            for_each = (data.kubernetes_secret.seq.data.enabled ? [1] : [])
-            content {
-              name  = "Seq__Endpoint"
-              value = data.kubernetes_secret.seq.data.web_url
-            }
-          }
-          dynamic "env" {
-            for_each = local.credentials
-            content {
-              name = env.key
-              value_from {
-                secret_key_ref {
-                  key      = env.value.key
-                  name     = env.value.name
-                  optional = false
-                }
-              }
-            }
-          }
-          dynamic "volume_mount" {
-            for_each = local.certificates
-            content {
-              name       = volume_mount.value.name
-              mount_path = volume_mount.value.mount_path
-              read_only  = true
-            }
-          }
-        }
         # App container
         container {
-          name              = var.admin_gui.app.name
-          image             = var.admin_gui.app.tag != "" ? "${var.admin_gui.app.image}:${var.admin_gui.app.tag}" : var.admin_gui.app.image
+          name              = var.admin_gui.name
+          image             = var.admin_gui.tag != "" ? "${var.admin_gui.image}:${var.admin_gui.tag}" : var.admin_gui.image
           image_pull_policy = var.admin_gui.image_pull_policy
           resources {
-            limits   = var.admin_gui.app.limits
-            requests = var.admin_gui.app.requests
+            limits   = var.admin_gui.limits
+            requests = var.admin_gui.requests
           }
           port {
             name           = "app-port"
@@ -199,14 +141,8 @@ resource "kubernetes_service" "admin_gui" {
     }
     port {
       name        = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.0.port.0.name
-      port        = var.admin_gui.api.port
+      port        = var.admin_gui.port
       target_port = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.0.port.0.container_port
-      protocol    = "TCP"
-    }
-    port {
-      name        = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.1.port.0.name
-      port        = var.admin_gui.app.port
-      target_port = kubernetes_deployment.admin_gui[0].spec.0.template.0.spec.0.container.1.port.0.container_port
       protocol    = "TCP"
     }
   }

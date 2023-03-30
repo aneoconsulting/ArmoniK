@@ -1,0 +1,17 @@
+{
+  "name": "armonik-docs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxi dev",
+    "build": "nuxi build",
+    "generate": "nuxi generate",
+    "preview": "nuxi preview"
+  },
+  "dependencies": {
+    "@aneoconsultingfr/armonik-docs-theme": "^0.6.0",
+    "nuxt": "^3.3.1",
+    "rollup": "3.18.0",
+    "mermaid": "^10.0.0"
+  }
+}

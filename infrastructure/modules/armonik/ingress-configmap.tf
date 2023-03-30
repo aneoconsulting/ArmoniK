@@ -44,9 +44,15 @@ server {
     location = /admin {
         rewrite ^ $scheme://$http_host/admin/ permanent;
     }
+    location = /old-admin {
+        rewrite ^ $scheme://$http_host/old-admin/ permanent;
+    }
 %{if var.admin_gui != null~}
     location /admin/ {
         proxy_pass ${local.admin_app_url};
+    }
+    location /old-admin/ {
+        proxy_pass ${local.admin_old_url};
     }
     location /api {
         proxy_pass ${local.admin_api_url};

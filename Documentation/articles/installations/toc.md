@@ -1,5 +1,0 @@
-# [Local Docker and Kubernetes](k3s.md)
-# [K3s Cluster deployment](aws_k3s_deploy.md)
-# [Kubeadm Cluster deployment](aws_kubeadm_deploy.md)
-# [Windows Subsystem Linux deployment](all-in-one-deploy-powershell.md)
-# [Ubuntu Linux deployment](all-in-one-deploy-linux.md)

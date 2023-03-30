@@ -1,0 +1,62 @@
+name: Deploy Docs to Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-docs:
+    name: Build Docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - run: npm i -g pnpm @antfu/ni
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "pnpm"
+          cache-dependency-path: ".docs/pnpm-lock.yaml"
+
+      - name: Install dependencies
+        run: cd .docs && nci
+
+      - name: Use NODE_ENV=production
+        run: echo "NODE_ENV=production" >> $GITHUB_ENV
+
+      - name: Set the site URL
+        run: echo "NUXT_PUBLIC_SITE_URL=https://aneoconsulting.github.io/ArmoniK/" >> $GITHUB_ENV
+
+      - name: Static HTML export with Nuxt
+        run: cd .docs && nr generate
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: .docs/.output/public
+
+  deploy:
+    needs: build-docs
+    name: Deploy to GitHub Pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

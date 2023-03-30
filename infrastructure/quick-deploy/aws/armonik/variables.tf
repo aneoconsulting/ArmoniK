@@ -116,6 +116,30 @@ variable "control_plane" {
 variable "admin_gui" {
   description = "Parameters of the admin GUI"
   type = object({
+    name  = string
+    image = string
+    tag   = string
+    port  = number
+    limits = object({
+      cpu    = string
+      memory = string
+    })
+    requests = object({
+      cpu    = string
+      memory = string
+    })
+    service_type       = string
+    replicas           = number
+    image_pull_policy  = string
+    image_pull_secrets = string
+    node_selector      = any
+  })
+  default = null
+}
+
+variable "admin_old_gui" {
+  description = "Parameters of the old admin GUI"
+  type = object({
     api = object({
       name  = string
       image = string
@@ -130,7 +154,7 @@ variable "admin_gui" {
         memory = string
       })
     })
-    app = object({
+    old = object({
       name  = string
       image = string
       tag   = string
