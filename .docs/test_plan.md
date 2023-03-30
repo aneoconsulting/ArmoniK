@@ -42,11 +42,13 @@ The purpose of those tests is to have a reference numbers and performance of the
 ## Scripts bash
 
 - To lunch a warming up run then a bunch of runs with the same parameters and store them in files
-## Python:
+
+## Python
 
 - Clean the files where we stocked the data in readable json files.
 - Read the data and calculate the median and the mean of each run bunch.
-## Json :
+
+## Json 
 
 - We stock the results of the performance tests in Json file wich we will store in a database.
 
@@ -76,6 +78,7 @@ The purpose of those tests is to have a reference numbers and performance of the
 - 10k tasks on : 100 pods, 1000 pods, and 10000 pods
 - 100k tasks on : 100 pods, 1000 pods, and 10000 pods
 - 1M tasks on : 100 pods, 1000 pods, and 10000 pods
+
 ### with
 
 - The tasks duration : 1 ms
