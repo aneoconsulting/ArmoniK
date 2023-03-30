@@ -115,7 +115,7 @@ admin_old_gui = {
   }
   old = {
     name  = "admin-old-gui"
-    image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app"
+    image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-old"
     tag   = "0.8.0"
     port  = 1080
     limits = {
