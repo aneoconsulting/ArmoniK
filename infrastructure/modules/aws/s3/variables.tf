@@ -26,6 +26,6 @@ variable "s3" {
     restrict_public_buckets               = bool
     kms_key_id                            = string
     sse_algorithm                         = string
-    retention_in_days                     = number
+    #retention_in_days                     = number
   })
 }

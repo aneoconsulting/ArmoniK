@@ -122,28 +122,6 @@ module "cloudwatch" {
   tags              = local.tags
 }
 
-# AWS S3 bucket to store logs from fluent bit
-module "s3_logs" {
-  count  = (local.s3_enabled ? 1 : 0)
-  source = "../../../modules/aws/s3"
-  tags   = local.tags
-  name   = local.s3_name
-  s3 = {
-    policy                                = var.monitoring.s3.policy
-    attach_policy                         = var.monitoring.s3.attach_policy
-    attach_deny_insecure_transport_policy = var.monitoring.s3.attach_deny_insecure_transport_policy
-    attach_require_latest_tls_policy      = var.monitoring.s3.attach_require_latest_tls_policy
-    attach_public_policy                  = var.monitoring.s3.attach_public_policy
-    block_public_acls                     = var.monitoring.s3.attach_public_policy
-    block_public_policy                   = var.monitoring.s3.block_public_acls
-    ignore_public_acls                    = var.monitoring.s3.block_public_policy
-    restrict_public_buckets               = var.monitoring.s3.restrict_public_buckets
-    kms_key_id                            = local.s3_kms_key_id
-    sse_algorithm                         = (local.s3_kms_key_id != "" ? var.monitoring.s3.sse_algorithm : "aws:kms")
-    retention_in_days                     = var.monitoring.s3.retention_in_days
-  }
-}
-
 # Fluent-bit
 module "fluent_bit" {
   source        = "../../../modules/monitoring/fluent-bit"
@@ -172,7 +150,7 @@ module "fluent_bit" {
   } : {})
   s3 = (local.s3_enabled ? {
     name    = local.s3_name
-    region  = var.region
+    region  = local.s3_region
     enabled = true
   } : {})
 }

@@ -106,15 +106,15 @@ resource "aws_s3_bucket_public_access_block" "s3_bucket" {
   restrict_public_buckets = var.s3.restrict_public_buckets
 }
 
-resource "aws_s3_bucket_lifecycle_configuration" "s3_logs" {
-  count = var.s3.retention_in_days != null ? 1 : 0
-  bucket = aws_s3_bucket.s3_bucket.id
+# resource "aws_s3_bucket_lifecycle_configuration" "s3_logs" {
+#   count = var.s3.retention_in_days != null ? 1 : 0
+#   bucket = aws_s3_bucket.s3_bucket.id
 
-  rule {
-    id = "rule-1"
-    expiration {
-      days = var.s3.retention_in_days
-    }
-    status = "Enabled"
-  }
-}
+#   rule {
+#     id = "rule-1"
+#     expiration {
+#       days = var.s3.retention_in_days
+#     }
+#     status = "Enabled"
+#   }
+# }

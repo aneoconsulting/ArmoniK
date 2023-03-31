@@ -112,19 +112,10 @@ monitoring = {
   }
   s3 = {
     enabled                               = true
-    name                                  = "armonik-s3logs"
-    policy                                = ""
-    attach_policy                         = false
-    attach_deny_insecure_transport_policy = true
-    attach_require_latest_tls_policy      = true
-    attach_public_policy                  = false
-    block_public_acls                     = true
-    block_public_policy                   = true
-    ignore_public_acls                    = true
-    restrict_public_buckets               = true
-    kms_key_id                            = ""
-    sse_algorithm                         = ""
-    retention_in_days                     = 21
+    name                                  = "armonik-logs"
+    region                                = "eu-west-3"
+    arn                                   = "arn:aws:s3:::armonik-logs"
+    kms_key_id                            = "744bbd6f-fa64-4104-8c2f-ae7f5e7e89c7"
   }
   fluent_bit = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"

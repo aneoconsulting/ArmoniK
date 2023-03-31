@@ -92,15 +92,14 @@ resource "kubernetes_secret" "grafana" {
 }
 
 resource "kubernetes_secret" "s3_logs" {
-  count = length(module.s3_logs) > 0 ? 1 : 0
   metadata {
     name      = "s3-logs"
     namespace = var.namespace
   }
   data = {
     service_url       = "https://s3.${var.region}.amazonaws.com"
-    kms_key_id        = module.s3_logs[0].kms_key_id
-    name              = module.s3_logs[0].s3_bucket_name
+    kms_key_id        = local.s3_kms_key_id
+    name              = local.s3_name 
     access_key_id     = ""
     secret_access_key = ""
   }
