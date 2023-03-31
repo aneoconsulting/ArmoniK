@@ -31,7 +31,7 @@ resource "aws_iam_role_policy_attachment" "send_logs_from_fluent_bit_to_cloudwat
 
 # Decrypt objects in S3
 data "aws_iam_policy_document" "decrypt_object" {
-  count      = (local.s3_enabled ? 1 : 0)
+  count = (local.s3_enabled ? 1 : 0)
   statement {
     sid = "KMSAccess"
     actions = [
@@ -49,7 +49,7 @@ data "aws_iam_policy_document" "decrypt_object" {
 }
 
 resource "aws_iam_policy" "decrypt_object" {
-  count      = (local.s3_enabled ? 1 : 0)
+  count       = (local.s3_enabled ? 1 : 0)
   name_prefix = "s3-logs-encrypt-decrypt-${local.suffix}"
   description = "Policy for alowing decryption of encrypted object in S3 logs"
   policy      = data.aws_iam_policy_document.decrypt_object[0].json
@@ -64,7 +64,7 @@ resource "aws_iam_role_policy_attachment" "decrypt_object" {
 
 # Write objects in S3
 data "aws_iam_policy_document" "write_object" {
-  count      = (local.s3_enabled ? 1 : 0)
+  count = (local.s3_enabled ? 1 : 0)
   statement {
     sid = "WriteFromS3"
     actions = [
@@ -78,7 +78,7 @@ data "aws_iam_policy_document" "write_object" {
 }
 
 resource "aws_iam_policy" "write_object" {
-  count      = (local.s3_enabled ? 1 : 0)
+  count       = (local.s3_enabled ? 1 : 0)
   name_prefix = "s3-logs-write-${local.suffix}"
   description = "Policy for allowing read object in S3 logs"
   policy      = data.aws_iam_policy_document.write_object[0].json

@@ -111,11 +111,11 @@ monitoring = {
     retention_in_days = 30
   }
   s3 = {
-    enabled                               = true
-    name                                  = "armonik-logs"
-    region                                = "eu-west-3"
-    arn                                   = "arn:aws:s3:::armonik-logs"
-    kms_key_id                            = "744bbd6f-fa64-4104-8c2f-ae7f5e7e89c7"
+    enabled    = true
+    name       = "armonik-logs"
+    region     = "eu-west-3"
+    arn        = "arn:aws:s3:::armonik-logs"
+    kms_key_id = "744bbd6f-fa64-4104-8c2f-ae7f5e7e89c7"
   }
   fluent_bit = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"

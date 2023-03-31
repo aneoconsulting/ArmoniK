@@ -99,7 +99,7 @@ resource "kubernetes_secret" "s3_logs" {
   data = {
     service_url       = "https://s3.${var.region}.amazonaws.com"
     kms_key_id        = local.s3_kms_key_id
-    name              = local.s3_name 
+    name              = local.s3_name
     access_key_id     = ""
     secret_access_key = ""
   }
