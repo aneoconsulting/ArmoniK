@@ -25,7 +25,7 @@ output "cluster_name" {
 
 output "cluster_id" {
   description = "EKS cluster ID  used for backword compatibility : https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/UPGRADE-19.0.md#list-of-backwards-incompatible-changes"
-  value       = module.eks.cluster_name
+  value       = module.eks.cluster_id
 }
 
 

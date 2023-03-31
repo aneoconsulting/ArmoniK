@@ -233,7 +233,7 @@ data "aws_iam_policy_document" "decrypt_object" {
 
 resource "aws_iam_policy" "decrypt_object" {
   name_prefix = "${local.prefix}-s3-encrypt-decrypt"
-  description = "Policy for alowing decryption of encrypted object in S3 ${module.eks.cluster_id}"
+  description = "Policy for alowing decryption of encrypted object in S3 ${module.eks.cluster_name}"
   policy      = data.aws_iam_policy_document.decrypt_object.json
   tags        = local.tags
 }
@@ -260,7 +260,7 @@ data "aws_iam_policy_document" "object" {
 resource "aws_iam_policy" "object" {
   for_each    = data.aws_iam_policy_document.object
   name_prefix = "${local.prefix}-s3-${each.key}"
-  description = "Policy for allowing object access in ${each.key} S3 ${module.eks.cluster_id}"
+  description = "Policy for allowing object access in ${each.key} S3 ${module.eks.cluster_name}"
   policy      = each.value.json
   tags        = local.tags
 }
