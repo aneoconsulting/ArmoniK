@@ -38,14 +38,6 @@ output "kms_key_id" {
   }
 }
 
-
-output "worker_iam_role_name" {
-  description = "EKS worker IAM role name"
-  #value       = module.eks.self_managed_node_groups["worker-c5.4xlarge-spot"].iam_role_name
-  #value =       try(values(module.eks.self_managed_node_groups).1.iam_role_name, "")
-  value = module.eks.cluster_iam_role_name
-}
-
 output "self_managed_worker_iam_role_names" {
   description = "list of the self managed workers IAM role names"
   value       = values(module.eks.self_managed_node_groups)[*].iam_role_name

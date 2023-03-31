@@ -23,11 +23,6 @@ resource "aws_iam_policy" "decrypt_object" {
   tags        = local.tags
 }
 
-# resource "aws_iam_role_policy_attachment" "decrypt_object" {
-#   policy_arn = aws_iam_policy.decrypt_object.arn
-#   role       = var.eks.worker_iam_role_name
-# }
-
 resource "aws_iam_policy_attachment" "decrypt_object" {
   name       = local.iam_s3_decrypt_object_policy_name
   policy_arn = aws_iam_policy.decrypt_object.arn
