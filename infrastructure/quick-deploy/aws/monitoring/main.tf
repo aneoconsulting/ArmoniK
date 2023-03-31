@@ -1,6 +1,6 @@
 # AWS KMS
 module "kms" {
-  count  = (local.cloudwatch_enabled && local.cloudwatch_kms_key_id == "") || (local.s3_enabled && local.s3_kms_key_id == "") ? 1 : 0
+  count  = (local.cloudwatch_kms_key_id == "" && local.cloudwatch_enabled ? 1 : 0)
   source = "../../../modules/aws/kms"
   name   = local.kms_name
   tags   = local.tags
