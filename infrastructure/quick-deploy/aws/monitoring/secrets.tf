@@ -91,13 +91,13 @@ resource "kubernetes_secret" "grafana" {
   }
 }
 
-resource "kubernetes_secret" "s3_logs" {
-  metadata {
-    name      = "s3-logs"
-    namespace = var.namespace
-  }
-  data = {
-    service_url = "https://s3.${var.region}.amazonaws.com"
-    name        = local.s3_name
-  }
-}
+# resource "kubernetes_secret" "s3_logs" {
+#   metadata {
+#     name      = "s3-logs"
+#     namespace = var.namespace
+#   }
+#   data = {
+#     service_url = "https://s3.${var.region}.amazonaws.com"
+#     name        = local.s3_name
+#   }
+# }
