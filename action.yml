@@ -185,7 +185,7 @@ runs:
             -kv ingress=null \
             -kv authentication.require_authentication=false \
             -kv authentication.require_authorization=false \
-            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/all/parameters.tfvars \
+            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/all/parameters.tfvars \
         else
           python ${{ github.action_path }}/tools/modify_parameters.py \
             -kv "compute_plane[default].worker[*].image=${{ inputs.worker-image }}" \
@@ -204,7 +204,7 @@ runs:
             -kv ingress.generate_client_cert=false \
             -kv authentication.require_authentication=false \
             -kv authentication.require_authorization=false \
-            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/all/parameters.tfvars \
+            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/all/parameters.tfvars \
         fi
         cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
         make deploy-armonik PARAMETERS_FILE=${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
