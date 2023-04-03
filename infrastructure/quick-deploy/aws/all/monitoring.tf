@@ -33,6 +33,68 @@ resource "aws_iam_role_policy_attachment" "send_logs_from_fluent_bit_to_cloudwat
   role       = module.eks.worker_iam_role_name
 }
 
+# # Decrypt objects in S3
+# data "aws_iam_policy_document" "decrypt_object" {
+#   count = (var.s3.enabled ? 1 : 0)
+#   statement {
+#     sid = "KMSAccess"
+#     actions = [
+#       "kms:Encrypt",
+#       "kms:Decrypt",
+#       "kms:ReEncrypt*",
+#       "kms:GenerateDataKey*",
+#       "kms:DescribeKey"
+#     ]
+#     effect = "Allow"
+#     resources = [
+#       var.s3.arn
+#     ]
+#   }
+# }
+
+# resource "aws_iam_policy" "decrypt_object" {
+#   count       = (var.s3.enabled ? 1 : 0)
+#   name_prefix = "s3-logs-encrypt-decrypt-${var.prefix}"
+#   description = "Policy for alowing decryption of encrypted object in S3 logs"
+#   policy      = data.aws_iam_policy_document.decrypt_object[0].json
+#   tags        = var.tags
+# }
+
+# resource "aws_iam_role_policy_attachment" "decrypt_object" {
+#   count      = (var.s3.enabled ? 1 : 0)
+#   policy_arn = aws_iam_policy.decrypt_object[0].arn
+#   role       = module.eks.worker_iam_role_name
+# }
+
+# Write objects in S3
+data "aws_iam_policy_document" "write_object" {
+  count = (var.s3.enabled ? 1 : 0)
+  statement {
+    sid = "WriteFromS3"
+    actions = [
+      "s3:PutObject"
+    ]
+    effect = "Allow"
+    resources = [
+      "${var.s3.arn}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "write_object" {
+  count       = (var.s3.enabled ? 1 : 0)
+  name_prefix = "s3-logs-write-${var.prefix}"
+  description = "Policy for allowing read object in S3 logs"
+  policy      = data.aws_iam_policy_document.write_object[0].json
+  tags        = local.tags
+}
+
+resource "aws_iam_role_policy_attachment" "write_object_attachment" {
+  count      = (var.s3.enabled ? 1 : 0)
+  policy_arn = aws_iam_policy.write_object[0].arn
+  role       = module.eks.worker_iam_role_name
+}
+
 # Seq
 module "seq" {
   count         = var.seq != null ? 1 : 0
@@ -237,6 +299,11 @@ module "fluent_bit" {
     region  = var.region
     enabled = true
   } : {}
+  s3 = (var.s3.enabled ? {
+    name    = var.s3.name
+    region  = var.s3.region
+    enabled = true
+  } : {})
 }
 
 resource "kubernetes_secret" "fluent_bit" {
