@@ -53,7 +53,6 @@ s3_fs = {
   restrict_public_buckets               = true
   kms_key_id                            = ""
   sse_algorithm                         = ""
-  retention_in_days                     = null
 }
 
 # Object storage
@@ -97,7 +96,6 @@ elasticache = {
   restrict_public_buckets               = true
   kms_key_id                            = ""
   sse_algorithm                         = ""
-  retention_in_days                     = null
 }*/
 
 # MQ parameters
