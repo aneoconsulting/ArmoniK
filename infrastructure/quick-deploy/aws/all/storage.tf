@@ -361,6 +361,7 @@ locals {
     } : null
     mongodb = {
       url = module.mongodb.url
+      number_of_replicas = module.mongodb.number_of_replicas
     }
     shared = {
       service_url = "https://s3.${var.region}.amazonaws.com"
