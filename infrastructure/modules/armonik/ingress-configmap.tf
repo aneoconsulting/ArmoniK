@@ -1,10 +1,16 @@
 # Envvars
 locals {
   armonik_conf = <<EOF
+map $http_accept_language $accept_language {
+    ~*^en en;
+    ~*^fr fr;
+}
+
 map $http_upgrade $connection_upgrade {
     default upgrade;
     '' close;
 }
+
 %{if var.ingress != null ? var.ingress.mtls : false~}
     map $ssl_client_s_dn $ssl_client_s_dn_cn {
         default "";
@@ -38,11 +44,24 @@ server {
 
     sendfile on;
 
+    if ($accept_language ~ "^$") {
+        set $accept_language "en";
+    }
+
     location = / {
-        rewrite ^ $scheme://$http_host/admin/ permanent;
+        rewrite ^ $scheme://$http_host/admin/$accept_language/;
     }
     location = /admin {
-        rewrite ^ $scheme://$http_host/admin/ permanent;
+        rewrite ^ $scheme://$http_host/admin/$accept_language/;
+    }
+    location = /admin/ {
+        rewrite ^ $scheme://$http_host/admin/$accept_language/;
+    }
+    location = /admin/en {
+        rewrite ^ $scheme://$http_host/admin/en/;
+    }
+    location = /admin/fr {
+        rewrite ^ $scheme://$http_host/admin/fr/;
     }
     location = /old-admin {
         rewrite ^ $scheme://$http_host/old-admin/ permanent;

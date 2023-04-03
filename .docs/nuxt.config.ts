@@ -15,4 +15,11 @@ export default defineNuxtConfig({
   },
 
   extends: "@aneoconsultingfr/armonik-docs-theme",
+
+  runtimeConfig: {
+    public: {
+      siteName: 'ArmoniK',
+      siteDescription: 'The high throughput compute grid project using Kubernetes',
+    }
+  },
 });

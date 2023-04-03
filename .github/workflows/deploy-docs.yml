@@ -38,6 +38,9 @@ jobs:
       - name: Use NODE_ENV=production
         run: echo "NODE_ENV=production" >> $GITHUB_ENV
 
+      - name: Set the site URL
+        run: echo "NUXT_PUBLIC_SITE_URL=https://aneoconsulting.github.io/ArmoniK/" >> $GITHUB_ENV
+
       - name: Static HTML export with Nuxt
         run: cd .docs && nr generate
 
