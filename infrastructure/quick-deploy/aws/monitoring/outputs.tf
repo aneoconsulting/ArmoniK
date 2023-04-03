@@ -38,10 +38,6 @@ output "monitoring" {
       region  = var.region
       enabled = true
     } : {})
-    # s3_logs = length(local.s3_enabled ? {
-    #   service_url = "https://s3.${var.region}.amazonaws.com"
-    #   name        = local.s3_name
-    # } : null)
     fluent_bit = {
       container_name = module.fluent_bit.container_name
       image          = module.fluent_bit.image
