@@ -360,7 +360,7 @@ locals {
       kms_key_id  = module.s3_os[0].kms_key_id
     } : null
     mongodb = {
-      url = module.mongodb.url
+      url                = module.mongodb.url
       number_of_replicas = module.mongodb.number_of_replicas
     }
     shared = {
