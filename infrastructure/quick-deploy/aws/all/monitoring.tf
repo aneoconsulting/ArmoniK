@@ -33,39 +33,6 @@ resource "aws_iam_role_policy_attachment" "send_logs_from_fluent_bit_to_cloudwat
   role       = module.eks.worker_iam_role_name
 }
 
-# # Decrypt objects in S3
-# data "aws_iam_policy_document" "decrypt_object" {
-#   count = (var.s3.enabled ? 1 : 0)
-#   statement {
-#     sid = "KMSAccess"
-#     actions = [
-#       "kms:Encrypt",
-#       "kms:Decrypt",
-#       "kms:ReEncrypt*",
-#       "kms:GenerateDataKey*",
-#       "kms:DescribeKey"
-#     ]
-#     effect = "Allow"
-#     resources = [
-#       var.s3.arn
-#     ]
-#   }
-# }
-
-# resource "aws_iam_policy" "decrypt_object" {
-#   count       = (var.s3.enabled ? 1 : 0)
-#   name_prefix = "s3-logs-encrypt-decrypt-${var.prefix}"
-#   description = "Policy for alowing decryption of encrypted object in S3 logs"
-#   policy      = data.aws_iam_policy_document.decrypt_object[0].json
-#   tags        = var.tags
-# }
-
-# resource "aws_iam_role_policy_attachment" "decrypt_object" {
-#   count      = (var.s3.enabled ? 1 : 0)
-#   policy_arn = aws_iam_policy.decrypt_object[0].arn
-#   role       = module.eks.worker_iam_role_name
-# }
-
 # Write objects in S3
 data "aws_iam_policy_document" "write_object" {
   count = (var.s3.enabled ? 1 : 0)
