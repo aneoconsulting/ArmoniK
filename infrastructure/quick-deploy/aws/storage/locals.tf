@@ -14,9 +14,9 @@ resource "time_static" "creation_date" {}
 locals {
   random_string                                = random_string.random_resources.result
   suffix                                       = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
-  iam_s3_decrypt_object_policy_name            = "s3-encrypt-decrypt-${var.eks.cluster_id}"
-  iam_s3_read_object_policy_name               = "s3-read-${var.eks.cluster_id}"
-  iam_s3_decrypt_s3_storage_object_policy_name = "s3-storage-object-encrypt-decrypt-${var.eks.cluster_id}"
+  iam_s3_decrypt_object_policy_name            = "s3-encrypt-decrypt-${var.eks.cluster_name}"
+  iam_s3_read_object_policy_name               = "s3-read-${var.eks.cluster_name}"
+  iam_s3_decrypt_s3_storage_object_policy_name = "s3-storage-object-encrypt-decrypt-${var.eks.cluster_name}"
   kms_name                                     = "armonik-kms-storage-${local.suffix}-${local.random_string}"
   s3_fs_name                                   = "${var.s3_fs.name}-${local.suffix}"
   s3_os_name                                   = var.s3_os != null ? "${var.s3_os.name}-${local.suffix}" : ""

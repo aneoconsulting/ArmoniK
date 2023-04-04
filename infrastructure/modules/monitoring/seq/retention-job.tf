@@ -61,7 +61,25 @@ resource "kubernetes_cron_job_v1" "retention_job_in_seq" {
               name             = "retention-job"
               image             = var.docker_image_cron.tag != "" ? "${var.docker_image_cron.image}:${var.docker_image_cron.tag}" : var.docker_image_cron.image
               image_pull_policy = var.docker_image_cron.image_pull_secrets
-              #command           = ["/bin/bash", "-c", local.script_cron]
+              command           = ["/bin/bash", "-c", local.script_cron]
+              env {
+                name = "SEQ_URL"
+                value = local.seq_web_url
+              }
+              dynamic "env" {
+                for_each = var.authentication ? [true] : []
+                content {
+                  name = "SEQ_USER"
+                  value = "admin"
+                }
+              }
+              dynamic "env" {
+                for_each = var.authentication ? [true] : []
+                content {
+                  name = "SEQ_PASSWORD"
+                  value = "adminadmin"
+                }
+              }
             }
           }
         }
@@ -74,6 +92,7 @@ resource "kubernetes_cron_job_v1" "retention_job_in_seq" {
 locals {
   script_cron = <<EOF
 #!/bin/bash
-seqcli apikey list --json
+token=$(/bin/seqcli/seqcli apikey create -t "test ApiKey" --permissions=Project --connect-username=$SEQ_USER --connect-password=$SEQ_PASSWORD -s $SEQ_URL)
+/bin/seqcli/seqcli retention create --after ${var.retention_in_days} --delete-all-events --apikey=$token -s $SEQ_URL
 EOF
 }

@@ -531,7 +531,7 @@ variable "admin_old_gui" {
     api = optional(object({
       name  = optional(string, "admin-api")
       image = optional(string, "dockerhubaneo/armonik_admin_api")
-      tag   = optional(string)
+      tag   = optional(string, "0.8.0")
       port  = optional(number, 3333)
       limits = optional(object({
         cpu    = optional(string)
