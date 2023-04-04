@@ -6,6 +6,18 @@
 Changed
 -
 
+* Update module EKS and upgrade its version from `17.24.0` to `19.10.0`.
+
+Added
+-
+
+* Retention in days for Seq
+
+## [v2.12.0](https://github.com/aneoconsulting/armonik/tree/v2.12.0) (2023-03-29)
+
+Changed
+-
+
 * Upgrade versions of docker images for ArmoniK (see [versions.tfvars.json](./versions.tfvars.json)):
   * Core version from `0.11.1` to `0.12.2`.
   * Extension C# version from `0.9.1` to `0.9.2`.
