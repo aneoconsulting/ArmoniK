@@ -1,10 +1,10 @@
 resource "kubernetes_cron_job_v1" "retention_job_in_seq" {
   metadata {
-    name      = "retention-job"
+    name      = "seq-retention-job"
     namespace = var.namespace
     labels = {
       app     = "seq"
-      service = "retention-job"
+      service = "seq-retention-job"
       type    = "monitoring"
     }
   }
@@ -17,20 +17,20 @@ resource "kubernetes_cron_job_v1" "retention_job_in_seq" {
     schedule                      = "* * * * *"
     job_template {
       metadata {
-        name = "retention-job"
+        name = "seq-retention-job"
         labels = {
           app     = "seq"
-          service = "retention-job"
+          service = "seq-retention-job"
           type    = "monitoring"
         }
       }
       spec {
         template {
           metadata {
-            name = "retention-job"
+            name = "seq-retention-job"
             labels = {
               app     = "seq"
-              service = "retention-job"
+              service = "seq-retention-job"
               type    = "monitoring"
             }
           }
@@ -58,10 +58,22 @@ resource "kubernetes_cron_job_v1" "retention_job_in_seq" {
             }
             restart_policy = "OnFailure" # Always, OnFailure, Never
             container {
-              name             = "retention-job"
+              name              = "seq-retention-job"
               image             = var.docker_image_cron.tag != "" ? "${var.docker_image_cron.image}:${var.docker_image_cron.tag}" : var.docker_image_cron.image
               image_pull_policy = var.docker_image_cron.image_pull_secrets
-              #command           = ["/bin/bash", "-c", local.script_cron]
+              command           = ["/bin/bash", "-c", local.script_cron]
+              env {
+                name  = "SEQ_URL"
+                value = local.seq_web_url
+              }
+              env {
+                name  = "SEQ_USER"
+                value = var.authentication ? "admin" : ""
+              }
+              env {
+                name  = "SEQ_PASSWORD"
+                value = var.authentication ? "adminadmin" : ""
+              }
             }
           }
         }
@@ -74,6 +86,7 @@ resource "kubernetes_cron_job_v1" "retention_job_in_seq" {
 locals {
   script_cron = <<EOF
 #!/bin/bash
-seqcli apikey list --json
+token=$(/bin/seqcli/seqcli apikey create -t "test ApiKey" --permissions=Project --connect-username=$SEQ_USER --connect-password=$SEQ_PASSWORD -s $SEQ_URL)
+/bin/seqcli/seqcli retention create --after ${var.retention_in_days} --delete-all-events --apikey=$token -s $SEQ_URL
 EOF
 }

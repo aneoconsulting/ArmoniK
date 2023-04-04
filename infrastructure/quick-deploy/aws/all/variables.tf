@@ -349,9 +349,9 @@ variable "seq" {
     node_selector     = optional(any, {})
     system_ram_target = optional(number, 0.2)
     authentication    = optional(bool, false)
-    cli_image_name        = optional(string, "datalust/seqcli")
-    cli_image_tag         = optional(string)
-    cli_pull_secrets      = optional(string, "")
+    cli_image_name    = optional(string, "datalust/seqcli")
+    cli_image_tag     = optional(string)
+    cli_pull_secrets  = optional(string, "")
     retention_in_days = optional(string, "2d")
   })
   default = null
@@ -531,7 +531,7 @@ variable "admin_old_gui" {
     api = optional(object({
       name  = optional(string, "admin-api")
       image = optional(string, "dockerhubaneo/armonik_admin_api")
-      tag   = optional(string)
+      tag   = optional(string, "0.8.0")
       port  = optional(number, 3333)
       limits = optional(object({
         cpu    = optional(string)

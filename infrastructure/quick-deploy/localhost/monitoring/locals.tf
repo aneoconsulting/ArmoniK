@@ -11,7 +11,7 @@ locals {
   cli_seq_image              = try(var.monitoring.seq.cli_image, "datalust/seqcli")
   cli_seq_tag                = try(var.monitoring.seq.cli_tag, "2021.4")
   cli_seq_image_pull_secrets = try(var.monitoring.seq.cli_image_pull_secrets, "")
-  retention_in_days  = try(var.monitoring.seq.retention_in_days, "2d")
+  retention_in_days          = try(var.monitoring.seq.retention_in_days, "2d")
 
   # Grafana
   grafana_enabled            = tobool(try(var.monitoring.grafana.enabled, false))

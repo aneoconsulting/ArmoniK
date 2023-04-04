@@ -9,7 +9,8 @@ resource "aws_ecr_repository" "ecr" {
     encryption_type = "KMS"
     kms_key         = var.kms_key_id
   }
-  tags = local.tags
+  tags         = local.tags
+  force_delete = true #(Optional) If true, will delete the repository even if it contains images. Defaults to false.
 }
 
 # Copy images

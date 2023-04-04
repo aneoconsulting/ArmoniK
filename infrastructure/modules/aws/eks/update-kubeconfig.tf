@@ -4,7 +4,7 @@ resource "null_resource" "update_kubeconfig" {
     cluster_arn = module.eks.cluster_arn
   }
   provisioner "local-exec" {
-    command = "aws --profile ${var.profile} eks update-kubeconfig --region ${local.region} --name ${var.name}"
+    command = "aws --profile ${var.profile} eks update-kubeconfig --region ${local.region} --name ${module.eks.cluster_name}"
   }
   provisioner "local-exec" {
     when    = destroy
@@ -18,7 +18,4 @@ resource "null_resource" "update_kubeconfig" {
     when    = destroy
     command = "kubectl config delete-context ${self.triggers.cluster_arn}"
   }
-  depends_on = [
-    module.eks
-  ]
 }
