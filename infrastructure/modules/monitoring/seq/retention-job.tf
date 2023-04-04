@@ -14,7 +14,7 @@ resource "kubernetes_cron_job_v1" "retention_job_in_seq" {
     starting_deadline_seconds     = 20
     successful_jobs_history_limit = 0
     suspend                       = false
-    schedule                      = "* * * * *"
+    schedule                      = "0 0 * * *"
     job_template {
       metadata {
         name = "retention-job"
