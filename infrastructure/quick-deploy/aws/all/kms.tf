@@ -7,5 +7,5 @@ module "kms" {
 }
 
 locals {
-  kms_key = coalesce(one(module.kms[*].arn), var.kms_key)
+  kms_key = try(one(module.kms[*].arn), var.kms_key)
 }

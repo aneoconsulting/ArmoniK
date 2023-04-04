@@ -1,5 +1,5 @@
 locals {
-  cloudwatch_log_group_name = "/aws/containerinsights/${module.eks.name}/application"
+  cloudwatch_log_group_name = "/aws/containerinsights/${module.eks.cluster_name}/application"
 }
 
 # Send logs in cloudwatch
@@ -21,16 +21,17 @@ data "aws_iam_policy_document" "send_logs_from_fluent_bit_to_cloudwatch_document
 
 resource "aws_iam_policy" "send_logs_from_fluent_bit_to_cloudwatch_policy" {
   count       = var.cloudwatch != null ? 1 : 0
-  name_prefix = "send-logs-from-fluent-bit-to-cloudwatch-${module.eks.cluster_id}"
-  description = "Policy for allowing send logs from fluent-bit  ${module.eks.cluster_id} to cloudwatch"
+  name_prefix = "send-logs-from-fluent-bit-to-cloudwatch-${module.eks.cluster_name}"
+  description = "Policy for allowing send logs from fluent-bit  ${module.eks.cluster_name} to cloudwatch"
   policy      = data.aws_iam_policy_document.send_logs_from_fluent_bit_to_cloudwatch_document[0].json
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "send_logs_from_fluent_bit_to_cloudwatch_attachment" {
+resource "aws_iam_policy_attachment" "send_logs_from_fluent_bit_to_cloudwatch_attachment" {
   count      = length(aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy)
+  name       = "${local.prefix}-send-logs-from-fluent-bit-to-cloudwatch-${module.eks.cluster_name}"
   policy_arn = aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy[0].arn
-  role       = module.eks.worker_iam_role_name
+  roles      = module.eks.self_managed_worker_iam_role_names
 }
 
 # Write objects in S3
