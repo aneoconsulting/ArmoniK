@@ -56,10 +56,11 @@ resource "aws_iam_policy" "decrypt_object" {
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "decrypt_object" {
-  count      = (local.s3_enabled ? 1 : 0)
-  policy_arn = aws_iam_policy.decrypt_object[0].arn
-  role       = var.eks.worker_iam_role_name
+resource "aws_iam_policy_attachment" "decrypt_object" {
+ count      = (local.s3_enabled ? 1 : 0)
+  name       = "S3 bucket for logs decrypt"
+  policy_arn =aws_iam_policy.decrypt_object[0].arn
+  roles      = var.eks.self_managed_worker_iam_role_names
 }
 
 # Write objects in S3
@@ -85,8 +86,9 @@ resource "aws_iam_policy" "write_object" {
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "write_object_attachment" {
-  count      = (local.s3_enabled ? 1 : 0)
-  policy_arn = aws_iam_policy.write_object[0].arn
-  role       = var.eks.worker_iam_role_name
+ resource "aws_iam_policy_attachment" "write_object_attachment" {
+ count      = (local.s3_enabled ? 1 : 0)
+  name       = "S3 bucket for logs write"
+  policy_arn =aws_iam_policy.write_object[0].arn
+  roles      = var.eks.self_managed_worker_iam_role_names
 }
