@@ -22,13 +22,26 @@ This test plan describes the performance tests of ArmoniK. The purpose of those 
 - Measure the execution time of different numbers of submitted tasks and different size of the tasks.
 - Test the strong scalability.
 
-The purpose of those tests is to have a reference numbers and performance of the versions of ArmoniK.
+The purpose of those tests is to have performance measurements in function of the ArmoniK versions. Since this is the first iteration of the performances tests we are going to establish our baseline in function of a specific versions (see after).
 
 # The product and the functionalities to test
 
 ## Products
 
-- Bench "0.11.4" , Stresstest "2.12.0" on ArmoniK "2.12.0"
+### Stresstest "2.12.0"
+
+This test is a stress test which runs a number of tasks with a specific i/o sizes and duration of the tasks. It uses ArmoniK's c# extension. It copies a zip of the dlls of the application and install them on the workers.
+
+### Bench "0.11.4"
+
+This test is similar to StressTest but it doesn't use ArmoniK's c# extension, it means that the application is already in the docker image of the workers.
+
+## HtcMock "0.11.4" 
+
+With this test we can have an idea of how ArmoniK can handle the applications with subtasking and aggregation tasks.
+
+## functionalities
+
 - The submission of the tasks
 - The processing of the tasks
 - The retrieving of the results 
@@ -41,16 +54,16 @@ The purpose of those tests is to have a reference numbers and performance of the
 
 ## Scripts bash
 
-- To lunch a warming up run then a bunch of runs with the same parameters and store them in files
+- To start a warming up run then a bunch of runs with the same parameters and store them in files
 
 ## Python
 
-- Clean the files where we stocked the data in readable json files.
+- Clean the files where we stored the data in readable json files.
 - Read the data and calculate the median and the mean of each run bunch.
 
 ## Json 
 
-- We stock the results of the performance tests in Json file wich we will store in a database.
+- We store the results of the performance tests in Json file which we will store in a database.
 
 # Tests environment
 
@@ -84,9 +97,9 @@ The purpose of those tests is to have a reference numbers and performance of the
 
 ### with
 
-- The tasks duration : 1 ms
-- The payload size : 8B
-- The result size : 8B
+- tasks duration : 1 ms
+- payload size : 8B
+- result size : 8B
 
 #### StressTest
 
@@ -128,12 +141,32 @@ The purpose of those tests is to have a reference numbers and performance of the
 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 1 ms | 8B | 8B|  |  |  |  |
 | 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1 ms | 8B | 8B |  |  |  |  |
 
+#### HtcMock
+
+| nb pods | nb cores per control-plane| limits nb cores per control-plane| nb cores per scheduler-agent| limits nb cores per scheduler-agent| nb cores per worker | limits nb cores per worker | nb tasks | Sub tasks level | task duration | input payload | result payload | Duration of submission (s) | Upload speed (s) | Throughtput for submission (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
+| :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 5 | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 10 | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 100 | 1 ms | 8B | 8B|  |  |  |  |
+| 100 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1000 | 1 ms | 8B | 8B  |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 5 | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 10 | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 100 | 1 ms | 8B | 8B|  |  |  |  |
+| 1000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1000 | 1 ms | 8B | 8B  |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1K | 1 | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 5K | 5 | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 10K | 10 | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 100K | 100 | 1 ms | 8B | 8B|  |  |  |  |
+| 10000 | 200m  | 1000m | 1000m | 2000m | 50m | 1000m | 1M | 1000 | 1 ms | 8B | 8B  |  |  |  |  |
+
 
 ## Submission scalability tests
 
 - Number of pods : 1000
-- The tasks duration : 500 ms
-- The result size : 100KB
+- Tasks duration : 500 ms
+- Result size : 100KB
 
 #### StressTest
 
