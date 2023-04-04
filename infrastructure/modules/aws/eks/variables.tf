@@ -7,7 +7,7 @@ variable "profile" {
 # Tags
 variable "tags" {
   description = "Tags for resource"
-  type        = any
+  type        = map(string)
   default     = {}
 }
 
