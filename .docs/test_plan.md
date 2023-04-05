@@ -54,12 +54,12 @@ With this test we can have an idea of how ArmoniK can handle the applications wi
 
 ## Scripts bash
 
-- To start a warming up run then a bunch of runs with the same parameters and store them in files
+- To start a warming up run then a batch of runs with the same parameters and store them in files
 
 ## Python
 
 - Clean the files where we stored the data in readable json files.
-- Read the data and calculate the median and the mean of each run bunch.
+- Read the data and compute the median and the mean of each run batch.
 
 ## Json 
 
