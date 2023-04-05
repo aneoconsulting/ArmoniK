@@ -65,6 +65,8 @@ resource "helm_release" "keda_hpa_control_plane" {
     name  = "behavior.periodSeconds"
     value = try(var.control_plane.hpa.behavior.period_seconds, 15)
   }
+
+  # Forces the dependency on the Keda and Metrics Server Helm charts
   set {
     name  = "kedaChartName"
     value = var.keda_chart_name
