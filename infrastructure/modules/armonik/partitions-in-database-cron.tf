@@ -99,9 +99,9 @@ resource "kubernetes_cron_job_v1" "partitions_in_database" {
 locals {
   script_cron = <<EOF
 #!/bin/bash
-export nbElements=$(mongosh --tlsCAFile ${local.secrets.mongodb.ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database --eval 'db.PartitionData.countDocuments()' --quiet)
+export nbElements=$(mongosh --tlsCAFile ${local.secrets.mongodb.ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database?directConnection=false --eval 'db.PartitionData.countDocuments()' --quiet)
 if [[ $nbElements != ${length(local.partition_names)} ]]; then
-  mongosh --tlsCAFile ${local.secrets.mongodb.ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database --eval 'db.PartitionData.insertMany(${jsonencode(local.partitions_data)})'
+  mongosh --tlsCAFile ${local.secrets.mongodb.ca_filename} --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls --username $MongoDB_User --password $MongoDB_Password mongodb://$MongoDB_Host:$MongoDB_Port/database?directConnection=false --eval 'db.PartitionData.insertMany(${jsonencode(local.partitions_data)})'
 fi
 EOF
 }

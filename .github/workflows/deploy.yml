@@ -88,7 +88,10 @@ jobs:
           mkdir -p logs/infra/generated \
             logs/infra/tfstates \
             logs/app
-          cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json  logs/infra/generated
+
+          if [ -e infrastructure/quick-deploy/localhost/all/generated/armonik-output.json ] ; then
+            cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json logs/infra/generated
+          fi
           cp infrastructure/quick-deploy/localhost/all/generated/armonik-terraform.tfstate logs/infra/tfstates
           sudo cp -rL /var/log/pods/armonik_* logs/app
           sudo chown $USER -R logs
@@ -148,7 +151,10 @@ jobs:
           mkdir -p core-stream/infra/generated \
             core-stream/infra/tfstates \
             core-stream/app
-          cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json  core-stream/infra/generated
+
+          if [ -e infrastructure/quick-deploy/localhost/all/generated/armonik-output.json ] ; then
+            cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json core-stream/infra/generated
+          fi
           cp infrastructure/quick-deploy/localhost/all/generated/armonik-terraform.tfstate core-stream/infra/tfstates
           sudo cp -rL /var/log/pods/armonik_* core-stream/app
           sudo chown $USER -R core-stream
@@ -267,7 +273,10 @@ jobs:
             mkdir -p htcmock/infra/generated \
               htcmock/infra/tfstates \
               htcmock/app
-            cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json  htcmock/infra/generated
+
+            if [ -e infrastructure/quick-deploy/localhost/all/generated/armonik-output.json ] ; then
+              cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json htcmock/infra/generated
+            fi
             cp infrastructure/quick-deploy/localhost/all/generated/armonik-terraform.tfstate  htcmock/infra/tfstates
             sudo cp -rL /var/log/pods/armonik_* htcmock/app
             sudo chown $USER -R htcmock
@@ -368,7 +377,10 @@ jobs:
              mkdir -p bench/infra/generated \
                bench/infra/tfstates \
                bench/app
-             cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json bench/infra/generated
+
+             if [ -e infrastructure/quick-deploy/localhost/all/generated/armonik-output.json ] ; then
+              cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json bench/infra/generated
+             fi
              cp infrastructure/quick-deploy/localhost/all/generated/armonik-terraform.tfstate bench/infra/tfstates
              sudo cp -rL /var/log/pods/armonik_* bench/app
              sudo chown $USER -R bench
