@@ -294,7 +294,7 @@ resource "kubernetes_secret" "deployed_table_storage" {
 
 resource "kubernetes_secret" "deployed_queue_storage" {
   metadata {
-    name      = "deployed-table-storage"
+    name      = "deployed-queue-storage"
     namespace = local.namespace
   }
   data = {
