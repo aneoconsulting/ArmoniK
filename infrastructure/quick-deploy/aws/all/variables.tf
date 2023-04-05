@@ -274,10 +274,11 @@ variable "mq_credentials" {
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type = object({
-    image_name    = optional(string, "mongo")
-    image_tag     = optional(string)
-    node_selector = optional(any, {})
-    pull_secrets  = optional(string, "")
+    image_name      = optional(string, "mongo")
+    image_tag       = optional(string)
+    node_selector   = optional(any, {})
+    pull_secrets    = optional(string, "")
+    replicas_number = optional(number, 1)
     persistent_volume = optional(object({
       storage_provisioner = string
       parameters          = optional(map(string), {})
@@ -527,7 +528,7 @@ variable "admin_old_gui" {
     api = optional(object({
       name  = optional(string, "admin-api")
       image = optional(string, "dockerhubaneo/armonik_admin_api")
-      tag   = optional(string)
+      tag   = optional(string, "0.8.0")
       port  = optional(number, 3333)
       limits = optional(object({
         cpu    = optional(string)

@@ -12,6 +12,7 @@ variable "mongodb" {
     tag                = string
     node_selector      = any
     image_pull_secrets = string
+    replicas_number    = number
   })
 }
 

@@ -1,17 +1,22 @@
 # MongoDB
 output "host" {
   description = "Hostname or IP address of MongoDB server"
-  value       = local.mongodb_endpoints.ip
+  value       = local.mongodb_dns
 }
 
 output "port" {
   description = "Port of MongoDB server"
-  value       = local.mongodb_endpoints.port
+  value       = local.mongodb_port
 }
 
 output "url" {
-  description = "Endpoint URL of MongoDB server"
+  description = "URL of MongoDB server"
   value       = local.mongodb_url
+}
+
+output "number_of_replicas" {
+  description = "Number of replicas of MongoDB"
+  value       = var.mongodb.replicas_number
 }
 
 output "user_certificate" {
