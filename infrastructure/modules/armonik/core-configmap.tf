@@ -9,7 +9,7 @@ resource "kubernetes_config_map" "core_config" {
     Components__ObjectStorage            = local.object_storage_adapter
     Components__QueueStorage             = local.queue_storage_adapter
     MongoDB__CAFile                      = local.table_storage_adapter_from_secret == "mongodb" ? local.secrets.mongodb.ca_filename : ""
-    MongoDB__ReplicaSetName              = "rs0"
+    MongoDB__ReplicaSet                  = "rs0"
     MongoDB__DatabaseName                = "database"
     MongoDB__DirectConnection            = "false"
     MongoDB__Tls                         = "true"
