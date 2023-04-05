@@ -144,7 +144,7 @@ locals {
       credentials        = module.mongodb.user_credentials
       certificates       = module.mongodb.user_certificate
       endpoints          = module.mongodb.endpoints
-      number_of_replicas = module.mongodb.number_of_replicas
+      number_of_replicas = var.mongodb.replicas_number
       allow_insecure_tls = true
     }
     shared = var.shared_storage != null ? var.shared_storage : {

@@ -23,7 +23,7 @@ output "storage_endpoint_url" {
     } : null
     mongodb = {
       url                = module.mongodb.url
-      number_of_replicas = module.mongodb.number_of_replicas
+      number_of_replicas = var.mongodb.replicas_number
     }
     shared = {
       service_url       = "https://s3.${var.region}.amazonaws.com"
