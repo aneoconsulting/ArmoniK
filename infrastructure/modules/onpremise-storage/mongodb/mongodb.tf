@@ -144,8 +144,8 @@ resource "kubernetes_deployment" "mongodb" {
 resource "kubernetes_service" "mongodb" {
   for_each = local.replicas
   metadata {
-    name      = kubernetes_deployment.mongodb[each.key].metadata.0.name
-    namespace = kubernetes_deployment.mongodb[each.key].metadata.0.namespace
+    name = "mongodb-${each.key}"
+    namespace = var.namespace
     labels = {
       app     = "storage"
       type    = "table"
