@@ -446,7 +446,7 @@ variable "s3" {
     name    = optional(string, "armonik-logs")
     region  = optional(string, "eu-west-3")
     arn     = optional(string, "arn:aws:s3:::armonik-logs")
-    prefix     = optional(string, "main")
+    prefix  = optional(string, "main")
   })
   default = {}
 }

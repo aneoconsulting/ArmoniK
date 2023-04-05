@@ -53,9 +53,9 @@ resource "aws_iam_policy" "write_object" {
   tags        = local.tags
 }
 
- resource "aws_iam_policy_attachment" "write_object_attachment" {
- count      = (local.s3_enabled ? 1 : 0)
+resource "aws_iam_policy_attachment" "write_object_attachment" {
+  count      = (local.s3_enabled ? 1 : 0)
   name       = "s3-logs-write-${var.eks.cluster_name}"
-  policy_arn =aws_iam_policy.write_object[0].arn
+  policy_arn = aws_iam_policy.write_object[0].arn
   roles      = var.eks.self_managed_worker_iam_role_names
 }
