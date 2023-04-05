@@ -66,6 +66,14 @@ resource "helm_release" "keda_hpa_compute_plane" {
     name  = "behavior.periodSeconds"
     value = try(var.compute_plane[each.key].hpa.behavior.period_seconds, 15)
   }
+  set {
+    name  = "kedaChartName"
+    value = var.keda_chart_name
+  }
+  set {
+    name  = "metricsServerChartName"
+    value = var.metrics_server_chart_name
+  }
 
   values = [
     yamlencode(local.compute_plane_triggers[each.key]),

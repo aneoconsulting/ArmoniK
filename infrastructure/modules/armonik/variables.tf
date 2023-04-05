@@ -343,3 +343,15 @@ variable "s3_secret_name" {
   type        = string
   default     = "s3"
 }
+
+variable "keda_chart_name" {
+  description = "Name of the Keda Helm chart"
+  type        = string
+  default     = "keda"
+}
+
+variable "metrics_server_chart_name" {
+  description = "Name of the metrics-server Helm chart"
+  type        = string
+  default     = "metrics-server"
+}
