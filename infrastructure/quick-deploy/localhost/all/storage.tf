@@ -138,6 +138,7 @@ locals {
       ssl_host     = "127.0.0.1"
     } : null
     mongodb = {
+      url                = module.mongodb.url
       host               = module.mongodb.host
       port               = module.mongodb.port
       credentials        = module.mongodb.user_credentials
