@@ -36,7 +36,7 @@ module "s3_fs" {
 # Shared storage
 resource "kubernetes_secret" "shared_storage" {
   metadata {
-    name      = var.shared_storage_secret_name
+    name      = "shared-storage"
     namespace = local.namespace
   }
   data = {
@@ -73,7 +73,7 @@ module "s3_os" {
 resource "kubernetes_secret" "s3" {
   count = length(module.s3_os) > 0 ? 1 : 0
   metadata {
-    name      = var.s3_secret_name
+    name      = "s3"
     namespace = local.namespace
   }
   data = {
@@ -272,7 +272,7 @@ resource "aws_iam_role_policy_attachment" "object" {
 
 resource "kubernetes_secret" "deployed_object_storage" {
   metadata {
-    name      = var.deployed_object_storage_secret_name
+    name      = "deployed-object-storage"
     namespace = local.namespace
   }
   data = {
@@ -283,7 +283,7 @@ resource "kubernetes_secret" "deployed_object_storage" {
 
 resource "kubernetes_secret" "deployed_table_storage" {
   metadata {
-    name      = var.deployed_table_storage_secret_name
+    name      = "deployed-table-storage"
     namespace = local.namespace
   }
   data = {
@@ -294,7 +294,7 @@ resource "kubernetes_secret" "deployed_table_storage" {
 
 resource "kubernetes_secret" "deployed_queue_storage" {
   metadata {
-    name      = var.deployed_queue_storage_secret_name
+    name      = "deployed-table-storage"
     namespace = local.namespace
   }
   data = {
