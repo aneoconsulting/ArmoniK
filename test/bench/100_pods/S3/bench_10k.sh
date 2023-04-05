@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #ArmoniK "2.11.0"
-export CONTROL_PLANE_URL=http://ab52de83041174907b555aabff366290-801613365.eu-west-3.elb.amazonaws.com:5001/
+export CONTROL_PLANE_URL=$(cat ../../../../infrastructure/quick-deploy/aws/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
 
 #run  10000 tasks on 100 pods
 docker run --rm \
