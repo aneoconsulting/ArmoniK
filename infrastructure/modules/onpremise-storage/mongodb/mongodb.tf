@@ -1,12 +1,13 @@
 # Kubernetes MongoDB deployment
 resource "kubernetes_deployment" "mongodb" {
+  for_each = local.replicas
   metadata {
-    name      = "mongodb"
+    name      = "mongodb-${each.key}"
     namespace = var.namespace
     labels = {
       app     = "storage"
       type    = "table"
-      service = "mongodb"
+      service = "mongodb-${each.key}"
     }
   }
   spec {
@@ -15,7 +16,7 @@ resource "kubernetes_deployment" "mongodb" {
       match_labels = {
         app     = "storage"
         type    = "table"
-        service = "mongodb"
+        service = "mongodb-${each.key}"
       }
     }
     template {
@@ -24,7 +25,7 @@ resource "kubernetes_deployment" "mongodb" {
         labels = {
           app     = "storage"
           type    = "table"
-          service = "mongodb"
+          service = "mongodb-${each.key}"
         }
       }
       spec {
@@ -57,16 +58,8 @@ resource "kubernetes_deployment" "mongodb" {
           name              = "mongodb"
           image             = "${var.mongodb.image}:${var.mongodb.tag}"
           image_pull_policy = "IfNotPresent"
-          args = [
-            "--dbpath=/data/db",
-            "--port=27017",
-            "--bind_ip=0.0.0.0",
-            "--tlsMode=requireTLS",
-            "--tlsDisabledProtocols=TLS1_0",
-            "--tlsCertificateKeyFile=/mongodb/mongodb.pem",
-            "--auth",
-            "--noscripting",
-          ]
+          command           = ["/bin/bash"]
+          args              = ["/start/mongostart.sh", "${each.key}"]
           port {
             name           = "mongodb"
             container_port = 27017
@@ -85,8 +78,17 @@ resource "kubernetes_deployment" "mongodb" {
             read_only  = true
           }
           volume_mount {
+            name       = "mongodb-cluster-volume"
+            mount_path = "/cluster/"
+            read_only  = true
+          }
+          volume_mount {
             name       = "init-files"
             mount_path = "/docker-entrypoint-initdb.d/"
+          }
+          volume_mount {
+            name       = "start-files"
+            mount_path = "/start/"
           }
           dynamic "volume_mount" {
             for_each = (var.persistent_volume != null && var.persistent_volume != "" ? [1] : [])
@@ -104,9 +106,23 @@ resource "kubernetes_deployment" "mongodb" {
           }
         }
         volume {
+          name = "start-files"
+          config_map {
+            name     = kubernetes_config_map.mongo_start_sh.metadata.0.name
+            optional = false
+          }
+        }
+        volume {
           name = "mongodb-secret-volume"
           secret {
             secret_name = kubernetes_secret.mongodb_certificate.metadata[0].name
+            optional    = false
+          }
+        }
+        volume {
+          name = "mongodb-cluster-volume"
+          secret {
+            secret_name = kubernetes_secret.mongodb_cluster.metadata[0].name
             optional    = false
           }
         }
@@ -126,27 +142,29 @@ resource "kubernetes_deployment" "mongodb" {
 
 # Kubernetes MongoDB service
 resource "kubernetes_service" "mongodb" {
+  for_each = local.replicas
   metadata {
-    name      = kubernetes_deployment.mongodb.metadata.0.name
-    namespace = kubernetes_deployment.mongodb.metadata.0.namespace
+    name      = "mongodb-${each.key}"
+    namespace = var.namespace
     labels = {
-      app     = kubernetes_deployment.mongodb.metadata.0.labels.app
-      type    = kubernetes_deployment.mongodb.metadata.0.labels.type
-      service = kubernetes_deployment.mongodb.metadata.0.labels.service
+      app     = "storage"
+      type    = "table"
+      service = "mongodb"
     }
   }
   spec {
     type = "ClusterIP"
     selector = {
-      app     = kubernetes_deployment.mongodb.metadata.0.labels.app
-      type    = kubernetes_deployment.mongodb.metadata.0.labels.type
-      service = kubernetes_deployment.mongodb.metadata.0.labels.service
+      app     = "storage"
+      type    = "table"
+      service = "mongodb-${each.key}"
     }
     port {
-      name        = kubernetes_deployment.mongodb.metadata.0.name
+      name        = "mongodb"
       port        = 27017
       target_port = 27017
       protocol    = "TCP"
     }
   }
 }
+

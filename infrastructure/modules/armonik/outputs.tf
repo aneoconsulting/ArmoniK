@@ -3,7 +3,7 @@ output "endpoint_urls" {
     control_plane_url = local.ingress_grpc_url != "" ? local.ingress_grpc_url : local.control_plane_url
     grafana_url       = data.kubernetes_secret.grafana.data.enabled ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/grafana/" : nonsensitive(data.kubernetes_secret.grafana.data.url)) : ""
     seq_web_url       = data.kubernetes_secret.seq.data.enabled ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/seq/" : nonsensitive(data.kubernetes_secret.seq.data.web_url)) : ""
-    admin_app_url     = length(kubernetes_service.admin_gui) > 0 ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/" : local.admin_app_url) : null
+    admin_app_url     = length(kubernetes_service.admin_gui) > 0 ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/admin" : local.admin_app_url) : null
     admin_api_url     = length(kubernetes_service.admin_old_gui) > 0 ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/api" : local.admin_api_url) : null
     admin_old_url     = length(kubernetes_service.admin_old_gui) > 0 ? (local.ingress_http_url != "" ? "${local.ingress_http_url}/old-admin" : local.admin_old_url) : null
     } : {

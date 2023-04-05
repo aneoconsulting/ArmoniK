@@ -49,5 +49,4 @@ module "eks" {
   }
   eks_operational_worker_groups = var.eks_operational_worker_groups
   eks_worker_groups             = var.eks_worker_groups
-  depends_on                    = [null_resource.empty_kubeconfig]
 }

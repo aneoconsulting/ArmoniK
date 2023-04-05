@@ -34,32 +34,35 @@ control_plane = {
     memory = "2048Mi"
   }
   requests = {
-    cpu    = "200m"
-    memory = "500Mi"
+    cpu    = "50m"
+    memory = "50Mi"
   }
   default_partition = "default"
 }
 
 # Parameters of admin GUI
+# Parameters of admin GUI
 admin_gui = {
-  app = {
-    limits = {
-      cpu    = "1000m"
-      memory = "1024Mi"
-    }
-    requests = {
-      cpu    = "100m"
-      memory = "128Mi"
-    }
+  limits = {
+    cpu    = "1000m"
+    memory = "1024Mi"
   }
+  requests = {
+    cpu    = "50m"
+    memory = "50Mi"
+  }
+}
+
+# Old GUI
+admin_old_gui = {
   api = {
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
     }
     requests = {
-      cpu    = "100m"
-      memory = "128Mi"
+      cpu    = "50m"
+      memory = "50Mi"
     }
   }
   old = {
@@ -68,8 +71,8 @@ admin_gui = {
       memory = "1024Mi"
     }
     requests = {
-      cpu    = "100m"
-      memory = "128Mi"
+      cpu    = "50m"
+      memory = "50Mi"
     }
   }
 }
@@ -87,8 +90,8 @@ compute_plane = {
         memory = "2048Mi"
       }
       requests = {
-        cpu    = "500m"
-        memory = "256Mi"
+        cpu    = "50m"
+        memory = "50Mi"
       }
     }
     # ArmoniK workers
@@ -100,8 +103,8 @@ compute_plane = {
           memory = "1024Mi"
         }
         requests = {
-          cpu    = "500m"
-          memory = "512Mi"
+          cpu    = "50m"
+          memory = "50Mi"
         }
       }
     ]
@@ -110,7 +113,7 @@ compute_plane = {
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 0
-      max_replica_count = 100
+      max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
@@ -137,8 +140,8 @@ compute_plane = {
         memory = "2048Mi"
       }
       requests = {
-        cpu    = "500m"
-        memory = "256Mi"
+        cpu    = "50m"
+        memory = "50Mi"
       }
     }
     # ArmoniK workers
@@ -150,8 +153,8 @@ compute_plane = {
           memory = "1024Mi"
         }
         requests = {
-          cpu    = "500m"
-          memory = "512Mi"
+          cpu    = "50m"
+          memory = "50Mi"
         }
       }
     ]
@@ -160,7 +163,7 @@ compute_plane = {
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 0
-      max_replica_count = 100
+      max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
@@ -187,8 +190,8 @@ compute_plane = {
         memory = "2048Mi"
       }
       requests = {
-        cpu    = "500m"
-        memory = "256Mi"
+        cpu    = "50m"
+        memory = "50Mi"
       }
     }
     # ArmoniK workers
@@ -200,8 +203,8 @@ compute_plane = {
           memory = "1024Mi"
         }
         requests = {
-          cpu    = "500m"
-          memory = "512Mi"
+          cpu    = "50m"
+          memory = "50Mi"
         }
       }
     ]
@@ -210,7 +213,7 @@ compute_plane = {
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 0
-      max_replica_count = 100
+      max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
@@ -237,8 +240,8 @@ compute_plane = {
         memory = "2048Mi"
       }
       requests = {
-        cpu    = "500m"
-        memory = "256Mi"
+        cpu    = "50m"
+        memory = "50Mi"
       }
     }
     # ArmoniK workers
@@ -250,8 +253,8 @@ compute_plane = {
           memory = "1024Mi"
         }
         requests = {
-          cpu    = "500m"
-          memory = "512Mi"
+          cpu    = "50m"
+          memory = "50Mi"
         }
       }
     ]
@@ -260,7 +263,7 @@ compute_plane = {
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 0
-      max_replica_count = 100
+      max_replica_count = 5
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300

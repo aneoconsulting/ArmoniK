@@ -10,6 +10,7 @@ locals {
   mongodb_tag                = try(var.mongodb.tag, "4.4.11")
   mongodb_node_selector      = try(var.mongodb.node_selector, {})
   mongodb_image_pull_secrets = try(var.mongodb.image_pull_secrets, {})
+  mongodb_replicas_number    = try(var.mongodb.replicas_number, 2)
 
   # Redis
   redis_image              = try(var.redis.image, "redis")

@@ -20,7 +20,7 @@ locals {
 
 # this external provider is used to get date during the plan step.
 data "external" "static_timestamp" {
-  program = ["date", "+{ \"creation_date\": \"%Y/%M/%d %T\" }"]
+  program = ["date", "+{ \"creation_date\": \"%Y/%m/%d %T\" }"]
 }
 
 # this resource is just used to prevent change of the creation_date during successive 'terraform apply'

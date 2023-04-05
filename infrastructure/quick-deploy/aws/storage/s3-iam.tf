@@ -18,14 +18,15 @@ data "aws_iam_policy_document" "decrypt_object" {
 
 resource "aws_iam_policy" "decrypt_object" {
   name_prefix = local.iam_s3_decrypt_object_policy_name
-  description = "Policy for alowing decryption of encrypted object in S3 ${var.eks.cluster_id}"
+  description = "Policy for alowing decryption of encrypted object in S3 ${var.eks.cluster_name}"
   policy      = data.aws_iam_policy_document.decrypt_object.json
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "decrypt_object" {
+resource "aws_iam_policy_attachment" "decrypt_object" {
+  name       = local.iam_s3_decrypt_object_policy_name
   policy_arn = aws_iam_policy.decrypt_object.arn
-  role       = var.eks.worker_iam_role_name
+  roles      = var.eks.self_managed_worker_iam_role_names
 }
 
 # Read objects in S3
@@ -43,13 +44,14 @@ data "aws_iam_policy_document" "read_object" {
 }
 
 resource "aws_iam_policy" "read_object" {
-  name_prefix = "s3-read-${var.eks.cluster_id}"
-  description = "Policy for allowing read object in S3 ${var.eks.cluster_id}"
+  name_prefix = "s3-read-${var.eks.cluster_name}"
+  description = "Policy for allowing read object in S3 ${var.eks.cluster_name}"
   policy      = data.aws_iam_policy_document.read_object.json
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "read_object_attachment" {
+resource "aws_iam_policy_attachment" "read_object_attachment" {
+  name       = "s3-read-${var.eks.cluster_name}"
   policy_arn = aws_iam_policy.read_object.arn
-  role       = var.eks.worker_iam_role_name
+  roles      = var.eks.self_managed_worker_iam_role_names
 }
