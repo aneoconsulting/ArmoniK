@@ -124,6 +124,7 @@ variable "monitoring" {
       name    = string
       region  = string
       arn     = string
+      prefix  = string
     })
     fluent_bit = object({
       image              = string

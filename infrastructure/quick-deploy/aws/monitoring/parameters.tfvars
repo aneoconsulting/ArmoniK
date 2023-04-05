@@ -114,6 +114,7 @@ monitoring = {
     enabled = true
     name    = "armonik-logs"
     region  = "eu-west-3"
+    prefix  = "main"
     arn     = "arn:aws:s3:::armonik-logs"
   }
   fluent_bit = {

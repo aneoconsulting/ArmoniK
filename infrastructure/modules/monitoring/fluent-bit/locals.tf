@@ -25,5 +25,6 @@ locals {
   #S3
   s3_name    = try(var.s3.name, "")
   s3_region  = try(var.s3.region, "")
+  s3_prefix  = try(var.s3.prefix, "")
   s3_enabled = tobool(try(var.s3.enabled, false))
 }
