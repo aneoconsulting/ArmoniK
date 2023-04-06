@@ -12,6 +12,9 @@ output "port" {
 output "url" {
   description = "URL of MongoDB server"
   value       = local.mongodb_url
+  depends_on = [
+    kubernetes_deployment.mongodb
+  ]
 }
 
 output "number_of_replicas" {

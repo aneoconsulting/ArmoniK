@@ -65,4 +65,8 @@ module "armonik" {
   authentication = merge(var.authentication, {
     tag = try(coalesce(var.authentication.tag), local.default_tags[var.authentication.image])
   })
+
+  # Force the dependency on Keda and metrics-server for the HPA
+  keda_chart_name           = module.keda.keda.chart_name
+  metrics_server_chart_name = concat(module.metrics_server[*].metrics_server.chart_name, ["metrics-server"])[0]
 }
