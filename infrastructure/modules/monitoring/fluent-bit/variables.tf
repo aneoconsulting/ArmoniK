@@ -45,5 +45,6 @@ variable "fluent_bit" {
     read_from_head     = string
     read_from_tail     = string
     image_pull_secrets = string
+    parser             = string
   })
 }
