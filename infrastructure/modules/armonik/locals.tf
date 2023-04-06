@@ -56,17 +56,17 @@ locals {
       name        = "redis"
       ca_filename = "/redis/chain.pem"
     }
-    s3                             = "s3"
-    shared_storage                 = "shared-storage"
-    metrics_exporter               = "metrics-exporter"
-    partition_metrics_exporter     = "partition-metrics-exporter"
-    fluent_bit                     = "fluent-bit"
-    seq                            = "seq"
-    grafana                        = "grafana"
-    prometheus                     = "prometheus"
-    deployed_object_storage_secret = "deployed-object-storage"
-    deployed_table_storage_secret  = "deployed-table-storage"
-    deployed_queue_storage_secret  = "deployed-queue-storage"
+    s3                             = var.s3_secret_name
+    shared_storage                 = var.shared_storage_secret_name
+    metrics_exporter               = var.metrics_exporter_secret_name
+    partition_metrics_exporter     = var.partition_metrics_exporter_secret_name
+    fluent_bit                     = var.fluent_bit_secret_name
+    seq                            = var.seq_secret_name
+    grafana                        = var.grafana_secret_name
+    prometheus                     = var.prometheus_secret_name
+    deployed_object_storage_secret = var.deployed_object_storage_secret_name
+    deployed_table_storage_secret  = var.deployed_table_storage_secret_name
+    deployed_queue_storage_secret  = var.deployed_queue_storage_secret_name
   }
 
   # Shared storage

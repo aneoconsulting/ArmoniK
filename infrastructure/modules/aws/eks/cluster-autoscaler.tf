@@ -162,13 +162,15 @@ data "aws_iam_policy_document" "worker_autoscaling_document" {
 
 resource "aws_iam_policy" "worker_autoscaling_policy" {
   name_prefix = local.iam_worker_autoscaling_policy_name
-  description = "EKS worker node autoscaling policy for cluster ${module.eks.cluster_id}"
+  description = "EKS worker node autoscaling policy for cluster ${module.eks.cluster_name}"
   policy      = data.aws_iam_policy_document.worker_autoscaling_document.json
   tags        = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "workers_autoscaling_attach" {
+  for_each   = module.eks.self_managed_node_groups
   policy_arn = aws_iam_policy.worker_autoscaling_policy.arn
-  role       = module.eks.worker_iam_role_name
+  role       = each.value.iam_role_name
 }
+
 

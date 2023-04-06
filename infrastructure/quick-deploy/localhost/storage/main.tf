@@ -21,6 +21,7 @@ module "mongodb" {
     tag                = local.mongodb_tag
     node_selector      = local.mongodb_node_selector
     image_pull_secrets = local.mongodb_image_pull_secrets
+    replicas_number    = local.mongodb_replicas_number
   }
   persistent_volume = null
 }

@@ -67,6 +67,16 @@ resource "helm_release" "keda_hpa_compute_plane" {
     value = try(var.compute_plane[each.key].hpa.behavior.period_seconds, 15)
   }
 
+  # Forces the dependency on the Keda and Metrics Server Helm charts
+  set {
+    name  = "kedaChartName"
+    value = var.keda_chart_name
+  }
+  set {
+    name  = "metricsServerChartName"
+    value = var.metrics_server_chart_name
+  }
+
   values = [
     yamlencode(local.compute_plane_triggers[each.key]),
   ]

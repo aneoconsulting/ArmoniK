@@ -175,6 +175,7 @@ module "mongodb" {
     tag                = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.pull_secrets
+    replicas_number    = var.mongodb.replicas_number
   }
   persistent_volume = local.mongodb_persistent_volume
   depends_on        = [module.efs_persistent_volume]
@@ -233,14 +234,15 @@ data "aws_iam_policy_document" "decrypt_object" {
 
 resource "aws_iam_policy" "decrypt_object" {
   name_prefix = "${local.prefix}-s3-encrypt-decrypt"
-  description = "Policy for alowing decryption of encrypted object in S3 ${module.eks.cluster_id}"
+  description = "Policy for alowing decryption of encrypted object in S3 ${module.eks.cluster_name}"
   policy      = data.aws_iam_policy_document.decrypt_object.json
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "decrypt_object" {
+resource "aws_iam_policy_attachment" "decrypt_object" {
+  name       = "${local.prefix}-s3-encrypt-decrypt"
+  roles      = module.eks.self_managed_worker_iam_role_names
   policy_arn = aws_iam_policy.decrypt_object.arn
-  role       = module.eks.worker_iam_role_name
 }
 
 # object permissions for S3
@@ -259,15 +261,16 @@ data "aws_iam_policy_document" "object" {
 resource "aws_iam_policy" "object" {
   for_each    = data.aws_iam_policy_document.object
   name_prefix = "${local.prefix}-s3-${each.key}"
-  description = "Policy for allowing object access in ${each.key} S3 ${module.eks.cluster_id}"
+  description = "Policy for allowing object access in ${each.key} S3 ${module.eks.cluster_name}"
   policy      = each.value.json
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "object" {
+resource "aws_iam_policy_attachment" "object" {
   for_each   = aws_iam_policy.object
+  name       = "${local.prefix}-permissions-on-s3-${each.key}"
+  roles      = module.eks.self_managed_worker_iam_role_names
   policy_arn = each.value.arn
-  role       = module.eks.worker_iam_role_name
 }
 
 resource "kubernetes_secret" "deployed_object_storage" {
@@ -359,7 +362,8 @@ locals {
       kms_key_id  = module.s3_os[0].kms_key_id
     } : null
     mongodb = {
-      url = module.mongodb.url
+      url                = module.mongodb.url
+      number_of_replicas = var.mongodb.replicas_number
     }
     shared = {
       service_url = "https://s3.${var.region}.amazonaws.com"

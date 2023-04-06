@@ -14,7 +14,12 @@ output "eks" {
   description = "EKS cluster"
   value = {
     arn    = module.eks.arn
-    name   = module.eks.name
+    name   = module.eks.cluster_name
     region = var.region
   }
+}
+
+output "s3_bucket_name" {
+  description = "Name of S3 bucket"
+  value       = module.s3_fs.s3_bucket_name
 }

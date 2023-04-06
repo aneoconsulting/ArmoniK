@@ -13,5 +13,6 @@
     "nuxt": "^3.3.1",
     "rollup": "3.18.0",
     "mermaid": "^10.0.0"
-  }
+  },
+  "packageManager": "pnpm@8.1.0"
 }
