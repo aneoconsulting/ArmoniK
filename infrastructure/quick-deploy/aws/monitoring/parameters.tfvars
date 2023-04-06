@@ -13,6 +13,9 @@ k8s_config_context = "default"
 # Kubernetes namespace
 namespace = "armonik"
 
+# SUFFIX
+suffix = "main"
+
 tags = {
   "name"             = ""
   "env"              = ""
@@ -106,6 +109,13 @@ monitoring = {
     enabled           = true
     kms_key_id        = ""
     retention_in_days = 30
+  }
+  s3 = {
+    enabled = false
+    name    = "armonik-logs"
+    region  = "eu-west-3"
+    prefix  = "main"
+    arn     = "arn:aws:s3:::armonik-logs"
   }
   fluent_bit = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"

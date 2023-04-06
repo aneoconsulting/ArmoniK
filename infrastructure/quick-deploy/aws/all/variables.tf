@@ -440,6 +440,18 @@ variable "cloudwatch" {
   default = {}
 }
 
+variable "s3" {
+  description = "S3 bucket for logs"
+  type = object({
+    enabled = optional(bool, false)
+    name    = optional(string, "armonik-logs")
+    region  = optional(string, "eu-west-3")
+    arn     = optional(string, "arn:aws:s3:::armonik-logs")
+    prefix  = optional(string, "main")
+  })
+  default = {}
+}
+
 # Extra configuration
 variable "extra_conf" {
   description = "Add extra configuration in the configmaps"

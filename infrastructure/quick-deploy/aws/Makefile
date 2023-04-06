@@ -195,6 +195,7 @@ clean-storage:
 
 deploy-monitoring:
 	$(MAKE) -C $(CURRENT_DIR)/monitoring deploy \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
@@ -203,6 +204,7 @@ deploy-monitoring:
 
 destroy-monitoring:
 	$(MAKE) -C $(CURRENT_DIR)/monitoring destroy \
+		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		PROFILE=$(ARMONIK_PROFILE) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
