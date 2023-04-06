@@ -64,7 +64,7 @@ We store the results of the performance tests in Json files which we will be sto
 | **API version** | 3.5.2 |
 | **Extension c# version** | 0.9.1 |
 | **Instance type** | c24.xlarge |
-| **Instance caracteristics** | Intel Xeon de 2e (Cascade Lake) |
+| **Instance characteristics** | Intel Xeon de 2e (Cascade Lake) |
 | **CPU frequency** | 3.6 GHz - 3.9 GHz |
 | **nb vCPUs** |  96 |
 | **RAM (GB)** | 192 |
