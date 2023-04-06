@@ -92,7 +92,8 @@ locals {
   fluent_bit_node_selector      = try(var.monitoring.fluent_bit.node_selector, {})
 
   # S3 for logs
-  s3_enabled    = tobool(try(var.monitoring.s3.enabled, false))
-  s3_name       = "${try(var.monitoring.s3.name, "armonik-s3logs")}-${local.suffix}"
-  s3_kms_key_id = try(var.monitoring.s3.kms_key_id, "")
+  s3_enabled = tobool(try(var.monitoring.s3.enabled, false))
+  s3_name    = try(var.monitoring.s3.name, "armonik-logs")
+  s3_region  = try(var.monitoring.s3.region, "eu-west-3")
+  s3_prefix  = try(var.monitoring.s3.prefix, "main")
 }

@@ -38,13 +38,6 @@ output "monitoring" {
       region  = var.region
       enabled = true
     } : {})
-    s3_logs = length(module.s3_logs) > 0 ? {
-      service_url       = "https://s3.${var.region}.amazonaws.com"
-      kms_key_id        = module.s3_logs[0].kms_key_id
-      name              = module.s3_logs[0].s3_bucket_name
-      access_key_id     = ""
-      secret_access_key = ""
-    } : null
     fluent_bit = {
       container_name = module.fluent_bit.container_name
       image          = module.fluent_bit.image

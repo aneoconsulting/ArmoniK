@@ -34,6 +34,37 @@ resource "aws_iam_policy_attachment" "send_logs_from_fluent_bit_to_cloudwatch_at
   roles      = module.eks.self_managed_worker_iam_role_names
 }
 
+# Write objects in S3
+data "aws_iam_policy_document" "write_object" {
+  count = (var.s3.enabled ? 1 : 0)
+  statement {
+    sid = "WriteFromS3"
+    actions = [
+      "s3:PutObject"
+    ]
+    effect = "Allow"
+    resources = [
+      "${var.s3.arn}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "write_object" {
+  count       = (local.s3_enabled ? 1 : 0)
+  name_prefix = "s3-logs-write-${var.eks.cluster_name}"
+  description = "Policy for allowing read object in S3 logs ${var.eks.cluster_name}"
+  policy      = data.aws_iam_policy_document.write_object[0].json
+  tags        = local.tags
+}
+
+
+resource "aws_iam_policy_attachment" "write_object" {
+  count      = (local.s3_enabled ? 1 : 0)
+  name       = "s3-logs-write-${var.eks.cluster_name}"
+  policy_arn = aws_iam_policy.write_object[0].arn
+  roles      = var.eks.self_managed_worker_iam_role_names
+}
+
 # Seq
 module "seq" {
   count         = var.seq != null ? 1 : 0
@@ -244,6 +275,12 @@ module "fluent_bit" {
     region  = var.region
     enabled = true
   } : {}
+  s3 = (var.s3.enabled ? {
+    name    = var.s3.name
+    region  = var.s3.region
+    prefix  = var.s3.prefix
+    enabled = true
+  } : {})
 }
 
 resource "kubernetes_secret" "fluent_bit" {

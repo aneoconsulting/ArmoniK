@@ -103,6 +103,7 @@ variable "mongodb" {
     image_tag          = optional(string)
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
+    replicas_number    = optional(number, 1)
   })
   default = {}
 }
@@ -266,7 +267,7 @@ variable "control_plane" {
   type = object({
     name              = optional(string, "control-plane")
     service_type      = optional(string, "ClusterIP")
-    replicas          = optional(number, 2)
+    replicas          = optional(number, 1)
     image             = optional(string, "dockerhubaneo/armonik_control")
     tag               = optional(string)
     image_pull_policy = optional(string, "IfNotPresent")
