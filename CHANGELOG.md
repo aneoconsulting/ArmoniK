@@ -1,6 +1,22 @@
 # Changelog
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+
+
+## [v2.12.1](https://github.com/aneoconsulting/armonik/tree/v2.12.0) (2023-04-06)
+Changed
+-
+
+* Upgrade versions of docker images for ArmoniK (see [versions.tfvars.json](./versions.tfvars.json)):
+  * Core version from `0.12.2` to `0.12.3`.
+  * Extension C# version from `0.9.2` to `0.9.4`.
+* Samples version from `v2.12.0` to `v2.12.1`
+
+Fixed
+- 
+
+* Fix issue with AWSSDK.SecurityToken [#145](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/pull/145)
+
 ## [v2.12.0](https://github.com/aneoconsulting/armonik/tree/v2.12.0) (2023-03-29)
 
 Changed
