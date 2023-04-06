@@ -21,6 +21,7 @@ module "mongodb" {
     tag                = try(coalesce(var.mongodb.image_tag), local.default_tags[var.mongodb.image_name])
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.image_pull_secrets
+    replicas_number    = var.mongodb.replicas_number
   }
   persistent_volume = null
 }
@@ -143,6 +144,7 @@ locals {
       credentials        = module.mongodb.user_credentials
       certificates       = module.mongodb.user_certificate
       endpoints          = module.mongodb.endpoints
+      number_of_replicas = var.mongodb.replicas_number
       allow_insecure_tls = true
     }
     shared = var.shared_storage != null ? var.shared_storage : {

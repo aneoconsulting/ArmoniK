@@ -274,10 +274,11 @@ variable "mq_credentials" {
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type = object({
-    image_name    = optional(string, "mongo")
-    image_tag     = optional(string)
-    node_selector = optional(any, {})
-    pull_secrets  = optional(string, "")
+    image_name      = optional(string, "mongo")
+    image_tag       = optional(string)
+    node_selector   = optional(any, {})
+    pull_secrets    = optional(string, "")
+    replicas_number = optional(number, 1)
     persistent_volume = optional(object({
       storage_provisioner = string
       parameters          = optional(map(string), {})
