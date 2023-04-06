@@ -79,7 +79,8 @@ module "prometheus" {
   service_type                   = local.prometheus_service_type
   node_selector                  = local.prometheus_node_selector
   metrics_exporter_url           = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  partition_metrics_exporter_url = null #"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
+  partition_metrics_exporter_url = null
+  #"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
   docker_image = {
     image              = local.prometheus_image
     tag                = local.prometheus_tag
@@ -145,6 +146,12 @@ module "fluent_bit" {
   cloudwatch = (local.cloudwatch_enabled ? {
     name    = module.cloudwatch.0.name
     region  = var.region
+    enabled = true
+  } : {})
+  s3 = (local.s3_enabled ? {
+    name    = local.s3_name
+    region  = local.s3_region
+    prefix  = local.s3_prefix
     enabled = true
   } : {})
 }

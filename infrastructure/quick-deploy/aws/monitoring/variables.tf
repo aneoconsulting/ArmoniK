@@ -119,6 +119,13 @@ variable "monitoring" {
       kms_key_id        = string
       retention_in_days = number
     })
+    s3 = object({
+      enabled = bool
+      name    = string
+      region  = string
+      arn     = string
+      prefix  = string
+    })
     fluent_bit = object({
       image              = string
       tag                = string
