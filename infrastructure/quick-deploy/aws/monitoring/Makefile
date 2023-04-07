@@ -5,6 +5,7 @@ STATE_FILE=monitoring-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/monitoring-output.json
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
+export SUFFIX?=main
 export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
@@ -30,6 +31,7 @@ apply:
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(EKS_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
+		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
 		-state $(STATE_FILE) \
@@ -46,6 +48,7 @@ delete:
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(EKS_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
+		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
 		-state $(STATE_FILE) \

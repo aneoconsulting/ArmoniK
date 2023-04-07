@@ -13,6 +13,9 @@ k8s_config_context = "default"
 # Kubernetes namespace
 namespace = "armonik"
 
+# SUFFIX
+suffix = "main"
+
 tags = {
   "name"             = ""
   "env"              = ""
@@ -78,7 +81,7 @@ monitoring = {
   }
   metrics_exporter = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter"
-    tag                = "0.12.2"
+    tag                = "0.12.3"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
@@ -91,7 +94,7 @@ monitoring = {
   }
   partition_metrics_exporter = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/partition-metrics-exporter"
-    tag                = "0.12.2"
+    tag                = "0.12.3"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { "grid/type" = "Operator" }
@@ -106,6 +109,13 @@ monitoring = {
     enabled           = true
     kms_key_id        = ""
     retention_in_days = 30
+  }
+  s3 = {
+    enabled = true
+    name    = "armonik-logs"
+    region  = "eu-west-3"
+    prefix  = "main"
+    arn     = "arn:aws:s3:::armonik-logs"
   }
   fluent_bit = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"

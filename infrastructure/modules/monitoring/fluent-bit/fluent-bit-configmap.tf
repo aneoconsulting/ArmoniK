@@ -17,6 +17,7 @@ resource "kubernetes_config_map" "fluent_bit_config" {
     "filter-kubernetes.conf" = (local.fluent_bit_is_daemonset ? file("${path.module}/configs/filter/filter-kubernetes-daemonset.conf") : file("${path.module}/configs/filter/filter-kubernetes-sidecar.conf"))
     "output-http-seq.conf"   = (local.seq_enabled ? file("${path.module}/configs/output/output-http-seq.conf") : file("${path.module}/configs/output/output-empty.conf"))
     "output-cloudwatch.conf" = (local.cloudwatch_enabled ? file("${path.module}/configs/output/output-cloudwatch.conf") : file("${path.module}/configs/output/output-empty.conf"))
+    "output-s3.conf"         = (local.s3_enabled ? file("${path.module}/configs/output/output-s3.conf") : file("${path.module}/configs/output/output-empty.conf"))
     "output-stdout.conf"     = (!local.seq_enabled && !local.cloudwatch_enabled ? file("${path.module}/configs/output/output-stdout.conf") : file("${path.module}/configs/output/output-empty.conf"))
     "parsers.conf"           = file("${path.module}/configs/parser/parsers.conf")
   }

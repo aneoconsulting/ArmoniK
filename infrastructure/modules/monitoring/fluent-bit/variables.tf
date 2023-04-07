@@ -25,6 +25,13 @@ variable "cloudwatch" {
   default     = {}
 }
 
+# S3
+variable "s3" {
+  description = "S3 for logs"
+  type        = any
+  default     = {}
+}
+
 # Fluent-bit
 variable "fluent_bit" {
   description = "Parameters of Fluent bit"
