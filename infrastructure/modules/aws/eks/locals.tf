@@ -24,7 +24,7 @@ locals {
   ima_aws_node_termination_handler_name                = "${var.name}-aws-node-termination-handler-${random_string.random_resources.result}"
   aws_node_termination_handler_asg_name                = "${var.name}-asg-termination"
   aws_node_termination_handler_spot_name               = "${var.name}-spot-termination"
-  kubeconfig_output_path                               = "${path.root}/generated/eks/kubeconfig-${var.name}"
+  kubeconfig_output_path                               = "${path.root}/generated/kubeconfig-${var.name}"
 
   # Custom ENI
   subnets = {
