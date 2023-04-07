@@ -1,13 +1,13 @@
 # Kubernetes MongoDB deployment
 resource "kubernetes_deployment" "mongodb" {
-  for_each = local.replicas
+  count = var.mongodb.replicas_number
   metadata {
-    name      = "mongodb-${each.key}"
+    name      = "mongodb-${count.index}"
     namespace = var.namespace
     labels = {
       app     = "storage"
       type    = "table"
-      service = "mongodb-${each.key}"
+      service = "mongodb-${count.index}"
     }
   }
   spec {
@@ -16,7 +16,7 @@ resource "kubernetes_deployment" "mongodb" {
       match_labels = {
         app     = "storage"
         type    = "table"
-        service = "mongodb-${each.key}"
+        service = "mongodb-${count.index}"
       }
     }
     template {
@@ -25,7 +25,7 @@ resource "kubernetes_deployment" "mongodb" {
         labels = {
           app     = "storage"
           type    = "table"
-          service = "mongodb-${each.key}"
+          service = "mongodb-${count.index}"
         }
       }
       spec {
@@ -59,7 +59,7 @@ resource "kubernetes_deployment" "mongodb" {
           image             = "${var.mongodb.image}:${var.mongodb.tag}"
           image_pull_policy = "IfNotPresent"
           command           = ["/bin/bash"]
-          args              = ["/start/mongostart.sh", "${each.key}"]
+          args              = ["/start/mongostart.sh", tostring(count.index)]
           port {
             name           = "mongodb"
             container_port = 27017
@@ -142,9 +142,9 @@ resource "kubernetes_deployment" "mongodb" {
 
 # Kubernetes MongoDB service
 resource "kubernetes_service" "mongodb" {
-  for_each = local.replicas
+  count = var.mongodb.replicas_number
   metadata {
-    name      = "mongodb-${each.key}"
+    name      = "mongodb-${count.index}"
     namespace = var.namespace
     labels = {
       app     = "storage"
@@ -157,7 +157,7 @@ resource "kubernetes_service" "mongodb" {
     selector = {
       app     = "storage"
       type    = "table"
-      service = "mongodb-${each.key}"
+      service = "mongodb-${count.index}"
     }
     port {
       name        = "mongodb"
