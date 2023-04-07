@@ -45,7 +45,7 @@ eks = {
 # Operational node groups for EKS
 eks_operational_worker_groups = {
   eks_operational_worker = {
-    name                                     = "operational-worker"
+    name                                     = "opt"
     spot_allocation_strategy                 = "capacity-optimized"
     instance_type                            = "c5.4xlarge"
     spot_instance_pools                      = 0
@@ -61,7 +61,7 @@ eks_operational_worker_groups = {
 # EKS worker groups
 eks_worker_groups = {
   linux = {
-    name                                     = "worker-c5.4xlarge-spot"
+    name                                     = "spot"
     spot_allocation_strategy                 = "capacity-optimized"
     instance_type                            = "c5.4xlarge"
     spot_instance_pools                      = 0
