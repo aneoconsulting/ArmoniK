@@ -15,6 +15,12 @@ deploy: $(YAML_SRC)
 	@aws --profile $(PROFILE) cloudformation describe-stacks --stack-name $(SUFFIX) --region $(REGION) --query 'Stacks[0]' > $(BACKEND)/output.json
 
 destroy:
+	aws s3api delete-objects \
+		--bucket "$(BUCKET_NAME)-$(SUFFIX)" \
+		--delete "`aws s3api list-object-versions \
+		--bucket "$(BUCKET_NAME)-$(SUFFIX)" \
+		--output=json \
+		--query='{Objects: Versions[].{Key:Key,VersionId:VersionId}}'`"
 	aws --profile $(PROFILE) cloudformation delete-stack --stack-name $(SUFFIX) --region $(REGION)
 	aws --profile $(PROFILE) cloudformation wait stack-delete-complete --stack-name $(shell aws cloudformation describe-stacks --region $(REGION) --stack-name $(SUFFIX) --query 'Stacks[0].StackId' --output text) --region $(REGION)
 
