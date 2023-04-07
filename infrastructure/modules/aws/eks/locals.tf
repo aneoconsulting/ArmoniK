@@ -89,8 +89,7 @@ locals {
           metadata_http_put_response_hop_limit = 2
         }
       )
-    }
-    ,
+    },
     {
       for k, v in var.eks_operational_worker_groups : k =>
       merge(v,

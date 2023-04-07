@@ -70,9 +70,8 @@ eks_worker_groups = {
     asg_desired_capacity                     = 0
     on_demand_base_capacity                  = 0
     on_demand_percentage_above_base_capacity = 0
-
-    iam_role_name        = "self-managed-node-group-worker-linux"
-    iam_role_description = "self-managed-node-group-worker-linux"
+    iam_role_name                            = "self-managed-node-group-worker-linux"
+    iam_role_description                     = "self-managed-node-group-worker-linux"
   },
   linux_mixed = {
     name                       = "mixed"

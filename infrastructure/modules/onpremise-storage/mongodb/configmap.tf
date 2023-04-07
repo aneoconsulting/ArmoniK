@@ -22,7 +22,7 @@ rs.initiate({
   _id :  "rs0",
   members: [
 %{for i, service in kubernetes_service.mongodb~}
-    { _id:  ${i}, host:  "${service.metadata.0.name}.${service.metadata.0.namespace}:${service.spec.0.type == "NodePort" ? service.spec.0.port.0.node_port : service.spec.0.port.0.port}" },
+    { _id:  ${i}, host:  "${service.metadata.0.name}.${service.metadata.0.namespace}:${service.spec.0.port.0.port}" },
 %{endfor~}
   ]
 })
