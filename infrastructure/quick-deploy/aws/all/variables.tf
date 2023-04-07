@@ -274,10 +274,11 @@ variable "mq_credentials" {
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type = object({
-    image_name    = optional(string, "mongo")
-    image_tag     = optional(string)
-    node_selector = optional(any, {})
-    pull_secrets  = optional(string, "")
+    image_name      = optional(string, "mongo")
+    image_tag       = optional(string)
+    node_selector   = optional(any, {})
+    pull_secrets    = optional(string, "")
+    replicas_number = optional(number, 1)
     persistent_volume = optional(object({
       storage_provisioner = string
       parameters          = optional(map(string), {})
@@ -435,6 +436,18 @@ variable "cloudwatch" {
   description = "Cloudwatch configuration"
   type = object({
     retention_in_days = optional(number, 30)
+  })
+  default = {}
+}
+
+variable "s3" {
+  description = "S3 bucket for logs"
+  type = object({
+    enabled = optional(bool, true)
+    name    = optional(string, "armonik-logs")
+    region  = optional(string, "eu-west-3")
+    arn     = optional(string, "arn:aws:s3:::armonik-logs")
+    prefix  = optional(string, "main")
   })
   default = {}
 }

@@ -19,7 +19,7 @@ output "eks" {
   }
 }
 
-output "s3_bucket_name" {
-  description = "Name of S3 bucket"
+output "s3_fs_name" {
+  description = "Name of S3 bucket for application DLLs."
   value       = module.s3_fs.s3_bucket_name
 }

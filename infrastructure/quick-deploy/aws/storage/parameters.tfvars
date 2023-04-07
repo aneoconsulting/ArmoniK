@@ -125,6 +125,7 @@ mongodb = {
   node_selector      = { "grid/type" = "Operator" }
   image_pull_secrets = ""
   persistent_volume  = null
+  replicas_number    = 2
   # example: {storage_provisioner="efs.csi.aws.com",parameters=null,resources={limits=null,requests={storage="5Gi"}}}
 }
 

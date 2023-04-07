@@ -175,6 +175,7 @@ module "mongodb" {
     tag                = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.pull_secrets
+    replicas_number    = var.mongodb.replicas_number
   }
   persistent_volume = local.mongodb_persistent_volume
   depends_on        = [module.efs_persistent_volume]
@@ -361,7 +362,8 @@ locals {
       kms_key_id  = module.s3_os[0].kms_key_id
     } : null
     mongodb = {
-      url = module.mongodb.url
+      url                = module.mongodb.url
+      number_of_replicas = var.mongodb.replicas_number
     }
     shared = {
       service_url = "https://s3.${var.region}.amazonaws.com"
