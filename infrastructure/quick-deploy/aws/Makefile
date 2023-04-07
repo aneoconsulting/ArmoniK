@@ -6,8 +6,6 @@ export ARMONIK_KUBERNETES_NAMESPACE?=armonik
 export KEDA_KUBERNETES_NAMESPACE?=default
 export METRICS_SERVER_KUBERNETES_NAMESPACE?=kube-system
 export TFSTATE_BUCKET_NAME=$(ARMONIK_BUCKET_NAME)-$(ARMONIK_SUFFIX)
-export KEDA=$(shell kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
-export METRICS_SERVER=$(shell kubectl get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
 export PUBLIC_VPC?=true
 export PUBLIC_ACCESS_EKS?=true
 
@@ -16,6 +14,7 @@ VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/vpc/generated/vpc-output.json
 STORAGE_PARAMETERS_FILE?=$(CURRENT_DIR)/storage/generated/storage-output.json
 MONITORING_PARAMETERS_FILE?=$(CURRENT_DIR)/monitoring/generated/monitoring-output.json
 EKS_PARAMETERS_FILE?=$(CURRENT_DIR)/eks/generated/eks-output.json
+KUBECONFIG?=$(CURRENT_DIR)/eks/generated/kubeconfig
 
 ####################################
 # KSM and S3 buckets for TF states #
@@ -90,7 +89,8 @@ deploy-eks:
 		PROFILE=$(ARMONIK_PROFILE) \
 		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME) \
-		PUBLIC_ACCESS_EKS=$(PUBLIC_ACCESS_EKS)
+		PUBLIC_ACCESS_EKS=$(PUBLIC_ACCESS_EKS) \
+		KUBECONFIG=$(KUBECONFIG)
 
 destroy-eks:
 	$(MAKE) -C $(CURRENT_DIR)/eks destroy \
@@ -99,7 +99,8 @@ destroy-eks:
 		PROFILE=$(ARMONIK_PROFILE) \
 		VPC_PARAMETERS_FILE=$(VPC_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME) \
-		PUBLIC_ACCESS_EKS=$(PUBLIC_ACCESS_EKS)
+		PUBLIC_ACCESS_EKS=$(PUBLIC_ACCESS_EKS) \
+		KUBECONFIG=$(KUBECONFIG)
 
 clean-eks:
 	$(MAKE) -C $(CURRENT_DIR)/eks clean
@@ -109,6 +110,8 @@ clean-eks:
 ####################################
 
 create-namespace:
+	@KEDA=$(shell kubectl --kubeconfig $(KUBECONFIG) get deploy -A -l app=keda-operator --no-headers=true -o name)
+	@METRICS_SERVER=$(shell kubectl --kubeconfig $(KUBECONFIG) get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
 	@kubectl get namespace $(ARMONIK_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(ARMONIK_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE)
 	@kubectl get namespace $(KEDA_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(KEDA_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(KEDA_KUBERNETES_NAMESPACE)
 	@kubectl get namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 &&  echo "namespace : '$(METRICS_SERVER_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)
@@ -128,7 +131,8 @@ deploy-keda:
         	NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE) \
         	SUFFIX=$(ARMONIK_SUFFIX) \
         	REGION=$(ARMONIK_REGION) \
-        	PROFILE=$(ARMONIK_PROFILE);\
+        	PROFILE=$(ARMONIK_PROFILE) \
+        	KUBECONFIG=$(KUBECONFIG);\
     fi
 
 destroy-keda:
@@ -136,7 +140,8 @@ destroy-keda:
 		NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
-		PROFILE=$(ARMONIK_PROFILE)
+		PROFILE=$(ARMONIK_PROFILE) \
+		KUBECONFIG=$(KUBECONFIG)
 
 clean-keda:
 	$(MAKE) -C $(CURRENT_DIR)/keda clean
