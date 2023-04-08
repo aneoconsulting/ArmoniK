@@ -447,7 +447,7 @@ variable "cloudwatch" {
 variable "s3" {
   description = "S3 bucket for logs"
   type = object({
-    enabled = optional(bool, false)
+    enabled = optional(bool, true)
     name    = optional(string, "armonik-logs")
     region  = optional(string, "eu-west-3")
     arn     = optional(string, "arn:aws:s3:::armonik-logs")

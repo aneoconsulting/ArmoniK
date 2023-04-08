@@ -115,7 +115,7 @@ monitoring = {
     retention_in_days = 30
   }
   s3 = {
-    enabled = false
+    enabled = true
     name    = "armonik-logs"
     region  = "eu-west-3"
     prefix  = "main"

@@ -50,19 +50,19 @@ data "aws_iam_policy_document" "write_object" {
 }
 
 resource "aws_iam_policy" "write_object" {
-  count       = (local.s3_enabled ? 1 : 0)
-  name_prefix = "s3-logs-write-${var.eks.cluster_name}"
-  description = "Policy for allowing read object in S3 logs ${var.eks.cluster_name}"
+  count       = (var.s3.enabled ? 1 : 0)
+  name_prefix = "s3-logs-write-${module.eks.cluster_name}"
+  description = "Policy for allowing read object in S3 logs ${module.eks.cluster_name}"
   policy      = data.aws_iam_policy_document.write_object[0].json
   tags        = local.tags
 }
 
 
 resource "aws_iam_policy_attachment" "write_object" {
-  count      = (local.s3_enabled ? 1 : 0)
-  name       = "s3-logs-write-${var.eks.cluster_name}"
+  count      = (var.s3.enabled ? 1 : 0)
+  name       = "s3-logs-write-${module.eks.cluster_name}"
   policy_arn = aws_iam_policy.write_object[0].arn
-  roles      = var.eks.self_managed_worker_iam_role_names
+  roles      = module.eks.self_managed_worker_iam_role_names
 }
 
 # Seq
