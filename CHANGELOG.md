@@ -23,19 +23,7 @@ Added
 -
 
 * AWS S3 as Fluent-bit output for logs.
-
-## [v2.12.0](https://github.com/aneoconsulting/armonik/tree/v2.12.0) (2023-03-29)
-
-Changed
--
-
-* Update module EKS and upgrade its version from `17.24.0` to `19.10.0`.
-
-Added
--
-
 * Retention in days for Seq.
-* AWS S3 as Fluent-bit output for logs.
 
 ## [v2.12.0](https://github.com/aneoconsulting/armonik/tree/v2.12.0) (2023-03-29)
 
