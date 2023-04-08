@@ -21,7 +21,7 @@ module "s3_fs" {
     block_public_policy                   = var.s3_fs.block_public_acls
     ignore_public_acls                    = var.s3_fs.block_public_policy
     restrict_public_buckets               = var.s3_fs.restrict_public_buckets
-    kms_key_id                            = (var.s3_fs.kms_key_id != "" ? var.s3_fs.kms_key_id : module.kms[0].arn)
+    kms_key_id                            = local.s3_fs_kms_key_id
     sse_algorithm                         = (var.s3_fs.kms_key_id != "" ? var.s3_fs.sse_algorithm : "aws:kms")
   }
 }
@@ -68,7 +68,7 @@ module "s3_os" {
     block_public_policy                   = var.s3_os.block_public_acls
     ignore_public_acls                    = var.s3_os.block_public_policy
     restrict_public_buckets               = var.s3_os.restrict_public_buckets
-    kms_key_id                            = (can(coalesce(var.s3_os.kms_key_id)) ? var.s3_os.kms_key_id : module.kms[0].arn)
+    kms_key_id                            = local.s3_os_kms_key_id
     sse_algorithm                         = (var.s3_os.kms_key_id != "" ? var.s3_os.sse_algorithm : "aws:kms")
   }
 }

@@ -11,7 +11,7 @@ data "aws_iam_policy_document" "decrypt_object" {
     ]
     effect = "Allow"
     resources = [
-      (var.s3_fs.kms_key_id != "" ? var.s3_fs.kms_key_id : module.kms[0].arn)
+      local.s3_fs_kms_key_id
     ]
   }
 }

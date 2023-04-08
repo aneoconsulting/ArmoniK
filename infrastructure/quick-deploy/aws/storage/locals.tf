@@ -43,6 +43,8 @@ locals {
     "created by"         = data.aws_caller_identity.current.arn
     "creation date"      = time_static.creation_date.rfc3339
   })
+  s3_fs_kms_key_id = (var.s3_fs.kms_key_id != "" ? var.s3_fs.kms_key_id : module.kms.0.arn)
+  s3_os_kms_key_id = (can(coalesce(var.s3_os.kms_key_id)) ? var.s3_os.kms_key_id : module.kms.0.arn)
   vpc = {
     id                 = try(var.vpc.id, "")
     cidr_block_private = var.vpc.cidr_block_private

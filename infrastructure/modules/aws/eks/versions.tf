@@ -6,7 +6,7 @@ terraform {
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = ">= 2.7.1"
+      version = ">= 2.13.0"
     }
     cloudinit = {
       source  = "hashicorp/cloudinit"
@@ -14,7 +14,7 @@ terraform {
     }
     helm = {
       source  = "hashicorp/helm"
-      version = ">= 2.4.1"
+      version = ">= 2.7"
     }
     random = {
       source  = "hashicorp/random"
