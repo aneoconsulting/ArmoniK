@@ -22,8 +22,8 @@ export TF_VAR_prefix?=$(PREFIX)
 
 .PHONY: apply destroy
 
-all: init apply output
-deploy: init apply output
+all: init apply output kubeconfig
+deploy: init apply output kubeconfig
 destroy: init delete
 
 env:
@@ -70,7 +70,12 @@ delete:
 	terraform destroy -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
 
 output:
-	terraform output -state=$(STATE_FILE) -json | jq 'map_values(.value)' > $(GENERATED_DIR)/armonik-output.json
+	@terraform output -state=$(STATE_FILE) -json | jq 'map_values(.value)' > $(GENERATED_DIR)/armonik-output.json
+	@echo "Output file: $(GENERATED_DIR)/armonik-output.json"
+
+kubeconfig:
+	@echo "Execute the following command: export KUBECONFIG=${HOME}/.kube/config:$(shell cat $(GENERATED_DIR)/armonik-output.json | jq -r '.eks.kubeconfig_file'):${KUBECONFIG}"
+	@echo "------------------------------"
 
 clean:
 	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform

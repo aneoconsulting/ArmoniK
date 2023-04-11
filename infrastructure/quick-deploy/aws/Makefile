@@ -259,10 +259,18 @@ clean-armonik:
 	$(MAKE) -C $(CURRENT_DIR)/armonik clean
 
 ####################################
+#          KUBECONFIG              #
+####################################
+
+kubeconfig:
+	@echo "Execute the following command: export KUBECONFIG=${HOME}/.kube/config:$(shell cat $(EKS_PARAMETERS_FILE) | jq -r '.eks.kubeconfig_file'):${KUBECONFIG}"
+	@echo "------------------------------"
+
+####################################
 #               All                #
 ####################################
 
-deploy-all: deploy-vpc deploy-ecr deploy-eks create-namespace deploy-keda deploy-metrics-server deploy-storage deploy-monitoring deploy-armonik
+deploy-all: deploy-vpc deploy-ecr deploy-eks create-namespace deploy-keda deploy-metrics-server deploy-storage deploy-monitoring deploy-armonik kubeconfig
 
 destroy-all: destroy-armonik destroy-monitoring destroy-storage destroy-metrics-server destroy-keda delete-namespace destroy-eks destroy-ecr destroy-vpc
 
