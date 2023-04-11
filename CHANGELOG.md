@@ -1,9 +1,21 @@
 # Changelog
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.12.2](https://github.com/aneoconsulting/armonik/tree/v2.12.2) (2023-04-11)
+Changed
+-
 
+* Upgrade versions of docker images for ArmoniK (see [versions.tfvars.json](./versions.tfvars.json)):
+  * Core version from `0.12.3` to `0.12.4`.
+  * Extension C# version from `0.9.4` to `0.9.5`.
+* Samples version from `v2.12.1` to `v2.12.2`
 
-## [v2.12.1](https://github.com/aneoconsulting/armonik/tree/v2.12.0) (2023-04-06)
+Fixed
+- 
+
+* Added milliseconds to Api log [#225](https://github.com/aneoconsulting/ArmoniK.Api/pull/225)
+
+## [v2.12.1](https://github.com/aneoconsulting/armonik/tree/v2.12.1) (2023-04-06)
 Changed
 -
 
