@@ -72,7 +72,6 @@ module "eks" {
     }
   }
 
-
   # Worker groups
   # module input from doc : https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest?tab=inputs#optional-inputs
   # variables from module code : https://github.dev/terraform-aws-modules/terraform-aws-eks/tree/v19.10.0

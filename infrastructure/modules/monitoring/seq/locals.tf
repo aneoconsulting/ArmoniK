@@ -1,12 +1,4 @@
-# Node IP of seq_web_console pod
-data "external" "seq_node_ip" {
-  depends_on  = [kubernetes_service.seq_web_console]
-  program     = ["bash", "get_node_ip.sh", "seq", var.namespace]
-  working_dir = "${var.working_dir}/utils/scripts"
-}
-
 locals {
-  seq_node_ip          = try(tomap(data.external.seq_node_ip.result).node_ip, "")
   node_selector_keys   = keys(var.node_selector)
   node_selector_values = values(var.node_selector)
 
@@ -18,20 +10,12 @@ locals {
     seq_web_port = ""
   })
 
-  node_port = (local.load_balancer.ip == "" && kubernetes_service.seq_web_console.spec.0.type == "NodePort" ? {
-    ip           = local.seq_node_ip
-    seq_web_port = kubernetes_service.seq_web_console.spec.0.port.0.node_port
-    } : {
-    ip           = local.load_balancer.ip
-    seq_web_port = local.load_balancer.seq_web_port
-  })
-
-  seq_endpoints = (local.node_port.ip == "" && kubernetes_service.seq_web_console.spec.0.type == "ClusterIP" ? {
+  seq_endpoints = (local.load_balancer.ip == "" && kubernetes_service.seq_web_console.spec.0.type == "ClusterIP" ? {
     ip           = kubernetes_service.seq_web_console.spec.0.cluster_ip
     seq_web_port = kubernetes_service.seq_web_console.spec.0.port.0.port
     } : {
-    ip           = local.node_port.ip
-    seq_web_port = local.node_port.seq_web_port
+    ip           = local.load_balancer.ip
+    seq_web_port = local.load_balancer.seq_web_port
   })
 
 

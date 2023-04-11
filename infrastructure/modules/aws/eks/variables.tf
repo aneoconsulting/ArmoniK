@@ -4,6 +4,13 @@ variable "profile" {
   type        = string
 }
 
+# Kubeconfig file path
+variable "kubeconfig_file" {
+  description = "Kubeconfig file path"
+  type        = string
+}
+
+
 # Tags
 variable "tags" {
   description = "Tags for resource"

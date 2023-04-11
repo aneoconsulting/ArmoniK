@@ -233,7 +233,7 @@ Changed
     * [Read-only permission on S3 of .dll](infrastructure/quick-deploy/aws/storage/s3-iam.tf).
     * [Permissions to send logs in CloudWatch for Fluent-bit](infrastructure/quick-deploy/aws/monitoring/iam.tf)
     * [Permissions for the cluster auto-scaler to scale woker nodes](infrastructure/modules/aws/eks/cluster-autoscaler.tf)
-    * [Permissions for the termination handler to gracefully handle EC2 instance shutdown within Kubernetes](infrastructure/modules/aws/eks/instance_refresh.tf)
+    * [Permissions for the termination handler to gracefully handle EC2 instance shutdown within Kubernetes](infrastructure/modules/aws/eks/instance-refresh.tf)
 * Let Kubernetes manage the limits of nginx (don't set limits and requests)
 
 ## [v2.8.7-beta](https://github.com/aneoconsulting/armonik/tree/v2.8.7-beta) (2022-09-23)

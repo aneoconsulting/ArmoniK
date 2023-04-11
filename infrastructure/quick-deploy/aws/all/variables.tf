@@ -12,6 +12,13 @@ variable "profile" {
   default     = "default"
 }
 
+# Kubeconfig file path
+variable "kubeconfig_file" {
+  description = "Kubeconfig file path"
+  type        = string
+  default     = "generated/kubeconfig"
+}
+
 # Region
 variable "region" {
   description = "AWS region where the infrastructure will be deployed"

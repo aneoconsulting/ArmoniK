@@ -11,6 +11,7 @@ export PROFILE?=default
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 export VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/../vpc/generated/vpc-output.json
 export PUBLIC_ACCESS_EKS?=true
+export KUBECONFIG?=$(GENERATED_DIR)/kubeconfig
 
 .PHONY: apply destroy
 
@@ -34,6 +35,7 @@ apply:
 		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'enable_public_eks_access=$(PUBLIC_ACCESS_EKS)' \
+		-var 'kubeconfig_file=$(KUBECONFIG)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 
@@ -51,6 +53,7 @@ delete:
 		-var 'suffix=$(SUFFIX)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'enable_public_eks_access=$(PUBLIC_ACCESS_EKS)' \
+		-var 'kubeconfig_file=$(KUBECONFIG)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 
