@@ -125,6 +125,7 @@ monitoring = {
     http_port          = 2020 # 0 or 2020
     read_from_head     = true
     node_selector      = { "grid/type" = "Operator" }
+    parser             = "cri"
   }
 }
 
