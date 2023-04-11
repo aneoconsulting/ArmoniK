@@ -18,13 +18,13 @@ resource "random_string" "random_resources" {
 locals {
   account_id                                           = data.aws_caller_identity.current.id
   region                                               = data.aws_region.current.name
-  tags                                                 = merge({ module = "eks" }, var.tags)
-  iam_worker_autoscaling_policy_name                   = "eks-worker-autoscaling-${module.eks.cluster_name}"
-  iam_worker_assume_role_agent_permissions_policy_name = "eks-worker-assume-agent-${module.eks.cluster_name}"
+  tags                                                 = merge({ module = "eks-${var.name}" }, var.tags)
+  iam_worker_autoscaling_policy_name                   = "eks-worker-autoscaling-${var.name}"
+  iam_worker_assume_role_agent_permissions_policy_name = "eks-worker-assume-agent-${var.name}"
   ima_aws_node_termination_handler_name                = "${var.name}-aws-node-termination-handler-${random_string.random_resources.result}"
   aws_node_termination_handler_asg_name                = "${var.name}-asg-termination"
   aws_node_termination_handler_spot_name               = "${var.name}-spot-termination"
-  kubeconfig_output_path                               = "${path.root}/generated/eks/kubeconfig-${var.name}"
+  kubeconfig_output_path                               = coalesce(var.kubeconfig_file, "${path.root}/generated/kubeconfig")
 
   # Custom ENI
   subnets = {
@@ -79,6 +79,7 @@ locals {
       for k, v in var.eks_worker_groups : k =>
       merge(v,
         {
+          name                                 = "${var.name}-${v.name}"
           root_encrypted                       = true
           root_kms_key_id                      = var.eks.encryption_keys.ebs_kms_key_id
           additional_userdata                  = <<-EOT
@@ -89,15 +90,15 @@ locals {
           metadata_http_put_response_hop_limit = 2
         }
       )
-    }
-    ,
+    },
     {
       for k, v in var.eks_operational_worker_groups : k =>
       merge(v,
         {
-          launch_template_name                 = "self-managed-ex-ondemand"
+          name                                 = "${var.name}-${v.name}"
+          launch_template_name                 = "self-managed-ondemand-${var.name}"
           launch_template_use_name_prefix      = true
-          launch_template_description          = "Self managed node group example launch template"
+          launch_template_description          = "Self managed node group example launch template for eks ${var.name}"
           root_encrypted                       = true
           root_kms_key_id                      = var.eks.encryption_keys.ebs_kms_key_id
           additional_userdata                  = <<-EOT

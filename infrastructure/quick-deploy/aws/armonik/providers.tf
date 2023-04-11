@@ -5,7 +5,7 @@ provider "aws" {
 
 # K8s configuration
 data "external" "k8s_config_context" {
-  program     = ["bash", "k8s_config.sh"]
+  program     = ["bash", "k8s_config.sh", var.k8s_config_path]
   working_dir = "${path.root}/../../../utils/scripts"
 }
 

@@ -6,5 +6,6 @@ output "eks" {
     cluster_id                         = module.eks.cluster_id
     self_managed_worker_iam_role_names = module.eks.self_managed_worker_iam_role_names
     issuer                             = module.eks.issuer
+    kubeconfig_file                    = module.eks.kubeconfig_file
   }
 }

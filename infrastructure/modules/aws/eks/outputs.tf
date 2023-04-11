@@ -28,7 +28,6 @@ output "cluster_id" {
   value       = module.eks.cluster_id
 }
 
-
 output "kms_key_id" {
   description = "ARN of KMS used for EKS"
   value = {
@@ -66,4 +65,9 @@ output "fargate_profiles" {
 output "issuer" {
   description = "EKS Identity issuer"
   value       = module.eks.cluster_oidc_issuer_url
+}
+
+output "kubeconfig_file" {
+  description = "Path of kubeconfig file"
+  value       = local.kubeconfig_output_path
 }
