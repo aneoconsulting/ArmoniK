@@ -4,6 +4,7 @@ locals {
   fluent_bit_image                = try(var.fluent_bit.image, "fluent/fluent-bit")
   fluent_bit_tag                  = try(var.fluent_bit.tag, "1.3.11")
   fluent_bit_is_daemonset         = tobool(try(var.fluent_bit.is_daemonset, false))
+  fluent_bit_parser               = try(var.fluent_bit.parser)
   fluent_bit_http_server          = try(var.fluent_bit.http_server, "Off")
   fluent_bit_http_port            = try(var.fluent_bit.http_port, "")
   fluent_bit_read_from_head       = try(var.fluent_bit.read_from_head, "On")
