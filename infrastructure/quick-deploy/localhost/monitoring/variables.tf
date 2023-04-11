@@ -92,6 +92,7 @@ variable "monitoring" {
       http_port          = number
       read_from_head     = string
       node_selector      = any
+      parser             = string
     })
   })
 }

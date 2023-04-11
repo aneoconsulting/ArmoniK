@@ -12,6 +12,13 @@ variable "profile" {
   default     = "default"
 }
 
+# Kubeconfig file path
+variable "kubeconfig_file" {
+  description = "Kubeconfig file path"
+  type        = string
+  default     = "generated/kubeconfig"
+}
+
 # Region
 variable "region" {
   description = "AWS region where the infrastructure will be deployed"
@@ -432,6 +439,7 @@ variable "fluent_bit" {
     http_port      = optional(number, 2020)
     read_from_head = optional(bool, true)
     node_selector  = optional(any, {})
+    parser         = optional(string, "cri")
   })
   default = {}
 }

@@ -12,9 +12,8 @@ resource "time_static" "creation_date" {}
 locals {
   random_string             = random_string.random_resources.result
   suffix                    = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
-  cluster_name              = try(var.eks.name, "")
   kms_name                  = "armonik-kms-monitoring-${local.suffix}-${local.random_string}"
-  cloudwatch_log_group_name = "/aws/containerinsights/${local.cluster_name}/application"
+  cloudwatch_log_group_name = "/aws/containerinsights/${var.eks.cluster_name}/application"
   tags = merge(var.tags, {
     "application"        = "armonik"
     "deployment version" = local.suffix
@@ -90,6 +89,7 @@ locals {
   fluent_bit_http_port          = tonumber(try(var.monitoring.fluent_bit.http_port, 0))
   fluent_bit_read_from_head     = tobool(try(var.monitoring.fluent_bit.read_from_head, true))
   fluent_bit_node_selector      = try(var.monitoring.fluent_bit.node_selector, {})
+  fluent_bit_parser             = try(var.monitoring.fluent_bit.parser, "cri")
 
   # S3 for logs
   s3_enabled = tobool(try(var.monitoring.s3.enabled, false))

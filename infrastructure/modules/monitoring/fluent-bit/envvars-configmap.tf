@@ -18,5 +18,6 @@ resource "kubernetes_config_map" "fluent_bit_envvars_config" {
     AWS_S3_NAME                                  = local.s3_name
     AWS_REGION_S3                                = local.s3_region
     PREFIX                                       = local.s3_prefix
+    PARSER                                       = local.fluent_bit_parser
   }
 }

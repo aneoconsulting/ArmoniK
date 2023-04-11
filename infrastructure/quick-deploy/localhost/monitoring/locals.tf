@@ -60,4 +60,5 @@ locals {
   fluent_bit_http_port          = tonumber(try(var.monitoring.fluent_bit.http_port, 0))
   fluent_bit_read_from_head     = tobool(try(var.monitoring.fluent_bit.read_from_head, true))
   fluent_bit_node_selector      = try(var.monitoring.fluent_bit.node_selector, {})
+  fluent_bit_parser             = try(var.monitoring.fluent_bit.parser, "docker")
 }

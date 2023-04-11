@@ -258,6 +258,7 @@ module "fluent_bit" {
     container_name     = "fluent-bit"
     image              = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].image
     tag                = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].tag
+    parser             = var.fluent_bit.parser
     image_pull_secrets = var.fluent_bit.pull_secrets
     is_daemonset       = var.fluent_bit.is_daemonset
     http_server        = (var.fluent_bit.http_port == 0 ? "Off" : "On")

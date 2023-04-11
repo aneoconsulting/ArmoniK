@@ -70,7 +70,7 @@ resource "kubernetes_secret" "mongodb_cluster" {
     namespace = var.namespace
   }
   data = {
-    "cluster.key" = "${random_string.mongodb_cluster_key.result}"
+    "cluster.key" = random_string.mongodb_cluster_key.result
   }
 }
 

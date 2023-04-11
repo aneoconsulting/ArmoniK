@@ -13,9 +13,10 @@ output "armonik" {
 output "eks" {
   description = "EKS cluster"
   value = {
-    arn    = module.eks.arn
-    name   = module.eks.cluster_name
-    region = var.region
+    arn             = module.eks.arn
+    name            = module.eks.cluster_name
+    region          = var.region
+    kubeconfig_file = module.eks.kubeconfig_file
   }
 }
 
