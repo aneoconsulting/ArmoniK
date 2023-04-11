@@ -435,6 +435,7 @@ variable "fluent_bit" {
     http_port      = optional(number, 2020)
     read_from_head = optional(bool, true)
     node_selector  = optional(any, {})
+    parser         = optional(string, "cri")
   })
   default = {}
 }
