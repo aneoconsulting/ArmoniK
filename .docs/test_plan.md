@@ -28,15 +28,27 @@ This is a stress test which runs a number of tasks with a specific I/O sizes and
 
 This test is similar to StressTest but it doesn't use ArmoniK C# extension. The application is already installed on the workers.
 
-## HtcMock
+### HtcMock
 
 With this test we can have an idea of how ArmoniK can handle the applications with subtasking and aggregation tasks.
 
 ## functionalities
 
-- The submission of the tasks
-- The processing of the tasks
-- The retrieving of the results 
+We want to test in this first iteration, the three main functionnalities of ArmoniK described below.
+
+### The submission of the tasks
+
+With those tests we want to measure the performances of ArmoniK in submitting the tasks.This step is the first step of task ochestration which consists in submitting the tasks and the input data to be processed to the ArmoniK workers
+
+### The processing of the tasks
+
+In addition to the tasks submission, this tests will allow to measure the ArmoniK ability to process different numbers with different tasks sizes.
+
+### The retrieving of the results 
+
+Those tests will allow to determine ArmoniK performances to retrieve the results data after tasks processing.this step consists in the recovery of the output data after the processing of the tasks and it is the last step of the task orchestration.
+
+* Those tests are dependent of the configuration of the underlying infrastructure and are a prerequirement of every test execution used as comparison. This method could be reused as reproducer for anyone desiring to execute our tests.
 
 # The tools used to do the tests
 
@@ -187,3 +199,5 @@ Faster task processing by increasing the number of pods.
 | Number of pods | Resource requests per control-plane| Resource limits per control-plane| Resource requests per scheduling-agent| Resource limits per scheduling-agent| Resource requests per worker | Resource limits for per worker | Number of tasks | Task workload duration | Input payload size | Output payload size | Duration of submissions (s) | Upload speed (s) | Throughtput for submissions (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
 | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
 | 80K | CPU: 200m / Memory: 500Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 500Mi | CPU: 1000m / Memory: 2048Mi | 1 | CPU: 1000m / Memory: 2048Mi | 300M | 1s | 1KB | 1KB |  |  |  |  |  |  |  |  |
+
+This document will be completed in the future with more tests to target more detailed and deeper ArmoniK's features and components.
