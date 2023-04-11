@@ -20,6 +20,17 @@ variable "docker_image" {
   })
 }
 
+# Docker image cron
+variable "docker_image_cron" {
+  description = "Docker image cron for Seq"
+  type = object({
+    image              = string
+    tag                = string
+    image_pull_secrets = string
+  })
+}
+
+
 # Node selector
 variable "node_selector" {
   description = "Node selector for Seq"
@@ -51,4 +62,10 @@ variable "authentication" {
 variable "system_ram_target" {
   description = "Target RAM size"
   type        = number
+}
+
+# Retention of Seq logs in days
+variable "retention_in_days" {
+  description = "Retention of Seq logs in days"
+  type        = string
 }

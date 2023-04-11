@@ -23,6 +23,7 @@ Added
 -
 
 * AWS S3 as Fluent-bit output for logs.
+* Retention in days for Seq.
 
 ## [v2.12.0](https://github.com/aneoconsulting/armonik/tree/v2.12.0) (2023-03-29)
 

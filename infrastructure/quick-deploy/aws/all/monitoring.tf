@@ -78,9 +78,15 @@ module "seq" {
     tag                = local.ecr_images["${var.seq.image_name}:${try(coalesce(var.seq.image_tag), "")}"].tag
     image_pull_secrets = var.seq.pull_secrets
   }
+  docker_image_cron = {
+    image              = local.ecr_images["${var.seq.cli_image_name}:${try(coalesce(var.seq.cli_image_tag), "")}"].image
+    tag                = local.ecr_images["${var.seq.cli_image_name}:${try(coalesce(var.seq.cli_image_tag), "")}"].tag
+    image_pull_secrets = var.seq.pull_secrets
+  }
   working_dir       = "${path.root}/../../.."
   authentication    = var.seq.authentication
   system_ram_target = var.seq.system_ram_target
+  retention_in_days = var.seq.retention_in_days
 }
 
 resource "kubernetes_secret" "seq" {

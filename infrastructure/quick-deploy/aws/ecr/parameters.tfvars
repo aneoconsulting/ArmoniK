@@ -96,6 +96,11 @@ ecr = {
       tag   = "2023.1"
     },
     {
+      name  = "seqcli"
+      image = "datalust/seqcli"
+      tag   = "2023.1"
+    },
+    {
       name  = "grafana"
       image = "grafana/grafana"
       tag   = "9.3.6"

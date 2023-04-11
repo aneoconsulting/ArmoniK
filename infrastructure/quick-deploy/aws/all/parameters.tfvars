@@ -214,10 +214,8 @@ admin_gui = {
 #Parameters of old admin GUI
 admin_old_gui = {
   api = {
-    name  = "admin-api"
-    image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-api-old"
-    tag   = "0.8.0"
-    port  = 3333
+    name = "admin-api"
+    port = 3333
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
@@ -228,10 +226,8 @@ admin_old_gui = {
     }
   }
   old = {
-    name  = "admin-old-gui"
-    image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app-old"
-    tag   = "0.8.0"
-    port  = 1080
+    name = "admin-old-gui"
+    port = 1080
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"

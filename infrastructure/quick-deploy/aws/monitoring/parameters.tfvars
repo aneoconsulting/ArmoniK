@@ -47,14 +47,18 @@ tags = {
 # Monitoring infos
 monitoring = {
   seq = {
-    enabled            = true
-    image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
-    tag                = "2023.1"
-    port               = 8080
-    image_pull_secrets = ""
-    service_type       = "ClusterIP"
-    node_selector      = { "grid/type" = "Operator" }
-    system_ram_target  = 0.2
+    enabled                = true
+    image                  = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
+    tag                    = "2023.1"
+    port                   = 8080
+    image_pull_secrets     = ""
+    service_type           = "ClusterIP"
+    node_selector          = { "grid/type" = "Operator" }
+    system_ram_target      = 0.2
+    cli_image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seqcli"
+    cli_tag                = "2023.1"
+    cli_image_pull_secrets = ""
+    retention_in_days      = "2d"
   }
   grafana = {
     enabled            = true

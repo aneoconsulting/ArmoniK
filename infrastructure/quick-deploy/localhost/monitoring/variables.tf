@@ -31,14 +31,19 @@ variable "monitoring" {
   description = "Monitoring infos"
   type = object({
     seq = object({
-      enabled            = bool
-      image              = string
-      tag                = string
-      port               = number
-      image_pull_secrets = string
-      service_type       = string
-      node_selector      = any
-      system_ram_target  = number
+      enabled                = bool
+      image                  = string
+      tag                    = string
+      port                   = number
+      image_pull_secrets     = string
+      service_type           = string
+      node_selector          = any
+      system_ram_target      = number
+      cli_image              = string
+      cli_tag                = string
+      cli_image_pull_secrets = string
+      retention_in_days      = string
+
     })
     grafana = object({
       enabled            = bool
