@@ -12,9 +12,8 @@ resource "time_static" "creation_date" {}
 locals {
   random_string             = random_string.random_resources.result
   suffix                    = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
-  cluster_name              = try(var.eks.name, "")
   kms_name                  = "armonik-kms-monitoring-${local.suffix}-${local.random_string}"
-  cloudwatch_log_group_name = "/aws/containerinsights/${local.cluster_name}/application"
+  cloudwatch_log_group_name = "/aws/containerinsights/${var.eks.cluster_name}/application"
   tags = merge(var.tags, {
     "application"        = "armonik"
     "deployment version" = local.suffix

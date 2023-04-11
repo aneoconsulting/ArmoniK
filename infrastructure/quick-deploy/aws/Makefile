@@ -112,14 +112,14 @@ clean-eks:
 create-namespace:
 	@KEDA=$(shell kubectl --kubeconfig $(KUBECONFIG) get deploy -A -l app=keda-operator --no-headers=true -o name)
 	@METRICS_SERVER=$(shell kubectl --kubeconfig $(KUBECONFIG) get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
-	@kubectl get namespace $(ARMONIK_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(ARMONIK_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE)
-	@kubectl get namespace $(KEDA_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(KEDA_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(KEDA_KUBERNETES_NAMESPACE)
-	@kubectl get namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 &&  echo "namespace : '$(METRICS_SERVER_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)
+	@kubectl --kubeconfig $(KUBECONFIG) get namespace $(ARMONIK_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(ARMONIK_KUBERNETES_NAMESPACE)' is already created." || kubectl --kubeconfig $(KUBECONFIG) create namespace $(ARMONIK_KUBERNETES_NAMESPACE)
+	@kubectl --kubeconfig $(KUBECONFIG) get namespace $(KEDA_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(KEDA_KUBERNETES_NAMESPACE)' is already created." || kubectl --kubeconfig $(KUBECONFIG) create namespace $(KEDA_KUBERNETES_NAMESPACE)
+	@kubectl --kubeconfig $(KUBECONFIG) get namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 &&  echo "namespace : '$(METRICS_SERVER_KUBERNETES_NAMESPACE)' is already created." || kubectl --kubeconfig $(KUBECONFIG) create namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)
 
 delete-namespace:
-	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
-	kubectl delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
-	kubectl delete namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE) || true
+	kubectl --kubeconfig $(KUBECONFIG) delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
+	kubectl --kubeconfig $(KUBECONFIG) delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
+	kubectl --kubeconfig $(KUBECONFIG) delete namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE) || true
 
 ####################################
 #              KEDA                #
@@ -214,6 +214,7 @@ deploy-monitoring:
 		KUBECONFIG=$(KUBECONFIG) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
 		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
+		EKS_PARAMETERS_FILE=$(EKS_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 destroy-monitoring:
@@ -224,6 +225,7 @@ destroy-monitoring:
 		KUBECONFIG=$(KUBECONFIG) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
 		STORAGE_PARAMETERS_FILE=$(STORAGE_PARAMETERS_FILE) \
+		EKS_PARAMETERS_FILE=$(EKS_PARAMETERS_FILE) \
 		TFSTATE_BUCKET_NAME=$(TFSTATE_BUCKET_NAME)
 
 clean-monitoring:
@@ -262,6 +264,6 @@ clean-armonik:
 
 deploy-all: deploy-vpc deploy-ecr deploy-eks create-namespace deploy-keda deploy-metrics-server deploy-storage deploy-monitoring deploy-armonik
 
-destroy-all: destroy-armonik destroy-monitoring destroy-storage destroy-metrics-server destroy-keda destroy-eks destroy-ecr destroy-vpc
+destroy-all: destroy-armonik destroy-monitoring destroy-storage destroy-metrics-server destroy-keda delete-namespace destroy-eks destroy-ecr destroy-vpc
 
 clean-all: clean-armonik clean-monitoring clean-storage clean-metrics-server clean-keda clean-eks clean-ecr clean-vpc

@@ -41,16 +41,3 @@ resource "null_resource" "timestamp" {
     ignore_changes = [triggers]
   }
 }
-
-# Empty Kubeconfig
-resource "null_resource" "empty_kubeconfig" {
-  provisioner "local-exec" {
-    command = "mkdir -p ${pathexpand("~/.kube")}"
-  }
-  provisioner "local-exec" {
-    command = "touch ${pathexpand("~/.kube/config")}"
-  }
-  provisioner "local-exec" {
-    command = "sed -i 's/: null/: []/g' ${pathexpand("~/.kube/config")}"
-  }
-}
