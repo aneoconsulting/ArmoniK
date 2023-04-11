@@ -47,4 +47,8 @@ variable "fluent_bit" {
     image_pull_secrets = string
     parser             = string
   })
+  validation {
+    condition     = contains(["apache", "apache2", "apache_error", "nginx", "json", "docker", "cri", "syslog"], var.fluent_bit.parser)
+    error_message = "Valid values for Fluent-bit parsers are: \"apache\" | \"apache2\" | \"apache_error\" | \"nginx\" | \"json\" | \"docker\" | \"cri\" | \"syslog\"."
+  }
 }
