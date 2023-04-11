@@ -40,6 +40,13 @@ variable "vpc" {
   default     = {}
 }
 
+# Kubeconfig file path
+variable "kubeconfig_file" {
+  description = "Kubeconfig file path"
+  type        = string
+  default     = "generated/kubeconfig"
+}
+
 # AWS EKS
 variable "eks" {
   description = "Parameters of AWS EKS"
