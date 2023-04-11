@@ -14,7 +14,7 @@ resource "kubernetes_cron_job_v1" "retention_job_in_seq" {
     starting_deadline_seconds     = 20
     successful_jobs_history_limit = 0
     suspend                       = false
-    schedule                      = "0 0 * * *"
+    schedule                      = "* * * * *"
     job_template {
       metadata {
         name = "seq-retention-job"
@@ -86,7 +86,10 @@ resource "kubernetes_cron_job_v1" "retention_job_in_seq" {
 locals {
   script_cron = <<EOF
 #!/bin/bash
-token=$(/bin/seqcli/seqcli apikey create -t "test ApiKey" --permissions=Project --connect-username=$SEQ_USER --connect-password=$SEQ_PASSWORD -s $SEQ_URL)
-/bin/seqcli/seqcli retention create --after ${var.retention_in_days} --delete-all-events --apikey=$token -s $SEQ_URL
+if [ -z "$(/bin/seqcli/seqcli retention list -s $SEQ_URL)" ]
+then
+  token=$(/bin/seqcli/seqcli apikey create -t "test ApiKey" --permissions=Project --connect-username=$SEQ_USER --connect-password=$SEQ_PASSWORD -s $SEQ_URL)
+  /bin/seqcli/seqcli retention create --after ${var.retention_in_days} --delete-all-events --apikey=$token -s $SEQ_URL
+fi
 EOF
 }
