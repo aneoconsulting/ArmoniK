@@ -54,7 +54,7 @@ fi
 sleep 15
 
 if [ "$1" == "0" ] ; then
-  mongosh \
+  while ! mongosh \
     --username ${random_string.mongodb_admin_user.result} \
     --password ${random_password.mongodb_admin_password.result} \
     --tlsCAFile /mongodb/chain.pem \
@@ -62,14 +62,12 @@ if [ "$1" == "0" ] ; then
     --tlsAllowInvalidCertificates \
     --tls \
     localhost:27017/admin /start/initreplica.js
+  do
+    sleep 10
+  done
 fi
-
-
-
 wait
-
 EOF
-
 }
 
 # configmap with all the variables
