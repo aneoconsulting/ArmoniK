@@ -146,6 +146,10 @@ variable "seq" {
     node_selector     = optional(any, {})
     system_ram_target = optional(number, 0.2)
     authentication    = optional(bool, false)
+    cli_image_name    = optional(string, "datalust/seqcli")
+    cli_image_tag     = optional(string)
+    cli_pull_secrets  = optional(string, "")
+    retention_in_days = optional(string, "2d")
   })
   default = {}
 }
@@ -224,6 +228,7 @@ variable "fluent_bit" {
     http_port      = optional(number, 2020)
     read_from_head = optional(bool, true)
     node_selector  = optional(any, {})
+    parser         = optional(string, "docker")
   })
   default = {}
 }

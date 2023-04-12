@@ -4,14 +4,18 @@ namespace = "armonik"
 # Monitoring infos
 monitoring = {
   seq = {
-    enabled            = true
-    image              = "datalust/seq"
-    tag                = "2023.1"
-    port               = 8080
-    image_pull_secrets = ""
-    service_type       = "ClusterIP"
-    node_selector      = {}
-    system_ram_target  = 0.2
+    enabled                = true
+    image                  = "datalust/seq"
+    tag                    = "2023.1"
+    port                   = 8080
+    image_pull_secrets     = ""
+    service_type           = "ClusterIP"
+    node_selector          = {}
+    system_ram_target      = 0.2
+    cli_image              = "datalust/seqcli"
+    cli_tag                = "2023.1"
+    cli_image_pull_secrets = ""
+    retention_in_days      = "2d"
   }
   grafana = {
     enabled            = true
@@ -38,7 +42,7 @@ monitoring = {
   }
   metrics_exporter = {
     image              = "dockerhubaneo/armonik_control_metrics"
-    tag                = "0.12.2"
+    tag                = "0.12.4"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
@@ -51,7 +55,7 @@ monitoring = {
   }
   partition_metrics_exporter = {
     image              = "dockerhubaneo/armonik_control_partition_metrics"
-    tag                = "0.12.2"
+    tag                = "0.12.4"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = {}
@@ -70,6 +74,7 @@ monitoring = {
     http_port          = 2020 # 0 or 2020
     read_from_head     = true
     node_selector      = {}
+    parser             = "docker"
   }
 }
 

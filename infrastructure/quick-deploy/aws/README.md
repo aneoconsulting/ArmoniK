@@ -16,6 +16,7 @@
     - [Storage](#storage)
     - [Monitoring](#monitoring)
 - [Deploy ArmoniK](#deploy-armonik)
+- [Merge multiple kubeconfig](#merge-multiple-kubeconfig)
 - [Clean-up](#clean-up)
 
 # Introduction
@@ -357,6 +358,19 @@ command, You execute:
 ```bash
 make deploy-all
 ```
+
+# Merge multiple kubeconfig
+
+When accessing multiple Kubernetes clusters, you will have many kubeconfig files. By default, kubectl only looks for a
+file named config in the `$HOME/.kube` directory.
+
+So, to manage multiple Kubernetes clusters execute the following command:
+
+```bash
+make kubeconfig
+```
+
+Export `KUBECONFIG` as displayed by the above command.
 
 # Clean-up
 

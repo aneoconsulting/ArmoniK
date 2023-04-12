@@ -19,9 +19,15 @@ module "seq" {
     tag                = local.seq_tag
     image_pull_secrets = local.seq_image_pull_secrets
   }
+  docker_image_cron = {
+    image              = local.cli_seq_image
+    tag                = local.cli_seq_tag
+    image_pull_secrets = local.cli_seq_image_pull_secrets
+  }
   working_dir       = "${path.root}/../../.."
   authentication    = var.authentication
   system_ram_target = local.seq_system_ram_target
+  retention_in_days = local.retention_in_days
 }
 
 # node exporter
@@ -79,7 +85,8 @@ module "prometheus" {
   service_type                   = local.prometheus_service_type
   node_selector                  = local.prometheus_node_selector
   metrics_exporter_url           = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  partition_metrics_exporter_url = null #"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
+  partition_metrics_exporter_url = null
+  #"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
   docker_image = {
     image              = local.prometheus_image
     tag                = local.prometheus_tag
@@ -132,6 +139,7 @@ module "fluent_bit" {
     tag                = local.fluent_bit_tag
     image_pull_secrets = local.fluent_bit_image_pull_secrets
     is_daemonset       = local.fluent_bit_is_daemonset
+    parser             = local.fluent_bit_parser
     http_server        = (local.fluent_bit_http_port == 0 ? "Off" : "On")
     http_port          = (local.fluent_bit_http_port == 0 ? "" : tostring(local.fluent_bit_http_port))
     read_from_head     = (local.fluent_bit_read_from_head ? "On" : "Off")
@@ -145,6 +153,12 @@ module "fluent_bit" {
   cloudwatch = (local.cloudwatch_enabled ? {
     name    = module.cloudwatch.0.name
     region  = var.region
+    enabled = true
+  } : {})
+  s3 = (local.s3_enabled ? {
+    name    = local.s3_name
+    region  = local.s3_region
+    prefix  = local.s3_prefix
     enabled = true
   } : {})
 }

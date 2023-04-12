@@ -13,13 +13,14 @@ output "armonik" {
 output "eks" {
   description = "EKS cluster"
   value = {
-    arn    = module.eks.arn
-    name   = module.eks.cluster_name
-    region = var.region
+    arn             = module.eks.arn
+    name            = module.eks.cluster_name
+    region          = var.region
+    kubeconfig_file = module.eks.kubeconfig_file
   }
 }
 
-output "s3_bucket_name" {
-  description = "Name of S3 bucket"
+output "s3_fs_name" {
+  description = "Name of S3 bucket for application DLLs."
   value       = module.s3_fs.s3_bucket_name
 }

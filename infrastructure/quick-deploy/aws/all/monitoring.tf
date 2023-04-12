@@ -34,6 +34,37 @@ resource "aws_iam_policy_attachment" "send_logs_from_fluent_bit_to_cloudwatch_at
   roles      = module.eks.self_managed_worker_iam_role_names
 }
 
+# Write objects in S3
+data "aws_iam_policy_document" "write_object" {
+  count = (var.s3.enabled ? 1 : 0)
+  statement {
+    sid = "WriteFromS3"
+    actions = [
+      "s3:PutObject"
+    ]
+    effect = "Allow"
+    resources = [
+      "${var.s3.arn}/*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "write_object" {
+  count       = (var.s3.enabled ? 1 : 0)
+  name_prefix = "s3-logs-write-${module.eks.cluster_name}"
+  description = "Policy for allowing read object in S3 logs ${module.eks.cluster_name}"
+  policy      = data.aws_iam_policy_document.write_object[0].json
+  tags        = local.tags
+}
+
+
+resource "aws_iam_policy_attachment" "write_object" {
+  count      = (var.s3.enabled ? 1 : 0)
+  name       = "s3-logs-write-${module.eks.cluster_name}"
+  policy_arn = aws_iam_policy.write_object[0].arn
+  roles      = module.eks.self_managed_worker_iam_role_names
+}
+
 # Seq
 module "seq" {
   count         = var.seq != null ? 1 : 0
@@ -47,9 +78,15 @@ module "seq" {
     tag                = local.ecr_images["${var.seq.image_name}:${try(coalesce(var.seq.image_tag), "")}"].tag
     image_pull_secrets = var.seq.pull_secrets
   }
+  docker_image_cron = {
+    image              = local.ecr_images["${var.seq.cli_image_name}:${try(coalesce(var.seq.cli_image_tag), "")}"].image
+    tag                = local.ecr_images["${var.seq.cli_image_name}:${try(coalesce(var.seq.cli_image_tag), "")}"].tag
+    image_pull_secrets = var.seq.pull_secrets
+  }
   working_dir       = "${path.root}/../../.."
   authentication    = var.seq.authentication
   system_ram_target = var.seq.system_ram_target
+  retention_in_days = var.seq.retention_in_days
 }
 
 resource "kubernetes_secret" "seq" {
@@ -221,6 +258,7 @@ module "fluent_bit" {
     container_name     = "fluent-bit"
     image              = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].image
     tag                = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].tag
+    parser             = var.fluent_bit.parser
     image_pull_secrets = var.fluent_bit.pull_secrets
     is_daemonset       = var.fluent_bit.is_daemonset
     http_server        = (var.fluent_bit.http_port == 0 ? "Off" : "On")
@@ -238,6 +276,12 @@ module "fluent_bit" {
     region  = var.region
     enabled = true
   } : {}
+  s3 = (var.s3.enabled ? {
+    name    = var.s3.name
+    region  = var.s3.region
+    prefix  = var.s3.prefix
+    enabled = true
+  } : {})
 }
 
 resource "kubernetes_secret" "fluent_bit" {

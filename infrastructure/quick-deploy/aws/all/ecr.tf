@@ -19,6 +19,7 @@ locals {
     var.pv_efs == null ? null : [var.pv_efs.csi_driver.images.node_driver_registrar.name, var.pv_efs.csi_driver.images.node_driver_registrar.tag],
     var.pv_efs == null ? null : [var.pv_efs.csi_driver.images.external_provisioner.name, var.pv_efs.csi_driver.images.external_provisioner.tag],
     var.seq == null ? null : [var.seq.image_name, var.seq.image_tag],
+    var.seq == null ? null : [var.seq.cli_image_name, var.seq.cli_image_tag],
     var.grafana == null ? null : [var.grafana.image_name, var.grafana.image_tag],
     var.node_exporter == null ? null : [var.node_exporter.image_name, var.node_exporter.image_tag],
     var.partition_metrics_exporter == null ? null : [var.partition_metrics_exporter.image_name, var.partition_metrics_exporter.image_tag],
