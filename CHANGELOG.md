@@ -2,6 +2,35 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.12.2](https://github.com/aneoconsulting/armonik/tree/v2.12.2) (2023-04-11)
+
+Changed
+-
+
+* Update module EKS and upgrade its version from `17.24.0` to `19.10.0`.
+* Set up a MongoDB cluster.
+
+Added
+-
+
+* AWS S3 as Fluent-bit output for logs.
+* Retention in days for Seq.
+
+## [v2.12.2](https://github.com/aneoconsulting/armonik/tree/v2.12.2) (2023-04-11)
+
+Changed
+-
+
+* Upgrade versions of docker images for ArmoniK (see [versions.tfvars.json](./versions.tfvars.json)):
+  * Core version from `0.12.3` to `0.12.4`.
+  * Extension C# version from `0.9.4` to `0.9.5`.
+* Samples version from `v2.12.1` to `v2.12.2`
+
+Fixed
+- 
+
+* Added milliseconds to Api log [#225](https://github.com/aneoconsulting/ArmoniK.Api/pull/225)
+
 ## [v2.12.1](https://github.com/aneoconsulting/armonik/tree/v2.12.1) (2023-04-06)
 
 Changed
@@ -10,20 +39,12 @@ Changed
 * Upgrade versions of docker images for ArmoniK (see [versions.tfvars.json](./versions.tfvars.json)):
   * Core version from `0.12.2` to `0.12.3`.
   * Extension C# version from `0.9.2` to `0.9.4`.
-* Samples version from `v2.12.0` to `v2.12.1`.
-* Update module EKS and upgrade its version from `17.24.0` to `19.10.0`.
-* Set up a MongoDB cluster.
+* Samples version from `v2.12.0` to `v2.12.1`
 
 Fixed
 - 
 
 * Fix issue with AWSSDK.SecurityToken [#145](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/pull/145)
-
-Added
--
-
-* AWS S3 as Fluent-bit output for logs.
-* Retention in days for Seq.
 
 ## [v2.12.0](https://github.com/aneoconsulting/armonik/tree/v2.12.0) (2023-03-29)
 
