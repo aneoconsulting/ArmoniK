@@ -38,17 +38,15 @@ We want to test in this first iteration, the three main functionnalities of Armo
 
 ### The submission of the tasks
 
-With those tests we want to measure the performances of ArmoniK in submitting the tasks.This step is the first step of task ochestration which consists in submitting the tasks and the input data to be processed to the ArmoniK workers
+With these tests, we want to measure the performances of tasks submissions od ArmoniK. This is the first step of the task ochestration which consists in submitting the tasks and the input data to be processed by ArmoniK workers.
 
 ### The processing of the tasks
 
-In addition to the tasks submission, this tests will allow to measure the ArmoniK ability to process different numbers with different tasks sizes.
+In addition to the tasks submission, these tests will allow us to measure the ArmoniK ability to process different numbers of tasks with different workload durations.
 
 ### The retrieving of the results 
 
-Those tests will allow to determine ArmoniK performances to retrieve the results data after tasks processing.this step consists in the recovery of the output data after the processing of the tasks and it is the last step of the task orchestration.
-
-* Those tests are dependent of the configuration of the underlying infrastructure and are a prerequirement of every test execution used as comparison. This method could be reused as reproducer for anyone desiring to execute our tests.
+These tests will allow us to determine ArmoniK performances to retrieve the results data after tasks processing. This step consists in the recovery of the output data after the processing of the tasks and it is the last step of the task orchestration.
 
 # The tools used to do the tests
 
@@ -66,7 +64,8 @@ We store the results of the performance tests in Json files which we will be sto
 
 # Tests environment
 
-- ArmoniK deployed on AWS via WSL2
+These tests are dependent of the configuration of the underlying infrastructure and are a prerequirement of every test execution used as comparison. This method could be reused as reproducer for anyone desiring to execute our tests.
+
 
 |        |       |
 | ------ | ----- |
