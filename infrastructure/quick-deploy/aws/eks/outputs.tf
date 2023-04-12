@@ -2,10 +2,10 @@
 output "eks" {
   description = "EKS parameters"
   value = {
-    name                    = module.eks.name
-    cluster_id              = module.eks.cluster_id
-    worker_iam_role_name    = module.eks.worker_iam_role_name
-    kubectl_config_filename = abspath(module.eks.kubectl_config_filename)
-    issuer                  = module.eks.issuer
+    cluster_name                       = module.eks.cluster_name
+    cluster_id                         = module.eks.cluster_id
+    self_managed_worker_iam_role_names = module.eks.self_managed_worker_iam_role_names
+    issuer                             = module.eks.issuer
+    kubeconfig_file                    = module.eks.kubeconfig_file
   }
 }

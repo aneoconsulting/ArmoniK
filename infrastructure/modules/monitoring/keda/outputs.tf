@@ -1,3 +1,5 @@
 output "keda" {
-  value = {}
+  value = {
+    chart_name = helm_release.keda.name
+  }
 }

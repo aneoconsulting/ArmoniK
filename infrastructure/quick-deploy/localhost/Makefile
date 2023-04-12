@@ -110,6 +110,6 @@ clean-armonik:
 
 deploy-all: create-namespace deploy-keda deploy-metrics-server deploy-storage deploy-monitoring deploy-armonik
 
-destroy-all: destroy-armonik destroy-monitoring destroy-storage destroy-metrics-server destroy-keda
+destroy-all: destroy-armonik destroy-monitoring destroy-storage destroy-metrics-server destroy-keda delete-namespace
 
 clean-all: clean-armonik clean-monitoring clean-storage clean-metrics-server clean-keda

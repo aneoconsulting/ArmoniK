@@ -134,7 +134,7 @@ resource "helm_release" "cluster_autoscaler" {
 }
 
 # Workers Auto Scaling policy
-data "aws_iam_policy_document" "worker_autoscaling_document" {
+data "aws_iam_policy_document" "worker_autoscaling" {
   statement {
     sid    = "eksWorkerAutoscalingAll"
     effect = "Allow"
@@ -160,15 +160,17 @@ data "aws_iam_policy_document" "worker_autoscaling_document" {
   }
 }
 
-resource "aws_iam_policy" "worker_autoscaling_policy" {
+resource "aws_iam_policy" "worker_autoscaling" {
   name_prefix = local.iam_worker_autoscaling_policy_name
-  description = "EKS worker node autoscaling policy for cluster ${module.eks.cluster_id}"
-  policy      = data.aws_iam_policy_document.worker_autoscaling_document.json
+  description = "EKS worker node autoscaling policy for cluster ${module.eks.cluster_name}"
+  policy      = data.aws_iam_policy_document.worker_autoscaling.json
   tags        = local.tags
 }
 
-resource "aws_iam_role_policy_attachment" "workers_autoscaling_attach" {
-  policy_arn = aws_iam_policy.worker_autoscaling_policy.arn
-  role       = module.eks.worker_iam_role_name
+resource "aws_iam_policy_attachment" "workers_autoscaling" {
+  name       = "eks-worker-node-autoscaling-${module.eks.cluster_name}"
+  roles      = values(module.eks.self_managed_node_groups)[*].iam_role_name
+  policy_arn = aws_iam_policy.worker_autoscaling.arn
 }
+
 

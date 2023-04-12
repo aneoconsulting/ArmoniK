@@ -66,14 +66,18 @@ variable "monitoring" {
   description = "Monitoring infos"
   type = object({
     seq = object({
-      enabled            = bool
-      image              = string
-      tag                = string
-      port               = number
-      image_pull_secrets = string
-      service_type       = string
-      node_selector      = any
-      system_ram_target  = number
+      enabled                = bool
+      image                  = string
+      tag                    = string
+      port                   = number
+      image_pull_secrets     = string
+      service_type           = string
+      node_selector          = any
+      system_ram_target      = number
+      cli_image              = string
+      cli_tag                = string
+      cli_image_pull_secrets = string
+      retention_in_days      = string
     })
     grafana = object({
       enabled            = bool
@@ -119,6 +123,13 @@ variable "monitoring" {
       kms_key_id        = string
       retention_in_days = number
     })
+    s3 = object({
+      enabled = bool
+      name    = string
+      region  = string
+      arn     = string
+      prefix  = string
+    })
     fluent_bit = object({
       image              = string
       tag                = string
@@ -127,6 +138,7 @@ variable "monitoring" {
       http_port          = number
       read_from_head     = string
       node_selector      = any
+      parser             = string
     })
   })
 }

@@ -13,6 +13,9 @@ k8s_config_context = "default"
 # Kubernetes namespace
 namespace = "armonik"
 
+# SUFFIX
+suffix = "main"
+
 tags = {
   "name"             = ""
   "env"              = ""
@@ -44,14 +47,18 @@ tags = {
 # Monitoring infos
 monitoring = {
   seq = {
-    enabled            = true
-    image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
-    tag                = "2023.1"
-    port               = 8080
-    image_pull_secrets = ""
-    service_type       = "ClusterIP"
-    node_selector      = { "grid/type" = "Operator" }
-    system_ram_target  = 0.2
+    enabled                = true
+    image                  = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
+    tag                    = "2023.1"
+    port                   = 8080
+    image_pull_secrets     = ""
+    service_type           = "ClusterIP"
+    node_selector          = { "grid/type" = "Operator" }
+    system_ram_target      = 0.2
+    cli_image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seqcli"
+    cli_tag                = "2023.1"
+    cli_image_pull_secrets = ""
+    retention_in_days      = "2d"
   }
   grafana = {
     enabled            = true
@@ -107,6 +114,13 @@ monitoring = {
     kms_key_id        = ""
     retention_in_days = 30
   }
+  s3 = {
+    enabled = true
+    name    = "armonik-logs"
+    region  = "eu-west-3"
+    prefix  = "main"
+    arn     = "arn:aws:s3:::armonik-logs"
+  }
   fluent_bit = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/fluent-bit"
     tag                = "2.0.9"
@@ -115,6 +129,7 @@ monitoring = {
     http_port          = 2020 # 0 or 2020
     read_from_head     = true
     node_selector      = { "grid/type" = "Operator" }
+    parser             = "cri"
   }
 }
 

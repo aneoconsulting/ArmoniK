@@ -55,6 +55,25 @@ resource "tls_locally_signed_cert" "mongodb_certificate" {
   ]
 }
 
+#------------------------------------------------------------------------------
+# Kubernetes Secrets with certificates
+#------------------------------------------------------------------------------
+resource "random_string" "mongodb_cluster_key" {
+  length  = 1024
+  special = false
+  numeric = false
+}
+
+resource "kubernetes_secret" "mongodb_cluster" {
+  metadata {
+    name      = "mongodb-cluster-key"
+    namespace = var.namespace
+  }
+  data = {
+    "cluster.key" = random_string.mongodb_cluster_key.result
+  }
+}
+
 resource "kubernetes_secret" "mongodb_certificate" {
   metadata {
     name      = "mongodb-server-certificates"
@@ -62,6 +81,7 @@ resource "kubernetes_secret" "mongodb_certificate" {
   }
   data = {
     "mongodb.pem" = format("%s\n%s", tls_locally_signed_cert.mongodb_certificate.cert_pem, tls_private_key.mongodb_private_key.private_key_pem)
+    "chain.pem"   = format("%s\n%s", tls_locally_signed_cert.mongodb_certificate.cert_pem, tls_self_signed_cert.root_mongodb.cert_pem)
   }
 }
 

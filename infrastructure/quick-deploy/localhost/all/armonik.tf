@@ -6,6 +6,19 @@ module "armonik" {
   storage_endpoint_url = local.storage_endpoint_url
   monitoring           = local.monitoring
   extra_conf           = var.extra_conf
+
+  // To avoid the "known after apply" behavior that arises from using depends_on, we are using a ternary expression to impose implicit dependencies on the below secrets.
+  fluent_bit_secret_name                 = kubernetes_secret.fluent_bit.id != null ? kubernetes_secret.fluent_bit.metadata[0].name : kubernetes_secret.fluent_bit.metadata[0].name
+  grafana_secret_name                    = kubernetes_secret.grafana.id != null ? kubernetes_secret.grafana.metadata[0].name : kubernetes_secret.grafana.metadata[0].name
+  prometheus_secret_name                 = kubernetes_secret.prometheus.id != null ? kubernetes_secret.prometheus.metadata[0].name : kubernetes_secret.prometheus.metadata[0].name
+  metrics_exporter_secret_name           = kubernetes_secret.metrics_exporter.id != null ? kubernetes_secret.metrics_exporter.metadata[0].name : kubernetes_secret.metrics_exporter.metadata[0].name
+  partition_metrics_exporter_secret_name = kubernetes_secret.partition_metrics_exporter.id != null ? kubernetes_secret.partition_metrics_exporter.metadata[0].name : kubernetes_secret.partition_metrics_exporter.metadata[0].name
+  seq_secret_name                        = kubernetes_secret.seq.id != null ? kubernetes_secret.seq.metadata[0].name : kubernetes_secret.seq.metadata[0].name
+  shared_storage_secret_name             = kubernetes_secret.shared_storage.id != null ? kubernetes_secret.shared_storage.metadata[0].name : kubernetes_secret.shared_storage.metadata[0].name
+  deployed_object_storage_secret_name    = kubernetes_secret.deployed_object_storage.id != null ? kubernetes_secret.deployed_object_storage.metadata[0].name : kubernetes_secret.deployed_object_storage.metadata[0].name
+  deployed_table_storage_secret_name     = kubernetes_secret.deployed_table_storage.id != null ? kubernetes_secret.deployed_table_storage.metadata[0].name : kubernetes_secret.deployed_table_storage.metadata[0].name
+  deployed_queue_storage_secret_name     = kubernetes_secret.deployed_queue_storage.id != null ? kubernetes_secret.deployed_queue_storage.metadata[0].name : kubernetes_secret.deployed_queue_storage.metadata[0].name
+
   // If compute plane has no partition data, provides a default
   // but always overrides the images
   compute_plane = {
@@ -52,15 +65,8 @@ module "armonik" {
   authentication = merge(var.authentication, {
     tag = try(coalesce(var.authentication.tag), local.default_tags[var.authentication.image])
   })
-  depends_on = [
-    kubernetes_secret.fluent_bit,
-    kubernetes_secret.grafana,
-    kubernetes_secret.metrics_exporter,
-    kubernetes_secret.partition_metrics_exporter,
-    kubernetes_secret.seq,
-    kubernetes_secret.shared_storage,
-    kubernetes_secret.deployed_object_storage,
-    kubernetes_secret.deployed_table_storage,
-    kubernetes_secret.deployed_queue_storage
-  ]
+
+  # Force the dependency on Keda and metrics-server for the HPA
+  keda_chart_name           = module.keda.keda.chart_name
+  metrics_server_chart_name = concat(module.metrics_server[*].metrics_server.chart_name, ["metrics-server"])[0]
 }

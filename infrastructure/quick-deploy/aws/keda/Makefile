@@ -10,6 +10,7 @@ export PROFILE?=default
 export NAMESPACE?=default
 export SUFFIX?=main
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
+export KUBECONFIG?=$(GENERATED_DIR)/eks/kubeconfig
 
 .PHONY: apply destroy
 
@@ -31,6 +32,7 @@ apply:
 		-var 'region=$(REGION)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
+		-var 'k8s_config_path=$(KUBECONFIG)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 
@@ -46,6 +48,7 @@ delete:
 		-var 'region=$(REGION)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
+		-var 'k8s_config_path=$(KUBECONFIG)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 

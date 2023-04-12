@@ -276,3 +276,82 @@ variable "authentication" {
     condition     = var.authentication == null || !var.authentication.require_authentication || var.authentication.authentication_datafile == "" || try(fileexists(var.authentication.authentication_datafile), false) && can(jsondecode(file(var.authentication.authentication_datafile)))
   }
 }
+
+# The name of the secrets.
+variable "fluent_bit_secret_name" {
+  description = "the name of the fluent-bit secret"
+  type        = string
+  default     = "fluent-bit"
+}
+
+variable "grafana_secret_name" {
+  description = "the name of the grafana secret"
+  type        = string
+  default     = "grafana"
+}
+
+variable "prometheus_secret_name" {
+  description = "the name of the prometheus secret"
+  type        = string
+  default     = "prometheus"
+}
+
+variable "metrics_exporter_secret_name" {
+  description = "the name of the metrics exporter secret"
+  type        = string
+  default     = "metrics-exporter"
+}
+
+variable "partition_metrics_exporter_secret_name" {
+  description = "the name of the partition metrics exporter secret"
+  type        = string
+  default     = "partition-metrics-exporter"
+}
+
+variable "seq_secret_name" {
+  description = "the name of the seq secret"
+  type        = string
+  default     = "seq"
+}
+
+variable "shared_storage_secret_name" {
+  description = "the name of the shared-storage secret"
+  type        = string
+  default     = "shared-storage"
+}
+
+variable "deployed_object_storage_secret_name" {
+  description = "the name of the deployed-object-storage secret"
+  type        = string
+  default     = "deployed-object-storage"
+}
+
+variable "deployed_table_storage_secret_name" {
+  description = "the name of the deployed-table-storage secret"
+  type        = string
+  default     = "deployed-table-storage"
+}
+
+variable "deployed_queue_storage_secret_name" {
+  description = "the name of the deployed-queue-storage secret"
+  type        = string
+  default     = "deployed-queue-storage"
+}
+
+variable "s3_secret_name" {
+  description = "the name of the S3 secret"
+  type        = string
+  default     = "s3"
+}
+
+variable "keda_chart_name" {
+  description = "Name of the Keda Helm chart"
+  type        = string
+  default     = "keda"
+}
+
+variable "metrics_server_chart_name" {
+  description = "Name of the metrics-server Helm chart"
+  type        = string
+  default     = "metrics-server"
+}

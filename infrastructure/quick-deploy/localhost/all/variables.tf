@@ -103,6 +103,7 @@ variable "mongodb" {
     image_tag          = optional(string)
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
+    replicas_number    = optional(number, 1)
   })
   default = {}
 }
@@ -145,6 +146,10 @@ variable "seq" {
     node_selector     = optional(any, {})
     system_ram_target = optional(number, 0.2)
     authentication    = optional(bool, false)
+    cli_image_name    = optional(string, "datalust/seqcli")
+    cli_image_tag     = optional(string)
+    cli_pull_secrets  = optional(string, "")
+    retention_in_days = optional(string, "2d")
   })
   default = {}
 }
@@ -223,6 +228,7 @@ variable "fluent_bit" {
     http_port      = optional(number, 2020)
     read_from_head = optional(bool, true)
     node_selector  = optional(any, {})
+    parser         = optional(string, "docker")
   })
   default = {}
 }
@@ -262,7 +268,7 @@ variable "control_plane" {
   type = object({
     name              = optional(string, "control-plane")
     service_type      = optional(string, "ClusterIP")
-    replicas          = optional(number, 2)
+    replicas          = optional(number, 1)
     image             = optional(string, "dockerhubaneo/armonik_control")
     tag               = optional(string)
     image_pull_policy = optional(string, "IfNotPresent")

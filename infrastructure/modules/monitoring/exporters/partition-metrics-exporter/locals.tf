@@ -1,10 +1,3 @@
-# Node IP of metrics-exporter pod
-data "external" "partition_metrics_exporter_node_ip" {
-  depends_on  = [kubernetes_service.partition_metrics_exporter]
-  program     = ["bash", "get_node_ip.sh", "partition-metrics-exporter", var.namespace]
-  working_dir = "${var.working_dir}/utils/scripts"
-}
-
 locals {
   node_selector_keys   = keys(var.node_selector)
   node_selector_values = values(var.node_selector)
@@ -51,7 +44,6 @@ locals {
   }
 
   # Endpoint urls
-  partition_metrics_exporter_node_ip = try(tomap(data.external.partition_metrics_exporter_node_ip.result).node_ip, "")
   load_balancer = (kubernetes_service.partition_metrics_exporter.spec.0.type == "LoadBalancer" ? {
     ip   = (kubernetes_service.partition_metrics_exporter.status.0.load_balancer.0.ingress.0.ip == "" ? kubernetes_service.partition_metrics_exporter.status.0.load_balancer.0.ingress.0.hostname : kubernetes_service.partition_metrics_exporter.status.0.load_balancer.0.ingress.0.ip)
     port = kubernetes_service.partition_metrics_exporter.spec.0.port.0.port
@@ -60,20 +52,12 @@ locals {
     port = ""
   })
 
-  node_port = (local.load_balancer.ip == "" && kubernetes_service.partition_metrics_exporter.spec.0.type == "NodePort" ? {
-    ip   = local.partition_metrics_exporter_node_ip
-    port = kubernetes_service.partition_metrics_exporter.spec.0.port.0.node_port
-    } : {
-    ip   = local.load_balancer.ip
-    port = local.load_balancer.port
-  })
-
-  partition_metrics_exporter_endpoints = (local.node_port.ip == "" && kubernetes_service.partition_metrics_exporter.spec.0.type == "ClusterIP" ? {
+  partition_metrics_exporter_endpoints = (local.load_balancer.ip == "" && kubernetes_service.partition_metrics_exporter.spec.0.type == "ClusterIP" ? {
     ip   = kubernetes_service.partition_metrics_exporter.spec.0.cluster_ip
     port = kubernetes_service.partition_metrics_exporter.spec.0.port.0.port
     } : {
-    ip   = local.node_port.ip
-    port = local.node_port.port
+    ip   = local.load_balancer.ip
+    port = local.load_balancer.port
   })
 
   url = "http://${local.partition_metrics_exporter_endpoints.ip}:${local.partition_metrics_exporter_endpoints.port}"

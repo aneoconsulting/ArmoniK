@@ -8,11 +8,12 @@ module "kms" {
 
 # AWS EKS
 module "eks" {
-  source        = "../../../modules/aws/eks"
-  profile       = var.profile
-  tags          = local.tags
-  name          = local.cluster_name
-  node_selector = var.node_selector
+  source          = "../../../modules/aws/eks"
+  profile         = var.profile
+  tags            = local.tags
+  name            = local.cluster_name
+  node_selector   = var.node_selector
+  kubeconfig_file = abspath(var.kubeconfig_file)
   vpc = {
     id                 = local.vpc.id
     private_subnet_ids = local.vpc.private_subnet_ids
@@ -49,5 +50,4 @@ module "eks" {
   }
   eks_operational_worker_groups = var.eks_operational_worker_groups
   eks_worker_groups             = var.eks_worker_groups
-  depends_on                    = [null_resource.empty_kubeconfig]
 }

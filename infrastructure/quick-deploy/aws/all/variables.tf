@@ -12,6 +12,13 @@ variable "profile" {
   default     = "default"
 }
 
+# Kubeconfig file path
+variable "kubeconfig_file" {
+  description = "Kubeconfig file path"
+  type        = string
+  default     = "generated/kubeconfig"
+}
+
 # Region
 variable "region" {
   description = "AWS region where the infrastructure will be deployed"
@@ -274,10 +281,11 @@ variable "mq_credentials" {
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type = object({
-    image_name    = optional(string, "mongo")
-    image_tag     = optional(string)
-    node_selector = optional(any, {})
-    pull_secrets  = optional(string, "")
+    image_name      = optional(string, "mongo")
+    image_tag       = optional(string)
+    node_selector   = optional(any, {})
+    pull_secrets    = optional(string, "")
+    replicas_number = optional(number, 1)
     persistent_volume = optional(object({
       storage_provisioner = string
       parameters          = optional(map(string), {})
@@ -349,6 +357,10 @@ variable "seq" {
     node_selector     = optional(any, {})
     system_ram_target = optional(number, 0.2)
     authentication    = optional(bool, false)
+    cli_image_name    = optional(string, "datalust/seqcli")
+    cli_image_tag     = optional(string)
+    cli_pull_secrets  = optional(string, "")
+    retention_in_days = optional(string, "2d")
   })
   default = null
 }
@@ -427,6 +439,7 @@ variable "fluent_bit" {
     http_port      = optional(number, 2020)
     read_from_head = optional(bool, true)
     node_selector  = optional(any, {})
+    parser         = optional(string, "cri")
   })
   default = {}
 }
@@ -435,6 +448,18 @@ variable "cloudwatch" {
   description = "Cloudwatch configuration"
   type = object({
     retention_in_days = optional(number, 30)
+  })
+  default = {}
+}
+
+variable "s3" {
+  description = "S3 bucket for logs"
+  type = object({
+    enabled = optional(bool, true)
+    name    = optional(string, "armonik-logs")
+    region  = optional(string, "eu-west-3")
+    arn     = optional(string, "arn:aws:s3:::armonik-logs")
+    prefix  = optional(string, "main")
   })
   default = {}
 }
