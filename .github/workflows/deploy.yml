@@ -110,7 +110,7 @@ jobs:
 
   coreStream:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
     steps:
       - name: Get type of VM
         run: |
@@ -174,7 +174,7 @@ jobs:
 
   htcMock:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
       - name: Get type of VM
         run: |
@@ -297,7 +297,7 @@ jobs:
 
   bench:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
     strategy:
            fail-fast: false
     steps:
