@@ -9,3 +9,9 @@ output "eks" {
     kubeconfig_file                    = module.eks.kubeconfig_file
   }
 }
+
+
+output "kubeconfig" {
+  description = "Use multiple Kubernetes cluster with KUBECONFIG environment variable"
+  value       = "export KUBECONFIG=$${HOME}/.kube/config:${module.eks.kubeconfig_file}:$${KUBECONFIG}"
+}
