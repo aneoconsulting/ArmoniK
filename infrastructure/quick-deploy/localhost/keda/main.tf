@@ -12,8 +12,10 @@ module "keda" {
       tag   = local.keda_metricsApiServer_tag
     }
   }
-  image_pull_secrets    = local.keda_image_pull_secrets
-  node_selector         = local.keda_node_selector
-  helm_chart_repository = var.keda.helm_chart_repository
-  helm_chart_version    = var.keda.helm_chart_version
+  image_pull_secrets              = local.keda_image_pull_secrets
+  node_selector                   = local.keda_node_selector
+  metrics_server_dns_policy       = var.keda.metrics_server_dns_policy
+  metrics_server_use_host_network = var.keda.metrics_server_use_host_network
+  helm_chart_repository           = var.keda.helm_chart_repository
+  helm_chart_version              = var.keda.helm_chart_version
 }
