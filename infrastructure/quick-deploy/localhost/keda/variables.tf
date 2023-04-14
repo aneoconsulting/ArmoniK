@@ -33,9 +33,11 @@ variable "keda" {
         tag   = string
       })
     })
-    image_pull_secrets    = string
-    node_selector         = any
-    helm_chart_repository = optional(string, "https://kedacore.github.io/charts")
-    helm_chart_version    = optional(string, "2.9.4")
+    image_pull_secrets              = string
+    node_selector                   = any
+    metrics_server_dns_policy       = optional(string, "ClusterFirst")
+    metrics_server_use_host_network = optional(bool, false)
+    helm_chart_repository           = optional(string, "https://kedacore.github.io/charts")
+    helm_chart_version              = optional(string, "2.9.4")
   })
 }

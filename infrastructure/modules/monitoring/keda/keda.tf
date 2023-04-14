@@ -25,6 +25,14 @@ resource "helm_release" "keda" {
     name  = "imagePullSecrets"
     value = var.image_pull_secrets
   }
+  set {
+    name  = "metricsServer.dnsPolicy"
+    value = var.metrics_server_use_host_network ? "ClusterFirstWithHostNet" : var.metrics_server_dns_policy
+  }
+  set {
+    name  = "metricsServer.useHostNetwork"
+    value = var.metrics_server_use_host_network
+  }
 
   values = [
     yamlencode(local.node_selector),

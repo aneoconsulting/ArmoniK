@@ -46,9 +46,11 @@ variable "keda" {
         tag   = string
       })
     })
-    image_pull_secrets    = string
-    node_selector         = any
-    helm_chart_repository = string
-    helm_chart_version    = string
+    image_pull_secrets              = string
+    node_selector                   = any
+    metrics_server_dns_policy       = string
+    metrics_server_use_host_network = bool
+    helm_chart_repository           = string
+    helm_chart_version              = string
   })
 }
