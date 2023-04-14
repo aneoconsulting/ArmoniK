@@ -34,6 +34,7 @@ jobs:
 
   format:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -50,6 +51,7 @@ jobs:
 
   AdminGUI:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Get type of VM
         run: |
@@ -108,6 +110,7 @@ jobs:
 
   coreStream:
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
       - name: Get type of VM
         run: |
@@ -171,6 +174,7 @@ jobs:
 
   htcMock:
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
       - name: Get type of VM
         run: |
@@ -293,6 +297,7 @@ jobs:
 
   bench:
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     strategy:
            fail-fast: false
     steps:

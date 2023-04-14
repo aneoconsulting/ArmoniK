@@ -11,9 +11,15 @@ module "seq" {
     tag                = local.seq_tag
     image_pull_secrets = local.seq_image_pull_secrets
   }
+  docker_image_cron = {
+    image              = local.cli_seq_image
+    tag                = local.cli_seq_tag
+    image_pull_secrets = local.cli_seq_image_pull_secrets
+  }
   working_dir       = "${path.root}/../../.."
   authentication    = var.authentication
   system_ram_target = local.seq_system_ram_target
+  retention_in_days = local.retention_in_days
 }
 
 # node exporter
@@ -121,6 +127,7 @@ module "fluent_bit" {
     tag                = local.fluent_bit_tag
     image_pull_secrets = local.fluent_bit_image_pull_secrets
     is_daemonset       = local.fluent_bit_is_daemonset
+    parser             = local.fluent_bit_parser
     http_server        = (local.fluent_bit_http_port == 0 ? "Off" : "On")
     http_port          = (local.fluent_bit_http_port == 0 ? "" : tostring(local.fluent_bit_http_port))
     read_from_head     = (local.fluent_bit_read_from_head ? "On" : "Off")

@@ -11,9 +11,15 @@ module "seq" {
     tag                = try(coalesce(var.seq.image_tag), local.default_tags[var.seq.image_name])
     image_pull_secrets = var.seq.pull_secrets
   }
+  docker_image_cron = {
+    image              = var.seq.cli_image_name
+    tag                = try(coalesce(var.seq.cli_image_tag), local.default_tags[var.seq.cli_image_name])
+    image_pull_secrets = var.seq.cli_pull_secrets
+  }
   working_dir       = "${path.root}/../../.."
   authentication    = var.seq.authentication
   system_ram_target = var.seq.system_ram_target
+  retention_in_days = var.seq.retention_in_days
 }
 
 resource "kubernetes_secret" "seq" {
@@ -192,6 +198,7 @@ module "fluent_bit" {
     container_name     = "fluent-bit"
     image              = var.fluent_bit.image_name
     tag                = try(coalesce(var.fluent_bit.image_tag), local.default_tags[var.fluent_bit.image_name])
+    parser             = var.fluent_bit.parser
     image_pull_secrets = var.fluent_bit.pull_secrets
     is_daemonset       = var.fluent_bit.is_daemonset
     http_server        = (var.fluent_bit.http_port == 0 ? "Off" : "On")
