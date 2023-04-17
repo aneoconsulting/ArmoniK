@@ -1,6 +1,6 @@
 # K8s configuration
 data "external" "k8s_config_context" {
-  program     = ["bash", "k8s_config.sh", var.k8s_config_path]
+  program     = ["bash", "k8s_config.sh"]
   working_dir = ".${path.root}/../../utils/scripts"
 }
 
