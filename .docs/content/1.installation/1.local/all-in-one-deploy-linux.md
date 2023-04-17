@@ -7,6 +7,8 @@ uid: all_in_one_deploy_linux
 Hereafter, You have instructions to deploy ArmoniK on dev/test environment upon your local machine with a simple deploy
 script [deploy-dev-test-infra.sh] located in ArmoniK directory `infrastructure/utils/scripts/`.
 
+<!-- TODO: move to a different page (components of ArmoniK)-->
+<!-- TODO: create a template in each file in order to allow user to help to complete docsph -->
 The infrastructure is composed of:
 
 * Storage:
@@ -21,23 +23,8 @@ The infrastructure is composed of:
     * Control plane
     * Compute plane: polling agent and workers
 
-# Prerequisites
 
-The following software or tool should be installed upon your local Linux machine:
-
-* [Docker](https://docs.docker.com/engine/install/)
-* [GNU make](https://www.gnu.org/software/make/)
-* [JQ](https://stedolan.github.io/jq/download/)
-* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
-* [Python](https://docs.python-guide.org/starting/install3/linux/) version 3
-    * [hcl2](https://pypi.org/project/python-hcl2/)
-    * [jsonpath-ng](https://pypi.org/project/jsonpath-ng/)
-* [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-
-# Install Kubernetes
-
-You must have a Kubernetes on your local machine to install ArmoniK. If not, You can follow instructions in one of the following documentation [Install Kubernetes on dev/test local machine](k3s.md).
-
+<!-- TODO: move to a different page -->
 # Script bash all-in-one
 
 From the **root** of the repository, position yourself in directory `infrastructure/utils/scripts/` after cloning the [ArmoniK](https://github.com/aneoconsulting/ArmoniK) repository:

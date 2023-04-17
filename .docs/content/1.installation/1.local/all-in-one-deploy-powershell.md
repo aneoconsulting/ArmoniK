@@ -1,6 +1,4 @@
----
-uid: all_in_one_deploy_powershell
----
+<!-- TODO: remove this page after moving some parts to windows -->
 
 # ArmoniK installation on Windows Subsytem Linux
 
@@ -46,6 +44,7 @@ and start the script from a powershell (_pwsh_) terminal:
 .\armonik_dev_environment.ps1
 ```
 
+<!-- Remove each images (in the folder) -->
 ![start script](~/images/installations/wsl_armonik1.png)
 
 This will open a new terminal where the Ubuntu linux image configuration (user and password) will be done:
@@ -70,16 +69,3 @@ After answering these questions, the installation will be done in the following 
 5. Run ArmoniK tests
 
 In theory, a new tabulation will open in your default webrowser to access to the logs with [seq](https://datalust.co/).
-
-## Connection to the WSL
-
-It is possible to access at anytime to the WSL Ubuntu by using the following command (after systemd installation):
-
-```powershell
-wsl genie -s
-```
-
-
-
-
-
