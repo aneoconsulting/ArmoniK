@@ -77,8 +77,7 @@ locals {
 
 # Default tags for all images
 module "default_images" {
-  source = "../../../modules/default-images"
-
+  source           = "../../../modules/default-images"
   armonik_versions = var.armonik_versions
   armonik_images   = var.armonik_images
   image_tags       = var.image_tags
