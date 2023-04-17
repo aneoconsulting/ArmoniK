@@ -51,11 +51,16 @@ make create-namespace
 echo "Keda deployment"
 make deploy-keda
 
+echo "Metrics server deployment"
+make deploy-metrics-server
+
 echo "Storage creation: ActiveMQ, MongoDB, Redis"
 make deploy-storage
+
 echo "ArmoniK storage information are store in $PWD'/storage/generated/storage-output.json'"
 echo "Monitoring deployment"
 make deploy-monitoring
+
 echo "ArmoniK monitoring information are store in $PWD'/monitoring/generated/monitoring-output.json'"
 echo "Deploy ArmoniK"
 make deploy-armonik
