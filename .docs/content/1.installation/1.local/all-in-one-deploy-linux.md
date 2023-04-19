@@ -1,30 +1,9 @@
----
-uid: all_in_one_deploy_linux
----
-
 # Ubuntu Linux 18.04 and 20.04 deployment
 
 Hereafter, You have instructions to deploy ArmoniK on dev/test environment upon your local machine with a simple deploy
 script [deploy-dev-test-infra.sh] located in ArmoniK directory `infrastructure/utils/scripts/`.
 
-<!-- TODO: move to a different page (components of ArmoniK)-->
-<!-- TODO: create a template in each file in order to allow user to help to complete docsph -->
-The infrastructure is composed of:
 
-* Storage:
-    * [ActiveMQ](https://activemq.apache)
-    * [MongoDB](https://www.mongodb.com/)
-    * [Redis](https://redis.com/)
-* Monitoring:
-    * [Seq](https://datalust.co/) server for structured log data of ArmoniK.
-    * [Grafana](https://grafana.com/)
-    * [Prometheus](https://prometheus.io/)
-* ArmoniK:
-    * Control plane
-    * Compute plane: polling agent and workers
-
-
-<!-- TODO: move to a different page -->
 # Script bash all-in-one
 
 From the **root** of the repository, position yourself in directory `infrastructure/utils/scripts/` after cloning the [ArmoniK](https://github.com/aneoconsulting/ArmoniK) repository:
