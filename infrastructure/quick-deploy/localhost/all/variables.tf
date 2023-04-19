@@ -59,15 +59,17 @@ variable "metrics_server" {
 variable "keda" {
   description = "Keda configuration"
   type = object({
-    namespace             = optional(string, "default")
-    keda_image_name       = optional(string, "ghcr.io/kedacore/keda"),
-    keda_image_tag        = optional(string),
-    apiserver_image_name  = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
-    apiserver_image_tag   = optional(string),
-    pull_secrets          = optional(string, ""),
-    node_selector         = optional(any, {})
-    helm_chart_repository = optional(string, "https://kedacore.github.io/charts")
-    helm_chart_version    = optional(string, "2.9.4")
+    namespace                       = optional(string, "default")
+    keda_image_name                 = optional(string, "ghcr.io/kedacore/keda"),
+    keda_image_tag                  = optional(string),
+    apiserver_image_name            = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
+    apiserver_image_tag             = optional(string),
+    pull_secrets                    = optional(string, ""),
+    node_selector                   = optional(any, {})
+    metrics_server_dns_policy       = optional(string, "ClusterFirst")
+    metrics_server_use_host_network = optional(bool, false)
+    helm_chart_repository           = optional(string, "https://kedacore.github.io/charts")
+    helm_chart_version              = optional(string, "2.9.4")
   })
   default = {}
 }

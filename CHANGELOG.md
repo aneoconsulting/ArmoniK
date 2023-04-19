@@ -2,8 +2,6 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
-## [v2.12.2](https://github.com/aneoconsulting/armonik/tree/v2.12.2) (2023-04-11)
-
 Changed
 -
 
@@ -15,6 +13,13 @@ Added
 
 * AWS S3 as Fluent-bit output for logs.
 * Retention in days for Seq.
+
+## [v2.12.3](https://github.com/aneoconsulting/armonik/tree/v2.12.3) (2023-04-14)
+
+Added
+-
+
+* Add parameters `useHostNetwork` and `dnsPolicy` to the Helm chart of KEDA in Terraform module.
 
 ## [v2.12.2](https://github.com/aneoconsulting/armonik/tree/v2.12.2) (2023-04-11)
 
