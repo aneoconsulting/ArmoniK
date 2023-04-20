@@ -448,7 +448,6 @@ variable "authentication" {
 variable "armonik_versions" {
   description = "Versions of all the ArmoniK components"
   type = object({
-    armonik   = string
     infra     = string
     core      = string
     api       = string
@@ -461,7 +460,6 @@ variable "armonik_versions" {
 variable "armonik_images" {
   description = "Image names of all the ArmoniK components"
   type = object({
-    armonik   = set(string)
     infra     = set(string)
     core      = set(string)
     api       = set(string)
