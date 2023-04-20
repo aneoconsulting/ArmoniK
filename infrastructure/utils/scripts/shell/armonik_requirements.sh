@@ -1,5 +1,7 @@
 #!/bin/bash
 # usage: armonik_requirements.sh <username> <k3s_version>
+# TODO: split script in order to install docker, k3s, terraform, dotnet in differents scripts
+# TODO: create a script to use all the scripts
 
 set -e
 
