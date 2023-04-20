@@ -9,7 +9,7 @@ module "eks" {
   subnet_ids = var.vpc.private_subnet_ids
   vpc_id     = var.vpc.id
 
-  create_aws_auth_configmap = true
+  create_aws_auth_configmap = !(can(coalesce(var.eks_managed_node_groups)) && can(coalesce(var.fargate_profiles)))
   # Needed to add self managed node group configuration.
   # => kubectl get cm aws-auth -n kube-system -o yaml
   manage_aws_auth_configmap = true
@@ -59,17 +59,49 @@ module "eks" {
     }
   ], var.eks.map_users)
 
+  # List of EKS managed node groups
+  eks_managed_node_group_defaults = {
+    enable_monitoring = true
+    tags = merge(local.tags, {
+      "k8s.io/cluster-autoscaler/${var.name}" = "owned"
+      "k8s.io/cluster-autoscaler/enabled"     = true
+      "aws-node-termination-handler/managed"  = true
+    })
+    metadata_options = {
+      http_endpoint               = "enabled"
+      http_tokens                 = "required"
+      http_put_response_hop_limit = 2
+      instance_metadata_tags      = "disabled"
+    }
+    post_bootstrap_user_data = <<-EOT
+        echo fs.inotify.max_user_instances=8192 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+      EOT
+  }
+
+  # List of self managed node groups
   self_managed_node_group_defaults = {
+    enable_monitoring = true
     # enable discovery of autoscaling groups by cluster-autoscaler
     autoscaling_group_tags = {
-      "k8s.io/cluster-autoscaler/enabled" : true,
-      "k8s.io/cluster-autoscaler/${var.name}" : "owned"
-      "aws-node-termination-handler/managed" : true
+      "k8s.io/cluster-autoscaler/${var.name}" = "owned"
+      "k8s.io/cluster-autoscaler/enabled"     = true
+      "aws-node-termination-handler/managed"  = true
     }
-    # it replaces previously created role in iam.tf
-    iam_role_additional_policies = {
-      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    tags = local.tags
+    metadata_options = {
+      http_endpoint               = "enabled"
+      http_tokens                 = "required"
+      http_put_response_hop_limit = 2
+      instance_metadata_tags      = "disabled"
     }
+    post_bootstrap_user_data = <<-EOT
+        echo fs.inotify.max_user_instances=8192 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+      EOT
+  }
+
+  # List of fargate profiles
+  fargate_profile_defaults = {
+    tags = local.tags
   }
 
   # Worker groups
@@ -77,5 +109,7 @@ module "eks" {
   # variables from module code : https://github.dev/terraform-aws-modules/terraform-aws-eks/tree/v19.10.0
   # sample usages : https://github.com/Jitsusama/example-terraform-eks-mixed-os-cluster/blob/main/cluster.tf#L91
   #                 https://github.dev/terraform-aws-modules/terraform-aws-eks/tree/v19.10.0
-  self_managed_node_groups = local.eks_worker_group
+  eks_managed_node_groups  = local.eks_managed_node_groups
+  self_managed_node_groups = local.self_managed_node_groups
+  fargate_profiles         = local.fargate_profiles
 }
