@@ -10,8 +10,7 @@ output "eks" {
   }
 }
 
-
 output "kubeconfig" {
   description = "Use multiple Kubernetes cluster with KUBECONFIG environment variable"
-  value       = "export KUBECONFIG=$${HOME}/.kube/config:${module.eks.kubeconfig_file}:$${KUBECONFIG}"
+  value       = "export KUBECONFIG=${module.eks.kubeconfig_file} && kubectl config use-context ${module.eks.cluster_name}"
 }

@@ -74,8 +74,10 @@ output:
 	@echo "Output file: $(GENERATED_DIR)/armonik-output.json"
 
 kubeconfig:
-	@echo "Execute the following command: export KUBECONFIG=${HOME}/.kube/config:$(shell cat $(GENERATED_DIR)/armonik-output.json | jq -r '.eks.kubeconfig_file'):${KUBECONFIG}"
+	@echo "Execute the following commands:"
 	@echo "------------------------------"
+	@echo "export KUBECONFIG=$(shell cat $(GENERATED_DIR)/armonik-output.json | jq -r '.eks.kubeconfig_file')"
+	@echo "kubectl config use-context $(shell cat $(GENERATED_DIR)/armonik-output.json | jq -r '.eks.name')"
 
 clean:
 	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform

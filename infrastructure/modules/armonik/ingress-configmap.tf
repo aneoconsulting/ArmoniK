@@ -33,8 +33,9 @@ server {
     proxy_hide_header X-Certificate-Client-CN;
     proxy_hide_header X-Certificate-Client-Fingerprint;
 %{endif~}
-    ssl_protocols TLSv1.3;
+    ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers EECDH+AESGCM:EECDH+AES256;
+    ssl_conf_command Ciphersuites TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256;
 %{else~}
     listen 8080;
     listen [::]:8080;

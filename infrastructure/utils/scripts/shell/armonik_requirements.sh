@@ -19,7 +19,8 @@ apt -y install docker-ce docker-ce-cli containerd.io
 # k3s
 # change mode in kubernet installation: https://github.com/k3s-io/k3s/issues/389
 #curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sh -s - --disable traefik
-curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=$2 sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
+#curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=$2 sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
+curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
 
 # copy k3s config file from /root to /home/$USER
 cp -r $HOME/.kube /home/$1
