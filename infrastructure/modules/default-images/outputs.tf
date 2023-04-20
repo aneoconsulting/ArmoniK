@@ -6,9 +6,6 @@ output "armonik_versions" {
 output "image_tags" {
   description = "Tags of images used"
   value = merge({
-    for image in var.armonik_images.armonik :
-    image => var.armonik_versions.armonik
-    }, {
     for image in var.armonik_images.infra :
     image => var.armonik_versions.infra
     }, {
