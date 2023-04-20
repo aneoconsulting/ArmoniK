@@ -86,6 +86,8 @@ eks = {
     cluster_encryption_config = ""
     ebs_kms_key_id            = ""
   }
+  map_roles = []
+  map_users = []
 }
 
 # List of EKS managed node groups
