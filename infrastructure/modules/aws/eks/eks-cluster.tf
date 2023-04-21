@@ -73,6 +73,10 @@ module "eks" {
       http_put_response_hop_limit = 2
       instance_metadata_tags      = "disabled"
     }
+    # The sysctls fs.inotify.max_user_instances defines user limits on the number of inotify resources.
+    # In the context of a Kubernetes cluster, if these limits are reached, you may experience processes
+    # failing with error messages related to the limits, and it would exhibit as failing Pods with inotify
+    # related errors in the Pod logs.
     post_bootstrap_user_data = <<-EOT
         echo fs.inotify.max_user_instances=8192 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
       EOT
@@ -94,6 +98,10 @@ module "eks" {
       http_put_response_hop_limit = 2
       instance_metadata_tags      = "disabled"
     }
+    # The sysctls fs.inotify.max_user_instances defines user limits on the number of inotify resources.
+    # In the context of a Kubernetes cluster, if these limits are reached, you may experience processes
+    # failing with error messages related to the limits, and it would exhibit as failing Pods with inotify
+    # related errors in the Pod logs.
     post_bootstrap_user_data = <<-EOT
         echo fs.inotify.max_user_instances=8192 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
       EOT
