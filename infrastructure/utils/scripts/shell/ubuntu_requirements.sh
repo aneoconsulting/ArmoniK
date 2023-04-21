@@ -10,6 +10,7 @@ if [ -z "$1" ]; then
 fi
 
 set -e
+# what is this for? 
 
 apt update
 apt -y dist-upgrade

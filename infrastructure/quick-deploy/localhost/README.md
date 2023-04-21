@@ -1,61 +1,3 @@
-Table of contents
-
-- [Introduction](#introduction)
-- [Prerequisites](#prerequisites)
-- [Install Kubernetes](#install-kubernetes)
-- [Set environment variables](#set-environment-variables)
-- [Deploy](#deploy)
-    - [Kubernetes namespace](#kubernetes-namespace)
-    - [KEDA](#keda)
-    - [Metrics server](#metrics-server)
-    - [Storage](#storage)
-    - [Monitoring](#monitoring)
-    - [ArmoniK](#armonik)
-- [Script bash all-in-one](#script-bash-all-in-one)
-- [Clean-up](#clean-up)
-
-# Introduction
-
-Hereafter, You have instructions to deploy ArmoniK on dev/test environment upon your local machine.
-
-The infrastructure is composed of:
-
-* [KEDA](https://keda.sh/)
-* Storage:
-    * ActiveMQ
-    * MongoDB
-    * Redis
-* Monitoring:
-    * Fluent-bit
-    * Grafana
-    * Keda
-    * Metrics exporter
-    * Metrics server
-    * Node exporter
-    * Partition metrics exporter
-    * Prometheus
-    * Seq server for structured log data of ArmoniK
-* ArmoniK:
-    * Control plane
-    * Compute plane:
-        * polling agent
-        * workers
-    * Ingress
-    * Admin GUI
-
-# Prerequisites
-
-The following software or tool should be installed upon your local Linux machine:
-
-* If You have Windows machine, You can install [WSL 2](docs/wsl2.md)
-* [Docker](https://docs.docker.com/engine/install/)
-* [GNU make](https://www.gnu.org/software/make/)
-* [JQ](https://stedolan.github.io/jq/download/)
-* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
-* [Helm](https://helm.sh/docs/intro/install/)
-* [Openssl](https://www.howtoforge.com/tutorial/how-to-install-openssl-from-source-on-linux/)
-* [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version 1.0.9 and later
-* [.NET](https://docs.microsoft.com/en-us/dotnet/core/install/linux)
 
 # Install Kubernetes
 
@@ -299,6 +241,3 @@ make clean-keda
 ### [Return to the infrastructure main page](../../README.md)
 
 ### [Return to the project main page](../../../README.md)
-
-
-

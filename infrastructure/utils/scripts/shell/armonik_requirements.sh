@@ -2,21 +2,10 @@
 # usage: armonik_requirements.sh <username> <k3s_version>
 # TODO: split script in order to install docker, k3s, terraform, dotnet in differents scripts
 # TODO: create a script to use all the scripts
-
-set -e
-
-# Install gpg to add needed repositories
-apt -y install gnupg2
+# TODO: will be removed
 
 # install the pre-requisite need for ArmoniK (docker, k3s, terraform)
 
-# docker
-source /etc/os-release
-curl -fsSL https://download.docker.com/linux/${ID}/gpg | apt-key add -
-echo "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/${ID} ${VERSION_CODENAME} stable" | tee /etc/apt/sources.list.d/docker.list
-apt update
-apt dist-upgrade -y
-apt -y install docker-ce docker-ce-cli containerd.io
 
 # k3s
 # change mode in kubernet installation: https://github.com/k3s-io/k3s/issues/389
@@ -29,12 +18,3 @@ chown -R $1:$1 /home/$1/.kube
 
 systemctl enable k3s
 systemctl start k3s
-
-#terraform
-curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -
-apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-apt update
-apt -y install terraform
-
-# dotnet 6.0 installation
-apt -y install dotnet-sdk-6.0
