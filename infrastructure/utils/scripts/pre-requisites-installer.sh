@@ -3,6 +3,9 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+# Display Ubuntu version
+lsb_release -d -s
+
 # Get the current directory
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
@@ -39,6 +42,11 @@ echo "Installing pip3"
 $DIR/install-pip3.sh
 echo "Pip3 installed"
 
+# Install helm
+echo "Installing helm"
+$DIR/install-helm.sh
+echo "Helm installed"
+
 # Install docker
 echo "Installing docker"
 $DIR/install-docker.sh
@@ -63,3 +71,8 @@ echo "K3s installed"
 echo "Installing dotnet"
 $DIR/install-dotnet.sh
 echo "Dotnet installed"
+
+# Remove unused packages
+sudo apt autoremove
+
+echo "Installation completed"

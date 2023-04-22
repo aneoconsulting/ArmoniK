@@ -1,5 +1,5 @@
 # Table of contents
-
+<!-- TODO: must be moved to the docs -->
 - [Introduction](#introduction)
 - [Quick install of ArmoniK](#quick-install-of-armonik)
     - [On dev/test local machine](#on-devtest-local-machine)
