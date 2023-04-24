@@ -139,16 +139,25 @@ variable "eks" {
   })
 }
 
-# Operational node groups for EKS
-variable "eks_operational_worker_groups" {
-  description = "List of EKS operational node groups"
+# List of EKS managed node groups
+variable "eks_managed_node_groups" {
+  description = "List of EKS managed node groups"
   type        = any
+  default     = null
 }
 
-# EKS worker groups
-variable "eks_worker_groups" {
-  description = "List of EKS worker node groups"
+# List of self managed node groups
+variable "self_managed_node_groups" {
+  description = "List of self managed node groups"
   type        = any
+  default     = null
+}
+
+# List of fargate profiles
+variable "fargate_profiles" {
+  description = "List of fargate profiles"
+  type        = any
+  default     = null
 }
 
 # Metrics Server
