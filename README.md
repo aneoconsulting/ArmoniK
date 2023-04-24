@@ -6,9 +6,9 @@
     - [When should I not use ArmoniK](#when-should-i-not-use-armonik)
 - [ArmoniK versions](#armonik-versions)
 - [ArmoniK deployment](#armonik-deployment)
-- [How to run ArmoniK.Samples](#how-to-run-armonik.samples)
+- [How to run ArmoniK.Samples](#how-to-run-armoniksamples)
 - [Acknowledge](#acknowledge)
-- [Bugs/Support](#bugs-support)
+- [Bugs/Support](#bugssupport)
 
 # ArmoniK
 
