@@ -1,3 +1,5 @@
+<!-- TODO: rename and reorganize -->
+
 # **ArmoniK Partitioning Configuration Guide**
 
 This guide aims to present the setup and usage of the partitions within ArmoniK.

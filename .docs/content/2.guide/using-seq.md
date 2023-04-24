@@ -1,3 +1,5 @@
+<!-- TODO: reorganize -->
+
 # Configure Seq
 
 If you want to access outside your kubernetes cluster, you have to configure seq to make it accessible from outside.
