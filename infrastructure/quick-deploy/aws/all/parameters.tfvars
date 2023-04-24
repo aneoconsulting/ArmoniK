@@ -103,6 +103,36 @@ self_managed_node_groups = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
   }
+  mixed = {
+    name                        = "self_mixed"
+    launch_template_description = "Mixed On demand and SPOT instances for the worker nodes in SPOT"
+    min_size                    = 0
+    desired_size                = 0
+    max_size                    = 3
+    use_mixed_instances_policy  = true
+    mixed_instances_policy = {
+      on_demand_allocation_strategy            = null
+      on_demand_base_capacity                  = 0
+      on_demand_percentage_above_base_capacity = 20 # 20% On-Demand Instances, 80% Spot Instances
+      spot_allocation_strategy                 = "price-capacity-optimized"
+      spot_instance_pools                      = null
+      spot_max_price                           = null
+    }
+    override = [
+      {
+        instance_type     = "c5.4xlarge"
+        weighted_capacity = "1"
+      },
+      {
+        instance_type     = "c5.2xlarge"
+        weighted_capacity = "2"
+      },
+    ]
+    bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
 }
 
 # List of fargate profiles
