@@ -42,63 +42,101 @@ eks = {
   map_users                      = []
 }
 
-# Operational node groups for EKS
-eks_operational_worker_groups = {
-  eks_operational_worker = {
-    name                                     = "opt"
-    spot_allocation_strategy                 = "capacity-optimized"
-    instance_type                            = "c5.4xlarge"
-    spot_instance_pools                      = 0
-    min_size                                 = 1
-    max_size                                 = 5
-    desired_size                             = 1
-    on_demand_base_capacity                  = 1
-    on_demand_percentage_above_base_capacity = 100
-    bootstrap_extra_args                     = "--kubelet-extra-args '--node-labels=grid/type=Operator --register-with-taints=grid/type=Operator:NoSchedule'"
-  }
-}
-
-# EKS worker groups
-eks_worker_groups = {
-  linux = {
-    name                                     = "spot"
-    spot_allocation_strategy                 = "capacity-optimized"
-    instance_type                            = "c5.24xlarge"
-    spot_instance_pools                      = 0
-    min_size                                 = 0
-    max_size                                 = 1000
-    desired_size                             = 0
-    on_demand_base_capacity                  = 0
-    on_demand_percentage_above_base_capacity = 0
-    iam_role_name                            = "self-managed-node-group-worker-linux"
-    iam_role_description                     = "self-managed-node-group-worker-linux"
-  },
-  linux_mixed = {
-    name                       = "mixed"
-    min_size                   = 1
-    max_size                   = 5
-    desired_size               = 2
-    bootstrap_extra_args       = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-    use_mixed_instances_policy = true
-    mixed_instances_policy = {
-      instances_distribution = {
-        on_demand_base_capacity                  = 0
-        on_demand_percentage_above_base_capacity = 20
-        spot_allocation_strategy                 = "capacity-optimized"
+# List of EKS managed node groups
+eks_managed_node_groups = {
+  opt = {
+    name                        = "eks_opt"
+    launch_template_description = "Node group for operational pods"
+    ami_type                    = "AL2_x86_64"
+    instance_types = [
+      "m5.large",
+      "m5.xlarge",
+      "m5.2xlarge",
+      "m5.4xlarge",
+      "m5.8xlarge",
+      "m5.12xlarge",
+      "m5d.large",
+      "m5d.xlarge",
+      "m5d.2xlarge",
+      "m5d.4xlarge",
+      "m5d.8xlarge",
+      "m5d.12xlarge"
+    ]
+    capacity_type = "ON_DEMAND"
+    min_size      = 1
+    desired_size  = 1
+    max_size      = 5
+    labels = {
+      "grid/type"                    = "Operator"
+      "node.kubernetes.io/lifecycle" = "ondemand"
+    }
+    taints = {
+      dedicated = {
+        key    = "grid/type"
+        value  = "Operator"
+        effect = "NO_SCHEDULE"
       }
-      override = [
-        {
-          instance_type     = "c5.4xlarge"
-          weighted_capacity = "1"
-        },
-        {
-          instance_type     = "c5.2xlarge"
-          weighted_capacity = "2"
-        },
-      ]
+    }
+    bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=ondemand'"
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
   }
 }
+
+# List of self managed node groups
+self_managed_node_groups = {
+  spot = {
+    name                        = "self_spot"
+    launch_template_description = "Worker nodes in SPOT"
+    instance_type               = "c5.24xlarge"
+    min_size                    = 0
+    desired_size                = 0
+    max_size                    = 2700
+    force_delete                = true
+    force_delete_warm_pool      = true
+    instance_market_options = {
+      market_type = "spot"
+    }
+    bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  mixed = {
+    name                        = "self_mixed"
+    launch_template_description = "Mixed On demand and SPOT instances for the worker nodes in SPOT"
+    min_size                    = 0
+    desired_size                = 0
+    max_size                    = 3
+    use_mixed_instances_policy  = true
+    mixed_instances_policy = {
+      on_demand_allocation_strategy            = null
+      on_demand_base_capacity                  = 0
+      on_demand_percentage_above_base_capacity = 20 # 20% On-Demand Instances, 80% Spot Instances
+      spot_allocation_strategy                 = "price-capacity-optimized"
+      spot_instance_pools                      = null
+      spot_max_price                           = null
+    }
+    override = [
+      {
+        instance_type     = "c5.4xlarge"
+        weighted_capacity = "1"
+      },
+      {
+        instance_type     = "c5.2xlarge"
+        weighted_capacity = "2"
+      },
+    ]
+    bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+}
+
+# List of fargate profiles
+fargate_profiles = {}
 
 metrics_server = {
   node_selector = { "grid/type" = "Operator" }

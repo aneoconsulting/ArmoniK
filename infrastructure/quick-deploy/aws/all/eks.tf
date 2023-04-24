@@ -34,8 +34,9 @@ module "eks" {
     map_roles = var.eks.map_roles
     map_users = var.eks.map_users
   }
-  eks_operational_worker_groups = var.eks_operational_worker_groups
-  eks_worker_groups             = var.eks_worker_groups
+  eks_managed_node_groups  = var.eks_managed_node_groups
+  self_managed_node_groups = var.self_managed_node_groups
+  fargate_profiles         = var.fargate_profiles
 }
 
 resource "kubernetes_namespace" "armonik" {
