@@ -10,7 +10,7 @@ lsb_release -d -s
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Get the pre-requisites directory
-DIR=$DIR/pre-requisites
+DIR=$DIR/prerequisites
 
 # Update packages
 echo "Updating packages"
