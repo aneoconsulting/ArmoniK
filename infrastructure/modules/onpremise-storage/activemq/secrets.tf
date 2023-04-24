@@ -13,6 +13,6 @@ resource "kubernetes_secret" "activemq" {
     web_url               = local.activemq_web_url
     adapter_class_name    = local.adapter_class_name
     adapter_absolute_path = local.adapter_absolute_path
-    engine_tpe            = local.adapter_absolute_path
+    engine_type           = local.adapter_absolute_path
   }
 }
