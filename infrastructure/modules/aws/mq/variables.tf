@@ -51,4 +51,8 @@ variable "mq" {
     publicly_accessible     = bool
     kms_key_id              = string
   })
+  validation {
+    condition     = contains(["ActiveMQ", "RabbitMQ"], var.mq.engine_type)
+    error_message = "Valid values for \"engine_type\" : \"ActiveMQ\" | \"RabbitMQ\"."
+  }
 }

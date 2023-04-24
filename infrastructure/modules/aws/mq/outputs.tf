@@ -31,3 +31,8 @@ output "user" {
   }
   sensitive = true
 }
+
+output "engine_type" {
+  description = "Engine type"
+  value       = var.mq.engine_type
+}

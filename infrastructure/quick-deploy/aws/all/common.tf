@@ -16,6 +16,8 @@ locals {
     "created by"         = data.aws_caller_identity.current.arn
     "creation date"      = null_resource.timestamp.triggers["creation_date"]
   }, var.tags)
+  adapter_class_name    = module.mq.engine_type == "ActiveMQ" ? "ArmoniK.Core.Adapters.Amqp.QueueBuilder" : "ArmoniK.Core.Adapters.RabbitMQ.QueueBuilder"
+  adapter_absolute_path = module.mq.engine_type == "ActiveMQ" ? "/adapters/queue/amqp/ArmoniK.Core.Adapters.Amqp.dll" : "/adapters/queue/rabbit/ArmoniK.Core.Adapters.RabbitMQ.dll"
 }
 
 # this external provider is used to get date during the plan step.
