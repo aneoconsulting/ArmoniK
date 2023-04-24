@@ -10,7 +10,7 @@ Changed
 * Update module EKS and upgrade its version from `17.24.0` to `19.10.0`.
 * Set up a MongoDB cluster.
 * Queue adapters are now dynamically loaded.
-* Upgrade Core version from `0.12.4` to `0.13.0`.
+* Upgrade Core version from `0.12.4` to `0.13.1`.
 
 Added
 -
