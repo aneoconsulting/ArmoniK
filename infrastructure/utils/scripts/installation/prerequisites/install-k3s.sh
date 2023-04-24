@@ -1,7 +1,7 @@
 #!/bin/bash
 # This script is used to install k3s.
 
-curl -sfL https://get.k3s.io |sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config
+curl -sfL https://get.k3s.io |sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config --kubelet-arg cgroup-driver=systemd
 
 # To uninstall
 # sudo /usr/local/bin/k3s-uninstall.sh
