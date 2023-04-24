@@ -9,6 +9,11 @@ logging_level = "Information"
 redis = {}
 #minio = {}
 
+# Queue
+activemq = {}
+#rabbitmq = {}
+
+
 metrics_exporter = {
   extra_conf = {
     MongoDB__AllowInsecureTls              = true

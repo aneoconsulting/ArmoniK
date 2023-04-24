@@ -94,7 +94,20 @@ variable "activemq" {
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
   })
-  default = {}
+  default = null
+}
+
+# Parameters for RabbitMQ
+variable "rabbitmq" {
+  description = "Parameters of RabbitMQ"
+  type = object({
+    image_name         = optional(string, "symptoma/rabbitmq")
+    image_tag          = optional(string)
+    node_selector      = optional(any, {})
+    image_pull_secrets = optional(string, "")
+    protocol           = optional(string, "amqp1_0")
+  })
+  default = null
 }
 
 # Parameters for MongoDB

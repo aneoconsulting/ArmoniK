@@ -1,5 +1,6 @@
 # ActiveMQ
 module "activemq" {
+  count       = var.activemq != null ? 1 : 0
   source      = "../../../modules/onpremise-storage/activemq"
   namespace   = local.namespace
   working_dir = "${path.root}/../../.."
@@ -8,6 +9,21 @@ module "activemq" {
     tag                = try(coalesce(var.activemq.image_tag), local.default_tags[var.activemq.image_name])
     node_selector      = var.activemq.node_selector
     image_pull_secrets = var.activemq.image_pull_secrets
+  }
+}
+
+# RabbitMQ
+module "rabbitmq" {
+  count       = var.rabbitmq != null ? 1 : 0
+  source      = "../../../modules/onpremise-storage/rabbitmq"
+  namespace   = local.namespace
+  working_dir = "${path.root}/../../.."
+  rabbitmq = {
+    image              = var.rabbitmq.image_name
+    tag                = try(coalesce(var.rabbitmq.image_tag), local.default_tags[var.rabbitmq.image_name])
+    node_selector      = var.rabbitmq.node_selector
+    image_pull_secrets = var.rabbitmq.image_pull_secrets
+    protocol           = var.rabbitmq.protocol
   }
 }
 
@@ -110,23 +126,39 @@ locals {
       length(module.minio) > 0 ? "S3" : null,
     ), "")
     table_storage_adapter = "MongoDB"
-    queue_storage_adapter = "Amqp"
+    queue_storage_adapter = try(coalesce(
+      length(module.activemq) > 0 ? "Amqp" : null,
+      length(module.rabbitmq) > 0 ? "RabbitMQ" : null,
+    ), "")
     deployed_object_storages = concat(
       length(module.redis) > 0 ? ["Redis"] : [],
       length(module.minio) > 0 ? ["S3"] : [],
     )
     deployed_table_storages = ["MongoDB"]
-    deployed_queue_storages = ["Amqp"]
-    activemq = {
-      url                 = module.activemq.url
-      host                = module.activemq.host
-      port                = module.activemq.port
-      web_url             = module.activemq.web_url
-      credentials         = module.activemq.user_credentials
-      certificates        = module.activemq.user_certificate
-      endpoints           = module.activemq.endpoints
+    deployed_queue_storages = concat(
+      length(module.activemq) > 0 ? ["Amqp"] : [],
+      length(module.rabbitmq) > 0 ? ["RabbitMQ"] : [],
+    )
+    activemq = length(module.activemq) > 0 ? {
+      url                 = module.activemq[0].url
+      host                = module.activemq[0].host
+      port                = module.activemq[0].port
+      web_url             = module.activemq[0].web_url
+      credentials         = module.activemq[0].user_credentials
+      certificates        = module.activemq[0].user_certificate
+      endpoints           = module.activemq[0].endpoints
       allow_host_mismatch = true
-    }
+    } : null
+    rabbitmq = length(module.rabbitmq) > 0 ? {
+      url                 = module.rabbitmq[0].url
+      host                = module.rabbitmq[0].host
+      port                = module.rabbitmq[0].port
+      web_url             = module.rabbitmq[0].web_url
+      credentials         = module.rabbitmq[0].user_credentials
+      certificates        = module.rabbitmq[0].user_certificate
+      endpoints           = module.rabbitmq[0].endpoints
+      allow_host_mismatch = true
+    } : null
     redis = length(module.redis) > 0 ? {
       url          = module.redis[0].url
       host         = module.redis[0].host
