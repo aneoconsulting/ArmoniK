@@ -38,3 +38,18 @@ output "endpoints" {
     data_keys = keys(kubernetes_secret.activemq.data)
   }
 }
+
+output "engine_type" {
+  description = "Engine type"
+  value       = "ActiveMQ"
+}
+
+output "adapter_class_name" {
+  description = "Class name for queue adapter"
+  value       = "ArmoniK.Core.Adapters.Amqp.QueueBuilder"
+}
+
+output "adapter_absolute_path" {
+  description = "Absolute path for the queue adapter"
+  value       = "/adapters/queue/amqp/ArmoniK.Core.Adapters.Amqp.dll"
+}

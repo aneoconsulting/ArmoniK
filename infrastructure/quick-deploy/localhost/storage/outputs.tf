@@ -8,8 +8,11 @@ output "storage_endpoint_url" {
     deployed_table_storages  = local.deployed_table_storages
     deployed_queue_storages  = local.deployed_queue_storages
     activemq = {
-      url     = module.activemq.url
-      web_url = module.activemq.web_url
+      url                   = module.activemq.url
+      web_url               = module.activemq.web_url
+      adapter_class_name    = module.activemq.adapter_class_name
+      adapter_absolute_path = module.activemq.adapter_absolute_path
+      engine_type           = module.activemq.engine_type
     }
     redis = length(module.redis) > 0 ? {
       url = module.redis[0].url

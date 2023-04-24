@@ -38,7 +38,9 @@ resource "kubernetes_secret" "deployed_queue_storage" {
     namespace = var.namespace
   }
   data = {
-    list    = join(",", local.deployed_queue_storages)
-    adapter = local.queue_storage_adapter
+    list                  = join(",", local.deployed_queue_storages)
+    adapter               = local.queue_storage_adapter
+    adapter_class_name    = module.activemq.adapter_class_name
+    adapter_absolute_path = module.activemq.adapter_absolute_path
   }
 }

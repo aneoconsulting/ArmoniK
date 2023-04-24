@@ -5,22 +5,23 @@ resource "kubernetes_config_map" "core_config" {
     namespace = var.namespace
   }
   data = merge(var.extra_conf.core, {
-    Components__TableStorage                    = local.table_storage_adapter
-    Components__ObjectStorage                   = local.object_storage_adapter
-    Components__QueueStorage                    = local.queue_storage_adapter
-    Components__QueueAdaptorSettings__ClassName = "ArmoniK.Core.Adapters.${data.kubernetes_secret.deployed_queue_storage.data.adapter}.QueueBuilder"
-    MongoDB__CAFile                             = local.table_storage_adapter_from_secret == "mongodb" ? local.secrets.mongodb.ca_filename : ""
-    MongoDB__ReplicaSet                         = "rs0"
-    MongoDB__DatabaseName                       = "database"
-    MongoDB__DirectConnection                   = "false"
-    MongoDB__Tls                                = "true"
-    Redis__CaPath                               = local.object_storage_adapter_from_secret == "redis" ? local.secrets.redis.ca_filename : ""
-    Redis__InstanceName                         = "ArmoniKRedis"
-    Redis__ClientName                           = "ArmoniK.Core"
-    Redis__Ssl                                  = "true"
-    Amqp__CaPath                                = local.queue_storage_adapter_from_secret == "amqp" ? local.secrets.activemq.ca_filename : ""
-    Amqp__Scheme                                = "AMQPS"
-    Authenticator__RequireAuthentication        = local.authentication_require_authentication
-    Authenticator__RequireAuthorization         = local.authentication_require_authorization
+    Components__TableStorage                              = local.table_storage_adapter
+    Components__ObjectStorage                             = local.object_storage_adapter
+    Components__QueueStorage                              = local.queue_storage_adapter
+    Components__QueueAdaptorSettings__ClassName           = data.kubernetes_secret.deployed_queue_storage.data.adapter_class_name
+    Components__QueueAdaptorSettings__AdapterAbsolutePath = data.kubernetes_secret.deployed_queue_storage.data.adapter_absolute_path
+    MongoDB__CAFile                                       = local.table_storage_adapter_from_secret == "mongodb" ? local.secrets.mongodb.ca_filename : ""
+    MongoDB__ReplicaSet                                   = "rs0"
+    MongoDB__DatabaseName                                 = "database"
+    MongoDB__DirectConnection                             = "false"
+    MongoDB__Tls                                          = "true"
+    Redis__CaPath                                         = local.object_storage_adapter_from_secret == "redis" ? local.secrets.redis.ca_filename : ""
+    Redis__InstanceName                                   = "ArmoniKRedis"
+    Redis__ClientName                                     = "ArmoniK.Core"
+    Redis__Ssl                                            = "true"
+    Amqp__CaPath                                          = local.queue_storage_adapter_from_secret == "amqp" ? local.secrets.activemq.ca_filename : ""
+    Amqp__Scheme                                          = "AMQPS"
+    Authenticator__RequireAuthentication                  = local.authentication_require_authentication
+    Authenticator__RequireAuthorization                   = local.authentication_require_authorization
   })
 }
