@@ -73,6 +73,6 @@ $DIR/install-dotnet.sh
 echo "Dotnet installed"
 
 # Remove unused packages
-sudo apt autoremove
+sudo apt autoremove -y
 
 echo "Installation completed"
