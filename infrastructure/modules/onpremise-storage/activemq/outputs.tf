@@ -41,15 +41,15 @@ output "endpoints" {
 
 output "engine_type" {
   description = "Engine type"
-  value       = "ActiveMQ"
+  value       = local.engine_type
 }
 
 output "adapter_class_name" {
   description = "Class name for queue adapter"
-  value       = "ArmoniK.Core.Adapters.Amqp.QueueBuilder"
+  value       = local.adapter_class_name
 }
 
 output "adapter_absolute_path" {
   description = "Absolute path for the queue adapter"
-  value       = "/adapters/queue/amqp/ArmoniK.Core.Adapters.Amqp.dll"
+  value       = local.adapter_absolute_path
 }
