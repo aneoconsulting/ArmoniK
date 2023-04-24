@@ -1,12 +1,12 @@
 # Kubernetes minio deployment
 resource "kubernetes_deployment" "minio" {
   metadata {
-    name      = "minio"
+    name      = var.minio.host
     namespace = var.namespace
     labels = {
       app     = "storage"
       type    = "object"
-      service = "minio"
+      service = var.minio.host
     }
   }
   spec {
@@ -15,16 +15,16 @@ resource "kubernetes_deployment" "minio" {
       match_labels = {
         app     = "storage"
         type    = "object"
-        service = "minio"
+        service = var.minio.host
       }
     }
     template {
       metadata {
-        name = "minio"
+        name = var.minio.host
         labels = {
           app     = "storage"
           type    = "object"
-          service = "minio"
+          service = var.minio.host
         }
       }
       spec {

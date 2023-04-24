@@ -1,6 +1,8 @@
 # Kubernetes namespace
 namespace = "armonik"
 
+#minio_s3_fs = {}
+
 # Shared storage
 shared_storage = {
   host_path         = "/data"

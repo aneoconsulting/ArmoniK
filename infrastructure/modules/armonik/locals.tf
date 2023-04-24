@@ -77,6 +77,7 @@ locals {
     S3Storage__AccessKeyId     = data.kubernetes_secret.shared_storage.data.access_key_id
     S3Storage__SecretAccessKey = data.kubernetes_secret.shared_storage.data.secret_access_key
     S3Storage__BucketName      = data.kubernetes_secret.shared_storage.data.name
+    S3Storage__MustForcePathStyle = data.kubernetes_secret.shared_storage.data.must_force_path_style    
   } : {}
 
   # Object storage

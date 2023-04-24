@@ -55,3 +55,19 @@ module "minio" {
     node_selector      = local.minio_node_selector
   }
 }
+
+
+# minio for file storage
+module "minio_s3_fs" {
+  count     = var.minio_s3_fs != null ? 1 : 0
+  source    = "../../../modules/onpremise-storage/minio"
+  namespace = var.namespace
+  minio = {
+    image              = local.minio_s3_fs_image
+    tag                = local.minio_s3_fs_tag
+    image_pull_secrets = local.minio_s3_fs_image_pull_secrets
+    host               = local.minio_s3_fs_host
+    bucket_name        = local.minio_s3_fs_bucket_name
+    node_selector      = local.minio_s3_fs_node_selector
+  }
+}

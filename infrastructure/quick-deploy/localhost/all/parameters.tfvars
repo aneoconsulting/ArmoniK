@@ -8,6 +8,7 @@ logging_level = "Information"
 # Uncomment either the `redis` or the `minio` parameter
 redis = {}
 #minio = {}
+#minio_s3_fs = {}
 
 metrics_exporter = {
   extra_conf = {
