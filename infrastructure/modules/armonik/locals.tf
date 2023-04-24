@@ -91,7 +91,7 @@ locals {
 
   # Queue storage
   queue_storage_adapter_from_secret = lower(data.kubernetes_secret.deployed_queue_storage.data.adapter)
-  queue_storage_adapter             = "ArmoniK.Core.Adapters.${data.kubernetes_secret.deployed_queue_storage.data.adapter}.QueueBuilder"
+  queue_storage_adapter             = "ArmoniK.Adapters.${data.kubernetes_secret.deployed_queue_storage.data.adapter}.QueueStorage"
   deployed_queue_storages           = split(",", data.kubernetes_secret.deployed_queue_storage.data.list)
 
   # Credentials

@@ -7,7 +7,8 @@ resource "kubernetes_config_map" "core_config" {
   data = merge(var.extra_conf.core, {
     Components__TableStorage                    = local.table_storage_adapter
     Components__ObjectStorage                   = local.object_storage_adapter
-    Components__QueueAdaptorSettings__ClassName = local.queue_storage_adapter
+    Components__QueueStorage                    = local.queue_storage_adapter
+    Components__QueueAdaptorSettings__ClassName = "ArmoniK.Core.Adapters.${data.kubernetes_secret.deployed_queue_storage.data.adapter}.QueueBuilder"
     MongoDB__CAFile                             = local.table_storage_adapter_from_secret == "mongodb" ? local.secrets.mongodb.ca_filename : ""
     MongoDB__ReplicaSet                         = "rs0"
     MongoDB__DatabaseName                       = "database"
