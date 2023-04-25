@@ -8,7 +8,7 @@ resource "kubernetes_secret" "rabbitmq" {
     username    = random_string.mq_application_user.result
     password    = random_password.mq_application_password.result
     host        = local.rabbitmq_endpoints.ip
-    port        = local.rabbitmq_endpoints.pkubeort
+    port        = local.rabbitmq_endpoints.port
     url         = local.rabbitmq_url
     web_url     = local.rabbitmq_web_url
     protocol    = var.rabbitmq.protocol
