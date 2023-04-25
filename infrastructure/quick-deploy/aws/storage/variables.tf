@@ -76,6 +76,8 @@ variable "s3_fs" {
     restrict_public_buckets               = bool
     kms_key_id                            = string
     sse_algorithm                         = string
+    ownership                             = string
+    versioning                            = string
   })
 }
 
@@ -221,6 +223,8 @@ variable "s3_os" {
     restrict_public_buckets               = bool
     kms_key_id                            = string
     sse_algorithm                         = string
+    ownership                             = string
+    versioning                            = string
   })
   default = null
 }

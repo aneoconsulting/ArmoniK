@@ -215,6 +215,8 @@ variable "s3_fs" {
     ignore_public_acls                    = optional(bool, true)
     restrict_public_buckets               = optional(bool, true)
     sse_algorithm                         = optional(string, "")
+    ownership                             = optional(string, "BucketOwnerPreferred")
+    versioning                            = optional(string, "Disabled")
   })
   default = {}
 }
@@ -256,6 +258,8 @@ variable "s3_os" {
     ignore_public_acls                    = optional(bool, true)
     restrict_public_buckets               = optional(bool, true)
     sse_algorithm                         = optional(string, "")
+    ownership                             = optional(string, "BucketOwnerPreferred")
+    versioning                            = optional(string, "Disabled")
   })
   default = null
 }
