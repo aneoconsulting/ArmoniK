@@ -104,30 +104,30 @@ locals {
       Amqp__User = local.queue_storage_adapter_from_secret == "amqp" ? {
         key  = "username"
         name = local.secrets.activemq.name
-      } : (local.queue_storage_adapter_from_secret == "rabbitmq" ? {
-        key  = "username"
-        name = local.secrets.rabbitmq.name
+        } : (local.queue_storage_adapter_from_secret == "rabbitmq" ? {
+          key  = "username"
+          name = local.secrets.rabbitmq.name
       } : { key = "", name = "" })
       Amqp__Password = local.queue_storage_adapter_from_secret == "amqp" ? {
         key  = "password"
         name = local.secrets.activemq.name
-      } : (local.queue_storage_adapter_from_secret == "rabbitmq" ? {
-        key  = "password"
-        name = local.secrets.rabbitmq.name
+        } : (local.queue_storage_adapter_from_secret == "rabbitmq" ? {
+          key  = "password"
+          name = local.secrets.rabbitmq.name
       } : { key = "", name = "" })
       Amqp__Host = local.queue_storage_adapter_from_secret == "amqp" ? {
         key  = "host"
         name = local.secrets.activemq.name
-      } : (local.queue_storage_adapter_from_secret == "rabbitmq" ? {
-        key  = "host"
-        name = local.secrets.rabbitmq.name
+        } : (local.queue_storage_adapter_from_secret == "rabbitmq" ? {
+          key  = "host"
+          name = local.secrets.rabbitmq.name
       } : { key = "", name = "" })
       Amqp__Port = local.queue_storage_adapter_from_secret == "amqp" ? {
         key  = "port"
         name = local.secrets.activemq.name
-      } : (local.queue_storage_adapter_from_secret == "rabbitmq" ? {
-        key  = "port"
-        name = local.secrets.rabbitmq.name
+        } : (local.queue_storage_adapter_from_secret == "rabbitmq" ? {
+          key  = "port"
+          name = local.secrets.rabbitmq.name
       } : { key = "", name = "" })
       Redis__User = local.object_storage_adapter_from_secret == "redis" ? {
         key  = "username"
@@ -209,12 +209,12 @@ locals {
         name        = "activemq-secret-volume"
         mount_path  = "/amqp"
         secret_name = local.secrets.activemq.name
-      } :  { key = "", name = "" }
+      } : { key = "", name = "" }
       rabbitmq = local.queue_storage_adapter_from_secret == "rabbitmq" ? {
         name        = "rabbitmq-secret-volume"
         mount_path  = "/rabbitmq"
         secret_name = local.secrets.rabbitmq.name
-      } :  { key = "", name = "" }
+      } : { key = "", name = "" }
       redis = local.object_storage_adapter_from_secret == "redis" ? {
         name        = "redis-secret-volume"
         mount_path  = "/redis"
