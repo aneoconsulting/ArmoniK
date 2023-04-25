@@ -38,3 +38,18 @@ output "endpoints" {
     data_keys = keys(kubernetes_secret.activemq.data)
   }
 }
+
+output "engine_type" {
+  description = "Engine type"
+  value       = local.engine_type
+}
+
+output "adapter_class_name" {
+  description = "Class name for queue adapter"
+  value       = local.adapter_class_name
+}
+
+output "adapter_absolute_path" {
+  description = "Absolute path for the queue adapter"
+  value       = local.adapter_absolute_path
+}

@@ -142,9 +142,10 @@ data "aws_iam_policy_document" "worker_autoscaling" {
       "autoscaling:DescribeAutoScalingGroups",
       "autoscaling:DescribeAutoScalingInstances",
       "autoscaling:DescribeLaunchConfigurations",
+      "autoscaling:DescribeScalingActivities",
       "autoscaling:DescribeTags",
-      "ec2:DescribeLaunchTemplateVersions",
       "ec2:DescribeInstanceTypes",
+      "ec2:DescribeLaunchTemplateVersions",
     ]
     resources = ["*"]
   }
@@ -154,7 +155,10 @@ data "aws_iam_policy_document" "worker_autoscaling" {
     actions = [
       "autoscaling:SetDesiredCapacity",
       "autoscaling:TerminateInstanceInAutoScalingGroup",
+      "ec2:DescribeImages",
+      "ec2:GetInstanceTypesFromInstanceRequirements",
       "autoscaling:UpdateAutoScalingGroup",
+      "eks:DescribeNodegroup"
     ]
     resources = ["*"]
   }
@@ -168,8 +172,11 @@ resource "aws_iam_policy" "worker_autoscaling" {
 }
 
 resource "aws_iam_policy_attachment" "workers_autoscaling" {
-  name       = "eks-worker-node-autoscaling-${module.eks.cluster_name}"
-  roles      = values(module.eks.self_managed_node_groups)[*].iam_role_name
+  name = "eks-worker-node-autoscaling-${module.eks.cluster_name}"
+  roles = concat(
+    values(module.eks.eks_managed_node_groups)[*].iam_role_name,
+    values(module.eks.self_managed_node_groups)[*].iam_role_name,
+  values(module.eks.fargate_profiles)[*].iam_role_name)
   policy_arn = aws_iam_policy.worker_autoscaling.arn
 }
 

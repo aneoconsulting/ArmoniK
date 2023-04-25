@@ -67,4 +67,6 @@ locals {
   ), "")
   table_storage_adapter = "MongoDB"
   queue_storage_adapter = "Amqp"
+  adapter_class_name    = module.mq.engine_type == "ActiveMQ" ? "ArmoniK.Core.Adapters.Amqp.QueueBuilder" : "ArmoniK.Core.Adapters.RabbitMQ.QueueBuilder"
+  adapter_absolute_path = module.mq.engine_type == "ActiveMQ" ? "/adapters/queue/amqp/ArmoniK.Core.Adapters.Amqp.dll" : "/adapters/queue/rabbit/ArmoniK.Core.Adapters.RabbitMQ.dll"
 }
