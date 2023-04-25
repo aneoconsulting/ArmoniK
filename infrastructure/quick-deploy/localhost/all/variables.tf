@@ -101,7 +101,7 @@ variable "activemq" {
 variable "rabbitmq" {
   description = "Parameters of RabbitMQ"
   type = object({
-    image_name         = optional(string, "symptoma/rabbitmq")
+    image_name         = optional(string, "rabbitmq")
     image_tag          = optional(string)
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
