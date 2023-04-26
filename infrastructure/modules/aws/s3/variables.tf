@@ -26,5 +26,15 @@ variable "s3" {
     restrict_public_buckets               = bool
     kms_key_id                            = string
     sse_algorithm                         = string
+    ownership                             = string
+    versioning                            = string
   })
+  validation {
+    condition     = contains(["BucketOwnerPreferred", "ObjectWriter"], var.s3.ownership)
+    error_message = "Valid values for \"ownership\": \"BucketOwnerPreferred\" | \"ObjectWriter\"."
+  }
+  validation {
+    condition     = contains(["Enabled", "Suspended", "Disabled"], var.s3.versioning)
+    error_message = "Valid values for \"versioning\": \"Enabled\" | \"Suspended\" | \"Disabled\"."
+  }
 }

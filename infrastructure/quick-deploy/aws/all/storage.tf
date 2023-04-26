@@ -30,6 +30,8 @@ module "s3_fs" {
     restrict_public_buckets               = var.s3_fs.restrict_public_buckets
     kms_key_id                            = local.kms_key
     sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_fs.sse_algorithm : "aws:kms"
+    ownership                             = var.s3_fs.ownership
+    versioning                            = var.s3_fs.versioning
   }
 }
 
@@ -67,6 +69,8 @@ module "s3_os" {
     restrict_public_buckets               = var.s3_os.restrict_public_buckets
     kms_key_id                            = local.kms_key
     sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_os.sse_algorithm : "aws:kms"
+    ownership                             = var.s3_os.ownership
+    versioning                            = var.s3_os.versioning
   }
 }
 
