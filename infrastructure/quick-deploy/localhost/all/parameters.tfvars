@@ -10,8 +10,8 @@ redis = {}
 #minio = {}
 
 # Queue
-activemq = {}
-#rabbitmq = {}
+#activemq = {}
+rabbitmq = {}
 
 
 metrics_exporter = {
