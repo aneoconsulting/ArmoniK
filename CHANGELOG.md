@@ -2,6 +2,22 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main) (2023-01-06)
 
+## [v2.10.3](https://github.com/aneoconsulting/armonik/tree/v2.10.3) (2023-04-26)
+
+Changed
+-
+
+* Update Armonik.Extension.Csharp version from 0.8.2 to 0.8.2.1
+
+Fixed
+-
+* Fix buffered submission failing silently
+* Fixed missing tasks being awaited indefinitely
+* Added view of currently handled task ids
+* Added DestroyService call to worker service
+* Fixed mustforcepathstyle
+* Reduced worker startup logging
+
 ## [v2.10.2](https://github.com/aneoconsulting/armonik/tree/v2.10.2) (2023-01-23)
 
 Changed
