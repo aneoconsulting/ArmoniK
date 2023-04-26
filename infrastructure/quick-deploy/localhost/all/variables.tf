@@ -47,6 +47,7 @@ variable "metrics_server" {
       "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname",
       "--kubelet-use-node-status-port",
       "--metric-resolution=15s",
+      "--kubelet-insecure-tls"
     ]),
     host_network          = optional(bool, false),
     helm_chart_repository = optional(string, "https://kubernetes-sigs.github.io/metrics-server/")

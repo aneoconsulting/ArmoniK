@@ -25,6 +25,5 @@ output "storage_endpoint_url" {
       url                = module.mongodb.url
       number_of_replicas = var.mongodb.replicas_number
     }
-    shared = local.shared_storage
   }
 }
