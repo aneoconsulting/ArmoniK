@@ -8,7 +8,9 @@ logging_level = "Information"
 # Uncomment either the `redis` or the `minio` parameter
 redis = {}
 #minio = {}
-#minio_s3_fs = {}
+
+# Uncomment this to have minio S3 enabled instead of hostpath shared_storage
+#minio_s3_fs = {} # Shared storage
 
 metrics_exporter = {
   extra_conf = {

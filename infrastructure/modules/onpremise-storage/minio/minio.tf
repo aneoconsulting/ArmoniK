@@ -56,7 +56,7 @@ resource "kubernetes_deployment" "minio" {
           command           = ["/bin/bash"]
           args = [
             "-c",
-            "mkdir -p /data/${var.minio.bucket_name} && minio server /data --console-address :9001"
+            "mkdir -p /data/${var.minio.bucket_name} && minio server /data --console-address :${local.console_port}"
           ]
           env {
             name  = "MINIO_ROOT_USER"
@@ -71,7 +71,7 @@ resource "kubernetes_deployment" "minio" {
             protocol       = "TCP"
           }
           port {
-            container_port = 9001
+            container_port = local.console_port
             protocol       = "TCP"
           }
         }
@@ -105,9 +105,9 @@ resource "kubernetes_service" "minio" {
       protocol    = "TCP"
     }
     port {
-      name        = "${kubernetes_deployment.minio.metadata.0.name}-9001"
-      port        = 9001
-      target_port = 9001
+      name        = "${kubernetes_deployment.minio.metadata.0.name}-${local.console_port}"
+      port        = local.console_port
+      target_port = local.console_port
       protocol    = "TCP"
     }
   }
