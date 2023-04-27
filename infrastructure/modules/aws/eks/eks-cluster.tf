@@ -62,11 +62,6 @@ module "eks" {
   # List of EKS managed node groups
   eks_managed_node_group_defaults = {
     enable_monitoring = true
-    tags = merge(local.tags, {
-      "k8s.io/cluster-autoscaler/${var.name}" = "owned"
-      "k8s.io/cluster-autoscaler/enabled"     = true
-      "aws-node-termination-handler/managed"  = true
-    })
     metadata_options = {
       http_endpoint               = "enabled"
       http_tokens                 = "required"
@@ -85,12 +80,6 @@ module "eks" {
   # List of self managed node groups
   self_managed_node_group_defaults = {
     enable_monitoring = true
-    # enable discovery of autoscaling groups by cluster-autoscaler
-    autoscaling_group_tags = {
-      "k8s.io/cluster-autoscaler/${var.name}" = "owned"
-      "k8s.io/cluster-autoscaler/enabled"     = true
-      "aws-node-termination-handler/managed"  = true
-    }
     tags = local.tags
     metadata_options = {
       http_endpoint               = "enabled"
