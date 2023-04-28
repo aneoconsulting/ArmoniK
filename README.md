@@ -1,5 +1,6 @@
 # Table of contents
-
+<!-- TODO: must be rework -->
+<!-- TODO: must document ./tools -->
 - [ArmoniK](#armonik)
     - [When should I use ArmoniK](#when-should-i-use-armonik)
     - [When should I not use ArmoniK](#when-should-i-not-use-armonik)
