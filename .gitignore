@@ -7,8 +7,6 @@
 kubeconfig_*
 terraform.tfstate*
 .DS_Store
-.vscode/*
-.vscode/
 *.pyc
 venv/
 dist/
@@ -20,6 +18,6 @@ __init__.py/
 lambda.zip
 generated
 .build
-./source/ArmoniK.Samples
+./Source/ArmoniK.Samples
 *~
 *.pem
