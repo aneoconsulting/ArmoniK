@@ -110,6 +110,19 @@ resource "kubernetes_daemonset" "node-exporter" {
             path = "/"
           }
         }
+        toleration {
+          key      = "node-role.kubernetes.io/master"
+          operator = "Exists"
+          effect   = "NoSchedule"
+        }
+        toleration {
+          operator = "Exists"
+          effect   = "NoExecute"
+        }
+        toleration {
+          operator = "Exists"
+          effect   = "NoSchedule"
+        }
       }
     }
   }
