@@ -137,10 +137,6 @@ variable "eks" {
       groups   = list(string)
     })), [])
   })
-  validation {
-    condition     = contains(["random", "most-pods", "least-waste", "price", "priority"], var.eks.cluster_autoscaler.expander)
-    error_message = "Valid values for \"expander\" of the cluster-autoscaler: \"random\" | \"most-pods\" | \"least-waste\" | \"price\" | \"priority\"."
-  }
 }
 
 # List of EKS managed node groups
