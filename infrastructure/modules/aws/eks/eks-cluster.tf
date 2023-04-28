@@ -79,8 +79,9 @@ module "eks" {
 
   # List of self managed node groups
   self_managed_node_group_defaults = {
-    enable_monitoring = true
-    tags = local.tags
+    enable_monitoring      = true
+    tags                   = local.tags
+    autoscaling_group_tags = local.autoscaling_group_tags
     metadata_options = {
       http_endpoint               = "enabled"
       http_tokens                 = "required"

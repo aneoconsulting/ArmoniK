@@ -23,7 +23,7 @@ job_partitions_in_database = {
   tag                = "1.7.1"
   image_pull_policy  = "IfNotPresent"
   image_pull_secrets = ""
-  node_selector      = {}
+  node_selector      = { service = "control-plane" }
   annotations        = {}
 }
 
@@ -45,7 +45,7 @@ control_plane = {
     memory = "500Mi"
   }
   image_pull_secrets = ""
-  node_selector      = {}
+  node_selector      = { service = "control-plane" }
   annotations        = {}
   hpa = {
     polling_interval  = 15
@@ -94,7 +94,7 @@ admin_gui = {
   replicas           = 1
   image_pull_policy  = "IfNotPresent"
   image_pull_secrets = ""
-  node_selector      = {}
+  node_selector      = { service = "control-plane" }
 }
 
 #Parameters of old admin GUI
@@ -131,7 +131,7 @@ admin_old_gui = {
   replicas           = 1
   image_pull_policy  = "IfNotPresent"
   image_pull_secrets = ""
-  node_selector      = {}
+  node_selector      = { service = "control-plane" }
 }
 
 # Parameters of the compute plane
@@ -141,7 +141,7 @@ compute_plane = {
     replicas                         = 1
     termination_grace_period_seconds = 30
     image_pull_secrets               = ""
-    node_selector                    = {}
+    node_selector                    = { service = "workers" }
     annotations                      = {}
     # ArmoniK polling agent
     polling_agent = {
@@ -211,7 +211,7 @@ ingress = {
   limits                = null
   requests              = null
   image_pull_secrets    = ""
-  node_selector         = {}
+  node_selector         = { service = "control-plane" }
   annotations           = {}
   tls                   = false
   mtls                  = false
@@ -225,7 +225,7 @@ authentication = {
   tag                     = "1.7.1"
   image_pull_policy       = "IfNotPresent"
   image_pull_secrets      = ""
-  node_selector           = {}
+  node_selector           = { service = "control-plane" }
   authentication_datafile = ""
   require_authentication  = false
   require_authorization   = false

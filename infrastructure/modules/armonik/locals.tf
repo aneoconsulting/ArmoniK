@@ -8,6 +8,11 @@ locals {
   control_plane_node_selector_keys   = keys(local.control_plane_node_selector)
   control_plane_node_selector_values = values(local.control_plane_node_selector)
 
+  # Node selector for ingress
+  ingress_node_selector        = try(var.ingress.node_selector, {})
+  ingress_node_selector_keys   = keys(local.ingress_node_selector)
+  ingress_node_selector_values = values(local.ingress_node_selector)
+
   # Node selector for admin GUI
   admin_gui_node_selector        = try(var.admin_gui.node_selector, {})
   admin_gui_node_selector_keys   = keys(local.admin_gui_node_selector)

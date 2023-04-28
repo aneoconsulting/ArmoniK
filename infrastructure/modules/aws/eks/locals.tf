@@ -73,41 +73,44 @@ locals {
     }
   }
 
-  # Autoscaling group tags
-  # enable discovery of autoscaling groups by cluster-autoscaler
-  autoscaling_group_tags = {
-      "k8s.io/cluster-autoscaler/${var.name}" = "owned"
-      "k8s.io/cluster-autoscaler/enabled"     = true
-      "aws-node-termination-handler/managed"  = true
-    }
-
   # List of EKS managed node groups
   eks_managed_node_groups = {
     for key, value in var.eks_managed_node_groups : key => merge(value, {
-      name                       = "${key}-${var.name}",
+      name                       = can(coalesce(value.name)) ? "${try(value.name, "")}-${var.name}" : "${key}-${var.name}",
       enable_bootstrap_user_data = can(coalesce(value.ami_id))
-      tags = merge(
-        try(value.tags, {}), 
-      local.autoscaling_group_tags, 
-      {for k, v in try(value.labels, {}) : "k8s.io/cluster-autoscaler/node-template/label/${k}" => v}, 
-      {for k, v in try(value.taints, {}) : "k8s.io/cluster-autoscaler/node-template/taint/${v.key}" => "${v.value}:${v.effect}"}
-      )
     })
-    }
-  
+  }
+
   # List of self managed node groups
-  self_managed_node_groups = merge({
+  self_managed_node_groups = {
     for key, value in var.self_managed_node_groups : key => merge(value, {
-      name = "${key}-${var.name}",
-      autoscaling_group_tags = merge(
-         try(value.tags, {}), 
-        local.autoscaling_group_tags, 
-      {for k, v in try(value.labels, {}) : "k8s.io/cluster-autoscaler/node-template/label/${k}" => v}, 
-      {for k, v in try(value.taints, {}) : "k8s.io/cluster-autoscaler/node-template/taint/${v.key}" => "${v.value}:${v.effect}"})
+      name = can(coalesce(value.name)) ? "${try(value.name, "")}-${var.name}" : "${key}-${var.name}",
     })
-    }
-  )
+  }
 
   # List of fargate profiles
   fargate_profiles = var.fargate_profiles
+
+  # enable discovery of autoscaling groups by cluster-autoscaler
+  autoscaling_group_tags = {
+    "k8s.io/cluster-autoscaler/${var.name}" = "owned"
+    "k8s.io/cluster-autoscaler/enabled"     = true
+    "aws-node-termination-handler/managed"  = true
+  }
+
+  # List of effect for taints
+  taint_effects = {
+    NO_SCHEDULE        = "NoSchedule"
+    NO_EXECUTE         = "NoExecute"
+    PREFER_NO_SCHEDULE = "PreferNoSchedule"
+  }
+
+  # List of tags per eks managed group
+  eks_autoscaling_group_tags = {
+    for key, value in var.eks_managed_node_groups : key => merge(
+      local.autoscaling_group_tags,
+      { for k, v in try(value.labels, {}) : "k8s.io/cluster-autoscaler/node-template/label/${k}" => v },
+      { for k, v in try(value.taints, {}) : "k8s.io/cluster-autoscaler/node-template/taint/${v.key}" => "${v.value}:${local.taint_effects[v.effect]}" }
+    )
+  }
 }

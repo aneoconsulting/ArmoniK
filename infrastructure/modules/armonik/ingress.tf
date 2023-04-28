@@ -29,6 +29,21 @@ resource "kubernetes_deployment" "ingress" {
         annotations = local.ingress_annotations
       }
       spec {
+        node_selector = local.ingress_node_selector
+        dynamic "toleration" {
+          for_each = (local.ingress_node_selector != {} ? [
+            for index in range(0, length(local.ingress_node_selector_keys)) : {
+              key   = local.ingress_node_selector_keys[index]
+              value = local.ingress_node_selector_values[index]
+            }
+          ] : [])
+          content {
+            key      = toleration.value.key
+            operator = "Equal"
+            value    = toleration.value.value
+            effect   = "NoSchedule"
+          }
+        }
         dynamic "image_pull_secrets" {
           for_each = (var.ingress.image_pull_secrets != "" ? [1] : [])
           content {

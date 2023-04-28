@@ -93,6 +93,7 @@ variable "eks" {
     cluster_endpoint_public_access        = optional(bool, false)
     cluster_endpoint_public_access_cidrs  = optional(list(string), ["0.0.0.0/0"])
     cluster_log_retention_in_days         = optional(number, 30)
+    node_selector                         = optional(any, {})
     docker_images = optional(object({
       cluster_autoscaler = optional(object({
         image = optional(string, "registry.k8s.io/autoscaling/cluster-autoscaler")
@@ -104,7 +105,7 @@ variable "eks" {
       }), {})
     }), {})
     cluster_autoscaler = optional(object({
-      expander                              = optional(string, "random")
+      expander                              = optional(string, "least-waste")
       scale_down_enabled                    = optional(bool, true)
       min_replica_count                     = optional(number, 0)
       scale_down_utilization_threshold      = optional(number, 0.5)
@@ -116,7 +117,6 @@ variable "eks" {
       scale_down_delay_after_failure        = optional(string, "3m")
       scale_down_unneeded_time              = optional(string, "2m")
       skip_nodes_with_system_pods           = optional(bool, true)
-      node_selector                         = optional(any, {})
       version                               = optional(string, "9.24.0")
       repository                            = optional(string, "https://kubernetes.github.io/autoscaler")
       namespace                             = optional(string, "kube-system")
@@ -137,6 +137,10 @@ variable "eks" {
       groups   = list(string)
     })), [])
   })
+  validation {
+    condition     = contains(["random", "most-pods", "least-waste", "price", "priority"], var.eks.cluster_autoscaler.expander)
+    error_message = "Valid values for \"expander\" of the cluster-autoscaler: \"random\" | \"most-pods\" | \"least-waste\" | \"price\" | \"priority\"."
+  }
 }
 
 # List of EKS managed node groups
@@ -662,7 +666,7 @@ variable "ingress" {
       memory = optional(string)
     }))
     image_pull_secrets    = optional(string, "")
-    node_selector         = optional(any, "")
+    node_selector         = optional(any, {})
     annotations           = optional(any, {})
     tls                   = optional(bool, false)
     mtls                  = optional(bool, false)
