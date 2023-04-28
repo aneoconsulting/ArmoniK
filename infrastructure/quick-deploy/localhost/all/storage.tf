@@ -56,17 +56,28 @@ module "minio" {
   }
 }
 
+# minio for file storage
+module "minio_s3_fs" {
+  count     = var.minio_s3_fs != null ? 1 : 0
+  source    = "../../../modules/onpremise-storage/minio"
+  namespace = local.namespace
+  minio = {
+    image              = local.minio_s3_fs_image
+    tag                = try(coalesce(var.minio.image_tag), local.default_tags[var.minio_s3_fs.image_name])
+    image_pull_secrets = local.minio_s3_fs_image_pull_secrets
+    host               = local.minio_s3_fs_host
+    bucket_name        = local.minio_s3_fs_bucket_name
+    node_selector      = local.minio_s3_fs_node_selector
+  }
+}
+
 # Shared storage
 resource "kubernetes_secret" "shared_storage" {
   metadata {
     name      = "shared-storage"
     namespace = local.namespace
   }
-  data = {
-    host_path         = abspath("data")
-    file_storage_type = "HostPath"
-    file_server_ip    = ""
-  }
+  data = local.shared_storage
 }
 
 resource "kubernetes_secret" "deployed_object_storage" {

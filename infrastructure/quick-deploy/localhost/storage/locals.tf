@@ -27,10 +27,31 @@ locals {
   minio_bucket_name        = try(var.minio.default_bucket, "minioBucket")
   minio_node_selector      = try(var.minio.node_selector, {})
 
-  # Shared storage
-  shared_storage_host_path         = try(var.shared_storage.host_path, "/data")
-  shared_storage_file_storage_type = try(var.shared_storage.file_storage_type, "HostPath")
-  shared_storage_file_server_ip    = try(var.shared_storage.file_server_ip, "")
+  # Minio for file storage
+  minio_s3_fs_image              = try(var.minio_s3_fs.image, "minio/minio")
+  minio_s3_fs_tag                = try(var.minio_s3_fs.tag, "RELEASE.2023-01-25T00-19-54Z")
+  minio_s3_fs_image_pull_secrets = try(var.minio_s3_fs.image_pull_secrets, "")
+  minio_s3_fs_host               = try(var.minio_s3_fs.host, "minio_s3_fs")
+  minio_s3_fs_bucket_name        = try(var.minio_s3_fs.default_bucket, "minioBucket")
+  minio_s3_fs_node_selector      = try(var.minio_s3_fs.node_selector, {})
+  shared_storage_minio_s3_fs = var.minio_s3_fs != null ? {
+    file_storage_type     = "s3"
+    host                  = module.minio_s3_fs[0].host
+    service_url           = module.minio_s3_fs[0].url
+    console_url           = module.minio_s3_fs[0].console_url
+    access_key_id         = module.minio_s3_fs[0].login
+    secret_access_key     = module.minio_s3_fs[0].password
+    name                  = module.minio_s3_fs[0].bucket_name
+    must_force_path_style = module.minio_s3_fs[0].must_force_path_style
+  } : {}
+  shared_storage_localhost_default = {
+    host_path         = try(var.shared_storage.host_path, "/data")
+    file_storage_type = try(var.shared_storage.file_storage_type, "HostPath")
+    file_server_ip    = try(var.shared_storage.file_server_ip, "")
+  }
+  shared_storage = var.minio_s3_fs != null ? local.shared_storage_minio_s3_fs : local.shared_storage_localhost_default
+
+
 
   # Deployed storage
   deployed_object_storages = concat(

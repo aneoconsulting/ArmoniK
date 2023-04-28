@@ -10,6 +10,10 @@ output "url" {
   value = "http://${var.minio.host}:${local.port}"
 }
 
+output "console_url" {
+  value = "http://${var.minio.host}:${local.console_port}"
+}
+
 output "login" {
   value     = random_string.minio_application_user.result
   sensitive = true
