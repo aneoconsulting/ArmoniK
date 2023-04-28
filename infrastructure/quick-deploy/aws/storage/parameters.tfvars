@@ -53,6 +53,8 @@ s3_fs = {
   restrict_public_buckets               = true
   kms_key_id                            = ""
   sse_algorithm                         = ""
+  ownership                             = "BucketOwnerPreferred"
+  versioning                            = "Disabled"
 }
 
 # Object storage
@@ -81,9 +83,9 @@ elasticache = {
     log_kms_key_id = ""
   }
 }
-
+/*
 # S3 as shared storage
-/*s3_os = {
+s3_os = {
   name                                  = "armonik-s3os"
   policy                                = ""
   attach_policy                         = false
@@ -96,7 +98,10 @@ elasticache = {
   restrict_public_buckets               = true
   kms_key_id                            = ""
   sse_algorithm                         = ""
-}*/
+  ownership                             = "BucketOwnerPreferred"
+  versioning                            = "Disabled"
+}
+*/
 
 # MQ parameters
 mq = {

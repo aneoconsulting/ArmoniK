@@ -2,7 +2,7 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
-## [v2.13.0](https://github.com/aneoconsulting/armonik/tree/v2.13.0) (2023-04-21)
+## [v2.13.0](https://github.com/aneoconsulting/armonik/tree/v2.13.0) (2023-04-23)
 
 Changed
 -
@@ -11,12 +11,26 @@ Changed
 * Set up a MongoDB cluster.
 * Queue adapters are now dynamically loaded.
 * Upgrade Core version from `0.12.4` to `0.13.1`.
+* Update Extension C# Version from `0.9.5` to `0.10.1`
+
+Breaking :
+-
+* GridServer Api is now unsupported in Extension C#
 
 Added
 -
 
 * AWS S3 as Fluent-bit output for logs.
 * Retention in days for Seq.
+
+Fixed
+-
+
+* Switched DLL Worker to release mode by default
+* Added view of currently handled task ids in Unified Client
+* Resend exception when errors occured in SubmitAsync 
+* Forward exception in bufferRequest list
+
 
 ## [v2.12.3](https://github.com/aneoconsulting/armonik/tree/v2.12.3) (2023-04-14)
 
