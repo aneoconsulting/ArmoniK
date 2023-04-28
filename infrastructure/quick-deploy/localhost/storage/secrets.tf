@@ -3,11 +3,7 @@ resource "kubernetes_secret" "shared_storage" {
     name      = "shared-storage"
     namespace = var.namespace
   }
-  data = {
-    host_path         = local.shared_storage_host_path
-    file_storage_type = local.shared_storage_file_storage_type
-    file_server_ip    = local.shared_storage_file_server_ip
-  }
+  data = local.shared_storage
 }
 
 resource "kubernetes_secret" "deployed_object_storage" {

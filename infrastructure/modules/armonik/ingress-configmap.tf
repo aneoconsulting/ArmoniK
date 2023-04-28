@@ -98,6 +98,54 @@ server {
         grpc_send_timeout 1d;
     }
 
+
+   proxy_buffering off;
+   proxy_request_buffering off;
+
+%{if data.kubernetes_secret.shared_storage.data.file_storage_type == "s3"~}
+ location / {
+    client_max_body_size 0;
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_connect_timeout 300;
+    # Default is HTTP/1, keepalive is only enabled in HTTP/1.1
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    chunked_transfer_encoding off;
+
+    proxy_pass ${data.kubernetes_secret.shared_storage.data.service_url}; # This uses the upstream directive definition to load balance
+ }
+
+ location /minioconsole {
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-NginX-Proxy true;
+
+    rewrite ^/minioconsole/(.*) /$1 break;
+    sub_filter '<head>' '<head><base href="$${scheme}://$${http_host}/minioconsole/">';
+    sub_filter_once on;
+
+    # This is necessary to pass the correct IP to be hashed
+    real_ip_header X-Real-IP;
+
+    proxy_connect_timeout 300;
+
+    # To support websockets in MinIO versions released after January 2023
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    chunked_transfer_encoding off;
+
+    proxy_pass ${data.kubernetes_secret.shared_storage.data.console_url}; # This uses the upstream directive definition to load balance and assumes a static Console port of 9001
+ }
+ %{endif~}
+
+
 %{if data.kubernetes_secret.seq.data.enabled~}
     location = /seq {
         rewrite ^ $scheme://$http_host/seq/ permanent;
