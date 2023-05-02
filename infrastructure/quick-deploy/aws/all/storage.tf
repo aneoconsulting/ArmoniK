@@ -248,7 +248,7 @@ resource "aws_iam_policy" "decrypt_object" {
 
 resource "aws_iam_policy_attachment" "decrypt_object" {
   name       = "${local.prefix}-s3-encrypt-decrypt"
-  roles      = module.eks.self_managed_worker_iam_role_names
+  roles      = module.eks.worker_iam_role_names
   policy_arn = aws_iam_policy.decrypt_object.arn
 }
 
@@ -276,7 +276,7 @@ resource "aws_iam_policy" "object" {
 resource "aws_iam_policy_attachment" "object" {
   for_each   = aws_iam_policy.object
   name       = "${local.prefix}-permissions-on-s3-${each.key}"
-  roles      = module.eks.self_managed_worker_iam_role_names
+  roles      = module.eks.worker_iam_role_names
   policy_arn = each.value.arn
 }
 

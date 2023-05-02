@@ -42,6 +42,24 @@ output "self_managed_worker_iam_role_names" {
   value       = values(module.eks.self_managed_node_groups)[*].iam_role_name
 }
 
+output "eks_managed_worker_iam_role_names" {
+  description = "list of the EKS managed workers IAM role names"
+  value       = values(module.eks.eks_managed_node_groups)[*].iam_role_name
+}
+
+output "fargate_profiles_worker_iam_role_names" {
+  description = "list of the fargate profile workers IAM role names"
+  value       = values(module.eks.fargate_profiles)[*].iam_role_name
+}
+
+output "worker_iam_role_names" {
+  description = "list of the workers IAM role names"
+  value = compact(flatten(concat(
+    values(module.eks.eks_managed_node_groups)[*].iam_role_name,
+    values(module.eks.self_managed_node_groups)[*].iam_role_name,
+  values(module.eks.fargate_profiles)[*].iam_role_name)))
+}
+
 output "cluster_iam_role_name" {
   description = "Cluster IAM role name"
   value       = module.eks.cluster_iam_role_name

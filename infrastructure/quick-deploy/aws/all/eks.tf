@@ -4,7 +4,7 @@ module "eks" {
   profile         = var.profile
   tags            = local.tags
   name            = module.vpc.eks_cluster_name
-  node_selector   = var.eks.cluster_autoscaler.node_selector
+  node_selector   = var.eks.node_selector
   kubeconfig_file = abspath(var.kubeconfig_file)
   vpc = {
     id                 = module.vpc.id
