@@ -2,6 +2,7 @@ CURRENT_DIR:=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 INGRESS_CERTIFICATES_DIR=$(GENERATED_DIR)/certificates/ingress
 PARAMETERS_FILE?=parameters.tfvars
+EXTRA_PARAMETERS_FILE?=../../../../extra.tfvars.json
 VERSIONS_FILE?=../../../../versions.tfvars.json
 STATE_FILE=armonik-terraform.tfstate
 
@@ -55,19 +56,19 @@ init:
 		-backend-config 'region=$(REGION)' \
 		-backend-config 'key=$(STATE_FILE)' \
 		-backend-config 'profile=$(PROFILE)' \
-		-var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) 	
+		-var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)	
 
 plan:
-	terraform plan -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -out=/dev/null
+	terraform plan -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -out=/dev/null
 
 apply:
-	terraform apply -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
+	terraform apply -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
 
 refresh:
-	terraform refresh -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE)
+	terraform refresh -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)
 
 delete:
-	terraform destroy -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -auto-approve
+	terraform destroy -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
 
 output:
 	@terraform output -state=$(STATE_FILE) -json | jq 'map_values(.value)' > $(GENERATED_DIR)/armonik-output.json
