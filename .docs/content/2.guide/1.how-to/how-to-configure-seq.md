@@ -1,6 +1,6 @@
 # How to configure SEQ?
 
-If you want to access outside your kubernetes cluster, you have to configure seq to make it accessible from outside.
+If you want to access outside your Kubernetes cluster, you have to configure Seq to make it accessible from outside.
 To do so, you have to set this service (`seq_web` in [seq.tf](../old/armonik-deployments/armonik/modules/armonik-components/seq.tf#L92) ) as `LoadBalancer` instead of `ClusterIP`.
 
 Then, redeploy.
@@ -27,7 +27,7 @@ The application name for the worker is `ArmoniK.Compute.Worker`. (Application = 
 
 ## Troubleshoot
 
-If you use docker as the kubernetes backend, you should configure the logging driver of docker to `json-file`.
+If you use docker as the Kubernetes backend, you should configure the logging driver of docker to `json-file`.
 Otherwise, the logs will remain empty (fluent-bit will not be able to fetch logs).
 
 https://docs.docker.com/config/containers/logging/configure/#configure-the-default-logging-driver
