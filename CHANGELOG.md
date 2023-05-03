@@ -2,11 +2,6 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
-Changed
--
-
-* Upgrade API version from `3.6.0` to `3.8.0`.
-
 ## [v2.13.0](https://github.com/aneoconsulting/armonik/tree/v2.13.0) (2023-04-23)
 
 Changed
