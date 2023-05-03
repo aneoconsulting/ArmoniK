@@ -42,12 +42,13 @@ resource "kubernetes_secret" "shared_storage" {
     namespace = local.namespace
   }
   data = {
-    service_url       = "https://s3.${var.region}.amazonaws.com"
-    kms_key_id        = module.s3_fs.kms_key_id
-    name              = module.s3_fs.s3_bucket_name
-    access_key_id     = ""
-    secret_access_key = ""
-    file_storage_type = "S3"
+    service_url           = "https://s3.${var.region}.amazonaws.com"
+    kms_key_id            = module.s3_fs.kms_key_id
+    name                  = module.s3_fs.s3_bucket_name
+    access_key_id         = ""
+    secret_access_key     = ""
+    file_storage_type     = "S3"
+    must_force_path_style = false
   }
 }
 
