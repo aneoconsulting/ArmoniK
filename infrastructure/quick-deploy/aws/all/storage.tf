@@ -2,7 +2,7 @@ locals {
   mongodb_persistent_volume = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
     storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
     resources           = var.mongodb.persistent_volume.resources
-    parameters = merge(var.mongodb.persistent_volume.parameters, {
+    parameters          = merge(var.mongodb.persistent_volume.parameters, {
       provisioningMode = "efs-ap"
       fileSystemId     = module.efs_persistent_volume[0].efs_id
       directoryPerms   = "755"
@@ -18,7 +18,7 @@ module "s3_fs" {
   source = "../../../modules/aws/s3"
   tags   = local.tags
   name   = "${local.prefix}-s3fs"
-  s3 = {
+  s3     = {
     policy                                = var.s3_fs.policy
     attach_policy                         = var.s3_fs.attach_policy
     attach_deny_insecure_transport_policy = var.s3_fs.attach_deny_insecure_transport_policy
@@ -42,12 +42,13 @@ resource "kubernetes_secret" "shared_storage" {
     namespace = local.namespace
   }
   data = {
-    service_url       = "https://s3.${var.region}.amazonaws.com"
-    kms_key_id        = module.s3_fs.kms_key_id
-    name              = module.s3_fs.s3_bucket_name
-    access_key_id     = ""
-    secret_access_key = ""
-    file_storage_type = "S3"
+    service_url           = "https://s3.${var.region}.amazonaws.com"
+    kms_key_id            = module.s3_fs.kms_key_id
+    name                  = module.s3_fs.s3_bucket_name
+    access_key_id         = ""
+    secret_access_key     = ""
+    file_storage_type     = "S3"
+    must_force_path_style = false
   }
 }
 
@@ -57,7 +58,7 @@ module "s3_os" {
   source = "../../../modules/aws/s3"
   tags   = local.tags
   name   = "${local.prefix}-s3os"
-  s3 = {
+  s3     = {
     policy                                = var.s3_os.policy
     attach_policy                         = var.s3_os.attach_policy
     attach_deny_insecure_transport_policy = var.s3_os.attach_deny_insecure_transport_policy
@@ -92,11 +93,11 @@ resource "kubernetes_secret" "s3" {
 
 # AWS Elasticache
 module "elasticache" {
-  count  = var.elasticache != null ? 1 : 0
-  source = "../../../modules/aws/elasticache"
-  tags   = local.tags
-  name   = "${local.prefix}-elasticache"
-  vpc    = local.vpc
+  count       = var.elasticache != null ? 1 : 0
+  source      = "../../../modules/aws/elasticache"
+  tags        = local.tags
+  name        = "${local.prefix}-elasticache"
+  vpc         = local.vpc
   elasticache = {
     engine                      = var.elasticache.engine
     engine_version              = var.elasticache.engine_version
@@ -109,7 +110,7 @@ module "elasticache" {
     data_tiering_enabled        = var.elasticache.data_tiering_enabled
     log_retention_in_days       = var.elasticache.log_retention_in_days
     cloudwatch_log_groups       = var.elasticache.cloudwatch_log_groups
-    encryption_keys = {
+    encryption_keys             = {
       kms_key_id     = local.kms_key
       log_kms_key_id = local.kms_key
     }
@@ -140,7 +141,7 @@ module "mq" {
   namespace = local.namespace
   vpc       = local.vpc
   user      = var.mq_credentials
-  mq = {
+  mq        = {
     engine_type             = var.mq.engine_type
     engine_version          = var.mq.engine_version
     host_instance_type      = var.mq.host_instance_type
@@ -177,7 +178,7 @@ module "mongodb" {
   source      = "../../../modules/onpremise-storage/mongodb"
   namespace   = local.namespace
   working_dir = "${path.root}/../../.."
-  mongodb = {
+  mongodb     = {
     image              = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
     tag                = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
     node_selector      = var.mongodb.node_selector
@@ -194,7 +195,7 @@ module "efs_persistent_volume" {
   source     = "../../../modules/persistent-volumes/efs"
   eks_issuer = module.eks.issuer
   vpc        = local.vpc
-  efs = {
+  efs        = {
     name                            = "${local.prefix}-efs"
     kms_key_id                      = local.kms_key
     performance_mode                = var.pv_efs.efs.performance_mode
@@ -210,7 +211,7 @@ module "efs_persistent_volume" {
     node_selector      = var.pv_efs.csi_driver.node_selector
     repository         = var.pv_efs.csi_driver.repository
     version            = var.pv_efs.csi_driver.version
-    docker_images = {
+    docker_images      = {
       efs_csi               = local.ecr_images["${var.pv_efs.csi_driver.images.efs_csi.name}:${try(coalesce(var.pv_efs.csi_driver.images.efs_csi.tag), "")}"]
       livenessprobe         = local.ecr_images["${var.pv_efs.csi_driver.images.livenessprobe.name}:${try(coalesce(var.pv_efs.csi_driver.images.livenessprobe.tag), "")}"]
       node_driver_registrar = local.ecr_images["${var.pv_efs.csi_driver.images.node_driver_registrar.name}:${try(coalesce(var.pv_efs.csi_driver.images.node_driver_registrar.tag), "")}"]
@@ -223,7 +224,7 @@ module "efs_persistent_volume" {
 # Decrypt objects in S3
 data "aws_iam_policy_document" "decrypt_object" {
   statement {
-    sid = "KMSAccess"
+    sid     = "KMSAccess"
     actions = [
       "kms:Encrypt",
       "kms:Decrypt",
@@ -231,10 +232,10 @@ data "aws_iam_policy_document" "decrypt_object" {
       "kms:GenerateDataKey*",
       "kms:DescribeKey"
     ]
-    effect = "Allow"
+    effect    = "Allow"
     resources = toset([
-      for _, s3 in local.aws_s3 :
-      s3.kms_key_id
+    for _, s3 in local.aws_s3 :
+    s3.kms_key_id
     ])
   }
 }
@@ -256,9 +257,9 @@ resource "aws_iam_policy_attachment" "decrypt_object" {
 data "aws_iam_policy_document" "object" {
   for_each = local.aws_s3
   statement {
-    sid     = each.value.permission_sid
-    actions = each.value.permission_actions
-    effect  = "Allow"
+    sid       = each.value.permission_sid
+    actions   = each.value.permission_actions
+    effect    = "Allow"
     resources = [
       "${each.value.arn}/*"
     ]
@@ -321,7 +322,7 @@ locals {
       fs = merge(
         module.s3_fs,
         {
-          permission_sid = "ReadFromS3"
+          permission_sid     = "ReadFromS3"
           permission_actions = [
             "s3:GetObject"
           ]
@@ -332,7 +333,7 @@ locals {
       os = merge(
         module.s3_os[0],
         {
-          permission_sid = "FullAccessFromS3"
+          permission_sid     = "FullAccessFromS3"
           permission_actions = [
             "s3:PutObject",
             "s3:GetObject",
@@ -350,15 +351,15 @@ locals {
       length(module.elasticache) > 0 ? "Redis" : null,
       length(module.s3_os) > 0 ? "S3" : null,
     ), "")
-    table_storage_adapter = "MongoDB"
-    queue_storage_adapter = "Amqp"
+    table_storage_adapter    = "MongoDB"
+    queue_storage_adapter    = "Amqp"
     deployed_object_storages = concat(
       length(module.elasticache) > 0 ? ["Redis"] : [],
       length(module.s3_os) > 0 ? ["S3"] : [],
     )
     deployed_table_storages = ["MongoDB"]
     deployed_queue_storages = ["Amqp"]
-    activemq = {
+    activemq                = {
       url     = module.mq.activemq_endpoint_url.url
       web_url = module.mq.web_url
     }

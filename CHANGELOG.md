@@ -2,6 +2,11 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+Changed
+-
+
+* Upgrade API version from `3.6.0` to `3.8.0`.
+
 ## [v2.13.0](https://github.com/aneoconsulting/armonik/tree/v2.13.0) (2023-04-23)
 
 Changed
@@ -15,6 +20,7 @@ Changed
 
 Breaking :
 -
+
 * GridServer Api is now unsupported in Extension C#
 
 Added
@@ -28,9 +34,8 @@ Fixed
 
 * Switched DLL Worker to release mode by default
 * Added view of currently handled task ids in Unified Client
-* Resend exception when errors occured in SubmitAsync 
+* Resend exception when errors occured in SubmitAsync
 * Forward exception in bufferRequest list
-
 
 ## [v2.12.3](https://github.com/aneoconsulting/armonik/tree/v2.12.3) (2023-04-14)
 
@@ -45,8 +50,8 @@ Changed
 -
 
 * Upgrade versions of docker images for ArmoniK (see [versions.tfvars.json](./versions.tfvars.json)):
-  * Core version from `0.12.3` to `0.12.4`.
-  * Extension C# version from `0.9.4` to `0.9.5`.
+    * Core version from `0.12.3` to `0.12.4`.
+    * Extension C# version from `0.9.4` to `0.9.5`.
 * Samples version from `v2.12.1` to `v2.12.2`
 
 Fixed
@@ -60,8 +65,8 @@ Changed
 -
 
 * Upgrade versions of docker images for ArmoniK (see [versions.tfvars.json](./versions.tfvars.json)):
-  * Core version from `0.12.2` to `0.12.3`.
-  * Extension C# version from `0.9.2` to `0.9.4`.
+    * Core version from `0.12.2` to `0.12.3`.
+    * Extension C# version from `0.9.2` to `0.9.4`.
 * Samples version from `v2.12.0` to `v2.12.1`
 
 Fixed
@@ -75,23 +80,29 @@ Changed
 -
 
 * Upgrade versions of docker images for ArmoniK (see [versions.tfvars.json](./versions.tfvars.json)):
-  * Core version from `0.11.1` to `0.12.2`.
-  * Extension C# version from `0.9.1` to `0.9.2`.
-  * API version from `3.5.2` to `3.6.0`
+    * Core version from `0.11.1` to `0.12.2`.
+    * Extension C# version from `0.9.1` to `0.9.2`.
+    * API version from `3.5.2` to `3.6.0`
 * Upgrade versions of docker images for third party applications [versions.tfvars.json](./versions.tfvars.json).
-* Upgrade versions of Helm charts of third party applications : KEDA, AWS cluster-autoscaler, Metrics Server, AWS node termination handler and AWS EFS csi driver.
+* Upgrade versions of Helm charts of third party applications : KEDA, AWS cluster-autoscaler, Metrics Server, AWS node
+  termination handler and AWS EFS csi driver.
 * Upgrade version of AWS EKS from `1.22` to `1.25`.
-* * Upgrade Admin GUI: from `0.7.2` to `0.9.0`.
-    * New dashboard
-    * GUI localization (fr, en)
-    * Remove gui backend
+*
+    * Upgrade Admin GUI: from `0.7.2` to `0.9.0`.
+        * New dashboard
+        * GUI localization (fr, en)
+        * Remove gui backend
 * Add URL for the old Admin GUI: `/old-admin/`
 
 Fixed
 - 
 
 * Extensions.Csharp client no longer waits for missing tasks.
-* Starting from version `1.24.0` by default Kubernetes does not automatically generate tokens (`default_secret_name`) for service accounts [See here](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#urgent-upgrade-notes-1). So modifications are done in the Fluent-bit module to fix the following warning:
+* Starting from version `1.24.0` by default Kubernetes does not automatically generate tokens (`default_secret_name`)
+  for service
+  accounts [See here](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#urgent-upgrade-notes-1)
+  . So modifications are done in the Fluent-bit module to fix the following warning:
+
 ```bash
 ╷
 │ Warning: "default_secret_name" is no longer applicable for Kubernetes v1.24.0 and above
@@ -102,8 +113,8 @@ Fixed
 │
 │ Starting from version 1.24.0 Kubernetes does not automatically generate a token for service accounts, in this case, "default_secret_name" will be empty
 ```
-In Fluent-bit module, we have replaced `kubernetes_service_account` by `kubernetes_manifest`.
 
+In Fluent-bit module, we have replaced `kubernetes_service_account` by `kubernetes_manifest`.
 
 ## [v2.11.1](https://github.com/aneoconsulting/armonik/tree/v2.11.1) (2023-02-24)
 
@@ -129,6 +140,7 @@ Changed
 
 Added
 -
+
 * S3 is also supported as an object storage, but this is optional (Redis still the default resource).
 
 ## [v2.10.2](https://github.com/aneoconsulting/armonik/tree/v2.10.2) (2023-01-23)
@@ -141,8 +153,8 @@ Changed
 Fixed
 -
 
-* Correction of TaskId result with correct request for SubmitAsync call. more infos [here](https://github.com/aneoconsulting/ArmoniK/issues/833)
-
+* Correction of TaskId result with correct request for SubmitAsync call. more
+  infos [here](https://github.com/aneoconsulting/ArmoniK/issues/833)
 
 ## [v2.10.1](https://github.com/aneoconsulting/armonik/tree/v2.10.1) (2023-01-06)
 
@@ -156,7 +168,6 @@ Fixed
 
 * Correction of the metric used for scaling. more infos [here](https://github.com/aneoconsulting/ArmoniK/issues/811)
 
-
 ## [v2.10.0](https://github.com/aneoconsulting/armonik/tree/v2.10.0) (2022-12-14)
 
 Changed
@@ -164,25 +175,29 @@ Changed
 
 * Update Core version from 0.7.1 to 0.8.2
 * Update Extensions.Csharp version from 0.7.5 to 0.8.1
-* **Breaking** : Namespaces in Extensions.Csharp have changed : 
-    * The namespaces are now organised in the following form : 
-    `ArmoniK.DevelopmentKit.[Common|Client|Worker].[Common|Symphony|GridServer|Unified]`
-    * For example, this means that the namespace `ArmoniK.DevelopmentKit.SymphonyApi.Client` is now `ArmoniK.DevelopmentKit.Client.Symphony`
-    * Unified api is now explicitely named as Unified (`ArmoniK.DevelopmentKit.Worker[.Grid]` is now `ArmoniK.DevelopmentKit.Worker.Unified`, and `ArmoniK.DevelopmentKit.Client` is now `ArmoniK.DevelopmentKit.Worker.Unified`)
+* **Breaking** : Namespaces in Extensions.Csharp have changed :
+    * The namespaces are now organised in the following form :
+      `ArmoniK.DevelopmentKit.[Common|Client|Worker].[Common|Symphony|GridServer|Unified]`
+    * For example, this means that the namespace `ArmoniK.DevelopmentKit.SymphonyApi.Client` is
+      now `ArmoniK.DevelopmentKit.Client.Symphony`
+    * Unified api is now explicitely named as Unified (`ArmoniK.DevelopmentKit.Worker[.Grid]` is
+      now `ArmoniK.DevelopmentKit.Worker.Unified`, and `ArmoniK.DevelopmentKit.Client` is
+      now `ArmoniK.DevelopmentKit.Worker.Unified`)
     * Namespace `ArmoniK.DevelopmentKit.WorkerApi.Common` is now `ArmoniK.DevelopmentKit.Worker.Common`
     * As a result, the nuget names have changed
-    * The motivations and details for this change are available [here](https://github.com/aneoconsulting/ArmoniK/issues/537)
+    * The motivations and details for this change are
+      available [here](https://github.com/aneoconsulting/ArmoniK/issues/537)
     * Some classes have been moved around to reduce repetition and to conform better to the new organisation
 * Changed engine type name enum values to reflect namespace changes
 * Renamed status code StatusCode.Canceled in StatusCode.Cancelled inside Armonik.Api
-
 
 Added
 -
 
 * Remove payload from Object Storage when task is completed
 * Implement new APIs for GUI
-* Buffered task submission using Client Unified API, increasing overall task submission speed doc usage [Buffering submission](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/blob/0.8.1/Documentation/articles/buffersubmit.md)  
+* Buffered task submission using Client Unified API, increasing overall task submission speed doc
+  usage [Buffering submission](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/blob/0.8.1/Documentation/articles/buffersubmit.md)
 * gRPC channel pooling in Extensions.Csharp to improve performance
 * NUnit testing in Extensions.Csharp to replace the old testing framework in a future release
 
@@ -192,8 +207,10 @@ Fixed
 * Use EphemeralMongo instead of Mongo2go in unit tests because of issues with Mongo2go
 * Issue with each polling agent creating multiple connections to the message queue
 * Improve task acquisition when messages are duplicated
-* Put task in error when worker is unavailable during task execution [#743](https://github.com/aneoconsulting/ArmoniK/issues/743)
-* `ArmoniK.DevelopmentKit.Worker.Unified.TaskSubmitterWorkerService` no longer exposes Symphony-like endpoints as it was never its intention
+* Put task in error when worker is unavailable during task
+  execution [#743](https://github.com/aneoconsulting/ArmoniK/issues/743)
+* `ArmoniK.DevelopmentKit.Worker.Unified.TaskSubmitterWorkerService` no longer exposes Symphony-like endpoints as it was
+  never its intention
 * Fixed null or empty argument list in payload causing UndefinedReferenceException in some cases
 * TaskOptions are now fed on worker side [#764](https://github.com/aneoconsulting/ArmoniK/issues/764)
 
@@ -221,7 +238,6 @@ Fixed
 
 * Polling agent health check fail when worker is unavailable
 
-
 ## [v2.8.9](https://github.com/aneoconsulting/armonik/tree/v2.8.9) (2022-11-22)
 
 Changed
@@ -247,7 +263,6 @@ Fixed
 -
 
 * Mark the pollster as failed when worker is unavailable
-
 
 ## [v2.8.7](https://github.com/aneoconsulting/armonik/tree/v2.8.7) (2022-10-12)
 
