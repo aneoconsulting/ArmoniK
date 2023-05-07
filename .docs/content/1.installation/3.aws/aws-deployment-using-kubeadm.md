@@ -1,8 +1,4 @@
----
-uid: aws_kubeadm_deploy
----
-
-# [AWS deployment using kubeadm](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/docs/kubernetes/cluster/kubeadm-cluster)
+# AWS deployment using kubeadm
 
 ## Introduction
 
@@ -13,7 +9,9 @@ The files to achieve this deployment are available [here](https://github.com/ane
 
 We mount a NFS server on the master node too, from which workers will upload .dll.
 
-> **_NOTE:_** You must have an AWS account to use these sources to create a cluster.
+::alert{type="info"}
+You muse have an AWS account to use these sources to create a cluster.
+::
 
 ## AWS credentials
 
@@ -96,7 +94,10 @@ worker_public_ip = [
 ## Prerequisites
 
 You must open the following inbound ports:
-![Open ports on aws](~/images/installations/ports.png)
+
+| IPv4 | Custom TCP   | TCP          | 30000 - 32767 | 0.0.0.0/0      | ArmoniK services |
+| ---- | ------------ | ------------ | ------------- | -------------- | ---------------- |
+| IPv4 | IP-in-IP (4) | IP-in-IP (4) | All           | 192.168.0.0/16 | ArmoniK services |
 
 ## Accessing the cluster from outside
 
