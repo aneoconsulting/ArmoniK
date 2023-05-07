@@ -104,7 +104,7 @@ Default certificates are generated alongside the automatically generated client 
 
 Using this configuration, the specified ```ca.pem``` will be used to authenticate the user certificates. The client certificates are **not generated** by the deployment. Each certificate is attributed to a specific user with specific roles. Each role has specific permissions, allowing or denying the user access to specific endpoints. For each certificate, the user and role need to be described in the given json configuration file (See [How to create a JSON authentication configuration file](#how-to-create-a-json-authentication-configuration-file)).
 
-### How to create a Json authentication configuration file
+### How to create a JSON authentication configuration file
 
 The JSON authentication configuration file must have the following format (note that the format is **case sensitive**):
 
@@ -140,7 +140,7 @@ The resulting configuration is stored in the MongoDB database. If the database i
 kubectl -n armonik get job authentication-in-database -o json | jq "del(.spec.selector)" | jq "del(.spec.template.metadata.labels)" | kubectl -n armonik replace --force -f -
 ```
 
-### Json authentication configuration example
+### JSON authentication configuration example
 
 The following json is an example defining two users, with their own different roles. The role ```Submitter``` does have all the permissions on every current endpoints. The role ```Monitoring``` does have all permissions related to monitoring duties, but cannot start or stop tasks or sessions. Each user has its own certificate.
 
