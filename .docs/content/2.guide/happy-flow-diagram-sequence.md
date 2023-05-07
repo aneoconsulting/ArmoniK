@@ -1,3 +1,5 @@
+# Happy Flow Diagram Sequence
+
 <Mermaid>
 sequenceDiagram
     #title ArmoniK Happy Flow Sequence 
