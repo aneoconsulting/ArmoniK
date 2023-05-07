@@ -74,3 +74,11 @@ See also [Issues](https://github.com/aneoconsulting/ArmoniK/issues) of ArmoniK p
 To report a bug or request a feature, please use and follow the instructions in one of
 the [issue templates](https://github.com/aneoconsulting/ArmoniK/issues/new/choose). Don't forget to include the version
 of ArmoniK you are using.
+
+
+<!--
+TODO: scripts is used for any scripts related to the repository (not the project)
+
+
+FIXME: vérifier les liens vers les documents (lors du déplacement des scripts)
+-->
