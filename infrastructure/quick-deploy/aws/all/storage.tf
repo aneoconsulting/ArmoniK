@@ -42,12 +42,13 @@ resource "kubernetes_secret" "shared_storage" {
     namespace = local.namespace
   }
   data = {
-    service_url       = "https://s3.${var.region}.amazonaws.com"
-    kms_key_id        = module.s3_fs.kms_key_id
-    name              = module.s3_fs.s3_bucket_name
-    access_key_id     = ""
-    secret_access_key = ""
-    file_storage_type = "S3"
+    service_url           = "https://s3.${var.region}.amazonaws.com"
+    kms_key_id            = module.s3_fs.kms_key_id
+    name                  = module.s3_fs.s3_bucket_name
+    access_key_id         = ""
+    secret_access_key     = ""
+    file_storage_type     = "S3"
+    must_force_path_style = false
   }
 }
 
@@ -248,7 +249,7 @@ resource "aws_iam_policy" "decrypt_object" {
 
 resource "aws_iam_policy_attachment" "decrypt_object" {
   name       = "${local.prefix}-s3-encrypt-decrypt"
-  roles      = module.eks.self_managed_worker_iam_role_names
+  roles      = module.eks.worker_iam_role_names
   policy_arn = aws_iam_policy.decrypt_object.arn
 }
 
@@ -276,7 +277,7 @@ resource "aws_iam_policy" "object" {
 resource "aws_iam_policy_attachment" "object" {
   for_each   = aws_iam_policy.object
   name       = "${local.prefix}-permissions-on-s3-${each.key}"
-  roles      = module.eks.self_managed_worker_iam_role_names
+  roles      = module.eks.worker_iam_role_names
   policy_arn = each.value.arn
 }
 

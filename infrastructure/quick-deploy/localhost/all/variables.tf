@@ -433,7 +433,7 @@ variable "ingress" {
       memory = optional(string)
     }))
     image_pull_secrets    = optional(string, "")
-    node_selector         = optional(any, "")
+    node_selector         = optional(any, {})
     annotations           = optional(any, {})
     tls                   = optional(bool, false)
     mtls                  = optional(bool, false)

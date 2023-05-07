@@ -20,7 +20,7 @@ keda = {
     }
   }
   image_pull_secrets              = ""
-  node_selector                   = { "grid/type" = "Operator" }
+  node_selector                   = { service = "monitoring" }
   metrics_server_dns_policy       = "ClusterFirst"
   metrics_server_use_host_network = false
   helm_chart_repository           = "https://kedacore.github.io/charts"
