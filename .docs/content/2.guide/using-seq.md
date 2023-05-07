@@ -10,9 +10,11 @@ Then, redeploy.
 # Connexion
 
 When you perform the command:
+
 ```bash
 kubectl get svc -n armonik
 ```
+
 You should see a service called `seqweb`. You can connect to its external-ip:8080 in your browser to access seq.
 
 If you enabled the authentication of seq, the default credentials are the following:
@@ -32,5 +34,5 @@ The application name for the worker is `ArmoniK.Compute.Worker`. (Application = 
 If you use docker as the kubernetes backend, you should configure the logging driver of docker to `json-file`.
 Otherwise, the logs will remain empty (fluent-bit will not be able to fetch logs).
 
-https://docs.docker.com/config/containers/logging/configure/#configure-the-default-logging-driver
-https://rancher.com/docs/rancher/v2.0-v2.4/en/cluster-admin/tools/cluster-logging/
+<https://docs.docker.com/config/containers/logging/configure/#configure-the-default-logging-driver>
+<https://rancher.com/docs/rancher/v2.0-v2.4/en/cluster-admin/tools/cluster-logging/>

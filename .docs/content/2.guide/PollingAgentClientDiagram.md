@@ -43,7 +43,7 @@ stateDiagram-v2
         OpenedTaskSession --> [*]:rcv_InitTaskRequest_RequestEnd
         OpenedTaskSession --> LT_PayloadTransfert:rcv_DataChunk_bytes
         LT_PayloadTransfert --> LT_PayloadTransfert:rcv_DataChunk_bytes
-        LT_PayloadTransfert --> OpenedTaskSession:rcv_DataChunk_dataComplete       
+        LT_PayloadTransfert --> OpenedTaskSession:rcv_DataChunk_dataComplete
     }
     LargeTaskReception --> Listening
     state ResourceRequestReception {

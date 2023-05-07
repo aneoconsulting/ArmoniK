@@ -1,4 +1,5 @@
 <!-- TODO: move to the documentation of documentation -->
+# Nice charts howto
 
 [Mermaid](https://mermaid-js.github.io/mermaid/#/) is a JavaScript based diagramming and charting tool. Recently,
 github added support to render mermaid code directly into the web browser. For example the code
@@ -48,7 +49,7 @@ stateDiagram
 will be rendered as
 
 <Mermaid>
-stateDiagram 
+stateDiagram
     direction LR
     [*] --> State1
     State1 --> [*]: A happy transition
