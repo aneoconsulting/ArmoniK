@@ -1,3 +1,6 @@
+<!-- TODO: need have a new title -->
+<!-- TODO: need to create a page where the all in one deployment is explain -->
+
 # Default images
 
 The all-in-one terraform deployments support to omit the image names and tags in the tfvars.
@@ -12,7 +15,7 @@ For third-party images, the default tag of an image is defined in [`image_tags`]
 You are still be able to specify custom image names and/or image tags in your tfvars if you want, without needing to modify [`versions.tfvars.json`](../versions.tfvars.json).
 If you try to use an image name that is not listed in [`versions.tfvars.json`](../versions.tfvars.json), you are required to also specify a tag for this image.
 
-# Examples
+## Examples
 
 All the examples are for the all-in-one local deployment for mongodb, with the following default versions:
 
@@ -91,7 +94,7 @@ control_plane = {
 - mongodb: `custom_registry/mongo:6.0`
 - control_plane: `custom_registry/custom_armonik_control:0.8.3`
 
-## Special case of the workers
+### Special case of the workers
 
 There is no default image for the workers, but you can still omit the tag if the image is listed in [`versions.tfvars.json`](../versions.tfvars.json):
 

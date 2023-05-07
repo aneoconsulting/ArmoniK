@@ -1,20 +1,17 @@
----
-uid: aws_k3s_deploy
----
-
-
-# [AWS deployment using k3s](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/docs/kubernetes/cluster/k3s-cluster)
+# AWS deployment using k3s
 
 ## Introduction
 
 This project presents the creation of a small cluster on AWS. The cluster will be composed of a master node and three
 worker nodes.
 
-The files to achieve this deployment are available [here](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/docs/kubernetes/cluster/k3s-cluster)
+The files to achieve this deployment are available [in the repository](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/docs/kubernetes/cluster/k3s-cluster)
 
 We mount a NFS server on the master node too, from which workers will upload .dll.
 
-> **_NOTE:_** You must have an AWS account to use these sources to create a cluster.
+::alert{type="info"}
+You muse have an AWS account to use these sources to create a cluster.
+::
 
 ## AWS credentials
 
@@ -99,7 +96,10 @@ worker_public_ip = [
 ## Prerequisites
 
 You must open the following inbound ports:
-![Open ports on aws](~/images/installations/ports.png)
+
+| IPv4 | Custom TCP   | TCP          | 30000 - 32767 | 0.0.0.0/0      | ArmoniK services |
+| ---- | ------------ | ------------ | ------------- | -------------- | ---------------- |
+| IPv4 | IP-in-IP (4) | IP-in-IP (4) | All           | 192.168.0.0/16 | ArmoniK services |
 
 ## Accessing the cluster from outside
 

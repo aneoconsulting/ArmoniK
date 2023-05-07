@@ -1,10 +1,8 @@
-<!-- TODO: rename and reorganize -->
-
-# **ArmoniK Partitioning Configuration Guide**
+# How to configure partitions?
 
 This guide aims to present the setup and usage of the partitions within ArmoniK.
 
-## **What partitioning means in ArmoniK**
+## What partitioning means in ArmoniK
 
 Partitions are sets of pods with their own configuration, their own task queue and their own scaling rules. Partitioning is useful in the following use-cases (non-exhaustive):
 
@@ -12,7 +10,7 @@ Partitions are sets of pods with their own configuration, their own task queue a
 - workers need different node configuration (eg: number of cores, gpu)
 - need different limits on the number of pods depending on the application
 
-## **How to setup the partitioning in terraform**
+## How to setup the partitioning in terraform
 
 To install and configure the partioning there are some modifications to implement in the deployment scripts.  With the implementation in the 2.9 version, the partioning is static. That means, that the partitions have to be defined and deployed at the same time than the ArmoniK infrastructure and cannot be changed without a redeployment and a new modification of the parameters files.
 
@@ -130,7 +128,7 @@ compute_plane = {
 }
 ```
 
-## **Use a partition when submitting tasks with UnifiedAPI**
+## Use a partition when submitting tasks with UnifiedAPI
 
 The partition to use is defined when creating the session, by setting the default `TaskOptions` of the session. The partition must exist, otherwise an error is raised.
 
@@ -159,9 +157,11 @@ Service = ServiceFactory.CreateService(Props, loggerFactory);
 
 If you set the `PartitionId` to empty (`""`), the default partition will be used.
 
-**Warning:** It is an error to set the `PartitionId` to `null`.
+::alert{type="warning"}
+It is an error to set the `PartitionId` to `null`.
+::
 
-## **Use a partition when submitting tasks with native gRPC API**
+## Use a partition when submitting tasks with native gRPC API
 
 In order to use partitions with the native gRPC API, you must specify at the session creation the partitions that will be used by the tasks of this session. This is done with the field `PartitionIds` which is the list of the partitions available to the tasks. You can set it to an empty list or a list containing only a single empty string to use the default partition during the session. You can also define the default partition to be used by the tasks of the session in the `defaultTaskOption`. An empty `DefaultTaskOption.PartitionId` is replaced by the default partition of the *cluster*. If a partition does not exist, an error is raised.
 
@@ -193,4 +193,6 @@ var createTaskReply = await submitterClient.CreateTasksAsync(
 );
 ```
 
-**Warning:** It is an error to set the `PartitionId` to `null`.
+::alert{type="warning"}
+It is an error to set the `PartitionId` to `null`.
+::
