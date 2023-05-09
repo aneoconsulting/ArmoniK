@@ -24,8 +24,8 @@ module "eks" {
       cluster_autoscaler = local.ecr_images["${var.eks.docker_images.cluster_autoscaler.image}:${try(coalesce(var.eks.docker_images.cluster_autoscaler.tag), "")}"]
       instance_refresh   = local.ecr_images["${var.eks.docker_images.instance_refresh.image}:${try(coalesce(var.eks.docker_images.instance_refresh.tag), "")}"]
     }
-    cluster_autoscaler = var.eks.cluster_autoscaler
-    instance_refresh   = var.eks.instance_refresh
+    cluster_autoscaler = merge(var.eks.cluster_autoscaler, { repository = try(coalesce(var.eks.cluster_autoscaler.repository), var.helm_charts.cluster_autoscaler.repository), version = try(coalesce(var.eks.cluster_autoscaler.verison), var.helm_charts.cluster_autoscaler.version) })
+    instance_refresh   = merge(var.eks.instance_refresh, { repository = try(coalesce(var.eks.instance_refresh.repository), var.helm_charts.termination_handler.repository), version = try(coalesce(var.eks.instance_refresh.verison), var.helm_charts.termination_handler.version) })
     encryption_keys = {
       cluster_log_kms_key_id    = local.kms_key
       cluster_encryption_config = local.kms_key

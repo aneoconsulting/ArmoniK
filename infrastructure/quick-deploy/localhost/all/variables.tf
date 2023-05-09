@@ -50,7 +50,7 @@ variable "metrics_server" {
       "--kubelet-insecure-tls"
     ]),
     host_network          = optional(bool, false),
-    helm_chart_repository = optional(string, "https://kubernetes-sigs.github.io/metrics-server/")
+    helm_chart_repository = optional(string)
     helm_chart_version    = optional(string, "3.8.3")
   })
   default = null
@@ -69,8 +69,8 @@ variable "keda" {
     node_selector                   = optional(any, {})
     metrics_server_dns_policy       = optional(string, "ClusterFirst")
     metrics_server_use_host_network = optional(bool, false)
-    helm_chart_repository           = optional(string, "https://kedacore.github.io/charts")
-    helm_chart_version              = optional(string, "2.9.4")
+    helm_chart_repository           = optional(string)
+    helm_chart_version              = optional(string)
   })
   default = {}
 }
@@ -487,4 +487,12 @@ variable "armonik_images" {
 variable "image_tags" {
   description = "Tags of images used"
   type        = map(string)
+}
+
+variable "helm_charts" {
+  description = "Versions of helm charts repositories"
+  type = map(object({
+    repository = string
+    version    = string
+  }))
 }

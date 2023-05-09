@@ -117,14 +117,14 @@ variable "eks" {
       scale_down_delay_after_failure        = optional(string, "3m")
       scale_down_unneeded_time              = optional(string, "2m")
       skip_nodes_with_system_pods           = optional(bool, true)
-      version                               = optional(string, "9.24.0")
-      repository                            = optional(string, "https://kubernetes.github.io/autoscaler")
+      version                               = optional(string)
+      repository                            = optional(string)
       namespace                             = optional(string, "kube-system")
     }), {})
     instance_refresh = optional(object({
       namespace  = optional(string, "kube-system")
-      repository = optional(string, "https://aws.github.io/eks-charts")
-      version    = optional(string, "0.21.0")
+      repository = optional(string)
+      version    = optional(string)
     }), {})
     map_roles = optional(list(object({
       rolearn  = string
@@ -176,8 +176,8 @@ variable "metrics_server" {
       "--metric-resolution=15s",
     ]),
     host_network          = optional(bool, false),
-    helm_chart_repository = optional(string, "https://kubernetes-sigs.github.io/metrics-server/")
-    helm_chart_version    = optional(string, "3.8.3")
+    helm_chart_repository = optional(string)
+    helm_chart_version    = optional(string)
   })
   default = {}
 }
@@ -195,8 +195,8 @@ variable "keda" {
     node_selector                   = optional(any, {})
     metrics_server_dns_policy       = optional(string, "ClusterFirst")
     metrics_server_use_host_network = optional(bool, false)
-    helm_chart_repository           = optional(string, "https://kedacore.github.io/charts")
-    helm_chart_version              = optional(string, "2.9.4")
+    helm_chart_repository           = optional(string)
+    helm_chart_version              = optional(string)
   })
   default = {}
 }
@@ -336,8 +336,8 @@ variable "pv_efs" {
       namespace     = optional(string, "kube-system")
       pull_secrets  = optional(string, "")
       node_selector = optional(any, {})
-      repository    = optional(string, "https://kubernetes-sigs.github.io/aws-efs-csi-driver/")
-      version       = optional(string, "2.3.0")
+      repository    = optional(string)
+      version       = optional(string)
       images = optional(object({
         efs_csi = optional(object({
           name = optional(string, "amazon/aws-efs-csi-driver")
@@ -716,4 +716,12 @@ variable "armonik_images" {
 variable "image_tags" {
   description = "Tags of images used"
   type        = map(string)
+}
+
+variable "helm_charts" {
+  description = "Versions of helm charts repositories"
+  type = map(object({
+    repository = string
+    version    = string
+  }))
 }
