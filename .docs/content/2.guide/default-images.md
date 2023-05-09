@@ -18,6 +18,7 @@ If you try to use an image name that is not listed in [`versions.tfvars.json`](.
 ## Examples
 
 All the examples are for the all-in-one local deployment for mongodb, with the following default versions:
+
 ```json
 {
   "armonik_versions": {
@@ -45,7 +46,8 @@ All the examples are for the all-in-one local deployment for mongodb, with the f
 
 Specifying the image and its version within the tfvars (ex: [`parameters.tfvars`](../infrastructure/quick-deploy/aws/all/parameters.tfvars))
 
-### Use the default image and tag:
+## Use the default image and tag
+
 ```terraform
 mongodb = {
 }
@@ -58,8 +60,8 @@ control_plane = {
 - mongodb: `mongo:5.0.9`
 - control_plane: `dockerhubaneo/armonik_control:0.8.3`
 
+## Use the default image with a custom tag
 
-### Use the default image with a custom tag:
 ```terraform
 mongodb = {
   image_tag = "6.0"
@@ -74,7 +76,8 @@ control_plane = {
 - mongodb: `mongo:6.0`
 - control_plane: `dockerhubaneo/armonik_control:0.8.0`
 
-### Use a custom image:
+## Use a custom image
+
 ```terraform
 mongodb = {
   image_name = "custom_registry/mongo"

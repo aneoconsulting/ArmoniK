@@ -1,3 +1,5 @@
+<!-- @case-police-ignore Grpc -->
+
 # How to configure partitions?
 
 This guide aims to present the setup and usage of the partitions within ArmoniK.
@@ -10,20 +12,15 @@ Partitions are sets of pods with their own configuration, their own task queue a
 - workers need different node configuration (eg: number of cores, gpu)
 - need different limits on the number of pods depending on the application
 
-
-
 ## How to setup the partitioning in terraform
 
+To install and configure the partitioning there are some modifications to implement in the deployment scripts.  With the implementation in the 2.9 version, the partitioning is static. That means, that the partitions have to be defined and deployed at the same time than the ArmoniK infrastructure and cannot be changed without a redeployment and a new modification of the parameters files.
 
-To install and configure the partioning there are some modifications to implement in the deployment scripts.  With the implementation in the 2.9 version, the partioning is static. That means, that the partitions have to be defined and deployed at the same time than the ArmoniK infrastructure and cannot be changed without a redeployment and a new modification of the parameters files.
+In the version 2.8, the partitioning was not available in ArmoniK but the infrastructure was ready for this functionality. A default partition was created at deployment time with the name `default`.
 
-In the version 2.8, the partitioning was not available in ArmoniK but the infrastructure was ready for this functionality. A default partition was created at deployment time with the name `default`. 
-
-To use multiple partitions, a functionality which is now available with the version 2.9,  the first step is to modify the infrastructure deployment with the desired configuration  for the partitions. On an AWS deployement, this is done in the file  [infrastructure/quick-deploy/*/armonik/parameters.tfvars](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/armonik/parameters.tfvars), specifically in the variable `compute_plane`.
-
+To use multiple partitions, a functionality which is now available with the version 2.9,  the first step is to modify the infrastructure deployment with the desired configuration  for the partitions. On an AWS deployment, this is done in the file  [infrastructure/quick-deploy/*/armonik/parameters.tfvars](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/armonik/parameters.tfvars), specifically in the variable `compute_plane`.
 
 This variable is a map whose key is the partition name and the value is the partition configuration.
-
 
 ```hcl
 # Parameters of the compute plane
@@ -184,7 +181,6 @@ var createSessionReply = submitterClient.CreateSession(createSessionRequest);
 ```
 
 You can specify a specific partition for a task by overwriting the `TaskOptions` for the task and specifying a different partition. If `PartitionId` is empty, the default partition of the *session* will be used. An error is raised if the specified partition is not part of the list of partitions of the session.
-
 
 ```c#
 var createTaskReply = await submitterClient.CreateTasksAsync(

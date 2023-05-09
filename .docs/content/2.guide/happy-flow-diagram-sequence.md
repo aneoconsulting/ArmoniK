@@ -2,14 +2,14 @@
 
 <Mermaid>
 sequenceDiagram
-    #title ArmoniK Happy Flow Sequence 
+    #title ArmoniK Happy Flow Sequence
     Client-->>Client:Generate GUID for session
     Client->>Submitter:Create session
     activate Client
     Submitter->>SessionTable:Create session document
     Submitter->>Client:Session OK
     deactivate Client
-    Client->>Submitter:Get Service Configuration 
+    Client->>Submitter:Get Service Configuration
     activate Client
     Submitter->>Client:Service Configuration
     deactivate Client
@@ -19,7 +19,7 @@ sequenceDiagram
     activate Submitter
     Submitter->>TaskTable:Get default task options
     activate Submitter
-    Submitter->>PayloadStorage:Store task payload 
+    Submitter->>PayloadStorage:Store task payload
     Submitter->>TaskTable:Create Task Document status = creating
     Submitter->>ResultTable:Create Result Document
     Submitter-->>Submitter:Wait all Task creation calls
@@ -58,12 +58,12 @@ sequenceDiagram
     PollingAgent->>ResultStorage:Send Result
     PollingAgent->>ResultTable:Send Result Availability
     PollingAgent->>Worker: Acknowledge
-    Worker->>PollingAgent:Send Output (OK vs Error) and close stream 
+    Worker->>PollingAgent:Send Output (OK vs Error) and close stream
     PollingAgent->>DispatchTable:Finalize Dispatch **with output metadata**.
     PollingAgent->>TaskTable:Update Status = Completed
     PollingAgent->>Queue:Release message
     deactivate Submitter
-    Submitter->>ResultTable:Check if Result is available 
+    Submitter->>ResultTable:Check if Result is available
     Submitter->>Client:ResultAvailable
     deactivate Submitter
     deactivate Client
