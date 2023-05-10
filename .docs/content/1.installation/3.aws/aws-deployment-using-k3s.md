@@ -1,20 +1,17 @@
----
-uid: aws_k3s_deploy
----
-
-
-# [AWS deployment using k3s](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/docs/kubernetes/cluster/k3s-cluster)
+# AWS deployment using k3s
 
 ## Introduction
 
 This project presents the creation of a small cluster on AWS. The cluster will be composed of a master node and three
 worker nodes.
 
-The files to achieve this deployment are available [here](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/docs/kubernetes/cluster/k3s-cluster)
+The files to achieve this deployment are available [in the repository](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/docs/kubernetes/cluster/k3s-cluster)
 
 We mount a NFS server on the master node too, from which workers will upload .dll.
 
-> **_NOTE:_** You must have an AWS account to use these sources to create a cluster.
+::alert{type="info"}
+You muse have an AWS account to use these sources to create a cluster.
+::
 
 ## AWS credentials
 
@@ -59,7 +56,9 @@ In [parameters.tfvars](https://github.com/aneoconsulting/ArmoniK/blob/main/infra
     public_key       = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 email@example.com"
   }
   ```
+
 * set the ID of an existing VPC and its subnet:
+
   ```bash
   vpc_id    = "<VPC_ID>"
   subnet_id = "<SUBNET_ID>"
@@ -97,7 +96,10 @@ worker_public_ip = [
 ## Prerequisites
 
 You must open the following inbound ports:
-![Open ports on aws](~/images/installations/ports.png)
+
+| IPv4 | Custom TCP   | TCP          | 30000 - 32767 | 0.0.0.0/0      | ArmoniK services |
+| ---- | ------------ | ------------ | ------------- | -------------- | ---------------- |
+| IPv4 | IP-in-IP (4) | IP-in-IP (4) | All           | 192.168.0.0/16 | ArmoniK services |
 
 ## Accessing the cluster from outside
 
