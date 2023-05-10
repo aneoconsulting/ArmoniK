@@ -26,7 +26,7 @@ resource "aws_iam_policy" "decrypt_object" {
 resource "aws_iam_policy_attachment" "decrypt_object" {
   name       = local.iam_s3_decrypt_object_policy_name
   policy_arn = aws_iam_policy.decrypt_object.arn
-  roles      = var.eks.self_managed_worker_iam_role_names
+  roles      = var.eks.worker_iam_role_names
 }
 
 # Read objects in S3
@@ -53,5 +53,5 @@ resource "aws_iam_policy" "read_object" {
 resource "aws_iam_policy_attachment" "read_object_attachment" {
   name       = "s3-read-${var.eks.cluster_name}"
   policy_arn = aws_iam_policy.read_object.arn
-  roles      = var.eks.self_managed_worker_iam_role_names
+  roles      = var.eks.worker_iam_role_names
 }

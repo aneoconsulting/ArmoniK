@@ -53,6 +53,8 @@ s3_fs = {
   restrict_public_buckets               = true
   kms_key_id                            = ""
   sse_algorithm                         = ""
+  ownership                             = "BucketOwnerPreferred"
+  versioning                            = "Disabled"
 }
 
 # Object storage
@@ -81,9 +83,9 @@ elasticache = {
     log_kms_key_id = ""
   }
 }
-
+/*
 # S3 as shared storage
-/*s3_os = {
+s3_os = {
   name                                  = "armonik-s3os"
   policy                                = ""
   attach_policy                         = false
@@ -96,7 +98,10 @@ elasticache = {
   restrict_public_buckets               = true
   kms_key_id                            = ""
   sse_algorithm                         = ""
-}*/
+  ownership                             = "BucketOwnerPreferred"
+  versioning                            = "Disabled"
+}
+*/
 
 # MQ parameters
 mq = {
@@ -122,7 +127,7 @@ mq_credentials = {
 mongodb = {
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongodb"
   tag                = "6.0.1"
-  node_selector      = { "grid/type" = "Operator" }
+  node_selector      = { service = "state-database" }
   image_pull_secrets = ""
   persistent_volume  = null
   replicas_number    = 2
@@ -146,7 +151,7 @@ pv_efs = {
   csi_driver = {
     namespace          = "kube-system"
     image_pull_secrets = ""
-    node_selector      = { "grid/type" = "Operator" }
+    node_selector      = { service = "state-database" }
     repository         = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
     version            = "2.3.0"
     docker_images = {

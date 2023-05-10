@@ -9,10 +9,9 @@
     "preview": "nuxi preview"
   },
   "dependencies": {
-    "@aneoconsultingfr/armonik-docs-theme": "^0.6.0",
-    "nuxt": "^3.3.1",
-    "rollup": "3.18.0",
-    "mermaid": "^10.0.0"
+    "@aneoconsultingfr/armonik-docs-theme": "^0.6.4",
+    "mermaid": "^10.1.0",
+    "nuxt": "^3.4.2"
   },
-  "packageManager": "pnpm@8.1.0"
+  "packageManager": "pnpm@8.3.1"
 }

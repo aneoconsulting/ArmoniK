@@ -9,6 +9,9 @@ logging_level = "Information"
 redis = {}
 #minio = {}
 
+# Uncomment this to have minio S3 enabled instead of hostpath shared_storage
+#minio_s3_fs = {} # Shared storage
+
 metrics_exporter = {
   extra_conf = {
     MongoDB__AllowInsecureTls              = true

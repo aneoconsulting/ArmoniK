@@ -30,6 +30,8 @@ module "s3_fs" {
     restrict_public_buckets               = var.s3_fs.restrict_public_buckets
     kms_key_id                            = local.kms_key
     sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_fs.sse_algorithm : "aws:kms"
+    ownership                             = var.s3_fs.ownership
+    versioning                            = var.s3_fs.versioning
   }
 }
 
@@ -67,6 +69,8 @@ module "s3_os" {
     restrict_public_buckets               = var.s3_os.restrict_public_buckets
     kms_key_id                            = local.kms_key
     sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_os.sse_algorithm : "aws:kms"
+    ownership                             = var.s3_os.ownership
+    versioning                            = var.s3_os.versioning
   }
 }
 
@@ -244,7 +248,7 @@ resource "aws_iam_policy" "decrypt_object" {
 
 resource "aws_iam_policy_attachment" "decrypt_object" {
   name       = "${local.prefix}-s3-encrypt-decrypt"
-  roles      = module.eks.self_managed_worker_iam_role_names
+  roles      = module.eks.worker_iam_role_names
   policy_arn = aws_iam_policy.decrypt_object.arn
 }
 
@@ -272,7 +276,7 @@ resource "aws_iam_policy" "object" {
 resource "aws_iam_policy_attachment" "object" {
   for_each   = aws_iam_policy.object
   name       = "${local.prefix}-permissions-on-s3-${each.key}"
-  roles      = module.eks.self_managed_worker_iam_role_names
+  roles      = module.eks.worker_iam_role_names
   policy_arn = each.value.arn
 }
 

@@ -53,7 +53,7 @@ monitoring = {
     port                   = 8080
     image_pull_secrets     = ""
     service_type           = "ClusterIP"
-    node_selector          = { "grid/type" = "Operator" }
+    node_selector          = { service = "monitoring" }
     system_ram_target      = 0.2
     cli_image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seqcli"
     cli_tag                = "2023.1"
@@ -67,28 +67,28 @@ monitoring = {
     port               = 3000
     image_pull_secrets = ""
     service_type       = "ClusterIP"
-    node_selector      = { "grid/type" = "Operator" }
+    node_selector      = { service = "monitoring" }
   }
   node_exporter = {
     enabled            = true
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/node-exporter"
     tag                = "v1.5.0"
     image_pull_secrets = ""
-    node_selector      = { "grid/type" = "Operator" }
+    node_selector      = {}
   }
   prometheus = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/prometheus"
     tag                = "v2.42.0"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
-    node_selector      = { "grid/type" = "Operator" }
+    node_selector      = { service = "metrics" }
   }
   metrics_exporter = {
     image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/metrics-exporter"
     tag                = "0.13.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
-    node_selector      = { "grid/type" = "Operator" }
+    node_selector      = { service = "metrics" }
     extra_conf = {
       MongoDB__AllowInsecureTls              = true
       Serilog__MinimumLevel                  = "Information"
@@ -101,7 +101,7 @@ monitoring = {
     tag                = "0.13.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
-    node_selector      = { "grid/type" = "Operator" }
+    node_selector      = { service = "metrics" }
     extra_conf = {
       MongoDB__AllowInsecureTls              = true
       Serilog__MinimumLevel                  = "Information"
@@ -128,7 +128,7 @@ monitoring = {
     is_daemonset       = true
     http_port          = 2020 # 0 or 2020
     read_from_head     = true
-    node_selector      = { "grid/type" = "Operator" }
+    node_selector      = {}
     parser             = "cri"
   }
 }
