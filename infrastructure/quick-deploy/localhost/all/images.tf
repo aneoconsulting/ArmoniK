@@ -1,5 +1,5 @@
 module "default_images" {
-  source = "../../../modules/default-images"
+  source = "./generated/infra-modules/default-images"
 
   armonik_versions = var.armonik_versions
   armonik_images   = var.armonik_images
