@@ -1,7 +1,7 @@
 # Seq
 module "seq" {
   count         = (local.seq_enabled ? 1 : 0)
-  source        = "../../../modules/monitoring/seq"
+  source        = "../generated/modules/monitoring/seq"
   namespace     = var.namespace
   service_type  = local.seq_service_type
   port          = local.seq_port
@@ -25,7 +25,7 @@ module "seq" {
 # node exporter
 module "node_exporter" {
   count         = (local.node_exporter_enabled ? 1 : 0)
-  source        = "../../../modules/monitoring/exporters/node-exporter"
+  source        = "../generated/modules/monitoring/exporters/node-exporter"
   namespace     = var.namespace
   node_selector = local.node_exporter_node_selector
   docker_image = {
@@ -38,7 +38,7 @@ module "node_exporter" {
 
 # Metrics exporter
 module "metrics_exporter" {
-  source               = "../../../modules/monitoring/exporters/metrics-exporter"
+  source               = "../generated/modules/monitoring/exporters/metrics-exporter"
   namespace            = var.namespace
   service_type         = local.metrics_exporter_service_type
   node_selector        = local.metrics_exporter_node_selector
@@ -54,7 +54,7 @@ module "metrics_exporter" {
 
 # Partition metrics exporter
 #module "partition_metrics_exporter" {
-#  source               = "../../../modules/monitoring/exporters/partition-metrics-exporter"
+#  source               = "../generated/modules/monitoring/exporters/partition-metrics-exporter"
 #  namespace            = var.namespace
 #  service_type         = local.partition_metrics_exporter_service_type
 #  node_selector        = local.partition_metrics_exporter_node_selector
@@ -73,7 +73,7 @@ module "metrics_exporter" {
 
 # Prometheus
 module "prometheus" {
-  source                         = "../../../modules/monitoring/prometheus"
+  source                         = "../generated/modules/monitoring/prometheus"
   namespace                      = var.namespace
   service_type                   = local.prometheus_service_type
   node_selector                  = local.prometheus_node_selector
@@ -95,7 +95,7 @@ module "prometheus" {
 # Grafana
 module "grafana" {
   count          = (local.grafana_enabled ? 1 : 0)
-  source         = "../../../modules/monitoring/grafana"
+  source         = "../generated/modules/monitoring/grafana"
   namespace      = var.namespace
   service_type   = local.grafana_service_type
   port           = local.grafana_port
@@ -113,7 +113,7 @@ module "grafana" {
 
 # Fluent-bit
 module "fluent_bit" {
-  source        = "../../../modules/monitoring/fluent-bit"
+  source        = "../generated/modules/monitoring/fluent-bit"
   namespace     = var.namespace
   node_selector = local.fluent_bit_node_selector
   seq = (local.seq_enabled ? {
