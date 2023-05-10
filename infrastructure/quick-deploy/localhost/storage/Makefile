@@ -5,6 +5,7 @@ PARAMETERS_FILE?=parameters.tfvars
 STATE_FILE=$(BACKEND)/storage-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/storage-output.json
 VERSIONS_FILE?=../../../../versions.tfvars.json
+MODULES_DIR?=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
 MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
 

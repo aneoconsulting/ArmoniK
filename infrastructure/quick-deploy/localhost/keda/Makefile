@@ -6,6 +6,7 @@ STATE_FILE=$(BACKEND)/keda-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/keda-output.json
 MODULES_DIR?=$(CURRENT_DIR)/../modules
 VERSIONS_FILE?=../../../../versions.tfvars.json
+MODULES_DIR?=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
 MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
 

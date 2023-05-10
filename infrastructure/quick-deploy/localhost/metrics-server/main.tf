@@ -1,6 +1,6 @@
 # Metrics server
 module "metrics_server" {
-  source    = "../generated/modules/monitoring/metrics-server"
+  source    = "../generated/infra-modules/monitoring/metrics-server"
   namespace = local.namespace
   docker_image = {
     image = local.image
