@@ -2,6 +2,11 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+Changed
+-
+
+* Move Terraform modules of different resources deployment to GitHub repository [ArmoniK.Infra](https://github.com/aneoconsulting/ArmoniK.Infra).
+
 ## [v2.13.0](https://github.com/aneoconsulting/armonik/tree/v2.13.0) (2023-04-23)
 
 Changed
@@ -28,7 +33,7 @@ Fixed
 
 * Switched DLL Worker to release mode by default
 * Added view of currently handled task ids in Unified Client
-* Resend exception when errors occured in SubmitAsync 
+* Resend exception when errors occurred in SubmitAsync 
 * Forward exception in bufferRequest list
 
 
