@@ -7,6 +7,6 @@ module "metrics_server" {
   node_selector         = var.metrics_server.node_selector
   default_args          = var.metrics_server.args
   host_network          = var.metrics_server.host_network
-  helm_chart_repository = var.metrics_server.helm_chart_repository
-  helm_chart_version    = var.metrics_server.helm_chart_version
+  helm_chart_repository = try(coalesce(var.metrics_server.helm_chart_repository), var.helm_charts.metrics_server.repository)
+  helm_chart_version    = try(coalesce(var.metrics_server.helm_chart_verison), var.helm_charts.metrics_server.version)
 }
