@@ -1,7 +1,7 @@
 # AWS KMS
 module "kms" {
   count  = can(coalesce(var.kms_key)) ? 0 : 1
-  source = "../../../modules/aws/kms"
+  source = "./generated/infra-modules/aws/kms"
   name   = "${local.prefix}-kms"
   tags   = local.tags
 }

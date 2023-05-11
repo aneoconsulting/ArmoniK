@@ -1,7 +1,7 @@
 # AWS KMS
 module "kms" {
   count  = (local.cloudwatch_kms_key_id == "" && local.cloudwatch_enabled ? 1 : 0)
-  source = "../../../modules/aws/kms"
+  source = "../generated/infra-modules/aws/kms"
   name   = local.kms_name
   tags   = local.tags
 }
@@ -9,7 +9,7 @@ module "kms" {
 # Seq
 module "seq" {
   count         = (local.seq_enabled ? 1 : 0)
-  source        = "../../../modules/monitoring/seq"
+  source        = "../generated/infra-modules/monitoring/seq"
   namespace     = var.namespace
   service_type  = local.seq_service_type
   port          = local.seq_port
@@ -33,7 +33,7 @@ module "seq" {
 # node exporter
 module "node_exporter" {
   count         = (local.node_exporter_enabled ? 1 : 0)
-  source        = "../../../modules/monitoring/exporters/node-exporter"
+  source        = "../generated/infra-modules/monitoring/exporters/node-exporter"
   namespace     = var.namespace
   node_selector = local.node_exporter_node_selector
   docker_image = {
@@ -46,7 +46,7 @@ module "node_exporter" {
 
 # Metrics exporter
 module "metrics_exporter" {
-  source               = "../../../modules/monitoring/exporters/metrics-exporter"
+  source               = "../generated/infra-modules/monitoring/exporters/metrics-exporter"
   namespace            = var.namespace
   service_type         = local.metrics_exporter_service_type
   node_selector        = local.metrics_exporter_node_selector
@@ -62,7 +62,7 @@ module "metrics_exporter" {
 
 # Partition metrics exporter
 #module "partition_metrics_exporter" {
-#  source               = "../../../modules/monitoring/exporters/partition-metrics-exporter"
+#  source               = "../generated/infra-modules/monitoring/exporters/partition-metrics-exporter"
 #  namespace            = var.namespace
 #  service_type         = local.partition_metrics_exporter_service_type
 #  node_selector        = local.partition_metrics_exporter_node_selector
@@ -80,7 +80,7 @@ module "metrics_exporter" {
 
 # Prometheus
 module "prometheus" {
-  source                         = "../../../modules/monitoring/prometheus"
+  source                         = "../generated/infra-modules/monitoring/prometheus"
   namespace                      = var.namespace
   service_type                   = local.prometheus_service_type
   node_selector                  = local.prometheus_node_selector
@@ -102,7 +102,7 @@ module "prometheus" {
 # Grafana
 module "grafana" {
   count          = (local.grafana_enabled ? 1 : 0)
-  source         = "../../../modules/monitoring/grafana"
+  source         = "../generated/infra-modules/monitoring/grafana"
   namespace      = var.namespace
   service_type   = local.grafana_service_type
   port           = local.grafana_port
@@ -121,7 +121,7 @@ module "grafana" {
 # CloudWatch
 module "cloudwatch" {
   count             = (local.cloudwatch_enabled ? 1 : 0)
-  source            = "../../../modules/aws/cloudwatch-log-group"
+  source            = "../generated/infra-modules/aws/cloudwatch-log-group"
   name              = local.cloudwatch_log_group_name
   kms_key_id        = (local.cloudwatch_kms_key_id != "" ? local.cloudwatch_kms_key_id : module.kms.0.arn)
   retention_in_days = local.cloudwatch_retention_in_days
@@ -130,7 +130,7 @@ module "cloudwatch" {
 
 # Fluent-bit
 module "fluent_bit" {
-  source        = "../../../modules/monitoring/fluent-bit"
+  source        = "../generated/infra-modules/monitoring/fluent-bit"
   namespace     = var.namespace
   node_selector = local.fluent_bit_node_selector
   fluent_bit = {

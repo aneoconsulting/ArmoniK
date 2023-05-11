@@ -3,6 +3,9 @@ GENERATED_DIR=$(CURRENT_DIR)/generated
 PARAMETERS_FILE?=parameters.tfvars
 STATE_FILE=metrics-server-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/metrics-server-output.json
+MODULES_DIR?=$(GENERATED_DIR)/infra-modules
+MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
+MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export REGION?=eu-west-3
@@ -14,8 +17,8 @@ export KUBECONFIG?=$(GENERATED_DIR)/eks/kubeconfig
 
 .PHONY: apply destroy
 
-all: init apply output
-deploy: init apply output
+all: get-modules init apply output
+deploy: get-modules init apply output
 destroy: init delete
 
 init:
@@ -51,6 +54,15 @@ delete:
 		-var 'k8s_config_path=$(KUBECONFIG)' \
 		-state $(STATE_FILE) \
 		-auto-approve
+
+get-modules:
+	@if [ -d $(MODULES_DIR) ]; then\
+		git -C $(MODULES_DIR) fetch --all --tags;\
+		git -C $(MODULES_DIR) -c advice.detachedHead=false checkout $(MODULES_VERSION);\
+		git -C $(MODULES_DIR) pull origin $(MODULES_VERSION);\
+    else \
+      	git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) $(MODULES_SOURCE) $(MODULES_DIR);\
+    fi
 
 clean:
 	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform

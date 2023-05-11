@@ -15,7 +15,7 @@ locals {
 
 # AWS S3 as shared storage
 module "s3_fs" {
-  source = "../../../modules/aws/s3"
+  source = "./generated/infra-modules/aws/s3"
   tags   = local.tags
   name   = "${local.prefix}-s3fs"
   s3 = {
@@ -55,7 +55,7 @@ resource "kubernetes_secret" "shared_storage" {
 # AWS S3 as object storage
 module "s3_os" {
   count  = var.s3_os != null ? 1 : 0
-  source = "../../../modules/aws/s3"
+  source = "./generated/infra-modules/aws/s3"
   tags   = local.tags
   name   = "${local.prefix}-s3os"
   s3 = {
@@ -94,7 +94,7 @@ resource "kubernetes_secret" "s3" {
 # AWS Elasticache
 module "elasticache" {
   count  = var.elasticache != null ? 1 : 0
-  source = "../../../modules/aws/elasticache"
+  source = "./generated/infra-modules/aws/elasticache"
   tags   = local.tags
   name   = "${local.prefix}-elasticache"
   vpc    = local.vpc
@@ -135,7 +135,7 @@ resource "kubernetes_secret" "elasticache" {
 
 # Amazon MQ
 module "mq" {
-  source    = "../../../modules/aws/mq"
+  source    = "./generated/infra-modules/aws/mq"
   tags      = local.tags
   name      = "${local.prefix}-mq"
   namespace = local.namespace
@@ -175,7 +175,7 @@ resource "kubernetes_secret" "mq" {
 
 # MongoDB
 module "mongodb" {
-  source      = "../../../modules/onpremise-storage/mongodb"
+  source      = "./generated/infra-modules/onpremise-storage/mongodb"
   namespace   = local.namespace
   working_dir = "${path.root}/../../.."
   mongodb = {
@@ -192,7 +192,7 @@ module "mongodb" {
 # AWS EFS as persistent volume
 module "efs_persistent_volume" {
   count      = try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0
-  source     = "../../../modules/persistent-volumes/efs"
+  source     = "./generated/infra-modules/persistent-volumes/efs"
   eks_issuer = module.eks.issuer
   vpc        = local.vpc
   efs = {

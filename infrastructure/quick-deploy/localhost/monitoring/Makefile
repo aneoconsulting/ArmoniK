@@ -4,14 +4,18 @@ BACKEND?=$(GENERATED_DIR)/backend
 PARAMETERS_FILE?=parameters.tfvars
 STATE_FILE=$(BACKEND)/monitoring-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/monitoring-output.json
+VERSIONS_FILE?=../../../../versions.tfvars.json
+MODULES_DIR?=$(GENERATED_DIR)/infra-modules
+MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
+MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export NAMESPACE?=armonik
 
 .PHONY: apply destroy
 
-all: init apply output
-deploy: init apply output
+all: get-modules init apply output
+deploy: get-modules init apply output
 destroy: init delete
 
 init:
@@ -37,6 +41,15 @@ delete:
 		-var 'namespace=$(NAMESPACE)' \
 		-state $(STATE_FILE) \
 		-auto-approve
+
+get-modules:
+	@if [ -d $(MODULES_DIR) ]; then\
+		git -C $(MODULES_DIR) fetch --all --tags;\
+		git -C $(MODULES_DIR) -c advice.detachedHead=false checkout $(MODULES_VERSION);\
+		git -C $(MODULES_DIR) pull origin $(MODULES_VERSION);\
+    else \
+      	git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) $(MODULES_SOURCE) $(MODULES_DIR);\
+    fi
 
 clean:
 	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform
