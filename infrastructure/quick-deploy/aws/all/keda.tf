@@ -1,6 +1,6 @@
 # Keda
 module "keda" {
-  source    = "./generated/infra-modules/monitoring/keda"
+  source    = "./generated/infra-modules/monitoring/onpremise/keda"
   namespace = var.keda.namespace
   docker_image = {
     keda             = local.ecr_images["${var.keda.keda_image_name}:${try(coalesce(var.keda.keda_image_tag), "")}"]
