@@ -20,7 +20,7 @@ export TF_VAR_prefix?=$(PREFIX)
 
 all: get-modules init apply output
 deploy: get-modules init apply output
-destroy: get-modules init delete
+destroy: init delete
 
 env:
 	@set
@@ -47,7 +47,9 @@ output:
 
 get-modules:
 	@if [ -d $(MODULES_DIR) ]; then\
+		git -C $(MODULES_DIR) fetch --all --tags;\
 		git -C $(MODULES_DIR) -c advice.detachedHead=false checkout $(MODULES_VERSION);\
+		git -C $(MODULES_DIR) pull origin $(MODULES_VERSION);\
     else \
       	git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) $(MODULES_SOURCE) $(MODULES_DIR);\
     fi

@@ -4,7 +4,6 @@ BACKEND?=$(GENERATED_DIR)/backend
 PARAMETERS_FILE?=parameters.tfvars
 STATE_FILE=$(BACKEND)/keda-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/keda-output.json
-MODULES_DIR?=$(CURRENT_DIR)/../modules
 VERSIONS_FILE?=../../../../versions.tfvars.json
 MODULES_DIR?=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
@@ -17,7 +16,7 @@ export NAMESPACE?=default
 
 all: get-modules init apply output
 deploy: get-modules init apply output
-destroy: get-modules init delete
+destroy: init delete
 
 init:
 	mkdir -p $(GENERATED_DIR)
@@ -45,7 +44,9 @@ delete:
 
 get-modules:
 	@if [ -d $(MODULES_DIR) ]; then\
+		git -C $(MODULES_DIR) fetch --all --tags;\
 		git -C $(MODULES_DIR) -c advice.detachedHead=false checkout $(MODULES_VERSION);\
+		git -C $(MODULES_DIR) pull origin $(MODULES_VERSION);\
     else \
       	git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) $(MODULES_SOURCE) $(MODULES_DIR);\
     fi
