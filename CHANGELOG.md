@@ -2,6 +2,12 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main) (2023-01-06)
 
+## [v2.10.4](https://github.com/aneoconsulting/armonik/tree/v2.10.4) (2023-05-12)
+
+Fixed
+-
+* image tag of Armonik.Extension.Csharp in ECR deployment
+
 ## [v2.10.3](https://github.com/aneoconsulting/armonik/tree/v2.10.3) (2023-04-26)
 
 Changed
