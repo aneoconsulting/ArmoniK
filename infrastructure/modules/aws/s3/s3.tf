@@ -11,10 +11,10 @@ resource "aws_s3_bucket_versioning" "versioning" {
   }
 }
 
-resource "aws_s3_bucket_acl" "acl" {
+/*resource "aws_s3_bucket_acl" "acl" {
   bucket = aws_s3_bucket.s3_bucket.id
   acl    = "private"
-}
+}*/
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
   bucket = aws_s3_bucket.s3_bucket.bucket
