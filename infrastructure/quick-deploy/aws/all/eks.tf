@@ -1,6 +1,6 @@
 # AWS EKS
 module "eks" {
-  source          = "./generated/infra-modules/aws/eks"
+  source          = "./generated/infra-modules/kubernetes/aws/eks"
   profile         = var.profile
   tags            = local.tags
   name            = module.vpc.eks_cluster_name

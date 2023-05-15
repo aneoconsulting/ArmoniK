@@ -1,6 +1,6 @@
 # Metrics server
 module "metrics_server" {
-  source                = "./generated/infra-modules/monitoring/metrics-server"
+  source                = "./generated/infra-modules/monitoring/onpremise/metrics-server"
   namespace             = var.metrics_server.namespace
   docker_image          = local.ecr_images["${var.metrics_server.image_name}:${try(coalesce(var.metrics_server.image_tag), "")}"]
   image_pull_secrets    = var.metrics_server.image_pull_secrets

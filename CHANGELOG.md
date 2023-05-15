@@ -6,6 +6,7 @@ Changed
 -
 
 * Move Terraform modules of different resources deployment to GitHub repository [ArmoniK.Infra](https://github.com/aneoconsulting/ArmoniK.Infra).
+* Use ArmoniK Infrastructure version `0.0.2`
 
 ## [v2.13.0](https://github.com/aneoconsulting/armonik/tree/v2.13.0) (2023-04-23)
 

@@ -1,6 +1,6 @@
 # ActiveMQ
 module "activemq" {
-  source      = "./generated/infra-modules/onpremise-storage/activemq"
+  source      = "./generated/infra-modules/storage/onpremise/activemq"
   namespace   = local.namespace
   working_dir = "${path.root}/../../.."
   activemq = {
@@ -13,7 +13,7 @@ module "activemq" {
 
 # MongoDB
 module "mongodb" {
-  source      = "./generated/infra-modules/onpremise-storage/mongodb"
+  source      = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace   = local.namespace
   working_dir = "${path.root}/../../.."
   mongodb = {
@@ -29,7 +29,7 @@ module "mongodb" {
 # Redis
 module "redis" {
   count       = var.redis != null ? 1 : 0
-  source      = "./generated/infra-modules/onpremise-storage/redis"
+  source      = "./generated/infra-modules/storage/onpremise/redis"
   namespace   = local.namespace
   working_dir = "${path.root}/../../.."
   redis = {
@@ -44,7 +44,7 @@ module "redis" {
 # minio
 module "minio" {
   count     = var.minio != null ? 1 : 0
-  source    = "./generated/infra-modules/onpremise-storage/minio"
+  source    = "./generated/infra-modules/storage/onpremise/minio"
   namespace = local.namespace
   minio = {
     image              = var.minio.image_name
@@ -59,7 +59,7 @@ module "minio" {
 # minio for file storage
 module "minio_s3_fs" {
   count     = var.minio_s3_fs != null ? 1 : 0
-  source    = "./generated/infra-modules/onpremise-storage/minio"
+  source    = "./generated/infra-modules/storage/onpremise/minio"
   namespace = local.namespace
   minio = {
     image              = local.minio_s3_fs_image
