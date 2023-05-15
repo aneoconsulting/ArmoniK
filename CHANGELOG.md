@@ -1,6 +1,10 @@
 # Changelog
 
-## [main](https://github.com/aneoconsulting/armonik/tree/main) (2023-01-06)
+## [v2.10.5](https://github.com/aneoconsulting/armonik/tree/v2.10.5) (2023-05-15)
+
+Fixed
+-
+* Use version 0.8.4 of ArmoniK.Core with metrics exporter corrections backported
 
 ## [v2.10.4](https://github.com/aneoconsulting/armonik/tree/v2.10.4) (2023-05-12)
 
