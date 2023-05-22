@@ -67,7 +67,6 @@ We store the results of the performance tests in Json files which we will be sto
 
 These tests are dependent of the configuration of the underlying infrastructure and are a prerequirement of every test execution used as comparison. This method could be reused as reproducer for anyone desiring to execute our tests.
 
-
 |        |       |
 | ------ | ----- |
 | **Date** | 05/01/2023 |
@@ -86,7 +85,6 @@ These tests are dependent of the configuration of the underlying infrastructure 
 | **RAM (GB)** | 192 |
 | **Network bandwidth (Gbps)** | 25 |
 | **EBS Bandwidth (Mbps)** | 19000 |
-
 
 The versions of the different ArmoniK components and the third-party tools are defined in [versions.tfvars.json](https://github.com/aneoconsulting/ArmoniK/blob/v2.12.3/versions.tfvars.json).
 
@@ -159,7 +157,7 @@ Faster task processing by increasing the number of pods.
 #### HtcMock
 
 | Number of pods | Resource requests per control-plane| Resource limits per control-plane| Resource requests per scheduling-agent| Resource limits per scheduling-agent| Resource requests per worker | Resource limits for per worker | Number of tasks | Aggregation level | Task workload duration | Input payload size | Output payload size | Duration of submissions (s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) |
-| :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: | 
+| :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
 | 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1K | 1 | 1 ms | 8B | 8B |  |  |  |  |
 | 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 5K | 5 | 1 ms | 8B | 8B |  |  |  |  |
 | 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi |CPU: 1000m / Memory: 256Mi | CPU: 2000m / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 10 | 1 ms | 8B | 8B |  |  |  |  |
@@ -175,7 +173,6 @@ Faster task processing by increasing the number of pods.
 | 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi |CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 10 | 1 ms | 8B | 8B |  |  |  |  |
 | 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 100 | 1 ms | 8B | 8B|  |  |  |  |
 | 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1000 | 1 ms | 8B | 8B  |  |  |  |  |
-
 
 ## Submission scalability tests
 
@@ -198,7 +195,7 @@ Faster task processing by increasing the number of pods.
 | 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |  |
 
 ## Other tests
-    
+
 | Number of pods | Resource requests per control-plane| Resource limits per control-plane| Resource requests per scheduling-agent| Resource limits per scheduling-agent| Resource requests per worker | Resource limits for per worker | Number of tasks | Task workload duration | Input payload size | Output payload size | Duration of submissions (s) | Upload speed (s) | Throughtput for submissions (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) | Total time (s) |
 | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
 | 80K | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | 1 | CPU: 1000m / Memory: 2048Mi | 300M | 1s | 1KB | 1KB |  |  |  |  |  |  |  |  |  |
