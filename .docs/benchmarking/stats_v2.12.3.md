@@ -1,5 +1,4 @@
- 
-# Table of contents
+ # Table of contents
 
 - [Introduction](#introduction)
 - [Test-plan](#test-plan)
@@ -133,7 +132,7 @@ Faster task processing by increasing the number of pods.
 - Tasks duration : 500 ms
 - Output payload size : 8B
 
-#### StressTest
+### StressTest
 
 | Number of pods | Resource requests per control-plane| Resource limits per control-plane| Resource requests per scheduling-agent| Resource limits per scheduling-agent| Resource requests per worker | Resource limits for per worker | Number of tasks | Task workload duration | Input payload size | Output payload size | Duration of submissions (s) | Upload speed (s) | Throughtput for submissions (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) | Total time (s) |
 | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
