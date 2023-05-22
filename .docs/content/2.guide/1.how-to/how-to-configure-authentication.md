@@ -132,7 +132,7 @@ The JSON authentication configuration file must have the following format (note 
 }
 ```
 
-To know more about permission strings, please refer to [this document](https://github.com/aneoconsulting/ArmoniK.Core/blob/main/Documentation/articles/authentication.md#user-permissions). Please note that the ```Username``` and ```RoleName``` **MUST** be uniquely defined. A badly defined json may fail silently.
+Please note that the ```Username``` and ```RoleName``` **MUST** be uniquely defined. A badly defined json may fail silently.
 
 The resulting configuration is stored in the MongoDB database. If the database is restarted when MongoDB isn't setup with a persistent volume or if the database is emptied it needs to be repopulated by relaunching the authentication-in-database job. In a local deployment, this can be achieved using the following shell command:
 

@@ -1,19 +1,10 @@
-# Table of contents
-
-- [Introduction](#introduction)
-- [Test-plan](#test-plan)
-- [Tests environment](#tests-environment)
-- [Exploited ressources](#exploited-ressources)
-- [The estimated results](#the-estimated-results)
-- [Tests to do](#tests-to-do)
-
 # Introduction
 
 In this document we present the performances of the ArmoniK version 2.12.3.
 
 # Test plan
 
-The benchmarks realised here follow the [test plan](../test_plan.md).
+The benchmarks realised here follow the [test plan](./0.test_plan.md).
 
 # Tests environment
 
