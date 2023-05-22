@@ -47,7 +47,7 @@ The current version of ArmoniK uses the tags listed in [armonik-versions.txt](./
 # ArmoniK deployment
 
 All instructions to build, deploy and test ArmoniK software on Linux are described
-in [ArmoniK deployment](./infrastructure/README.md)
+in [ArmoniK deployment](https://aneoconsulting.github.io/ArmoniK/installation)
 
 # How to run ArmoniK.Samples
 

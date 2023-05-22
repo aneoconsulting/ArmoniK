@@ -5,15 +5,15 @@
 
 The all-in-one terraform deployments support to omit the image names and tags in the tfvars.
 
-If the image name is omitted, a default image name is used, specified directly in [`variables.tf`](../infrastructure/quick-deploy/localhost/all/variables.tf).
+If the image name is omitted, a default image name is used, specified directly in [`variables.tf`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/localhost/all/variables.tf).
 If the image tag is omitted, the default tag for this very image is used.
-The default tags are defined in [`versions.tfvars.json`](../versions.tfvars.json).
+The default tags are defined in [`versions.tfvars.json`](https://github.com/aneoconsulting/ArmoniK/blob/main/versions.tfvars.json).
 
-For all ArmoniK images, the default tag correspond to the version (in [`armonik_versions`](../versions.tfvars.json#L2...L9) variable) of the ArmoniK component that generates the image (in [`armonik_images`](../versions.tfvars.json#L10...L36) variable).
-For third-party images, the default tag of an image is defined in [`image_tags`](../versions.tfvars.json#L37...L58) variable.
+For all ArmoniK images, the default tag correspond to the version (in [`armonik_versions`](https://github.com/aneoconsulting/ArmoniK/blob/main/versions.tfvars.json#L2...L9) variable) of the ArmoniK component that generates the image (in [`armonik_images`](https://github.com/aneoconsulting/ArmoniK/blob/main/versions.tfvars.json#L10...L36) variable).
+For third-party images, the default tag of an image is defined in [`image_tags`](https://github.com/aneoconsulting/ArmoniK/blob/main/versions.tfvars.json#L37...L58) variable.
 
-You are still be able to specify custom image names and/or image tags in your tfvars if you want, without needing to modify [`versions.tfvars.json`](../versions.tfvars.json).
-If you try to use an image name that is not listed in [`versions.tfvars.json`](../versions.tfvars.json), you are required to also specify a tag for this image.
+You are still be able to specify custom image names and/or image tags in your tfvars if you want, without needing to modify [`versions.tfvars.json`](https://github.com/aneoconsulting/ArmoniK/blob/main/versions.tfvars.json).
+If you try to use an image name that is not listed in [`versions.tfvars.json`](https://github.com/aneoconsulting/ArmoniK/blob/main/versions.tfvars.json), you are required to also specify a tag for this image.
 
 ## Examples
 
@@ -44,7 +44,7 @@ All the examples are for the all-in-one local deployment for mongodb, with the f
 }
 ```
 
-Specifying the image and its version within the tfvars (ex: [`parameters.tfvars`](../infrastructure/quick-deploy/aws/all/parameters.tfvars))
+Specifying the image and its version within the tfvars (ex: [`parameters.tfvars`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/all/parameters.tfvars))
 
 ## Use the default image and tag
 
@@ -96,7 +96,7 @@ control_plane = {
 
 ### Special case of the workers
 
-There is no default image for the workers, but you can still omit the tag if the image is listed in [`versions.tfvars.json`](../versions.tfvars.json):
+There is no default image for the workers, but you can still omit the tag if the image is listed in [`versions.tfvars.json`](https://github.com/aneoconsulting/ArmoniK/blob/main/versions.tfvars.json):
 
 ```terraform
 compute_plane = {
