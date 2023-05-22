@@ -1,67 +1,10 @@
-# Test plan of Armonik
-
-- [Introduction](#introduction)
-- [The product and the functionalities to test](#the-product-and-the-functionalities-to-test)
-- [The tools used to do the tests](#the-tools-used-to-do-the-tests)
-- [Tests environment](#tests-environment)
-- [Exploited ressources](#exploited-ressources)
-- [The estimated results](#the-estimated-results)
-- [Tests to do](#tests-to-do)
-
 # Introduction
 
-In this document we describe a performance test plan of ArmoniK. The purpose is to measure the performance of the different functionalities of ArmoniK (task submissions, processing of tasks, ...). We will perform the following tests:
-- Measure the execution time of different numbers of submitted tasks and different size of the tasks.
-- The strong scaling.
+In this document we present the performances of the ArmoniK version 2.12.3.
 
-The purpose of these tests is to have performance measurements based on ArmoniK versions. As this is the first iteration of the performance tests, we will establish our baseline based on a specific version (see hereafter).
+# Test plan
 
-# The product and the functionalities to test
-
-## Products
-
-### Stresstest
-
-This is a stress test which runs a number of tasks with a specific I/O sizes and task workloads. It uses ArmoniK C# extension which copies the DLLs of the application as a zip and installs them on the workers.
-
-### Bench
-
-This test is similar to StressTest but it doesn't use ArmoniK C# extension. The application is already installed on the workers.
-
-### HtcMock
-
-With this test we can have an idea of how ArmoniK can handle the applications with subtasking and aggregation tasks.
-
-## functionalities
-
-We want to test in this first iteration, the three main functionnalities of ArmoniK described below.
-
-### The submission of the tasks
-
-With these tests, we want to measure the performances of tasks submissions od ArmoniK. This is the first step of the task ochestration which consists in submitting the tasks and the input data to be processed by ArmoniK workers.
-
-### The processing of the tasks
-
-In addition to the tasks submission, these tests will allow us to measure the ArmoniK ability to process different numbers of tasks with different workload durations.
-
-### The retrieving of the results
-
-These tests will allow us to determine ArmoniK performances to retrieve the results data after tasks processing. This step consists in the recovery of the output data after the processing of the tasks and it is the last step of the task orchestration.
-
-# The tools used to do the tests
-
-## Bash scripts
-
-The scripts start a warming up run, launch a batch of runs with the same parameters, and store performance data in files.
-
-## Python
-
-- Clean the files of the performance data and store them in readable Json files.
-- Compute the median and the mean of each batch of runs.
-
-## Json
-
-We store the results of the performance tests in Json files which we will be stored in a database.
+The benchmarks realised here follow the [test plan](./0.test_plan.md).
 
 # Tests environment
 
