@@ -69,26 +69,30 @@ These tests are dependent of the configuration of the underlying infrastructure 
 
 |        |       |
 | ------ | ----- |
-| **Date** | 03/29/2023 |
-| **Infra version** |  2.12.0  |
-| **Core version** | 0.11.1 |
-| **API version** | 3.5.2 |
-| **Extension c# version** | 0.9.1 |
-| **Instance type** | c24.xlarge |
-| **Processor** | Intel Xeon de 2e (Cascade Lake) |
-| **CPU frequency** | 3.6 GHz - 3.9 GHz |
-| **nb vCPUs** |  96 |
-| **RAM (GB)** | 192 |
-| **Network bandwidth (Gbps)** | 25 |
-| **EBS Bandwidth (Mbps)** | 19000 |
+| **Date** |  |
+| **Infra version** |   |
+| **Core version** |  |
+| **API version** |  |
+| **Extension c# version** |  |
+| **Metrics exporter** |  |
+| **StressTest Client** |  |
+| **Bench Client** |  |
+| **HtcMock Client** |  |
+| **Instance type** |  |
+| **Processor** | |
+| **CPU frequency** |  |
+| **nb vCPUs** |  |
+| **RAM (GB)** |  |
+| **Network bandwidth (Gbps)** |  |
+| **EBS Bandwidth (Mbps)** |  |
 
-The versions of the different ArmoniK components and the third-party tools are defined in [versions.tfvars.json](https://github.com/aneoconsulting/ArmoniK/blob/v2.12.0/versions.tfvars.json).
+The versions of the different ArmoniK components and the third-party tools are defined in versions.tfvars.json
 
 # Exploited ressources
 
 | Kubernetes | Object stroage type | Storage queue type | Storage table type | OS |
 | :---    | :---    | :---    | :---    | :---    |
-| AWS EKS "1.25" | AWS S3 | Amazon MQ, broker : ActiveMQ "5.16.4" | MongoDB "6.0.1" | Linux |
+|  |  |  |  | |
 
 # The estimated results
 
@@ -114,61 +118,61 @@ Faster task processing by increasing the number of pods.
 
 | Number of pods | Resource requests per control-plane| Resource limits per control-plane| Resource requests per scheduling-agent| Resource limits per scheduling-agent| Resource requests per worker | Resource limits for per worker | Number of tasks | Task workload duration | Input payload size | Output payload size | Duration of submissions (s) | Upload speed (s) | Throughtput for submissions (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
 | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1 ms | 8B | 8B  |  |  |  |  |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 1 ms | 8B | 8B  |  |  |  |  |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 5K | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 1 ms | 8B | 8B|  |  |  |  |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 1 ms | 8B | 8B |  |  |  |  |  |  |  |  |
 
 #### Bench
 
 | Number of pods | Resource requests per control-plane| Resource limits per control-plane| Resource requests per scheduling-agent| Resource limits per scheduling-agent| Resource requests per worker | Resource limits for per worker | Number of tasks | Task workload duration | Input payload size | Output payload size | Duration of submissions (s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) |
 | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1K | 1 ms | 8B | 8B |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 5K | 1 ms | 8B | 8B |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 1 ms | 8B | 8B |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 1 ms | 8B | 8B|  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1 ms | 8B | 8B  |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1K | 1 ms | 8B | 8B |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 5K | 1 ms | 8B | 8B |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 1 ms | 8B | 8B|  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 1 ms | 8B | 8B|  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1 ms | 8B | 8B |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1K | 1 ms | 8B | 8B |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 5K | 1 ms | 8B | 8B |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 1 ms | 8B | 8B|  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 1 ms | 8B | 8B|  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 1 ms | 8B | 8B  |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 1 ms | 8B | 8B|  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1K | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 5K | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 1 ms | 8B | 8B|  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 1 ms | 8B | 8B|  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 1 ms | 8B | 8B |  |  |  |  |
 
 #### HtcMock
 
 | Number of pods | Resource requests per control-plane| Resource limits per control-plane| Resource requests per scheduling-agent| Resource limits per scheduling-agent| Resource requests per worker | Resource limits for per worker | Number of tasks | Aggregation level | Task workload duration | Input payload size | Output payload size | Duration of submissions (s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) |
 | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1K | 1 | 1 ms | 8B | 8B |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 5K | 5 | 1 ms | 8B | 8B |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 10 | 1 ms | 8B | 8B |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 100 | 1 ms | 8B | 8B|  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1000 | 1 ms | 8B | 8B  |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1K | 1 | 1 ms | 8B | 8B |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 5K | 5 | 1 ms | 8B | 8B |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 10 | 1 ms | 8B | 8B |  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 100 | 1 ms | 8B | 8B|  |  |  |  |
-| 1000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1000 | 1 ms | 8B | 8B  |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1K | 1 | 1 ms | 8B | 8B |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 5K | 5 | 1 ms | 8B | 8B |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 10 | 1 ms | 8B | 8B |  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 100 | 1 ms | 8B | 8B|  |  |  |  |
-| 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1000 | 1 ms | 8B | 8B  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1K | 1 | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 5K | 5 | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 10 | 1 ms | 8B | 8B |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 100 | 1 ms | 8B | 8B|  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 1000 | 1 ms | 8B | 8B  |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1K | 1 | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 5K | 5 | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 10 | 1 ms | 8B | 8B |  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 100 | 1 ms | 8B | 8B|  |  |  |  |
+| 1000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 1000 | 1 ms | 8B | 8B  |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1K | 1 | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 5K | 5 | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 10 | 1 ms | 8B | 8B |  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 100 | 1 ms | 8B | 8B|  |  |  |  |
+| 10000 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 1000 | 1 ms | 8B | 8B  |  |  |  |  |
 
 ## Submission scalability tests
 
@@ -180,20 +184,21 @@ Faster task processing by increasing the number of pods.
 
 | Number of pods | Resource requests per control-plane| Resource limits per control-plane| Resource requests per scheduling-agent| Resource limits per scheduling-agent| Resource requests per worker | Resource limits for per worker | Number of tasks | Task workload duration | Input payload size | Output payload size | Duration of submissions (s) | Upload speed (s) | Throughtput for submissions (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
 | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
-| 100 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 10K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 100K | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 1KB | 5 | 1 |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
+| 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
+
 
 ## Other tests
 
 | Number of pods | Resource requests per control-plane| Resource limits per control-plane| Resource requests per scheduling-agent| Resource limits per scheduling-agent| Resource requests per worker | Resource limits for per worker | Number of tasks | Task workload duration | Input payload size | Output payload size | Duration of submissions (s) | Upload speed (s) | Throughtput for submissions (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
 | :---    | :---    | :---    | :---   |  :---   |  :----:  |    ---: |  :----:  |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |    ---: |
-| 80K | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 200m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1 | CPU: 1000m / Memory: 2048Mi | 300M | 1s | 1KB | 1KB |  |  |  |  |  |  |  |  |
+| 80K | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1 | CPU:  / Memory:  | 300M | 1s | 1KB | 1KB |  |  |  |  |  |  |  |  |
 
 This document will be completed in the future with more tests to target more detailed and deeper ArmoniK's features and components.
