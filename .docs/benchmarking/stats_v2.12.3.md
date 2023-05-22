@@ -1,7 +1,7 @@
- # Table of contents 
-- [Introduction](#Introduction)
-- [Test-plan](#Test-plan)
-- [Tests environment](#Tests-environment)
+ # Table of contents
+- [Introduction](#introduction)
+- [Test-plan](#test-plan)
+- [Tests environment](#tests-environment)
 - [Exploited ressources](#exploited-ressources)
 - [The estimated results](#the-estimated-results)
 - [Tests to do](#tests-to-do)
