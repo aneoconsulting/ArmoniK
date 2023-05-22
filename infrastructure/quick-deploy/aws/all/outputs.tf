@@ -27,5 +27,5 @@ output "s3_fs_name" {
 
 output "kubeconfig" {
   description = "Use multiple Kubernetes cluster with KUBECONFIG environment variable"
-  value       = "export KUBECONFIG=${module.eks.kubeconfig_file} && kubectl config use-context ${module.eks.cluster_name}"
+  value       = "export KUBECONFIG=${module.eks.kubeconfig_file}"
 }

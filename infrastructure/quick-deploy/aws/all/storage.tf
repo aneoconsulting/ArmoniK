@@ -15,7 +15,7 @@ locals {
 
 # AWS S3 as shared storage
 module "s3_fs" {
-  source = "../../../modules/aws/s3"
+  source = "./generated/infra-modules/storage/aws/s3"
   tags   = local.tags
   name   = "${local.prefix}-s3fs"
   s3 = {
@@ -42,19 +42,20 @@ resource "kubernetes_secret" "shared_storage" {
     namespace = local.namespace
   }
   data = {
-    service_url       = "https://s3.${var.region}.amazonaws.com"
-    kms_key_id        = module.s3_fs.kms_key_id
-    name              = module.s3_fs.s3_bucket_name
-    access_key_id     = ""
-    secret_access_key = ""
-    file_storage_type = "S3"
+    service_url           = "https://s3.${var.region}.amazonaws.com"
+    kms_key_id            = module.s3_fs.kms_key_id
+    name                  = module.s3_fs.s3_bucket_name
+    access_key_id         = ""
+    secret_access_key     = ""
+    file_storage_type     = "S3"
+    must_force_path_style = false
   }
 }
 
 # AWS S3 as object storage
 module "s3_os" {
   count  = var.s3_os != null ? 1 : 0
-  source = "../../../modules/aws/s3"
+  source = "./generated/infra-modules/storage/aws/s3"
   tags   = local.tags
   name   = "${local.prefix}-s3os"
   s3 = {
@@ -93,7 +94,7 @@ resource "kubernetes_secret" "s3" {
 # AWS Elasticache
 module "elasticache" {
   count  = var.elasticache != null ? 1 : 0
-  source = "../../../modules/aws/elasticache"
+  source = "./generated/infra-modules/storage/aws/elasticache"
   tags   = local.tags
   name   = "${local.prefix}-elasticache"
   vpc    = local.vpc
@@ -134,7 +135,7 @@ resource "kubernetes_secret" "elasticache" {
 
 # Amazon MQ
 module "mq" {
-  source    = "../../../modules/aws/mq"
+  source    = "./generated/infra-modules/storage/aws/mq"
   tags      = local.tags
   name      = "${local.prefix}-mq"
   namespace = local.namespace
@@ -174,7 +175,7 @@ resource "kubernetes_secret" "mq" {
 
 # MongoDB
 module "mongodb" {
-  source      = "../../../modules/onpremise-storage/mongodb"
+  source      = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace   = local.namespace
   working_dir = "${path.root}/../../.."
   mongodb = {
@@ -191,7 +192,7 @@ module "mongodb" {
 # AWS EFS as persistent volume
 module "efs_persistent_volume" {
   count      = try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0
-  source     = "../../../modules/persistent-volumes/efs"
+  source     = "./generated/infra-modules/persistent-volume/aws/efs"
   eks_issuer = module.eks.issuer
   vpc        = local.vpc
   efs = {
@@ -208,8 +209,8 @@ module "efs_persistent_volume" {
     namespace          = var.pv_efs.csi_driver.namespace
     image_pull_secrets = var.pv_efs.csi_driver.pull_secrets
     node_selector      = var.pv_efs.csi_driver.node_selector
-    repository         = var.pv_efs.csi_driver.repository
-    version            = var.pv_efs.csi_driver.version
+    repository         = try(coalesce(var.pv_efs.csi_driver.repository), var.helm_charts.efs_csi_driver.repository)
+    version            = try(coalesce(var.pv_efs.csi_driver.verison), var.helm_charts.efs_csi_driver.version)
     docker_images = {
       efs_csi               = local.ecr_images["${var.pv_efs.csi_driver.images.efs_csi.name}:${try(coalesce(var.pv_efs.csi_driver.images.efs_csi.tag), "")}"]
       livenessprobe         = local.ecr_images["${var.pv_efs.csi_driver.images.livenessprobe.name}:${try(coalesce(var.pv_efs.csi_driver.images.livenessprobe.tag), "")}"]

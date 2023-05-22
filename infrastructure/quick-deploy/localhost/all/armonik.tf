@@ -1,5 +1,5 @@
 module "armonik" {
-  source               = "../../../modules/armonik"
+  source               = "./generated/infra-modules/armonik"
   working_dir          = "${path.root}/../../.."
   namespace            = local.namespace
   logging_level        = var.logging_level

@@ -3,15 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "nuxi prepare",
     "dev": "nuxi dev",
     "build": "nuxi build",
     "generate": "nuxi generate",
-    "preview": "nuxi preview"
+    "preview": "nuxi preview",
+    "lint": "eslint --cache .",
+    "lint:fix": "eslint --cache --fix .",
+    "lint:md": "markdownlint . && case-police ./**/*.md",
+    "lint:md:fix": "markdownlint . --fix && case-police --fix ./**/*.md"
   },
   "dependencies": {
     "@aneoconsultingfr/armonik-docs-theme": "^0.6.4",
     "mermaid": "^10.1.0",
     "nuxt": "^3.4.2"
   },
-  "packageManager": "pnpm@8.3.1"
+  "packageManager": "pnpm@8.3.1",
+  "devDependencies": {
+    "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "case-police": "^0.6.0",
+    "eslint": "^8.40.0",
+    "markdownlint-cli": "^0.34.0"
+  }
 }

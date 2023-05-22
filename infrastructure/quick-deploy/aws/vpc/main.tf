@@ -1,14 +1,14 @@
 # AWS KMS
 module "kms" {
   count  = (var.vpc.flow_log_cloudwatch_log_group_kms_key_id == "" ? 1 : 0)
-  source = "../../../modules/aws/kms"
+  source = "../generated/infra-modules/utils/aws/kms"
   name   = local.kms_name
   tags   = local.tags
 }
 
 # AWS VPC
 module "vpc" {
-  source = "../../../modules/aws/vpc"
+  source = "../generated/infra-modules/networking/aws/vpc"
   tags   = local.tags
   name   = local.vpc_name
   vpc = {
