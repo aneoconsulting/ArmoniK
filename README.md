@@ -37,7 +37,7 @@ ArmoniK might not be the best choice if :
 
 # ArmoniK versions
 
-The current version of ArmoniK uses the tags listed in [armonik-versions.txt](./armonik-versions.txt) where:
+The current version of ArmoniK uses the tags listed in [armonik-versions.txt](https://github.com/aneoconsulting/ArmoniK/blob/main/armonik-versions.txt) where:
 
 * `core` is the ArmoniK Core tag used for container images of Control plane, Polling agent and Metrics exporter.
 * `worker` is the tag used for the container image of the workers
@@ -46,7 +46,7 @@ The current version of ArmoniK uses the tags listed in [armonik-versions.txt](./
 
 # ArmoniK deployment
 
-All instructions to build, deploy and test ArmoniK software on Linux are described
+All instructions to build, deploy and test ArmoniK software are described
 in [ArmoniK deployment](https://aneoconsulting.github.io/ArmoniK/installation)
 
 # How to run ArmoniK.Samples
