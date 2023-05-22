@@ -194,7 +194,6 @@ Faster task processing by increasing the number of pods.
 | 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 10KB | 5 | 5 |  |  |  |  |  |  |  |  |
 | 100 | CPU:  / Memory:   | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | CPU:  / Memory:  | 1M | 100KB | 5 | 10 |  |  |  |  |  |  |  |  |
 
-
 ## Other tests
 
 | Number of pods | Resource requests per control-plane| Resource limits per control-plane| Resource requests per scheduling-agent| Resource limits per scheduling-agent| Resource requests per worker | Resource limits for per worker | Number of tasks | Task workload duration | Input payload size | Output payload size | Duration of submissions (s) | Upload speed (s) | Throughtput for submissions (tasks/s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) | Throughtput for retrieving results (tasks/s) | Download speed (s) |
