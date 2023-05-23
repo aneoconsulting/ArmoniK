@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.10.6](https://github.com/aneoconsulting/armonik/tree/v2.10.6) (2023-05-24)
+
+Fixed
+-
+
+* Use version 0.8.2.2 of Armonik.Extension.Csharp to add retry on getResult and backport Either
+
 ## [v2.10.5](https://github.com/aneoconsulting/armonik/tree/v2.10.5) (2023-05-15)
 
 Fixed
