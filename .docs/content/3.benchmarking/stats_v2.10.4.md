@@ -12,7 +12,7 @@ These tests are dependent of the configuration of the underlying infrastructure 
 
 |        |       |
 | ------ | ----- |
-| **Date** | 23/01/2023 |
+| **Date** | 05/23/2023 |
 | **Infra version** |  2.10.4 |
 | **Core version** | 0.8.3 |
 | **API version** | 3.2.1 |
