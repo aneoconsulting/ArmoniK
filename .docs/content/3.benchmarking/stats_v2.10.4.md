@@ -99,7 +99,7 @@ Faster task processing by increasing the number of pods.
 
 ##### Results analysis
 
-* The throughput column has been removed from the table because the bench client doesn't return the throughput metric in this version.
+* The throughput column is empty because the bench client doesn't return the throughput metric in this version.
 * We don't have stats for the tests with the number of tasks greater than 10k tasks because the bench client can't handle the results retrieving of a higher number of tasks.
 
 #### HtcMock
