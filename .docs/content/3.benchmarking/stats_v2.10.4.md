@@ -97,6 +97,11 @@ Faster task processing by increasing the number of pods.
 | 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 1 ms | 8B | 8B| **-** | **-** | **-** | **-** | **-** |
 | 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1 ms | 8B | 8B | **-** | **-** | **-** | **-** | **-** |
 
+##### Results analysis
+
+* The throughput column has been removed from the table because the bench client doesn't return the throughput metric in this version.
+* We don't have stats for the tests with the number of tasks greater than 10k tasks because the bench client can't handle the results retrieving of a higher number of tasks.
+
 #### HtcMock
 
 | Number of pods | Resource requests per control-plane| Resource limits per control-plane| Resource requests per scheduling-agent| Resource limits per scheduling-agent| Resource requests per worker | Resource limits for per worker | Number of tasks | Aggregation level | Task workload duration | Input payload size | Output payload size | Duration of submissions (s) | Duration of processing (s) | Throughput for processing (tasks/s) | Duration of retrieving results (s) |
