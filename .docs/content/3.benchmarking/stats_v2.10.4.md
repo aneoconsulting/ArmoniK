@@ -29,8 +29,6 @@ These tests are dependent of the configuration of the underlying infrastructure 
 | **Network bandwidth (Gbps)** | 25 |
 | **EBS Bandwidth (Mbps)** | 19000 |
 
-The versions of the different ArmoniK components and the third-party tools are defined in [versions.tfvars.json](https://github.com/aneoconsulting/ArmoniK/blob/v2.12.3/versions.tfvars.json).
-
 # Exploited ressources
 
 | Kubernetes | Object stroage type | Storage queue type | Storage table type | OS |
