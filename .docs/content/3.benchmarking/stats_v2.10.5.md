@@ -29,8 +29,6 @@ These tests are dependent of the configuration of the underlying infrastructure 
 | **Network bandwidth (Gbps)** | 25 |
 | **EBS Bandwidth (Mbps)** | 19000 |
 
-The versions of the different ArmoniK components and the third-party tools are defined in [versions.tfvars.json](https://github.com/aneoconsulting/ArmoniK/blob/v2.12.3/versions.tfvars.json).
-
 # Exploited ressources
 
 | Kubernetes | Object stroage type | Storage queue type | Storage table type | OS |
@@ -96,6 +94,11 @@ Faster task processing by increasing the number of pods.
 | 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 10K | 1 ms | 8B | 8B| **-** | **-** | **-** | **-** | **-** |
 | 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 100K | 1 ms | 8B | 8B| **-** | **-** | **-** | **-** | **-** |
 | 10000 | CPU: 200m / Memory: 512Mi  | CPU: 1000m / Memory: 2048Mi | CPU: 1000m / Memory: 256Mi | CPU: 2000m  / Memory: 2048Mi | CPU: 500m / Memory: 512Mi | CPU: 1000m / Memory: 2048Mi | 1M | 1 ms | 8B | 8B | **-** | **-** | **-** | **-** | **-** |
+
+##### Results analysis
+
+- The throughput column is empty because the bench client doesn't return the throughput metric in this version.
+- We don't have stats for the tests with the number of tasks greater than 10k tasks because the bench client can't handle the results retrieving of a higher number of tasks.
 
 #### HtcMock
 
