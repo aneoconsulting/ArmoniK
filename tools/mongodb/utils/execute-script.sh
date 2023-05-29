@@ -12,18 +12,18 @@ fi
 
 echo "Executing script: $1"
 
-DEST=$(pwd)
+DIR=$(pwd)
 # Get MongoDB Password
-MPASS=$($DEST/tools/mongodb/utils/mongodb-password.sh)
+MPASS=$($DIR/tools/mongodb/utils/mongodb-password.sh)
 # Get MongoDB Username
-MUSER=$($DEST/tools/mongodb/utils/mongodb-username.sh)
+MUSER=$($DIR/tools/mongodb/utils/mongodb-username.sh)
 # Get MongoDB IP
-MONGO_IP=$($DEST/tools/mongodb/utils/mongodb-ip.sh)
+MONGO_IP=$($DIR/tools/mongodb/utils/mongodb-ip.sh)
 
 # Generate SSL Certificat
-$DEST/tools/mongodb/utils/generate-certificat.sh
+$DIR/tools/mongodb/utils/generate-certificat.sh
 
 # Export all collections from database
-docker run -v $DEST/mongodb_chain.pem:/chain.pem -v $DEST:/data -v $DEST/tools/mongodb/scripts/node_modules:/root/node_modules --rm rtsp/mongosh mongosh --tls --tlsCAFile=/chain.pem -u $MUSER -p $MPASS --authenticationDatabase admin --host=$MONGO_IP:27017  --tlsAllowInvalidHostnames --tlsAllowInvalidCertificates --quiet /data/tools/mongodb/scripts/$1.js
+docker run -v $DIR/mongodb_chain.pem:/chain.pem -v $DIR:/data -v $DIR/tools/mongodb/scripts/node_modules:/root/node_modules --rm rtsp/mongosh mongosh --tls --tlsCAFile=/chain.pem -u $MUSER -p $MPASS --authenticationDatabase admin --host=$MONGO_IP:27017  --tlsAllowInvalidHostnames --tlsAllowInvalidCertificates --quiet /data/tools/mongodb/scripts/$1.js
 
-$DEST/tools/mongodb/utils/clean-certificat.sh
+$DIR/tools/mongodb/utils/clean-certificat.sh
