@@ -1,4 +1,4 @@
-# Args: <script-name>
+# Used to provide the correct environment to execute a MongoDB scripts. See `export-all.sh` in the parent directory for an example. You can also read the documentation for more information.
 if [ $# -eq 0 ]; then
     echo "No arguments provided"
     echo ""
