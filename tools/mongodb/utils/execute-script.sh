@@ -1,4 +1,3 @@
-
 # Args: <script-name>
 if [ $# -eq 0 ]; then
     echo "No arguments provided"
