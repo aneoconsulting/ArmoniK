@@ -24,9 +24,10 @@ Data are generated randomly, so you can run the script multiple times to generat
 
 1. Go to the root directory of the project.
 2. Run the following command:
-```sh
-./tools/mongodb/<script-name>.sh
-```
+
+    ```sh
+    ./tools/mongodb/<script-name>.sh
+    ```
 
 ::alert{type="info"}
 You can also use these scripts directly from the mongodb directory.
@@ -55,12 +56,14 @@ Finally, we recommend you to use [execute-script.sh](https://github.com/aneocons
 
 1. Create a file in the `mongodb` folder. Please name it with the following pattern: `<action>-<collection>.sh`.
 2. Use the following command:
-```sh
-# Get the directory of the script to create relative links
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-# Description: <description with only a couple of words>
-"$DIR/utils/execute-script.sh" <script-name>
-```
+
+    ```sh
+    # Get the directory of the script to create relative links
+    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+    # Description: <description with only a couple of words>
+    "$DIR/utils/execute-script.sh" <script-name>
+    ```
+
 3. Create your JavaScript script in the `scripts` folder. Please name it with the following pattern: `<action>-<collection>.js`. (Same name as the file created in step 1)
 4. Write your script. You can use the [@faker-js/faker](https://www.npmjs.com/package/@faker-js/faker) library to generate fake data.
 5. _Voilà_! You're good to go!
