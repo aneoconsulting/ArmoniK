@@ -10,7 +10,7 @@ This guide is useful for the [Admin GUI](https://github.com/aneoconsulting/Armon
 
 You need to have a running ArmoniK cluster. If you don't have one, please follow the [Getting Started](../1.installation/1.linux/1.installation.md) guide.
 
-## Populate database
+## Functioning
 
 In order to be easily populate database with [MongoDB scripts](https://www.mongodb.com/docs/mongodb-shell/write-scripts/) along the [@faker-js/faker](https://www.npmjs.com/package/@faker-js/faker) library.
 
@@ -24,9 +24,10 @@ Data are generated randomly, so you can run the script multiple times to generat
 
 1. Go to the root directory of the project.
 2. Run the following command:
-```sh
-./tools/mongodb/<script-name>.sh
-```
+
+    ```sh
+    ./tools/mongodb/<script-name>.sh
+    ```
 
 ### Available scripts
 
@@ -51,10 +52,12 @@ Finally, we recommend you to use [execute-script.sh](https://github.com/aneocons
 
 1. Create a file in the `mongodb` folder. Please name it with the following pattern: `<action>-<collection>.sh`.
 2. Use the following command:
-```sh
-# Description: <description with only a couple of words>
-$(pwd)/tools/mongodb/utils/execute-script.sh <script-name>
-```
+
+    ```sh
+    # Description: <description with only a couple of words>
+    $(pwd)/tools/mongodb/utils/execute-script.sh <script-name>
+    ```
+
 3. Create your JavaScript script in the `scripts` folder. Please name it with the following pattern: `<action>-<collection>.js`. (Same name as the file created in step 1)
 4. Write your script. You can use the [@faker-js/faker](https://www.npmjs.com/package/@faker-js/faker) library to generate fake data.
 5. _Voilà_! You're good to go!
