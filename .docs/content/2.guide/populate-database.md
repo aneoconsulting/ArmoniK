@@ -12,7 +12,7 @@ You need to have a running ArmoniK cluster. If you don't have one, please follow
 
 ## Populate database
 
-In order to be easily populate database with [MongoDB scripts](https://www.mongodb.com/docs/mongodb-shell/write-scripts/) along the [@faker-js/faker](https://www.npmjs.com/package/@faker-js/faker) library.
+In order to easily populate, we use [MongoDB scripts](https://www.mongodb.com/docs/mongodb-shell/write-scripts/) along the [@faker-js/faker](https://www.npmjs.com/package/@faker-js/faker) library.
 
 This method allows use to write JavaScript scripts to populate database without having to write dump files manually and insert them with the `mongoimport` command.
 
