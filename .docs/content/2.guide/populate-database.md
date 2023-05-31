@@ -40,6 +40,10 @@ You can also use these scripts directly from the mongodb directory.
 | `export-all` | Export all collections in the `.database` folder. |
 | `generate-partitions` | Generate 100 partitions |
 
+::alert{type="info"}
+To generate applications, you must generate tasks.
+::
+
 ## Going further
 
 The section is only needed if you can't find your joy with current scripts.
