@@ -35,10 +35,12 @@ You can also use these scripts directly from the mongodb directory.
 
 ### Available scripts
 
-| Script name | Description |
-| ----------- | ----------- |
-| `export-all` | Export all collections in the `.database` folder. |
-| `generate-partitions` | Generate 100 partitions |
+| Script name           | Description                                       |
+|-----------------------|---------------------------------------------------|
+| `export-all`          | Export all collections in the `.database` folder. |
+| `generate-partitions` | Generate 100 partitions                           |
+| `generate-sessions`   | Generate 100 sessions                             |
+
 
 ::alert{type="info"}
 To generate applications, you must generate tasks.
