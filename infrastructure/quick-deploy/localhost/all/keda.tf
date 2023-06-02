@@ -1,6 +1,6 @@
 # Keda
 module "keda" {
-  source    = "./generated/infra-modules/monitoring/keda"
+  source    = "./generated/infra-modules/monitoring/onpremise/keda"
   namespace = var.keda.namespace
   docker_image = {
     keda = {

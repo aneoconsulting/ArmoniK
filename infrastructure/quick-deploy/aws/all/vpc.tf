@@ -1,6 +1,6 @@
 # AWS VPC
 module "vpc" {
-  source = "./generated/infra-modules/aws/vpc"
+  source = "./generated/infra-modules/networking/aws/vpc"
   tags   = local.tags
   name   = "${local.prefix}-vpc"
   vpc = {

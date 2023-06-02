@@ -1,7 +1,7 @@
 # Metrics server
 module "metrics_server" {
   count     = var.metrics_server != null ? 1 : 0
-  source    = "./generated/infra-modules/monitoring/metrics-server"
+  source    = "./generated/infra-modules/monitoring/onpremise/metrics-server"
   namespace = var.metrics_server.namespace
   docker_image = {
     image = var.metrics_server.image_name
