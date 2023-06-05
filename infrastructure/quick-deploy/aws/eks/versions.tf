@@ -6,23 +6,23 @@ terraform {
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.13.0"
+      version = "~> 2.21.0"
     }
     cloudinit = {
       source  = "hashicorp/cloudinit"
-      version = "~> 2.2.0"
+      version = "~> 2.3.0"
     }
     helm = {
       source  = "hashicorp/helm"
-      version = "~> 2.7.0"
+      version = "~> 2.10.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.4.3"
+      version = "~> 3.5.0"
     }
     local = {
       source  = "hashicorp/local"
-      version = "~> 2.2.0"
+      version = "~> 2.4.0"
     }
   }
 }
