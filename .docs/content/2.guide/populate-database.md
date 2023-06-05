@@ -41,7 +41,6 @@ You can also use these scripts directly from the mongodb directory.
 | `generate-partitions` | Generate 100 partitions                           |
 | `generate-sessions`   | Generate 100 sessions                             |
 
-
 ::alert{type="info"}
 To generate applications, you must generate tasks.
 ::
