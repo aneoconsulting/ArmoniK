@@ -7,9 +7,6 @@
     "helpers:pinGitHubActionDigests"
   ],
   "rangeStrategy": "bump",
-  "npm": {
-    "commitMessageTopic": "{{prettyDepType}} {{depName}}"
-  },
   "packageRules": [
     {
       "groupName": "npm packages",
