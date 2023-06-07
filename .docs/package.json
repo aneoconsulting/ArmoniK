@@ -15,14 +15,14 @@
   },
   "dependencies": {
     "@aneoconsultingfr/armonik-docs-theme": "^0.6.10",
-    "mermaid": "^10.2.0",
-    "nuxt": "^3.5.2"
+    "mermaid": "^10.2.2",
+    "nuxt": "^3.5.3"
   },
-  "packageManager": "pnpm@8.6.0",
+  "packageManager": "pnpm@8.6.1",
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "case-police": "^0.6.1",
-    "eslint": "^8.41.0",
+    "eslint": "^8.42.0",
     "markdownlint-cli": "^0.34.0"
   }
 }
