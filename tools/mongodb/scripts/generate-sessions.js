@@ -1,6 +1,9 @@
 const localRequire = require("module").createRequire(__filename);
 const faker = localRequire("@faker-js/faker").fakerEN;
 
+// Use the primary replica set member because we are writing data
+db.getMongo().setReadPref('primary');
+// Move to the correct database in MongoDB
 db = db.getSiblingDB("database");
 
 // Create 100 sessions

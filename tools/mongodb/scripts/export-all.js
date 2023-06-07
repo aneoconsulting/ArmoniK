@@ -10,6 +10,8 @@ if (fs.existsSync("./data/.database")) {
   fs.mkdirSync("./data/.database");
 }
 
+// Use the nearest replica set member because we are reading data
+db.getMongo().setReadPref('nearest');
 // Move to the correct database in MongoDB
 db = db.getSiblingDB("database")
 
