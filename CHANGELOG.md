@@ -2,6 +2,22 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.13.1](https://github.com/aneoconsulting/armonik/tree/v2.13.0) (2023-06-07)
+
+Changed
+-
+
+* Use Armonik.Extension.Csharp version `0.11.0`
+
+Fixed
+-
+
+* Use strong name for Utils
+* Remove LanguageExt dependency (backport Either) 
+* Add retry getresult
+* Issue with no TLS and windows 11 
+* Expose Taskoptions for SubmitTask* type in Extensions.Csharp 
+
 ## [v2.13.0](https://github.com/aneoconsulting/armonik/tree/v2.13.0) (2023-04-23)
 
 Changed
