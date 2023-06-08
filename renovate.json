@@ -1,20 +1,40 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base",
-              "group:allNonMajor",
-              ":semanticCommits"
-             ],
-  "packageRules":
-  [
+  "extends": [
+    "config:base",
+    "group:allNonMajor",
+    ":semanticCommitTypeAll(chore)",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "rangeStrategy": "bump",
+  "packageRules": [
     {
-      "matchPackagePrefixes": ["ArmoniK"],
-      "groupName": "release packages Armonik"
+      "groupName": "npm packages",
+      "groupSlug": "npm",
+      "matchDatasources": [
+        "npm"
+      ]
     },
     {
-
-    "matchPackagePatterns": ["*"],
-    "excludePackagePrefixes": ["ArmoniK"],
-    "groupName": "other dependencies"  
-    }
+      "groupName": "terraform modules",
+      "groupSlug": "terraform-module",
+      "matchDatasources": [
+        "terraform-module"
+      ]
+    },
+    {
+      "groupName": "terraform provides",
+      "groupSlug": "terraform-provider",
+      "matchDatasources": [
+        "terraform-provider"
+      ]
+    },
+    {
+      "groupName": "github actions",
+      "groupSlug": "github-actions",
+      "matchDatasources": [
+        "github-tags"
+      ]
+    },
   ]
 }
