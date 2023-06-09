@@ -22,12 +22,17 @@ MUSER=$("$DIR/mongodb-username.sh")
 MONGO_IPS=$("$DIR/mongodb-ip.sh")
 
 # Get MongoDB Hosts (IP:PORT)
-MONGO_HOSTS=$(echo $MONGO_IPS | sed 's/ /:27017,/g'):27017
+MONGO_HOSTS=$(echo $MONGO_IPS | sed 's/ /:27017 /g'):27017
 
 # Generate SSL Certificat
 "$DIR/generate-certificat.sh"
 
-docker run -v ./mongodb_chain.pem:/chain.pem -v "$DIR/../../../":/data -v "$DIR/../scripts/node_modules":/root/node_modules --rm rtsp/mongosh mongosh --tls --tlsCAFile=/chain.pem -u $MUSER -p $MPASS --host rs0/$MONGO_HOSTS --authenticationDatabase admin --tlsAllowInvalidHostnames --tlsAllowInvalidCertificates --verbose -f "/data/tools/mongodb/scripts/$1.js"
+# Execute the script on each MongoDB Host (IP:PORT) because the script must be executed on the primary node but we don't know which one is the primary node.
+echo "Trying to execute script: $1 on each MongoDB Host (IP:PORT): $MONGO_HOSTS (finding the primary node)"
+for MONGO_HOST in $MONGO_HOSTS; do
+    echo "Executing script: $1 on $MONGO_HOST"
+    docker run -v ./mongodb_chain.pem:/chain.pem -v "$DIR/../../../":/data -v "$DIR/../scripts/node_modules":/root/node_modules --rm rtsp/mongosh mongosh --tls --tlsCAFile=/chain.pem -u $MUSER -p $MPASS --host $MONGO_HOST --authenticationDatabase admin --tlsAllowInvalidHostnames --tlsAllowInvalidCertificates --quiet -f "/data/tools/mongodb/scripts/$1.js"
+done
 
 # Delete the SSL Certificat
 "$DIR/clean-certificat.sh"
