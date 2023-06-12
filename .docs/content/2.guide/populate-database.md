@@ -22,8 +22,15 @@ Data are generated randomly, so you can run the script multiple times to generat
 
 ### Run scripts
 
-1. Go to the root directory of the project.
-2. Run the following command:
+1. Go to `./tools/mongodb/scripts`.
+2. Install dependencies:
+
+    ```sh
+    npm install
+    ```
+
+3. Return to the root directory of the project.
+4. Run the following command:
 
     ```sh
     ./tools/mongodb/<script-name>.sh
@@ -67,7 +74,7 @@ Finally, we recommend you to use [execute-script.sh](https://github.com/aneocons
 
     ```sh
     # Get the directory of the script to create relative links
-    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+    DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
     # Description: <description with only a couple of words>
     "$DIR/utils/execute-script.sh" <script-name>
     ```
