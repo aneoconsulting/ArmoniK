@@ -20,7 +20,7 @@ This method allows use to write JavaScript scripts to populate database without 
 Data are generated randomly, so you can run the script multiple times to generate different data.
 ::
 
-### Run scripts
+### Install dependencies
 
 1. Go to `./tools/mongodb/scripts`.
 2. Install dependencies:
@@ -29,8 +29,10 @@ Data are generated randomly, so you can run the script multiple times to generat
     npm install
     ```
 
-3. Return to the root directory of the project.
-4. Run the following command:
+### Run scripts
+
+1. Return to the root directory of the project.
+2. Run the following command:
 
     ```sh
     ./tools/mongodb/<script-name>.sh
