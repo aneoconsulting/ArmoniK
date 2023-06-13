@@ -52,7 +52,6 @@ You can also use these scripts directly from the mongodb directory.
 | `generate-session-with-related-tasks` | Generate 1 session and 100 related tasks          |
 | `generate-tasks`                      | Generate 100 tasks                                |
 
-
 ::alert{type="info"}
 To generate applications, you must generate tasks.
 ::
