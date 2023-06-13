@@ -31,7 +31,7 @@ MONGO_HOSTS=$(echo $MONGO_IPS | sed 's/ /:27017 /g'):27017
 echo "Trying to execute script: $1 on each MongoDB Host (IP:PORT): $MONGO_HOSTS (finding the primary node)"
 for MONGO_HOST in $MONGO_HOSTS; do
     echo "Executing script: $1 on $MONGO_HOST"
-    docker run -v ./mongodb_chain.pem:/chain.pem -v "$DIR/../../../":/data -v "$DIR/../scripts/node_modules":/root/node_modules --rm rtsp/mongosh mongosh --tls --tlsCAFile=/chain.pem -u $MUSER -p $MPASS --host $MONGO_HOST --authenticationDatabase admin --tlsAllowInvalidHostnames --tlsAllowInvalidCertificates --quiet -f "/data/tools/mongodb/scripts/$1.js"
+    docker run -v ./mongodb_chain.pem:/chain.pem -v "$DIR/../../../":/data -v "$DIR/../scripts/node_modules":/root/node_modules --rm rtsp/mongosh mongosh --tls --tlsCAFile=/chain.pem -u "$MUSER" -p "$MPASS" --host "$MONGO_HOST" --authenticationDatabase admin --tlsAllowInvalidHostnames --tlsAllowInvalidCertificates --quiet -f "/data/tools/mongodb/scripts/$1.js"
 done
 
 # Delete the SSL Certificat
