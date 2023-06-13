@@ -13,10 +13,14 @@ locals {
     ip       = kubernetes_service.rabbitmq.spec.0.cluster_ip
     port     = kubernetes_service.rabbitmq.spec.0.port.0.port
     web_port = kubernetes_service.rabbitmq.spec.0.port.1.port
+    # port     = 5672
+    # web_port = 15672
     } : {
     ip       = local.rabbitmq_load_balancer.ip
     port     = local.rabbitmq_load_balancer.port
     web_port = local.rabbitmq_load_balancer.web_port
+    # port     = 5672
+    # web_port = 15672
   })
 
   rabbitmq_url     = "amqp://${local.rabbitmq_endpoints.ip}:${local.rabbitmq_endpoints.port}"
