@@ -8,7 +8,7 @@ if [ $# -eq 0 ]; then
     echo "Usage: $0 <script-name>"
     echo ""
     echo "Available scripts:"
-    ls $DIR/../scripts/*.js | xargs -n 1 basename | sed 's/\.js//g' | sed 's/^/ - /g'
+    ls "$DIR/../scripts/"*.js | xargs -n 1 basename | sed 's/\.js//g' | sed 's/^/ - /g'
     exit 1
 fi
 
