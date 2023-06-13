@@ -1,4 +1,4 @@
 #! /bin/sh
 
-# Delete the SSL Certificat
+# Delete the SSL Certificate
 rm ./mongodb_chain.pem
