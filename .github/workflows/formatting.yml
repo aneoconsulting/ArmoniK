@@ -16,7 +16,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Show commit SHA
+        run: |
+          git rev-parse HEAD
+          git rev-parse --short HEAD
       - name: Install terraform
         run: |
           if ! which terraform 2>/dev/null; then
