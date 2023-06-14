@@ -8,6 +8,22 @@ Changed
 * Move Terraform modules of different resources deployment to GitHub repository [ArmoniK.Infra](https://github.com/aneoconsulting/ArmoniK.Infra).
 * Use ArmoniK Infrastructure version `0.0.2`
 
+## [v2.13.1](https://github.com/aneoconsulting/armonik/tree/v2.13.1) (2023-06-07)
+
+Changed
+-
+
+* Use Armonik.Extension.Csharp version `0.11.0`
+
+Fixed
+-
+
+* Use strong name for Utils
+* Remove LanguageExt dependency (backport Either) 
+* Add retry getresult
+* Issue with no TLS and windows 11 
+* Expose Taskoptions for SubmitTask* type in Extensions.Csharp 
+
 ## [v2.13.0](https://github.com/aneoconsulting/armonik/tree/v2.13.0) (2023-04-23)
 
 Changed
