@@ -78,3 +78,17 @@ variable "minio" {
   })
   default = null
 }
+
+# Parameters for minio file storage
+variable "minio_s3_fs" {
+  description = "Parameters of Minio"
+  type = object({
+    image_name         = optional(string, "minio/minio")
+    image_tag          = optional(string)
+    node_selector      = optional(any, {})
+    image_pull_secrets = optional(string, "")
+    default_bucket     = optional(string, "minioBucket")
+    host               = optional(string, "minio-s3-fs")
+  })
+  default = null
+}

@@ -27,7 +27,7 @@ resource "aws_iam_policy_attachment" "send_logs_from_fluent_bit_to_cloudwatch_at
   count      = (local.cloudwatch_enabled ? 1 : 0)
   name       = "send-logs-from-fluent-bit-to-cloudwatch-${var.eks.cluster_name}"
   policy_arn = aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy.0.arn
-  roles      = var.eks.self_managed_worker_iam_role_names
+  roles      = var.eks.worker_iam_role_names
 }
 
 # Write objects in S3
@@ -57,5 +57,5 @@ resource "aws_iam_policy_attachment" "write_object" {
   count      = (local.s3_enabled ? 1 : 0)
   name       = "s3-logs-write-${var.eks.cluster_name}"
   policy_arn = aws_iam_policy.write_object[0].arn
-  roles      = var.eks.self_managed_worker_iam_role_names
+  roles      = var.eks.worker_iam_role_names
 }

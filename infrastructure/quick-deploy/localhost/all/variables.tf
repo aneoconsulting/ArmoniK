@@ -47,9 +47,10 @@ variable "metrics_server" {
       "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname",
       "--kubelet-use-node-status-port",
       "--metric-resolution=15s",
+      "--kubelet-insecure-tls"
     ]),
     host_network          = optional(bool, false),
-    helm_chart_repository = optional(string, "https://kubernetes-sigs.github.io/metrics-server/")
+    helm_chart_repository = optional(string)
     helm_chart_version    = optional(string, "3.8.3")
   })
   default = null
@@ -68,8 +69,8 @@ variable "keda" {
     node_selector                   = optional(any, {})
     metrics_server_dns_policy       = optional(string, "ClusterFirst")
     metrics_server_use_host_network = optional(bool, false)
-    helm_chart_repository           = optional(string, "https://kedacore.github.io/charts")
-    helm_chart_version              = optional(string, "2.9.4")
+    helm_chart_repository           = optional(string)
+    helm_chart_version              = optional(string)
   })
   default = {}
 }
@@ -133,6 +134,20 @@ variable "minio" {
     image_pull_secrets = optional(string, "")
     default_bucket     = optional(string, "minioBucket")
     host               = optional(string, "minio")
+  })
+  default = null
+}
+
+# Parameters for Minio file storage
+variable "minio_s3_fs" {
+  description = "Parameters of Minio"
+  type = object({
+    image_name         = optional(string, "minio/minio")
+    image_tag          = optional(string)
+    node_selector      = optional(any, {})
+    image_pull_secrets = optional(string, "")
+    default_bucket     = optional(string, "minioBucket")
+    host               = optional(string, "minio-s3-fs")
   })
   default = null
 }
@@ -418,7 +433,7 @@ variable "ingress" {
       memory = optional(string)
     }))
     image_pull_secrets    = optional(string, "")
-    node_selector         = optional(any, "")
+    node_selector         = optional(any, {})
     annotations           = optional(any, {})
     tls                   = optional(bool, false)
     mtls                  = optional(bool, false)
@@ -472,4 +487,12 @@ variable "armonik_images" {
 variable "image_tags" {
   description = "Tags of images used"
   type        = map(string)
+}
+
+variable "helm_charts" {
+  description = "Versions of helm charts repositories"
+  type = map(object({
+    repository = string
+    version    = string
+  }))
 }

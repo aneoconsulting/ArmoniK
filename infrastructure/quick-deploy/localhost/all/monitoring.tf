@@ -1,7 +1,7 @@
 # Seq
 module "seq" {
   count         = var.seq != null ? 1 : 0
-  source        = "../../../modules/monitoring/seq"
+  source        = "./generated/infra-modules/monitoring/onpremise/seq"
   namespace     = local.namespace
   service_type  = var.seq.service_type
   port          = var.seq.port
@@ -45,7 +45,7 @@ resource "kubernetes_secret" "seq" {
 # node exporter
 module "node_exporter" {
   count         = var.node_exporter != null ? 1 : 0
-  source        = "../../../modules/monitoring/exporters/node-exporter"
+  source        = "./generated/infra-modules/monitoring/onpremise/exporters/node-exporter"
   namespace     = local.namespace
   node_selector = var.node_exporter.node_selector
   docker_image = {
@@ -58,7 +58,7 @@ module "node_exporter" {
 
 # Metrics exporter
 module "metrics_exporter" {
-  source               = "../../../modules/monitoring/exporters/metrics-exporter"
+  source               = "./generated/infra-modules/monitoring/onpremise/exporters/metrics-exporter"
   namespace            = local.namespace
   service_type         = var.metrics_exporter.service_type
   node_selector        = var.metrics_exporter.node_selector
@@ -89,7 +89,7 @@ resource "kubernetes_secret" "metrics_exporter" {
 # Partition metrics exporter
 module "partition_metrics_exporter" {
   count                = var.partition_metrics_exporter != null ? 1 : 0
-  source               = "../../../modules/monitoring/exporters/partition-metrics-exporter"
+  source               = "./generated/infra-modules/monitoring/onpremise/exporters/partition-metrics-exporter"
   namespace            = local.namespace
   service_type         = var.partition_metrics_exporter.service_type
   node_selector        = var.partition_metrics_exporter.node_selector
@@ -127,7 +127,7 @@ resource "kubernetes_secret" "partition_metrics_exporter" {
 
 # Prometheus
 module "prometheus" {
-  source                         = "../../../modules/monitoring/prometheus"
+  source                         = "./generated/infra-modules/monitoring/onpremise/prometheus"
   namespace                      = local.namespace
   service_type                   = var.prometheus.service_type
   node_selector                  = var.prometheus.node_selector
@@ -156,7 +156,7 @@ resource "kubernetes_secret" "prometheus" {
 # Grafana
 module "grafana" {
   count          = var.grafana != null ? 1 : 0
-  source         = "../../../modules/monitoring/grafana"
+  source         = "./generated/infra-modules/monitoring/onpremise/grafana"
   namespace      = local.namespace
   service_type   = var.grafana.service_type
   port           = var.grafana.port
@@ -191,7 +191,7 @@ resource "kubernetes_secret" "grafana" {
 
 # Fluent-bit
 module "fluent_bit" {
-  source        = "../../../modules/monitoring/fluent-bit"
+  source        = "./generated/infra-modules/monitoring/onpremise/fluent-bit"
   namespace     = local.namespace
   node_selector = var.fluent_bit.node_selector
   fluent_bit = {

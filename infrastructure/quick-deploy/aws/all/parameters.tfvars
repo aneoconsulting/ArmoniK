@@ -33,10 +33,8 @@ vpc = {
 
 # AWS EKS
 eks = {
-  cluster_version = "1.25"
-  cluster_autoscaler = {
-    node_selector = { "grid/type" = "Operator" }
-  }
+  cluster_version                = "1.25"
+  node_selector                  = { service = "monitoring" }
   cluster_endpoint_public_access = true
   map_roles                      = []
   map_users                      = []
@@ -44,40 +42,148 @@ eks = {
 
 # List of EKS managed node groups
 eks_managed_node_groups = {
-  opt = {
-    name                        = "eks_opt"
-    launch_template_description = "Node group for operational pods"
+  # Default node group for workers of ArmoniK
+  workers = {
+    name                        = "workers"
+    launch_template_description = "Node group for ArmoniK Compute-plane pods"
     ami_type                    = "AL2_x86_64"
-    instance_types = [
-      "m5.large",
-      "m5.xlarge",
-      "m5.2xlarge",
-      "m5.4xlarge",
-      "m5.8xlarge",
-      "m5.12xlarge",
-      "m5d.large",
-      "m5d.xlarge",
-      "m5d.2xlarge",
-      "m5d.4xlarge",
-      "m5d.8xlarge",
-      "m5d.12xlarge"
-    ]
-    capacity_type = "ON_DEMAND"
-    min_size      = 1
-    desired_size  = 1
-    max_size      = 5
+    instance_types              = ["c5.24xlarge"]
+    capacity_type               = "SPOT"
+    min_size                    = 0
+    desired_size                = 0
+    max_size                    = 1000
     labels = {
-      "grid/type"                    = "Operator"
+      service                        = "workers"
+      "node.kubernetes.io/lifecycle" = "spot"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "workers"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  # Node group for metrics: Metrics exporter and Prometheus
+  metrics = {
+    name                        = "metrics"
+    launch_template_description = "Node group for metrics: Metrics exporter and Prometheus"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.24xlarge"]
+    capacity_type               = "ON_DEMAND"
+    min_size                    = 1
+    desired_size                = 1
+    max_size                    = 5
+    labels = {
+      service                        = "metrics"
       "node.kubernetes.io/lifecycle" = "ondemand"
     }
     taints = {
       dedicated = {
-        key    = "grid/type"
-        value  = "Operator"
+        key    = "service"
+        value  = "metrics"
         effect = "NO_SCHEDULE"
       }
     }
-    bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=ondemand'"
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  # Node group for ArmoniK control-plane: control-plane and Ingress
+  control_plane = {
+    name                        = "control-plane"
+    launch_template_description = "Node group for ArmoniK Control-plane and Ingress"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.24xlarge"]
+    capacity_type               = "ON_DEMAND"
+    min_size                    = 1
+    desired_size                = 1
+    max_size                    = 10
+    labels = {
+      service                        = "control-plane"
+      "node.kubernetes.io/lifecycle" = "ondemand"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "control-plane"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  # Node group for monitoring: metrics server, keda, seq, grafana, cluster-autoscaler, coreDNS, termination handler
+  monitoring = {
+    name                        = "monitoring"
+    launch_template_description = "Node group for monitoring"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.24xlarge"]
+    capacity_type               = "ON_DEMAND"
+    min_size                    = 1
+    desired_size                = 1
+    max_size                    = 5
+    labels = {
+      service                        = "monitoring"
+      "node.kubernetes.io/lifecycle" = "ondemand"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "monitoring"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  # Node group for data-plane
+  # state_database, inner_storage, task_queue
+  state_database = {
+    name                        = "mongodb"
+    launch_template_description = "Node group for MongoDB"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.24xlarge"]
+    use_custom_launch_template  = true
+    block_device_mappings = {
+      xvda = {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = 75
+          volume_type           = "gp3"
+          iops                  = 3000
+          throughput            = 150
+          encrypted             = null
+          kms_key_id            = null
+          delete_on_termination = true
+        }
+      }
+    }
+    capacity_type = "ON_DEMAND"
+    min_size      = 1
+    desired_size  = 1
+    max_size      = 10
+    labels = {
+      service                        = "state-database"
+      "node.kubernetes.io/lifecycle" = "ondemand"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "state-database"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
@@ -86,32 +192,33 @@ eks_managed_node_groups = {
 
 # List of self managed node groups
 self_managed_node_groups = {
-  spot = {
-    name                        = "self_spot"
-    launch_template_description = "Worker nodes in SPOT"
+  others = {
+    name                        = "others"
+    launch_template_description = "Node group for others"
     instance_type               = "c5.24xlarge"
     min_size                    = 0
     desired_size                = 0
-    max_size                    = 2700
+    max_size                    = 5
     force_delete                = true
     force_delete_warm_pool      = true
     instance_market_options = {
       market_type = "spot"
     }
-    bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    bootstrap_extra_args     = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    iam_role_use_name_prefix = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
   }
-  mixed = {
-    name                        = "self_mixed"
-    launch_template_description = "Mixed On demand and SPOT instances for the worker nodes in SPOT"
+  others_mixed = {
+    name                        = "others-mixed"
+    launch_template_description = "Mixed On demand and SPOT instances for other pods"
     min_size                    = 0
     desired_size                = 0
-    max_size                    = 3
+    max_size                    = 5
     use_mixed_instances_policy  = true
     mixed_instances_policy = {
-      on_demand_allocation_strategy            = null
+      on_demand_allocation_strategy            = "lowest-price"
       on_demand_base_capacity                  = 0
       on_demand_percentage_above_base_capacity = 20 # 20% On-Demand Instances, 80% Spot Instances
       spot_allocation_strategy                 = "price-capacity-optimized"
@@ -128,7 +235,7 @@ self_managed_node_groups = {
         weighted_capacity = "2"
       },
     ]
-    bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    iam_role_use_name_prefix = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
@@ -139,11 +246,11 @@ self_managed_node_groups = {
 fargate_profiles = {}
 
 metrics_server = {
-  node_selector = { "grid/type" = "Operator" }
+  node_selector = { service = "monitoring" }
 }
 
 keda = {
-  node_selector = { "grid/type" = "Operator" }
+  node_selector = { service = "monitoring" }
 }
 
 # Object storage
@@ -164,7 +271,7 @@ mq = {
 }
 
 mongodb = {
-  node_selector = { "grid/type" = "Operator" }
+  node_selector = { service = "state-database" }
   #persistent_volume = {
   #  storage_provisioner = "efs.csi.aws.com"
   #  resources = {
@@ -177,28 +284,28 @@ mongodb = {
 
 pv_efs = {
   csi_driver = {
-    node_selector = { "grid/type" = "Operator" }
+    node_selector = { service = "state-database" }
   }
 }
 
 seq = {
-  node_selector = { "grid/type" = "Operator" }
+  node_selector = { service = "monitoring" }
 }
 
 grafana = {
-  node_selector = { "grid/type" = "Operator" }
+  node_selector = { service = "monitoring" }
 }
 
 node_exporter = {
-  node_selector = { "grid/type" = "Operator" }
+  node_selector = {}
 }
 
 prometheus = {
-  node_selector = { "grid/type" = "Operator" }
+  node_selector = { service = "metrics" }
 }
 
 metrics_exporter = {
-  node_selector = { "grid/type" = "Operator" }
+  node_selector = { service = "metrics" }
   extra_conf = {
     MongoDB__AllowInsecureTls              = true
     Serilog__MinimumLevel                  = "Information"
@@ -208,7 +315,7 @@ metrics_exporter = {
 }
 
 /*parition_metrics_exporter = {
-  node_selector = { "grid/type" = "Operator" }
+  node_selector = { service = "metrics" }
   extra_conf    = {
     MongoDB__AllowInsecureTls           = true
     Serilog__MinimumLevel               = "Information"
@@ -218,7 +325,8 @@ metrics_exporter = {
 }*/
 
 fluent_bit = {
-  is_daemonset = true
+  is_daemonset  = true
+  node_selector = {}
 }
 
 # Logging level
@@ -235,6 +343,7 @@ control_plane = {
     memory = "500Mi"
   }
   default_partition = "default"
+  node_selector     = { service = "control-plane" }
 }
 
 # Parameters of admin GUI
@@ -247,9 +356,10 @@ admin_gui = {
     cpu    = "100m"
     memory = "128Mi"
   }
+  node_selector = { service = "monitoring" }
 }
 
-#Parameters of old admin GUI
+# Parameters of old admin GUI
 admin_old_gui = {
   api = {
     name = "admin-api"
@@ -279,13 +389,14 @@ admin_old_gui = {
   replicas           = 1
   image_pull_policy  = "IfNotPresent"
   image_pull_secrets = ""
-  node_selector      = {}
+  node_selector      = { service = "monitoring" }
 }
 
 # Parameters of the compute plane
 compute_plane = {
   # Default partition that uses the C# extension for the worker
   default = {
+    node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
     replicas = 1
     # ArmoniK polling agent
@@ -336,6 +447,7 @@ compute_plane = {
   },
   # Partition for the stream worker
   stream = {
+    node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
     replicas = 1
     # ArmoniK polling agent
@@ -386,6 +498,7 @@ compute_plane = {
   },
   # Partition for the htcmock worker
   htcmock = {
+    node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
     replicas = 1
     # ArmoniK polling agent
@@ -436,6 +549,7 @@ compute_plane = {
   },
   # Partition for the bench worker
   bench = {
+    node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
     replicas = 1
     # ArmoniK polling agent
@@ -492,6 +606,17 @@ ingress = {
   tls                  = false
   mtls                 = false
   generate_client_cert = false
+  node_selector        = { service = "control-plane" }
+}
+
+# Job to insert partitions in the database
+job_partitions_in_database = {
+  node_selector = { service = "control-plane" }
+}
+
+# Authentication behavior
+authentication = {
+  node_selector = { service = "control-plane" }
 }
 
 extra_conf = {

@@ -1,14 +1,14 @@
 # AWS KMS
 module "kms" {
   count  = (can(coalesce(var.s3_fs.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.log_kms_key_id)) && can(coalesce(var.s3_os.kms_key_id)) && can(coalesce(var.mq.kms_key_id)) ? 0 : 1)
-  source = "../../../modules/aws/kms"
+  source = "../generated/infra-modules/utils/aws/kms"
   name   = local.kms_name
   tags   = local.tags
 }
 
 # AWS S3 as shared storage
 module "s3_fs" {
-  source = "../../../modules/aws/s3"
+  source = "../generated/infra-modules/storage/aws/s3"
   tags   = local.tags
   name   = local.s3_fs_name
   s3 = {
@@ -31,7 +31,7 @@ module "s3_fs" {
 # AWS Elasticache
 module "elasticache" {
   count  = var.elasticache != null ? 1 : 0
-  source = "../../../modules/aws/elasticache"
+  source = "../generated/infra-modules/storage/aws/elasticache"
   tags   = local.tags
   name   = local.elasticache_name
   vpc    = local.vpc
@@ -57,7 +57,7 @@ module "elasticache" {
 # AWS S3 as objects storage
 module "s3_os" {
   count  = var.s3_os != null ? 1 : 0
-  source = "../../../modules/aws/s3"
+  source = "../generated/infra-modules/storage/aws/s3"
   tags   = local.tags
   name   = local.s3_os_name
   s3 = {
@@ -79,7 +79,7 @@ module "s3_os" {
 
 # Amazon MQ
 module "mq" {
-  source    = "../../../modules/aws/mq"
+  source    = "../generated/infra-modules/storage/aws/mq"
   tags      = local.tags
   name      = local.mq_name
   namespace = var.namespace
@@ -103,7 +103,7 @@ module "mq" {
 
 # MongoDB
 module "mongodb" {
-  source      = "../../../modules/onpremise-storage/mongodb"
+  source      = "../generated/infra-modules/storage/onpremise/mongodb"
   namespace   = var.namespace
   working_dir = "${path.root}/../../.."
   mongodb = {
@@ -120,7 +120,7 @@ module "mongodb" {
 # AWS EFS as persistent volume
 module "efs_persistent_volume" {
   count      = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
-  source     = "../../../modules/persistent-volumes/efs"
+  source     = "../generated/infra-modules/persistent-volume/aws/efs"
   eks_issuer = var.eks.issuer
   vpc        = local.vpc
   efs = {

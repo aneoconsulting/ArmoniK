@@ -17,7 +17,7 @@ docker_image = {
 image_pull_secrets = ""
 
 # node selector
-node_selector = { "grid/type" = "Operator" }
+node_selector = { service = "monitoring" }
 
 # args
 args = [

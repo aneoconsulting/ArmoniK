@@ -77,7 +77,7 @@ locals {
 
 # Default tags for all images
 module "default_images" {
-  source = "../../../modules/default-images"
+  source = "./generated/infra-modules/utils/default-images"
 
   armonik_versions = var.armonik_versions
   armonik_images   = var.armonik_images
@@ -86,7 +86,7 @@ module "default_images" {
 
 # AWS ECR
 module "ecr" {
-  source       = "../../../modules/aws/ecr"
+  source       = "./generated/infra-modules/container-registry/aws/ecr"
   profile      = var.profile
   tags         = local.tags
   kms_key_id   = local.kms_key

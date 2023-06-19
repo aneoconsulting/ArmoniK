@@ -37,7 +37,7 @@ tags = {
 }
 
 # Node selector
-node_selector = { "grid/type" = "Operator" }
+node_selector = { service = "monitoring" }
 
 # AWS EKS
 eks = {
@@ -60,7 +60,7 @@ eks = {
     }
   }
   cluster_autoscaler = {
-    expander                              = "random" # random, most-pods, least-waste, price, priority
+    expander                              = "least-waste" # random, most-pods, least-waste, price, priority
     scale_down_enabled                    = true
     min_replica_count                     = 0
     scale_down_utilization_threshold      = 0.5
@@ -92,40 +92,148 @@ eks = {
 
 # List of EKS managed node groups
 eks_managed_node_groups = {
-  opt = {
-    name                        = "eks_opt"
-    launch_template_description = "Node group for operational pods"
+  # Default node group for workers of ArmoniK
+  workers = {
+    name                        = "workers"
+    launch_template_description = "Node group for ArmoniK Compute-plane pods"
     ami_type                    = "AL2_x86_64"
-    instance_types = [
-      "m5.large",
-      "m5.xlarge",
-      "m5.2xlarge",
-      "m5.4xlarge",
-      "m5.8xlarge",
-      "m5.12xlarge",
-      "m5d.large",
-      "m5d.xlarge",
-      "m5d.2xlarge",
-      "m5d.4xlarge",
-      "m5d.8xlarge",
-      "m5d.12xlarge"
-    ]
-    capacity_type = "ON_DEMAND"
-    min_size      = 1
-    desired_size  = 1
-    max_size      = 5
+    instance_types              = ["c5.24xlarge"]
+    capacity_type               = "SPOT"
+    min_size                    = 0
+    desired_size                = 0
+    max_size                    = 1000
     labels = {
-      "grid/type"                    = "Operator"
+      service                        = "workers"
+      "node.kubernetes.io/lifecycle" = "spot"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "workers"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  # Node group for metrics: Metrics exporter and Prometheus
+  metrics = {
+    name                        = "metrics"
+    launch_template_description = "Node group for metrics: Metrics exporter and Prometheus"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.24xlarge"]
+    capacity_type               = "ON_DEMAND"
+    min_size                    = 1
+    desired_size                = 1
+    max_size                    = 5
+    labels = {
+      service                        = "metrics"
       "node.kubernetes.io/lifecycle" = "ondemand"
     }
     taints = {
       dedicated = {
-        key    = "grid/type"
-        value  = "Operator"
+        key    = "service"
+        value  = "metrics"
         effect = "NO_SCHEDULE"
       }
     }
-    bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=ondemand'"
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  # Node group for ArmoniK control-plane: control-plane and Ingress
+  control_plane = {
+    name                        = "control-plane"
+    launch_template_description = "Node group for ArmoniK Control-plane and Ingress"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.24xlarge"]
+    capacity_type               = "ON_DEMAND"
+    min_size                    = 1
+    desired_size                = 1
+    max_size                    = 10
+    labels = {
+      service                        = "control-plane"
+      "node.kubernetes.io/lifecycle" = "ondemand"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "control-plane"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  # Node group for monitoring: metrics server, keda, seq, grafana, cluster-autoscaler, coreDNS, termination handler
+  monitoring = {
+    name                        = "monitoring"
+    launch_template_description = "Node group for monitoring"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.24xlarge"]
+    capacity_type               = "ON_DEMAND"
+    min_size                    = 1
+    desired_size                = 1
+    max_size                    = 5
+    labels = {
+      service                        = "monitoring"
+      "node.kubernetes.io/lifecycle" = "ondemand"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "monitoring"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  # Node group for data-plane
+  # state_database, inner_storage, task_queue
+  state_database = {
+    name                        = "mongodb"
+    launch_template_description = "Node group for MongoDB"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.24xlarge"]
+    use_custom_launch_template  = true
+    block_device_mappings = {
+      xvda = {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = 75
+          volume_type           = "gp3"
+          iops                  = 3000
+          throughput            = 150
+          encrypted             = null
+          kms_key_id            = null
+          delete_on_termination = true
+        }
+      }
+    }
+    capacity_type = "ON_DEMAND"
+    min_size      = 1
+    desired_size  = 1
+    max_size      = 10
+    labels = {
+      service                        = "state-database"
+      "node.kubernetes.io/lifecycle" = "ondemand"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "state-database"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
@@ -134,19 +242,50 @@ eks_managed_node_groups = {
 
 # List of self managed node groups
 self_managed_node_groups = {
-  spot = {
-    name                        = "self_spot"
-    launch_template_description = "Worker nodes in SPOT"
+  others = {
+    name                        = "others"
+    launch_template_description = "Node group for others"
     instance_type               = "c5.24xlarge"
     min_size                    = 0
     desired_size                = 0
-    max_size                    = 2700
+    max_size                    = 5
     force_delete                = true
     force_delete_warm_pool      = true
     instance_market_options = {
       market_type = "spot"
     }
-    bootstrap_extra_args = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    bootstrap_extra_args     = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  others_mixed = {
+    name                        = "others-mixed"
+    launch_template_description = "Mixed On demand and SPOT instances for other pods"
+    min_size                    = 0
+    desired_size                = 0
+    max_size                    = 5
+    use_mixed_instances_policy  = true
+    mixed_instances_policy = {
+      on_demand_allocation_strategy            = "lowest-price"
+      on_demand_base_capacity                  = 0
+      on_demand_percentage_above_base_capacity = 20 # 20% On-Demand Instances, 80% Spot Instances
+      spot_allocation_strategy                 = "price-capacity-optimized"
+      spot_instance_pools                      = null
+      spot_max_price                           = null
+    }
+    override = [
+      {
+        instance_type     = "c5.4xlarge"
+        weighted_capacity = "1"
+      },
+      {
+        instance_type     = "c5.2xlarge"
+        weighted_capacity = "2"
+      },
+    ]
+    iam_role_use_name_prefix = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }

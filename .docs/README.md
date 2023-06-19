@@ -15,11 +15,13 @@ pnpm install
 ## Usage
 
 To run the docs locally, run the following command:
+
 ```bash
 pnpm run dev
 ```
 
 To build the docs, run the following command:
+
 ```bash
 pnpm run generate
 ```

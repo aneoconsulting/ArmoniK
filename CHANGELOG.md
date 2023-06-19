@@ -2,6 +2,12 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+Changed
+-
+
+* Move Terraform modules of different resources deployment to GitHub repository [ArmoniK.Infra](https://github.com/aneoconsulting/ArmoniK.Infra).
+* Use ArmoniK Infrastructure version `0.0.2`
+
 ## [v2.13.2](https://github.com/aneoconsulting/armonik/tree/v2.13.2) (2023-06-16)
 
 Changed
@@ -14,8 +20,6 @@ Fixed
 
 
 * User keys were not loaded if they were part of the certificate file or if they were in PKCS#8 format
-
-* 
 
 ## [v2.13.1](https://github.com/aneoconsulting/armonik/tree/v2.13.1) (2023-06-07)
 
@@ -59,7 +63,7 @@ Fixed
 
 * Switched DLL Worker to release mode by default
 * Added view of currently handled task ids in Unified Client
-* Resend exception when errors occured in SubmitAsync 
+* Resend exception when errors occurred in SubmitAsync 
 * Forward exception in bufferRequest list
 
 

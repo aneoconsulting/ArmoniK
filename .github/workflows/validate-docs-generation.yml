@@ -1,12 +1,15 @@
 name: Validate Docs Generation
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
 
 concurrency:
-  group: "ci-${{ github.ref }}"
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -15,14 +18,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
 
       - run: npm i -g pnpm @antfu/ni
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3
         with:
-          node-version: "18"
+          node-version: 18
           cache: "pnpm"
           cache-dependency-path: ".docs/pnpm-lock.yaml"
 
@@ -34,3 +37,39 @@ jobs:
 
       - name: Static HTML export with Nuxt
         run: cd .docs && nr generate
+
+  lint-markdown:
+    name: Lint Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
+
+      - run: npm i -g pnpm @antfu/ni
+
+      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3
+        with:
+          node-version: 18
+          cache: pnpm
+          cache-dependency-path: ".docs/pnpm-lock.yaml"
+
+      - run: cd .docs && nci
+      
+      - run: cd .docs && nr lint:md
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
+
+      - run: npm i -g pnpm @antfu/ni
+
+      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3
+        with:
+          node-version: 18
+          cache: pnpm
+          cache-dependency-path: ".docs/pnpm-lock.yaml"
+
+      - run: cd .docs && nci
+      
+      - run: cd .docs && nr lint

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    "group:allNonMajor",
+    ":semanticCommitTypeAll(chore)",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "rangeStrategy": "bump",
+  "packageRules": [
+    {
+      "groupName": "npm packages",
+      "groupSlug": "npm",
+      "matchDatasources": [
+        "npm"
+      ]
+    },
+    {
+      "groupName": "terraform modules",
+      "groupSlug": "terraform-module",
+      "matchDatasources": [
+        "terraform-module"
+      ]
+    },
+    {
+      "groupName": "terraform provides",
+      "groupSlug": "terraform-provider",
+      "matchDatasources": [
+        "terraform-provider"
+      ]
+    },
+    {
+      "groupName": "github actions",
+      "groupSlug": "github-actions",
+      "matchDatasources": [
+        "github-tags"
+      ]
+    },
+  ]
+}
