@@ -12,9 +12,9 @@ locals {
   rabbitmq_endpoints = (local.rabbitmq_load_balancer.ip == "" && kubernetes_service.rabbitmq.spec.0.type == "ClusterIP" ? {
     ip       = kubernetes_service.rabbitmq.spec.0.cluster_ip
     port     = kubernetes_service.rabbitmq.spec.0.port.0.port
+    #port     =  5671
     web_port = kubernetes_service.rabbitmq.spec.0.port.1.port
-    # port     = 5672
-    # web_port = 15672
+    #web_port = 15672
     } : {
     ip       = local.rabbitmq_load_balancer.ip
     port     = local.rabbitmq_load_balancer.port

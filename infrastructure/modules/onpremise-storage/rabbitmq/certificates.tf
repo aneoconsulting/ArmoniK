@@ -70,9 +70,9 @@ resource "kubernetes_secret" "rabbitmq_certificate" {
     namespace = var.namespace
   }
   data = {
-    "root.pem" = tls_self_signed_cert.root_rabbitmq.cert_pem
-    "cert.pem" = tls_locally_signed_cert.rabbitmq_certificate.cert_pem
-    "key.pem"  = tls_private_key.rabbitmq_private_key.private_key_pem
+    "RMQ-CA-cert.pem" = tls_self_signed_cert.root_rabbitmq.cert_pem
+    "RMQ-server-cert.pem" = tls_locally_signed_cert.rabbitmq_certificate.cert_pem
+    "RMQ-server-keypem"  = tls_private_key.rabbitmq_private_key.private_key_pem
   }
   binary_data = {
     "certificate.pfx" = pkcs12_from_pem.rabbitmq_certificate.result

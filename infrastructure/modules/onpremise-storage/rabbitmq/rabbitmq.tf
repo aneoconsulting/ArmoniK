@@ -55,28 +55,46 @@ resource "kubernetes_deployment" "rabbitmq" {
           name              = "rabbitmq"
           image             = "${var.rabbitmq.image}:${var.rabbitmq.tag}"
           image_pull_policy = "IfNotPresent"
-          volume_mount {
+         volume_mount {
             name       = "rabbitmq-plugins"
             mount_path = "/etc/rabbitmq"
             read_only  = true
           }
+          volume_mount {
+            name       = "rabbitmq-storage-secret-volume"
+            mount_path = "/etc/pki/tls/"
+            read_only  = true
+          }
+
           # volume_mount {
           #   name       = "rabbitmq-config"
           #   mount_path = "/etc/rabbitmq/conf.d/"
           #   read_only  = true
           # }
           port {
-            name           = "rabbitmq"
+            name           = "amqp"
             container_port = 5672
             protocol       = "TCP"
           }
+          /*port {
+            name           = "ssl"
+            container_port = 5671
+            #protocol       = "SSL"
+          }*/
           port {
             name           = "dashboard"
             container_port = 15672
             protocol       = "TCP"
           }
         }
-      volume {
+        volume {
+          name = "rabbitmq-storage-secret-volume"
+          secret {
+            secret_name = kubernetes_secret.rabbitmq_certificate.metadata.0.name
+            optional    = false
+          }
+        }
+        volume {
           name = "rabbitmq-plugins"
           config_map {
             name     = kubernetes_config_map.rabbitmq_plugins.metadata.0.name
@@ -113,6 +131,12 @@ resource "kubernetes_service" "rabbitmq" {
       type    = kubernetes_deployment.rabbitmq.metadata.0.labels.type
       service = kubernetes_deployment.rabbitmq.metadata.0.labels.service
     }
+    /*port {
+      name        = "ssl"
+      port        = 5671
+      target_port = 5671
+      #protocol    = "TCP"
+    }*/
     port {
       name        = "rmq"
       port        = 5672
