@@ -19,7 +19,7 @@ You must create and provide
 your [AWS programmatic access keys](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html#access-keys-and-secret-access-keys)
 in your dev/test environment:
 
-```bash
+```bash [shell]
 mkdir -p ~/.aws
 cat <<EOF | tee ~/.aws/credentials
 [default]
@@ -32,7 +32,7 @@ EOF
 
 Use the following procedure to generate a SSH key pair and save it in `~/.ssh`:
 
-```bash
+```bash [shell]
 ssh-keygen -b 4096 -t rsa -f ~/.ssh/cluster-key
 ```
 
@@ -50,7 +50,7 @@ In [parameters.tfvars](https://github.com/aneoconsulting/ArmoniK/blob/main/infra
 * set the value of the parameter `ssh_key` with the content of the public SSH key `~/.ssh/cluster-key.pub` and the path
   to the private SSH key, for example:
 
-  ```bash
+  ```bash [shell]
   ssh_key = {
     private_key_path = "~/.ssh/cluster-key"
     public_key       = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41 email@example.com"
@@ -59,20 +59,20 @@ In [parameters.tfvars](https://github.com/aneoconsulting/ArmoniK/blob/main/infra
 
 * set the ID of an existing VPC and its subnet:
 
-  ```bash
+  ```bash [shell]
   vpc_id    = "<VPC_ID>"
   subnet_id = "<SUBNET_ID>"
   ```
 
 To deploy the cluster execute the command:
 
-```bash
+```bash [shell]
 make all
 ```
 
 The outputs display the public IP of each instance, like:
 
-```bash
+```bash [shell]
 master_public_ip = {
   "ip" = "54.185.23.147"
   "name" = "i-0168c936872babdf2"
@@ -111,6 +111,6 @@ manage your K3s cluster from your local machine.
 
 To delete all resources of the cluster created on AWS, execute the command:
 
-```bash
+```bash [shell]
 make destroy
 ```

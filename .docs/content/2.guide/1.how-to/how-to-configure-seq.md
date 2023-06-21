@@ -9,7 +9,7 @@ Then, redeploy.
 
 When you perform the command:
 
-```bash
+```bash [shell]
 kubectl get svc -n armonik
 ```
 

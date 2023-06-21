@@ -136,7 +136,7 @@ Please note that the ```Username``` and ```RoleName``` **MUST** be uniquely defi
 
 The resulting configuration is stored in the MongoDB database. If the database is restarted when MongoDB isn't setup with a persistent volume or if the database is emptied it needs to be repopulated by relaunching the authentication-in-database job. In a local deployment, this can be achieved using the following shell command:
 
-```bash
+```bash [shell]
 kubectl -n armonik get job authentication-in-database -o json | jq "del(.spec.selector)" | jq "del(.spec.template.metadata.labels)" | kubectl -n armonik replace --force -f -
 ```
 
@@ -148,13 +148,13 @@ The following json is an example defining two users, with their own different ro
 {
   "certificates_list":[
     {
-      "CN": "CNOfUserSubmitter", 
-      "Fingerprint" : "752c14ea195c369bac3c3b7896975ee9fd15eeb7", 
+      "CN": "CNOfUserSubmitter",
+      "Fingerprint" : "752c14ea195c369bac3c3b7896975ee9fd15eeb7",
       "Username": "UserSubmitter"
     },
     {
-      "CN": "CNOfUserMonitoring", 
-      "Fingerprint" : "c26dc0bf68e25099bc4a85b631efdb93d0768a20", 
+      "CN": "CNOfUserMonitoring",
+      "Fingerprint" : "c26dc0bf68e25099bc4a85b631efdb93d0768a20",
       "Username": "UserMonitoring"
     }
   ],
@@ -162,7 +162,7 @@ The following json is an example defining two users, with their own different ro
     {
       "Username": "UserSubmitter",
       "Roles": [
-        "Submitter", 
+        "Submitter",
         "Monitoring"
         ] // Note here that the permissions of Monitoring are included in Submitter, thus Monitoring could be omitted here
     },
