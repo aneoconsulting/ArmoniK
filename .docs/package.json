@@ -18,7 +18,7 @@
     "mermaid": "^10.2.3",
     "nuxt": "^3.5.3"
   },
-  "packageManager": "pnpm@8.6.2",
+  "packageManager": "pnpm@8.6.3",
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "case-police": "^0.6.1",
