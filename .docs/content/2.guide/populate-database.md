@@ -48,6 +48,7 @@ If you can't run the script, you may need to give execution rights to the script
 ```sh
 chmod +x ./tools/mongodb/<script-name>.sh
 ```
+
 ::
 
 ### Available scripts
