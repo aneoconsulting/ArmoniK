@@ -7,7 +7,7 @@ db = db.getSiblingDB("database");
 const tasksNumber = 100;
 for (let i = 0; i < tasksNumber; i++) {
   const creationDate = faker.date.past();
-  const submittedDate = faker.date.between(creationDate, new Date());
+  const submittedDate = faker.date.between({ from: creationDate, to: new Date() });
   const startDate = faker.date.future({ refDate: submittedDate });
   const endDate = faker.datatype.boolean() ? faker.date.future({ refDate: startDate }) : null;
   db.TaskData.insertOne({
