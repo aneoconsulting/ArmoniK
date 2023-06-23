@@ -41,7 +41,10 @@ for (let i = 0; i < tasksNumber; i++) {
         min: 0,
         max: 10
       }),
-      Options: {},
+      Options: {
+        "CustomOption1": faker.word.sample(),
+        "CustomOption2": faker.word.sample()
+      },
       Priority: faker.number.int({
         min: 0,
         max: 4
