@@ -10,6 +10,7 @@ services, allowing users to submit high volumes of short and long-running tasks 
 ## ArmoniK versions
 
 <!-- TODO: Must move the documentation -->
+<!-- TODO: Add a link to this section in the documentation section once this have moved to the documentation -->
 
 The current version of ArmoniK uses the tags listed in [armonik-versions.txt](https://github.com/aneoconsulting/ArmoniK/blob/main/armonik-versions.txt) where:
 
