@@ -8,6 +8,19 @@ Changed
 * Move Terraform modules of different resources deployment to GitHub repository [ArmoniK.Infra](https://github.com/aneoconsulting/ArmoniK.Infra).
 * Use ArmoniK Infrastructure version `0.0.2`
 
+## [v2.13.2](https://github.com/aneoconsulting/armonik/tree/v2.13.2) (2023-06-16)
+
+Changed
+-
+
+* Use Armonik.Extension.Csharp version `0.11.1`
+* Upgrade Core version from `0.13.1` to `0.13.2`.
+
+Fixed
+
+
+* User keys were not loaded if they were part of the certificate file or if they were in PKCS#8 format
+
 ## [v2.13.1](https://github.com/aneoconsulting/armonik/tree/v2.13.1) (2023-06-07)
 
 Changed

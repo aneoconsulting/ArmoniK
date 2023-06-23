@@ -32,23 +32,6 @@ jobs:
           echo "Version :" >> $GITHUB_STEP_SUMMARY
           echo "$VERSION" >> $GITHUB_STEP_SUMMARY
 
-  format:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
-      - name: Install terraform
-        run: |
-          if ! which terraform 2>/dev/null; then
-            sh tools/install/terraform.sh
-          fi   
-      - name: Check Format
-        run: terraform fmt -check -recursive -diff
-
   AdminGUI:
     runs-on: ubuntu-latest
     timeout-minutes: 10

@@ -153,10 +153,25 @@ eks_managed_node_groups = {
     launch_template_description = "Node group for MongoDB"
     ami_type                    = "AL2_x86_64"
     instance_types              = ["c5.24xlarge"]
-    capacity_type               = "ON_DEMAND"
-    min_size                    = 1
-    desired_size                = 1
-    max_size                    = 10
+    use_custom_launch_template  = true
+    block_device_mappings = {
+      xvda = {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = 75
+          volume_type           = "gp3"
+          iops                  = 3000
+          throughput            = 150
+          encrypted             = null
+          kms_key_id            = null
+          delete_on_termination = true
+        }
+      }
+    }
+    capacity_type = "ON_DEMAND"
+    min_size      = 1
+    desired_size  = 1
+    max_size      = 10
     labels = {
       service                        = "state-database"
       "node.kubernetes.io/lifecycle" = "ondemand"
