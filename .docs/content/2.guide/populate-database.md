@@ -42,6 +42,14 @@ Data are generated randomly, so you can run the script multiple times to generat
 You can also use these scripts directly from the mongodb directory.
 ::
 
+::alert{type="warning"}
+If you can't run the script, you may need to give execution rights to the script:
+
+```sh
+chmod +x ./tools/mongodb/<script-name>.sh
+```
+::
+
 ### Available scripts
 
 | Script name                           | Description                                       |
@@ -51,6 +59,7 @@ You can also use these scripts directly from the mongodb directory.
 | `generate-sessions`                   | Generate 100 sessions                             |
 | `generate-session-with-related-tasks` | Generate 1 session and 100 related tasks          |
 | `generate-tasks`                      | Generate 100 tasks                                |
+| `generate-results`                    | Generate 100 results                              |
 
 ::alert{type="info"}
 To generate applications, you must generate tasks.
