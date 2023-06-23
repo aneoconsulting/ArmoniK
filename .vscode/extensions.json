@@ -1,5 +1,6 @@
 {
   "recommendations": [
+    "nuxt.mdc",
     "streetsidesoftware.code-spell-checker"
   ]
 }

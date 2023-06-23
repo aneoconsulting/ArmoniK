@@ -1,0 +1,7 @@
+{
+  "name": "mongodb-scripts",
+  "description": "Scripts use to populate mongodb with fake data",
+  "dependencies": {
+    "@faker-js/faker": "^8.0.2"
+  }
+}

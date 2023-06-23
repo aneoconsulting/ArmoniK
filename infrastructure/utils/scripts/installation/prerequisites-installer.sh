@@ -7,7 +7,7 @@ set -e
 lsb_release -d -s
 
 # Get the current directory
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
 # Get the pre-requisites directory
 DIR=$DIR/prerequisites

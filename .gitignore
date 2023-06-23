@@ -21,3 +21,4 @@ generated
 ./Source/ArmoniK.Samples
 *~
 *.pem
+.database
