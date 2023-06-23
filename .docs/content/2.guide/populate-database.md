@@ -56,6 +56,7 @@ chmod +x ./tools/mongodb/<script-name>.sh
 | Script name                           | Description                                       |
 |---------------------------------------|---------------------------------------------------|
 | `export-all`                          | Export all collections in the `.database` folder. |
+| `clean-all`                           | Clean all collections. **Be careful!**            |
 | `generate-partitions`                 | Generate 100 partitions                           |
 | `generate-sessions`                   | Generate 100 sessions                             |
 | `generate-session-with-related-tasks` | Generate 1 session and 100 related tasks          |
