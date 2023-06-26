@@ -12,10 +12,11 @@ services, allowing users to submit high volumes of short and long-running tasks 
 Please, read [documentation](https://aneoconsulting.github.io/ArmoniK/) for more information about ArmoniK.
 
 - 👉 [ArmoniK Architecture](https://aneoconsulting.github.io/ArmoniK/armonik)
+- 👉 [ArmoniK Versions](https://aneoconsulting.github.io/ArmoniK/armonik#versions)
 - 👉 [ArmoniK Installation](https://aneoconsulting.github.io/ArmoniK/installation)
 - 👉 [ArmoniK Configuration](https://aneoconsulting.github.io/ArmoniK/guide/how-to/how-to-configure-authentication)
 - 👉 [ArmoniK Performance](https://aneoconsulting.github.io/ArmoniK/benchmarking/test-plan)
-- 👉 [ArmoniK Versions](https://aneoconsulting.github.io/ArmoniK/armonik#versions)
+
 
 ## Bug
 
