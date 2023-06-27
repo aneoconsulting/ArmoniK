@@ -5,9 +5,11 @@ const faker = localRequire("@faker-js/faker").fakerEN;
 db = db.getSiblingDB("database");
 
 const tasksNumber = 100;
-// TODO: Add more intelligent data (e.g. a task that depends on another task or a task that is a retry of another task or many tasks with the same application and session)
-// TODO: It could be in another file.
 for (let i = 0; i < tasksNumber; i++) {
+  const creationDate = faker.date.past();
+  const submittedDate = faker.date.between({ from: creationDate, to: new Date() });
+  const startDate = faker.date.future({ refDate: submittedDate });
+  const endDate = faker.datatype.boolean() ? faker.date.future({ refDate: startDate }) : null;
   db.TaskData.insertOne({
     _id: faker.string.uuid(),
     SessionId: faker.string.uuid(),
@@ -53,11 +55,10 @@ for (let i = 0; i < tasksNumber; i++) {
       ApplicationNamespace: faker.commerce.productName().split(" ").join("."),
       EngineType: faker.commerce.productAdjective(),
     },
-    CreationDate: faker.date.past(),
-    // TODO: Add a date
-    SubmittedDate: null,
-    StartDate: null,
-    EndDate: null,
+    CreationDate: creationDate,
+    SubmittedDate: submittedDate,
+    StartDate: startDate,
+    EndDate: endDate,
     ReceptionDate: null,
     AcquisitionDate: null,
     PodTtl: null,
