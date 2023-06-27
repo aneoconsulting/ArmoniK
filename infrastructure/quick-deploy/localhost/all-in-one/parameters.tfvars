@@ -312,3 +312,8 @@ extra_conf = {
     Submitter__MaxErrorAllowed = 50
   }
 }
+
+environment_description = {
+  name  = "local-dev"
+  color = "#ffffff"
+}

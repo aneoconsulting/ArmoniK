@@ -496,3 +496,9 @@ variable "helm_charts" {
     version    = string
   }))
 }
+
+variable "environment_description" {
+  description = "Description of the environment"
+  type        = any
+  default     = null
+}

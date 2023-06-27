@@ -72,4 +72,6 @@ module "armonik" {
   # Force the dependency on Keda and metrics-server for the HPA
   keda_chart_name           = module.keda.keda.chart_name
   metrics_server_chart_name = concat(module.metrics_server[*].metrics_server.chart_name, ["metrics-server"])[0]
+
+  environment_description = var.environment_description
 }
