@@ -314,8 +314,8 @@ extra_conf = {
 }
 
 environment_description = {
-  name  = "local-dev"
-  version = "0.0.0"
+  name        = "local-dev"
+  version     = "0.0.0"
   description = "Local development environment"
-  color = "blue"
+  color       = "blue"
 }
