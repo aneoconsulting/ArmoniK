@@ -29,5 +29,5 @@ module "armonik" {
   ingress                    = var.ingress
   job_partitions_in_database = var.job_partitions_in_database
   authentication             = var.authentication
-  environment_description = var.environment_description
+  environment_description    = var.environment_description
 }
