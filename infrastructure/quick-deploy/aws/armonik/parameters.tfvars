@@ -252,3 +252,9 @@ extra_conf = {
   }
 }
 
+environment_description = {
+  name        = "aws-dev"
+  version     = "0.0.0"
+  description = "AWS environment"
+  color       = "#80ff80"
+}

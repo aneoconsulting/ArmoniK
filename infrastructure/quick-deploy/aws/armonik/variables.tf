@@ -262,3 +262,9 @@ variable "authentication" {
     require_authorization   = bool
   })
 }
+
+variable "environment_description" {
+  description = "Description of the environment"
+  type        = any
+  default     = null
+}
