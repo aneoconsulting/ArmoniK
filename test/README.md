@@ -1,6 +1,6 @@
 # HOW TO USE IT
 
-This document describe how to use the scripts for do the tests and get the results.
+This document describe how to use the benchmarking scripts.
 
 ## Bench
 
