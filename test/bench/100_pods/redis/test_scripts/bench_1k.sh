@@ -14,4 +14,4 @@ docker run --rm \
 	-e BenchOptions__BatchSize=50 \
 	-e BenchOptions__MaxRetries=5 \
 	-e BenchOptions__DegreeOfParallelism=5 \
-	dockerhubaneo/armonik_core_bench_test_client:0.11.4-jgbench.13.e5bd3b7c
+	dockerhubaneo/armonik_core_bench_test_client:0.13.2

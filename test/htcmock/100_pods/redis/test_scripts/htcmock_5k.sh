@@ -13,4 +13,4 @@ export CONTROL_PLANE_URL=$(cat ../../../../../infrastructure/quick-deploy/aws/ar
               -e HtcMock__EnableSmallOutput=true \
               -e HtcMock__EnableFastCompute=true \
               -e HtcMock__Partition="htcmock" \
-              dockerhubaneo/armonik_core_htcmock_test_client:0.13.1
+              dockerhubaneo/armonik_core_htcmock_test_client:0.13.2
