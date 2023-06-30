@@ -1,0 +1,130 @@
+[
+    {
+        "armonik_versions": {
+            "infra": "2.12.2",
+            "core": "0.12.4",
+            "api": "3.6.0",
+            "gui": "0.9.0",
+            "extcsharp": "0.9.5",
+            "samples": "2.12.2"
+        },
+        "armonik_images": {
+            "infra": [],
+            "core": [
+                "dockerhubaneo/armonik_pollingagent",
+                "dockerhubaneo/armonik_control_metrics",
+                "dockerhubaneo/armonik_control_partition_metrics",
+                "dockerhubaneo/armonik_control",
+                "dockerhubaneo/armonik_core_stream_test_worker",
+                "dockerhubaneo/armonik_core_stream_test_client",
+                "dockerhubaneo/armonik_core_htcmock_test_worker",
+                "dockerhubaneo/armonik_core_htcmock_test_client",
+                "dockerhubaneo/armonik_core_bench_test_worker",
+                "dockerhubaneo/armonik_core_bench_test_client"
+            ],
+            "api": [],
+            "gui": [
+                "dockerhubaneo/armonik_admin_app",
+                "dockerhubaneo/armonik_admin_api"
+            ],
+            "extcsharp": [
+                "dockerhubaneo/armonik_worker_dll"
+            ],
+            "samples": []
+        },
+        "image_tags": {
+            "registry.k8s.io/autoscaling/cluster-autoscaler": "v1.23.0",
+            "registry.k8s.io/metrics-server/metrics-server": "v0.6.2",
+            "ghcr.io/kedacore/keda": "2.9.3",
+            "ghcr.io/kedacore/keda-metrics-apiserver": "2.9.3",
+            "public.ecr.aws/aws-ec2/aws-node-termination-handler": "v1.19.0",
+            "amazon/aws-efs-csi-driver": "v1.5.1",
+            "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe": "v2.9.0-eks-1-22-19",
+            "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar": "v2.7.0-eks-1-22-19",
+            "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner": "v3.4.0-eks-1-22-19",
+            "symptoma/activemq": "5.17.0",
+            "mongo": "6.0.1",
+            "redis": "7.0.8",
+            "minio/minio": "RELEASE.2023-02-10T18-48-39Z",
+            "datalust/seq": "2023.1",
+            "grafana/grafana": "9.3.6",
+            "prom/node-exporter": "v1.5.0",
+            "prom/prometheus": "v2.42.0",
+            "fluent/fluent-bit": "2.0.9",
+            "rtsp/mongosh": "1.7.1",
+            "nginx": "1.23.3",
+            "nginxinc/nginx-unprivileged": "1.23.3",
+            "datalust/seqcli": "2023.1"
+        },
+        "test_environnement": {
+            "instance_type": "c24.xlarge",
+            "Processor": "Intel Xeon de 2e (Cascade Lake)",
+            "CPU_frequency": "3.6 GHz - 3.9 GHz",
+            "nb_cpus": "96",
+            "RAM": "192",
+            "Network_bandwidth": "25",
+            "EBS_bandwidth": "19000",
+            "Kubernetes": "AWS EKS 1.25",
+            "Object_object_type": "AWS S3",
+            "Storage_queue_storage": "Amazon MQ, broker : ActiveMQ 5.16.4",
+            "Storage_table_type": "MongoDB 6.0.1",
+            "OS": "Linux"
+        }
+    },
+    [
+        {
+            "Test": "bench",
+            "ElapsedTime": "00:00:18.3504645",
+            "SubmissionTime": "00:00:02.3141442",
+            "TasksExecutionTime": "00:00:13.9157812",
+            "ResultRetrievingTime": "00:00:02.0692890",
+            "CountExecutionTime": "00:00:00.0160471",
+            "TotalTasks": 1000,
+            "ErrorTasks": 0,
+            "CompletedTasks": 1000,
+            "CancelledTasks": 0,
+            "$type": "BenchOptions",
+            "NTasks": 1000,
+            "TaskDurationMs": 1,
+            "PayloadSize": 1,
+            "ResultSize": 1,
+            "BatchSize": 50,
+            "TaskRpcException": "",
+            "TaskError": "",
+            "Partition": "bench",
+            "ShowEvents": false,
+            "MaxRetries": 5,
+            "DegreeOfParallelism": 5,
+            "throughput": 78.1983109164842,
+            "nb_pods": 100
+        }
+    ],
+    [
+        {
+            "Test": "bench",
+            "ElapsedTime": "00:01:04.4384410",
+            "SubmissionTime": "00:00:10.5994994",
+            "TasksExecutionTime": "00:00:44.2651815",
+            "ResultRetrievingTime": "00:00:09.5377842",
+            "CountExecutionTime": "00:00:00.0217572",
+            "TotalTasks": 5000,
+            "ErrorTasks": 0,
+            "CompletedTasks": 5000,
+            "CancelledTasks": 0,
+            "$type": "BenchOptions",
+            "NTasks": 5000,
+            "TaskDurationMs": 1,
+            "PayloadSize": 1,
+            "ResultSize": 1,
+            "BatchSize": 50,
+            "TaskRpcException": "",
+            "TaskError": "",
+            "Partition": "bench",
+            "ShowEvents": false,
+            "MaxRetries": 5,
+            "DegreeOfParallelism": 5,
+            "throughput": 246.80388962930056,
+            "nb_pods": 100
+        }
+    ]
+]
