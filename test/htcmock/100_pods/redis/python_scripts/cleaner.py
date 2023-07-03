@@ -26,18 +26,13 @@ def clean_file(file):
                 keep_tput.append(jline)
     dic_json = [{"Test": "htcmock"} | stats | {"configuration": conf, "throughput": tput, "nb_pods": 100} for
                 stats, conf, tput in zip(keep_stats, keep_config, keep_tput)]
-    print(keep_stats)
+
     # write a clean json file with needed data
     with open(file, 'w') as f:
         json.dump(dic_json, f)
 
 
-# clean the stats file
-# file = "../stats/4_agg/1k.json"
+
 # clean_file(file)
-file = "../stats/4_agg/5k.json"
+file = "../stats/5k.json"
 clean_file(file)
-# file = "../stats/4_agg/10k.json"
-# clean_file(file)
-# file = "out.json"
-# clean_file(file)
