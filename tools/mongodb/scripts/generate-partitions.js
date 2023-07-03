@@ -16,12 +16,10 @@ for (let i = 0; i < partitionsNumber; i++) {
       })
     }, () => faker.string.uuid()),
     PodConfiguration: {
-      verb: faker.hacker.verb(),
-      time: faker.date.future(),
-      number: faker.number.int({
-        min: 0,
-        max: 100
-      }),
+      Configuration: {
+        verb: faker.hacker.verb(),
+        noun: faker.hacker.noun(),
+      }
     },
     PodMax: faker.number.int({
       min: 20,
