@@ -9,9 +9,10 @@ Changed
 
 * Move Terraform modules of different resources deployment to GitHub repository [ArmoniK.Infra](https://github.com/aneoconsulting/ArmoniK.Infra).
 * Use ArmoniK Infrastructure version `0.0.2`
-* Upgrade ArmoniK.Extension.Csharp version from `0.11.1` to `0.12.0`
-* Upgrade Core version from `0.13.2` to `0.14.2`
-* Upgrade ArmoniK.Api to `3.9.1`
+* Upgrade ArmoniK.Extension.Csharp version from `0.11.1` to `0.12.1`
+* Upgrade Core version from `0.13.2` to `0.14.3`
+* Upgrade ArmoniK.Api to `3.10.0`
+* Upgrade ArmoniK.Admin.GUI to `0.9.1`
 
 Breaking
 - 
@@ -28,6 +29,7 @@ Added
 * Retried status to tasks
 * SessionId and task options in queue adapter
 * Ability to submit data and tasks separately using native Api
+* C++ Api
 
 Fixed
 -
