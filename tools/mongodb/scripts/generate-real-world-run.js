@@ -111,9 +111,7 @@ for (let i = 0; i < tasksNumber; i++) {
     ReceptionDate: null,
     AcquisitionDate: null,
     PodTtl: null,
-    // TODO: Is it a date?
     ProcessingToEndDuration: null,
-    // TODO: Is it a date?
     CreationToEndDuration: null,
     Output: {
       Success: false,
