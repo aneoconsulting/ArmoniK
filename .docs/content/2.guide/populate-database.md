@@ -53,14 +53,15 @@ chmod +x ./tools/mongodb/<script-name>.sh
 
 ### Available scripts
 
-| Script name                           | Description                                       |
-|---------------------------------------|---------------------------------------------------|
-| `export-all`                          | Export all collections in the `.database` folder. |
-| `generate-partitions`                 | Generate 100 partitions                           |
-| `generate-sessions`                   | Generate 100 sessions                             |
-| `generate-session-with-related-tasks` | Generate 1 session and 100 related tasks          |
-| `generate-tasks`                      | Generate 100 tasks                                |
-| `generate-results`                    | Generate 100 results                              |
+| Script name                           | Description                                                                         |
+|---------------------------------------|-------------------------------------------------------------------------------------|
+| `export-all`                          | Export all collections in the `.database` folder.                                   |
+| `generate-partitions`                 | Generate 100 partitions                                                             |
+| `generate-sessions`                   | Generate 100 sessions                                                               |
+| `generate-session-with-related-tasks` | Generate 1 session and 100 related tasks                                            |
+| `generate-tasks`                      | Generate 100 tasks                                                                  |
+| `generate-results`                    | Generate 100 results                                                                |
+| `generate-real-world-run`             | Generate 1 partition, 1 session, 1 application and 1 000 tasks with related results |
 
 ::alert{type="info"}
 To generate applications, you must generate tasks.
