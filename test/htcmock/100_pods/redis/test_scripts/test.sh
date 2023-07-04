@@ -19,5 +19,3 @@
 
 #print the test stats and plot graphs
 #../python_scripts/wjson.py
-
-rm ../stats/5k.json
