@@ -40,26 +40,25 @@ This document describe how to use the benchmarking scripts.
 
 ### Run the tests
 
-* Scripts for each test where we set the parameters of the test to run.
-* Script to run all the tests cases and  store the results in Json files using python scripts.
+* bench_1k.sh & bench_5k.sh : scripts for each test where we set the parameters of the test to run.
+* test.sh : script to run all the tests cases and  store the results in Json files.
 
 ### Clean the output
 
-* cleaner.py will clean the json output files.  
+* cleaner.py : will clean the json output files.  
 Parameters : path to the json files we want to clean.  
 
 
-* merge_jsons.py : merges test_env.json which is a json file which describes the test environment(third party components of ArmoniK) and we have to set it for each test with the parameters json file of the tested version of ArmoniK with the clean results of the test.
+* merge_jsons.py : merges the cleaned results files with the parameters json file of the tested version of ArmoniK and est_env.json file (third party components of ArmoniK).
 * prerequisites: we have to install jsonmerge (pip install jsonmerge)
 
 ### Analyse the results 
 
-wjson will read the clean json files and calculate the results.
+wjson.py : will read the clean stats files so we can manipulate the data.
 
 * Parameters : List of clean json files
 
 ### How to use it :
 * Run the script test_scripts/test.sh to run the tests, store the outputs, clean them and merge them with the environment and infrastructure description files.
-
 
 

@@ -1,15 +1,9 @@
 #!/bin/bash
 
-#lunch runs with the same nb pods
 # warm up run
-#./bench_10k.sh
+./bench_10k.sh
 
 #clearmeasured runs
-#for i in {1..3}
-#do
-#    ./bench_10k.sh >> 10k.json
-#done
-
 ./htcmock_5k.sh >> ../stats/5k.json
 #clean the output file
 ../python_scripts/cleaner.py 
