@@ -1,6 +1,6 @@
 # HOW TO USE IT
 
-This document describe how to use the benchmarking scripts. 
+This document describes how to use the benchmarking scripts. 
 
 
 #### Folder tree
