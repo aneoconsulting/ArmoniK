@@ -2,8 +2,8 @@
 
 This document describes how to use the benchmarking scripts. 
 
-
-#### Folder tree
+Those tests are an example of benchmarking tests using bench and htcmock to measure the performances of ArmoniK.  
+We have to deploy ArmoniK on aws with two partitions (bench and htcmock) with 100 pods for each partition using redis as storage.  
 
 <pre>
 .  
@@ -36,7 +36,8 @@ This document describes how to use the benchmarking scripts.
 
 </pre>
 
-## Bench and Htcmock
+
+# Bench & Htcmock
 
 ### Run the tests
 
@@ -58,7 +59,14 @@ wjson.py : will read the clean stats files so we can manipulate the data.
 
 * Parameters : List of clean json files
 
-### How to use it :
-* Run the script test_scripts/test.sh to run the tests, store the outputs, clean them and merge them with the environment and infrastructure description files.
+### How to run the tests :
 
+#### Linux : 
+* Run the script test.sh in the directory /test/bench/100_pods/redis/test_scripts  to run the tests of bench, store the outputs, clean them and merge them with the environment and infrastructure description files.
+* Run the script test.sh in the directory /test/htcmock/100_pods/redis/test_scripts  to run the tests of htcmock, store the outputs, clean them and merge them with the environment and infrastructure description files.
 
+```console
+user@user:~$ ./test.sh
+```
+# Stresstest : 
+TODO:
