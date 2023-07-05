@@ -16,6 +16,5 @@ then
     "$DIR/utils/execute-mongo-shell-script.sh" export-all
 fi
 
-echo $DIR
 # Description: Export all collections from MongoDB
 "$DIR/utils/execute-mongo-shell-script.sh" clean-all
