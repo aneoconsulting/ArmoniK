@@ -2,6 +2,20 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.13.3](https://github.com/aneoconsulting/armonik/tree/v2.13.2) (2023-07-05)
+
+Changed
+-
+
+* Use Armonik.Extension.Csharp version `0.11.2`
+
+Fixed
+
+
+* Bad properties override
+
+* 
+
 ## [v2.13.2](https://github.com/aneoconsulting/armonik/tree/v2.13.2) (2023-06-16)
 
 Changed
