@@ -11,7 +11,7 @@ with open("../stats/test_env.json", "r") as test_env:
     result.append(json.load(test_env))
 with open("../stats/5k.json", "r") as stats:
     result.append(json.load(stats))
-with open("results.json", "w") as r:
+with open("../stats/results.json", "w") as r:
 
     dict_json = [merge(result[0], result[1]), result[2]]
     json.dump(dict_json, r)

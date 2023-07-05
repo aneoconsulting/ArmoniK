@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # warm up run
-./bench_10k.sh
+./bench_1k.sh
 
 #clearmeasured runs
 ./bench_1k.sh >> ../stats/1k.json && ./bench_5k.sh >> ../stats/5k.json

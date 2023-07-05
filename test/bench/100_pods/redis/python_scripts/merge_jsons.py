@@ -14,6 +14,6 @@ with open("../stats/1k.json", "r") as stats:
 with open("../stats/5k.json", "r") as stats:
     result2 = json.load(stats)
 # print(merged)
-with open("results.json", "w") as r:
+with open("../stats/results.json", "w") as r:
     dict_json = [merge(result[0], result[1]), result[2], result2]
     json.dump(dict_json, r)

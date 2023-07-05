@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CONTROL_PLANE_URL=$(cat ../../../../../infrastructure/quick-deploy/aws/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+export CONTROL_PLANE_URL=$(cat ../../../../../infrastructure/quick-deploy/aws-benchmark/armonik/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
 
 #run  5000 tasks on 100 pods
 docker run --rm \

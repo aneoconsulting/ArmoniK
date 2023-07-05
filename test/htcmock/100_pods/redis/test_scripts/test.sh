@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # warm up run
-./bench_10k.sh
+./htcmock_5k.sh
 
 #clearmeasured runs
 ./htcmock_5k.sh >> ../stats/5k.json

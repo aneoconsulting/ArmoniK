@@ -3,7 +3,7 @@
 This document describes how to use the benchmarking scripts. 
 
 Those tests are an example of benchmarking tests using bench and htcmock to measure the performances of ArmoniK.  
-We have to deploy ArmoniK on aws with two partitions (bench and htcmock) with 100 pods for each partition using redis as storage.  
+We have to deploy ArmoniK(aws-benchmark) on aws with two partitions (bench and htcmock) with 100 pods for each partition using redis as storage.   
 
 <pre>
 .  
