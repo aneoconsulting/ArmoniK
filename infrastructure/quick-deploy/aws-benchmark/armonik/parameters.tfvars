@@ -33,7 +33,7 @@ control_plane = {
   service_type      = "ClusterIP"
   replicas          = 1
   image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-control-plane"
-  tag               = "0.13.2"
+  tag               = "0.14.3"
   image_pull_policy = "IfNotPresent"
   port              = 5001
   limits = {
@@ -80,7 +80,7 @@ control_plane = {
 admin_gui = {
   name  = "admin-app"
   image = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-admin-app"
-  tag   = "0.9.0"
+  tag   = "0.9.1"
   port  = 1080
   limits = {
     cpu    = "1000m"
@@ -146,7 +146,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.13.2"
+      tag               = "0.14.3"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"
@@ -162,7 +162,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-worker"
-        tag               = "0.11.1"
+        tag               = "0.12.1"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
@@ -195,7 +195,6 @@ compute_plane = {
       ]
     }
   },
-  #bench partition
   bench = {
     # number of replicas for each deployment of compute plane
     replicas                         = 100
@@ -206,7 +205,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.13.2"
+      tag               = "0.14.3"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"
@@ -220,9 +219,9 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        name              = "worker"
+        name              = "bench"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-bench"
-        tag               = "0.13.2"
+        tag               = "0.14.3"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
@@ -255,7 +254,6 @@ compute_plane = {
       ]
     }
   },
-  #htcmock partition
   htcmock = {
     # number of replicas for each deployment of compute plane
     replicas                         = 100
@@ -266,7 +264,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-polling-agent"
-      tag               = "0.13.2"
+      tag               = "0.14.3"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"
@@ -280,9 +278,9 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        name              = "worker"
+        name              = "htcmock"
         image             = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik-htcmock"
-        tag               = "0.13.2"
+        tag               = "0.14.3"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
