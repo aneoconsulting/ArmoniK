@@ -36,3 +36,7 @@ file = "../stats/1k.json"
 clean_file(file)
 file = "../stats/5k.json"
 clean_file(file)
+file = "../stats/10k.json"
+clean_file(file)
+file = "../stats/100k.json"
+clean_file(file)
