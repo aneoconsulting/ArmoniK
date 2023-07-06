@@ -4,12 +4,12 @@ INGRESS_CERTIFICATES_DIR=$(GENERATED_DIR)/certificates/ingress
 PARAMETERS_FILE?=parameters.tfvars
 EXTRA_PARAMETERS_FILE?=../../../../extra.tfvars.json
 VERSIONS_FILE?=../../../../versions.tfvars.json
-STATE_FILE=$(GENERATED_DIR)/armonik-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/armonik-output.json
 MODULES_DIR=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
 MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
 
+export KUBE_CONFIG_PATH?=$(HOME)/.kube/config
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export NAMESPACE?=armonik
 export PREFIX?=armonik-local
@@ -27,22 +27,22 @@ env:
 
 init:
 	mkdir -p $(GENERATED_DIR)
-	terraform init -upgrade -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)
+	terraform init -upgrade -reconfigure -backend-config="secret_suffix=$(PREFIX)" -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)
 
 plan:
-	terraform plan -state $(STATE_FILE) -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)  -out=/dev/null
+	terraform plan -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)  -out=/dev/null
 
 apply:
-	terraform apply -state $(STATE_FILE) -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
+	terraform apply -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
 
 refresh:
-	terraform refresh -state $(STATE_FILE) -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
+	terraform refresh -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
 
 delete:
-	terraform destroy -state $(STATE_FILE) -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
+	terraform destroy -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
 
 output:
-	@terraform output -state=$(STATE_FILE) -json | jq 'map_values(.value)' > $(OUTPUT_FILE)
+	@terraform output -json | jq 'map_values(.value)' > $(OUTPUT_FILE)
 	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 
 get-modules:
