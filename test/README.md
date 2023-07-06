@@ -26,8 +26,8 @@ using redis as storage.
 |        └── redis  
 |            ├── python_scripts  
 |            |   ├── cleaner.py  
-|            |   ├── merge_jsons.py  
-|            |   └── wjson.py  
+|            |   └── merge_jsons.py  
+|            |     
 |            ├── stats  
 |            |   └── test_env.json  
 |            └── test_scripts  
@@ -58,7 +58,7 @@ user@user:~$ pip install jsonmerge
 
 ### Analyse the results
 
-* wjson.py : will read the clean stats files, so we can manipulate the data.
+* wjson.py : will read the clean stats files, so we can manipulate the data of bench tests.
 
 ### How to run the tests :
 
