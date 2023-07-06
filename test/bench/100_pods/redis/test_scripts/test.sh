@@ -11,8 +11,9 @@
 #merge json files
 ../python_scripts/merge_jsons.py
 
-# save a pretty json file
+# save and print pretty json file
 jq . ../stats/results.json > ../stats/pretty_results.json
+jq . ../stats/pretty_results.json
 
 #print the test stats and plot graphs
 #../python_scripts/wjson.py
