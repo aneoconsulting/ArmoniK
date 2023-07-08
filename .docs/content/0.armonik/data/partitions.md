@@ -11,12 +11,20 @@ In the database, the table name is `PartitionData`.
 | Column Name | Type | Description |
 | ----------- | ---- | ----------- |
 
-
 ## Table Data
 
-Here an example of the table data:
+An extract of the table data:
 
 ```json
-
-
+[
+  {
+    "_id": "default",
+    "ParentPartitionIds": [],
+    "PodConfiguration": null,
+    "PodMax": 100,
+    "PodReserved": 1,
+    "PreemptionPercentage": 50,
+    "Priority": 1
+  }
+]
 ```

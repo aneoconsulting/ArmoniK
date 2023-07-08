@@ -11,7 +11,6 @@ In the database, the table name is `RoleData`.
 | Column Name | Type | Description |
 | ----------- | ---- | ----------- |
 
-
 ## Table Data
 
 Here an example of the table data:
