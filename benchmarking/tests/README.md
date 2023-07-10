@@ -80,14 +80,14 @@ pip install jsonmerge
 
 ### Linux :
 
-* Run the script `test.sh` in the directory benchmarking/tests/bench/test-scripts to run the tests of Bench, store the
+* Run the script `test.sh` in the directory `benchmarking/tests/bench/test-scripts` to run the tests of Bench, store the
   outputs, clean them and merge them with the environment and infrastructure description files.
 ```bash
 cd benchmarking/tests/bench/test-scripts/
 ./test.sh
 ```
 
-* Run the script test.sh in the directory benchmarking/tests/htcmock/test-scripts to run the tests of HtcMock, store
+* Run the script `test.sh` in the directory `benchmarking/tests/htcmock/test-scripts` to run the tests of HtcMock, store
   the outputs, clean them and merge them with the environment and infrastructure description files.
 ```bash
 cd benchmarking/tests/htcmock/test-scripts/
