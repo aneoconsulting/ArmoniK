@@ -3,34 +3,37 @@
 This document describes how to use the benchmarking scripts.
 
 Those tests are an example of benchmarking tests using bench and htcmock to measure the performances of ArmoniK.  
-We have to deploy ArmoniK on aws using the parameters file in aws-benchmark folder to deploy ArmoniK with two partitions (bench and htcmock) with 100 pods for each partition.
+We have to deploy ArmoniK on aws using the parameters file in aws-benchmark folder to deploy ArmoniK with two partitions (bench and htcmock) with 100 pods or 1000 pods for each partition.
+
+Example : ArmoniK with 100 pods of bench and htcmock partitions  
+in quickdeploy/aws/all repository, execute this command :  
+```console
+user@user:~$ make deploy PARAMETERS_FILE=<Path to ArmoniK>/ArmoniK/infrastructure/quick-deploy/aws-benchmark/parameters_100pods.tfvars
+```
 
 <pre>
 .
 ├── bench
-│   ├── python_scripts
+│   ├── python-scripts
 │   │   ├── cleaner.py
-│   │   ├── merge_jsons.py
+│   │   ├── merge-jsons.py
 │   │   └── wjson.py
 │   ├── stats
-│   │   ├── 10k.json
-│   │   ├── 1k.json
-│   │   ├── 5k.json
-│   │   └── test_env.json
+│   │   └── test-env.json
 │   └── test_scripts
-│       ├── bench_100k.sh
-│       ├── bench_10k.sh
-│       ├── bench_1k.sh
-│       ├── bench_5k.sh
+│       ├── bench-100k.sh
+│       ├── bench-10k.sh
+│       ├── bench-1k.sh
+│       ├── bench-5k.sh
 │       └── test.sh
 ├── htcmock
-│   ├── python_scripts
+│   ├── python-scripts
 │   │   ├── cleaner.py
-│   │   └── merge_jsons.py
+│   │   └── merge-jsons.py
 │   ├── stats
-│   │   └── test_env.json
-│   └── test_scripts
-│       ├── htcmock_5k.sh
+│   │   └── test-env.json
+│   └── test-scripts
+│       ├── htcmock-5k.sh
 │       └── test.sh
 └── README.md
 
