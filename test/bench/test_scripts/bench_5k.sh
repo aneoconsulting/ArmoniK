@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export CONTROL_PLANE_URL=$(cat ../../../../../infrastructure/quick-deploy/aws/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+export CONTROL_PLANE_URL=$(cat ../../../infrastructure/quick-deploy/aws/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
 
 #run  5000 tasks on 100 pods
 docker run --rm \
@@ -14,4 +14,4 @@ docker run --rm \
 	-e BenchOptions__BatchSize=50 \
 	-e BenchOptions__MaxRetries=5 \
 	-e BenchOptions__DegreeOfParallelism=5 \
-	dockerhubaneo/armonik_core_bench_test_client:$(cat ../../../../../versions.tfvars.json | jq -r '.armonik_versions.core')
+	dockerhubaneo/armonik_core_bench_test_client:$(cat ../../../versions.tfvars.json | jq -r '.armonik_versions.core')
