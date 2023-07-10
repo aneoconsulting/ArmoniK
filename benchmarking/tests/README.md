@@ -53,41 +53,43 @@ From the root of the repository, the scripts of bench and htcmock tests are in [
 </pre>
 
 # Bench & HtcMock
+## Prerequisites  
 
-## Run the tests
-
-* * `bench-1k.sh`, `bench-5k.sh`, `bench-10k.sh`, `bench-100k.sh` and  `bench-1m.sh`: bash scripts to launch bench tests with 1000 tasks, 5000 tasks, 10000 tasks, 100000 tasks and 1000000 tasks, respectively. In addition, you can modify in the scripts other parameters like workload time, io size, ...
-* `test.sh` : script to run all the tests cases listed above and store the results in JSON files.
-
-### Clean the output
-
-* cleaner.py : will clean the json output files.  
-
-* merge_jsons.py : merges the cleaned results files with the parameters json file of the tested version of ArmoniK and
-  est_env.json file (third party components of ArmoniK).
-* prerequisites: install jsonmerge
+Install `jsonmerge : 
 ```bash
 pip install jsonmerge
 ```
+## Run the tests
+* `bench-1k.sh`, `bench-5k.sh`, `bench-10k.sh`, `bench-100k.sh` and  `bench-1m.sh`: bash scripts to launch bench tests with 1000 tasks, 5000 tasks, 10000 tasks, 100000 tasks and 1000000 tasks, respectively. In addition, you can modify in the scripts other parameters like workload time, io size, ...
+* `htcmock-1k.sh`, `htcmock-5k.sh`, `htcmock-10k.sh`, `htcmock-100k.sh` and  `htcmock-1m.sh`: bash scripts to launch htcmock tests with 1000 tasks, 5000 tasks, 10000 tasks, 100000 tasks and 1000000 tasks, respectively. In addition, you can modify in the scripts other parameters like workload time, io size, ...
+* `test.sh` : script to run all the tests cases listed above and store the results in JSON files.
+
+## Clean-up the outputs
+
+* `cleaner.py` : Python script to clean the JSON output files.   
+
+* `merge_jsons.py` : Python script to merge the cleaned results files with the [versions.tfvars.json file](https://github.com/aneoconsulting/ArmoniK/tree/main/versions.tfvars.json) of the tested version of ArmoniK and `test-env.json` file (third party components of ArmoniK).
 
 
-### Analyse the results
 
-* wjson.py : will read the clean stats files, so we can manipulate the data of bench tests.
+## Analyze the results
 
-### How to run the tests :
+* `wjson.py` : Python script to read the clean stats files, so we can manipulate the data of bench tests.
 
-#### Linux :
+## How to run the tests :
 
-* Run the script test.sh in the directory /test/bench/100_pods/redis/test_scripts to run the tests of bench, store the
+### Linux :
+
+* Run the script `test.sh` in the directory benchmarking/tests/bench/test-scripts to run the tests of Bench, store the
   outputs, clean them and merge them with the environment and infrastructure description files.
-* Run the script test.sh in the directory /test/htcmock/100_pods/redis/test_scripts to run the tests of htcmock, store
-  the outputs, clean them and merge them with the environment and infrastructure description files.
-
-```console
+```bash
+cd benchmarking/tests/bench/test-scripts/
 ./test.sh
 ```
 
-# Stresstest :
-
-TODO:
+* Run the script test.sh in the directory benchmarking/tests/htcmock/test-scripts to run the tests of HtcMock, store
+  the outputs, clean them and merge them with the environment and infrastructure description files.
+```bash
+cd benchmarking/tests/htcmock/test-scripts/
+./test.sh
+```
