@@ -6,33 +6,34 @@ Those tests are an example of benchmarking tests using bench and htcmock to meas
 We have to deploy ArmoniK on aws using the parameters file in aws-benchmark folder to deploy ArmoniK with two partitions (bench and htcmock) with 100 pods for each partition.
 
 <pre>
-.  
-├── bench    
-|  └── 100_pods  
-|        └── redis  
-|            ├── python_scripts  
-|            |   ├── cleaner.py  
-|            |   ├── merge_jsons.py  
-|            |   └── wjson.py  
-|            ├── stats  
-|            |   └── test_env.json  
-|            └── test_scripts  
-|                ├── bench_1k.sh  
-|                ├── bench_5k.sh  
-|                └── test.sh  
-├── htcmock  
-|   └── 100_pods  
-|        └── redis  
-|            ├── python_scripts  
-|            |   ├── cleaner.py  
-|            |   └── merge_jsons.py  
-|            |     
-|            ├── stats  
-|            |   └── test_env.json  
-|            └── test_scripts  
-|                ├── htcmock_5k.sh  
-|                └── test.sh  
-├── README.md  
+.
+├── bench
+│   ├── python_scripts
+│   │   ├── cleaner.py
+│   │   ├── merge_jsons.py
+│   │   └── wjson.py
+│   ├── stats
+│   │   ├── 10k.json
+│   │   ├── 1k.json
+│   │   ├── 5k.json
+│   │   └── test_env.json
+│   └── test_scripts
+│       ├── bench_100k.sh
+│       ├── bench_10k.sh
+│       ├── bench_1k.sh
+│       ├── bench_5k.sh
+│       └── test.sh
+├── htcmock
+│   ├── python_scripts
+│   │   ├── cleaner.py
+│   │   └── merge_jsons.py
+│   ├── stats
+│   │   └── test_env.json
+│   └── test_scripts
+│       ├── htcmock_5k.sh
+│       └── test.sh
+└── README.md
+
 
 </pre>
 
