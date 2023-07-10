@@ -72,13 +72,13 @@ if __name__ == "__main__":
     for file in files:
         filename = file.split(".")[0]
         print('Degree of parallelism of retrieving time is : ' + str(cases[filename].d_parallel[0]))
-        print('mean total time for treatement of ' + filename + ' tasks on 100 pods is : ' + str(
+        print('mean total time for treatement of ' + filename + ' tasks is : ' + str(
             mean["time"][filename]) + ' s')
-        print('mean time of the execution of ' + filename + ' tasks on 100 pods is : ' + str(
+        print('mean time of the execution of ' + filename + ' tasks is : ' + str(
             mean["exec_time"][filename]) + ' s')
-        print('mean time of the submission of ' + filename + ' tasks on 100 pods is : ' + str(
+        print('mean time of the submission of ' + filename + ' tasks is : ' + str(
             mean["sub_time"][filename]) + ' s')
-        print('mean time of the retrieving of ' + filename + ' tasks on 100 pods is : ' + str(
+        print('mean time of the retrieving of ' + filename + ' tasks is : ' + str(
             mean["retrv_time"][filename]) + ' s')
-        print('mean throughput for ' + filename + ' tasks on 100 pods is : ' + str(
+        print('mean throughput for ' + filename + ' tasks is : ' + str(
             mean["throughput"][filename]) + " tasks/s \n")

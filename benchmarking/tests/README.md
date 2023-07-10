@@ -56,8 +56,8 @@ From the root of the repository, the scripts of bench and htcmock tests are in [
 
 ## Run the tests
 
-* `bench-1k.sh`, `bench-5k.sh`, `bench-10k.sh`, `bench-100k.sh` and  `bench-1m.sh`: bash scripts to launch bench tests with 1000 tasks, 5000 tasks, 10000 tasks and 100000 tasks, respectively. In addition, you can modify in the scripts other parameters like workload time, io size, ...
-* `test.sh` : script to run all the tests cases and store the results in Json files.
+* * `bench-1k.sh`, `bench-5k.sh`, `bench-10k.sh`, `bench-100k.sh` and  `bench-1m.sh`: bash scripts to launch bench tests with 1000 tasks, 5000 tasks, 10000 tasks, 100000 tasks and 1000000 tasks, respectively. In addition, you can modify in the scripts other parameters like workload time, io size, ...
+* `test.sh` : script to run all the tests cases listed above and store the results in JSON files.
 
 ### Clean the output
 

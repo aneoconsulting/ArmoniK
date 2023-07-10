@@ -398,7 +398,7 @@ compute_plane = {
   default = {
     node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
-    replicas = 1
+    replicas = 1000
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -428,8 +428,8 @@ compute_plane = {
       type              = "prometheus"
       polling_interval  = 15
       cooldown_period   = 300
-      min_replica_count = 1
-      max_replica_count = 100
+      min_replica_count = 1000
+      max_replica_count = 1000
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
@@ -449,7 +449,7 @@ compute_plane = {
   stream = {
     node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
-    replicas = 1
+    replicas = 1000
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -479,8 +479,8 @@ compute_plane = {
       type              = "prometheus"
       polling_interval  = 15
       cooldown_period   = 300
-      min_replica_count = 1
-      max_replica_count = 100
+      min_replica_count = 1000
+      max_replica_count = 1000
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
