@@ -4,7 +4,7 @@ import json
 import re
 from jsonmerge import merge
 
-with open("../../../../../versions.tfvars.json", "r") as versions:
+with open("../../../versions.tfvars.json", "r") as versions:
     infra = json.load(versions)
 with open("../stats/test_env.json", "r") as test_env:
     env = (json.load(test_env))

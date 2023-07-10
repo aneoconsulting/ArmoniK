@@ -2,7 +2,10 @@
 
 import json
 import re
+import subprocess
 
+nb_pods = subprocess.run("kubectl get pod -n armonik | grep htcmock | wc -l",shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8')
+nb_pods = int(nb_pods)
 
 def clean_file(file):
     lines = []
@@ -23,7 +26,7 @@ def clean_file(file):
                 keep_options.append(jline["benchOptions"])
             if "sessionThroughput" in jline:
                 keep_tput.append(jline["sessionThroughput"])
-    dic_json = [{"Test": "bench"} | stats | options | {"throughput": tput, "nb_pods": 100} for stats, tput, options in
+    dic_json = [{"Test": "bench"} | stats | options | {"throughput": tput, "nb_pods": nb_pods} for stats, tput, options in
                 zip(keep_stats, keep_tput, keep_options)]
 
     # write a clean json file with needed data
