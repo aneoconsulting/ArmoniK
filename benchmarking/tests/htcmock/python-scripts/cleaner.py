@@ -4,8 +4,10 @@ import json
 import re
 import subprocess
 
-nb_pods = subprocess.run("kubectl get pod -n armonik | grep htcmock | wc -l",shell=True, stdout=subprocess.PIPE).stdout.decode('utf-8')
+nb_pods = subprocess.run("kubectl get pod -n armonik | grep htcmock | wc -l", shell=True,
+                         stdout=subprocess.PIPE).stdout.decode('utf-8')
 nb_pods = int(nb_pods)
+
 
 def clean_file(file):
     lines = []
@@ -35,7 +37,14 @@ def clean_file(file):
         json.dump(dic_json, f)
 
 
-
 # clean_file(file)
+file = "../stats/1k.json"
+clean_file(file)
 file = "../stats/5k.json"
+clean_file(file)
+file = "../stats/10k.json"
+clean_file(file)
+file = "../stats/100k.json"
+clean_file(file)
+file = "../stats/1m.json"
 clean_file(file)

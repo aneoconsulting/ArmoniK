@@ -38,7 +38,7 @@ class TestCase:
 
 if __name__ == "__main__":
 
-    files = ['../stats/1k.json', '../stats/5k.json', '../stats/10k.json', '../stats/100k.json']
+    files = ['../stats/1k.json', '../stats/5k.json', '../stats/10k.json', '../stats/100k.json', '../stats/1m.json']
     JsonFiles = [x for x in files if x.endswith(".json")]
 
     # dictionary to store the stats of each test case
@@ -48,6 +48,7 @@ if __name__ == "__main__":
     cases["5k"] = TestCase(JsonFiles[1])
     cases["10k"] = TestCase(JsonFiles[2])
     cases["100k"] = TestCase(JsonFiles[3])
+    cases["1m"] = TestCase(JsonFiles[4])
 
     # Dictionary to store the mean of each test case
     mean = {

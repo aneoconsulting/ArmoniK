@@ -2,14 +2,23 @@
 
 This document describes how to use the benchmarking scripts.
 
-Those tests are an example of benchmarking tests using bench and htcmock to measure the performances of ArmoniK.  
-We have to deploy ArmoniK on aws using the parameters file in aws-benchmark folder to deploy ArmoniK with two partitions (bench and htcmock) with 100 pods or 1000 pods for each partition.
+These tests are examples of benchmarking based on  Bench and HtcMock tests to measure the performances of ArmoniK.   
+We have to deploy ArmoniK on AWS cloud using the parameters files saved in folder [aws-benchmark](https://github.com/aneoconsulting/ArmoniK/tree/main/benchmarking_scripts/infrastructure/quick-deploy/aws-benchmark) to deploy ArmoniK with two partitions (bench and htcmock) with 100 pods or 1000 pods for each partition.
 
-Example : ArmoniK with 100 pods of bench and htcmock partitions  
-in quickdeploy/aws/all repository, execute this command :  
-```console
-user@user:~$ make deploy PARAMETERS_FILE=<Path to ArmoniK>/ArmoniK/infrastructure/quick-deploy/aws-benchmark/parameters_100pods.tfvars
+# Deploy ArmoniK on AWS cloud  
+To deploy ArmoniK on AWS cloud with 100 pods of compute plane, from the root of the repository : 
+```bash
+cd infrastructure/quick-deploy/aws/all  
+make deploy PARAMETERS_FILE=<Path to ArmoniK>/infrastructure/quick-deploy/aws-benchmark/parameters_100pods.tfvars
 ```
+To deploy ArmoniK on AWS cloud with 1000 pods of compute plane, from the root of the repository : 
+```bash
+cd infrastructure/quick-deploy/aws/all  
+make deploy PARAMETERS_FILE=<Path to ArmoniK>/infrastructure/quick-deploy/aws-benchmark/parameters_1000pods.tfvars
+```
+# Global view test scripts tree
+
+From the root of the repository, the scripts of bench and htcmock tests are in [benchmarking/tests](https://github.com/aneoconsulting/ArmoniK/tree/main/benchmarking/tests) as follows : 
 
 <pre>
 .
@@ -25,6 +34,7 @@ user@user:~$ make deploy PARAMETERS_FILE=<Path to ArmoniK>/ArmoniK/infrastructur
 │       ├── bench-10k.sh
 │       ├── bench-1k.sh
 │       ├── bench-5k.sh
+│       ├── htcmock-1m.sh
 │       └── test.sh
 ├── htcmock
 │   ├── python-scripts
@@ -33,19 +43,21 @@ user@user:~$ make deploy PARAMETERS_FILE=<Path to ArmoniK>/ArmoniK/infrastructur
 │   ├── stats
 │   │   └── test-env.json
 │   └── test-scripts
+│       ├── htcmock-1k.sh
 │       ├── htcmock-5k.sh
+│       ├── htcmock-10k.sh
+│       ├── htcmock-100k.sh
+│       ├── htcmock-1m.sh
 │       └── test.sh
 └── README.md
-
-
 </pre>
 
-# Bench & Htcmock
+# Bench & HtcMock
 
-### Run the tests
+## Run the tests
 
-* bench_1k.sh & bench_5k.sh : scripts for each test where we set the parameters of the test to run.
-* test.sh : script to run all the tests cases and store the results in Json files.
+* `bench-1k.sh`, `bench-5k.sh`, `bench-10k.sh`, `bench-100k.sh` and  `bench-1m.sh`: bash scripts to launch bench tests with 1000 tasks, 5000 tasks, 10000 tasks and 100000 tasks, respectively. In addition, you can modify in the scripts other parameters like workload time, io size, ...
+* `test.sh` : script to run all the tests cases and store the results in Json files.
 
 ### Clean the output
 
@@ -54,8 +66,8 @@ user@user:~$ make deploy PARAMETERS_FILE=<Path to ArmoniK>/ArmoniK/infrastructur
 * merge_jsons.py : merges the cleaned results files with the parameters json file of the tested version of ArmoniK and
   est_env.json file (third party components of ArmoniK).
 * prerequisites: install jsonmerge
-```console
-user@user:~$ pip install jsonmerge
+```bash
+pip install jsonmerge
 ```
 
 
@@ -73,7 +85,7 @@ user@user:~$ pip install jsonmerge
   the outputs, clean them and merge them with the environment and infrastructure description files.
 
 ```console
-user@user:~$ ./test.sh
+./test.sh
 ```
 
 # Stresstest :

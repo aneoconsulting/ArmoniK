@@ -16,7 +16,9 @@ with open("../stats/10k.json", "r") as stats:
     result_10k = json.load(stats)
 with open("../stats/100k.json", "r") as stats:
     result_100k = json.load(stats)
+with open("../stats/1m.json", "r") as stats:
+    result_1m = json.load(stats)
 # print(merged)
 with open("../stats/results.json", "w") as r:
-    dict_json = [merge(infra, env), result_1k, result_5k, result_10k, result_100k]
+    dict_json = [merge(infra, env), result_1k, result_5k, result_10k, result_100k, result_1m]
     json.dump(dict_json, r)

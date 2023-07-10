@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # warm up run
-./htcmock-5k.sh
+./htcmock-1k.sh
 
 #clearmeasured runs
-./htcmock-5k.sh >> ../stats/5k.json
+./htcmock-1k.sh >> ../stats/1k.json && ./htcmock-5k.sh >> ../stats/5k.json && ./htcmock-10k.sh >> ../stats/10k.json && ./htcmock-100k.sh >> ../stats/100k.json && ./htcmock-1m.sh >> ../stats/1m.json
 #clean the output file
 ../python-scripts/cleaner.py 
 

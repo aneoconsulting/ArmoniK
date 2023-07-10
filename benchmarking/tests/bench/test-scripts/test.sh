@@ -4,7 +4,7 @@
 ./bench-1k.sh
 
 #clearmeasured runs
-./bench-1k.sh >> ../stats/1k.json && ./bench-5k.sh >> ../stats/5k.json && ./bench-10k.sh >> ../stats/10k.json && ./bench-100k.sh >> ../stats/100k.json
+./bench-1k.sh >> ../stats/1k.json && ./bench-5k.sh >> ../stats/5k.json && ./bench-10k.sh >> ../stats/10k.json && ./bench-100k.sh >> ../stats/100k.json && ./bench-1m.sh >> ../stats/1m.json
 #clean the output file
 ../python-scripts/cleaner.py
 
