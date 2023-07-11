@@ -130,8 +130,8 @@ function createTask(id, retriedIds, outputsIds) {
   db.TaskData.insertOne({
     _id: taskId,
     SessionId: sessionId,
-    OwnerPodId: null,
-    OwnerPodName: null,
+    OwnerPodId: '',
+    OwnerPodName: '',
     PayloadId: faker.string.uuid(),
     ParentTaskIds: [],
     DataDependencies: [],
