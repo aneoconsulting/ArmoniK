@@ -103,8 +103,12 @@ resultsIds.forEach(({ taskId, expectedOutputIds }) => {
  *
  * If id and outputsIds are given, the task is created from a retry.
  * Only return the last task id when a retry is created.
+ *
+ * @param {string} id
+ * @param {string[]} retriedIds
+ * @param {string[]} outputsIds
  */
-function createTask(id, outputsIds) {
+function createTask(id, retriedIds, outputsIds) {
   const creationDate = faker.date.between({ from: sessionCreationDate, to: new Date() })
   const submittedDate = faker.date.between({ from: creationDate, to: new Date() })
   const startDate = faker.date.future({ refDate: submittedDate })
@@ -134,6 +138,7 @@ function createTask(id, outputsIds) {
     RemainingDataDependencies: {},
     ExpectedOutputIds: expectedOutputIds,
     InitialTaskId: id ?? null,
+    RetryOfIds: retriedIds ?? [],
     Status: isRetried ? 11 /* Retry */ : 4 /* Completed */,
     StatusMessage: "",
     Options: {
@@ -155,7 +160,7 @@ function createTask(id, outputsIds) {
   })
 
   if (isRetried) {
-    const { taskId: id } = createTask(taskId, expectedOutputIds)
+    const { taskId: id } = createTask(taskId, retriedIds ? [taskId, ...retriedIds] : [taskId], expectedOutputIds)
     return {
       taskId: id,
       expectedOutputIds: expectedOutputIds
