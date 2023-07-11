@@ -137,7 +137,7 @@ function createTask(id, retriedIds, outputsIds) {
     DataDependencies: [],
     RemainingDataDependencies: {},
     ExpectedOutputIds: expectedOutputIds,
-    InitialTaskId: id ?? null,
+    InitialTaskId: id ?? taskId,
     RetryOfIds: retriedIds ?? [],
     Status: isRetried ? 11 /* Retry */ : 4 /* Completed */,
     StatusMessage: "",
