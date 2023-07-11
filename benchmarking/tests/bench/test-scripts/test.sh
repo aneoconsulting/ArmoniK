@@ -16,5 +16,5 @@ jq . ../stats/results.json > ../stats/pretty-results.json
 jq . ../stats/pretty-results.json
 
 #print the test stats and plot graphs
-#../python-scripts/wjson.py
+#../python-scripts/reader.py
 

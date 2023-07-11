@@ -26,7 +26,7 @@ From the root of the repository, the scripts of bench and htcmock tests are in [
 │   ├── python-scripts
 │   │   ├── cleaner.py
 │   │   ├── merge-jsons.py
-│   │   └── wjson.py
+│   │   └── reader.py
 │   ├── stats
 │   │   └── test-env.json
 │   └── test_scripts
@@ -74,7 +74,7 @@ pip install jsonmerge
 
 ## Analyze the results
 
-* `wjson.py` : Python script to read the clean stats files, so we can manipulate the data of bench tests.
+* `reader.py` : Python script to read the clean stats files, so we can manipulate the data of bench tests.
 
 ## How to run the tests :
 
