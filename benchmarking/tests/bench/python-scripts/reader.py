@@ -26,7 +26,7 @@ class TestCase:
         runs = json.loads(data)
 
         for run in runs:
-            if (run["nb_pods"] == 100):
+            if run["nb_pods"] == 100:
                 self.nbtasks.append(run["TotalTasks"])
                 self.time.append(float(parse(run["ElapsedTime"])))
                 self.exec_time.append(float(parse(run["TasksExecutionTime"])))
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         "throughput": {}
     }
 
-    # calculte the mean of each test case
+    # calculate the mean of each test case
     for file in files:
         filename = file.split(".")[0]
         mean["time"][filename] = np.mean(cases[filename].time)
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     for file in files:
         filename = file.split(".")[0]
         print('Degree of parallelism of retrieving time is : ' + str(cases[filename].d_parallel[0]))
-        print('mean total time for treatement of ' + filename + ' tasks is : ' + str(
+        print('mean total time for treatment of ' + filename + ' tasks is : ' + str(
             mean["time"][filename]) + ' s')
         print('mean time of the execution of ' + filename + ' tasks is : ' + str(
             mean["exec_time"][filename]) + ' s')
