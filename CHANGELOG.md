@@ -2,11 +2,58 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.14.0](https://github.com/aneoconsulting/armonik/tree/v2.14.0) (2023-07-05)
+
 Changed
 -
 
 * Move Terraform modules of different resources deployment to GitHub repository [ArmoniK.Infra](https://github.com/aneoconsulting/ArmoniK.Infra).
 * Use ArmoniK Infrastructure version `0.0.2`
+* Upgrade ArmoniK.Extension.Csharp version from `0.11.1` to `0.12.1`
+* Upgrade Core version from `0.13.2` to `0.14.3`
+* Upgrade ArmoniK.Api to `3.10.0`
+* Upgrade ArmoniK.Admin.GUI to `0.9.1`
+
+Breaking
+- 
+
+* Results metadata for the expected output keys must be created prior to submitting a task
+  * Result ids are now given as a response to the Api endpoint Results.CreateResultsMetadata
+  * This change is transparent for Extension.Csharp client and worker
+
+Added
+-
+
+* Grpc channel health check when recycling in Extension.Csharp
+* Redis Data TTL (`Redis__TtlTimeSpan` options)
+* Retried status to tasks
+* SessionId and task options in queue adapter
+* Ability to submit data and tasks separately using native Api
+* C++ Api
+
+Fixed
+-
+
+* Grpc channel keep alive configuration in Api
+* Retry using bad channel in Extension.Csharp
+* Worker abort propagation
+* Reduced database load
+  * Removed unnecessary indices
+  * Optimized requests
+
+## [v2.13.3](https://github.com/aneoconsulting/armonik/tree/v2.13.2) (2023-07-05)
+
+Changed
+-
+
+* Use Armonik.Extension.Csharp version `0.11.2`
+
+Fixed
+
+
+* Bad properties override
+
+* 
 
 ## [v2.13.2](https://github.com/aneoconsulting/armonik/tree/v2.13.2) (2023-06-16)
 
@@ -17,7 +64,7 @@ Changed
 * Upgrade Core version from `0.13.1` to `0.13.2`.
 
 Fixed
-
+-
 
 * User keys were not loaded if they were part of the certificate file or if they were in PKCS#8 format
 
