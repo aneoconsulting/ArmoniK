@@ -69,54 +69,11 @@ const tasksNumber = 1_000
 
 const resultsIds = []
 for (let i = 0; i < tasksNumber; i++) {
-  const creationDate = faker.date.between({ from: sessionCreationDate, to: new Date() })
-  const submittedDate = faker.date.between({ from: creationDate, to: new Date() })
-  const startDate = faker.date.future({ refDate: submittedDate })
-  const endDate = faker.date.future({ refDate: startDate })
-
-  const expectedOutputIds = Array.from({
-    length: faker.number.int({
-      min: 0,
-      max: 2
-    })
-  }, () => faker.string.uuid())
-
-  const taskId = faker.string.uuid()
+  const { taskId, expectedOutputIds } = createTask()
 
   resultsIds.push({
     taskId: taskId,
     expectedOutputIds: expectedOutputIds
-  })
-
-  db.TaskData.insertOne({
-    _id: taskId,
-    SessionId: sessionId,
-    OwnerPodId: null,
-    OwnerPodName: null,
-    PayloadId: faker.string.uuid(),
-    ParentTaskIds: [],
-    DataDependencies: [],
-    RemainingDataDependencies: {},
-    ExpectedOutputIds: expectedOutputIds,
-    InitialTaskId: null,
-    Status: 4, // Completed
-    StatusMessage: "",
-    Options: {
-      ...options,
-    },
-    CreationDate: creationDate,
-    SubmittedDate: submittedDate,
-    StartDate: startDate,
-    EndDate: endDate,
-    ReceptionDate: null,
-    AcquisitionDate: null,
-    PodTtl: null,
-    ProcessingToEndDuration: null,
-    CreationToEndDuration: null,
-    Output: {
-      Success: false,
-      Error: ""
-    }
   })
 }
 
@@ -139,3 +96,74 @@ resultsIds.forEach(({ taskId, expectedOutputIds }) => {
     })
   })
 })
+
+
+/**
+ * Create a task
+ *
+ * If id and outputsIds are given, the task is created from a retry.
+ * Only return the last task id when a retry is created.
+ */
+function createTask(id, outputsIds) {
+  const creationDate = faker.date.between({ from: sessionCreationDate, to: new Date() })
+  const submittedDate = faker.date.between({ from: creationDate, to: new Date() })
+  const startDate = faker.date.future({ refDate: submittedDate })
+  const endDate = faker.date.future({ refDate: startDate })
+
+  const expectedOutputIds = outputsIds ?? Array.from({
+    length: faker.number.int({
+      min: 0,
+      max: 2
+    })
+  }, () => faker.string.uuid())
+
+  const taskId = faker.string.uuid()
+
+  const isRetried = faker.datatype.boolean({
+    probability: 0.2
+  })
+
+  db.TaskData.insertOne({
+    _id: taskId,
+    SessionId: sessionId,
+    OwnerPodId: null,
+    OwnerPodName: null,
+    PayloadId: faker.string.uuid(),
+    ParentTaskIds: [],
+    DataDependencies: [],
+    RemainingDataDependencies: {},
+    ExpectedOutputIds: expectedOutputIds,
+    InitialTaskId: id ?? null,
+    Status: isRetried ? 11 /* Retry */ : 4 /* Completed */,
+    StatusMessage: "",
+    Options: {
+      ...options,
+    },
+    CreationDate: creationDate,
+    SubmittedDate: submittedDate,
+    StartDate: startDate,
+    EndDate: endDate,
+    ReceptionDate: null,
+    AcquisitionDate: null,
+    PodTtl: null,
+    ProcessingToEndDuration: null,
+    CreationToEndDuration: null,
+    Output: {
+      Success: false,
+      Error: ""
+    }
+  })
+
+  if (isRetried) {
+    const { taskId: id } = createTask(taskId, expectedOutputIds)
+    return {
+      taskId: id,
+      expectedOutputIds: expectedOutputIds
+    }
+  }
+
+  return {
+    taskId: taskId,
+    expectedOutputIds: expectedOutputIds
+  }
+}
