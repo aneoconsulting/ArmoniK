@@ -91,8 +91,8 @@ for (let i = 0; i < tasksNumber; i++) {
   db.TaskData.insertOne({
     _id: taskId,
     SessionId: sessionId,
-    OwnerPodId: "",
-    OwnerPodName: "",
+    OwnerPodId: null,
+    OwnerPodName: null,
     PayloadId: faker.string.uuid(),
     ParentTaskIds: [],
     DataDependencies: [],
