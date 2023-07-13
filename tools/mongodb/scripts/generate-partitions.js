@@ -9,10 +9,18 @@ const partitionsNumber = 100;
 for (let i = 0; i < partitionsNumber; i++) {
   db.PartitionData.insertOne({
     _id: faker.string.uuid(),
-    // TODO: Which value can be used here?
-    ParentPartitionIds: [],
-    // TODO: Which value can be used here?
-    PodConfiguration: null,
+    ParentPartitionIds: Array.from({
+      length: faker.number.int({
+        min: 1,
+        max: 10
+      })
+    }, () => faker.string.uuid()),
+    PodConfiguration: {
+      Configuration: {
+        verb: faker.hacker.verb(),
+        noun: faker.hacker.noun(),
+      }
+    },
     PodMax: faker.number.int({
       min: 20,
       max: 100
