@@ -126,7 +126,7 @@ mq_credentials = {
 # Parameters for MongoDB
 mongodb = {
   image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongodb"
-  tag                = "6.0.1"
+  tag                = "6.0.7"
   node_selector      = { service = "state-database" }
   image_pull_secrets = ""
   persistent_volume  = null

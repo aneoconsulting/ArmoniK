@@ -2,6 +2,18 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+Changed
+-
+
+* Upgrade version of ActiveMQ from `5.17.0` to `5.18.0`.
+* Upgrade version of MongoDB from `6.0.1` to `6.0.7`.
+* Upgrade version of Redis from `7.0.8` to `7.0.12-alpine3.18`.
+* Upgrade version of Grafana from `9.3.6` to `10.0.2`.
+* Upgrade version of Node exporter from `v1.5.0` to `v1.6.0`.
+* Upgrade version of Prometheus from `v2.42.0` to `v2.45.0`.
+* Upgrade version of Fluent-bit from `2.0.9` to `2.1.7`.
+* Upgrade version of Nginx from `1.23.3` to `1.25.1-alpine-slim`.
+
 ## [v2.14.0](https://github.com/aneoconsulting/armonik/tree/v2.14.0) (2023-07-05)
 
 Changed
