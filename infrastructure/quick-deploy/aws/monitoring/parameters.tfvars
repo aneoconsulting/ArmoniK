@@ -49,14 +49,14 @@ monitoring = {
   seq = {
     enabled                = true
     image                  = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seq"
-    tag                    = "2023.1"
+    tag                    = "2023.3"
     port                   = 8080
     image_pull_secrets     = ""
     service_type           = "ClusterIP"
     node_selector          = { service = "monitoring" }
     system_ram_target      = 0.2
     cli_image              = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/seqcli"
-    cli_tag                = "2023.1"
+    cli_tag                = "2023.2"
     cli_image_pull_secrets = ""
     retention_in_days      = "2d"
   }

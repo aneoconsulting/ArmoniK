@@ -222,7 +222,7 @@ ingress = {
 authentication = {
   name                    = "job-authentication-in-database"
   image                   = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/mongosh"
-  tag                     = "1.7.1"
+  tag                     = "1.10.1"
   image_pull_policy       = "IfNotPresent"
   image_pull_secrets      = ""
   node_selector           = { service = "control-plane" }

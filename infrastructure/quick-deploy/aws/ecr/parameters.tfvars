@@ -88,17 +88,17 @@ ecr = {
     {
       name  = "mongosh"
       image = "rtsp/mongosh"
-      tag   = "1.7.1"
+      tag   = "1.10.1"
     },
     {
       name  = "seq"
       image = "datalust/seq"
-      tag   = "2023.1"
+      tag   = "2023.3"
     },
     {
       name  = "seqcli"
       image = "datalust/seqcli"
-      tag   = "2023.1"
+      tag   = "2023.2"
     },
     {
       name  = "grafana"
