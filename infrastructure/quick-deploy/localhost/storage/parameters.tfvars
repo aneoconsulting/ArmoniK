@@ -15,7 +15,7 @@ shared_storage = {
 # Parameters for ActiveMQ
 activemq = {
   image              = "symptoma/activemq"
-  tag                = "5.17.0"
+  tag                = "5.18.0"
   node_selector      = {}
   image_pull_secrets = ""
 }
@@ -23,7 +23,7 @@ activemq = {
 # Parameters for MongoDB
 mongodb = {
   image              = "mongo"
-  tag                = "6.0.1"
+  tag                = "6.0.7"
   node_selector      = {}
   image_pull_secrets = ""
   replicas_number    = 2
@@ -34,7 +34,7 @@ mongodb = {
 # Parameters for Redis
 redis = {
   image              = "redis"
-  tag                = "7.0.8"
+  tag                = "7.0.12-alpine3.18"
   node_selector      = {}
   image_pull_secrets = ""
   max_memory         = "12000mb"
