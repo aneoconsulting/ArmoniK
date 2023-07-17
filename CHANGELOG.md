@@ -15,7 +15,8 @@ Changed
 * Upgrade version of Fluent-bit from `2.0.9` to `2.1.7`.
 * Upgrade version of Mongosh from `1.7.1` to `1.10.1`.
 * Upgrade version of Nginx from `1.23.3` to `1.25.1-alpine-slim`.
-* Upgrade version of SeqCli from `2023.1` to `2023.2`.
+* Upgrade version of SeqCli from `2023.1` to `2023.2`
+* Upgrade version of Admin GUI from `0.9.1` to `0.9.2`.
 
 ## [v2.14.0](https://github.com/aneoconsulting/armonik/tree/v2.14.0) (2023-07-05)
 
