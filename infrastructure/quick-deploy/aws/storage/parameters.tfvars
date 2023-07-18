@@ -130,7 +130,7 @@ mongodb = {
   node_selector      = { service = "state-database" }
   image_pull_secrets = ""
   persistent_volume  = null
-  replicas_number    = 2
+  replicas_number    = 1
   # example: {storage_provisioner="efs.csi.aws.com",parameters=null,resources={limits=null,requests={storage="5Gi"}}}
 }
 
