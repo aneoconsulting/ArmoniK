@@ -8,7 +8,7 @@
         "Network_bandwidth" : "25",
         "EBS_bandwidth" : "19000",
         "Kubernetes" : "AWS EKS 1.25",
-        "Object_object_type" : "Redis",
+        "Object_object_type" : "AWS Elasticache for Redis",
         "Storage_queue_storage" : "Amazon MQ, broker : ActiveMQ 5.17.0",
         "Storage_table_type" : "MongoDB 6.0.1",
         "OS" : "Linux"
