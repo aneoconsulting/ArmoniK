@@ -156,8 +156,74 @@ compute_plane = {
     worker = [
       {
         name              = "worker"
-        image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.10.1"
+        image             = "armonik.samples.helloworld.worker.dll"
+        tag               = "latest"
+        image_pull_policy = "IfNotPresent"
+        limits = {
+          cpu    = "1000m"  # set to null if you don't want to set it
+          memory = "1024Mi" # set to null if you don't want to set it
+        }
+        requests = {
+          cpu    = "200m"  # set to null if you don't want to set it
+          memory = "512Mi" # set to null if you don't want to set it
+        }
+      }
+    ]
+    hpa = {
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 1
+      max_replica_count = 5
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  cpp = {
+    partition_data = {
+      priority              = 1
+      reserved_pods         = 50
+      max_pods              = 100
+      preemption_percentage = 20
+      parent_partition_ids  = []
+      pod_configuration     = null
+    }
+    # number of replicas for each deployment of compute plane
+    replicas                         = 1
+    termination_grace_period_seconds = 30
+    image_pull_secrets               = ""
+    node_selector                    = {}
+    annotations                      = {}
+    # ArmoniK polling agent
+    polling_agent = {
+      image             = "dockerhubaneo/armonik_pollingagent"
+      tag               = "0.13.1"
+      image_pull_policy = "IfNotPresent"
+      limits = {
+        cpu    = "2000m"  # set to null if you don't want to set it
+        memory = "2048Mi" # set to null if you don't want to set it
+      }
+      requests = {
+        cpu    = "200m"  # set to null if you don't want to set it
+        memory = "256Mi" # set to null if you don't want to set it
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        name              = "worker"
+        image             = "armonik-api-cpp"
+        tag               = "0.1.0"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"  # set to null if you don't want to set it
