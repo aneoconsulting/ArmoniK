@@ -1,7 +1,7 @@
 module "armonik" {
-  source               = "../generated/infra-modules/armonik"
-  namespace            = var.namespace
-  logging_level        = var.logging_level
+  source        = "../generated/infra-modules/armonik"
+  namespace     = var.namespace
+  logging_level = var.logging_level
   extra_conf = {
     compute = try(var.extra_conf.compute, {})
     control = try(var.extra_conf.control, {})
