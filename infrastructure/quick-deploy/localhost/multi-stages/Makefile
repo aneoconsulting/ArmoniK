@@ -10,7 +10,7 @@ export METRICS_SERVER=$(shell kubectl get deploy -A -l k8s-app=metrics-server --
 CURRENT_DIR=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 MODULES_DIR=$(GENERATED_DIR)/infra-modules
-VERSIONS_FILE?=$(shell realpath ../../../versions.tfvars.json)
+VERSIONS_FILE?=$(shell realpath ../../../../versions.tfvars.json)
 
 ####################################
 #       Kubernetes namespace       #

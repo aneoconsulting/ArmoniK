@@ -6,7 +6,7 @@ logging_level = "Information"
 
 # Object storage
 # Uncomment either the `redis` or the `minio` parameter
-redis = {}
+#redis = {}
 #minio = {}
 
 # Uncomment this to have minio S3 enabled instead of hostpath shared_storage
@@ -85,7 +85,7 @@ compute_plane = {
   # Default partition that uses the C# extension for the worker
   default = {
     # number of replicas for each deployment of compute plane
-    replicas = 0
+    replicas      = 0
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -100,7 +100,7 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image = "dockerhubaneo/armonik_worker_dll"
+        image  = "dockerhubaneo/armonik_worker_dll"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -117,7 +117,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 5
-      behavior = {
+      behavior          = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
@@ -135,7 +135,7 @@ compute_plane = {
   # Partition for the stream worker
   stream = {
     # number of replicas for each deployment of compute plane
-    replicas = 0
+    replicas      = 0
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -150,7 +150,7 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image = "dockerhubaneo/armonik_core_stream_test_worker"
+        image  = "dockerhubaneo/armonik_core_stream_test_worker"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -167,7 +167,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 5
-      behavior = {
+      behavior          = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
@@ -185,7 +185,7 @@ compute_plane = {
   # Partition for the htcmock worker
   htcmock = {
     # number of replicas for each deployment of compute plane
-    replicas = 0
+    replicas      = 0
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -200,7 +200,7 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image = "dockerhubaneo/armonik_core_htcmock_test_worker"
+        image  = "dockerhubaneo/armonik_core_htcmock_test_worker"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -217,7 +217,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 5
-      behavior = {
+      behavior          = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
@@ -235,7 +235,7 @@ compute_plane = {
   # Partition for the bench worker
   bench = {
     # number of replicas for each deployment of compute plane
-    replicas = 0
+    replicas      = 0
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -250,7 +250,7 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image = "dockerhubaneo/armonik_core_bench_test_worker"
+        image  = "dockerhubaneo/armonik_core_bench_test_worker"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -267,7 +267,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 5
-      behavior = {
+      behavior          = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
@@ -311,4 +311,41 @@ extra_conf = {
   control = {
     Submitter__MaxErrorAllowed = 50
   }
+}
+
+activemq = {
+  image_name = "dockerhubaneo/activemq"
+  image_tag  = "5.18.2"
+}
+
+mongodb = {
+  image_name = "dockerhubaneo/mongodb"
+  image_tag  = "6.0.7"
+}
+
+node_exporter = {
+  image_name = "dockerhubaneo/nodeexporter"
+  image_tag  = "1.6.0"
+}
+
+prometheus = {
+  image_name = "dockerhubaneo/prometheus"
+  image_tag  = "2.45.0"
+}
+
+grafana = {
+  image_name = "dockerhubaneo/grafana"
+  image_tag  = "10.0.2"
+}
+
+redis = {
+  image_name = "dockerhubaneo/redis"
+  image_tag  = "7.0.12"
+}
+
+seq = {
+  image_name     = "dockerhubaneo/seq"
+  image_tag      = "2023.3"
+  cli_image_name = "dockerhubaneo/seqcli"
+  cli_image_tag  = "2023.2"
 }
