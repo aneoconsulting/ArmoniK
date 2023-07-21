@@ -16,7 +16,6 @@ module "seq" {
     tag                = local.cli_seq_tag
     image_pull_secrets = local.cli_seq_image_pull_secrets
   }
-  working_dir       = "${path.root}/../../.."
   authentication    = var.authentication
   system_ram_target = local.seq_system_ram_target
   retention_in_days = local.retention_in_days
@@ -33,7 +32,6 @@ module "node_exporter" {
     tag                = local.node_exporter_tag
     image_pull_secrets = local.node_exporter_image_pull_secrets
   }
-  working_dir = "${path.root}/../../../.."
 }
 
 # Metrics exporter
@@ -42,14 +40,12 @@ module "metrics_exporter" {
   namespace            = var.namespace
   service_type         = local.metrics_exporter_service_type
   node_selector        = local.metrics_exporter_node_selector
-  storage_endpoint_url = var.storage_endpoint_url
   docker_image = {
     image              = local.metrics_exporter_image
     tag                = local.metrics_exporter_tag
     image_pull_secrets = local.metrics_exporter_image_pull_secrets
   }
   extra_conf  = local.metrics_exporter_extra_conf
-  working_dir = "${path.root}/../../.."
 }
 
 # Partition metrics exporter
@@ -59,7 +55,6 @@ module "metrics_exporter" {
 #  service_type         = local.partition_metrics_exporter_service_type
 #  node_selector        = local.partition_metrics_exporter_node_selector
 #  logging_level        = var.logging_level
-#  storage_endpoint_url = var.storage_endpoint_url
 #  metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
 #  docker_image = {
 #    image              = local.partition_metrics_exporter_image
@@ -67,7 +62,6 @@ module "metrics_exporter" {
 #    image_pull_secrets = local.partition_metrics_exporter_image_pull_secrets
 #  }
 #  extra_conf  = local.partition_metrics_exporter_extra_conf
-#  working_dir = "${path.root}/../../.."
 #  depends_on  = [module.metrics_exporter]
 #}
 
@@ -78,14 +72,12 @@ module "prometheus" {
   service_type                   = local.prometheus_service_type
   node_selector                  = local.prometheus_node_selector
   metrics_exporter_url           = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  partition_metrics_exporter_url = null
   #"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
   docker_image = {
     image              = local.prometheus_image
     tag                = local.prometheus_tag
     image_pull_secrets = local.prometheus_image_pull_secrets
   }
-  working_dir = "${path.root}/../../.."
   depends_on = [
     module.metrics_exporter,
     #module.partition_metrics_exporter
@@ -106,7 +98,6 @@ module "grafana" {
     tag                = local.grafana_tag
     image_pull_secrets = local.grafana_image_pull_secrets
   }
-  working_dir    = "${path.root}/../../.."
   authentication = var.authentication
   depends_on     = [module.prometheus]
 }

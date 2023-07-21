@@ -2,7 +2,7 @@ terraform {
   required_providers {
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.13.0"
+      version = "~> 2.21.1"
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
@@ -18,11 +18,11 @@ terraform {
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.4.3"
+      version = "~> 3.5.1"
     }
     local = {
       source  = "hashicorp/local"
-      version = "~> 2.2.2"
+      version = "~> 2.4.0"
     }
     tls = {
       source  = "hashicorp/tls"

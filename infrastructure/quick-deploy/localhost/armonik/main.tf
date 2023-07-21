@@ -1,10 +1,7 @@
 module "armonik" {
   source               = "../generated/infra-modules/armonik"
-  working_dir          = "${path.root}/../../.."
   namespace            = var.namespace
   logging_level        = var.logging_level
-  storage_endpoint_url = var.storage_endpoint_url
-  monitoring           = var.monitoring
   extra_conf = {
     compute = try(var.extra_conf.compute, {})
     control = try(var.extra_conf.control, {})

@@ -6,7 +6,7 @@ terraform {
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.13.0"
+      version = "~> 2.21.1"
     }
     external = {
       source  = "hashicorp/external"
@@ -18,7 +18,7 @@ terraform {
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.4.3"
+      version = "~> 3.5.1"
     }
     local = {
       source  = "hashicorp/local"
