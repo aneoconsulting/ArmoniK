@@ -6,7 +6,7 @@ logging_level = "Information"
 
 # Object storage
 # Uncomment either the `redis` or the `minio` parameter
-#redis = {}
+redis = {}
 #minio = {}
 
 # Uncomment this to have minio S3 enabled instead of hostpath shared_storage
@@ -311,41 +311,4 @@ extra_conf = {
   control = {
     Submitter__MaxErrorAllowed = 50
   }
-}
-
-activemq = {
-  image_name = "dockerhubaneo/activemq"
-  image_tag  = "5.18.2"
-}
-
-mongodb = {
-  image_name = "dockerhubaneo/mongodb"
-  image_tag  = "6.0.7"
-}
-
-node_exporter = {
-  image_name = "dockerhubaneo/nodeexporter"
-  image_tag  = "1.6.0"
-}
-
-prometheus = {
-  image_name = "dockerhubaneo/prometheus"
-  image_tag  = "2.45.0"
-}
-
-grafana = {
-  image_name = "dockerhubaneo/grafana"
-  image_tag  = "10.0.2"
-}
-
-redis = {
-  image_name = "dockerhubaneo/redis"
-  image_tag  = "7.0.12"
-}
-
-seq = {
-  image_name     = "dockerhubaneo/seq"
-  image_tag      = "2023.3"
-  cli_image_name = "dockerhubaneo/seqcli"
-  cli_image_tag  = "2023.2"
 }
