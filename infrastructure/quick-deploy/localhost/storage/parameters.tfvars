@@ -26,7 +26,7 @@ mongodb = {
   tag                = "6.0.7"
   node_selector      = {}
   image_pull_secrets = ""
-  replicas_number    = 2
+  replicas_number    = 1
 }
 
 # Object storage
