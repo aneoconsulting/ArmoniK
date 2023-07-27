@@ -1,0 +1,127 @@
+---
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Security: KMS customer managed CMK for AWS services and S3 buckets for Terraform'
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: 'Tag needs to follow S3 naming rules.'
+        Parameters:
+          - Tag
+      - Label:
+          default: 'Name of S3 bucket'
+        Parameters:
+          - BucketName
+Parameters:
+  Tag:
+    Description: 'Recommended to suffix the different required buckets'
+    Type: String
+    Default: ''
+  BucketName:
+    Description: 'Recommended to name S3 bucket'
+    Type: String
+    Default: ''
+Resources:
+  Key:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Type: 'AWS::KMS::Key'
+    Properties:
+      KeySpec: SYMMETRIC_DEFAULT
+      KeyUsage: ENCRYPT_DECRYPT
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub '${AWS::AccountId}'
+            Action:
+              - kms:Encrypt*
+              - kms:Decrypt*
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:Describe*
+            Resource: '*'
+            Condition:
+              StringEquals:
+                kms:ViaService:
+                  - !Sub 'ec2.${AWS::Region}.amazonaws.com'
+                  - !Sub 's3.${AWS::Region}.amazonaws.com'
+                  - !Sub 'dynamodb.${AWS::Region}.amazonaws.com'
+                  - !Sub 'ecr.${AWS::Region}.amazonaws.com'
+                  - !Sub 'eks.${AWS::Region}.amazonaws.com'
+                  - !Sub 'elasticache.${AWS::Region}.amazonaws.com'
+                  - !Sub 'mq.${AWS::Region}.amazonaws.com'
+          - Effect: Allow
+            Principal:
+              Service: !Sub 'logs.${AWS::Region}.amazonaws.com'
+            Action:
+              - kms:Encrypt*
+              - kms:Decrypt*
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:Describe*
+            Resource: '*'
+            Condition:
+              ArnEquals:
+                kms:EncryptionContext:aws:logs:arn: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*:*'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling'
+            Action:
+              - kms:Encrypt*
+              - kms:Decrypt*
+              - kms:ReEncrypt*
+              - kms:GenerateDataKey*
+              - kms:Describe*
+            Resource: '*'
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling'
+            Action:
+              - kms:CreateGrant
+            Resource: '*'
+            Condition:
+              Bool:
+                kms:GrantIsForAWSResource: true
+  KeyAlias:
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Retain
+    Type: 'AWS::KMS::Alias'
+    Properties:
+      AliasName: !Sub
+        - 'alias/armonik-kms-${Tag}-${RANDOM}'
+        - RANDOM: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      TargetKeyId: !Ref Key
+  ArmoniKTfstate:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub
+        - '${BucketName}-${Tag}'
+        - RANDOM: !Select [ 0, !Split [ '-', !Select [ 2, !Split [ '/', !Ref 'AWS::StackId' ] ] ] ]
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: 'aws:kms'
+              KMSMasterKeyID: !GetAtt 'Key.Arn'
+    DeletionPolicy: Delete
+Outputs:
+  StackName:
+    Description: 'Stack name.'
+    Value: !Sub '${AWS::StackName}'
+  KeyArn:
+    Description: 'Key ARN.'
+    Value: !GetAtt 'Key.Arn'
+    Export:
+      Name: !Sub '${AWS::StackName}-KeyArn'
+  ArmoniKTfstateBucketId:
+    Description: 'S3 bucket name for .tfstates of ArmoniK'
+    Value: !Ref ArmoniKTfstate
