@@ -729,7 +729,7 @@ variable "helm_charts" {
 variable "ecr" {
   description = "AWS ECR for docker images"
   type = object({
-    encryption_type                       = optional(string, "KMS")
+    encryption_type = optional(string, "KMS")
   })
   default = {}
 }

@@ -8,9 +8,9 @@ module "kms" {
 
 # AWS VPC
 module "vpc" {
-  source = "../generated/infra-modules/networking/aws/vpc"
-  tags   = local.tags
-  name   = local.vpc_name
+  source                                          = "../generated/infra-modules/networking/aws/vpc"
+  tags                                            = local.tags
+  name                                            = local.vpc_name
   cluster_name                                    = local.cluster_name
   private_subnets                                 = var.vpc.cidr_block_private
   public_subnets                                  = var.vpc.cidr_block_public

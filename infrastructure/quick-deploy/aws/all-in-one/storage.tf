@@ -135,11 +135,11 @@ resource "kubernetes_secret" "elasticache" {
 
 # Amazon MQ
 module "mq" {
-  source    = "./generated/infra-modules/storage/aws/mq"
-  tags      = local.tags
-  name      = "${local.prefix}-mq"
-  vpc       = local.vpc
-  user      = var.mq_credentials
+  source = "./generated/infra-modules/storage/aws/mq"
+  tags   = local.tags
+  name   = "${local.prefix}-mq"
+  vpc    = local.vpc
+  user   = var.mq_credentials
   mq = {
     engine_type             = var.mq.engine_type
     engine_version          = var.mq.engine_version
@@ -174,8 +174,8 @@ resource "kubernetes_secret" "mq" {
 
 # MongoDB
 module "mongodb" {
-  source      = "./generated/infra-modules/storage/onpremise/mongodb"
-  namespace   = local.namespace
+  source    = "./generated/infra-modules/storage/onpremise/mongodb"
+  namespace = local.namespace
   mongodb = {
     image              = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
     tag                = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag

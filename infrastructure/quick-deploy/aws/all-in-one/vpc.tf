@@ -20,7 +20,7 @@ module "vpc" {
   flow_log_cloudwatch_log_group_kms_key_id        = local.kms_key
   flow_log_cloudwatch_log_group_retention_in_days = var.vpc.flow_log_cloudwatch_log_group_retention_in_days
   use_karpenter                                   = true
-  tags = local.tags
+  tags                                            = local.tags
 }
 
 module "vpce" {

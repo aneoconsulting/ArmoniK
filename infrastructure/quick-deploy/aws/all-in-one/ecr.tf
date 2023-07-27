@@ -73,10 +73,10 @@ locals {
     if can(local.ecr_images_raw["${name}:${tag}"])
   })
 
-  repositories = {for element in local.ecr_repositories : element.name => {
+  repositories = { for element in local.ecr_repositories : element.name => {
     image = element.image
-    tag = element.tag
-  }
+    tag   = element.tag
+    }
   }
 
   default_tags = module.default_images.image_tags
@@ -84,17 +84,17 @@ locals {
 
 # Default tags for all images
 module "default_images" {
-  source = "./generated/infra-modules/utils/default-images"
+  source           = "./generated/infra-modules/utils/default-images"
   armonik_versions = var.armonik_versions
   armonik_images   = var.armonik_images
   image_tags       = var.image_tags
 }
 
 module "ecr" {
-  source                 = "./generated/infra-modules/container-registry/aws/ecr"
-  aws_profile            = var.profile
-  kms_key_id             = local.kms_key
-  repositories           = local.repositories
-  encryption_type        = var.ecr.encryption_type
-  tags                   = local.tags
+  source          = "./generated/infra-modules/container-registry/aws/ecr"
+  aws_profile     = var.profile
+  kms_key_id      = local.kms_key
+  repositories    = local.repositories
+  encryption_type = var.ecr.encryption_type
+  tags            = local.tags
 }
