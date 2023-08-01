@@ -10,6 +10,7 @@ make bootstrap-deploy PREFIX=<PREFIX_KEY>
 ```
 
 To deploy, simply execute the following command:
+
 ```bash
 make deploy PREFIX=<PREFIX_KEY>
 ```
@@ -54,4 +55,4 @@ You can specify a custom parameter file. When executing the `make` command, you 
 
 ```bash
 make PARAMETERS_FILE=my-custom-parameters.tfvars
-``` 
+```
