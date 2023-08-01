@@ -3,6 +3,7 @@
 Deploying on AWS is similar to deploying on localhost but with the necessity to deploy an S3 bucket first.
 
 ## Generate S3 bucket key
+
 Execute the following command to generate a prefix key:
 
 ```bash
