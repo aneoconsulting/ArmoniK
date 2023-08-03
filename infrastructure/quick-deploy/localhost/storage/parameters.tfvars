@@ -45,7 +45,7 @@ redis = {
   host               = "minio"
   default_bucket     = "minioBucket"
   image              = "minio/minio"
-  tag                = "RELEASE.2023-02-10T18-48-39Z"
+  tag                = "RELEASE.2023-07-18T17-49-40Z"
   image_pull_secrets = ""
   node_selector      = {}
 }*/
