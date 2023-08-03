@@ -8,6 +8,7 @@ MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
 MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
+export TF_PLUGIN_CACHE_DIR=$(GENERATED_DIR)/terraform-plugins
 export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=default
@@ -23,6 +24,7 @@ deploy: get-modules init apply output
 destroy: init delete
 
 init:
+	mkdir -p $(TF_PLUGIN_CACHE_DIR)
 	mkdir -p $(GENERATED_DIR)
 	terraform init -upgrade \
 		-backend-config 'bucket=$(TFSTATE_BUCKET_NAME)' \
