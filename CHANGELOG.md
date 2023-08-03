@@ -5,8 +5,72 @@
 Changed
 -
 
+* Upgrade version of ActiveMQ from `5.17.0` to `5.18.0`.
+* Upgrade version of MongoDB from `6.0.1` to `6.0.7`.
+* Upgrade version of Redis from `7.0.8` to `7.0.12-alpine3.18`.
+* Upgrade version of Seq from `2023.1` to `2023.3`.
+* Upgrade version of Grafana from `9.3.6` to `10.0.2`.
+* Upgrade version of Node exporter from `v1.5.0` to `v1.6.0`.
+* Upgrade version of Prometheus from `v2.42.0` to `v2.45.0`.
+* Upgrade version of Fluent-bit from `2.0.9` to `2.1.7`.
+* Upgrade version of Mongosh from `1.7.1` to `1.10.1`.
+* Upgrade version of Nginx from `1.23.3` to `1.25.1-alpine-slim`.
+* Upgrade version of SeqCli from `2023.1` to `2023.2`
+* Upgrade version of Admin GUI from `0.9.1` to `0.9.2`.
+* Upgrade version of MinIO from `RELEASE.2023-02-10T18-48-39Z` to `RELEASE.2023-07-18T17-49-40Z`.
+
+## [v2.14.0](https://github.com/aneoconsulting/armonik/tree/v2.14.0) (2023-07-05)
+
+Changed
+-
+
 * Move Terraform modules of different resources deployment to GitHub repository [ArmoniK.Infra](https://github.com/aneoconsulting/ArmoniK.Infra).
 * Use ArmoniK Infrastructure version `0.0.2`
+* Upgrade ArmoniK.Extension.Csharp version from `0.11.1` to `0.12.1`
+* Upgrade Core version from `0.13.2` to `0.14.3`
+* Upgrade ArmoniK.Api to `3.10.0`
+* Upgrade ArmoniK.Admin.GUI to `0.9.1`
+
+Breaking
+- 
+
+* Results metadata for the expected output keys must be created prior to submitting a task
+  * Result ids are now given as a response to the Api endpoint Results.CreateResultsMetadata
+  * This change is transparent for Extension.Csharp client and worker
+
+Added
+-
+
+* Grpc channel health check when recycling in Extension.Csharp
+* Redis Data TTL (`Redis__TtlTimeSpan` options)
+* Retried status to tasks
+* SessionId and task options in queue adapter
+* Ability to submit data and tasks separately using native Api
+* C++ Api
+
+Fixed
+-
+
+* Grpc channel keep alive configuration in Api
+* Retry using bad channel in Extension.Csharp
+* Worker abort propagation
+* Reduced database load
+  * Removed unnecessary indices
+  * Optimized requests
+
+## [v2.13.3](https://github.com/aneoconsulting/armonik/tree/v2.13.2) (2023-07-05)
+
+Changed
+-
+
+* Use Armonik.Extension.Csharp version `0.11.2`
+
+Fixed
+
+
+* Bad properties override
+
+* 
 
 ## [v2.13.2](https://github.com/aneoconsulting/armonik/tree/v2.13.2) (2023-06-16)
 
@@ -17,7 +81,7 @@ Changed
 * Upgrade Core version from `0.13.1` to `0.13.2`.
 
 Fixed
-
+-
 
 * User keys were not loaded if they were part of the certificate file or if they were in PKCS#8 format
 

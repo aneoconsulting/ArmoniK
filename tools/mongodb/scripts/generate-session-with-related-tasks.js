@@ -19,7 +19,10 @@ const sessionId = db.SessionData.insertOne({
       min: 0,
       max: 10
     }),
-    Options: {},
+    Options: {
+      "CustomOption1": faker.word.sample(),
+      "CustomOption2": faker.word.sample()
+    },
     Priority: faker.number.int({
       min: 0,
       max: 4

@@ -10,7 +10,7 @@ locals {
   mongodb_tag                = try(var.mongodb.tag, "4.4.11")
   mongodb_node_selector      = try(var.mongodb.node_selector, {})
   mongodb_image_pull_secrets = try(var.mongodb.image_pull_secrets, {})
-  mongodb_replicas_number    = try(var.mongodb.replicas_number, 2)
+  mongodb_replicas_number    = try(var.mongodb.replicas_number, 1)
 
   # Redis
   redis_image              = try(var.redis.image, "redis")
@@ -21,7 +21,7 @@ locals {
 
   # Minio
   minio_image              = try(var.minio.image, "minio/minio")
-  minio_tag                = try(var.minio.tag, "RELEASE.2023-01-25T00-19-54Z")
+  minio_tag                = try(var.minio.tag, "RELEASE.2023-07-18T17-49-40Z")
   minio_image_pull_secrets = try(var.minio.image_pull_secrets, "")
   minio_host               = try(var.minio.host, "minio")
   minio_bucket_name        = try(var.minio.default_bucket, "minioBucket")
@@ -29,7 +29,7 @@ locals {
 
   # Minio for file storage
   minio_s3_fs_image              = try(var.minio_s3_fs.image, "minio/minio")
-  minio_s3_fs_tag                = try(var.minio_s3_fs.tag, "RELEASE.2023-01-25T00-19-54Z")
+  minio_s3_fs_tag                = try(var.minio_s3_fs.tag, "RELEASE.2023-07-18T17-49-40Z")
   minio_s3_fs_image_pull_secrets = try(var.minio_s3_fs.image_pull_secrets, "")
   minio_s3_fs_host               = try(var.minio_s3_fs.host, "minio_s3_fs")
   minio_s3_fs_bucket_name        = try(var.minio_s3_fs.default_bucket, "minioBucket")
