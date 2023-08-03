@@ -8,9 +8,9 @@ module "kms" {
 
 # AWS ECR
 module "ecr" {
-  source                 = "../generated/infra-modules/container-registry/aws/ecr"
-  aws_profile            = var.profile
-  kms_key_id             = (var.ecr.kms_key_id != "" ? var.ecr.kms_key_id : module.kms.0.arn)
-  repositories           = local.repositories
-  tags =local.tags
+  source       = "../generated/infra-modules/container-registry/aws/ecr"
+  aws_profile  = var.profile
+  kms_key_id   = (var.ecr.kms_key_id != "" ? var.ecr.kms_key_id : module.kms.0.arn)
+  repositories = local.repositories
+  tags         = local.tags
 }

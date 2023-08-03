@@ -79,10 +79,10 @@ module "s3_os" {
 
 # Amazon MQ
 module "mq" {
-  source    = "../generated/infra-modules/storage/aws/mq"
-  tags      = local.tags
-  name      = local.mq_name
-  vpc       = local.vpc
+  source = "../generated/infra-modules/storage/aws/mq"
+  tags   = local.tags
+  name   = local.mq_name
+  vpc    = local.vpc
   user = {
     password = var.mq_credentials.password
     username = var.mq_credentials.username
@@ -102,8 +102,8 @@ module "mq" {
 
 # MongoDB
 module "mongodb" {
-  source      = "../generated/infra-modules/storage/onpremise/mongodb"
-  namespace   = var.namespace
+  source    = "../generated/infra-modules/storage/onpremise/mongodb"
+  namespace = var.namespace
   mongodb = {
     image              = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${var.mongodb.image}"
     tag                = var.mongodb.tag
@@ -143,7 +143,7 @@ module "efs_persistent_volume" {
         tag   = var.pv_efs.csi_driver.docker_images.efs_csi.tag
       }
       livenessprobe = {
-      image = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${var.pv_efs.csi_driver.docker_images.livenessprobe.image}"
+        image = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${var.pv_efs.csi_driver.docker_images.livenessprobe.image}"
         tag   = var.pv_efs.csi_driver.docker_images.livenessprobe.tag
       }
       node_driver_registrar = {

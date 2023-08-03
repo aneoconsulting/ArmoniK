@@ -34,6 +34,6 @@ locals {
     "application"        = "armonik"
     "deployment version" = local.suffix
     "created by"         = data.aws_caller_identity.current.arn
-     "creation date" = null_resource.timestamp.triggers["creation_date"]
+    "creation date"      = null_resource.timestamp.triggers["creation_date"]
   })
 }

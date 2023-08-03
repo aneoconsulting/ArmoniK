@@ -44,16 +44,16 @@ module "node_exporter" {
 
 # Metrics exporter
 module "metrics_exporter" {
-  source               = "../generated/infra-modules/monitoring/onpremise/exporters/metrics-exporter"
-  namespace            = var.namespace
-  service_type         = local.metrics_exporter_service_type
-  node_selector        = local.metrics_exporter_node_selector
+  source        = "../generated/infra-modules/monitoring/onpremise/exporters/metrics-exporter"
+  namespace     = var.namespace
+  service_type  = local.metrics_exporter_service_type
+  node_selector = local.metrics_exporter_node_selector
   docker_image = {
     image              = local.metrics_exporter_image
     tag                = local.metrics_exporter_tag
     image_pull_secrets = local.metrics_exporter_image_pull_secrets
   }
-  extra_conf  = local.metrics_exporter_extra_conf
+  extra_conf = local.metrics_exporter_extra_conf
 }
 
 # Partition metrics exporter
@@ -75,11 +75,11 @@ module "metrics_exporter" {
 
 # Prometheus
 module "prometheus" {
-  source                         = "../generated/infra-modules/monitoring/onpremise/prometheus"
-  namespace                      = var.namespace
-  service_type                   = local.prometheus_service_type
-  node_selector                  = local.prometheus_node_selector
-  metrics_exporter_url           = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
+  source               = "../generated/infra-modules/monitoring/onpremise/prometheus"
+  namespace            = var.namespace
+  service_type         = local.prometheus_service_type
+  node_selector        = local.prometheus_node_selector
+  metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
   #"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
   docker_image = {
     image              = local.prometheus_image
