@@ -13,9 +13,6 @@ k8s_config_context = "default"
 # Kubernetes namespace
 namespace = "armonik"
 
-# AWS account ID
-aws_account_id = "125796369274"
-
 # Suffix
 suffix = "main"
 
@@ -227,7 +224,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "armonik-htcmock-worker"
-        tag               = "0.12.1"
+        tag               = "0.14.3"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
@@ -286,7 +283,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "armonik-bench-worker"
-        tag               = "0.12.1"
+        tag               = "0.14.3"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
@@ -345,7 +342,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "armonik-stream-worker"
-        tag               = "0.12.1"
+        tag               = "0.14.3"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"

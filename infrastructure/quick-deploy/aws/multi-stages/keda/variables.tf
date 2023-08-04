@@ -23,7 +23,6 @@ variable "region" {
 variable "aws_account_id" {
   description = "AWS account ID where the infrastructure will be deployed"
   type        = string
-  default     = "125796369274"
 }
 
 # Kubeconfig path

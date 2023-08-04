@@ -4,9 +4,6 @@ profile = "default"
 # Region
 region = "eu-west-3"
 
-# AWS account ID
-aws_account_id = "125796369274"
-
 # Suffix
 suffix = "main"
 

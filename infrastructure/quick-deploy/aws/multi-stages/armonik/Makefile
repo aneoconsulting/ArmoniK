@@ -8,14 +8,15 @@ VERSIONS_FILE?=../../../../versions.tfvars.json
 MODULES_DIR?=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
 MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
+TERRAFORM_PLUGINS?=$(GENERATED_DIR)/terraform-plugins
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
-export TF_PLUGIN_CACHE_DIR=$(GENERATED_DIR)/terraform-plugins
+export TF_PLUGIN_CACHE_DIR?=$(TERRAFORM_PLUGINS)
 export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
 export SUFFIX?=main
-export AWS_ACCOUNT_ID?=125796369274
+export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 export KUBECONFIG?=$(GENERATED_DIR)/eks/kubeconfig
 

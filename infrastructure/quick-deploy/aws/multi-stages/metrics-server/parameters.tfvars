@@ -7,9 +7,6 @@ region = "eu-west-3"
 # Kubernetes namespace
 namespace = "kube-system"
 
-# AWS account ID
-aws_account_id = "125796369274"
-
 # Suffix
 suffix = "main"
 

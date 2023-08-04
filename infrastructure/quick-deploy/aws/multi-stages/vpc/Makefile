@@ -6,9 +6,10 @@ OUTPUT_FILE=$(GENERATED_DIR)/vpc-output.json
 MODULES_DIR?=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
 MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
+TERRAFORM_PLUGINS?=$(GENERATED_DIR)/terraform-plugins
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
-export TF_PLUGIN_CACHE_DIR=$(GENERATED_DIR)/terraform-plugins
+export TF_PLUGIN_CACHE_DIR?=$(TERRAFORM_PLUGINS)
 export SUFFIX?=main
 export REGION?=eu-west-3
 export PROFILE?=default
