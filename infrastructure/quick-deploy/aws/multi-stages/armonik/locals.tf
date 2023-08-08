@@ -8,5 +8,5 @@ locals {
   ingress_image                     = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${var.ingress.image}"
   authentication_image              = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${var.authentication.image}"
   compute_plane_polling_agent_image = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${var.compute_plane.default.polling_agent.image}"
-  compute_plane_worker_images        = { for key, value in var.compute_plane: key => [for w in value.worker: "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${w.image}"] }
+  compute_plane_worker_images       = { for key, value in var.compute_plane : key => [for w in value.worker : "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${w.image}"] }
 }

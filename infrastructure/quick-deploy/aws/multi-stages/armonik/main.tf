@@ -18,11 +18,11 @@ module "armonik" {
       preemption_percentage = 50
       parent_partition_ids  = []
       pod_configuration     = null
-     }
+    }
     # Update images for polling_agent et worker
     polling_agent = merge(v.polling_agent, { image = local.compute_plane_polling_agent_image })
     worker        = [for w in v.worker : merge(w, { image = local.compute_plane_worker_images[k][index(v.worker, w)] })]
-   })
+    })
   }
 
   control_plane = merge(var.control_plane, { image = local.control_plane_image })
