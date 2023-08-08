@@ -12,6 +12,12 @@ variable "region" {
   default     = "eu-west-3"
 }
 
+# Aws account id
+variable "aws_account_id" {
+  description = "AWS account ID where the infrastructure will be deployed"
+  type        = string
+}
+
 # Kubeconfig path
 variable "k8s_config_path" {
   description = "Path of the configuration file of K8s"

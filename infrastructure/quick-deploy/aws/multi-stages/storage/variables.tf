@@ -25,7 +25,6 @@ variable "aws_account_id" {
   type        = string
 }
 
-
 # AWS TAGs
 variable "tags" {
   description = "Tags for AWS resources"

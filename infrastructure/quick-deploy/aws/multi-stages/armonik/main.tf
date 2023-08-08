@@ -21,7 +21,7 @@ module "armonik" {
      }
     # Update images for polling_agent et worker
     polling_agent = merge(v.polling_agent, { image = local.compute_plane_polling_agent_image })
-    worker        = [for w in v.worker : merge(w, { image = local.compute_plane_worker_image[k][index(v.worker, w)] })]
+    worker        = [for w in v.worker : merge(w, { image = local.compute_plane_worker_images[k][index(v.worker, w)] })]
    })
   }
 

@@ -1,8 +1,8 @@
 CURRENT_DIR=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 PARAMETERS_FILE?=parameters.tfvars
-STATE_FILE=storage-terraform.tfstate
-OUTPUT_FILE=$(GENERATED_DIR)/storage-output.json
+STATE_FILE=ecr-terraform.tfstate
+OUTPUT_FILE=$(GENERATED_DIR)/ecr-output.json
 MODULES_DIR?=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
 MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')

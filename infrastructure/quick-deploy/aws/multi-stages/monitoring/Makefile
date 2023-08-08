@@ -1,8 +1,8 @@
 CURRENT_DIR=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 PARAMETERS_FILE?=parameters.tfvars
-STATE_FILE=storage-terraform.tfstate
-OUTPUT_FILE=$(GENERATED_DIR)/storage-output.json
+STATE_FILE=monitoring-terraform.tfstate
+OUTPUT_FILE=$(GENERATED_DIR)/monitoring-output.json
 MODULES_DIR?=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
 MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
@@ -11,6 +11,7 @@ TERRAFORM_PLUGINS?=$(GENERATED_DIR)/terraform-plugins
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export TF_PLUGIN_CACHE_DIR?=$(TERRAFORM_PLUGINS)
 export SUFFIX?=main
+export AWS_ACCOUNT_ID?=$(shell aws sts get-caller-identity --query "Account" --output text)
 export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
@@ -39,6 +40,7 @@ apply:
 		-var-file $(EKS_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'suffix=$(SUFFIX)' \
+		-var 'aws_account_id=$(AWS_ACCOUNT_ID)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
 		-var 'k8s_config_path=$(KUBECONFIG)' \
@@ -57,6 +59,7 @@ delete:
 		-var-file $(EKS_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'suffix=$(SUFFIX)' \
+		-var 'aws_account_id=$(AWS_ACCOUNT_ID)' \
 		-var 'profile=$(PROFILE)' \
 		-var 'namespace=$(NAMESPACE)' \
 		-var 'k8s_config_path=$(KUBECONFIG)' \
