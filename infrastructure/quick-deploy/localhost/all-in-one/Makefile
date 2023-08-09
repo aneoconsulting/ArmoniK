@@ -11,6 +11,7 @@ MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
 
 export KUBE_CONFIG_PATH?=$(HOME)/.kube/config
 export TF_DATA_DIR?=$(GENERATED_DIR)
+export TF_PLUGIN_CACHE_DIR?=$(GENERATED_DIR)/terraform-plugins
 export NAMESPACE?=armonik
 export PREFIX?=armonik-local
 export TF_VAR_namespace?=$(NAMESPACE)
@@ -26,6 +27,7 @@ env:
 	@set
 
 init:
+	mkdir -p $(TF_PLUGIN_CACHE_DIR)
 	mkdir -p $(GENERATED_DIR)
 	terraform init -upgrade -reconfigure -backend-config="secret_suffix=$(PREFIX)" -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)
 

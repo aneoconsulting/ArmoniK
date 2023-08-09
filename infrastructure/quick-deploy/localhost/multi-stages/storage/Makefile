@@ -10,6 +10,7 @@ MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
 
 export KUBE_CONFIG_PATH?=$(HOME)/.kube/config
 export TF_DATA_DIR?=$(GENERATED_DIR)
+export TF_PLUGIN_CACHE_DIR?=$(TERRAFORM_PLUGINS)
 export NAMESPACE?=armonik
 export SHARED_HOST_PATH?=$(HOME)/data
 export FILE_STORAGE_FILE?=HostPath
@@ -22,6 +23,7 @@ deploy: get-modules init apply output
 destroy: init delete
 
 init:
+	mkdir -p $(TF_PLUGIN_CACHE_DIR)
 	mkdir -p $(GENERATED_DIR)
 	terraform init -upgrade -reconfigure \
 		-backend-config="secret_suffix=storage-$(BACKEND_SUFFIX)" \
