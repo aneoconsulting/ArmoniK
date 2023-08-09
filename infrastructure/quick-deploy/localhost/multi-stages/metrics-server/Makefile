@@ -2,7 +2,7 @@ CURRENT_DIR=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 PARAMETERS_FILE?=parameters.tfvars
 BACKEND_SUFFIX?=armonik
-OUTPUT_FILE=$(GENERATED_DIR)/keda-output.json
+OUTPUT_FILE=$(GENERATED_DIR)/metrics-server-output.json
 VERSIONS_FILE?=../../../../versions.tfvars.json
 MODULES_DIR?=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
@@ -10,7 +10,8 @@ MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
 
 export KUBE_CONFIG_PATH?=$(HOME)/.kube/config
 export TF_DATA_DIR?=$(GENERATED_DIR)
-export NAMESPACE?=default
+export TF_PLUGIN_CACHE_DIR?=$(TERRAFORM_PLUGINS)
+export NAMESPACE?=kube-system
 
 .PHONY: apply destroy
 
@@ -19,9 +20,10 @@ deploy: get-modules init apply output
 destroy: init delete
 
 init:
+	mkdir -p $(TF_PLUGIN_CACHE_DIR)
 	mkdir -p $(GENERATED_DIR)
 	terraform init -upgrade -reconfigure \
-		-backend-config="secret_suffix=keda-$(BACKEND_SUFFIX)" \
+		-backend-config="secret_suffix=metrics-server-$(BACKEND_SUFFIX)" \
 		-var-file "$(PARAMETERS_FILE)" \
 		-var 'namespace=$(NAMESPACE)'
 
@@ -32,8 +34,8 @@ apply:
 		-auto-approve
 
 output:
-	@echo -n "{\"keda\":" > $(OUTPUT_FILE)
-	@terraform output -json keda >> $(OUTPUT_FILE)
+	@echo -n "{\"metrics_server\":" > $(OUTPUT_FILE)
+	@terraform output -json metrics_server >> $(OUTPUT_FILE)
 	@echo -n "}" >> $(OUTPUT_FILE)
 	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 

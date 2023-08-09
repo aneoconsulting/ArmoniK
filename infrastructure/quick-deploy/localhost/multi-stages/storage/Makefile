@@ -2,7 +2,7 @@ CURRENT_DIR=$(shell pwd)
 GENERATED_DIR=$(CURRENT_DIR)/generated
 PARAMETERS_FILE?=parameters.tfvars
 BACKEND_SUFFIX?=armonik
-OUTPUT_FILE=$(GENERATED_DIR)/metrics-server-output.json
+OUTPUT_FILE=$(GENERATED_DIR)/storage-output.json
 VERSIONS_FILE?=../../../../versions.tfvars.json
 MODULES_DIR?=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
@@ -10,7 +10,11 @@ MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
 
 export KUBE_CONFIG_PATH?=$(HOME)/.kube/config
 export TF_DATA_DIR?=$(GENERATED_DIR)
-export NAMESPACE?=kube-system
+export TF_PLUGIN_CACHE_DIR?=$(TERRAFORM_PLUGINS)
+export NAMESPACE?=armonik
+export SHARED_HOST_PATH?=$(HOME)/data
+export FILE_STORAGE_FILE?=HostPath
+export FILE_SERVER_IP?=
 
 .PHONY: apply destroy
 
@@ -19,27 +23,30 @@ deploy: get-modules init apply output
 destroy: init delete
 
 init:
+	mkdir -p $(TF_PLUGIN_CACHE_DIR)
 	mkdir -p $(GENERATED_DIR)
 	terraform init -upgrade -reconfigure \
-		-backend-config="secret_suffix=metrics-server-$(BACKEND_SUFFIX)" \
+		-backend-config="secret_suffix=storage-$(BACKEND_SUFFIX)" \
 		-var-file "$(PARAMETERS_FILE)" \
 		-var 'namespace=$(NAMESPACE)'
 
 apply:
 	terraform apply \
 		-var-file $(PARAMETERS_FILE) \
+		-var 'shared_storage={"host_path":"$(SHARED_HOST_PATH)","file_storage_type":"$(FILE_STORAGE_FILE)","file_server_ip":"$(FILE_SERVER_IP)"}' \
 		-var 'namespace=$(NAMESPACE)' \
 		-auto-approve
 
 output:
-	@echo -n "{\"metrics_server\":" > $(OUTPUT_FILE)
-	@terraform output -json metrics_server >> $(OUTPUT_FILE)
+	@echo -n "{\"storage_endpoint_url\":" > $(OUTPUT_FILE)
+	@terraform output -json storage_endpoint_url >> $(OUTPUT_FILE)
 	@echo -n "}" >> $(OUTPUT_FILE)
 	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 
 delete:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
+		-var 'shared_storage={"host_path":"$(SHARED_HOST_PATH)","file_storage_type":"$(FILE_STORAGE_FILE)","file_server_ip":"$(FILE_SERVER_IP)"}' \
 		-var 'namespace=$(NAMESPACE)' \
 		-auto-approve
 

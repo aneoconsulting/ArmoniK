@@ -1,8 +1,7 @@
 # ActiveMQ
 module "activemq" {
-  source      = "./generated/infra-modules/storage/onpremise/activemq"
-  namespace   = local.namespace
-  working_dir = "${path.root}/../../.."
+  source    = "./generated/infra-modules/storage/onpremise/activemq"
+  namespace = local.namespace
   activemq = {
     image              = var.activemq.image_name
     tag                = try(coalesce(var.activemq.image_tag), local.default_tags[var.activemq.image_name])
@@ -13,9 +12,8 @@ module "activemq" {
 
 # MongoDB
 module "mongodb" {
-  source      = "./generated/infra-modules/storage/onpremise/mongodb"
-  namespace   = local.namespace
-  working_dir = "${path.root}/../../.."
+  source    = "./generated/infra-modules/storage/onpremise/mongodb"
+  namespace = local.namespace
   mongodb = {
     image              = var.mongodb.image_name
     tag                = try(coalesce(var.mongodb.image_tag), local.default_tags[var.mongodb.image_name])
@@ -28,10 +26,9 @@ module "mongodb" {
 
 # Redis
 module "redis" {
-  count       = var.redis != null ? 1 : 0
-  source      = "./generated/infra-modules/storage/onpremise/redis"
-  namespace   = local.namespace
-  working_dir = "${path.root}/../../.."
+  count     = var.redis != null ? 1 : 0
+  source    = "./generated/infra-modules/storage/onpremise/redis"
+  namespace = local.namespace
   redis = {
     image              = var.redis.image_name
     tag                = try(coalesce(var.redis.image_tag), local.default_tags[var.redis.image_name])

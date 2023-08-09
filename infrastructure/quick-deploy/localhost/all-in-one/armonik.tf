@@ -1,11 +1,8 @@
 module "armonik" {
-  source               = "./generated/infra-modules/armonik"
-  working_dir          = "${path.root}/../../.."
-  namespace            = local.namespace
-  logging_level        = var.logging_level
-  storage_endpoint_url = local.storage_endpoint_url
-  monitoring           = local.monitoring
-  extra_conf           = var.extra_conf
+  source        = "./generated/infra-modules/armonik"
+  namespace     = local.namespace
+  logging_level = var.logging_level
+  extra_conf    = var.extra_conf
 
   // To avoid the "known after apply" behavior that arises from using depends_on, we are using a ternary expression to impose implicit dependencies on the below secrets.
   fluent_bit_secret_name                 = kubernetes_secret.fluent_bit.id != null ? kubernetes_secret.fluent_bit.metadata[0].name : kubernetes_secret.fluent_bit.metadata[0].name
