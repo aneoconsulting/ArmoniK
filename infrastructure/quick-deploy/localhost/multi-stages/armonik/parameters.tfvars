@@ -245,3 +245,10 @@ extra_conf = {
     Submitter__MaxErrorAllowed = 50
   }
 }
+
+environment_description = {
+  name        = "local-dev"
+  version     = "0.0.0"
+  description = "Local development environment"
+  color       = "blue"
+}

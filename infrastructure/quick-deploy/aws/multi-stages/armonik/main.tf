@@ -34,4 +34,6 @@ module "armonik" {
   ingress                    = merge(var.ingress, { image = local.ingress_image })
   job_partitions_in_database = merge(var.job_partitions_in_database, { image = local.job_partitions_in_database_image })
   authentication             = merge(var.authentication, { image = local.authentication_image })
+
+  environment_description = var.environment_description
 }
