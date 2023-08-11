@@ -61,8 +61,8 @@ jobs:
         shell: bash
         run: |
           set -ex
-          export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
-          export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
+          export ADMIN_API_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.admin_api_url')
+          export ADMIN_APP_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.admin_app_url')
           : "Add -f again when a success endpoint has been implemented"
           curl -sSL "${ADMIN_API_URL}" -o /dev/null || true "in v2.7.2, there is no api endpoint"
           curl -fsSL "${ADMIN_APP_URL}" -o /dev/null || true "in v2.7.2, there is no app endpoint"
@@ -74,10 +74,10 @@ jobs:
             logs/infra/tfstates \
             logs/app
 
-          if [ -e infrastructure/quick-deploy/localhost/all/generated/armonik-output.json ] ; then
-            cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json logs/infra/generated
+          if [ -e infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json ] ; then
+            cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json logs/infra/generated
           fi
-          cp infrastructure/quick-deploy/localhost/all/generated/armonik-terraform.tfstate logs/infra/tfstates
+          make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > logs/infra/tfstates/armonik-terraform.tfstate
           sudo cp -rL /var/log/pods/armonik_* logs/app
           sudo chown $USER -R logs
           tar -czf admin-gui.tar.gz logs
@@ -89,7 +89,7 @@ jobs:
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
-           type: localhost  
+           type: localhost
 
   coreStream:
     runs-on: ubuntu-latest
@@ -125,7 +125,7 @@ jobs:
         shell: bash
         run: |
            set -ex
-           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
            docker run --rm \
              -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
              -e Partition="stream" \
@@ -138,10 +138,10 @@ jobs:
             core-stream/infra/tfstates \
             core-stream/app
 
-          if [ -e infrastructure/quick-deploy/localhost/all/generated/armonik-output.json ] ; then
-            cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json core-stream/infra/generated
+          if [ -e infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json ] ; then
+            cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json core-stream/infra/generated
           fi
-          cp infrastructure/quick-deploy/localhost/all/generated/armonik-terraform.tfstate core-stream/infra/tfstates
+          make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > core-stream/infra/tfstates/armonik-terraform.tfstate
           sudo cp -rL /var/log/pods/armonik_* core-stream/app
           sudo chown $USER -R core-stream
           tar -czf core-stream.tar.gz core-stream
@@ -180,7 +180,7 @@ jobs:
             docker: true
             terraform: true
             k3s: true
-            aws: true 
+            aws: true
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
@@ -189,7 +189,7 @@ jobs:
         shell: bash
         run: |
             set -ex
-            export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+            export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
             docker run --rm \
               -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
               -e HtcMock__NTasks=2000 \
@@ -201,12 +201,12 @@ jobs:
               -e HtcMock__EnableSmallOutput=false \
               -e HtcMock__EnableFastCompute=false \
               -e HtcMock__Partition="htcmock" \
-              dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}  
+              dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
       - name: Test HTC Mock - 1 level
         shell: bash
         run: |
             set -ex
-            export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+            export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
             docker run --rm \
               -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
               -e HtcMock__NTasks=1000 \
@@ -223,7 +223,7 @@ jobs:
         shell: bash
         run: |
             set -ex
-            export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+            export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
             docker run --rm \
               -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
               -e HtcMock__NTasks=1000 \
@@ -240,7 +240,7 @@ jobs:
         shell: bash
         run: |
             set -ex
-            export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+            export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
             docker run --rm \
               -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
               -e HtcMock__NTasks=1000 \
@@ -261,10 +261,10 @@ jobs:
               htcmock/infra/tfstates \
               htcmock/app
 
-            if [ -e infrastructure/quick-deploy/localhost/all/generated/armonik-output.json ] ; then
-              cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json htcmock/infra/generated
+            if [ -e infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json ] ; then
+              cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json htcmock/infra/generated
             fi
-            cp infrastructure/quick-deploy/localhost/all/generated/armonik-terraform.tfstate  htcmock/infra/tfstates
+            make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > htcmock/infra/tfstates/armonik-terraform.tfstate
             sudo cp -rL /var/log/pods/armonik_* htcmock/app
             sudo chown $USER -R htcmock
             tar -czf htcmock.tar.gz htcmock
@@ -305,16 +305,16 @@ jobs:
                docker: true
                terraform: true
                k3s: true
-               aws: true 
+               aws: true
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
-            type: localhost  
+            type: localhost
       - name: Test Bench - many tasks (200)
         shell: bash
         run: |
              set -ex
-             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
              docker run --rm \
                -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
                -e BenchOptions__NTasks=200 \
@@ -325,7 +325,7 @@ jobs:
         shell: bash
         run: |
              set -ex
-             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
              docker run --rm \
                -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
                -e BenchOptions__NTasks=2 \
@@ -336,7 +336,7 @@ jobs:
         shell: bash
         run: |
              set -ex
-             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
              docker run --rm \
                -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
                -e BenchOptions__NTasks=10 \
@@ -349,7 +349,7 @@ jobs:
         shell: bash
         run: |
              set -ex
-              export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+              export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
              docker run --rm \
                -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
                -e BenchOptions__NTasks=10 \
@@ -366,10 +366,10 @@ jobs:
                bench/infra/tfstates \
                bench/app
 
-             if [ -e infrastructure/quick-deploy/localhost/all/generated/armonik-output.json ] ; then
-              cp infrastructure/quick-deploy/localhost/all/generated/armonik-output.json bench/infra/generated
+             if [ -e infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json ] ; then
+              cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json bench/infra/generated
              fi
-             cp infrastructure/quick-deploy/localhost/all/generated/armonik-terraform.tfstate bench/infra/tfstates
+             make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > bench/infra/tfstates/armonik-terraform.tfstate
              sudo cp -rL /var/log/pods/armonik_* bench/app
              sudo chown $USER -R bench
              tar -czf bench.tar.gz bench
