@@ -1,0 +1,81 @@
+# How to troubleshoot
+
+Things can go wrong. As a developper, you know this already. But what to do when something goes wrong in ArmoniK ?
+
+This section will give you tips to check and fix problems for those times when it just won’t work and you do not know why.
+___
+## Your deployment failed or is malfunctioning
+
+First, note that if you deployment is local, MongoDB and Redis certifcates are only available for 7 days. Past this period, your deployment might encounter issues.
+Our suggestion is to destroy your deployment and redeploy.
+
+To check if your deployment is ok, you can enter the command:
+
+```bash [shell]
+kubectl get po
+```
+
+This line allows you to check the status of all the pods. If every one of them is «Running» or «Completed», your deployment is operational.
+___
+## Notes on Terraform
+If your deployment has an issue or you just want to stop it, we recommend using the following command:
+
+```bash [shell]
+sudo sysctemctl stop k3s.service
+```
+
+::alert{type="info"}
+We do **not** recommend using CTRL+C in the terminal to stop Terraform. The reason is that if you end Terraform this way, there will be no end message and your redeployment will have issues.
+::
+___
+## Deployment is ok but tasks are not received.
+
+If your deployment is ok, but tasks are not being processed, there are several solutions you can try.
+
+### 1. Set the retry value to 1.
+This way, you will know right away if the worker is receiving the tasks or not.
+### 2. Open Seq
+Opening Seq will allow you to see if the pods are on. If you have no information, it means they are off or that the Workers crashed and did not send any information to Seq.
+### 3. Run the command line :
+```bash [shell]
+kubectl get po –n armonik
+```
+
+This command line will show you all the active pods in their namespace in ArmoniK. Once you located the malfunctioning pod, you can use
+
+```bash [shell]
+kubectl describe po –n armonik <PodName> -f
+```
+
+This command line will show you in real time what is happening in the pod. If the pod crashes, you will get the reason in your terminal.
+___
+## How to stop a container
+
+If you have a container with a "Terminated" status and you want to stop it, you can do so with the command:
+
+```bash [shell]
+kubectl delete po –n armonik –force <PodName>
+```
+
+To check if the pod has been correctly stopped, run the command:
+
+``` bash [shell]
+kubectl get namespaces
+```
+The deleted pod should not appear in the list.
+___
+## My Worker is receiving a task but crashes. Why?
+
+You might get some information by checking with Seq.
+If you can not or if you prefer, you can check the logs directly with
+
+```bash [shell]
+kubectl logs –n  armonik ingress-number –f
+```
+
+This line will show you in real time all the containers
+
+```bash [shell]
+kubectl logs –n armonik ingress-number –c <containerName> <PodName>
+```
+This command will give your informations on the specified container and pod. You can add -f to have live feedback.
