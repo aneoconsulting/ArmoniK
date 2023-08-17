@@ -12,32 +12,50 @@ variable "k8s_config_context" {
   default     = "default"
 }
 
+variable "armonik_versions" {
+  description = "Versions of all the ArmoniK components"
+  type        = map(string)
+}
+
+variable "armonik_images" {
+  description = "Image names of all the ArmoniK components"
+  type        = map(set(string))
+}
+
+variable "image_tags" {
+  description = "Tags of images used"
+  type        = map(string)
+}
+
+variable "helm_charts" {
+  description = "Versions of helm charts repositories"
+  type = map(object({
+    repository = string
+    version    = string
+  }))
+}
+
 # Kubernetes namespace
 variable "namespace" {
   description = "Kubernetes namespace for ArmoniK"
   type        = string
-  default     = "armonik"
+  default     = "default"
 }
 
 # Keda infos
 variable "keda" {
   description = "Keda infos"
   type = object({
-    docker_image = object({
-      keda = object({
-        image = string
-        tag   = string
-      })
-      metricsApiServer = object({
-        image = string
-        tag   = string
-      })
-    })
-    image_pull_secrets              = string
-    node_selector                   = any
+    image_name                      = optional(string, "ghcr.io/kedacore/keda"),
+    image_tag                       = optional(string),
+    apiserver_image_name            = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
+    apiserver_image_tag             = optional(string),
+    image_pull_secrets              = optional(string, "")
+    node_selector                   = optional(map(string), {})
     metrics_server_dns_policy       = optional(string, "ClusterFirst")
     metrics_server_use_host_network = optional(bool, false)
-    helm_chart_repository           = optional(string, "https://kedacore.github.io/charts")
-    helm_chart_version              = optional(string, "2.9.4")
+    helm_chart_repository           = optional(string)
+    helm_chart_version              = optional(string)
   })
+  default = {}
 }

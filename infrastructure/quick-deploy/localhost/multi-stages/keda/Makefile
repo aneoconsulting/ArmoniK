@@ -23,13 +23,12 @@ init:
 	mkdir -p $(TF_PLUGIN_CACHE_DIR)
 	mkdir -p $(GENERATED_DIR)
 	terraform init -upgrade -reconfigure \
-		-backend-config="secret_suffix=keda-$(BACKEND_SUFFIX)" \
-		-var-file "$(PARAMETERS_FILE)" \
-		-var 'namespace=$(NAMESPACE)'
+		-backend-config="secret_suffix=keda-$(BACKEND_SUFFIX)" 
 
 apply:
-	terraform apply \
+	terraform apply -compact-warnings \
 		-var-file $(PARAMETERS_FILE) \
+		-var-file $(VERSIONS_FILE) \
 		-var 'namespace=$(NAMESPACE)' \
 		-auto-approve
 
@@ -40,8 +39,9 @@ output:
 	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 
 delete:
-	terraform destroy \
+	terraform destroy -compact-warnings \
 		-var-file $(PARAMETERS_FILE) \
+		-var-file $(VERSIONS_FILE) \
 		-var 'namespace=$(NAMESPACE)' \
 		-auto-approve
 
