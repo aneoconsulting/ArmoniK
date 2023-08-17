@@ -41,7 +41,7 @@ Opening Seq will allow you to see the logs of the workers and ArmoniK. If you ha
 
 Run the command line :
 ```bash [shell]
-kubectl get po –n armonik
+kubectl get po –n armonik -A
 ```
 
 This command line will show you all the active pods in the armonik namespace. Once you located the malfunctioning pod, you can use :
