@@ -1,5 +1,5 @@
 locals {
-  subnets    = {for key, value in coalesce(var.subnets, {}) : "${local.prefix}-${key}" => value}
+  subnets    = { for key, value in coalesce(var.subnets, {}) : "${local.prefix}-${key}" => value }
   gke_subnet = merge(var.gke.subnet, { name = "${local.prefix}-${var.gke.subnet.name}" })
 }
 

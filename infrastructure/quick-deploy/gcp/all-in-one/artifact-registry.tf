@@ -1,5 +1,5 @@
 locals {
-  default_tags        = module.default_images.image_tags
+  default_tags = module.default_images.image_tags
   input_docker_images = concat([
     var.keda != null ? [var.keda.image_name, var.keda.image_tag] : null,
     var.keda != null ? [var.keda.apiserver_image_name, var.keda.apiserver_image_tag] : null,
@@ -18,65 +18,65 @@ locals {
     var.partition_metrics_exporter != null ? [var.partition_metrics_exporter.image_name, var.partition_metrics_exporter.image_tag] : null,
     var.ingress != null ? [var.ingress.image, var.ingress.tag] : null,
     var.authentication != null ? [var.authentication.image, var.authentication.tag] : null,
-  ], [
-  for k, v in var.compute_plane :
-  [v.polling_agent.image, v.polling_agent.tag]
-  ], concat([
-  for k, v in var.compute_plane :
-  [
-  for w in v.worker :
-  [w.image, w.tag]
-  ]
+    ], [
+    for k, v in var.compute_plane :
+    [v.polling_agent.image, v.polling_agent.tag]
+    ], concat([
+      for k, v in var.compute_plane :
+      [
+        for w in v.worker :
+        [w.image, w.tag]
+      ]
   ]...))
 
   input_docker_images_step1 = toset([
-  for image in local.input_docker_images :
-  {
-    name = image[0]
-    tag  = try(coalesce(image[1]), local.default_tags[image[0]])
-  }
-  if image != null
+    for image in local.input_docker_images :
+    {
+      name = image[0]
+      tag  = try(coalesce(image[1]), local.default_tags[image[0]])
+    }
+    if image != null
   ])
 
   input_docker_images_step2 = [
-  for image in local.input_docker_images_step1 :
-  {
-    key        = "${image.name}:${image.tag}"
-    components = split("/", image.name)
-    name       = image.name
-    tag        = image.tag
-  }
+    for image in local.input_docker_images_step1 :
+    {
+      key        = "${image.name}:${image.tag}"
+      components = split("/", image.name)
+      name       = image.name
+      tag        = image.tag
+    }
   ]
 
   docker_repositories = [
-  for image in local.input_docker_images_step2 : {
-    key   = image.key
-    name  = replace(image.components[length(image.components) - 1], "_", "-")
-    image = image.name
-    tag   = image.tag
-  }
+    for image in local.input_docker_images_step2 : {
+      key   = image.key
+      name  = replace(image.components[length(image.components) - 1], "_", "-")
+      image = image.name
+      tag   = image.tag
+    }
   ]
 
   docker_images_raw = {
-  for rep in local.docker_repositories :
-  rep.key => {
-    image = try(module.artifact_registry.docker_repositories[rep.name], null),
-    name  = try(module.artifact_registry.docker_repositories[rep.name], null),
-    tag   = rep.tag,
-  }
+    for rep in local.docker_repositories :
+    rep.key => {
+      image = try(module.artifact_registry.docker_repositories[rep.name], null),
+      name  = try(module.artifact_registry.docker_repositories[rep.name], null),
+      tag   = rep.tag,
+    }
   }
 
   docker_images = merge(local.docker_images_raw, {
-  for name, tag in local.default_tags :
-  "${name}:" => local.docker_images_raw["${name}:${tag}"]
-  if can(local.docker_images_raw["${name}:${tag}"])
+    for name, tag in local.default_tags :
+    "${name}:" => local.docker_images_raw["${name}:${tag}"]
+    if can(local.docker_images_raw["${name}:${tag}"])
   })
 
   repositories = {
-  for element in local.docker_repositories : element.name => {
-    image = element.image
-    tag   = element.tag
-  }
+    for element in local.docker_repositories : element.name => {
+      image = element.image
+      tag   = element.tag
+    }
   }
 }
 

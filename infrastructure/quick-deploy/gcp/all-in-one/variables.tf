@@ -36,7 +36,7 @@ variable "kms_name" {
 # VPC and subnets for resources
 variable "subnets" {
   description = "A map of subnets inside the VPC. Each subnet object has a CIDR block, a region, and a boolean set to true if the subnet is public, or false if the subnet is private"
-  type        = map(object({
+  type = map(object({
     cidr_block    = optional(string)
     region        = optional(string)
     public_access = optional(bool)
@@ -47,7 +47,7 @@ variable "subnets" {
 # GCP Kubernetes cluster
 variable "gke" {
   description = "GKE cluster configuration"
-  type        = object({
+  type = object({
     subnet = optional(object({
       name                = optional(string, "gke-subnet")
       nodes_cidr_block    = optional(string, "10.43.0.0/16")
@@ -80,7 +80,7 @@ variable "gke" {
 # Keda
 variable "keda" {
   description = "Keda configuration"
-  type        = object({
+  type = object({
     namespace                       = optional(string, "default")
     image_name                      = optional(string, "ghcr.io/kedacore/keda"),
     image_tag                       = optional(string),
@@ -99,13 +99,13 @@ variable "keda" {
 # Metrics Server
 variable "metrics_server" {
   description = "Parameters of the metrics server"
-  type        = object({
+  type = object({
     namespace          = optional(string, "kube-system"),
     image_name         = optional(string, "registry.k8s.io/metrics-server/metrics-server"),
     image_tag          = optional(string),
     image_pull_secrets = optional(string, ""),
     node_selector      = optional(any, {}),
-    args               = optional(list(string), [
+    args = optional(list(string), [
       "--cert-dir=/tmp",
       "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname",
       "--kubelet-use-node-status-port",
@@ -121,16 +121,16 @@ variable "metrics_server" {
 # Parameters for MongoDB
 variable "mongodb" {
   description = "Parameters of MongoDB"
-  type        = object({
-    image_name        = optional(string, "mongo")
-    image_tag         = optional(string)
-    node_selector     = optional(any, {})
-    pull_secrets      = optional(string, "")
-    replicas_number   = optional(number, 1)
+  type = object({
+    image_name      = optional(string, "mongo")
+    image_tag       = optional(string)
+    node_selector   = optional(any, {})
+    pull_secrets    = optional(string, "")
+    replicas_number = optional(number, 1)
     persistent_volume = optional(object({
       storage_provisioner = string
       parameters          = optional(map(string), {})
-      resources           = optional(object({
+      resources = optional(object({
         limits = optional(object({
           storage = optional(string)
         }))
@@ -146,7 +146,7 @@ variable "mongodb" {
 # GCP Memorystore for Redis
 variable "memorystore" {
   description = "Configuration of GCP Memorystore for Redis"
-  type        = object({
+  type = object({
     memory_size_gb     = number
     auth_enabled       = optional(bool, true)
     connect_mode       = optional(string, "DIRECT_PEERING")
@@ -173,7 +173,7 @@ variable "memorystore" {
 # ArmoniK docker images
 variable "armonik_images" {
   description = "Image names of all the ArmoniK components"
-  type        = object({
+  type = object({
     infra     = set(string)
     core      = set(string)
     api       = set(string)
@@ -186,7 +186,7 @@ variable "armonik_images" {
 # Versions of the ArmoniK docker images
 variable "armonik_versions" {
   description = "Versions of all the ArmoniK components"
-  type        = object({
+  type = object({
     infra     = string
     core      = string
     api       = string
@@ -198,7 +198,7 @@ variable "armonik_versions" {
 
 variable "seq" {
   description = "Seq configuration (nullable)"
-  type        = object({
+  type = object({
     image_name        = optional(string, "datalust/seq")
     image_tag         = optional(string)
     port              = optional(number, 8080)
@@ -217,7 +217,7 @@ variable "seq" {
 
 variable "grafana" {
   description = "Grafana configuration (nullable)"
-  type        = object({
+  type = object({
     image_name     = optional(string, "grafana/grafana")
     image_tag      = optional(string)
     port           = optional(number, 3000)
@@ -231,7 +231,7 @@ variable "grafana" {
 
 variable "node_exporter" {
   description = "Node exporter configuration (nullable)"
-  type        = object({
+  type = object({
     image_name    = optional(string, "prom/node-exporter")
     image_tag     = optional(string)
     pull_secrets  = optional(string, "")
@@ -243,7 +243,7 @@ variable "node_exporter" {
 
 variable "prometheus" {
   description = "Prometheus configuration"
-  type        = object({
+  type = object({
     image_name    = optional(string, "prom/prometheus")
     image_tag     = optional(string)
     pull_secrets  = optional(string, "")
@@ -255,7 +255,7 @@ variable "prometheus" {
 
 variable "metrics_exporter" {
   description = "Metrics exporter configuration"
-  type        = object({
+  type = object({
     image_name    = optional(string, "dockerhubaneo/armonik_control_metrics")
     image_tag     = optional(string)
     pull_secrets  = optional(string, "")
@@ -268,7 +268,7 @@ variable "metrics_exporter" {
 
 variable "partition_metrics_exporter" {
   description = "Partition metrics exporter configuration (nullable)"
-  type        = object({
+  type = object({
     image_name    = optional(string, "dockerhubaneo/armonik_control_partition_metrics")
     image_tag     = optional(string)
     pull_secrets  = optional(string, "")
@@ -281,7 +281,7 @@ variable "partition_metrics_exporter" {
 
 variable "fluent_bit" {
   description = "Fluent bit configuration"
-  type        = object({
+  type = object({
     image_name     = optional(string, "fluent/fluent-bit")
     image_tag      = optional(string)
     pull_secrets   = optional(string, "")
@@ -297,7 +297,7 @@ variable "fluent_bit" {
 # Extra configuration
 variable "extra_conf" {
   description = "Add extra configuration in the configmaps"
-  type        = object({
+  type = object({
     compute = optional(map(string), {})
     control = optional(map(string), {})
     core    = optional(map(string), {})
@@ -311,7 +311,7 @@ variable "extra_conf" {
 # Job to insert partitions in the database
 variable "job_partitions_in_database" {
   description = "Job to insert partitions IDs in the database"
-  type        = object({
+  type = object({
     name               = optional(string, "job-partitions-in-database")
     image              = optional(string, "rtsp/mongosh")
     tag                = optional(string)
@@ -326,7 +326,7 @@ variable "job_partitions_in_database" {
 # Parameters of control plane
 variable "control_plane" {
   description = "Parameters of the control plane"
-  type        = object({
+  type = object({
     name              = optional(string, "control-plane")
     service_type      = optional(string, "ClusterIP")
     replicas          = optional(number, 2)
@@ -334,7 +334,7 @@ variable "control_plane" {
     tag               = optional(string)
     image_pull_policy = optional(string, "IfNotPresent")
     port              = optional(number, 5001)
-    limits            = optional(object({
+    limits = optional(object({
       cpu    = optional(string)
       memory = optional(string)
     }))
@@ -346,19 +346,19 @@ variable "control_plane" {
     node_selector      = optional(any, {})
     annotations        = optional(any, {})
     # KEDA scaler
-    hpa                = optional(any)
-    default_partition  = string
+    hpa               = optional(any)
+    default_partition = string
   })
 }
 
 # Parameters of admin gui
 variable "admin_gui" {
   description = "Parameters of the admin GUI"
-  type        = object({
-    name   = optional(string, "admin-app")
-    image  = optional(string, "dockerhubaneo/armonik_admin_app")
-    tag    = optional(string)
-    port   = optional(number, 1080)
+  type = object({
+    name  = optional(string, "admin-app")
+    image = optional(string, "dockerhubaneo/armonik_admin_app")
+    tag   = optional(string)
+    port  = optional(number, 1080)
     limits = optional(object({
       cpu    = optional(string)
       memory = optional(string)
@@ -379,17 +379,17 @@ variable "admin_gui" {
 # Parameters of the compute plane
 variable "compute_plane" {
   description = "Parameters of the compute plane"
-  type        = map(object({
+  type = map(object({
     replicas                         = optional(number, 1)
     termination_grace_period_seconds = optional(number, 30)
     image_pull_secrets               = optional(string, "IfNotPresent")
     node_selector                    = optional(any, {})
     annotations                      = optional(any, {})
-    polling_agent                    = optional(object({
+    polling_agent = optional(object({
       image             = optional(string, "dockerhubaneo/armonik_pollingagent")
       tag               = optional(string)
       image_pull_policy = optional(string, "IfNotPresent")
-      limits            = optional(object({
+      limits = optional(object({
         cpu    = optional(string)
         memory = optional(string)
       }))
@@ -403,7 +403,7 @@ variable "compute_plane" {
       image             = string
       tag               = optional(string)
       image_pull_policy = optional(string, "IfNotPresent")
-      limits            = optional(object({
+      limits = optional(object({
         cpu    = optional(string)
         memory = optional(string)
       }))
@@ -419,7 +419,7 @@ variable "compute_plane" {
 
 variable "ingress" {
   description = "Parameters of the ingress controller (nullable)"
-  type        = object({
+  type = object({
     name              = optional(string, "ingress")
     service_type      = optional(string, "LoadBalancer")
     replicas          = optional(number, 1)
@@ -428,7 +428,7 @@ variable "ingress" {
     image_pull_policy = optional(string, "IfNotPresent")
     http_port         = optional(number, 5000)
     grpc_port         = optional(number, 5001)
-    limits            = optional(object({
+    limits = optional(object({
       cpu    = optional(string)
       memory = optional(string)
     }))
@@ -450,7 +450,7 @@ variable "ingress" {
 # Authentication behavior
 variable "authentication" {
   description = "Authentication behavior"
-  type        = object({
+  type = object({
     name                    = optional(string, "job-authentication-in-database")
     image                   = optional(string, "rtsp/mongosh")
     tag                     = optional(string)
@@ -473,7 +473,7 @@ variable "image_tags" {
 # Repositories and versions of Helm charts
 variable "helm_charts" {
   description = "Versions of helm charts repositories"
-  type        = map(object({
+  type = map(object({
     repository = string
     version    = string
   }))

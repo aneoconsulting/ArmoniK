@@ -35,7 +35,7 @@ locals {
   prefix    = try(coalesce(var.prefix), "armonik-${random_string.prefix.result}")
   gke_name  = "${local.prefix}-gke"
   namespace = kubernetes_namespace.armonik.metadata[0].name
-  labels    = merge({
+  labels = merge({
     "application"        = "armonik"
     "deployment_version" = local.prefix
     "created_by"         = split("@", data.google_client_openid_userinfo.current.email)[0]

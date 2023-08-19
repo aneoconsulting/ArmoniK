@@ -2,13 +2,13 @@ locals {
   storage_endpoint_url = {
     table_storage_adapter   = "MongoDB"
     deployed_table_storages = ["MongoDB"]
-    mongodb                 = {
+    mongodb = {
       url                = module.mongodb.url
       number_of_replicas = var.mongodb.replicas_number
     }
     queue_storage_adapter   = "PubSub"
     deployed_queue_storages = ["PubSub"]
-    activemq                = {
+    activemq = {
       url     = null
       web_url = null
     }
@@ -40,7 +40,7 @@ locals {
 module "mongodb" {
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
-  mongodb   = {
+  mongodb = {
     image              = local.docker_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
     tag                = local.docker_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
     node_selector      = var.mongodb.node_selector
@@ -86,15 +86,15 @@ module "memorystore" {
   connect_mode       = var.memorystore.connect_mode
   display_name       = "${local.prefix}-redis"
   labels             = local.labels
-  locations          = var.memorystore.tier == "STANDARD_HA" && length(var.memorystore.locations) == 0 ? (length(data.google_compute_zones.available.names) >= 2 ? [
+  locations = var.memorystore.tier == "STANDARD_HA" && length(var.memorystore.locations) == 0 ? (length(data.google_compute_zones.available.names) >= 2 ? [
     data.google_compute_zones.available.names[0],
     data.google_compute_zones.available.names[1]
   ] : [data.google_compute_zones.available.names[0]]) : var.memorystore.locations
-  redis_configs           = var.memorystore.redis_configs
-  persistence_config      = var.memorystore.persistence_config
-  maintenance_policy      = var.memorystore.maintenance_policy
-  redis_version           = var.memorystore.redis_version
-#  reserved_ip_range       = var.memorystore.reserved_ip_range
+  redis_configs      = var.memorystore.redis_configs
+  persistence_config = var.memorystore.persistence_config
+  maintenance_policy = var.memorystore.maintenance_policy
+  redis_version      = var.memorystore.redis_version
+  #  reserved_ip_range       = var.memorystore.reserved_ip_range
   tier                    = var.memorystore.tier
   transit_encryption_mode = var.memorystore.transit_encryption_mode
   replica_count           = var.memorystore.replica_count

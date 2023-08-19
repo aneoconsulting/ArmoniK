@@ -1,5 +1,5 @@
 terraform {
   backend "gcs" {
-    prefix  = "armonik-terraform.tfstate"
+    prefix = "armonik-terraform.tfstate"
   }
 }

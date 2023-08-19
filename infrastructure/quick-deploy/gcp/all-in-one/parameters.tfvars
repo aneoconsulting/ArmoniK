@@ -20,7 +20,7 @@ memorystore = {
   memory_size_gb = 20
   auth_enabled   = true
   connect_mode   = "PRIVATE_SERVICE_ACCESS"
-  redis_configs  = {
+  redis_configs = {
     "maxmemory-gb"     = "18"
     "maxmemory-policy" = "volatile-lru"
   }
@@ -87,8 +87,8 @@ control_plane = {
   }
   default_partition = "default"
   #node_selector     = { service = "control-plane" }
-  image             = "submitterpubsub"
-  tag               = "0.14.3-pubsub"
+  image = "submitterpubsub"
+  tag   = "0.14.3-pubsub"
 }
 
 # Parameters of admin GUI
@@ -110,7 +110,7 @@ compute_plane = {
   default = {
     #node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
-    replicas      = 1
+    replicas = 1
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -125,7 +125,7 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image  = "dockerhubaneo/armonik_worker_dll"
+        image = "dockerhubaneo/armonik_worker_dll"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -142,7 +142,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 100
-      behavior          = {
+      behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
@@ -161,7 +161,7 @@ compute_plane = {
   stream = {
     #node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
-    replicas      = 1
+    replicas = 1
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -178,7 +178,7 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image  = "dockerhubaneo/armonik_core_stream_test_worker"
+        image = "dockerhubaneo/armonik_core_stream_test_worker"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -195,7 +195,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 100
-      behavior          = {
+      behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
@@ -214,7 +214,7 @@ compute_plane = {
   htcmock = {
     #node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
-    replicas      = 1
+    replicas = 1
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -229,7 +229,7 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image  = "dockerhubaneo/armonik_core_htcmock_test_worker"
+        image = "dockerhubaneo/armonik_core_htcmock_test_worker"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -246,7 +246,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 100
-      behavior          = {
+      behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
@@ -265,7 +265,7 @@ compute_plane = {
   bench = {
     #node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
-    replicas      = 1
+    replicas = 1
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -280,7 +280,7 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image  = "dockerhubaneo/armonik_core_bench_test_worker"
+        image = "dockerhubaneo/armonik_core_bench_test_worker"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -297,7 +297,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 100
-      behavior          = {
+      behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"

@@ -1,6 +1,6 @@
 output "gke" {
   description = "GKE cluster"
-  value       = {
+  value = {
     arn             = module.gke.cluster_id
     name            = module.gke.name
     region          = module.gke.region
