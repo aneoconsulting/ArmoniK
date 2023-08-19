@@ -2,6 +2,7 @@ keda = {
   #node_selector = { service = "monitoring" }
 }
 
+metrics_server = null
 
 
 /*# Tags
@@ -251,9 +252,7 @@ self_managed_node_groups = {
 # List of fargate profiles
 fargate_profiles = {}
 
-metrics_server = {
-  node_selector = { service = "monitoring" }
-}
+
 
 # Object storage
 # Uncomment either the `elasticache` or the `s3_os` parameter

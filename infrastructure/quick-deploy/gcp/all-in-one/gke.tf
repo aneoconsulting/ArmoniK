@@ -8,7 +8,7 @@ module "gke" {
   subnetwork               = module.vpc.gke_subnet_name
   ip_range_pods            = module.vpc.gke_subnet_pods_range_name
   ip_range_services        = module.vpc.gke_subnet_svc_range_name
-  kubeconfig_path          = abspath(var.kubeconfig_file)
+  kubeconfig_path          = abspath(var.gke.kubeconfig_file)
   create_service_account   = true
   service_account_name     = local.gke_name
   grant_registry_access    = true
@@ -20,4 +20,11 @@ module "gke" {
     }
   ]
   cluster_resource_labels = local.labels
+}
+
+resource "kubernetes_namespace" "armonik" {
+  metadata {
+    name = var.gke.namespace
+  }
+  depends_on = [module.gke]
 }

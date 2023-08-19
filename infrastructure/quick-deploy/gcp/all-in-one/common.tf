@@ -29,13 +29,6 @@ resource "null_resource" "timestamp" {
   }
 }
 
-resource "kubernetes_namespace" "armonik" {
-  metadata {
-    name = var.namespace
-  }
-  depends_on = [module.gke]
-}
-
 locals {
   prefix    = try(coalesce(var.prefix), "armonik-${random_string.prefix.result}")
   gke_name  = "${local.prefix}-gke"

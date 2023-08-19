@@ -3,7 +3,7 @@ module "keda" {
   source    = "./generated/infra-modules/monitoring/onpremise/keda"
   namespace = var.keda.namespace
   docker_image = {
-    keda             = local.docker_images["${var.keda.keda_image_name}:${try(coalesce(var.keda.keda_image_tag), "")}"]
+    keda             = local.docker_images["${var.keda.image_name}:${try(coalesce(var.keda.image_tag), "")}"]
     metricsApiServer = local.docker_images["${var.keda.apiserver_image_name}:${try(coalesce(var.keda.apiserver_image_tag), "")}"]
   }
   image_pull_secrets              = var.keda.pull_secrets

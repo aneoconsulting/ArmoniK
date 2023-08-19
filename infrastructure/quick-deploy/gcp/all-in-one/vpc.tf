@@ -1,6 +1,6 @@
 locals {
   subnets    = {for key, value in var.subnets : "${local.prefix}-${key}" => value}
-  gke_subnet = merge(var.gke_subnet, { name = "${local.prefix}-${var.gke_subnet.name}" })
+  gke_subnet = merge(var.gke.subnet, { name = "${local.prefix}-${var.gke.subnet.name}" })
 }
 
 module "vpc" {

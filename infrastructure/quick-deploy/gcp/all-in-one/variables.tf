@@ -5,37 +5,35 @@ variable "prefix" {
   default     = null # random
 }
 
+# GCP region
 variable "region" {
   description = "The GCP region used to deploy all resources"
   type        = string
   default     = "europe-west1"
 }
 
+# GCP project
 variable "project" {
-  description = "Project name"
+  description = "GCP project name"
   type        = string
   default     = "armonik-gcp-13469"
 }
 
+# Map of labels
 variable "labels" {
   description = "Labels for GCP resources"
   type        = map(string)
   default     = {}
 }
 
+# KMS key name to encrypt/decrypt resources
 variable "kms_name" {
   description = "Cloud KMS used to encrypt/decrypt resources."
   type        = string
   default     = "projects/armonik-gcp-13469/locations/europe-west1/keyRings/armonik-europe-west1/cryptoKeys/armonik-europe-west1"
 }
 
-# Kubernetes namespace
-variable "namespace" {
-  description = "Kubernetes namespace for ArmoniK"
-  type        = string
-  default     = "armonik"
-}
-
+# VPC and subnets for resources
 variable "subnets" {
   description = "A map of subnets inside the VPC. Each subnet object has a CIDR block, a region, and a boolean set to true if the subnet is public, or false if the subnet is private"
   type        = map(object({
@@ -44,11 +42,6 @@ variable "subnets" {
     public_access = optional(bool, false)
   }))
   default = {
-    "public-subnet" = {
-      cidr_block    = "10.0.192.0/24"
-      region        = "europe-west1"
-      public_access = true
-    }
     "private-subnet" = {
       cidr_block    = "10.0.0.0/18"
       region        = "europe-west1"
@@ -57,50 +50,37 @@ variable "subnets" {
   }
 }
 
-variable "gke_subnet" {
-  description = "The GKE subnet. The subnet contains a name, a CIDR block for nodes, a CIDR block for Pods, a CIDR block for services and a region"
+# GCP Kubernetes cluster
+variable "gke" {
+  description = "GKE cluster configuration"
   type        = object({
-    name                = string
-    nodes_cidr_block    = string
-    pods_cidr_block     = string
-    services_cidr_block = string
-    region              = string
+    subnet = optional(object({
+      name                = optional(string, "gke-subnet")
+      nodes_cidr_block    = optional(string, "10.43.0.0/16")
+      pods_cidr_block     = optional(string, "172.16.0.0/16")
+      services_cidr_block = optional(string, "172.17.17.0/24")
+      region              = optional(string, "europe-west1")
+    }), {})
+    cluster_autoscaling = optional(object({
+      enabled       = optional(bool, true)
+      min_cpu_cores = optional(number, 0)
+      max_cpu_cores = optional(number, 0)
+      min_memory_gb = optional(number, 0)
+      max_memory_gb = optional(number, 0)
+      gpu_resources = optional(list(object({
+        resource_type = optional(string),
+        minimum       = optional(number),
+        maximum       = optional(number)
+      })), [])
+      auto_repair  = optional(bool, true)
+      auto_upgrade = optional(bool, true)
+      disk_size    = optional(number, 100)
+      disk_type    = optional(string, "pd-standard")
+    }), {})
+    namespace       = optional(string, "armonik")
+    kubeconfig_file = optional(string, "generated/kubeconfig")
   })
-  default = {
-    name                = "gke-subnet"
-    nodes_cidr_block    = "10.43.0.0/16",
-    pods_cidr_block     = "172.16.0.0/16"
-    services_cidr_block = "172.17.17.0/24"
-    region              = "europe-west1"
-  }
-}
-
-# Kubeconfig file path
-variable "kubeconfig_file" {
-  description = "Kubeconfig file path"
-  type        = string
-  default     = "generated/kubeconfig"
-}
-
-variable "gke_cluster_autoscaling" {
-  type = object({
-    enabled       = optional(bool, true)
-    min_cpu_cores = optional(number, 0)
-    max_cpu_cores = optional(number, 0)
-    min_memory_gb = optional(number, 0)
-    max_memory_gb = optional(number, 0)
-    gpu_resources = optional(list(object({
-      resource_type = optional(string),
-      minimum       = optional(number),
-      maximum       = optional(number)
-    })), [])
-    auto_repair  = optional(bool, true)
-    auto_upgrade = optional(bool, true)
-    disk_size    = optional(number, 100)
-    disk_type    = optional(string, "pd-standard")
-  })
-  default     = {}
-  description = "Cluster autoscaling configuration. See [more details](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1beta1/projects.locations.clusters#clusterautoscaling)"
+  default = {}
 }
 
 # Keda
@@ -108,32 +88,43 @@ variable "keda" {
   description = "Keda configuration"
   type        = object({
     namespace                       = optional(string, "default")
-    keda_image_name                 = optional(string, "ghcr.io/kedacore/keda"),
-    keda_image_tag                  = optional(string),
+    image_name                      = optional(string, "ghcr.io/kedacore/keda"),
+    image_tag                       = optional(string),
     apiserver_image_name            = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
     apiserver_image_tag             = optional(string),
     pull_secrets                    = optional(string, ""),
     node_selector                   = optional(any, {})
     metrics_server_dns_policy       = optional(string, "ClusterFirst")
     metrics_server_use_host_network = optional(bool, false)
-    helm_chart_repository           = optional(string)
-    helm_chart_version              = optional(string)
+    helm_chart_repository           = optional(string, "https://kedacore.github.io/charts")
+    helm_chart_version              = optional(string, "2.9.4")
   })
   default = {}
 }
 
-variable "armonik_versions" {
-  description = "Versions of all the ArmoniK components"
+# Metrics Server
+variable "metrics_server" {
+  description = "Parameters of the metrics server"
   type        = object({
-    infra     = string
-    core      = string
-    api       = string
-    gui       = string
-    extcsharp = string
-    samples   = string
+    namespace          = optional(string, "kube-system"),
+    image_name         = optional(string, "registry.k8s.io/metrics-server/metrics-server"),
+    image_tag          = optional(string),
+    image_pull_secrets = optional(string, ""),
+    node_selector      = optional(any, {}),
+    args               = optional(list(string), [
+      "--cert-dir=/tmp",
+      "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname",
+      "--kubelet-use-node-status-port",
+      "--metric-resolution=15s",
+    ]),
+    host_network          = optional(bool, false),
+    helm_chart_repository = optional(string, "https://kubernetes-sigs.github.io/metrics-server/")
+    helm_chart_version    = optional(string, "3.8.3")
   })
+  default = {}
 }
 
+# ArmoniK docker images
 variable "armonik_images" {
   description = "Image names of all the ArmoniK components"
   type        = object({
@@ -146,11 +137,26 @@ variable "armonik_images" {
   })
 }
 
+# Versions of the ArmoniK docker images
+variable "armonik_versions" {
+  description = "Versions of all the ArmoniK components"
+  type        = object({
+    infra     = string
+    core      = string
+    api       = string
+    gui       = string
+    extcsharp = string
+    samples   = string
+  })
+}
+
+# Versions of Third-party docker images
 variable "image_tags" {
   description = "Tags of images used"
   type        = map(string)
 }
 
+# Repositories and versions of Helm charts
 variable "helm_charts" {
   description = "Versions of helm charts repositories"
   type        = map(object({
@@ -265,27 +271,7 @@ variable "fargate_profiles" {
   default     = null
 }
 
-# Metrics Server
-variable "metrics_server" {
-  description = "Parameters of the metrics server"
-  type        = object({
-    namespace          = optional(string, "kube-system"),
-    image_name         = optional(string, "registry.k8s.io/metrics-server/metrics-server"),
-    image_tag          = optional(string),
-    image_pull_secrets = optional(string, ""),
-    node_selector      = optional(any, {}),
-    args               = optional(list(string), [
-      "--cert-dir=/tmp",
-      "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname",
-      "--kubelet-use-node-status-port",
-      "--metric-resolution=15s",
-    ]),
-    host_network          = optional(bool, false),
-    helm_chart_repository = optional(string)
-    helm_chart_version    = optional(string)
-  })
-  default = {}
-}
+
 
 
 

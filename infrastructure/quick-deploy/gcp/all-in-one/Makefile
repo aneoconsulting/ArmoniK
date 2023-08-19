@@ -20,7 +20,6 @@ export NAMESPACE?=armonik
 export PREFIX?=armonik-$(RANDOM_PREFIX)
 export TFSTATE_BUCKET_NAME?=$(PREFIX)-tfstate
 
-
 export TF_VAR_region?=$(REGION)
 export TF_VAR_namespace?=$(NAMESPACE)
 export TF_VAR_prefix?=$(PREFIX)

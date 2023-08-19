@@ -1,8 +1,9 @@
 locals {
   default_tags        = module.default_images.image_tags
   input_docker_images = concat([
-    [var.keda.keda_image_name, var.keda.keda_image_tag],
-    [var.keda.apiserver_image_name, var.keda.apiserver_image_tag],
+    var.keda != null ? [var.keda.image_name, var.keda.image_tag] : null,
+    var.keda != null ? [var.keda.apiserver_image_name, var.keda.apiserver_image_tag] : null,
+    var.metrics_server != null ? [var.metrics_server.image_name, var.metrics_server.image_tag] : null,
     /*[var.mongodb.image_name, var.mongodb.image_tag],
     [var.prometheus.image_name, var.prometheus.image_tag],
     [var.fluent_bit.image_name, var.fluent_bit.image_tag],
