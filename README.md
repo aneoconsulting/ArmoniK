@@ -7,26 +7,16 @@
 architecture that can be used to build and adapt a modern high throughput compute solution on-premise or using Cloud
 services, allowing users to submit high volumes of short and long-running tasks and scaling environments dynamically.
 
-## ArmoniK versions
-
-<!-- TODO: Must move the documentation -->
-<!-- TODO: Add a link to this section in the documentation section once this have moved to the documentation -->
-
-The current version of ArmoniK uses the tags listed in [armonik-versions.txt](https://github.com/aneoconsulting/ArmoniK/blob/main/armonik-versions.txt) where:
-
-* `core` is the ArmoniK Core tag used for container images of Control plane, Polling agent and Metrics exporter.
-* `worker` is the tag used for the container image of the workers
-* `admin-gui` is the tag used for the container images of ArmoniK AdminGUI (admin-api and admin-app)
-* `samples` is the tag for ArmoniK Samples
-
 ## Documentation
 
 Please, read [documentation](https://aneoconsulting.github.io/ArmoniK/) for more information about ArmoniK.
 
 - 👉 [ArmoniK Architecture](https://aneoconsulting.github.io/ArmoniK/armonik)
+- 👉 [ArmoniK Versions](https://aneoconsulting.github.io/ArmoniK/armonik#versions)
 - 👉 [ArmoniK Installation](https://aneoconsulting.github.io/ArmoniK/installation)
 - 👉 [ArmoniK Configuration](https://aneoconsulting.github.io/ArmoniK/guide/how-to/how-to-configure-authentication)
 - 👉 [ArmoniK Performance](https://aneoconsulting.github.io/ArmoniK/benchmarking/test-plan)
+
 
 ## Bug
 
