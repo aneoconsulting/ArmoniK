@@ -37,17 +37,11 @@ variable "kms_name" {
 variable "subnets" {
   description = "A map of subnets inside the VPC. Each subnet object has a CIDR block, a region, and a boolean set to true if the subnet is public, or false if the subnet is private"
   type        = map(object({
-    cidr_block    = string
-    region        = optional(string, "europe-west1")
-    public_access = optional(bool, false)
+    cidr_block    = optional(string)
+    region        = optional(string)
+    public_access = optional(bool)
   }))
-  default = {
-    "private-subnet" = {
-      cidr_block    = "10.0.0.0/18"
-      region        = "europe-west1"
-      public_access = false
-    }
-  }
+  default = null
 }
 
 # GCP Kubernetes cluster
@@ -64,9 +58,9 @@ variable "gke" {
     cluster_autoscaling = optional(object({
       enabled       = optional(bool, true)
       min_cpu_cores = optional(number, 0)
-      max_cpu_cores = optional(number, 0)
+      max_cpu_cores = optional(number, 192)
       min_memory_gb = optional(number, 0)
-      max_memory_gb = optional(number, 0)
+      max_memory_gb = optional(number, 128)
       gpu_resources = optional(list(object({
         resource_type = optional(string),
         minimum       = optional(number),
@@ -124,6 +118,58 @@ variable "metrics_server" {
   default = {}
 }
 
+# Parameters for MongoDB
+variable "mongodb" {
+  description = "Parameters of MongoDB"
+  type        = object({
+    image_name        = optional(string, "mongo")
+    image_tag         = optional(string)
+    node_selector     = optional(any, {})
+    pull_secrets      = optional(string, "")
+    replicas_number   = optional(number, 1)
+    persistent_volume = optional(object({
+      storage_provisioner = string
+      parameters          = optional(map(string), {})
+      resources           = optional(object({
+        limits = optional(object({
+          storage = optional(string)
+        }))
+        requests = optional(object({
+          storage = optional(string)
+        }))
+      }), {})
+    }))
+  })
+  default = {}
+}
+
+# GCP Memorystore for Redis
+variable "memorystore" {
+  description = "Configuration of GCP Memorystore for Redis"
+  type        = object({
+    memory_size_gb     = number
+    auth_enabled       = optional(bool, true)
+    connect_mode       = optional(string, "DIRECT_PEERING")
+    display_name       = optional(string, "armonik-redis")
+    locations          = optional(list(string), [])
+    redis_configs      = optional(map(string), null)
+    reserved_ip_range  = optional(string, null)
+    persistence_config = optional(map(string), null)
+    maintenance_policy = optional(object({
+      day        = optional(string),
+      start_time = optional(map(string))
+    }), null)
+    redis_version           = string
+    tier                    = optional(string, "BASIC")
+    transit_encryption_mode = optional(string, "SERVER_AUTHENTICATION")
+    replica_count           = optional(number, 1)
+    read_replicas_mode      = optional(string, "READ_REPLICAS_DISABLED")
+    secondary_ip_range      = optional(string, "")
+    customer_managed_key    = optional(string, null)
+  })
+  default = null
+}
+
 # ArmoniK docker images
 variable "armonik_images" {
   description = "Image names of all the ArmoniK components"
@@ -148,291 +194,6 @@ variable "armonik_versions" {
     extcsharp = string
     samples   = string
   })
-}
-
-# Versions of Third-party docker images
-variable "image_tags" {
-  description = "Tags of images used"
-  type        = map(string)
-}
-
-# Repositories and versions of Helm charts
-variable "helm_charts" {
-  description = "Versions of helm charts repositories"
-  type        = map(object({
-    repository = string
-    version    = string
-  }))
-}
-
-##############################
-##############################
-##############################
-/*
-
-
-
-# Logging level
-variable "logging_level" {
-  description = "Logging level in ArmoniK"
-  type        = string
-  default     = "Information"
-}
-
-# KMS Key
-variable "kms_key" {
-  description = "KMS key id used to encrypt logs and storage"
-  type        = string
-  default     = null
-}
-
-# AWS TAGs
-variable "tags" {
-  description = "Tags for AWS resources"
-  type        = map(string)
-  default     = {}
-}
-
-# AWS EKS
-variable "eks" {
-  description = "Parameters of AWS EKS"
-  type        = object({
-    cluster_version                       = string
-    cluster_endpoint_private_access       = optional(bool, true) # vpc.enable_private_subnet
-    cluster_endpoint_private_access_cidrs = optional(list(string), [])
-    cluster_endpoint_private_access_sg    = optional(list(string), [])
-    cluster_endpoint_public_access        = optional(bool, false)
-    cluster_endpoint_public_access_cidrs  = optional(list(string), ["0.0.0.0/0"])
-    cluster_log_retention_in_days         = optional(number, 30)
-    node_selector                         = optional(any, {})
-    docker_images                         = optional(object({
-      cluster_autoscaler = optional(object({
-        image = optional(string, "registry.k8s.io/autoscaling/gke-autoscaler")
-        tag   = optional(string)
-      }), {})
-      instance_refresh = optional(object({
-        image = optional(string, "public.ecr.aws/aws-ec2/aws-node-termination-handler")
-        tag   = optional(string)
-      }), {})
-    }), {})
-    cluster_autoscaler = optional(object({
-      expander                              = optional(string, "least-waste")
-      scale_down_enabled                    = optional(bool, true)
-      min_replica_count                     = optional(number, 0)
-      scale_down_utilization_threshold      = optional(number, 0.5)
-      scale_down_non_empty_candidates_count = optional(number, 30)
-      max_node_provision_time               = optional(string, "15m0s")
-      scan_interval                         = optional(string, "10s")
-      scale_down_delay_after_add            = optional(string, "2m")
-      scale_down_delay_after_delete         = optional(string, "0s")
-      scale_down_delay_after_failure        = optional(string, "3m")
-      scale_down_unneeded_time              = optional(string, "2m")
-      skip_nodes_with_system_pods           = optional(bool, true)
-      version                               = optional(string)
-      repository                            = optional(string)
-      namespace                             = optional(string, "kube-system")
-    }), {})
-    instance_refresh = optional(object({
-      namespace  = optional(string, "kube-system")
-      repository = optional(string)
-      version    = optional(string)
-    }), {})
-    map_roles = optional(list(object({
-      rolearn  = string
-      username = string
-      groups   = list(string)
-    })), [])
-    map_users = optional(list(object({
-      userarn  = string
-      username = string
-      groups   = list(string)
-    })), [])
-  })
-}
-
-# List of EKS managed node groups
-variable "eks_managed_node_groups" {
-  description = "List of EKS managed node groups"
-  type        = any
-  default     = null
-}
-
-# List of self managed node groups
-variable "self_managed_node_groups" {
-  description = "List of self managed node groups"
-  type        = any
-  default     = null
-}
-
-# List of fargate profiles
-variable "fargate_profiles" {
-  description = "List of fargate profiles"
-  type        = any
-  default     = null
-}
-
-
-
-
-
-# S3 as shared storage
-variable "s3_fs" {
-  description = "AWS S3 bucket as shared storage"
-  type        = object({
-    policy                                = optional(string, "")
-    attach_policy                         = optional(bool, false)
-    attach_deny_insecure_transport_policy = optional(bool, true)
-    attach_require_latest_tls_policy      = optional(bool, true)
-    attach_public_policy                  = optional(bool, false)
-    block_public_acls                     = optional(bool, true)
-    block_public_policy                   = optional(bool, true)
-    ignore_public_acls                    = optional(bool, true)
-    restrict_public_buckets               = optional(bool, true)
-    sse_algorithm                         = optional(string, "")
-    ownership                             = optional(string, "BucketOwnerPreferred")
-    versioning                            = optional(string, "Disabled")
-  })
-  default = {}
-}
-
-
-# AWS Elasticache
-variable "elasticache" {
-  description = "Parameters of Elasticache"
-  type        = object({
-    engine                      = string
-    engine_version              = string
-    node_type                   = string
-    apply_immediately           = optional(bool, true)
-    multi_az_enabled            = optional(bool, false)
-    automatic_failover_enabled  = optional(bool, true)
-    num_cache_clusters          = number
-    preferred_cache_cluster_azs = optional(list(string), [])
-    data_tiering_enabled        = optional(bool, false)
-    log_retention_in_days       = optional(number, 30)
-    cloudwatch_log_groups       = optional(object({
-      slow_log   = optional(string, "")
-      engine_log = optional(string, "")
-    }), {})
-  })
-  default = null
-}
-
-# S3 as object storage
-variable "s3_os" {
-  description = "AWS S3 bucket as shared storage"
-  type        = object({
-    policy                                = optional(string, "")
-    attach_policy                         = optional(bool, false)
-    attach_deny_insecure_transport_policy = optional(bool, true)
-    attach_require_latest_tls_policy      = optional(bool, true)
-    attach_public_policy                  = optional(bool, false)
-    block_public_acls                     = optional(bool, true)
-    block_public_policy                   = optional(bool, true)
-    ignore_public_acls                    = optional(bool, true)
-    restrict_public_buckets               = optional(bool, true)
-    sse_algorithm                         = optional(string, "")
-    ownership                             = optional(string, "BucketOwnerPreferred")
-    versioning                            = optional(string, "Disabled")
-  })
-  default = null
-}
-
-# MQ parameters
-variable "mq" {
-  description = "MQ Service parameters"
-  type        = object({
-    engine_type             = string
-    engine_version          = string
-    host_instance_type      = string
-    apply_immediately       = optional(bool, true)
-    deployment_mode         = optional(string, "SINGLE_INSTANCE")
-    storage_type            = optional(string, "ebs")
-    authentication_strategy = optional(string, "simple")
-    publicly_accessible     = optional(bool, false)
-  })
-}
-
-# MQ Credentials
-variable "mq_credentials" {
-  description = "Amazon MQ credentials"
-  type        = object({
-    password = string
-    username = string
-  })
-  default = {
-    password = ""
-    username = ""
-  }
-}
-
-# Parameters for MongoDB
-variable "mongodb" {
-  description = "Parameters of MongoDB"
-  type        = object({
-    image_name        = optional(string, "mongo")
-    image_tag         = optional(string)
-    node_selector     = optional(any, {})
-    pull_secrets      = optional(string, "")
-    replicas_number   = optional(number, 1)
-    persistent_volume = optional(object({
-      storage_provisioner = string
-      parameters          = optional(map(string), {})
-      #Resources for PVC
-      resources           = optional(object({
-        limits = optional(object({
-          storage = optional(string)
-        }))
-        requests = optional(object({
-          storage = optional(string)
-        }))
-      }), {})
-    }))
-  })
-  default = {}
-}
-
-# AWS EFS as Persistent volume
-variable "pv_efs" {
-  description = "AWS EFS as Persistent volume"
-  type        = object({
-    # AWS Elastic Filesystem Service
-    efs = optional(object({
-      performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
-      throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
-      provisioned_throughput_in_mibps = optional(number, null)
-      transition_to_ia                = optional(string, "AFTER_7_DAYS")
-      # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
-      access_point                    = optional(list(string), [])
-    }), {})
-    # EFS Container Storage Interface (CSI) Driver
-    csi_driver = optional(object({
-      namespace     = optional(string, "kube-system")
-      pull_secrets  = optional(string, "")
-      node_selector = optional(any, {})
-      repository    = optional(string)
-      version       = optional(string)
-      images        = optional(object({
-        efs_csi = optional(object({
-          name = optional(string, "amazon/aws-efs-csi-driver")
-          tag  = optional(string)
-        }), {})
-        livenessprobe = optional(object({
-          name = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe")
-          tag  = optional(string)
-        }), {})
-        node_driver_registrar = optional(object({
-          name = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar")
-          tag  = optional(string)
-        }), {})
-        external_provisioner = optional(object({
-          name = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner")
-          tag  = optional(string)
-        }), {})
-      }), {})
-    }), {})
-  })
-  default = null
 }
 
 variable "seq" {
@@ -533,26 +294,6 @@ variable "fluent_bit" {
   default = {}
 }
 
-variable "cloudwatch" {
-  description = "Cloudwatch configuration"
-  type        = object({
-    retention_in_days = optional(number, 30)
-  })
-  default = {}
-}
-
-variable "s3" {
-  description = "S3 bucket for logs"
-  type        = object({
-    enabled = optional(bool, true)
-    name    = optional(string, "armonik-logs")
-    region  = optional(string, "eu-west-3")
-    arn     = optional(string, "arn:aws:s3:::armonik-logs")
-    prefix  = optional(string, "main")
-  })
-  default = {}
-}
-
 # Extra configuration
 variable "extra_conf" {
   description = "Add extra configuration in the configmaps"
@@ -626,46 +367,6 @@ variable "admin_gui" {
       cpu    = optional(string)
       memory = optional(string)
     }))
-    service_type       = optional(string, "ClusterIP")
-    replicas           = optional(number, 1)
-    image_pull_policy  = optional(string, "IfNotPresent")
-    image_pull_secrets = optional(string, "")
-    node_selector      = optional(any, {})
-  })
-  default = {}
-}
-
-variable "admin_old_gui" {
-  description = "Parameters of the old admin GUI"
-  type        = object({
-    api = optional(object({
-      name   = optional(string, "admin-api")
-      image  = optional(string, "dockerhubaneo/armonik_admin_api")
-      tag    = optional(string, "0.8.0")
-      port   = optional(number, 3333)
-      limits = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-      requests = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-    }), {})
-    old = optional(object({
-      name   = optional(string, "admin-old-gui")
-      image  = optional(string, "dockerhubaneo/armonik_admin_app")
-      tag    = optional(string, "0.8.0")
-      port   = optional(number, 1080)
-      limits = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-      requests = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-    }), {})
     service_type       = optional(string, "ClusterIP")
     replicas           = optional(number, 1)
     image_pull_policy  = optional(string, "IfNotPresent")
@@ -763,19 +464,26 @@ variable "authentication" {
   default = {}
 }
 
+# Versions of Third-party docker images
+variable "image_tags" {
+  description = "Tags of images used"
+  type        = map(string)
+}
 
+# Repositories and versions of Helm charts
+variable "helm_charts" {
+  description = "Versions of helm charts repositories"
+  type        = map(object({
+    repository = string
+    version    = string
+  }))
+}
 
-
-
-
-
-
-variable "ecr" {
-  description = "AWS ECR for docker images"
-  type        = object({
-    encryption_type = optional(string, "KMS")
-  })
-  default = {}
+# Logging level
+variable "logging_level" {
+  description = "Logging level in ArmoniK"
+  type        = string
+  default     = "Information"
 }
 
 variable "environment_description" {
@@ -783,4 +491,3 @@ variable "environment_description" {
   type        = any
   default     = null
 }
-*/

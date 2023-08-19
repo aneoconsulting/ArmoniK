@@ -2,6 +2,8 @@ data "google_client_openid_userinfo" "current" {}
 
 data "google_client_config" "current" {}
 
+data "google_compute_zones" "available" {}
+
 resource "random_string" "prefix" {
   length  = 5
   special = false
