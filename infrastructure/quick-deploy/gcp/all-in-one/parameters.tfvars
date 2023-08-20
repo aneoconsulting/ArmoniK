@@ -121,6 +121,8 @@ compute_plane = {
         cpu    = "500m"
         memory = "256Mi"
       }
+      image = "pollingagentpubsub"
+      tag   = "0.14.3-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -225,6 +227,8 @@ compute_plane = {
         cpu    = "500m"
         memory = "256Mi"
       }
+      image = "pollingagentpubsub"
+      tag   = "0.14.3-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -276,6 +280,8 @@ compute_plane = {
         cpu    = "500m"
         memory = "256Mi"
       }
+      image = "pollingagentpubsub"
+      tag   = "0.14.3-pubsub"
     }
     # ArmoniK workers
     worker = [

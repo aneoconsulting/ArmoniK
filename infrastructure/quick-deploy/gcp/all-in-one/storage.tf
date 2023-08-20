@@ -121,9 +121,9 @@ resource "kubernetes_secret" "memorystore" {
     namespace = local.namespace
   }
   data = {
-    "chain.pem" = "" #module.memorystore[0].server_ca_certs
+    "chain.pem" = one(module.memorystore[0].server_ca_certs[*].cert)
     username    = ""
-    password    = "" #module.memorystore[0].auth_string
+    password    = module.memorystore[0].auth_string
     host        = module.memorystore[0].host
     port        = module.memorystore[0].port
     url         = module.memorystore[0].url
@@ -147,10 +147,15 @@ resource "kubernetes_secret" "shared_storage" {
     namespace = local.namespace
   }
   data = {
-    kms_key_id        = var.kms_name
-    name              = module.gcs_fs.name
-    project_id        = data.google_client_config.current.project
-    file_storage_type = "GCS"
+    kms_key_id = var.kms_name
+    name       = module.gcs_fs.name
+    project_id = data.google_client_config.current.project
+    #TODO adapt them for GCS
+    file_storage_type     = "S3"
+    service_url           = ""
+    access_key_id         = ""
+    secret_access_key     = ""
+    must_force_path_style = false
   }
 }
 
