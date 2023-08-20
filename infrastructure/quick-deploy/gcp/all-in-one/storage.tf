@@ -21,7 +21,7 @@ locals {
       #length(module.gcs_os) > 0 ? "S3" : null,
     ), "")
     redis = length(module.memorystore) > 0 ? {
-      url = "${module.memorystore[0].host}:${module.memorystore[0].port}"
+      url = module.memorystore[0].url
     } : null
     #    s3 = length(module.s3_os) > 0 ? {
     #      url         = "https://s3.${var.region}.amazonaws.com"
@@ -94,7 +94,7 @@ module "memorystore" {
   persistence_config = var.memorystore.persistence_config
   maintenance_policy = var.memorystore.maintenance_policy
   redis_version      = var.memorystore.redis_version
-  #  reserved_ip_range       = var.memorystore.reserved_ip_range
+  #reserved_ip_range       = var.memorystore.reserved_ip_range
   tier                    = var.memorystore.tier
   transit_encryption_mode = var.memorystore.transit_encryption_mode
   replica_count           = var.memorystore.replica_count
@@ -126,31 +126,18 @@ resource "kubernetes_secret" "memorystore" {
     password    = "" #module.memorystore[0].auth_string
     host        = module.memorystore[0].host
     port        = module.memorystore[0].port
-    url         = "${module.memorystore[0].host}:${module.memorystore[0].port}"
+    url         = module.memorystore[0].url
   }
 }
 
-/*
-# AWS S3 as shared storage
-module "s3_fs" {
-  source = "./generated/infra-modules/storage/aws/s3"
-  tags   = local.tags
-  name   = "${local.prefix}-s3fs"
-  s3 = {
-    policy                                = var.s3_fs.policy
-    attach_policy                         = var.s3_fs.attach_policy
-    attach_deny_insecure_transport_policy = var.s3_fs.attach_deny_insecure_transport_policy
-    attach_require_latest_tls_policy      = var.s3_fs.attach_require_latest_tls_policy
-    attach_public_policy                  = var.s3_fs.attach_public_policy
-    block_public_acls                     = var.s3_fs.attach_public_policy
-    block_public_policy                   = var.s3_fs.block_public_acls
-    ignore_public_acls                    = var.s3_fs.block_public_policy
-    restrict_public_buckets               = var.s3_fs.restrict_public_buckets
-    kms_key_id                            = local.kms_key
-    sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_fs.sse_algorithm : "aws:kms"
-    ownership                             = var.s3_fs.ownership
-    versioning                            = var.s3_fs.versioning
-  }
+# Shared storage for compute-plane
+module "gcs_fs" {
+  source               = "./generated/infra-modules/storage/gcp/gcs"
+  name                 = "${local.prefix}-s3fs"
+  location             = data.google_client_config.current.region
+  default_kms_key_name = var.kms_name
+  force_destroy        = true
+  labels               = local.labels
 }
 
 # Shared storage
@@ -160,16 +147,29 @@ resource "kubernetes_secret" "shared_storage" {
     namespace = local.namespace
   }
   data = {
-    service_url           = "https://s3.${var.region}.amazonaws.com"
-    kms_key_id            = module.s3_fs.kms_key_id
-    name                  = module.s3_fs.s3_bucket_name
-    access_key_id         = ""
-    secret_access_key     = ""
-    file_storage_type     = "S3"
-    must_force_path_style = false
+    kms_key_id        = var.kms_name
+    name              = module.gcs_fs.name
+    project_id        = data.google_client_config.current.project
+    file_storage_type = "GCS"
   }
 }
 
+# Service account for pods
+module "control_plane_service_account" {
+  source               = "./generated/infra-modules/service-account/gcp"
+  name                 = "${local.prefix}-control-plane-sa"
+  kubernetes_namespace = local.namespace
+  roles                = ["roles/pubsub.editor"]
+}
+
+module "compute_plane_service_account" {
+  source               = "./generated/infra-modules/service-account/gcp"
+  name                 = "${local.prefix}-compute-plane-sa"
+  kubernetes_namespace = local.namespace
+  roles                = ["roles/pubsub.editor"]
+}
+
+/*
 # AWS S3 as object storage
 module "s3_os" {
   count  = var.s3_os != null ? 1 : 0
@@ -248,9 +248,6 @@ resource "kubernetes_secret" "mq" {
     engine_type           = module.mq.engine_type
   }
 }
-
-
-
 
 # Decrypt objects in S3
 data "aws_iam_policy_document" "decrypt_object" {

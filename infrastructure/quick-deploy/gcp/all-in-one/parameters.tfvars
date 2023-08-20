@@ -24,7 +24,7 @@ memorystore = {
     "maxmemory-gb"     = "18"
     "maxmemory-policy" = "volatile-lru"
   }
-  reserved_ip_range       = "192.168.0.0/29"
+  reserved_ip_range       = "10.1.0.0/16"
   redis_version           = "REDIS_7_0"
   tier                    = "STANDARD_HA"
   transit_encryption_mode = "SERVER_AUTHENTICATION"
