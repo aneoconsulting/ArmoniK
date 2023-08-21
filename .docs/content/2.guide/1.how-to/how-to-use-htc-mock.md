@@ -28,7 +28,7 @@ To use HTC Mock, you need to swap out the ArmoniK worker in `/infrastructure/qui
 
 Then, you can update the tag version. You can verify the [latest of Core on GitHub](https://github.com/aneoconsulting/ArmoniK.Core/release/latest) in order to use it.
 
-:warning: `dockerhubaneo/armonik_control` `dockerhubaneo/armonik_pollingagent` and `dockerhubaneo/armonik_core_htcmock_test_worker` must have the **exact** same tag version. It's a necessity to be sure that they can talk each other using the same API.
+:warning: `dockerhubaneo/armonik_control` `dockerhubaneo/armonik_pollingagent` and `dockerhubaneo/armonik_core_htcmock_test_worker` must have the **exact** same tag version. It is necessary so they can talk to each other using the same API.
 
 Then, you can deploy ArmoniK as usual.
 
