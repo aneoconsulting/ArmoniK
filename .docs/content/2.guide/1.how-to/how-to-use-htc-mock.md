@@ -5,7 +5,7 @@ HTC Mock is a test tool for ArmoniK. It is used to generate tasks that will be r
 HTC Mock is used in CI to test ArmoniK automatically but it can also be used in development to generate realistic tasks.
 
 ::alert{type="info"}
-To populate the database, you can also use some scripts to populate database. See [Populate database?](../populate-database.md)
+To populate the database, you can also use scripts.  See [Populate database](../populate-database.md)
 ::
 
 ## Use it
