@@ -26,7 +26,7 @@ init:
 		-backend-config="secret_suffix=keda-$(BACKEND_SUFFIX)" 
 
 apply:
-	terraform apply -compact-warnings \
+	terraform apply  \
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(VERSIONS_FILE) \
 		-var 'namespace=$(NAMESPACE)' \
@@ -39,7 +39,7 @@ output:
 	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 
 delete:
-	terraform destroy -compact-warnings \
+	terraform destroy  \
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(VERSIONS_FILE) \
 		-var 'namespace=$(NAMESPACE)' \
