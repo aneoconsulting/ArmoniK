@@ -13,7 +13,7 @@ shared_storage = {
 }
 
 # Parameters for ActiveMQ
-activemq = {
+/*activemq = {
   image              = "symptoma/activemq"
   tag                = "5.18.0"
   node_selector      = {}
@@ -39,7 +39,7 @@ redis = {
   image_pull_secrets = ""
   max_memory         = "12000mb"
 }
-
+*/
 # Parameters for minio
 /*minio = {
   host               = "minio"

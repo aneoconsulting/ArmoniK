@@ -1,36 +1,36 @@
 # Seq
 module "seq" {
-  count         = (local.seq_enabled ? 1 : 0)
+  count         = (var.monitoring.seq.enabled ? 1 : 0)
   source        = "../generated/infra-modules/monitoring/onpremise/seq"
   namespace     = var.namespace
-  service_type  = local.seq_service_type
-  port          = local.seq_port
-  node_selector = local.seq_node_selector
+  service_type  = var.monitoring.seq.service_type
+  port          = var.monitoring.seq.port
+  node_selector = var.monitoring.seq.node_selector
   docker_image = {
-    image              = local.seq_image
-    tag                = local.seq_tag
-    image_pull_secrets = local.seq_image_pull_secrets
+    image              = var.monitoring.seq.image_name
+    tag                = try(var.image_tags[var.monitoring.seq.image_name], var.monitoring.seq.image_tag)
+    image_pull_secrets = var.monitoring.seq.image_pull_secrets
   }
   docker_image_cron = {
-    image              = local.cli_seq_image
-    tag                = local.cli_seq_tag
-    image_pull_secrets = local.cli_seq_image_pull_secrets
+    image              = var.monitoring.seq.cli_image_name
+    tag                = try(var.image_tags[var.monitoring.seq.cli_image_name], var.monitoring.seq.cli_image_tag)
+    image_pull_secrets = var.monitoring.seq.cli_image_pull_secrets
   }
   authentication    = var.authentication
-  system_ram_target = local.seq_system_ram_target
-  retention_in_days = local.retention_in_days
+  system_ram_target = var.monitoring.seq.system_ram_target
+  retention_in_days = var.monitoring.seq.retention_in_days
 }
 
 # node exporter
 module "node_exporter" {
-  count         = (local.node_exporter_enabled ? 1 : 0)
+  count         = (var.monitoring.node_exporter.enabled ? 1 : 0)
   source        = "../generated/infra-modules/monitoring/onpremise/exporters/node-exporter"
   namespace     = var.namespace
-  node_selector = local.node_exporter_node_selector
+  node_selector = var.monitoring.node_exporter.node_selector
   docker_image = {
-    image              = local.node_exporter_image
-    tag                = local.node_exporter_tag
-    image_pull_secrets = local.node_exporter_image_pull_secrets
+    image              = var.monitoring.node_exporter.image_name
+    tag                = try(var.image_tags[var.monitoring.node_exporter.image_name], var.monitoring.node_exporter.image_tag)
+    image_pull_secrets = var.monitoring.node_exporter.image_pull_secrets
   }
 }
 
@@ -38,45 +38,42 @@ module "node_exporter" {
 module "metrics_exporter" {
   source        = "../generated/infra-modules/monitoring/onpremise/exporters/metrics-exporter"
   namespace     = var.namespace
-  service_type  = local.metrics_exporter_service_type
-  node_selector = local.metrics_exporter_node_selector
+  node_selector = var.monitoring.metrics_exporter.node_selector
+  service_type  = var.monitoring.metrics_exporter.service_type
   docker_image = {
-    image              = local.metrics_exporter_image
-    tag                = local.metrics_exporter_tag
-    image_pull_secrets = local.metrics_exporter_image_pull_secrets
+    image              = var.monitoring.metrics_exporter.image_name
+    tag                = try(local.default_tags[var.monitoring.metrics_exporter.image_name], var.monitoring.metrics_exporter.image_tag)
+    image_pull_secrets = var.monitoring.metrics_exporter.image_pull_secrets
   }
-  extra_conf = local.metrics_exporter_extra_conf
+  extra_conf = var.monitoring.metrics_exporter.extra_conf
 }
 
 # Partition metrics exporter
 #module "partition_metrics_exporter" {
-#  source               = "../generated/modules/monitoring/onpremise/exporters/partition-metrics-exporter"
-#  namespace            = var.namespace
-#  service_type         = local.partition_metrics_exporter_service_type
-#  node_selector        = local.partition_metrics_exporter_node_selector
-#  logging_level        = var.logging_level
-#  metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
+#  namespace     = var.namespace
+#  node_selector = var.monitoring.partition_metrics_exporter.node_selector
+#  service_type = var.monitoring.partition_metrics_exporter.service_type
 #  docker_image = {
-#    image              = local.partition_metrics_exporter_image
-#    tag                = local.partition_metrics_exporter_tag
-#    image_pull_secrets = local.partition_metrics_exporter_image_pull_secrets
+#    image              = var.monitoring.partition_metrics_exporter.image_name
+#    tag                = try(local.default_tags[var.monitoring.partition_metrics_exporter.image_name],var.monitoring.partition_metrics_exporter.image_tag)
+#    image_pull_secrets = var.monitoring.partition_metrics_exporter.image_pull_secrets
 #  }
-#  extra_conf  = local.partition_metrics_exporter_extra_conf
-#  depends_on  = [module.metrics_exporter]
+#  extra_conf = var.monitoring.partition_metrics_exporter.extra_conf
+#  depends_on  = [module.partition_metrics_exporter]
 #}
 
 # Prometheus
 module "prometheus" {
   source               = "../generated/infra-modules/monitoring/onpremise/prometheus"
   namespace            = var.namespace
-  service_type         = local.prometheus_service_type
-  node_selector        = local.prometheus_node_selector
+  service_type         = var.monitoring.prometheus.service_type
+  node_selector        = var.monitoring.prometheus.node_selector
   metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
   #"${module.partition_metrics_exporter.host}:${module.partition_metrics_exporter.port}"
   docker_image = {
-    image              = local.prometheus_image
-    tag                = local.prometheus_tag
-    image_pull_secrets = local.prometheus_image_pull_secrets
+    image              = var.monitoring.prometheus.image_name
+    tag                = try(var.image_tags[var.monitoring.prometheus.image_name], var.monitoring.prometheus.image_tag)
+    image_pull_secrets = var.monitoring.prometheus.image_pull_secrets
   }
   depends_on = [
     module.metrics_exporter,
@@ -86,17 +83,17 @@ module "prometheus" {
 
 # Grafana
 module "grafana" {
-  count          = (local.grafana_enabled ? 1 : 0)
+  count          = (var.monitoring.grafana.enabled ? 1 : 0)
   source         = "../generated/infra-modules/monitoring/onpremise/grafana"
   namespace      = var.namespace
-  service_type   = local.grafana_service_type
-  port           = local.grafana_port
-  node_selector  = local.grafana_node_selector
+  service_type   = var.monitoring.grafana.service_type
+  port           = var.monitoring.grafana.port
+  node_selector  = var.monitoring.grafana.node_selector
   prometheus_url = module.prometheus.url
   docker_image = {
-    image              = local.grafana_image
-    tag                = local.grafana_tag
-    image_pull_secrets = local.grafana_image_pull_secrets
+    image              = var.monitoring.grafana.image_name
+    tag                = try(var.image_tags[var.monitoring.grafana.image_name], var.monitoring.grafana.image_tag)
+    image_pull_secrets = var.monitoring.grafana.image_pull_secrets
   }
   authentication = var.authentication
   depends_on     = [module.prometheus]
@@ -106,22 +103,22 @@ module "grafana" {
 module "fluent_bit" {
   source        = "../generated/infra-modules/monitoring/onpremise/fluent-bit"
   namespace     = var.namespace
-  node_selector = local.fluent_bit_node_selector
-  seq = (local.seq_enabled ? {
+  node_selector = var.monitoring.fluent_bit.node_selector
+  seq = (var.monitoring.seq.enabled ? {
     host    = module.seq.0.host
     port    = module.seq.0.port
     enabled = true
   } : {})
   fluent_bit = {
     container_name     = "fluent-bit"
-    image              = local.fluent_bit_image
-    tag                = local.fluent_bit_tag
-    image_pull_secrets = local.fluent_bit_image_pull_secrets
-    is_daemonset       = local.fluent_bit_is_daemonset
-    parser             = local.fluent_bit_parser
-    http_server        = (local.fluent_bit_http_port == 0 ? "Off" : "On")
-    http_port          = (local.fluent_bit_http_port == 0 ? "" : tostring(local.fluent_bit_http_port))
-    read_from_head     = (local.fluent_bit_read_from_head ? "On" : "Off")
-    read_from_tail     = (local.fluent_bit_read_from_head ? "Off" : "On")
+    image              = var.monitoring.fluent_bit.image_name
+    tag                = try(var.image_tags[var.monitoring.fluent_bit.image_name], var.monitoring.fluent_bit.image_tag)
+    image_pull_secrets = var.monitoring.fluent_bit.image_pull_secrets
+    is_daemonset       = var.monitoring.fluent_bit.is_daemonset
+    parser             = var.monitoring.fluent_bit.parser
+    http_server        = (var.monitoring.fluent_bit.http_port == 0 ? "Off" : "On")
+    http_port          = (var.monitoring.fluent_bit.http_port == 0 ? "" : tostring(var.monitoring.fluent_bit.http_port))
+    read_from_head     = (var.monitoring.fluent_bit.read_from_head ? "On" : "Off")
+    read_from_tail     = (var.monitoring.fluent_bit.read_from_head ? "Off" : "On")
   }
 }
