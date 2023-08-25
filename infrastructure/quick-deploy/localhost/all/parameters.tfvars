@@ -44,7 +44,6 @@ control_plane = {
 }
 
 # Parameters of admin GUI
-# Parameters of admin GUI
 admin_gui = {
   limits = {
     cpu    = "1000m"
@@ -56,8 +55,20 @@ admin_gui = {
   }
 }
 
+# Parameters of admin GUI
+admin_0_9_gui = {
+  limits = {
+    cpu    = "1000m"
+    memory = "1024Mi"
+  }
+  requests = {
+    cpu    = "50m"
+    memory = "50Mi"
+  }
+}
+
 # Old GUI
-admin_old_gui = {
+admin_0_8_gui = {
   api = {
     limits = {
       cpu    = "1000m"
@@ -68,7 +79,7 @@ admin_old_gui = {
       memory = "50Mi"
     }
   }
-  old = {
+  app = {
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"

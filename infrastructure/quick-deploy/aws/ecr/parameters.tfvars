@@ -73,17 +73,22 @@ ecr = {
     {
       name  = "armonik-admin-app"
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.9.2"
+      tag   = "0.9.4"
     },
     {
-      name  = "armonik-admin-app-old"
+      name  = "armonik-admin-app-0-9"
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.8.0"
+      tag   = "sha-1d31f17"
     },
     {
-      name  = "armonik-admin-api-old"
+      name  = "armonik-admin-app-0-8"
+      image = "dockerhubaneo/armonik_admin_app"
+      tag   = "0.8.1"
+    },
+    {
+      name  = "armonik-admin-api-0-8"
       image = "dockerhubaneo/armonik_admin_api"
-      tag   = "0.8.0"
+      tag   = "0.8.1"
     },
     {
       name  = "mongosh"

@@ -49,14 +49,18 @@ module "armonik" {
     image = local.ecr_images["${var.admin_gui.image}:${try(coalesce(var.admin_gui.tag), "")}"].name
     tag   = local.ecr_images["${var.admin_gui.image}:${try(coalesce(var.admin_gui.tag), "")}"].tag
   })
-  admin_old_gui = merge(var.admin_old_gui, {
-    api = merge(var.admin_old_gui.api, {
-      image = local.ecr_images["${var.admin_old_gui.api.image}:${try(coalesce(var.admin_old_gui.api.tag), "")}"].name
-      tag   = local.ecr_images["${var.admin_old_gui.api.image}:${try(coalesce(var.admin_old_gui.api.tag), "")}"].tag
+  admin_0_9_gui = merge(var.admin_0_9_gui, {
+    image = local.ecr_images["${var.admin_0_9_gui.image}:${try(coalesce(var.admin_0_9_gui.tag), "")}"].name
+    tag   = local.ecr_images["${var.admin_0_9_gui.image}:${try(coalesce(var.admin_0_9_gui.tag), "")}"].tag
+  })
+  admin_0_8_gui = merge(var.admin_0_8_gui, {
+    api = merge(var.admin_0_8_gui.api, {
+      image = local.ecr_images["${var.admin_0_8_gui.api.image}:${try(coalesce(var.admin_0_8_gui.api.tag), "")}"].name
+      tag   = local.ecr_images["${var.admin_0_8_gui.api.image}:${try(coalesce(var.admin_0_8_gui.api.tag), "")}"].tag
     })
-    old = merge(var.admin_old_gui.old, {
-      image = local.ecr_images["${var.admin_old_gui.old.image}:${try(coalesce(var.admin_old_gui.old.tag), "")}"].name
-      tag   = local.ecr_images["${var.admin_old_gui.old.image}:${try(coalesce(var.admin_old_gui.old.tag), "")}"].tag
+    app = merge(var.admin_0_8_gui.app, {
+      image = local.ecr_images["${var.admin_0_8_gui.app.image}:${try(coalesce(var.admin_0_8_gui.app.tag), "")}"].name
+      tag   = local.ecr_images["${var.admin_0_8_gui.app.image}:${try(coalesce(var.admin_0_8_gui.app.tag), "")}"].tag
     })
   })
   ingress = merge(var.ingress, {

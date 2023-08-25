@@ -359,8 +359,21 @@ admin_gui = {
   node_selector = { service = "monitoring" }
 }
 
-# Parameters of old admin GUI
-admin_old_gui = {
+# Parameters of admin GUI v0.9
+admin_0_9_gui = {
+  limits = {
+    cpu    = "1000m"
+    memory = "1024Mi"
+  }
+  requests = {
+    cpu    = "100m"
+    memory = "128Mi"
+  }
+  node_selector = { service = "monitoring" }
+}
+
+# Parameters of old admin GUI v0.8
+admin_0_8_gui = {
   api = {
     name = "admin-api"
     port = 3333
@@ -373,8 +386,8 @@ admin_old_gui = {
       memory = "128Mi"
     }
   }
-  old = {
-    name = "admin-old-gui"
+  app = {
+    name = "admin-0-8-gui"
     port = 1080
     limits = {
       cpu    = "1000m"
