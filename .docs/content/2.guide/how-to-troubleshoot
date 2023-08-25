@@ -18,15 +18,8 @@ kubectl get po -A
 
 This line allows you to check the status of all the pods. If every one of them is «Running» or «Completed», your deployment is operational.
 ___
-## Notes on Terraform
-If your deployment has an issue and you want to stop it immediately instead of waiting for the 10 minutes timeout, we recommend using the following command:
-
-```bash [shell]
-sudo sysctemctl stop k3s.service
-```
-
 ::alert{type="info"}
-We do **not** recommend using CTRL+C in the terminal to stop Terraform. If Terraform CLI is interrupted (e.g. ctrl+c, SIGINT) during the apply phase (especially with a second interruption) then it will exit ungracefully (ex. Terraform state is corrupted). In this case, you will typically need to take manual repair actions before you can continue (which is usually very tedious.).
+To stop Terraform, we do **not** recommend using CTRL+C in the terminal. If Terraform CLI is interrupted (e.g. ctrl+c, SIGINT) during the apply phase (especially with a second interruption) then it will exit ungracefully (ex. Terraform state is corrupted). In this case, you will typically need to take manual repair actions before you can continue (which is usually very tedious.).
 ::
 ___
 ## Deployment is ok but tasks are not processed
