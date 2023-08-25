@@ -28,7 +28,6 @@ ___
 
 If your deployment is ok, but tasks are not being processed, there are several solutions you can try.
 
-
 ### 1. Set the retry value in the task options to 1
 
 This way, if the problem is an exception that would trigger a retry, the client will see the details on the first error.
