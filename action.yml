@@ -111,7 +111,7 @@ runs:
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages
         source envvars.sh
         echo "host-path=${ARMONIK_SHARED_HOST_PATH}" >> $GITHUB_OUTPUT
 
@@ -119,7 +119,7 @@ runs:
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages
         source envvars.sh
         mkdir -p ${ARMONIK_SHARED_HOST_PATH}
 
@@ -127,7 +127,7 @@ runs:
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages
         source envvars.sh
         make create-namespace
 
@@ -135,7 +135,7 @@ runs:
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages
         source envvars.sh
         make deploy-keda
 
@@ -143,7 +143,7 @@ runs:
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages
         source envvars.sh
         make deploy-storage
 
@@ -151,23 +151,23 @@ runs:
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages
         source envvars.sh
         python ${{ github.action_path }}/tools/modify_parameters.py \
           -kv "monitoring.metrics_exporter.image=${{ inputs.metrics-exporter-image }}" \
           -kv "monitoring.metrics_exporter.tag=${{ inputs.core-tag }}" \
           -kv "monitoring.partition_metrics_exporter.image=${{ inputs.partition-metrics-exporter-image }}" \
           -kv "monitoring.partition_metrics_exporter.tag=${{ inputs.core-tag }}" \
-          ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars \
-          ${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars.json
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
-        make deploy-monitoring PARAMETERS_FILE=${{ github.action_path }}/infrastructure/quick-deploy/localhost/monitoring/parameters.tfvars.json
+          ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages/monitoring/parameters.tfvars \
+          ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages/monitoring/parameters.tfvars.json
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages
+        make deploy-monitoring PARAMETERS_FILE=${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages/monitoring/parameters.tfvars.json
 
     - name: Deploy ArmoniK
       shell: bash
       run: |
         set -ex
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages
         source envvars.sh
         if [ -z ${{ inputs.ingress }} ]; then
           python ${{ github.action_path }}/tools/modify_parameters.py \
@@ -185,8 +185,8 @@ runs:
             -kv ingress=null \
             -kv authentication.require_authentication=false \
             -kv authentication.require_authorization=false \
-            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars \
-            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
+            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages/armonik/parameters.tfvars \
+            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages/armonik/parameters.tfvars.json
         else
           python ${{ github.action_path }}/tools/modify_parameters.py \
             -kv "compute_plane[default].worker[*].image=${{ inputs.worker-image }}" \
@@ -205,8 +205,8 @@ runs:
             -kv ingress.generate_client_cert=false \
             -kv authentication.require_authentication=false \
             -kv authentication.require_authorization=false \
-            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars \
-            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
+            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages/armonik/parameters.tfvars \
+            ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages/armonik/parameters.tfvars.json
         fi
-        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost
-        make deploy-armonik PARAMETERS_FILE=${{ github.action_path }}/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars.json
+        cd ${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages
+        make deploy-armonik PARAMETERS_FILE=${{ github.action_path }}/infrastructure/quick-deploy/localhost/multi-stages/armonik/parameters.tfvars.json
