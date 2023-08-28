@@ -49,7 +49,7 @@ module "armonik" {
     tag = try(coalesce(var.admin_gui.tag), local.default_tags[var.admin_gui.image])
   })
   admin_0_9_gui = merge(var.admin_0_9_gui, {
-    tag = try(coalesce(var.admin_0_9_gui.tag), "sha-1d31f17")
+    tag = try(coalesce(var.admin_0_9_gui.tag), "0.9.5")
   })
   admin_0_8_gui = merge(var.admin_0_8_gui, {
     api = merge(var.admin_0_8_gui.api, {

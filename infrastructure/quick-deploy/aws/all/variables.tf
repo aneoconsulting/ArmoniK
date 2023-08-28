@@ -567,7 +567,7 @@ variable "admin_0_9_gui" {
   type = object({
     name  = optional(string, "admin-0-9-app")
     image = optional(string, "dockerhubaneo/armonik_admin_app")
-    tag   = optional(string, "sha-1d31f17")
+    tag   = optional(string, "0.9.5")
     port  = optional(number, 1080)
     limits = optional(object({
       cpu    = optional(string)
