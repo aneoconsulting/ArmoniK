@@ -2,22 +2,31 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+
+## [v2.15.0](https://github.com/aneoconsulting/armonik/tree/v2.15.0) (2023-08-29)
+
 Changed
 -
 
-* Upgrade version of ActiveMQ from `5.17.0` to `5.18.0`.
-* Upgrade version of MongoDB from `6.0.1` to `6.0.7`.
-* Upgrade version of Redis from `7.0.8` to `7.0.12-alpine3.18`.
-* Upgrade version of Seq from `2023.1` to `2023.3`.
-* Upgrade version of Grafana from `9.3.6` to `10.0.2`.
-* Upgrade version of Node exporter from `v1.5.0` to `v1.6.0`.
-* Upgrade version of Prometheus from `v2.42.0` to `v2.45.0`.
-* Upgrade version of Fluent-bit from `2.0.9` to `2.1.7`.
-* Upgrade version of Mongosh from `1.7.1` to `1.10.1`.
-* Upgrade version of Nginx from `1.23.3` to `1.25.1-alpine-slim`.
-* Upgrade version of SeqCli from `2023.1` to `2023.2`
-* Upgrade version of Admin GUI from `0.9.1` to `0.9.2`.
-* Upgrade version of MinIO from `RELEASE.2023-02-10T18-48-39Z` to `RELEASE.2023-07-18T17-49-40Z`.
+* Upgrade ArmoniK Infrastructure version from `0.0.2` to `0.0.4` ([raw changelog](https://github.com/aneoconsulting/ArmoniK.Infra/compare/0.0.2...0.0.4))
+* Upgrade ArmoniK.Extension.Csharp version from `0.12.1` to `0.12.2` ([changelog](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/releases/tag/0.12.2))
+* Upgrade Core version from `0.14.3` to `0.15.0` ([changelog](https://github.com/aneoconsulting/ArmoniK.Core/releases/tag/0.15.0))
+* Upgrade ArmoniK.Api from `3.10.0` to `3.11.0` ([changelog](https://github.com/aneoconsulting/ArmoniK.Api/releases/tag/3.11.0))
+* Upgrade ArmoniK.Admin.GUI from `0.9.1` to `0.10.0` ([changelog](https://github.com/aneoconsulting/ArmoniK.Admin.GUI/releases/tag/v0.10.0))
+
+Breaking
+-
+
+* [Infra]: The URL for the Admin gui has changed:
+  - `v0.10`: set to `/admin/`
+  - `v0.9`: moved from `/admin/` to `/admin-0.9/`
+  - `v0.8`: moved from `/admin-old/` to `/admin-0.8/`
+* [API]: Filter API (for listing) have changed. This is breaking only if native APIs are used.
+
+Added
+-
+
+* Deployment variable `environment_description` to pass information to the admin gui (defined in `parameters.tfvars`).
 
 ## [v2.14.0](https://github.com/aneoconsulting/armonik/tree/v2.14.0) (2023-07-05)
 
