@@ -46,10 +46,10 @@ export KUBECONFIG=<PATH_TO_AWS_FOLDER>/generated/kubeconfig
 
 ## Configuration
 
-All parameters are contained in [`parameters.tfvars`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/all/parameters.tfvars)
+All parameters are contained in [`parameters.tfvars`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/all-in-one/parameters.tfvars)
 
 ::alert{type="info"}
-By default, all the cloud services are set to launch. To see what kind of parameters are available, read [`variables.tf`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/all/variables.tf)
+By default, all the cloud services are set to launch. To see what kind of parameters are available, read [`variables.tf`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/all-in-one/variables.tf)
 ::
 
 You can specify a custom parameter file. When executing the `make` command, you may use the `PARAMETERS_FILE` option to set the path to your file.
