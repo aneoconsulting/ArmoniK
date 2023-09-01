@@ -4,6 +4,8 @@ HTC Mock is a test tool for ArmoniK. It is used to generate tasks that will be r
 
 HTC Mock is used in CI to test ArmoniK automatically but it can also be used in development to generate realistic tasks.
 
+Please make sure your version of Core is the same as HTC Mock's. If you use different versions, the test will fail.
+
 ::alert{type="info"}
 To populate the database, you can also use scripts.  See [Populate database](../populate-database.md)
 ::
@@ -13,6 +15,8 @@ To populate the database, you can also use scripts.  See [Populate database](../
 ::alert{type="warning"}
 HTC Mock is a development or test tool. It is not intended to be used in production.
 ::
+
+You now have the choice between a multi-stages deployment or an All-in-one deployment. You can use HTC Mock with both but the setup will differ depending on your choice.
 
 ### Multi-stages deployment
 
@@ -28,13 +32,13 @@ To use HTC Mock, you need to swap out the ArmoniK worker in `/infrastructure/qui
     ]
 ```
 
-Then, you can update the tag version. Please verify the [latest of Core on GitHub](https://github.com/aneoconsulting/ArmoniK.Core/release/latest) in order to use it.
+You can update the tag version. Please verify the [latest of Core on GitHub](https://github.com/aneoconsulting/ArmoniK.Core/release/latest) in order to use it.
 
 :warning: `dockerhubaneo/armonik_control` `dockerhubaneo/armonik_pollingagent` and `dockerhubaneo/armonik_core_htcmock_test_worker` must have the **exact** same tag version. It is necessary so they can talk to each other using the same API.
 
 Then, you can deploy ArmoniK as explained in the [multi-stages deployment page](https://aneoconsulting.github.io/ArmoniK/installation/linux/deployment)
 
-Then you can start the HTC mock client container.
+You are now ready to start the HTC mock client container.
 
 ```bash [shell]
 docker run --rm \
@@ -49,7 +53,7 @@ docker run --rm \
              dockerhubaneo/armonik_core_htcmock_test_client:0.12.1
 ```
 
-Don't forget to replace `<ip>` with the IP of your machine or the IP of the machine where ArmoniK is deployed.
+Remember to replace `<ip>` with the IP of your machine or the IP of the machine where ArmoniK is deployed.
 
 ### All-in-one deployment
 
@@ -70,7 +74,7 @@ docker run --rm \
              dockerhubaneo/armonik_core_htcmock_test_client:0.12.1
 ```
 
-Don't forget to replace `<ip>` with the IP of your machine or the IP of the machine where ArmoniK is deployed.
+Remember to replace `<ip>` with the IP of your machine or the IP of the machine where ArmoniK is deployed.
 
 ## Options
 
