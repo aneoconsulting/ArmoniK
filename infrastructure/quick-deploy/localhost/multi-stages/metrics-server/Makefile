@@ -25,11 +25,13 @@ init:
 	terraform init -upgrade -reconfigure \
 		-backend-config="secret_suffix=metrics-server-$(BACKEND_SUFFIX)" \
 		-var-file "$(PARAMETERS_FILE)" \
+		-var-file "$(VERSIONS_FILE)" \
 		-var 'namespace=$(NAMESPACE)'
 
 apply:
 	terraform apply \
 		-var-file $(PARAMETERS_FILE) \
+		-var-file $(VERSIONS_FILE) \
 		-var 'namespace=$(NAMESPACE)' \
 		-auto-approve
 

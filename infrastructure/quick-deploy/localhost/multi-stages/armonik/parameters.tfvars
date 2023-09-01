@@ -6,24 +6,10 @@ logging_level = "Information"
 
 # Job to insert partitions in the database
 job_partitions_in_database = {
-  name               = "job-partitions-in-database"
-  image              = "rtsp/mongosh"
-  tag                = "1.7.1"
-  image_pull_policy  = "IfNotPresent"
-  image_pull_secrets = ""
-  node_selector      = {}
-  annotations        = {}
 }
 
 # Parameters of control plane
 control_plane = {
-  name              = "control-plane"
-  service_type      = "ClusterIP"
-  replicas          = 1
-  image             = "dockerhubaneo/armonik_control"
-  tag               = "0.14.3"
-  image_pull_policy = "IfNotPresent"
-  port              = 5001
   limits = {
     cpu    = "1000m"  # set to null if you don't want to set it
     memory = "2048Mi" # set to null if you don't want to set it
@@ -32,9 +18,6 @@ control_plane = {
     cpu    = "200m"  # set to null if you don't want to set it
     memory = "500Mi" # set to null if you don't want to set it
   }
-  image_pull_secrets = ""
-  node_selector      = {}
-  annotations        = {}
   hpa = {
     polling_interval  = 15
     cooldown_period   = 300
@@ -65,10 +48,6 @@ control_plane = {
 
 # Parameters of admin GUI
 admin_gui = {
-  name  = "admin-app"
-  image = "dockerhubaneo/armonik_admin_app"
-  tag   = "0.9.2"
-  port  = 1080
   limits = {
     cpu    = "1000m"
     memory = "1024Mi"
@@ -77,20 +56,11 @@ admin_gui = {
     cpu    = "100m"
     memory = "128Mi"
   }
-  service_type       = "ClusterIP"
-  replicas           = 1
-  image_pull_policy  = "IfNotPresent"
-  image_pull_secrets = ""
-  node_selector      = {}
 }
 
 # Parameters of old admin GUI
 admin_old_gui = {
   api = {
-    name  = "admin-api"
-    image = "dockerhubaneo/armonik_admin_api"
-    tag   = "0.8.0"
-    port  = 3333
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
@@ -101,10 +71,6 @@ admin_old_gui = {
     }
   }
   old = {
-    name  = "admin-old-gui"
-    image = "dockerhubaneo/armonik_admin_app"
-    tag   = "0.8.0"
-    port  = 1080
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
@@ -114,35 +80,13 @@ admin_old_gui = {
       memory = "128Mi"
     }
   }
-  service_type       = "ClusterIP"
-  replicas           = 1
-  image_pull_policy  = "IfNotPresent"
-  image_pull_secrets = ""
-  node_selector      = {}
 }
 
 # Parameters of the compute plane
 compute_plane = {
   default = {
-    partition_data = {
-      priority              = 1
-      reserved_pods         = 50
-      max_pods              = 100
-      preemption_percentage = 20
-      parent_partition_ids  = []
-      pod_configuration     = null
-    }
-    # number of replicas for each deployment of compute plane
-    replicas                         = 1
-    termination_grace_period_seconds = 30
-    image_pull_secrets               = ""
-    node_selector                    = {}
-    annotations                      = {}
     # ArmoniK polling agent
     polling_agent = {
-      image             = "dockerhubaneo/armonik_pollingagent"
-      tag               = "0.14.3"
-      image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"  # set to null if you don't want to set it
         memory = "2048Mi" # set to null if you don't want to set it
@@ -155,10 +99,8 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        name              = "worker"
-        image             = "dockerhubaneo/armonik_worker_dll"
-        tag               = "0.12.1"
-        image_pull_policy = "IfNotPresent"
+        image = "dockerhubaneo/armonik_worker_dll"
+        tag   = "0.12.1"
         limits = {
           cpu    = "1000m"  # set to null if you don't want to set it
           memory = "1024Mi" # set to null if you don't want to set it
@@ -194,35 +136,12 @@ compute_plane = {
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
 ingress = {
-  name                  = "ingress"
-  service_type          = "LoadBalancer"
-  replicas              = 1
-  image                 = "nginxinc/nginx-unprivileged"
-  tag                   = "1.25.1-alpine-slim"
-  image_pull_policy     = "IfNotPresent"
-  http_port             = 5000
-  grpc_port             = 5001
-  limits                = null
-  requests              = null
-  image_pull_secrets    = ""
-  node_selector         = {}
-  annotations           = {}
-  tls                   = false
-  mtls                  = false
-  generate_client_cert  = false
-  custom_client_ca_file = ""
+  limits               = null
+  requests             = null
+  generate_client_cert = false
 }
 
 authentication = {
-  name                    = "job-authentication-in-database"
-  image                   = "rtsp/mongosh"
-  tag                     = "1.10.1"
-  image_pull_policy       = "IfNotPresent"
-  image_pull_secrets      = ""
-  node_selector           = {}
-  authentication_datafile = ""
-  require_authentication  = false
-  require_authorization   = false
 }
 
 extra_conf = {

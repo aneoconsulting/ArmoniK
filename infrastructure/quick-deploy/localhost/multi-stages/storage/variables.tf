@@ -12,6 +12,29 @@ variable "k8s_config_context" {
   default     = "default"
 }
 
+variable "armonik_versions" {
+  description = "Versions of all the ArmoniK components"
+  type        = map(string)
+}
+
+variable "armonik_images" {
+  description = "Image names of all the ArmoniK components"
+  type        = map(set(string))
+}
+
+variable "image_tags" {
+  description = "Tags of images used"
+  type        = map(string)
+}
+
+variable "helm_charts" {
+  description = "Versions of helm charts repositories"
+  type = map(object({
+    repository = string
+    version    = string
+  }))
+}
+
 # Kubernetes namespace
 variable "namespace" {
   description = "Kubernetes namespace for ArmoniK"
@@ -33,50 +56,53 @@ variable "shared_storage" {
 variable "activemq" {
   description = "Parameters of ActiveMQ"
   type = object({
-    image              = string
-    tag                = string
-    node_selector      = any
-    image_pull_secrets = string
+    image_name         = optional(string, "symptoma/activemq"),
+    image_tag          = optional(string),
+    node_selector      = optional(map(string), {})
+    image_pull_secrets = optional(string, "")
   })
+  default = {}
 }
 
 # Parameters for MongoDB
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type = object({
-    image              = string
-    tag                = string
-    node_selector      = any
-    image_pull_secrets = string
-    replicas_number    = number
+    image_name         = optional(string, "mongo"),
+    image_tag          = optional(string),
+    node_selector      = optional(map(string), {})
+    image_pull_secrets = optional(string, "")
+    replicas_number    = optional(number, 1)
   })
+  default = {}
 }
 
 # Parameters for Redis
 variable "redis" {
   description = "Parameters of Redis"
   type = object({
-    image              = string
-    tag                = string
-    node_selector      = any
-    image_pull_secrets = string
-    max_memory         = string
+    image_name         = optional(string, "redis"),
+    image_tag          = optional(string),
+    node_selector      = optional(map(string), {})
+    image_pull_secrets = optional(string, "")
+    max_memory         = optional(string, "12000mb")
   })
-  default = null
+  default = {}
 }
 
 # Parameters for minio
 variable "minio" {
   description = "Parameters of minio"
   type = object({
-    image              = string
-    tag                = string
-    image_pull_secrets = string
-    host               = string
-    default_bucket     = string
-    node_selector      = any
+    image_name         = optional(string, "minio/minio")
+    image_tag          = optional(string)
+    node_selector      = optional(map(string), {})
+    image_pull_secrets = optional(string, "")
+    default_bucket     = optional(string, "minioBucket")
+    host               = optional(string, "minio")
   })
   default = null
+
 }
 
 # Parameters for minio file storage
@@ -85,7 +111,7 @@ variable "minio_s3_fs" {
   type = object({
     image_name         = optional(string, "minio/minio")
     image_tag          = optional(string)
-    node_selector      = optional(any, {})
+    node_selector      = optional(map(string), {})
     image_pull_secrets = optional(string, "")
     default_bucket     = optional(string, "minioBucket")
     host               = optional(string, "minio-s3-fs")

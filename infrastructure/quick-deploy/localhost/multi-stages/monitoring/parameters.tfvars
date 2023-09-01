@@ -3,6 +3,17 @@ namespace = "armonik"
 
 # Monitoring infos
 monitoring = {
+  seq                        = {}
+  fluent_bit                 = {}
+  partition_metrics_exporter = {}
+  metrics_exporter           = {}
+  node_exporter              = {}
+  prometheus                 = {}
+  grafana                    = {}
+
+}
+/*
+monitoring = {
   seq = {
     enabled                = true
     image                  = "datalust/seq"
@@ -77,5 +88,5 @@ monitoring = {
     parser             = "docker"
   }
 }
-
+*/
 authentication = false

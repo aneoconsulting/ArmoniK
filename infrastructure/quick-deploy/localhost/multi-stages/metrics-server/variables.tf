@@ -12,53 +12,53 @@ variable "k8s_config_context" {
   default     = "default"
 }
 
+variable "image_tags" {
+  description = "Tags of images used"
+  type        = map(string)
+}
+
+variable "helm_charts" {
+  description = "Versions of helm charts repositories"
+  type = map(object({
+    repository = string
+    version    = string
+  }))
+}
+
+variable "armonik_versions" {
+  description = "Versions of all the ArmoniK components"
+  type        = map(string)
+}
+
+variable "armonik_images" {
+  description = "Image names of all the ArmoniK components"
+  type        = map(set(string))
+}
+
 # Kubernetes namespace
 variable "namespace" {
   description = "Kubernetes namespace for metrics server"
   type        = string
+  default     = "kube-system"
 }
 
-# Docker image
-variable "docker_image" {
-  description = "Docker image for metrics server"
+variable "metrics_server" {
+  description = "metrics-server infos"
   type = object({
-    image = string
-    tag   = string
+    image_name            = optional(string, "registry.k8s.io/metrics-server/metrics-server"),
+    image_tag             = optional(string),
+    image_pull_secrets    = optional(string, "")
+    node_selector         = optional(map(string), {})
+    host_network          = optional(bool, false)
+    helm_chart_repository = optional(string)
+    helm_chart_version    = optional(string)
+    args = optional(set(string), [
+      "--cert-dir=/tmp",
+      "--kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname",
+      "--kubelet-use-node-status-port",
+      "--metric-resolution=15s",
+      "--kubelet-insecure-tls"
+    ])
   })
-}
-
-# image pull secrets
-variable "image_pull_secrets" {
-  description = "image_pull_secrets for metrics server"
-  type        = string
-}
-
-# Node selector
-variable "node_selector" {
-  description = "Node selector for metrics server"
-  type        = any
-}
-
-# Args
-variable "args" {
-  description = "Arguments for metrics server"
-  type        = list(string)
-}
-
-# Host network
-variable "host_network" {
-  description = "Host network for metrics server"
-  type        = bool
-}
-
-# Repository of helm chart
-variable "helm_chart_repository" {
-  description = "Path to helm chart helm repository for metrics server"
-  type        = string
-}
-
-# Version of helm chart
-variable "helm_chart_version" {
-  description = "Version of chart helm repository for metrics server"
-  type        = string
+  default = {}
 }

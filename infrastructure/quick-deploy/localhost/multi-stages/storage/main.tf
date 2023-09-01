@@ -3,10 +3,10 @@ module "activemq" {
   source    = "../generated/infra-modules/storage/onpremise/activemq"
   namespace = var.namespace
   activemq = {
-    image              = local.activemq_image
-    tag                = local.activemq_tag
-    node_selector      = local.activemq_node_selector
-    image_pull_secrets = local.activemq_image_pull_secrets
+    image              = var.activemq.image_name
+    tag                = try(var.image_tags[var.activemq.image_name], var.activemq)
+    node_selector      = var.activemq.node_selector
+    image_pull_secrets = var.activemq.image_pull_secrets
   }
 }
 
@@ -15,11 +15,11 @@ module "mongodb" {
   source    = "../generated/infra-modules/storage/onpremise/mongodb"
   namespace = var.namespace
   mongodb = {
-    image              = local.mongodb_image
-    tag                = local.mongodb_tag
-    node_selector      = local.mongodb_node_selector
-    image_pull_secrets = local.mongodb_image_pull_secrets
-    replicas_number    = local.mongodb_replicas_number
+    image              = var.mongodb.image_name
+    tag                = try(var.image_tags[var.mongodb.image_name], var.mongodb.image_tag)
+    node_selector      = var.mongodb.node_selector
+    image_pull_secrets = var.mongodb.image_pull_secrets
+    replicas_number    = var.mongodb.replicas_number
   }
   persistent_volume = null
 }
@@ -30,11 +30,11 @@ module "redis" {
   source    = "../generated/infra-modules/storage/onpremise/redis"
   namespace = var.namespace
   redis = {
-    image              = local.redis_image
-    tag                = local.redis_tag
-    node_selector      = local.redis_node_selector
-    image_pull_secrets = local.redis_image_pull_secrets
-    max_memory         = local.redis_max_memory
+    image              = var.redis.image_name
+    tag                = try(var.image_tags[var.redis.image_name], var.redis)
+    node_selector      = var.redis.node_selector
+    image_pull_secrets = var.redis.image_pull_secrets
+    max_memory         = var.redis.max_memory
   }
 }
 
@@ -44,12 +44,12 @@ module "minio" {
   source    = "../generated/infra-modules/storage/onpremise/minio"
   namespace = var.namespace
   minio = {
-    image              = local.minio_image
-    tag                = local.minio_tag
-    image_pull_secrets = local.minio_image_pull_secrets
-    host               = local.minio_host
-    bucket_name        = local.minio_bucket_name
-    node_selector      = local.minio_node_selector
+    image              = var.minio.image_name
+    tag                = try(var.image_tags[var.minio.image_name], var.minio)
+    node_selector      = var.minio.node_selector
+    image_pull_secrets = var.minio.image_pull_secrets
+    host               = var.minio.host
+    bucket_name        = var.minio.default_bucket
   }
 }
 
@@ -60,11 +60,11 @@ module "minio_s3_fs" {
   source    = "../generated/infra-modules/storage/onpremise//minio"
   namespace = var.namespace
   minio = {
-    image              = local.minio_s3_fs_image
-    tag                = local.minio_s3_fs_tag
-    image_pull_secrets = local.minio_s3_fs_image_pull_secrets
-    host               = local.minio_s3_fs_host
-    bucket_name        = local.minio_s3_fs_bucket_name
-    node_selector      = local.minio_s3_fs_node_selector
+    image              = var.minio_s3_fs.image_name
+    tag                = try(var.image_tags[var.minio_s3_fs.image_name], var.minio_s3_fs.image_tag)
+    node_selector      = var.minio_s3_fs.node_selector
+    image_pull_secrets = var.minio_s3_fs.image_pull_secrets
+    host               = var.minio_s3_fs.host
+    bucket_name        = var.minio_s3_fs.default_bucket
   }
 }

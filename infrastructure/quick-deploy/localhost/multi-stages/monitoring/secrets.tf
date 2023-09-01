@@ -58,7 +58,7 @@ resource "kubernetes_secret" "seq" {
     name      = "seq"
     namespace = var.namespace
   }
-  data = local.seq_enabled ? {
+  data = var.monitoring.seq.enabled ? {
     host    = module.seq.0.host
     port    = module.seq.0.port
     url     = module.seq.0.url
@@ -78,7 +78,7 @@ resource "kubernetes_secret" "grafana" {
     name      = "grafana"
     namespace = var.namespace
   }
-  data = local.grafana_enabled ? {
+  data = var.monitoring.grafana.enabled ? {
     host    = module.grafana.0.host
     port    = module.grafana.0.port
     url     = module.grafana.0.url

@@ -12,6 +12,29 @@ variable "k8s_config_context" {
   default     = "default"
 }
 
+variable "armonik_versions" {
+  description = "Versions of all the ArmoniK components"
+  type        = map(string)
+}
+
+variable "armonik_images" {
+  description = "image_name names of all the ArmoniK components"
+  type        = map(set(string))
+}
+
+variable "image_tags" {
+  description = "Tags of images used"
+  type        = map(string)
+}
+
+variable "helm_charts" {
+  description = "Versions of helm charts repositories"
+  type = map(object({
+    repository = string
+    version    = string
+  }))
+}
+
 # Kubernetes namespace
 variable "namespace" {
   description = "Kubernetes namespace for ArmoniK"
@@ -31,70 +54,83 @@ variable "monitoring" {
   description = "Monitoring infos"
   type = object({
     seq = object({
-      enabled                = bool
-      image                  = string
-      tag                    = string
-      port                   = number
-      image_pull_secrets     = string
-      service_type           = string
-      node_selector          = any
-      system_ram_target      = number
-      cli_image              = string
-      cli_tag                = string
-      cli_image_pull_secrets = string
-      retention_in_days      = string
+      enabled                = optional(bool, true)
+      image_name             = optional(string, "datalust/seq")
+      image_tag              = optional(string)
+      port                   = optional(number, 8080)
+      image_pull_secrets     = optional(string, "")
+      service_type           = optional(string, "ClusterIP")
+      node_selector          = optional(map(string), {})
+      system_ram_target      = optional(number, 0.2)
+      cli_image_name         = optional(string, "datalust/seqcli")
+      cli_image_tag          = optional(string)
+      cli_image_pull_secrets = optional(string, "")
+      retention_in_days      = optional(string, "2d")
+    })
 
-    })
     grafana = object({
-      enabled            = bool
-      image              = string
-      tag                = string
-      port               = number
-      image_pull_secrets = string
-      service_type       = string
-      node_selector      = any
+      enabled            = optional(bool, true)
+      image_name         = optional(string, "grafana/grafana")
+      image_tag          = optional(string)
+      port               = optional(number, 3000)
+      image_pull_secrets = optional(string, "")
+      service_type       = optional(string, "ClusterIP")
+      node_selector      = optional(map(string), {})
     })
+
     node_exporter = object({
-      enabled            = bool
-      image              = string
-      tag                = string
-      image_pull_secrets = string
-      node_selector      = any
+      enabled            = optional(bool, true)
+      image_name         = optional(string, "prom/node-exporter")
+      image_tag          = optional(string)
+      image_pull_secrets = optional(string, "")
+      node_selector      = optional(map(string), {})
     })
+
     prometheus = object({
-      image              = string
-      tag                = string
-      image_pull_secrets = string
-      service_type       = string
-      node_selector      = any
+      image_name         = optional(string, "prom/prometheus")
+      image_tag          = optional(string)
+      image_pull_secrets = optional(string, "")
+      service_type       = optional(string, "ClusterIP")
+      node_selector      = optional(map(string), {})
     })
+
     metrics_exporter = object({
-      image              = string
-      tag                = string
-      image_pull_secrets = string
-      service_type       = string
-      node_selector      = any
-      extra_conf         = map(string)
+      image_name         = optional(string, "dockerhubaneo/armonik_control_metrics")
+      image_tag          = optional(string)
+      image_pull_secrets = optional(string, "")
+      service_type       = optional(string, "ClusterIP")
+      node_selector      = optional(map(string), {})
+      extra_conf = optional(map(string), { MongoDB__AllowInsecureTls = "true"
+        Serilog__MinimumLevel                  = "Information"
+        MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax = "00:00:10" })
     })
+
     partition_metrics_exporter = object({
-      image              = string
-      tag                = string
-      image_pull_secrets = string
-      service_type       = string
-      node_selector      = any
-      extra_conf         = map(string)
+      image_name         = optional(string, "dockerhubaneo/armonik_control_partition_metrics")
+      image_tag          = optional(string)
+      image_pull_secrets = optional(string, "")
+      service_type       = optional(string, "ClusterIP")
+      node_selector      = optional(map(string), {})
+      extra_conf = optional(map(string), { MongoDB__AllowInsecureTls = "true"
+        Serilog__MinimumLevel                  = "Information"
+        MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax = "00:00:10" })
     })
+
     fluent_bit = object({
-      image              = string
-      tag                = string
-      image_pull_secrets = string
-      is_daemonset       = bool
-      http_port          = number
-      read_from_head     = string
-      node_selector      = any
-      parser             = string
+      image_name         = optional(string, "fluent/fluent-bit")
+      image_tag          = optional(string)
+      image_pull_secrets = optional(string, "")
+      is_daemonset       = optional(bool, true)
+      http_port          = optional(number, 2020)
+      read_from_head     = optional(string, "true")
+      node_selector      = optional(map(string), {})
+      parser             = optional(string, "docker")
     })
+
   })
+
 }
 
 # Enable authentication of seq and grafana

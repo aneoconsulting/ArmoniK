@@ -26,13 +26,12 @@ init:
 	mkdir -p $(TF_PLUGIN_CACHE_DIR)
 	mkdir -p $(GENERATED_DIR)
 	terraform init -upgrade -reconfigure \
-		-backend-config="secret_suffix=storage-$(BACKEND_SUFFIX)" \
-		-var-file "$(PARAMETERS_FILE)" \
-		-var 'namespace=$(NAMESPACE)'
+		-backend-config="secret_suffix=storage-$(BACKEND_SUFFIX)" 
 
 apply:
 	terraform apply \
 		-var-file $(PARAMETERS_FILE) \
+		-var-file $(VERSIONS_FILE) \
 		-var 'shared_storage={"host_path":"$(SHARED_HOST_PATH)","file_storage_type":"$(FILE_STORAGE_FILE)","file_server_ip":"$(FILE_SERVER_IP)"}' \
 		-var 'namespace=$(NAMESPACE)' \
 		-auto-approve
@@ -46,6 +45,7 @@ output:
 delete:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
+		-var-file $(VERSIONS_FILE) \
 		-var 'shared_storage={"host_path":"$(SHARED_HOST_PATH)","file_storage_type":"$(FILE_STORAGE_FILE)","file_server_ip":"$(FILE_SERVER_IP)"}' \
 		-var 'namespace=$(NAMESPACE)' \
 		-auto-approve
