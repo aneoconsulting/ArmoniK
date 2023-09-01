@@ -14,15 +14,15 @@
     "lint:md:fix": "markdownlint . --fix && case-police --fix ./**/*.md"
   },
   "dependencies": {
-    "@aneoconsultingfr/armonik-docs-theme": "^0.6.11",
-    "mermaid": "^10.2.3",
-    "nuxt": "^3.6.0"
+    "@aneoconsultingfr/armonik-docs-theme": "^0.6.13",
+    "mermaid": "^10.3.1",
+    "nuxt": "^3.6.5"
   },
-  "packageManager": "pnpm@8.6.4",
+  "packageManager": "pnpm@8.6.12",
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "case-police": "^0.6.1",
-    "eslint": "^8.43.0",
+    "eslint": "^8.47.0",
     "markdownlint-cli": "^0.35.0"
   }
 }
