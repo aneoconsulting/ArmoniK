@@ -73,7 +73,7 @@ ecr = {
     {
       name  = "armonik-admin-app"
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.9.4"
+      tag   = "0.10.1"
     },
     {
       name  = "armonik-admin-app-0-9"
