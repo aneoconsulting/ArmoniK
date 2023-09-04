@@ -2,6 +2,17 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.15.1](https://github.com/aneoconsulting/armonik/tree/v2.15.0) (2023-08-29)
+
+Changed
+-
+
+* Upgrade ArmoniK.Admin.GUI from `0.10.0` to `0.10.1` ([changelog](https://github.com/aneoconsulting/ArmoniK.Admin.GUI/releases/tag/v0.10.1))
+
+Fixed
+-
+
+* Versions of the splitted deployment. It was still in 2.14
 
 ## [v2.15.0](https://github.com/aneoconsulting/armonik/tree/v2.15.0) (2023-08-29)
 
