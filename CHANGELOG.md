@@ -2,6 +2,12 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.15.1](https://github.com/aneoconsulting/armonik/tree/v2.15.0) (2023-08-29)
+
+Fixed
+-
+
+* Versions of the splitted deployment. It was still in 2.14
 
 ## [v2.15.0](https://github.com/aneoconsulting/armonik/tree/v2.15.0) (2023-08-29)
 
