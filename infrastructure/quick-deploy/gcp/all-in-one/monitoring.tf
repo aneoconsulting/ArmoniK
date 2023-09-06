@@ -32,11 +32,6 @@ locals {
       url       = module.partition_metrics_exporter[0].url
       namespace = module.partition_metrics_exporter[0].namespace
     }, null)
-    #    cloudwatch = try({
-    #      name    = module.cloudwatch[0].name
-    #      region  = var.region
-    #      enabled = true
-    #    }, null)
     fluent_bit = try({
       container_name = module.fluent_bit.container_name
       image          = module.fluent_bit.image
@@ -48,7 +43,6 @@ locals {
       }
     }, null)
   }
-  #cloudwatch_log_group_name = "/aws/containerinsights/${module.eks.cluster_name}/application"
 }
 
 
@@ -239,17 +233,16 @@ module "fluent_bit" {
     port    = module.seq[0].port
     enabled = true
   } : {}
-  #  cloudwatch = length(module.cloudwatch) != 0 ? {
-  #    name    = module.cloudwatch[0].name
-  #    region  = var.region
-  #    enabled = true
-  #  } : {}
-  #  s3 = (var.s3.enabled ? {
-  #    name    = var.s3.name
-  #    region  = var.s3.region
-  #    prefix  = var.s3.prefix
-  #    enabled = true
-  #  } : {})
+  stackdriver = {
+    cluster_name = module.gke.name
+    cluster_location = module.gke.location
+    credentials = base64decode(google_service_account_key.key.private_key)
+  }
+}
+
+resource "google_service_account_key" "key" {
+  service_account_id = module.gke.service_account
+  public_key_type    = "TYPE_X509_PEM_FILE"
 }
 
 resource "kubernetes_secret" "fluent_bit" {
@@ -266,81 +259,3 @@ resource "kubernetes_secret" "fluent_bit" {
     config       = module.fluent_bit.configmaps.config
   }
 }
-
-
-
-
-/*
-# Send logs in cloudwatch
-data "aws_iam_policy_document" "send_logs_from_fluent_bit_to_cloudwatch_document" {
-  count = var.cloudwatch != null ? 1 : 0
-  statement {
-    sid = "SendLogsFromFluentBitToCloudWatch"
-    actions = [
-      "logs:CreateLogStream",
-      "logs:CreateLogGroup",
-      "logs:PutLogEvents",
-    ]
-    effect = "Allow"
-    resources = [
-      "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:${local.cloudwatch_log_group_name}:*"
-    ]
-  }
-}
-
-resource "aws_iam_policy" "send_logs_from_fluent_bit_to_cloudwatch_policy" {
-  count       = var.cloudwatch != null ? 1 : 0
-  name_prefix = "send-logs-from-fluent-bit-to-cloudwatch-${module.eks.cluster_name}"
-  description = "Policy for allowing send logs from fluent-bit  ${module.eks.cluster_name} to cloudwatch"
-  policy      = data.aws_iam_policy_document.send_logs_from_fluent_bit_to_cloudwatch_document[0].json
-  tags        = local.tags
-}
-
-resource "aws_iam_policy_attachment" "send_logs_from_fluent_bit_to_cloudwatch_attachment" {
-  count      = length(aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy)
-  name       = "${local.prefix}-send-logs-from-fluent-bit-to-cloudwatch-${module.eks.cluster_name}"
-  policy_arn = aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy[0].arn
-  roles      = module.eks.worker_iam_role_names
-}
-
-# Write objects in S3
-data "aws_iam_policy_document" "write_object" {
-  count = (var.s3.enabled ? 1 : 0)
-  statement {
-    sid = "WriteFromS3"
-    actions = [
-      "s3:PutObject"
-    ]
-    effect = "Allow"
-    resources = [
-      "${var.s3.arn}/*"
-    ]
-  }
-}
-
-resource "aws_iam_policy" "write_object" {
-  count       = (var.s3.enabled ? 1 : 0)
-  name_prefix = "s3-logs-write-${module.eks.cluster_name}"
-  description = "Policy for allowing read object in S3 logs ${module.eks.cluster_name}"
-  policy      = data.aws_iam_policy_document.write_object[0].json
-  tags        = local.tags
-}
-
-resource "aws_iam_policy_attachment" "write_object" {
-  count      = (var.s3.enabled ? 1 : 0)
-  name       = "s3-logs-write-${module.eks.cluster_name}"
-  policy_arn = aws_iam_policy.write_object[0].arn
-  roles      = module.eks.worker_iam_role_names
-}
-
-# CloudWatch
-module "cloudwatch" {
-  count             = var.cloudwatch != null ? 1 : 0
-  source            = "./generated/infra-modules/monitoring/aws/cloudwatch-log-group"
-  name              = local.cloudwatch_log_group_name
-  kms_key_id        = local.kms_key
-  retention_in_days = var.cloudwatch.retention_in_days
-  tags              = local.tags
-}
-
-*/

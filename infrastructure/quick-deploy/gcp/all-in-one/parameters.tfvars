@@ -4,54 +4,51 @@ labels = {}
 logging_level = "Information"
 
 keda = {
-  #node_selector = { service = "monitoring" }
+  node_selector = { service = "monitoring" }
 }
 
-#metrics_server = {
-#  node_selector = { service = "monitoring" }
-#}
 metrics_server = null
 
 mongodb = {
-  #node_selector = { service = "state-database" }
+  node_selector = { service = "state-database" }
 }
 
-memorystore = {
-  memory_size_gb = 20
-  auth_enabled   = true
-  connect_mode   = "PRIVATE_SERVICE_ACCESS"
-  redis_configs = {
-    "maxmemory-gb"     = "18"
-    "maxmemory-policy" = "volatile-lru"
-  }
-  reserved_ip_range       = "10.1.0.0/16"
-  redis_version           = "REDIS_7_0"
-  tier                    = "STANDARD_HA"
-  transit_encryption_mode = "SERVER_AUTHENTICATION"
-  replica_count           = 3
-  read_replicas_mode      = "READ_REPLICAS_ENABLED"
-}
-#gcs_os = {}
+# memorystore = {
+#   memory_size_gb = 20
+#   auth_enabled   = true
+#   connect_mode   = "PRIVATE_SERVICE_ACCESS"
+#   redis_configs = {
+#     "maxmemory-gb"     = "18"
+#     "maxmemory-policy" = "volatile-lru"
+#   }
+#   reserved_ip_range       = "10.1.0.0/16"
+#   redis_version           = "REDIS_7_0"
+#   tier                    = "STANDARD_HA"
+#   transit_encryption_mode = "SERVER_AUTHENTICATION"
+#   replica_count           = 3
+#   read_replicas_mode      = "READ_REPLICAS_ENABLED"
+# }
+gcs_os = {}
 
 
 seq = {
-  #node_selector = { service = "monitoring" }
+  node_selector = { service = "monitoring" }
 }
 
 grafana = {
-  #node_selector = { service = "monitoring" }
+  node_selector = { service = "monitoring" }
 }
 
 node_exporter = {
-  #node_selector = {}
+  node_selector = {}
 }
 
 prometheus = {
-  #node_selector = { service = "metrics" }
+  node_selector = { service = "metrics" }
 }
 
 metrics_exporter = {
-  #node_selector = { service = "metrics" }
+  node_selector = { service = "metrics" }
   extra_conf = {
     MongoDB__AllowInsecureTls              = true
     Serilog__MinimumLevel                  = "Information"
@@ -86,7 +83,7 @@ control_plane = {
     memory = "500Mi"
   }
   default_partition = "default"
-  #node_selector     = { service = "control-plane" }
+  node_selector     = { service = "control-plane" }
   image = "submitterpubsub"
   tag   = "0.14.3-pubsub"
 }
@@ -101,7 +98,7 @@ admin_gui = {
     cpu    = "100m"
     memory = "128Mi"
   }
-  #node_selector = { service = "monitoring" }
+  node_selector = { service = "monitoring" }
 }
 
 # Parameters of the compute plane
@@ -161,7 +158,7 @@ compute_plane = {
   },
   # Partition for the stream worker
   stream = {
-    #node_selector = { service = "workers" }
+    node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
     replicas = 1
     # ArmoniK polling agent
@@ -214,7 +211,7 @@ compute_plane = {
   },
   # Partition for the htcmock worker
   htcmock = {
-    #node_selector = { service = "workers" }
+    node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
     replicas = 1
     # ArmoniK polling agent
@@ -267,7 +264,7 @@ compute_plane = {
   },
   # Partition for the bench worker
   bench = {
-    #node_selector = { service = "workers" }
+    node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
     replicas = 1
     # ArmoniK polling agent
@@ -326,27 +323,21 @@ ingress = {
   tls                  = false
   mtls                 = false
   generate_client_cert = false
-  #node_selector        = { service = "control-plane" }
+  node_selector        = { service = "control-plane" }
 }
 
 # Job to insert partitions in the database
 job_partitions_in_database = {
-  #node_selector = { service = "control-plane" }
+  node_selector = { service = "control-plane" }
 }
 
 # Authentication behavior
 authentication = {
-  #node_selector = { service = "control-plane" }
+  node_selector = { service = "control-plane" }
 }
 
 extra_conf = {
   core = {
-    Amqp__AllowHostMismatch                    = false
-    Amqp__MaxPriority                          = "10"
-    Amqp__MaxRetries                           = "5"
-    Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
-    Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
-    Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
     MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
     MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
     MongoDB__TableStorage__PollingDelay        = "00:00:01"
@@ -354,10 +345,6 @@ extra_conf = {
     MongoDB__AllowInsecureTls                  = true
     Redis__Timeout                             = 3000
     Redis__SslHost                             = ""
-    #    PubSub__ProjectId                          = "project_id"
-    #    PubSub__TopicId                            = "TestTopic"
-    #    PubSub__SubscriptionId                     = "SubTest"
-    #    PUBSUB_EMULATOR_HOST                       = "pubsub:8085"
   }
   control = {
     Submitter__MaxErrorAllowed = 50
@@ -365,8 +352,8 @@ extra_conf = {
 }
 
 environment_description = {
-  name        = "aws-dev"
+  name        = "gcp-dev"
   version     = "0.0.0"
-  description = "AWS environment"
+  description = "GCP environment"
   color       = "#80ff80"
 }

@@ -1,4 +1,5 @@
 locals {
+  region = coalesce(var.region, data.google_client_config.current.region)
   storage_endpoint_url = {
     table_storage_adapter   = "MongoDB"
     deployed_table_storages = ["MongoDB"]
@@ -14,25 +15,25 @@ locals {
     }
     deployed_object_storages = concat(
       length(module.memorystore) > 0 ? ["Redis"] : [],
-      #length(module.gcs_os) > 0 ? ["S3"] : [],
+      length(module.gcs_os) > 0 ? ["S3"] : [],
     )
     object_storage_adapter = try(coalesce(
       length(module.memorystore) > 0 ? "Redis" : null,
-      #length(module.gcs_os) > 0 ? "S3" : null,
+      length(module.gcs_os) > 0 ? "S3" : null,
     ), "")
     redis = length(module.memorystore) > 0 ? {
       url = module.memorystore[0].url
     } : null
-    #    s3 = length(module.s3_os) > 0 ? {
-    #      url         = "https://s3.${var.region}.amazonaws.com"
-    #      bucket_name = module.s3_os[0].s3_bucket_name
-    #      kms_key_id  = module.s3_os[0].kms_key_id
-    #    } : null
-    #    shared = {
-    #      service_url = "https://s3.${var.region}.amazonaws.com"
-    #      kms_key_id  = module.s3_fs.kms_key_id
-    #      name        = module.s3_fs.s3_bucket_name
-    #    }
+    s3 = length(module.gcs_os) > 0 ? {
+      url         = "https://${local.region}-storage.googleapis.com"
+      bucket_name = module.gcs_os[0].name
+      kms_key_id  = var.kms_name
+    } : null
+    shared = {
+      service_url = "https://${local.region}-storage.googleapis.com"
+      name        = module.gcs_fs.name
+      kms_key_id  = var.kms_name
+    }
   }
 }
 
@@ -130,11 +131,23 @@ resource "kubernetes_secret" "memorystore" {
   }
 }
 
+# HMac for buckets
+resource "google_storage_hmac_key" "cloud_storage" {
+  service_account_email = module.gke.service_account
+}
+
+# Give Storage Admin role to GKE service account
+resource "google_project_iam_member" "allow_gcs_access" {
+  project = data.google_client_config.current.project
+  role   = "roles/storage.admin"
+  member = "serviceAccount:${module.gke.service_account}"
+}
+
 # Shared storage for compute-plane
 module "gcs_fs" {
   source               = "./generated/infra-modules/storage/gcp/gcs"
-  name                 = "${local.prefix}-s3fs"
-  location             = data.google_client_config.current.region
+  name                 = "${local.prefix}-gcsfs"
+  location             = local.region
   default_kms_key_name = var.kms_name
   force_destroy        = true
   labels               = local.labels
@@ -147,12 +160,11 @@ resource "kubernetes_secret" "shared_storage" {
     namespace = local.namespace
   }
   data = {
-    kms_key_id = var.kms_name
-    name       = module.gcs_fs.name
-    project_id = data.google_client_config.current.project
-    #TODO adapt them for GCS
+    kms_key_id            = var.kms_name
+    name                  = module.gcs_fs.name
+    project_id            = data.google_client_config.current.project
     file_storage_type     = "S3"
-    service_url           = ""
+    service_url           = "https://${local.region}-storage.googleapis.com"
     access_key_id         = ""
     secret_access_key     = ""
     must_force_path_style = false
@@ -174,47 +186,35 @@ module "compute_plane_service_account" {
   roles                = ["roles/pubsub.editor"]
 }
 
-/*
-# AWS S3 as object storage
-module "s3_os" {
-  count  = var.s3_os != null ? 1 : 0
-  source = "./generated/infra-modules/storage/aws/s3"
-  tags   = local.tags
-  name   = "${local.prefix}-s3os"
-  s3 = {
-    policy                                = var.s3_os.policy
-    attach_policy                         = var.s3_os.attach_policy
-    attach_deny_insecure_transport_policy = var.s3_os.attach_deny_insecure_transport_policy
-    attach_require_latest_tls_policy      = var.s3_os.attach_require_latest_tls_policy
-    attach_public_policy                  = var.s3_os.attach_public_policy
-    block_public_acls                     = var.s3_os.attach_public_policy
-    block_public_policy                   = var.s3_os.block_public_acls
-    ignore_public_acls                    = var.s3_os.block_public_policy
-    restrict_public_buckets               = var.s3_os.restrict_public_buckets
-    kms_key_id                            = local.kms_key
-    sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_os.sse_algorithm : "aws:kms"
-    ownership                             = var.s3_os.ownership
-    versioning                            = var.s3_os.versioning
-  }
+# GCP bucket as object storage
+module "gcs_os" {
+  count                = var.gcs_os != null ? 1 : 0
+  source               = "./generated/infra-modules/storage/gcp/gcs"
+  name                 = "${local.prefix}-gcsos"
+  location             = local.region
+  default_kms_key_name = var.kms_name
+  force_destroy        = true
+  labels               = local.labels
 }
 
-resource "kubernetes_secret" "s3" {
-  count = length(module.s3_os) > 0 ? 1 : 0
+resource "kubernetes_secret" "gcs" {
+  count = length(module.gcs_os) > 0 ? 1 : 0
   metadata {
     name      = "s3"
     namespace = local.namespace
   }
   data = {
-    username              = ""
-    password              = ""
-    url                   = "https://s3.${var.region}.amazonaws.com"
-    bucket_name           = module.s3_os[0].s3_bucket_name
-    kms_key_id            = module.s3_os[0].kms_key_id
+    project_id            = data.google_client_config.current.project
+    username              = google_storage_hmac_key.cloud_storage.access_id
+    password              = google_storage_hmac_key.cloud_storage.secret
+    url                   = "https://${local.region}-storage.googleapis.com"
+    bucket_name           = module.gcs_os[0].name
+    kms_key_id            = var.kms_name
     must_force_path_style = false
   }
 }
 
-
+/*
 # Amazon MQ
 module "mq" {
   source = "./generated/infra-modules/storage/aws/mq"

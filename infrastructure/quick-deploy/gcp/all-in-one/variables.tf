@@ -170,6 +170,12 @@ variable "memorystore" {
   default = null
 }
 
+variable "gcs_os" {
+  description = "Use GCS as object storage"
+  type = any
+  default = null
+}
+
 # ArmoniK docker images
 variable "armonik_images" {
   description = "Image names of all the ArmoniK components"
