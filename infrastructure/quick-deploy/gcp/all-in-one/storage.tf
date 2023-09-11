@@ -25,12 +25,12 @@ locals {
       url = module.memorystore[0].url
     } : null
     s3 = length(module.gcs_os) > 0 ? {
-      url         = "https://${local.region}-storage.googleapis.com"
+      url         = "https://storage.googleapis.com"
       bucket_name = module.gcs_os[0].name
       kms_key_id  = var.kms_name
     } : null
     shared = {
-      service_url = "https://${local.region}-storage.googleapis.com"
+      service_url = "https://storage.googleapis.com"
       name        = module.gcs_fs.name
       kms_key_id  = var.kms_name
     }
@@ -139,8 +139,8 @@ resource "google_storage_hmac_key" "cloud_storage" {
 # Give Storage Admin role to GKE service account
 resource "google_project_iam_member" "allow_gcs_access" {
   project = data.google_client_config.current.project
-  role   = "roles/storage.admin"
-  member = "serviceAccount:${module.gke.service_account}"
+  role    = "roles/storage.admin"
+  member  = "serviceAccount:${module.gke.service_account}"
 }
 
 # Shared storage for compute-plane
@@ -160,14 +160,16 @@ resource "kubernetes_secret" "shared_storage" {
     namespace = local.namespace
   }
   data = {
-    kms_key_id            = var.kms_name
-    name                  = module.gcs_fs.name
-    project_id            = data.google_client_config.current.project
     file_storage_type     = "S3"
-    service_url           = "https://${local.region}-storage.googleapis.com"
-    access_key_id         = ""
-    secret_access_key     = ""
+    project_id            = data.google_client_config.current.project
+    secret_access_key     = google_storage_hmac_key.cloud_storage.access_id
+    password              = google_storage_hmac_key.cloud_storage.secret
+    url                   = "https://storage.googleapis.com"
+    bucket_name           = module.gcs_fs.name
+    kms_key_id            = var.kms_name
     must_force_path_style = false
+    use_chunk_encoding    = false
+    use_check_sum         = false
   }
 }
 
@@ -207,110 +209,11 @@ resource "kubernetes_secret" "gcs" {
     project_id            = data.google_client_config.current.project
     username              = google_storage_hmac_key.cloud_storage.access_id
     password              = google_storage_hmac_key.cloud_storage.secret
-    url                   = "https://${local.region}-storage.googleapis.com"
+    url                   = "https://storage.googleapis.com"
     bucket_name           = module.gcs_os[0].name
     kms_key_id            = var.kms_name
     must_force_path_style = false
+    use_chunk_encoding    = false
+    use_check_sum         = false
   }
 }
-
-/*
-# Amazon MQ
-module "mq" {
-  source = "./generated/infra-modules/storage/aws/mq"
-  tags   = local.tags
-  name   = "${local.prefix}-mq"
-  vpc    = local.vpc
-  user   = var.mq_credentials
-  mq = {
-    engine_type             = var.mq.engine_type
-    engine_version          = var.mq.engine_version
-    host_instance_type      = var.mq.host_instance_type
-    apply_immediately       = var.mq.apply_immediately
-    deployment_mode         = var.mq.deployment_mode
-    storage_type            = var.mq.storage_type
-    authentication_strategy = var.mq.authentication_strategy
-    publicly_accessible     = var.mq.publicly_accessible
-    kms_key_id              = local.kms_key
-  }
-}
-
-resource "kubernetes_secret" "mq" {
-  metadata {
-    name      = "activemq"
-    namespace = local.namespace
-  }
-  data = {
-    "chain.pem"           = ""
-    username              = module.mq.user.username
-    password              = module.mq.user.password
-    host                  = module.mq.activemq_endpoint_url.host
-    port                  = module.mq.activemq_endpoint_url.port
-    url                   = module.mq.activemq_endpoint_url.url
-    web-url               = module.mq.web_url
-    adapter_class_name    = local.adapter_class_name
-    adapter_absolute_path = local.adapter_absolute_path
-    engine_type           = module.mq.engine_type
-  }
-}
-
-# Decrypt objects in S3
-data "aws_iam_policy_document" "decrypt_object" {
-  statement {
-    sid = "KMSAccess"
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey"
-    ]
-    effect = "Allow"
-    resources = toset([
-      for _, s3 in local.aws_s3 :
-      s3.kms_key_id
-    ])
-  }
-}
-
-resource "aws_iam_policy" "decrypt_object" {
-  name_prefix = "${local.prefix}-s3-encrypt-decrypt"
-  description = "Policy for alowing decryption of encrypted object in S3 ${module.eks.cluster_name}"
-  policy      = data.aws_iam_policy_document.decrypt_object.json
-  tags        = local.tags
-}
-
-resource "aws_iam_policy_attachment" "decrypt_object" {
-  name       = "${local.prefix}-s3-encrypt-decrypt"
-  roles      = module.eks.worker_iam_role_names
-  policy_arn = aws_iam_policy.decrypt_object.arn
-}
-
-# object permissions for S3
-data "aws_iam_policy_document" "object" {
-  for_each = local.aws_s3
-  statement {
-    sid     = each.value.permission_sid
-    actions = each.value.permission_actions
-    effect  = "Allow"
-    resources = [
-      "${each.value.arn}/*"
-    ]
-  }
-}
-
-resource "aws_iam_policy" "object" {
-  for_each    = data.aws_iam_policy_document.object
-  name_prefix = "${local.prefix}-s3-${each.key}"
-  description = "Policy for allowing object access in ${each.key} S3 ${module.eks.cluster_name}"
-  policy      = each.value.json
-  tags        = local.tags
-}
-
-resource "aws_iam_policy_attachment" "object" {
-  for_each   = aws_iam_policy.object
-  name       = "${local.prefix}-permissions-on-s3-${each.key}"
-  roles      = module.eks.worker_iam_role_names
-  policy_arn = each.value.arn
-}
-*/

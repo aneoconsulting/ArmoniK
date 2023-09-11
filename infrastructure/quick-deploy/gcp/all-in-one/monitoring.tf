@@ -233,11 +233,6 @@ module "fluent_bit" {
     port    = module.seq[0].port
     enabled = true
   } : {}
-  stackdriver = {
-    cluster_name = module.gke.name
-    cluster_location = module.gke.location
-    credentials = base64decode(google_service_account_key.key.private_key)
-  }
 }
 
 resource "google_service_account_key" "key" {

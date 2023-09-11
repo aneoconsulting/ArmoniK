@@ -41,7 +41,9 @@ locals {
     "created_by"         = split("@", data.google_client_openid_userinfo.current.email)[0]
     "creation_date"      = null_resource.timestamp.triggers["date"]
   }, var.labels)
-  date = <<-EOT
+  node_pool_labels = { all = local.labels, default-node-pool = local.labels }
+  node_pool_tags   = { all = values(local.labels), default-node-pool = values(local.labels) }
+  date             = <<-EOT
 #!/bin/bash
 set -e
 DATE=$(date +%F-%H-%M-%S)

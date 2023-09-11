@@ -172,8 +172,8 @@ variable "memorystore" {
 
 variable "gcs_os" {
   description = "Use GCS as object storage"
-  type = any
-  default = null
+  type        = any
+  default     = null
 }
 
 # ArmoniK docker images

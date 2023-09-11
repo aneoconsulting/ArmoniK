@@ -13,23 +13,22 @@ mongodb = {
   node_selector = { service = "state-database" }
 }
 
-# memorystore = {
-#   memory_size_gb = 20
-#   auth_enabled   = true
-#   connect_mode   = "PRIVATE_SERVICE_ACCESS"
-#   redis_configs = {
-#     "maxmemory-gb"     = "18"
-#     "maxmemory-policy" = "volatile-lru"
-#   }
-#   reserved_ip_range       = "10.1.0.0/16"
-#   redis_version           = "REDIS_7_0"
-#   tier                    = "STANDARD_HA"
-#   transit_encryption_mode = "SERVER_AUTHENTICATION"
-#   replica_count           = 3
-#   read_replicas_mode      = "READ_REPLICAS_ENABLED"
-# }
-gcs_os = {}
-
+memorystore = {
+  memory_size_gb = 20
+  auth_enabled   = true
+  connect_mode   = "PRIVATE_SERVICE_ACCESS"
+  redis_configs = {
+    "maxmemory-gb"     = "18"
+    "maxmemory-policy" = "volatile-lru"
+  }
+  reserved_ip_range       = "10.1.0.0/16"
+  redis_version           = "REDIS_7_0"
+  tier                    = "STANDARD_HA"
+  transit_encryption_mode = "SERVER_AUTHENTICATION"
+  replica_count           = 3
+  read_replicas_mode      = "READ_REPLICAS_ENABLED"
+}
+#gcs_os = {}
 
 seq = {
   node_selector = { service = "monitoring" }
@@ -49,6 +48,7 @@ prometheus = {
 
 metrics_exporter = {
   node_selector = { service = "metrics" }
+  image_tag     = "0.17.0"
   extra_conf = {
     MongoDB__AllowInsecureTls              = true
     Serilog__MinimumLevel                  = "Information"
@@ -84,8 +84,8 @@ control_plane = {
   }
   default_partition = "default"
   node_selector     = { service = "control-plane" }
-  image = "submitterpubsub"
-  tag   = "0.14.3-pubsub"
+  image             = "submitterpubsub"
+  tag               = "0.17.0-pubsub"
 }
 
 # Parameters of admin GUI
@@ -119,7 +119,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.14.3-pubsub"
+      tag   = "0.17.0-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -172,7 +172,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.14.3-pubsub"
+      tag   = "0.17.0-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -225,7 +225,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.14.3-pubsub"
+      tag   = "0.17.0-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -278,7 +278,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.14.3-pubsub"
+      tag   = "0.17.0-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -338,13 +338,13 @@ authentication = {
 
 extra_conf = {
   core = {
-    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
-    MongoDB__TableStorage__PollingDelay        = "00:00:01"
-    MongoDB__DataRetention                     = "10.00:00:00"
-    MongoDB__AllowInsecureTls                  = true
-    Redis__Timeout                             = 3000
-    Redis__SslHost                             = ""
+    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    MongoDB__TableStorage__PollingDelay    = "00:00:01"
+    MongoDB__DataRetention                 = "10.00:00:00"
+    MongoDB__AllowInsecureTls              = true
+    Redis__Timeout                         = 3000
+    Redis__SslHost                         = ""
   }
   control = {
     Submitter__MaxErrorAllowed = 50
