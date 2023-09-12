@@ -38,13 +38,21 @@ apply:
 	terraform apply -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
 
 refresh:
-	terraform refresh -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
+	terraform refresh -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)
 
 delete:
 	terraform destroy -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
 
 state-pull:
 	terraform state pull
+
+import-error:
+	@if ! terraform state push errored.tfstate 2>/dev/null; then\
+		terraform state push errored.tfstate 2>&1 | sed -n 's/^.*ID:\s*\(\w*\)\s*/\1/p' | xargs terraform force-unlock -force || true;\
+		terraform state push errored.tfstate;\
+	fi
+	@echo terraform state push errored.tfstate
+	rm -f errored.tfstate
 
 output:
 	@terraform output -json | jq 'map_values(.value)' > $(OUTPUT_FILE)
