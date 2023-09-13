@@ -2,6 +2,11 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+Added
+-
+
+* Examples of deployments on Google Cloud Platform.
+
 Changed
 -
 
