@@ -17,18 +17,11 @@ module "vpc" {
   enable_google_access = true
 }
 
-# Private services access
-resource "google_compute_global_address" "reserved_service_range" {
+module "psa" {
+  source        = "./generated/infra-modules/networking/gcp/psa"
   name          = "private-ip-alloc-${local.suffix}"
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
+  network       = module.vpc.self_link
   prefix_length = 24
-  network       = module.vpc.id
-}
-
-resource "google_service_networking_connection" "private_service_connection" {
-  network                 = module.vpc.id
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.reserved_service_range.name]
+  address_type  = "INTERNAL"
 }
 
