@@ -18,7 +18,7 @@ module "vpc" {
 }
 
 module "psa" {
-  source        = "./generated/infra-modules/networking/gcp/psa"
+  source        = "../generated/infra-modules/networking/gcp/psa"
   name          = "private-ip-alloc-${local.suffix}"
   network       = module.vpc.self_link
   prefix_length = 24
