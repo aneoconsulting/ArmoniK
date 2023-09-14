@@ -373,18 +373,18 @@ variable "admin_old_gui" {
 }
 
 # Parameters of the compute plane
-variable "compute_plane" {
+variable "compute_plane_defaults" {
   description = "Parameters of the compute plane"
-  type = map(object({
-    replicas                         = optional(number, 1)
-    termination_grace_period_seconds = optional(number, 30)
-    image_pull_secrets               = optional(string, "IfNotPresent")
-    node_selector                    = optional(any, {})
-    annotations                      = optional(any, {})
-    polling_agent = object({
-      image             = optional(string, "dockerhubaneo/armonik_pollingagent")
+  type = object({
+    replicas                         = optional(number)
+    termination_grace_period_seconds = optional(number)
+    image_pull_secrets               = optional(string)
+    node_selector                    = optional(any)
+    annotations                      = optional(any)
+    polling_agent = optional(object({
+      image             = optional(string)
       tag               = optional(string)
-      image_pull_policy = optional(string, "IfNotPresent")
+      image_pull_policy = optional(string)
       limits = optional(object({
         cpu    = optional(string)
         memory = optional(string)
@@ -393,12 +393,12 @@ variable "compute_plane" {
         cpu    = optional(string)
         memory = optional(string)
       }))
-    })
-    worker = list(object({
-      name              = optional(string, "worker")
-      image             = string
+    }))
+    worker = optional(object({
+      name              = optional(string)
+      image             = optional(string)
       tag               = optional(string)
-      image_pull_policy = optional(string, "IfNotPresent")
+      image_pull_policy = optional(string)
       limits = optional(object({
         cpu    = optional(string)
         memory = optional(string)
@@ -410,7 +410,49 @@ variable "compute_plane" {
     }))
     # KEDA scaler
     hpa = optional(any)
-  }))
+  })
+  default = {}
+}
+# Parameters of the compute plane
+variable "compute_plane" {
+  description = "Parameters of the compute plane"
+  type        = any
+  # type = map(object({
+  #   replicas                         = optional(number)
+  #   termination_grace_period_seconds = optional(number)
+  #   image_pull_secrets               = optional(string)
+  #   node_selector                    = optional(any)
+  #   annotations                      = optional(any)
+  #   polling_agent = optional(object({
+  #     image             = optional(string)
+  #     tag               = optional(string)
+  #     image_pull_policy = optional(string)
+  #     limits = optional(object({
+  #       cpu    = optional(string)
+  #       memory = optional(string)
+  #     }))
+  #     requests = optional(object({
+  #       cpu    = optional(string)
+  #       memory = optional(string)
+  #     }))
+  #   }))
+  #   worker = optional(list(object({
+  #     name              = optional(string)
+  #     image             = optional(string)
+  #     tag               = optional(string)
+  #     image_pull_policy = optional(string)
+  #     limits = optional(object({
+  #       cpu    = optional(string)
+  #       memory = optional(string)
+  #     }))
+  #     requests = optional(object({
+  #       cpu    = optional(string)
+  #       memory = optional(string)
+  #     }))
+  #   })))
+  #   # KEDA scaler
+  #   hpa = optional(any)
+  # }))
 }
 
 variable "ingress" {

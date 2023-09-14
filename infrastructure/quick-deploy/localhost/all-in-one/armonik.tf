@@ -19,7 +19,7 @@ module "armonik" {
   // If compute plane has no partition data, provides a default
   // but always overrides the images
   compute_plane = {
-    for k, v in var.compute_plane : k => merge({
+    for k, v in local.compute_plane : k => merge({
       partition_data = {
         priority              = 1
         reserved_pods         = 1
