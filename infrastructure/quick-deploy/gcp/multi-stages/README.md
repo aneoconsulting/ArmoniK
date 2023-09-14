@@ -63,8 +63,8 @@ infrastructure:
 * [Docker](https://docs.docker.com/engine/install/)
 * [GNU make](https://www.gnu.org/software/make/)
 * [JQ](https://stedolan.github.io/jq/download/)
-* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) v1.23.6
-* [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version 1.0.9 and later
+* [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) version v1.23.6 and later.
+* [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) version 1.0.9 and later.
 
 ## GCP initialization
 
