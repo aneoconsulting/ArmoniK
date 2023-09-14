@@ -155,14 +155,18 @@ extra_conf = {
     MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
     MongoDB__AllowInsecureTls                  = true
     MongoDB__TableStorage__PollingDelay        = "00:00:01"
-    MongoDB__DataRetention                     = "10.00:00:00"
+    MongoDB__DataRetention                     = "1.00:00:00"
     Redis__Timeout                             = 30000
     Redis__SslHost                             = "127.0.0.1"
+    Redis__DataRetention                       = "1.00:00:00"
   }
   control = {
     Submitter__MaxErrorAllowed = 50
   }
 }
+
+# Extra configuration for jobs connecting to database
+jobs_in_database_extra_conf = { MongoDB__DataRetention = "1.00:00:00" }
 
 environment_description = {
   name        = "local-dev"

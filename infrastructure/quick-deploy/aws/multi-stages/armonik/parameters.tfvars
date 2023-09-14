@@ -32,13 +32,14 @@ job_partitions_in_database = {
 
 # Parameters of control plane
 control_plane = {
-  name              = "control-plane"
-  service_type      = "ClusterIP"
-  replicas          = 1
-  image             = "armonik-control-plane"
-  tag               = "0.15.0"
-  image_pull_policy = "IfNotPresent"
-  port              = 5001
+  name                 = "control-plane"
+  service_type         = "ClusterIP"
+  replicas             = 1
+  image                = "armonik-control-plane"
+  tag                  = "0.15.0"
+  image_pull_policy    = "IfNotPresent"
+  port                 = 5001
+  service_account_name = ""
   limits = {
     cpu    = "1000m"
     memory = "2048Mi"
@@ -146,6 +147,7 @@ compute_plane = {
     image_pull_secrets               = ""
     node_selector                    = { service = "workers" }
     annotations                      = {}
+    service_account_name             = ""
     # ArmoniK polling agent
     polling_agent = {
       image             = "armonik-polling-agent"
@@ -422,15 +424,19 @@ extra_conf = {
     MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
     MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
     MongoDB__TableStorage__PollingDelay        = "00:00:01"
-    MongoDB__DataRetention                     = "10.00:00:00"
+    MongoDB__DataRetention                     = "1.00:00:00"
     MongoDB__AllowInsecureTls                  = true
     Redis__Timeout                             = 3000
     Redis__SslHost                             = ""
+    Redis__DataRetention                       = "1.00:00:00"
   }
   control = {
     Submitter__MaxErrorAllowed = 50
   }
 }
+
+# Extra configuration for jobs connecting to database
+jobs_in_database_extra_conf = { MongoDB__DataRetention = "1.00:00:00" }
 
 environment_description = {
   name        = "aws-dev"

@@ -102,13 +102,14 @@ variable "job_partitions_in_database" {
 variable "control_plane" {
   description = "Parameters of the control plane"
   type = object({
-    name              = string
-    service_type      = string
-    replicas          = number
-    image             = string
-    tag               = string
-    image_pull_policy = string
-    port              = number
+    name                 = string
+    service_type         = string
+    replicas             = number
+    image                = string
+    tag                  = string
+    image_pull_policy    = string
+    port                 = number
+    service_account_name = string
     limits = object({
       cpu    = string
       memory = string
@@ -200,6 +201,7 @@ variable "compute_plane" {
     image_pull_secrets               = string
     node_selector                    = any
     annotations                      = any
+    service_account_name             = string
     polling_agent = object({
       image             = string
       tag               = string
@@ -275,6 +277,13 @@ variable "authentication" {
     require_authentication  = bool
     require_authorization   = bool
   })
+}
+
+# Extra configuration for jobs connecting to database
+variable "jobs_in_database_extra_conf" {
+  description = "Add extra configuration in the configmaps for jobs connecting to database"
+  type        = map(string)
+  default     = {}
 }
 
 variable "environment_description" {

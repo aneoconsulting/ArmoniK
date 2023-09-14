@@ -512,13 +512,14 @@ variable "job_partitions_in_database" {
 variable "control_plane" {
   description = "Parameters of the control plane"
   type = object({
-    name              = optional(string, "control-plane")
-    service_type      = optional(string, "ClusterIP")
-    replicas          = optional(number, 2)
-    image             = optional(string, "dockerhubaneo/armonik_control")
-    tag               = optional(string)
-    image_pull_policy = optional(string, "IfNotPresent")
-    port              = optional(number, 5001)
+    name                 = optional(string, "control-plane")
+    service_type         = optional(string, "ClusterIP")
+    replicas             = optional(number, 2)
+    image                = optional(string, "dockerhubaneo/armonik_control")
+    tag                  = optional(string)
+    image_pull_policy    = optional(string, "IfNotPresent")
+    port                 = optional(number, 5001)
+    service_account_name = optional(string, "")
     limits = optional(object({
       cpu    = optional(string)
       memory = optional(string)
@@ -610,6 +611,7 @@ variable "compute_plane" {
     image_pull_secrets               = optional(string, "IfNotPresent")
     node_selector                    = optional(any, {})
     annotations                      = optional(any, {})
+    service_account_name             = optional(string, "")
     polling_agent = optional(object({
       image             = optional(string, "dockerhubaneo/armonik_pollingagent")
       tag               = optional(string)
@@ -738,4 +740,11 @@ variable "environment_description" {
   description = "Description of the environment"
   type        = any
   default     = null
+}
+
+# Extra configuration for jobs connecting to database
+variable "jobs_in_database_extra_conf" {
+  description = "Add extra configuration in the configmaps for jobs connecting to database"
+  type        = map(string)
+  default     = {}
 }
