@@ -209,6 +209,7 @@ compute_plane = {
     image_pull_secrets               = ""
     node_selector                    = { service = "workers" }
     annotations                      = {}
+    service_account_name             = ""
     # ArmoniK polling agent
     polling_agent = {
       image             = "armonik-polling-agent"
@@ -268,6 +269,7 @@ compute_plane = {
     image_pull_secrets               = ""
     node_selector                    = { service = "workers" }
     annotations                      = {}
+    service_account_name             = ""
     # ArmoniK polling agent
     polling_agent = {
       image             = "armonik-polling-agent"
@@ -327,6 +329,7 @@ compute_plane = {
     image_pull_secrets               = ""
     node_selector                    = { service = "workers" }
     annotations                      = {}
+    service_account_name             = ""
     # ArmoniK polling agent
     polling_agent = {
       image             = "armonik-polling-agent"
