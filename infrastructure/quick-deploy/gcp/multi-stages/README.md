@@ -35,7 +35,7 @@ The infrastructure is composed of:
         * to upload `.dll` for worker pods
         * for input/output payloads
     * GCP Memorystore for Redis (in case where GCS is not used for payloads)
-    * Onpremise MongoDB
+    * MongoDB in Kubernetes 
 * GCP service accounts for control-plane and compute-plane
 * Monitoring:
     * Fluent-bit
