@@ -27,9 +27,10 @@ module "armonik" {
 
   control_plane = merge(var.control_plane, { image = local.control_plane_image })
   admin_gui     = merge(var.admin_gui, { image = local.admin_gui_image })
-  admin_old_gui = merge(var.admin_old_gui, {
-    api = merge(var.admin_old_gui.api, { image = local.admin_old_gui_api_image }),
-    old = merge(var.admin_old_gui.old, { image = local.admin_old_gui_old_image })
+  admin_0_9_gui = merge(var.admin_0_9_gui, { image = local.admin_0_9_gui_image })
+  admin_0_8_gui = merge(var.admin_0_8_gui, {
+    api = merge(var.admin_0_8_gui.api, { image = local.admin_0_8_gui_api_image }),
+    app = merge(var.admin_0_8_gui.app, { image = local.admin_0_8_gui_app_image })
   })
   ingress                    = merge(var.ingress, { image = local.ingress_image })
   job_partitions_in_database = merge(var.job_partitions_in_database, { image = local.job_partitions_in_database_image })

@@ -52,7 +52,7 @@ module "armonik" {
     api = merge(var.admin_0_8_gui.api, {
       tag = try(coalesce(var.admin_0_8_gui.api.tag), local.default_tags[var.admin_0_8_gui.api.image])
     })
-    old = merge(var.admin_0_8_gui.app, {
+    app = merge(var.admin_0_8_gui.app, {
       tag = try(coalesce(var.admin_0_8_gui.app.tag), local.default_tags[var.admin_0_8_gui.app.image])
     })
   })

@@ -361,8 +361,23 @@ admin_gui = {
   node_selector = { service = "monitoring" }
 }
 
-# Parameters of old admin GUI
-admin_old_gui = {
+# Deprecated, must be removed in a future version
+# Parameters of admin gui v0.9
+admin_0_9_gui = {
+  limits = {
+    cpu    = "1000m"
+    memory = "1024Mi"
+  }
+  requests = {
+    cpu    = "100m"
+    memory = "128Mi"
+  }
+  node_selector = { service = "monitoring" }
+}
+
+# Deprecated, must be removed in a future version
+# Parameters of admin gui v0.8 (previously called old admin gui)
+admin_0_8_gui = {
   api = {
     name = "admin-api"
     port = 3333
@@ -375,7 +390,7 @@ admin_old_gui = {
       memory = "128Mi"
     }
   }
-  old = {
+  app = {
     name = "admin-old-gui"
     port = 1080
     limits = {

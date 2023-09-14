@@ -3,14 +3,29 @@ namespace = "armonik"
 
 # Monitoring infos
 monitoring = {
-  seq                        = {}
-  fluent_bit                 = {}
-  partition_metrics_exporter = {}
-  metrics_exporter           = {}
-  node_exporter              = {}
-  prometheus                 = {}
-  grafana                    = {}
-
+  seq        = {}
+  fluent_bit = {}
+  partition_metrics_exporter = {
+    extra_conf = {
+      MongoDB__AllowInsecureTls              = true
+      Serilog__MinimumLevel                  = "Information"
+      MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+      MongoDB__DataRetention                 = "1.00:00:00" # 1 day retention
+    }
+  }
+  metrics_exporter = {
+    extra_conf = {
+      MongoDB__AllowInsecureTls              = true
+      Serilog__MinimumLevel                  = "Information"
+      MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+      MongoDB__DataRetention                 = "1.00:00:00" # 1 day retention
+    }
+  }
+  node_exporter = {}
+  prometheus    = {}
+  grafana       = {}
 }
 /*
 monitoring = {
