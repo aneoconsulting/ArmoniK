@@ -104,7 +104,7 @@ where:
 - `ARMONIK_BUCKET_NAME`: is the name of S3 bucket in which `.tfsate` will be safely stored
 - `ARMONIK_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for ArmoniK
 - `KEDA_KUBERNETES_NAMESPACE`: is the namespace in Kubernetes for [KEDA](https://keda.sh/)
-- `PUBLIC_ACCESS_gke`: is boolean defining whether the GKE to be deployed should have a public access
+- `PUBLIC_ACCESS_GKE`: is boolean defining whether the GKE to be deployed should have a public access
 - `TERRAFORM_PLUGINS`: directory path where save Terraform plugins
 
 **Warning:** `ARMONIK_SUFFIX` must be *UNIQUE* to allow resources to have unique name in GCP
@@ -168,9 +168,9 @@ The GKE deployment generates an output file `gke/generated/gke-output.json`.
 
 ### Create Kubernetes namespace
 
-After the GKE deployment, You create a Kubernetes namespaces for ArmoniK with the name set in the environment
-variable`ARMONIK_KUBERNETES_NAMESPACE` and for KEDA with the name set in the environment
-variable`KEDA_KUBERNETES_NAMESPACE`:
+After the GKE deployment, You create a Kubernetes namespaces for ArmoniK with the name set in the environment 
+variable `ARMONIK_KUBERNETES_NAMESPACE` and for KEDA with the name set in the environment
+variable `KEDA_KUBERNETES_NAMESPACE`:
 
 ```bash
 make create-namespace
@@ -194,9 +194,9 @@ The Keda deployment generates an output file `keda/generated/keda-output.json`.
 
 You need to create Google Cloud Storage for ArmoniK which are:
 
-* Google Memorystore for Redis
-* Google Cloud Storage to upload `.dll` for ArmoniK workers
-* MongoDB as a Kubernetes service
+* Google Memorystore for Redis or Google Cloud Storage (default deployment) for input/output payloads.
+* Google Cloud Storage to upload `.dll` for ArmoniK workers.
+* MongoDB as a Kubernetes service.
 
 The parameters of each storage are defined in [storage/parameters.tfvars](storage/parameters.tfvars).
 
@@ -252,7 +252,7 @@ make deploy-monitoring \
 where:
 
 - `<path-to-gke-parameters>` is the **absolute** path to file `gke/generated/gke-output.json` containing the information
-  about the VPC previously created.
+  about the GKE previously created.
 - `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json` containing the
   information about the storage previously created.
 
@@ -276,12 +276,14 @@ make deploy-armonik
 
 ```bash
 make deploy-armonik \
+  GKE_PARAMETERS_FILE=<path-to-gke-parameters> \
   STORAGE_PARAMETERS_FILE=<path-to-storage-parameters> \
   MONITORING_PARAMETERS_FILE=<path-to-monitoring-parameters>
 ```
 
 where:
 
+- `<path-to-gke-parameters>` is the **absolute** path to file `gke/generated/gke-output.json`
 - `<path-to-storage-parameters>` is the **absolute** path to file `storage/generated/storage-output.json`
 - `<path-to-monitoring-parameters>` is the **absolute** path to file `monitoring/generated/monitoring-output.json`
 
