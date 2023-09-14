@@ -99,6 +99,6 @@ module "artifact_registry" {
   docker_images = local.repositories
   name          = "${local.prefix}-docker-registry"
   description   = "All docker images for ArmoniK"
-  kms_key_name  = local.kms_key_id
+  kms_key_id  = local.kms_key_id
   labels        = local.labels
 }
