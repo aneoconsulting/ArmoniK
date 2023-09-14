@@ -2,6 +2,8 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.16.0](https://github.com/aneoconsulting/armonik/tree/v2.16.0) (2023-09-14)
+
 Added
 -
 
@@ -22,7 +24,8 @@ Changed
 * Upgrade version of Nginx from `1.23.3` to `1.25.1-alpine-slim`.
 * Upgrade version of SeqCli from `2023.1` to `2023.2`
 * Upgrade version of MinIO from `RELEASE.2023-02-10T18-48-39Z` to `RELEASE.2023-07-18T17-49-40Z`.
-* Upgrade version of infrastructure from `0.0.4` to `0.1.0`.
+* Upgrade version of infrastructure from `0.1.0` to `0.2.0`.
+* Upgrade version of ArmoniK Core from `0.15.0` to `0.17.0`.
 
 ## [v2.15.1](https://github.com/aneoconsulting/armonik/tree/v2.15.0) (2023-08-29)
 

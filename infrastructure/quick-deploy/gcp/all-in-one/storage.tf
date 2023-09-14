@@ -97,7 +97,7 @@ module "memorystore" {
   replica_count           = var.memorystore.replica_count
   read_replicas_mode      = var.memorystore.read_replicas_mode
   customer_managed_key    = coalesce(var.memorystore.customer_managed_key, local.kms_key_id)
-  depends_on              = [google_service_networking_connection.private_service_connection]
+  depends_on              = [module.psa]
 }
 
 resource "kubernetes_secret" "deployed_object_storage" {
