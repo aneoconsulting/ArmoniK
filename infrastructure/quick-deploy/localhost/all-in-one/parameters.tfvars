@@ -18,6 +18,7 @@ metrics_exporter = {
     Serilog__MinimumLevel                  = "Information"
     MongoDB__TableStorage__PollingDelayMin = "00:00:01"
     MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+    MongoDB__DataRetention                 = "1.00:00:00"
   }
 }
 
@@ -27,6 +28,7 @@ metrics_exporter = {
     Serilog__MinimumLevel               = "Information"
     MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
     MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+    MongoDB__DataRetention = "1.00:00:00"
   }
 }*/
 
@@ -44,40 +46,64 @@ control_plane = {
 }
 
 # Parameters of admin GUI
-# Parameters of admin GUI
 admin_gui = {
   limits = {
     cpu    = "1000m"
     memory = "1024Mi"
   }
   requests = {
-    cpu    = "50m"
-    memory = "50Mi"
+    cpu    = "100m"
+    memory = "128Mi"
   }
+  node_selector = { service = "monitoring" }
 }
 
-# Old GUI
-admin_old_gui = {
+# Deprecated, must be removed in a future version
+# Parameters of admin gui v0.9
+admin_0_9_gui = {
+  limits = {
+    cpu    = "1000m"
+    memory = "1024Mi"
+  }
+  requests = {
+    cpu    = "100m"
+    memory = "128Mi"
+  }
+  node_selector = { service = "monitoring" }
+}
+
+# Deprecated, must be removed in a future version
+# Parameters of admin gui v0.8 (previously called old admin gui)
+admin_0_8_gui = {
   api = {
+    name = "admin-api"
+    port = 3333
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
     }
     requests = {
-      cpu    = "50m"
-      memory = "50Mi"
+      cpu    = "100m"
+      memory = "128Mi"
     }
   }
-  old = {
+  app = {
+    name = "admin-old-gui"
+    port = 1080
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
     }
     requests = {
-      cpu    = "50m"
-      memory = "50Mi"
+      cpu    = "100m"
+      memory = "128Mi"
     }
   }
+  service_type       = "ClusterIP"
+  replicas           = 1
+  image_pull_policy  = "IfNotPresent"
+  image_pull_secrets = ""
+  node_selector      = { service = "monitoring" }
 }
 
 # Parameters of the compute plane
@@ -304,14 +330,18 @@ extra_conf = {
     MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
     MongoDB__AllowInsecureTls                  = true
     MongoDB__TableStorage__PollingDelay        = "00:00:01"
-    MongoDB__DataRetention                     = "10.00:00:00"
+    MongoDB__DataRetention                     = "1.00:00:00"
     Redis__Timeout                             = 30000
     Redis__SslHost                             = "127.0.0.1"
+    Redis__DataRetention                       = "1.00:00:00"
   }
   control = {
     Submitter__MaxErrorAllowed = 50
   }
 }
+
+# Extra configuration for jobs connecting to database
+jobs_in_database_extra_conf = { MongoDB__DataRetention = "1.00:00:00" }
 
 environment_description = {
   name        = "local-dev"

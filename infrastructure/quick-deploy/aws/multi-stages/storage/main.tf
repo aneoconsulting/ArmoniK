@@ -1,7 +1,7 @@
 # AWS KMS
 module "kms" {
   count  = (can(coalesce(var.s3_fs.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.log_kms_key_id)) && can(coalesce(var.s3_os.kms_key_id)) && can(coalesce(var.mq.kms_key_id)) ? 0 : 1)
-  source = "../generated/infra-modules/utils/aws/kms"
+  source = "../generated/infra-modules/security/aws/kms"
   name   = local.kms_name
   tags   = local.tags
 }

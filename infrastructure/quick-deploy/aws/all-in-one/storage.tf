@@ -49,6 +49,8 @@ resource "kubernetes_secret" "shared_storage" {
     secret_access_key     = ""
     file_storage_type     = "S3"
     must_force_path_style = false
+    use_chunk_encoding    = true
+    use_check_sum         = true
   }
 }
 
@@ -88,6 +90,8 @@ resource "kubernetes_secret" "s3" {
     bucket_name           = module.s3_os[0].s3_bucket_name
     kms_key_id            = module.s3_os[0].kms_key_id
     must_force_path_style = false
+    use_chunk_encoding    = true
+    use_check_sum         = true
   }
 }
 

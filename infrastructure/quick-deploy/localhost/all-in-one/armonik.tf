@@ -27,7 +27,7 @@ module "armonik" {
         preemption_percentage = 50
         parent_partition_ids  = []
         pod_configuration     = null
-      }
+      },
       }, v, {
       polling_agent = merge(v.polling_agent, {
         tag = try(coalesce(v.polling_agent.tag), local.default_tags[v.polling_agent.image])
@@ -45,12 +45,15 @@ module "armonik" {
   admin_gui = merge(var.admin_gui, {
     tag = try(coalesce(var.admin_gui.tag), local.default_tags[var.admin_gui.image])
   })
-  admin_old_gui = merge(var.admin_old_gui, {
-    api = merge(var.admin_old_gui.api, {
-      tag = try(coalesce(var.admin_old_gui.api.tag), local.default_tags[var.admin_old_gui.api.image])
+  admin_0_9_gui = merge(var.admin_0_9_gui, {
+    tag = try(coalesce(var.admin_0_9_gui.tag), local.default_tags[var.admin_0_9_gui.image])
+  })
+  admin_0_8_gui = merge(var.admin_0_8_gui, {
+    api = merge(var.admin_0_8_gui.api, {
+      tag = try(coalesce(var.admin_0_8_gui.api.tag), local.default_tags[var.admin_0_8_gui.api.image])
     })
-    old = merge(var.admin_old_gui.old, {
-      tag = try(coalesce(var.admin_old_gui.old.tag), local.default_tags[var.admin_old_gui.old.image])
+    app = merge(var.admin_0_8_gui.app, {
+      tag = try(coalesce(var.admin_0_8_gui.app.tag), local.default_tags[var.admin_0_8_gui.app.image])
     })
   })
   ingress = merge(var.ingress, {

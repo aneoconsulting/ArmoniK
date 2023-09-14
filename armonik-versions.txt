@@ -1,5 +1,5 @@
-infra=0.1.0
-core=0.15.0
+infra=0.2.0
+core=0.17.0
 worker=0.12.2
 admin-gui=0.10.1
 samples=v2.15.0
