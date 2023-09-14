@@ -60,6 +60,6 @@ module "gar" {
   docker_images = var.gar
   name          = "docker-registry-${local.suffix}"
   description   = "All docker images for ArmoniK"
-  kms_key_name  = local.kms_key_id
+  kms_key_id    = local.kms_key_id
   labels        = local.labels
 }
