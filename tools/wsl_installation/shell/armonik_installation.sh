@@ -15,7 +15,7 @@ then
 fi
 cd $HOME/ArmoniK
 
-git checkout -b arm_install $1
+if ! git checkout $1 ; then git checkout -b armonik_install $1; fi 
 
 # change branch
 #while ! git rev-parse --quiet --verify $branch_name > /dev/null 
