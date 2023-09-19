@@ -7,9 +7,10 @@ module "activemq" {
     tag                   = try(coalesce(var.activemq.image_tag), local.default_tags[var.activemq.image_name])
     node_selector         = var.activemq.node_selector
     image_pull_secrets    = var.activemq.image_pull_secrets
+
+  }
     adapter_class_name    = var.activemq.adapter_class_name
     adapter_absolute_path = var.activemq.adapter_absolute_path
-  }
 }
 
 # MongoDB
