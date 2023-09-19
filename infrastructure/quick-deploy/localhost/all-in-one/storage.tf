@@ -3,10 +3,12 @@ module "activemq" {
   source    = "./generated/infra-modules/storage/onpremise/activemq"
   namespace = local.namespace
   activemq = {
-    image              = var.activemq.image_name
-    tag                = try(coalesce(var.activemq.image_tag), local.default_tags[var.activemq.image_name])
-    node_selector      = var.activemq.node_selector
-    image_pull_secrets = var.activemq.image_pull_secrets
+    image                 = var.activemq.image_name
+    tag                   = try(coalesce(var.activemq.image_tag), local.default_tags[var.activemq.image_name])
+    node_selector         = var.activemq.node_selector
+    image_pull_secrets    = var.activemq.image_pull_secrets
+    adapter_class_name    = var.activemq.adapter_class_name
+    adapter_absolute_path = var.activemq.adapter_absolute_path
   }
 }
 
