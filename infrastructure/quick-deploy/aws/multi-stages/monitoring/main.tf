@@ -150,7 +150,7 @@ module "fluent_bit" {
   s3 = (local.s3_enabled ? {
     name    = local.s3_name
     region  = local.s3_region
-    prefix  = local.s3_prefix
+    prefix  = var.monitoring.s3.prefix
     enabled = true
   } : {})
 }
