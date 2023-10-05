@@ -186,16 +186,20 @@ module "fluent_bit" {
   namespace     = local.namespace
   node_selector = var.fluent_bit.node_selector
   fluent_bit = {
-    container_name     = "fluent-bit"
-    image              = var.fluent_bit.image_name
-    tag                = try(coalesce(var.fluent_bit.image_tag), local.default_tags[var.fluent_bit.image_name])
-    parser             = var.fluent_bit.parser
-    image_pull_secrets = var.fluent_bit.pull_secrets
-    is_daemonset       = var.fluent_bit.is_daemonset
-    http_server        = (var.fluent_bit.http_port == 0 ? "Off" : "On")
-    http_port          = (var.fluent_bit.http_port == 0 ? "" : tostring(var.fluent_bit.http_port))
-    read_from_head     = (var.fluent_bit.read_from_head ? "On" : "Off")
-    read_from_tail     = (var.fluent_bit.read_from_head ? "Off" : "On")
+    container_name                  = "fluent-bit"
+    image                           = var.fluent_bit.image_name
+    tag                             = try(coalesce(var.fluent_bit.image_tag), local.default_tags[var.fluent_bit.image_name])
+    parser                          = var.fluent_bit.parser
+    image_pull_secrets              = var.fluent_bit.pull_secrets
+    is_daemonset                    = var.fluent_bit.is_daemonset
+    http_server                     = (var.fluent_bit.http_port == 0 ? "Off" : "On")
+    http_port                       = (var.fluent_bit.http_port == 0 ? "" : tostring(var.fluent_bit.http_port))
+    read_from_head                  = (var.fluent_bit.read_from_head ? "On" : "Off")
+    read_from_tail                  = (var.fluent_bit.read_from_head ? "Off" : "On")
+    fluentbitstate_hostpath         = var.fluent_bit.fluentbitstate_hostpath
+    varlibdockercontainers_hostpath = var.fluent_bit.varlibdockercontainers_hostpath
+    runlogjournal_hostpath          = var.fluent_bit.runlogjournal_hostpath
+
   }
   seq = length(module.seq) != 0 ? {
     host    = module.seq[0].host
