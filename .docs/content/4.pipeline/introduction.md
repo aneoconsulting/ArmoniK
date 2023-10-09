@@ -13,4 +13,3 @@ Our standardized workflows include:
 - **Automated Testing**: A dedicated workflow for automated testing is triggered whenever a new contribution is submitted. This ensures that our code adheres to quality standards and functions correctly.
 
 - **Continuous Deployment**: We use a continuous deployment workflow to automatically publish updates to our pre-production environment. This allows us to test new features in an environment close to production before release.
-
