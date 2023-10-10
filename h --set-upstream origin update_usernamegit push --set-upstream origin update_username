@@ -1,0 +1,2247 @@
+[33mcommit e34f81eba8f19f7b1fce1e0056934336129aabaf[m[33m ([m[1;36mHEAD -> [m[1;32mupdate_username[m[33m, [m[1;31morigin/update_username[m[33m)[m
+Author: iadjadj <kazuya@DESKTOP-M5UV37J>
+Date:   Tue Oct 10 10:53:25 2023 +0200
+
+    up
+
+[33mcommit 5c0509129de7ec774f55d920f5bbb2a1725e87a7[m
+Author: kazuya mishima <kazuya@DESKTOP-M5UV37J>
+Date:   Mon Oct 9 15:30:08 2023 +0200
+
+    docs pipeline
+
+[33mcommit ee9fb811e2704af845a4f207e6bf8bb487709e93[m
+Author: YKharouni <ykharouni@aneo.fr>
+Date:   Wed Sep 27 16:08:59 2023 +0200
+
+    add s3 prefix local variable
+
+[33mcommit a5fc90227e9cad1c1f14b9c74ee6a58c1eeea3b1[m
+Author: YKharouni <ykharouni@aneo.fr>
+Date:   Wed Sep 27 16:04:11 2023 +0200
+
+    add prefix folder to store logs
+
+[33mcommit 0aa4ff9405cba6d047733c44631d2306a13d5f53[m
+Merge: 36c19418 0fdfcfdf
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Thu Sep 21 09:52:04 2023 +0200
+
+    fix: "feat: variablise activemq class name and path on premise" (#1218)
+
+[33mcommit 0fdfcfdf0950a37dfb1d6dc05a4c90e4700baa5e[m
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Thu Sep 21 09:40:32 2023 +0200
+
+    Revert "feat: variablise activemq class name and path on premise"
+
+[33mcommit 36c19418f8192b969fe6994dd956b9ef23bc6cb9[m
+Merge: 5ea3562e 6571a6e1
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Tue Sep 19 17:24:45 2023 +0200
+
+    feat: variablise activemq class name and path on premise (#1215)
+
+[33mcommit 6571a6e1b1bfd8e31ec2d2497a3992ffa591df21[m
+Author: YKharouni <ykharouni@aneo.fr>
+Date:   Tue Sep 19 16:27:49 2023 +0200
+
+    variablise activemq class name and path on premise
+
+[33mcommit 5ea3562e27c305878d9bd26b87274df9e9716bdb[m[33m ([m[1;33mtag: v2.16.0[m[33m)[m
+Merge: 0edb45ba 973f8afc
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Thu Sep 14 19:09:54 2023 +0200
+
+    feat: Add examples for GCP deployments (#1212)
+
+[33mcommit 973f8afc1eb2aed90cd59f2722aee16f32a963a3[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 18:54:10 2023 +0200
+
+    fix aws deployments
+
+[33mcommit 9bf56ab3b4158410b6c9674a9f61ca1525084b7c[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 18:26:53 2023 +0200
+
+    Update localhost and aws deployments
+
+[33mcommit 4dd0bd6aecae24399ff21dd0afe64d16e4c40e14[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 17:12:25 2023 +0200
+
+    prepare release
+
+[33mcommit a4a49aa89c341f424bf5683ca47de2a16caa81bd[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 17:02:30 2023 +0200
+
+    prepare release
+
+[33mcommit dc325b7016d44c01d172019a733ac740606ea410[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 14:39:46 2023 +0200
+
+    Adapt to new module of armonik
+
+[33mcommit cf7d81de4a4eda358ae8006d1c87f87336af7bdb[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 14:21:58 2023 +0200
+
+    Fix GCP GAR in all-in-one deployment
+
+[33mcommit 14e438d99d11544831531882d5f448e4fd6b58e2[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 14:18:35 2023 +0200
+
+    Fix GCP GAR
+
+[33mcommit dbe4369f61dd7075cb5b1ca938d4ea8ee6d5399c[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 12:33:19 2023 +0200
+
+    Fix use module GCP PSA in ArmoniK multi-stage deployment
+
+[33mcommit cc55050d28caee4f5b5c1d79495bb638345984c0[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 11:47:47 2023 +0200
+
+    Use module GCP PSA in ArmoniK deployment
+
+[33mcommit 07f435d260842e54d18a2562a573767e41ef306a[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 09:32:07 2023 +0200
+
+    Fix readme of GCP multistage deployment
+
+[33mcommit 6cf48a6b95334fa9edc0df5531705bcbf770d142[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 09:16:22 2023 +0200
+
+    Update readme of GCP multistage deployment
+
+[33mcommit 0d1e18632fb8b63a37537c0d536897f893a825af[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Sep 14 09:15:10 2023 +0200
+
+    Update readme of GCP multistage deployment
+
+[33mcommit 830c6e6185fdb683a8e7ae132304d521f4e173c0[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Wed Sep 13 20:10:31 2023 +0200
+
+    update infra version
+
+[33mcommit 93ad078243e8476212b51f8f453dab2d9fb8da5e[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Wed Sep 13 20:07:15 2023 +0200
+
+    Examples of GCP deployments
+
+[33mcommit 0edb45ba3c1d7f0adcdd6fd624d19f0be1b8a66b[m
+Merge: de194e48 4e7bd97d
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Wed Sep 13 09:19:03 2023 +0200
+
+    feat: Support import errored tfstate (#1211)
+
+[33mcommit 4e7bd97d53f95b0032c2a331bf4fb0543233ef94[m
+Author: Florian Lemaitre <flemaitre@aneo.fr>
+Date:   Tue Sep 12 16:47:28 2023 +0200
+
+    Support import errored tfstate
+
+[33mcommit de194e48b4958db2c3507ebbe33bcaf41754ec75[m
+Merge: 95d47a0f 8622e155
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Thu Sep 7 09:35:38 2023 +0200
+
+    feat: Update core 0.15 (#1202)
+
+[33mcommit 8622e1555d1679c54ab25bbda1b6b7babae149e9[m
+Author: Florian Lemaitre <flemaitre@aneo.fr>
+Date:   Wed Sep 6 10:39:35 2023 +0200
+
+    Fixed metrics-server destroy
+
+[33mcommit 6130a81ca1a646c8719a7a9cc1208e7347cef1e6[m
+Author: Florian Lemaitre <flemaitre@aneo.fr>
+Date:   Thu Aug 31 12:06:07 2023 +0200
+
+    Changelog
+
+[33mcommit 15104228ea5abcbb45f4bc568457e437cd3c9939[m
+Author: Florian Lemaitre <flemaitre@aneo.fr>
+Date:   Thu Aug 31 12:02:02 2023 +0200
+
+    Update core
+
+[33mcommit 95d47a0fcd58dea565153e4301d20880ebd5c95b[m
+Merge: 5cd74fe8 fc6095f3
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Mon Sep 4 15:49:22 2023 +0200
+
+    ci: apply formatting to every pull request (no branch dependency) (#1208)
+
+[33mcommit fc6095f3935074727b3612360e919ee0bd54ca2e[m
+Author: Nicolas GRUEL (ANEO) <ngruel@aneo.fr>
+Date:   Mon Sep 4 14:25:45 2023 +0200
+
+    ci: apply formatting to every pull request (no branch dependency)
+
+[33mcommit 5cd74fe8996f4422bd30a7b60826ef7346af0199[m
+Merge: 3824d7ba 8b6a164e
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Fri Sep 1 20:20:37 2023 +0200
+
+    docs: add usage about htc mock (#1187)
+
+[33mcommit 8b6a164ec39f5446c30ffa21eb02024bd474dcb8[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Sep 1 18:31:45 2023 +0200
+
+    added Default images link
+
+[33mcommit 6ffe5895bb56987512354eff332011ce123e7b8c[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Sep 1 18:28:04 2023 +0200
+
+    added 2 deployments sections
+
+[33mcommit 3824d7baf7a67ff4ad52f379ca4309c3aa34e9e0[m
+Merge: 0bcb5efa 842ab6fb
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Fri Sep 1 18:10:42 2023 +0200
+
+    docs(split): fix deployment documentation for missing command (#1183)
+
+[33mcommit 3b001b04eb1d788c602b797510c1284671bac565[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Sep 1 17:58:05 2023 +0200
+
+    added 2 parts for deployments
+
+[33mcommit 842ab6fb071161bf7d0bf7fcb3103f817eae4b0c[m
+Merge: c5eff8a8 0bcb5efa
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Sep 1 16:49:40 2023 +0200
+
+    Merge branch 'main' into IA/Docs
+
+[33mcommit 0bcb5efaaa493aadd79e643d41f237f0a7393f8a[m
+Merge: f114e82f d273f3f5
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Fri Sep 1 11:15:08 2023 +0200
+
+    refactor: Using version.tfvars.json values for localhost/multistage deployment configuration (#1199)
+
+[33mcommit f114e82f2982ec0c32426a8bf970113151619c08[m
+Merge: c20635f4 f1724634
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Fri Sep 1 08:13:52 2023 +0200
+
+    docs: fixed links (#1204)
+
+[33mcommit f1724634a111bae2de3b66a07f4de3d8ab524207[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Thu Aug 31 17:53:41 2023 +0200
+
+    docs: fixed links
+
+[33mcommit c20635f456ca497e519ee22bd3934c1a769c5f50[m
+Merge: 197d0bd3 66de700b
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Thu Aug 31 17:28:50 2023 +0200
+
+    docs: added diagram to index (#1203)
+
+[33mcommit 66de700bb80807a63a57bd1c8961070e6cfed4ac[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Thu Aug 31 17:13:26 2023 +0200
+
+    added diagram to index
+
+[33mcommit 197d0bd34572633eb93434177eebe523cade6b4b[m
+Merge: c43d1db2 068b6c71
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Mon Aug 28 10:58:46 2023 +0200
+
+    docs: add a how to troubleshoot guide (#1192)
+
+[33mcommit 068b6c710091bffeb820898cf48eb495443c4e56[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Mon Aug 28 10:02:14 2023 +0200
+
+    Apply suggestions from code review
+    
+    Co-authored-by: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+
+[33mcommit d273f3f579d6163337c44833c47d1e08dff6b63d[m
+Author: iadjadj <122876426+iadjadj@users.noreply.github.com>
+Date:   Mon Aug 28 09:19:36 2023 +0200
+
+    Update Makefile
+
+[33mcommit 795da6d28a9946fb1b6c0fbd40499d2c2cf572d2[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 25 17:05:34 2023 +0200
+
+    fixed last lint errors
+
+[33mcommit d5b1994dc6f8a2466779f3413a4c7cbe1d3c58ae[m
+Merge: 5c560056 3cf49543
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 25 17:00:59 2023 +0200
+
+    Merge branch 'how-to-troubleshoot'
+
+[33mcommit 3cf49543b4099f41686765403577d7e43a866cfe[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 25 17:00:27 2023 +0200
+
+    fixed lint errors
+
+[33mcommit 5c5600560416caed22503218fc2e19eeb592f902[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 25 16:48:38 2023 +0200
+
+    undid changes in index
+
+[33mcommit 761c334208c91bb53017ff27523697f5e055aa56[m
+Merge: 331e21aa 729dd4a3
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 25 16:37:46 2023 +0200
+
+    Merge branch 'index-diagram-link'
+
+[33mcommit 331e21aa3dfa81863a0634a081a26a17114f766e[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 25 16:19:35 2023 +0200
+
+    removed duplicate
+
+[33mcommit cf6b9d9dea00a99c0cd072c00603804304c6c9d1[m
+Merge: 40b1838b f7b17f68
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 25 16:11:51 2023 +0200
+
+    Merge branch 'how-to-troubleshoot'
+
+[33mcommit f7b17f684a9d444790a219e36d84b531d67990c6[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 25 14:22:08 2023 +0200
+
+    moved file to dedicated folder
+
+[33mcommit 5e43ceab83150fcb5e303d069298fb3b4fb2fea5[m
+Merge: 01a4a612 c43d1db2
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 25 14:14:39 2023 +0200
+
+    Merge branch 'how-to-troubleshoot' of https://github.com/pmilaneo/ArmoniK into how-to-troubleshoot
+
+[33mcommit 40b1838bc55e82133c5354952581aaca2595a1a1[m
+Merge: 7e33d098 c43d1db2
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Fri Aug 25 13:51:32 2023 +0200
+
+    Merge branch 'main' into main
+
+[33mcommit 01a4a612f452c8cb00ccd8b764a1013f0edd2641[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 25 13:49:34 2023 +0200
+
+    removed useless CLI part
+
+[33mcommit 729dd4a391ca512ab9337e99b82cc3b07ee9a4e7[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Thu Aug 24 17:06:55 2023 +0200
+
+    docs: link to diagram
+
+[33mcommit f836f7336cd7501c6169fc052c516f1f5af55964[m
+Merge: 38c75295 c43d1db2
+Author: iadjadj <122876426+iadjadj@users.noreply.github.com>
+Date:   Thu Aug 24 15:53:37 2023 +0200
+
+    Merge branch 'main' into IA/UseFileVersion.tfvars.jsonOnMultiStage
+
+[33mcommit 38c75295568ba2226ec06ad6525ea8588a86ab2a[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Thu Aug 24 15:24:42 2023 +0200
+
+    refactor all modules
+
+[33mcommit 9ab75ecc4310ae1a77b8b21202e6e2ac5636e333[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Thu Aug 24 15:21:45 2023 +0200
+
+    refactor all modules
+
+[33mcommit c43d1db2d6d201258bb0d3d732cd0724cb6d2f23[m
+Merge: 1e6b8c4a 4635607d
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Thu Aug 24 09:32:52 2023 +0200
+
+    chore(deps): update npm packages (#1158)
+
+[33mcommit 1e6b8c4ab87aa5024e04a382a4d458c7d23bc8e4[m
+Merge: 976d4a03 862e4d95
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Thu Aug 24 09:32:01 2023 +0200
+
+    ci: Fix action, added samples (#1198)
+
+[33mcommit 7e33d09898557d0e7138cca036a45b5598f19856[m
+Merge: 0bb97c90 976d4a03
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Tue Aug 22 14:25:26 2023 +0200
+
+    Merge branch 'main' into main
+
+[33mcommit 7e82ebec6ca74769eec6e4dd1880f178cde632fa[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Tue Aug 22 14:24:28 2023 +0200
+
+    removed repetitions and clarified some parts
+
+[33mcommit 862e4d954e7fc607e506858ecea012f2c4abd532[m
+Author: Dylan Brasseur <dbrasseur@aneo.fr>
+Date:   Mon Aug 21 18:13:32 2023 +0200
+
+    Fix action, added samples
+
+[33mcommit 976d4a03c6fa2e81d9f71806bcb7a13a59419409[m
+Merge: 899acefa 315cf018
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Mon Aug 21 10:44:47 2023 +0200
+
+    chore(deps): update actions/upload-pages-artifact action to v2 (#1175)
+
+[33mcommit 9acc855e043296830c0daa976ac3c3b95572ea09[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Mon Aug 21 08:36:26 2023 +0200
+
+    Update .docs/content/2.guide/1.how-to/how-to-use-htc-mock.md
+
+[33mcommit 28d5276c79807c4f312e8ac2c0aaf2818f69f2d5[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Mon Aug 21 08:36:14 2023 +0200
+
+    Update .docs/content/2.guide/1.how-to/how-to-use-htc-mock.md
+
+[33mcommit cfe0a591fbd9b8e8e11b4d8f33d71a910f8f53b9[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Mon Aug 21 08:35:45 2023 +0200
+
+    Update .docs/content/2.guide/1.how-to/how-to-use-htc-mock.md
+
+[33mcommit 899acefaf9de84e0cb88a2bff25408ad61ef536a[m
+Merge: 37880f5e 9e0e7921
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Mon Aug 21 08:34:59 2023 +0200
+
+    docs: move architecture diagram to its right place (#1196)
+
+[33mcommit 9e0e7921325f4a3549a4b63600cd871e185ba001[m
+Merge: da68111d 37880f5e
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Sat Aug 19 16:58:03 2023 +0200
+
+    Merge branch 'main' into fl/move-doc-diagram
+
+[33mcommit 37880f5e275ff4f9861183be63210f1d5308d774[m
+Merge: 2c514546 5c05c9bf
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Fri Aug 18 18:55:23 2023 +0200
+
+    docs: update the folder name (#1195)
+
+[33mcommit 2c5145465dc53be51144f38cd1db0423bb4222e5[m
+Merge: e5f36faf ade60d4b
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Fri Aug 18 18:54:35 2023 +0200
+
+    docs: add info for scripts permissions (#1136)
+
+[33mcommit e5f36fafcc6266c3b430faaa10173b2b2057bc39[m
+Merge: efc0397a 3182642a
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Fri Aug 18 18:53:50 2023 +0200
+
+    docs: move versions to online docs (#1157)
+
+[33mcommit 4635607d882680af968bdd7019287cfb407c285c[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Fri Aug 18 16:51:49 2023 +0000
+
+    chore(deps): update npm packages
+
+[33mcommit efc0397a4c072e5b22bdd7f5dbd136cd70426efc[m
+Merge: 5c5f6089 44e6d95f
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Fri Aug 18 18:51:02 2023 +0200
+
+    chore: update deps (#1186)
+
+[33mcommit 0bb97c90a0f307fa2b4e5a6903d606fd4a593278[m
+Merge: 3dc3eb1a 5c5f6089
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Fri Aug 18 14:29:19 2023 +0200
+
+    Merge branch 'aneoconsulting:main' into main
+
+[33mcommit 5c05c9bfdb9bbf0a13af43bc8637046bedf6ad6d[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Fri Aug 18 13:47:48 2023 +0200
+
+    Update .docs/content/1.installation/1.linux/2.all-in-one-deployment.md
+    
+    Co-authored-by: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+
+[33mcommit da68111d60bac24e53a40b2575b9ad904e8299d2[m
+Author: Florian Lemaitre <flemaitre@aneo.fr>
+Date:   Fri Aug 18 13:12:42 2023 +0200
+
+    Move architecture diagram to its right place
+
+[33mcommit 95e82ccde1c061ca144673a463764c124ef65ffe[m
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Fri Aug 18 11:12:49 2023 +0200
+
+    docs: update the folder name
+
+[33mcommit 020f07bdb749d5c72509860164ae1341fbadd080[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Thu Aug 17 18:08:51 2023 +0200
+
+    chore: keda and metrics-server
+
+[33mcommit 315cf018ccd654398d004dc24e33b94d95aaee64[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Thu Aug 17 16:04:32 2023 +0000
+
+    chore(deps): update actions/upload-pages-artifact action to v2
+
+[33mcommit 5c5f6089527b8e6c23401d81f476b4bdb1e8b586[m
+Merge: 89a4fb9d 252b63a3
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Thu Aug 17 18:03:17 2023 +0200
+
+    docs: addition of ArmoniK's simplified diagram (#1191)
+
+[33mcommit 252b63a3d8ad98ac273a51b7215e0cd34bb2835d[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Thu Aug 17 17:56:26 2023 +0200
+
+    Delete how-to-troubleshoot
+
+[33mcommit 4f6db09c5bb336a93f9253881be1cf1f337e6d17[m
+Merge: 7a41a080 d367101c
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Thu Aug 17 17:55:24 2023 +0200
+
+    Merge branch 'docs/glossary' of https://github.com/pmilaneo/ArmoniK into docs/glossary
+
+[33mcommit 7a41a0803f3460ae12e4787efd02e71462cdbaca[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Thu Aug 17 17:55:18 2023 +0200
+
+    updated graph with network communication
+
+[33mcommit b335af7e4548d48a5a7bb3661ba95d03637d6aaf[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Thu Aug 17 17:53:26 2023 +0200
+
+    updated graph with network communications
+
+[33mcommit d367101c5b2e53e531a18fb9930afd971a3fe8e8[m
+Merge: 8f2f6b0e 89a4fb9d
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Thu Aug 17 15:46:00 2023 +0200
+
+    Merge branch 'main' into docs/glossary
+
+[33mcommit 4927e5799ddeeec91f780226f77494a67e905bf2[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Thu Aug 17 15:28:10 2023 +0200
+
+    added -A
+
+[33mcommit 48f972007208580b83ff5216071ac22fe85dc9ec[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Thu Aug 17 15:09:40 2023 +0200
+
+    removed repetitions and added some clarifications
+
+[33mcommit 8f2f6b0e6da6dfc1ba999fb0ad8d6fcd78d5ceac[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Wed Aug 16 16:01:24 2023 +0200
+
+    Delete how-to-troubleshoot
+
+[33mcommit 89a4fb9d98b68f7373f253287d5346d541d8a09d[m
+Merge: 14f1b5ea 1719f3a0
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Wed Aug 16 13:24:55 2023 +0200
+
+    chore: change type of instance c5.large (#1194)
+
+[33mcommit 3dc3eb1a531c3515135fcf255e2b1025fd7d4f5b[m
+Merge: ffc2084d 5f10e9c2
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Wed Aug 16 11:05:16 2023 +0200
+
+    Merge branch 'main' of https://github.com/pmilaneo/ArmoniK
+
+[33mcommit ffc2084dde30ce68cb0d00e95e05b05f305dc599[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Wed Aug 16 11:05:12 2023 +0200
+
+    added suggestions
+
+[33mcommit 1719f3a06639da98d3922f60a960271645f3ed90[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Wed Aug 16 10:16:26 2023 +0200
+
+    chore: change type of instance c5.large
+
+[33mcommit 5f10e9c2ccd78ec408cee46d2ab689ef3d36baa8[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Wed Aug 16 09:21:20 2023 +0200
+
+    Update .docs/content/2.guide/how-to-troubleshoot
+    
+    Co-authored-by: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+
+[33mcommit 14f1b5ea049d1cda5a1b0c537ff0b98ceb373d8d[m
+Merge: 3b1b4da4 1fd5a43f
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Fri Aug 11 13:14:09 2023 +0200
+
+    feat: Update infra version (#1193)
+
+[33mcommit 3f5861dc80970b49fbce0434b8a61b23489f16a4[m
+Merge: bb5e2fa8 3b1b4da4
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Fri Aug 11 13:03:40 2023 +0200
+
+    Merge branch 'main' into docs/glossary
+
+[33mcommit 86c8068b09a2062152da0fc294243bbc114a7c74[m
+Merge: 21741967 3b1b4da4
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Fri Aug 11 13:03:12 2023 +0200
+
+    Merge branch 'main' into main
+
+[33mcommit 1fd5a43fdde46c8e427bb8912c5d2a3a3a06134d[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Fri Aug 11 12:02:52 2023 +0200
+
+    Update infra version
+
+[33mcommit 3b1b4da46a6c1286e425ea78a1a2a70f4b2a2141[m
+Merge: 4e99b7e2 46bac14c
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Fri Aug 11 12:51:33 2023 +0200
+
+    feat: Add support for nginx static file (#1161)
+
+[33mcommit 217419675890d4b789fdfca629f4e69085bd012f[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 11 11:00:29 2023 +0200
+
+    docs: add a how to troubleshoot guide
+    This is a starting point for this page / section.
+
+[33mcommit bb5e2fa85c62177b49f39ec36bea92b3362e6ae2[m
+Merge: 1652c712 d0128c11
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Fri Aug 11 10:48:02 2023 +0200
+
+    Merge pull request #1 from pmilaneo/how-to-troubleshoot
+
+[33mcommit d0128c11c530a22fda510fe387bf628d9bb8a308[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 11 10:42:34 2023 +0200
+
+    docs: add a how to troubleshoot page
+
+[33mcommit 1652c7121b1289bf6eda1c03cf3cfaa4fe25567b[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 11 10:41:02 2023 +0200
+
+    deleted added page
+
+[33mcommit 36d7699340f06426b3539ebe570253e5feccc085[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Aug 11 10:37:03 2023 +0200
+
+    docs: added how to troubleshoot page
+
+[33mcommit f75aa240ca366cc51256b6b2339e891837518ff7[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Thu Aug 10 11:45:00 2023 +0200
+
+    one more time with less pixels
+
+[33mcommit d01aec5238f160008bd6a1eb68dc3e336b920a1c[m
+Merge: b0eb435d ccef944e
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Thu Aug 10 11:16:29 2023 +0200
+
+    Merge branch 'docs/glossary' of https://github.com/pmilaneo/ArmoniK into docs/glossary
+
+[33mcommit b0eb435d487b4c2db071e9db2f758012e34725e7[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Thu Aug 10 11:16:26 2023 +0200
+
+    resized image
+
+[33mcommit ccef944ec84ce668c7ad04e1ca1fe4ae28666cc6[m
+Merge: ac692b8c 4e99b7e2
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Wed Aug 9 17:19:45 2023 +0200
+
+    Merge branch 'main' into docs/glossary
+
+[33mcommit ac692b8c404f3521f5f3f406b55c49184050fe4a[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Wed Aug 9 16:56:55 2023 +0200
+
+    docs : addition of ArmoniK's simplified diagram
+
+[33mcommit 46bac14c58df2fffc6bc8bdfdd1ae2df281dad61[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Wed Jun 28 17:50:21 2023 +0200
+
+    docs: create page related to this feature
+    
+    fix: format
+    
+    fix: format
+    
+    fix: add a line
+    
+    fix: add a line
+    
+    fix: format
+
+[33mcommit 86da76d15939e56ff1741958064d6c3d2d055e7c[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Tue Jun 27 18:07:32 2023 +0200
+
+    feat: support localhost deployment
+    
+    chore: format
+    
+    fix: normalize content
+
+[33mcommit 247b685c3723a6c86622d21de62ce8d38cfdf3f6[m
+Author: Florian Lemaitre <flemaitre@aneo.fr>
+Date:   Tue Jun 27 17:30:30 2023 +0200
+
+    Add support for nginx static file
+
+[33mcommit 4e99b7e2c8be56e0512090d2e218282b4d20c91c[m
+Merge: 761a5888 1f8be7e7
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Wed Aug 9 11:57:42 2023 +0200
+
+    refactor: localhost deployments with new infra (#1181)
+
+[33mcommit 1f8be7e7176fecbf6b049f7318dc3c7ef67ee06c[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Wed Aug 9 11:15:14 2023 +0200
+
+    Add backend kubernetes for all-in-one localhost
+
+[33mcommit 8776b29145e11b47cb326a651d8ed300da6c7264[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Wed Aug 9 09:58:32 2023 +0200
+
+    update pipeline deploy.yml
+
+[33mcommit b4db265439b50efd771a408f8b69d5df9761aad1[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Wed Aug 9 09:19:47 2023 +0200
+
+    use terraform plugin cache and update changelog
+
+[33mcommit 1a6de06545af22e864fd3cf4fc8de5ffbe272936[m
+Merge: 9b57cc77 761a5888
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Tue Aug 8 13:57:57 2023 +0200
+
+    Merge with main
+
+[33mcommit 761a58881180b7d7507e5b940144b1ef6ff763d2[m
+Merge: 424fc8e3 d92c87f3
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Tue Aug 8 11:56:04 2023 +0200
+
+    refactor: aws deployments with new infra  (#1190)
+
+[33mcommit d92c87f31c19f579344bf146be2c68c2db29e8ea[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Tue Aug 8 11:42:18 2023 +0200
+
+    Reformat Makefile
+
+[33mcommit ab3922601147f5b67ce980be27fb1232607eeae1[m
+Merge: 345bf5ab efbdaa65
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Tue Aug 8 11:41:04 2023 +0200
+
+    Merge remote-tracking branch 'origin/IA/aws-multistage' into IA/aws-multistage
+
+[33mcommit 345bf5ab2e2faa1fad7b4a0a438b85dacf5ae81b[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Tue Aug 8 11:39:54 2023 +0200
+
+    Reformat
+
+[33mcommit efbdaa65ea9bd55e22380d919f0486f403eae7b5[m
+Merge: b75ea831 424fc8e3
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Tue Aug 8 10:50:30 2023 +0200
+
+    Merge branch 'main' into IA/aws-multistage
+
+[33mcommit b75ea83137dce7656e9fa60b21cc1a356e499155[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Tue Aug 8 10:42:27 2023 +0200
+
+    Reformat
+
+[33mcommit 93b355beab198ff00900a5069a8515833142f81e[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Tue Aug 8 10:36:43 2023 +0200
+
+    Update aws deployment
+
+[33mcommit 4347b48f152b5a163cf0831a8b4a5cf0dd717634[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Fri Aug 4 18:26:12 2023 +0200
+
+    update multisatge and add all-in-one
+
+[33mcommit c5eff8a84f9aa4c2488096365979b583129dc881[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Fri Aug 4 14:25:04 2023 +0200
+
+    Update 1.installation.md
+    
+    changed a few lines to correct grammatical errors
+
+[33mcommit 424fc8e3be6945534a3f174992d69b18e71b054f[m
+Merge: cb932167 35b2dd41
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Thu Aug 3 21:11:13 2023 +0200
+
+    feat: Add kubernetes backend to localhost (#1170)
+
+[33mcommit 35b2dd41ae7cd2a8313cf7ccf3d09d2faa97e934[m
+Merge: 9fdb163d cb932167
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Thu Aug 3 20:21:25 2023 +0200
+
+    Merge branch 'main' into fl/kube-backend
+
+[33mcommit cb93216797c281c82ce2e57833ed2200c4550543[m
+Merge: 60df313e fa05629c
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Thu Aug 3 20:20:58 2023 +0200
+
+    feat: Update version of minio (#1182)
+
+[33mcommit 9fdb163d67a96795664d1ddb79f6598cd7bb6415[m
+Merge: 06c1eb8b 60df313e
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Thu Aug 3 19:59:42 2023 +0200
+
+    Merge branch 'main' into fl/kube-backend
+
+[33mcommit fa05629c7d48c58897655e86b4b9e03c1bfa8c2e[m
+Merge: 643e3e7b 60df313e
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Thu Aug 3 19:56:10 2023 +0200
+
+    Merge branch 'main' into LZK/update-minio-version
+
+[33mcommit 08abc237b31ae1111c3f35c0b5a621533d01dcfd[m
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Thu Aug 3 19:53:30 2023 +0200
+
+    Update .docs/content/1.installation/1.linux/1.installation.md
+    
+    Co-authored-by: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+
+[33mcommit 31bf595d3fc3cdf978452135f856aea833b4b29d[m
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Thu Aug 3 19:53:17 2023 +0200
+
+    Update .docs/content/1.installation/1.linux/1.installation.md
+    
+    Co-authored-by: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+
+[33mcommit 77f0dc3518f4aa09ef22a14296d18f5a2610692b[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Thu Aug 3 17:42:16 2023 +0200
+
+    Use infra version 0.0.2
+
+[33mcommit 4e2a7759864288e68ca10098263eb12dab4dfadf[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Thu Aug 3 17:37:42 2023 +0200
+
+    reformat terraform
+
+[33mcommit 0189ef6fc7ad6f3492ee247cd83bd0bf54cc7df1[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Thu Aug 3 17:29:38 2023 +0200
+
+    update Makefiles to manage terraform plugins
+
+[33mcommit 48fdb48e66a0b06e1939e5ae7ccc275c3cbf9c93[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Thu Aug 3 17:20:40 2023 +0200
+
+    Refactor aws multstages
+
+[33mcommit 60df313e3ccd4acb40e9daa32cc4f2da0fa3c5dc[m
+Merge: 6a242d68 97d3dd24
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Tue Aug 1 17:57:55 2023 +0200
+
+    docs: All-in-one (#1188)
+
+[33mcommit 97d3dd24127afc1cffa1e3078b0960f3177c3a71[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Tue Aug 1 17:19:40 2023 +0200
+
+    final merge
+
+[33mcommit 9ce2edca2284ca62ad7ebcdb91cadcd30eb53eaa[m
+Merge: 9a29f126 d65193c6
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Tue Aug 1 17:19:18 2023 +0200
+
+    Merge branch 'all-in-one' of https://github.com/pmilaneo/ArmoniK into all-in-one
+
+[33mcommit 9a29f126a608b1ced9306452e8b273fd6869661b[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Tue Aug 1 17:04:29 2023 +0200
+
+    updated glossary
+
+[33mcommit d65193c6783d78b0333700fb3a05e88f1fca451b[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Tue Aug 1 16:57:33 2023 +0200
+
+    Update .docs/content/0.armonik/1.glossary.md
+    
+    Co-authored-by: Dylan Brasseur <103190315+dbrasseur-aneo@users.noreply.github.com>
+
+[33mcommit 320a18ec1814814ec42b6db4c7b1c4f60fe0c298[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Tue Aug 1 16:57:12 2023 +0200
+
+    Update .docs/content/0.armonik/1.glossary.md
+    
+    Co-authored-by: Dylan Brasseur <103190315+dbrasseur-aneo@users.noreply.github.com>
+
+[33mcommit a3c2dd0bbce5cc4c7c29f63da05621d6440c6026[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Tue Aug 1 16:56:51 2023 +0200
+
+    Update .docs/content/0.armonik/1.glossary.md
+    
+    Co-authored-by: Dylan Brasseur <103190315+dbrasseur-aneo@users.noreply.github.com>
+
+[33mcommit 5f5750168a26d6278e11f5171b2389b0a6248ad7[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Tue Aug 1 16:24:42 2023 +0200
+
+    Update .docs/content/0.armonik/1.glossary.md
+    
+    Co-authored-by: Dylan Brasseur <103190315+dbrasseur-aneo@users.noreply.github.com>
+
+[33mcommit 4ee695e7418c051bae2e0161d5dd61717f2656f8[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Tue Aug 1 16:24:27 2023 +0200
+
+    Update .docs/content/0.armonik/1.glossary.md
+    
+    Co-authored-by: Dylan Brasseur <103190315+dbrasseur-aneo@users.noreply.github.com>
+
+[33mcommit 3003762aeefbb086e4c67ad8a071126a2dc599d0[m
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Tue Aug 1 16:24:15 2023 +0200
+
+    Update .docs/content/0.armonik/1.glossary.md
+    
+    Co-authored-by: Dylan Brasseur <103190315+dbrasseur-aneo@users.noreply.github.com>
+
+[33mcommit 06c1eb8bf7c6b03fe93f6076b83ac123b8bf65fd[m
+Merge: cd87a63f 6a242d68
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Tue Aug 1 16:01:51 2023 +0200
+
+    Merge branch 'main' into fl/kube-backend
+
+[33mcommit cd87a63fa0ef3173f2883729063deba1be459dad[m
+Author: Florian Lemaitre <flemaitre@aneo.fr>
+Date:   Tue Aug 1 16:00:20 2023 +0200
+
+    Multistage kubernetes backend
+
+[33mcommit 95c64d3910938ed3ce5ba62ffd32ca2aa8159d1c[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Tue Aug 1 15:34:12 2023 +0200
+
+    fixed space above entry
+
+[33mcommit b79930e1afd80e47aaae6ea97d5d2b0065a786b4[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Tue Aug 1 15:30:24 2023 +0200
+
+    added glossary as it was in previous PR
+
+[33mcommit 07eb9b6b43d2f57be5bc27eea856c45f4a841ef7[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Tue Aug 1 15:15:43 2023 +0200
+
+    lint fixes
+
+[33mcommit f707d2b6a71c016bb21e99b6c29d934dffe20aa0[m
+Merge: a463c562 6a242d68
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Tue Aug 1 14:54:35 2023 +0200
+
+    Merge branch 'main' into all-in-one
+
+[33mcommit a463c5620d56ccd91d4eb24e196ddbfcf96f9757[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Tue Aug 1 14:52:19 2023 +0200
+
+    re upload of the all in one doc lint fixes
+
+[33mcommit 46ee04480051dd84fe74f8256197f4d7934a3521[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Tue Aug 1 14:26:44 2023 +0200
+
+    all in one doc and links modifications
+
+[33mcommit d6fb4f508d5608871cd50ce20c2cc96ea607882d[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jul 28 11:38:32 2023 +0200
+
+    docs: add usage about htc mock
+
+[33mcommit 44e6d95f8e987a496f80f192b3f4594f23d1b61b[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jul 28 11:10:48 2023 +0200
+
+    docs: fix broken link
+
+[33mcommit 43b545f4ca6c3595db8aee7669ac0e3bc98254f8[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jul 28 11:10:36 2023 +0200
+
+    chore: update packages
+
+[33mcommit 6a242d68ccf9e4dbbe79cddd34b37c5979d5c613[m
+Merge: c88b0bb8 cb72f190
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Fri Jul 28 08:16:04 2023 +0200
+
+    chore: Re-add powershell script for ArmoniK deployment on WSL (Ubuntu 22.04) (#1177)
+
+[33mcommit cb72f1908beaae367bae635e965caf030cc34c7d[m
+Merge: 81046b8c c88b0bb8
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Fri Jul 28 08:12:33 2023 +0200
+
+    Merge branch 'main' into ng/wsl
+
+[33mcommit ecd39a736689ebca2c21ff588d451990ad5840f0[m
+Merge: df0187ca c88b0bb8
+Author: pmilaneo <132438256+pmilaneo@users.noreply.github.com>
+Date:   Wed Jul 26 16:45:59 2023 +0200
+
+    Merge branch 'main' into docs/glossary
+
+[33mcommit a35c82e090b0414b4199acaf4b24e4ffed2bf229[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Mon Jul 24 10:38:10 2023 +0200
+
+    docs(split_deploy):Fix deployment documentation for missing command to ensure smooth execution
+
+[33mcommit 9b57cc77301d89d958fe5ed77e89cfa6ff80092b[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Mon Jul 24 09:22:06 2023 +0200
+
+    Fix parameters of localhost all-in-one
+
+[33mcommit 643e3e7be912b160590ed1b8b295860720c557fb[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Fri Jul 21 18:48:29 2023 +0200
+
+    Update version of minio
+
+[33mcommit 566b37397ab24166cb4533095ff06d432196ac9d[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Fri Jul 21 18:43:24 2023 +0200
+
+    delete external data to get k8s context
+
+[33mcommit 8c67857870231c6ff79687163c2b34d83a940ab4[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Fri Jul 21 16:46:03 2023 +0200
+
+    reformat
+
+[33mcommit 56608db72add3501a4309202b4244e132b39bd9b[m
+Merge: 5e9e02c6 ca54a4b8
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Fri Jul 21 16:45:01 2023 +0200
+
+    Merge remote-tracking branch 'origin/IA/deploy_with_repo_infra' into IA/deploy_with_repo_infra
+
+[33mcommit 5e9e02c6509987ae3baf5f6b51d7615ab1c1469b[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Fri Jul 21 16:43:42 2023 +0200
+
+    reorganize localhost deployments directory
+
+[33mcommit ca54a4b8e289e9f476d7d5c101c79e21ccb25ba6[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Fri Jul 21 14:13:01 2023 +0200
+
+    format terraform
+
+[33mcommit 135e956f4c2a4cd78e347361d8c2b303b3dafb2f[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Fri Jul 21 11:14:12 2023 +0200
+
+    fix deploy localhost split
+
+[33mcommit df0187ca0bb76e8201d7b6061cd1d46bd6d09ce9[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Jul 21 09:33:40 2023 +0200
+
+    fixed blank spaces at the end of some lines
+
+[33mcommit 61af7f58d9646b6292f85b4b7071aac80e2b1816[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Fri Jul 21 09:24:24 2023 +0200
+
+    fixed some lint errors
+
+[33mcommit 236b5da9acc24a208265f54573d8022fe9b2463e[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Thu Jul 20 14:50:35 2023 +0200
+
+    fix format terraform
+
+[33mcommit 12451b2fe6c2a6901cb072e48657aed5e6e0ffb4[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Wed Jul 19 16:26:02 2023 +0200
+
+    refactor: deploy with repo armonik.infra
+
+[33mcommit 825584e65b14f3aa88b1d2ba15e12e20cb1a1fb8[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Wed Jul 19 15:58:45 2023 +0200
+
+    changed ingress link
+
+[33mcommit b9dea82eff44ec1becd0df3619bbeb1de02dedfe[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Wed Jul 19 15:34:44 2023 +0200
+
+    added links to some definitions
+
+[33mcommit c88b0bb8b019ad16cd8ebb25ba1174210d03d0cd[m
+Merge: 45c857cb d91a3602
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Tue Jul 18 17:02:52 2023 +0200
+
+    refactor(mongodb_replicas): Change the value of 'mongodb_replicas' for the split deployment (#1180)
+
+[33mcommit d91a36020a9d7f58c9816827130c566031112abc[m
+Author: iadjadj <imad1adjadj@gmail.com>
+Date:   Tue Jul 18 15:39:44 2023 +0200
+
+    refactor(mongodb_replicas):change mongodb_replicas 2 to 1
+
+[33mcommit 0370e2eb841d798429d66505fdf7be12486ab054[m
+Author: pmilaneo <pmilan@aneo.fr>
+Date:   Tue Jul 18 15:31:34 2023 +0200
+
+    added entries to glossary
+
+[33mcommit 81046b8caadcce177bc31e9edf9fecaeedb03a24[m
+Author: Nicolas GRUEL (ANEO) <ngruel@aneo.fr>
+Date:   Tue May 30 15:40:28 2023 +0200
+
+    fix: Re-add powershell script for ArmoniK deployment on WSL (Ubuntu 22.04)
+
+[33mcommit 45c857cbeb95446b7ef7c5cb54f4ef1c37d5b1ec[m
+Merge: 704c7f30 97363651
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Mon Jul 17 14:14:45 2023 +0200
+
+    feat: Update versions of third party docker images (#1176)
+
+[33mcommit 97363651e378159196e44387f798808871388d68[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Mon Jul 17 14:05:22 2023 +0200
+
+    update version of Admin GUI
+
+[33mcommit 02f2bbc700393538016fc0d322c9d457cd7333a8[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Fri Jul 14 12:17:55 2023 +0200
+
+    update CHANGELOG.md
+
+[33mcommit 4bb54a678e301d7a2b9bd96950d4763350dac1cb[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Fri Jul 14 12:14:25 2023 +0200
+
+    Update versions of third party docker images of seq, seqcli and mongosh
+
+[33mcommit db04f1f5cd2a59c0eaec5d0191206f3a5a3d486a[m
+Merge: c43f61f1 704c7f30
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Thu Jul 13 23:15:44 2023 +0200
+
+    Merge branch 'main' into LZK/fix-docker-images
+
+[33mcommit c43f61f15f0d43d9c78a473276cc618257597655[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu Jul 13 23:12:41 2023 +0200
+
+    Update versions of third party docker images
+
+[33mcommit 704c7f3021dbfe17cae77fbd18ca88182518a09a[m
+Merge: 16239e72 b47df42d
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Wed Jul 12 16:31:56 2023 +0200
+
+    feat: generate a real world run (#1165)
+
+[33mcommit b47df42d0566eff57cf72308521aa875f9a95e9a[m
+Merge: 81850bbc 16239e72
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Wed Jul 12 09:12:04 2023 +0200
+
+    Merge branch 'main' into feat/generate-real-world-run
+
+[33mcommit 81850bbca1ba95dfdfcbd818f7f828b5807053f5[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Tue Jul 11 11:08:47 2023 +0200
+
+    fix: initial task id can't be null and taskId is always set
+
+[33mcommit 86b35ffbb42b5178f12349e1462785c256668960[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Tue Jul 11 10:59:44 2023 +0200
+
+    fix: pod ip and pod name, can't be null
+
+[33mcommit 81933bdddd44c206a116bd9e44c1d283a230f96c[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Tue Jul 11 10:58:12 2023 +0200
+
+    fix: retriedOfIds
+
+[33mcommit 3182642a5687868d633b6071ba2d389161ddcf69[m
+Merge: 14e14c96 16239e72
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Tue Jul 11 10:25:04 2023 +0200
+
+    Merge branch 'main' into docs/versions
+
+[33mcommit 16239e72628b07da4359b0611799833f141d8e45[m
+Merge: 2bc9d576 0eddaa1a
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Tue Jul 11 10:24:32 2023 +0200
+
+    feat: add pod config and parent partitions ids to generate partitions (#1164)
+
+[33mcommit 0eddaa1ae061c31e8e641362bc49ecfde906e595[m
+Merge: 9ca30faa 2bc9d576
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Tue Jul 11 10:24:03 2023 +0200
+
+    Merge branch 'main' into feat/update-generate-partitions
+
+[33mcommit 2bc9d57622933efd63d8658523cc9be47fa5068c[m
+Merge: 78d5ceb2 a33b7f11
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Tue Jul 11 10:23:38 2023 +0200
+
+    feat: add custom tasks options for data generation (#1153)
+
+[33mcommit a33b7f1183883c52c1635de2f75c604796d2d0c9[m
+Merge: fe5cdafc 78d5ceb2
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Tue Jul 11 10:22:48 2023 +0200
+
+    Merge branch 'main' into feat/tasks-options
+
+[33mcommit e7721566a0c2090943e8ae55e85be4fa0ba0c06d[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Tue Jul 11 10:18:15 2023 +0200
+
+    feat: support retry
+
+[33mcommit 83b12793d88bf60163cec59ed710ef5f5ce44a3d[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Tue Jul 11 09:48:58 2023 +0200
+
+    fix: pod name and ip to null
+
+[33mcommit c714d92dea2f67593a2470b769424ea3e373c513[m
+Merge: e8a4f8be 78d5ceb2
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Tue Jul 11 09:43:13 2023 +0200
+
+    Merge branch 'main' into feat/generate-real-world-run
+
+[33mcommit 4f6dcb15e1042624c33308e1173d76cb27d21d99[m
+Author: Florian Lemaitre <flemaitre@aneo.fr>
+Date:   Thu Jul 6 09:57:38 2023 +0200
+
+    Fixed pipeline for kube backend
+
+[33mcommit cd27a8ec3b225ac1042a4745e32279a1e53d2fce[m
+Author: Florian Lemaitre <flemaitre@aneo.fr>
+Date:   Thu Jul 6 09:39:40 2023 +0200
+
+    Add kubernetes backend to localhost/all
+
+[33mcommit 78d5ceb2e451a218aa2679d68620f096d705cbee[m
+Merge: f692b252 89db7a2d
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Wed Jul 5 19:11:32 2023 +0200
+
+    feat: add a script to drop db (#1156)
+
+[33mcommit 89db7a2d267d46e59b944d06d276c1bfddd687ad[m
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Wed Jul 5 17:49:13 2023 +0200
+
+    Update tools/mongodb/clean-all.sh
+
+[33mcommit 9aadcc9ffc2f079f9c00bf6df216fee7f7bb39df[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jun 23 16:01:24 2023 +0200
+
+    feat: add a script to drop db
+
+[33mcommit f692b25250bf0e30d90ff1a113dd7f670eea3156[m[33m ([m[1;33mtag: v2.14.0[m[33m)[m
+Merge: cc721d8e 0b509cdb
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Wed Jul 5 16:43:34 2023 +0200
+
+    chore: release 2.14.0 (#1163)
+
+[33mcommit 0b509cdbf2b9d90e94cd1dbf91275d33732b5122[m
+Author: Dylan Brasseur <103190315+dbrasseur-aneo@users.noreply.github.com>
+Date:   Wed Jul 5 10:58:42 2023 +0200
+
+    Update CHANGELOG.md
+
+[33mcommit 73f47f3ad9de455298bcffd47bba3bc27b6cfee4[m
+Author: Dylan Brasseur <dbrasseur@aneo.fr>
+Date:   Mon Jul 3 15:25:26 2023 +0200
+
+    fixed versions
+
+[33mcommit 9ca30faae62b37bdf0ef5e3b92cc2e0def76b1ff[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Mon Jul 3 15:09:34 2023 +0200
+
+    fix: pod configuration in generate partitions
+
+[33mcommit e8a4f8bea33185a5d8533227b9296f71b998a76a[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Mon Jul 3 13:56:44 2023 +0200
+
+    docs: update populate database guide
+
+[33mcommit 0aa9f85d1cabdc55729f059273596bb26f854e79[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Mon Jul 3 13:56:31 2023 +0200
+
+    docs: remove useless comments
+
+[33mcommit 0015e9f954d441027fad0d260edf5b9ef1eced55[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Mon Jul 3 13:52:03 2023 +0200
+
+    feat: generate a real world run
+
+[33mcommit 7d8ed6d6d0baf14cd5977afe229b8223ee346a11[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jun 30 16:18:53 2023 +0200
+
+    feat: add pod config and parent partitions ids to generate partitions
+
+[33mcommit c748dbfce0060a5b8a9d0543793d90d8848ab1bc[m
+Author: Dylan Brasseur <dbrasseur@aneo.fr>
+Date:   Thu Jun 29 10:14:03 2023 +0200
+
+    chore: release 2.14.0
+
+[33mcommit cc721d8e5a10b8c30fefa6038a98f5925126b373[m
+Merge: f700e321 255c674e
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Tue Jun 27 08:23:29 2023 +0200
+
+    feat: add date to fake tasks (#1152)
+
+[33mcommit 255c674ea2bc919b7c4ef4bc06cfb53ed28c0fbf[m
+Merge: c132a643 f700e321
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Tue Jun 27 08:19:13 2023 +0200
+
+    Merge branch 'main' into feat/fake-tasks-date
+
+[33mcommit 14e14c964ad8d406ff0ee537ba031208959c0523[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Mon Jun 26 14:03:35 2023 +0200
+
+    docs: update order of links in readme
+
+[33mcommit ad404b550bc3548a97a3100699ffa208490352f0[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Mon Jun 26 14:02:18 2023 +0200
+
+    docs: move versions to online docs
+
+[33mcommit f700e3214e83ae5c946cc8f8cdf839dcecbcb6b0[m
+Merge: b4a245f6 a4779d78
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Mon Jun 26 11:52:44 2023 +0200
+
+    chore(deps): update npm packages (#1155)
+
+[33mcommit a4779d78a707313103c6a38d0d67f6299cf28ba5[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Mon Jun 26 09:50:18 2023 +0000
+
+    chore(deps): update npm packages
+
+[33mcommit b4a245f6f19577c479857007542dd0383123296b[m
+Merge: 54c9824e 6682ab5d
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Mon Jun 26 11:49:24 2023 +0200
+
+    feat: generate results (#1154)
+
+[33mcommit 6682ab5dce01b422435b4f6154ae7b435075931c[m
+Merge: 440226d3 54c9824e
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Mon Jun 26 00:26:22 2023 +0200
+
+    Merge branch 'main' into feat/generate-results
+
+[33mcommit 54c9824e3ddd3748a11697dca949ba48dfc0f1f8[m
+Merge: 248a7561 d17ed383
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Fri Jun 23 19:08:29 2023 +0200
+
+    docs: update readme (#1151)
+
+[33mcommit 440226d3b11af0f9a98a50da77157e9f71a11328[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jun 23 16:17:16 2023 +0200
+
+    fix: results data structure
+
+[33mcommit d17ed38380eacc920dff14c2dce9c6150156210d[m
+Merge: c6e72ddf 248a7561
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Fri Jun 23 15:49:53 2023 +0200
+
+    Merge branch 'main' into docs/update-readme
+
+[33mcommit 4f4eb4b34d72f1a582277be349adc08f5fddc410[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jun 23 15:47:15 2023 +0200
+
+    docs: lint
+
+[33mcommit 662d31839e2bc95e4689d6c3d26c6709391bc179[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jun 23 15:45:19 2023 +0200
+
+    feat: generate results
+
+[33mcommit fe5cdafc690958a9e553e3d4d1bb6caae6b2cc3c[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jun 23 15:05:17 2023 +0200
+
+    feat: add custom tasks options for data generation
+
+[33mcommit c132a6438155496be819613c77a49723e446a50d[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jun 23 14:53:31 2023 +0200
+
+    fix: between in js script
+
+[33mcommit 4b03c498093b5598facfeb7d6a81860079476e11[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jun 23 14:38:57 2023 +0200
+
+    feat: add date to fake tasks
+
+[33mcommit 248a7561d5cda5e93590222b3d6cb044e111876c[m
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Fri Jun 23 09:59:32 2023 +0200
+
+    feat: add scripts to seed database (#1104)
+    
+    Co-authored-by: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+
+[33mcommit c6e72ddf33388b088c705950900498a157430777[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jun 23 09:30:50 2023 +0200
+
+    docs: add a todo for a next PR
+
+[33mcommit 1d576cbf23169e0d519a7e6d5100e540d93d8248[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Fri Jun 23 09:27:52 2023 +0200
+
+    docs: update readme
+
+[33mcommit 3ca8340b49b1a8c5642402c061aa828b583fee80[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Thu Jun 22 09:36:20 2023 +0200
+
+    chore(deps): update pnpm to v8.6.3 (#1145)
+    
+    Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+[33mcommit 01e1db23ae02a069a9c5db305fc95fdd8598f0ab[m
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Wed Jun 21 09:00:53 2023 +0200
+
+    docs: add terminal into code blocks (#1146)
+
+[33mcommit b5e9f7451afbba032565c1bd4c5518e793bbbfd5[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Mon Jun 19 16:51:19 2023 +0200
+
+    chore(deps): update actions/upload-pages-artifact digest to 66b63f4 (#1141)
+    
+    Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+[33mcommit e2722a29d9475935ee17751b68b87e7a010996fe[m
+Merge: f7ef8ca6 5be75dde
+Author: Dylan Brasseur <103190315+dbrasseur-aneo@users.noreply.github.com>
+Date:   Mon Jun 19 11:50:32 2023 +0200
+
+    fix: Port forward v2.13.2 (#1144)
+
+[33mcommit 5be75dde2ee69776c0581aeea559b32a0ad4bb99[m
+Merge: 67bdef70 f7ef8ca6
+Author: Dylan Brasseur <103190315+dbrasseur-aneo@users.noreply.github.com>
+Date:   Mon Jun 19 09:33:55 2023 +0200
+
+    Merge branch 'main' into db/update2.13.2
+
+[33mcommit f7ef8ca6db8097ded17b4271e913f5dd60c17a2d[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Sat Jun 17 14:54:29 2023 +0200
+
+    chore(deps): update npm packages (#1142)
+    
+    Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+[33mcommit 67bdef70e935baa6511ea1141025162c15c3fac1[m
+Author: Dylan Brasseur <dbrasseur@aneo.fr>
+Date:   Fri Jun 16 16:55:47 2023 +0200
+
+    update extc# to 0.11.1, core to 0.13.2
+
+[33mcommit d52c9b427bae5767cc3640aa8ca9e0ed091283dd[m
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Thu Jun 15 12:12:12 2023 +0200
+
+    fix: remove unused script (#1131)
+
+[33mcommit 5208b8c93666ea93169d525d86798b1b88360814[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Thu Jun 15 12:10:33 2023 +0200
+
+    chore(deps): update actions/deploy-pages digest to ee48c7b (#1134)
+    
+    Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+[33mcommit ade60d4b2b3a57eb2d962aa5de96830229ef122d[m
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Thu Jun 15 08:31:30 2023 +0200
+
+    docs: lint md
+
+[33mcommit f4e1589420652686903cbca1a60efa347cec4d2e[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Wed Jun 14 21:43:16 2023 +0200
+
+    docs: add chomod example
+
+[33mcommit 19e255596c1dca57242c5786c8a82e10bc90a686[m
+Merge: 017599fa 84bbd861
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Wed Jun 14 10:21:32 2023 +0200
+
+    docs: Add glossary to documentation (#1127)
+
+[33mcommit 84bbd861a89e7bffa2edd1fa83e5caa18ad2595c[m
+Merge: b4e61bed 017599fa
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Wed Jun 14 10:19:53 2023 +0200
+
+    Merge branch 'main' into qd/docs-glossary
+
+[33mcommit 017599faf3d6dcc25aca65e5f11734bdf0701970[m
+Merge: 3edd8d27 94bec306
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Wed Jun 14 10:04:29 2023 +0200
+
+    ci: fix checkout for formatting (#1139)
+
+[33mcommit 94bec3066116c81d5a39375f1c0c1674c1e27ae8[m
+Author: Jérôme Gurhem <jgurhem@aneo.fr>
+Date:   Wed Jun 14 09:49:39 2023 +0200
+
+    ci: fix checkout for formatting
+
+[33mcommit b4e61bedf002dd1d227f8b8f726d28a128370710[m
+Merge: 03761256 3edd8d27
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Wed Jun 14 09:36:57 2023 +0200
+
+    Merge branch 'main' into qd/docs-glossary
+
+[33mcommit 3edd8d276bdc942ff6c4ba121533352f8c8cecba[m
+Merge: 5bea7320 627f3c19
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Wed Jun 14 09:36:30 2023 +0200
+
+    ci: move format job on pull requests (#1137)
+
+[33mcommit 627f3c19b1cc841f68b685c006f73029158fb6f1[m
+Author: Jérôme Gurhem <jgurhem@aneo.fr>
+Date:   Wed Jun 14 08:45:26 2023 +0200
+
+    ci: move format job on pull requests
+
+[33mcommit 5bea732052a9405604625e21029e2677a59d8340[m
+Merge: 8f11f322 e24d59c9
+Author: YKharouni <125263796+YKharouni@users.noreply.github.com>
+Date:   Tue Jun 13 11:54:57 2023 +0200
+
+    feat: upgrade iops for db node (#1130)
+
+[33mcommit 6fb59d79198db97fd0b7cc3c4ec2d9ee613bb267[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Tue Jun 13 11:02:35 2023 +0200
+
+    docs: add info for sciprts permissions
+
+[33mcommit 03761256a3c9c6f8ef44929f81c338083eec0234[m
+Merge: 7dfe7103 7b962662
+Author: Quentin Delamea <qdelamea@aneo.fr>
+Date:   Tue Jun 13 10:39:52 2023 +0200
+
+    Merge branch 'qd/docs-glossary' of github.com:qdelamea-aneo/ArmoniK into qd/docs-glossary
+
+[33mcommit 7dfe710325aa9fc39d8145589d865f5f60576f92[m
+Author: Quentin Delamea <qdelamea@aneo.fr>
+Date:   Tue Jun 13 10:36:20 2023 +0200
+
+    Correct typo
+
+[33mcommit 7b962662bfec962aae4f360bb74cd58f9c8f0005[m
+Author: qdelamea-aneo <134614217+qdelamea-aneo@users.noreply.github.com>
+Date:   Tue Jun 13 10:24:40 2023 +0200
+
+    Update .docs/content/0.armonik/1.glossary.md
+    
+    Co-authored-by: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+
+[33mcommit e24d59c974953a09445757259da0f6d3820328ce[m
+Merge: 059861a2 8f11f322
+Author: YKharouni <125263796+YKharouni@users.noreply.github.com>
+Date:   Tue Jun 13 09:48:46 2023 +0200
+
+    Merge branch 'main' into yk/upgrade_db_node_iops
+
+[33mcommit 9b2f341c0713d3827ac9e973524aa79cdde00209[m
+Author: Quentin Delamea <qdelamea@aneo.fr>
+Date:   Mon Jun 12 14:55:22 2023 +0200
+
+    Fix link in glossary
+
+[33mcommit 8e397a1347e0decd8025fccee93f36951f521fe3[m
+Author: Quentin Delamea <qdelamea@aneo.fr>
+Date:   Mon Jun 12 14:38:46 2023 +0200
+
+    Glossary correction
+
+[33mcommit 8f11f322e1187e32439b7dd7110e260df92fe76a[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Mon Jun 12 10:31:39 2023 +0200
+
+    chore(deps): update pnpm to v8.6.2 (#1133)
+    
+    Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+[33mcommit 059861a20fbdfd77ea7cf4213c6a56a482e19f2a[m
+Merge: eddf68d8 78e00715
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Mon Jun 12 10:13:57 2023 +0200
+
+    Merge branch 'main' into yk/upgrade_db_node_iops
+
+[33mcommit 78e007155b72feb3dc29eed8c0df5a088c5cc782[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Sun Jun 11 16:09:39 2023 +0200
+
+    chore(deps): update dependency mermaid to ^10.2.3 (#1129)
+    
+    Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+[33mcommit 43a9df99f4c4f6bd471f3b4471863969d034c377[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Sun Jun 11 15:39:49 2023 +0200
+
+    chore(deps): update actions/checkout digest to c85c95e (#1132)
+    
+    Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+[33mcommit eddf68d8e0d61604c97b6670b048cf9983192534[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Fri Jun 9 15:21:31 2023 +0200
+
+    upgrade iops for db node
+
+[33mcommit 7ad7570fdaddc23004090f8c008646d5704db886[m
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Fri Jun 9 09:23:24 2023 +0200
+
+    docs: update architecture diagrams to 2.13 (#1108)
+    
+    Co-authored-by: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+
+[33mcommit 97ffcc81500a93377048720e563f49629a6b5065[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Fri Jun 9 08:47:55 2023 +0200
+
+    chore(deps): pin dependencies (#1120)
+    
+    Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+[33mcommit 81f01e831d63c9b904d753b77f5ee16b36f69a58[m
+Merge: 69400fdb 9520a77c
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Thu Jun 8 10:16:28 2023 +0200
+
+    fix: update to extension csharp 0.11.0 (#1119)
+
+[33mcommit 9520a77c5327869f75a5330eb4e5782e4dae686b[m
+Merge: fa05abd7 69400fdb
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Thu Jun 8 09:52:45 2023 +0200
+
+    Merge branch 'main' into ng/update_extension_csharp_0.11.0
+
+[33mcommit fed4155e15972381f51921e4cd2e26aabd01f37d[m[33m ([m[1;33mtag: v2.13.1[m[33m)[m
+Merge: ec9d98b3 d83409af
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Thu Jun 8 09:52:26 2023 +0200
+
+    fix: Update to ArmoniK.Extensions.Csharp to 0.11.0 (version 2.13) (#1118)
+
+[33mcommit 75fa99747a9c02b87e33b21bd17f7d2468041252[m
+Author: Quentin Delamea <qdelamea@aneo.fr>
+Date:   Wed Jun 7 17:37:10 2023 +0200
+
+    Add glossary to documentation
+
+[33mcommit 69400fdbe0694b0f73a9b1bbcb82bdd92d20fd83[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Wed Jun 7 14:25:40 2023 +0200
+
+    chore(deps): update actions/deploy-pages action to v2 (#1124)
+    
+    Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+[33mcommit 289e7ad6fb6ccc58457c39974c1b41708439a784[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Wed Jun 7 14:22:53 2023 +0200
+
+    chore(deps): update npm packages (#1121)
+    
+    Co-authored-by: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+
+[33mcommit 4fbae3a8416fce60ea8f9fc4288b96538f632f91[m
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Wed Jun 7 14:14:32 2023 +0200
+
+    chore: allow renovate to group pr by datasources (#1117)
+
+[33mcommit d83409afe5f0340ff0778f10a9e65b37f3422860[m
+Author: Nicolas GRUEL (ANEO) <ngruel@aneo.fr>
+Date:   Wed Jun 7 11:33:08 2023 +0200
+
+    fix: Update to ArmoniK.Extensions.Csharp to 0.11.0
+
+[33mcommit fa05abd7d006295c6ec8fb0722aa1a8d87006628[m
+Merge: 0c126e6b d7b38947
+Author: Nicolas GRUEL (ANEO) <ngruel@aneo.fr>
+Date:   Wed Jun 7 11:43:55 2023 +0200
+
+    Merge branch '2.13.1' into main
+    
+    # Conflicts:
+    #       CHANGELOG.md
+
+[33mcommit d7b38947c74b7a35577ea858e2c5873c4c098537[m
+Author: Nicolas GRUEL (ANEO) <ngruel@aneo.fr>
+Date:   Wed Jun 7 11:33:08 2023 +0200
+
+    fix: Update to ArmoniK.Extensions.Csharp to 0.11.0
+
+[33mcommit 0c126e6b4847a0c9476de6d290e0fa1d486714e6[m
+Merge: 0162302d ae584216
+Author: iadjadj <122876426+iadjadj@users.noreply.github.com>
+Date:   Mon Jun 5 14:12:05 2023 +0200
+
+    fix: Configure Renovate (#1110)
+
+[33mcommit ae5842162cc2671517f02babd4a237c96a84bbc8[m
+Author: iadjadj <122876426+iadjadj@users.noreply.github.com>
+Date:   Mon Jun 5 11:00:13 2023 +0200
+
+    Update renovate.json
+
+[33mcommit 11d9ac6015ba47ce7a63b855d7ea2ed84109df9d[m
+Author: renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+Date:   Mon Jun 5 08:37:36 2023 +0000
+
+    Add renovate.json
+
+[33mcommit 0162302d7c14238256a075d9b5e29cd76c24ff27[m
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Fri Jun 2 15:54:35 2023 +0200
+
+    docs: rename and fix typos in benchmarking (#1106)
+    
+    Co-authored-by: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+
+[33mcommit 0ddad60ad583a7a641054c930c02fdd2f124d6d6[m
+Merge: ef8074ba 20688e2f
+Author: Jérôme Gurhem <88328270+aneojgurhem@users.noreply.github.com>
+Date:   Tue May 30 15:32:21 2023 +0200
+
+    chore: update deps (#1105)
+
+[33mcommit 20688e2f362b67d5931422687f303cfebf8fb09a[m
+Merge: 15ddf200 ef8074ba
+Author: Estéban <103997512+esoubiran-aneo@users.noreply.github.com>
+Date:   Mon May 29 15:43:02 2023 +0200
+
+    Merge branch 'main' into chore/docs
+
+[33mcommit 15ddf200b2038557c67b51a421a2bba0993f03b1[m
+Author: esoubiran-aneo <esoubiran@aneo.fr>
+Date:   Mon May 29 15:09:16 2023 +0200
+
+    chore: update deps
+
+[33mcommit ef8074ba848430f598b81cb3a6feb7cc83e6c83a[m
+Merge: fa519ab1 7ed1524b
+Author: ngruelaneo <100275739+ngruelaneo@users.noreply.github.com>
+Date:   Mon May 29 15:00:48 2023 +0200
+
+    docs: Yk/stats benchmarking v2.10.5 (#1102)
+
+[33mcommit 7ed1524b66a9d85825282ec10725e3c1b3967eeb[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Fri May 26 11:07:48 2023 +0200
+
+    add v2.10.5 stats
+
+[33mcommit f8eaa3a79cadfa3cfae67cdd80a79f69ea9fa8de[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Fri May 26 10:53:15 2023 +0200
+
+    add stats bench 1k pods v2.10.4
+
+[33mcommit d964a7d912fb6d496e30d67d2f59c9d53cb2057c[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Fri May 26 10:40:55 2023 +0200
+
+    add stats file of v2.10.5
+
+[33mcommit 73cf956a91134dce993d8723802e419ed8cb4b08[m
+Merge: 23b0cda9 fa519ab1
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Fri May 26 10:36:00 2023 +0200
+
+    Merge branch 'main' into yk/stats_benchmarking_v2.10.5
+
+[33mcommit fa519ab113e7fb19e7d5bc28d7965b6fefc01189[m
+Merge: 5a2b14a0 85973fae
+Author: YKharouni <125263796+YKharouni@users.noreply.github.com>
+Date:   Fri May 26 10:30:40 2023 +0200
+
+    docs: benchmarking stats of the version 2.10.4 of ArmoniK (#1098)
+
+[33mcommit 85973fae6cb4fa6a9d54b8affca9b538da714037[m
+Merge: f986e314 5a2b14a0
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Fri May 26 10:09:56 2023 +0200
+
+    Merge branch 'main' into yk/stats_benchmarking_v2.10.4
+
+[33mcommit f986e3141dd956c9d39f102521a1a2ea03eeaf75[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Fri May 26 09:58:45 2023 +0200
+
+    remove link to parameters file
+
+[33mcommit 6b958ba0513a71c549cab5cef4a65992861c953e[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Thu May 25 15:56:13 2023 +0200
+
+    fix lint
+
+[33mcommit 68c1283edda0efa8a1677ec4035a4abf007ff44f[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Thu May 25 15:53:04 2023 +0200
+
+    no throughput explication
+
+[33mcommit 256e2d18adfa13b84d58f0b5ecad8ab9b07cb378[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Thu May 25 15:51:00 2023 +0200
+
+    add results analysis
+
+[33mcommit 23b0cda9f8d5e44d8a15b592c2b71b8a4df9898d[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Wed May 24 16:11:42 2023 +0200
+
+    add stats of the version 2.10.5 of armonik
+
+[33mcommit 5a2b14a0b79918dc7b3d35203a78337d57152e37[m
+Merge: 660cfebd 8b3ad3e2
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Wed May 24 15:46:38 2023 +0200
+
+    docs: Fix doc section (#1093)
+
+[33mcommit d1cd1e51ecec755328678be2b477897a233f41c3[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Wed May 24 11:27:58 2023 +0200
+
+    fix lint
+
+[33mcommit 5f2bed203ebc788c6484404cac87dded2044066f[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Wed May 24 10:48:17 2023 +0200
+
+    update csv stats file with stats of 2.10.4
+
+[33mcommit 164ae6fa692610607e405cffcafb944cfec18443[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Wed May 24 10:14:04 2023 +0200
+
+    update date
+
+[33mcommit eb092b21a44d4f4eca739cde60be3529facbe0c0[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Wed May 24 10:03:17 2023 +0200
+
+    add bench file of v2.10.4
+
+[33mcommit 8b3ad3e207b54a28b78824cb986d6e3384a3581b[m
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Tue May 23 11:17:06 2023 +0200
+
+    Fix doc section
+
+[33mcommit 660cfebd454b3195e2ebe38b1d772c678f7227ce[m
+Merge: feaf049b 4fbbfd81
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Mon May 22 17:11:47 2023 +0200
+
+    docs: Fix doc dead links (#1084)
+
+[33mcommit 4fbbfd817d651b0885187fccb6d87772f52572b2[m
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Mon May 22 15:31:34 2023 +0200
+
+    typo
+
+[33mcommit a547aa8b58ff5018fd0496a915dcc442bda40aa2[m
+Merge: 3110343b feaf049b
+Author: Florian Lemaitre <flemaitre@aneo.fr>
+Date:   Mon May 22 15:15:00 2023 +0200
+
+    Merge branch 'main' of https://github.com/aneoconsulting/ArmoniK into fix-dead-links
+
+[33mcommit feaf049beaa896385f33bcf4017e86d4d45359dc[m
+Merge: 13a3d99b 95eabcfe
+Author: YKharouni <125263796+YKharouni@users.noreply.github.com>
+Date:   Mon May 22 14:18:39 2023 +0200
+
+    docs: fix lint markdown (#1086)
+
+[33mcommit 95eabcfe35bbaea7c95cfa3b4688e8cda7df3db4[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Mon May 22 11:36:57 2023 +0200
+
+    fix spaces
+
+[33mcommit 13ee0801e47ce3bf09f79ac3cb87ed827dceca96[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Mon May 22 11:32:05 2023 +0200
+
+    fix lint test plan
+
+[33mcommit 3110343bc6f71717fac98e4a9c04403a16de24fd[m
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Mon May 22 11:22:52 2023 +0200
+
+    tiny fixes
+
+[33mcommit 1c4f9800e13aab70c7eda2931140427aef469581[m
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Mon May 22 11:22:40 2023 +0200
+
+    tiny fixes
+
+[33mcommit 418723b6cbbdadebaea7a5b62c5339301701173a[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Mon May 22 11:15:36 2023 +0200
+
+    fix incrementation
+
+[33mcommit fc6e4930b44391385da5b4204571c358e997f240[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Mon May 22 11:12:25 2023 +0200
+
+    fix spaces
+
+[33mcommit 4690858b629863f081d6c0e1b70939240d971fdd[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Mon May 22 11:00:53 2023 +0200
+
+    fix headres
+
+[33mcommit 3bef25f78ccdf2a1da69ddcc20761121672b3c42[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Mon May 22 10:54:28 2023 +0200
+
+    fix titles
+
+[33mcommit 588ed3ac62d5df0b0d5ac74ca87902e89dfb2981[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Mon May 22 10:47:02 2023 +0200
+
+    fix spaces
+
+[33mcommit 458c16f2187654d127f6f9b1f52fa3dbbc5f2be1[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Mon May 22 10:41:05 2023 +0200
+
+    fix spaces
+
+[33mcommit d985f43e429da33ca04c762ee9dba35a638ef302[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Mon May 22 10:36:16 2023 +0200
+
+    fix lint markdown
+
+[33mcommit 50a716c5e722ccab9067f390d9fca7e969086209[m
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Mon May 22 10:06:59 2023 +0200
+
+    doc tiny fixes
+
+[33mcommit 4d11ce860b4a591a94181746c3b0f66c1bd5d703[m
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Mon May 22 10:04:00 2023 +0200
+
+    Fixed benchmark doc
+
+[33mcommit 072e9a1ef9f9af23eec84a8184347365ce2c5576[m
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Mon May 22 09:52:15 2023 +0200
+
+    Fixed md lint
+
+[33mcommit d8fe95adad4eaebb8de7d5efd017c18f57a41473[m
+Author: lemaitre-aneo <91961298+lemaitre-aneo@users.noreply.github.com>
+Date:   Mon May 22 09:41:35 2023 +0200
+
+    Fix doc dead links
+
+[33mcommit 13a3d99b07ca435ceef65093445d6599f46f33e7[m
+Merge: b1fa227f 1fbf4e99
+Author: YKharouni <125263796+YKharouni@users.noreply.github.com>
+Date:   Mon May 22 09:48:11 2023 +0200
+
+    docs: Yk/stats benchmarking (#1079)
+
+[33mcommit 1fbf4e99f4516eb609400fed61461b82a80966fa[m
+Merge: 9ea20c4c b1fa227f
+Author: YKharouni <125263796+YKharouni@users.noreply.github.com>
+Date:   Mon May 22 09:47:12 2023 +0200
+
+    Merge branch 'main' into yk/stats_benchmarking
+
+[33mcommit 9ea20c4c0088b1e2b29557393540693833df5f2d[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Wed May 17 09:56:02 2023 +0200
+
+    add benchmarking csv file
+
+[33mcommit e2319616e739b5ef0b079d5849cee65cc98d8452[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Wed May 17 09:52:41 2023 +0200
+
+    move csv file
+
+[33mcommit e7dbfa4edf14916e13858a53a75860daaa9048cf[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Wed May 17 09:37:56 2023 +0200
+
+    add csv stats file of version 2.12.3
+
+[33mcommit b1fa227f87330a9acf324365dc1033ca71a788dd[m
+Merge: 9ff43d15 bf59d8aa
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Mon May 15 14:57:56 2023 +0200
+
+    refactor: Rename modules sources (#1073)
+
+[33mcommit 2590dc8d7da64cf6ae8f085f064a44c5a7493e8b[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Mon May 15 09:58:41 2023 +0200
+
+    add benchmarking stats folder and set test plan into template
+
+[33mcommit bf59d8aa92aac33339a3fbc1cdfff8473bc4132b[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu May 11 18:54:06 2023 +0200
+
+    Update modules source path
+
+[33mcommit 9ff43d15fc2cc5ff7c4446aab419af3ae46ddf9b[m
+Merge: 784db5f1 23d17418
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Thu May 11 17:41:59 2023 +0200
+
+    refactor: Move Terraform modules to new GitHub repository ArmoniK.Infra (#1072)
+
+[33mcommit 23d1741848d8a1426862d94f3ba9628a1e204799[m
+Merge: f03781be 784db5f1
+Author: lzianekhodja <85945328+lzianekhodja@users.noreply.github.com>
+Date:   Thu May 11 15:55:26 2023 +0200
+
+    Merge branch 'main' into LZK/modules
+
+[33mcommit f03781be1e8ff3f3286be33676a4b62ee6db9225[m
+Merge: 8ea6e992 784db5f1
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu May 11 15:50:44 2023 +0200
+
+    Merge remote-tracking branch 'origin/main' into LZK/modules
+
+[33mcommit 8ea6e9925a1333bd2f1857b11b6ec6726b8a883e[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu May 11 14:33:50 2023 +0200
+
+    Fix Makefile of AWS split
+
+[33mcommit 8c0fd6b079d5e8bb3a3d6f6283f310caa81495e8[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu May 11 14:28:08 2023 +0200
+
+    Update changelog
+
+[33mcommit cc40575a72c5891062cd62a4dc7c0824ad3a7569[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu May 11 14:27:14 2023 +0200
+
+    Use new modules in AWS all-in-one version
+
+[33mcommit c3e85d88c095de711a1bc3e5de93d1ea6a1c0aa7[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu May 11 14:03:05 2023 +0200
+
+    Use new modules in AWS split version
+
+[33mcommit 6436de1d336f393b349a09dc0bb839ccb0474c98[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Thu May 11 12:25:07 2023 +0200
+
+    Fix makefile in localhost
+
+[33mcommit 147976039fa33eae556040034eeba6fa37b4445b[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Wed May 10 18:17:26 2023 +0200
+
+    Delete modules
+
+[33mcommit 6d92ba19cc8e7e213fcf944e6bf5932b9899ab22[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Wed May 10 18:16:41 2023 +0200
+
+    Use new modules in localhost all-in-one version (fix)
+
+[33mcommit 041a325f4325016c0cd6e1717e9712632e0ea3a4[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Wed May 10 18:10:02 2023 +0200
+
+    Use new modules in localhost split version (fix)
+
+[33mcommit e2da9fdb576435fccde6c63b858e853221d8879f[m
+Author: lzianekhodja <lzianekhodja@aneo.fr>
+Date:   Wed May 10 10:41:34 2023 +0200
+
+    Use new modules in localhost split version
+
+[33mcommit 784db5f15ae33c261e47523e2ac0daa8bfe17263[m
+Merge: 800192f4 e97fab01
+Author: YKharouni <125263796+YKharouni@users.noreply.github.com>
+Date:   Wed May 10 10:08:19 2023 +0200
+
+    refactor: add helm charts repositories and versions in json file (#1069)
+
+[33mcommit e03c9c4d83b68a913916dd6a1142f5f6de18b851[m
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Wed May 10 10:07:18 2023 +0200
+
+    fix date
+
+[33mcommit 28060c5afb6dcd23b0556fa31a3bbbcae8c491d1[m
+Merge: 44a52e5b e38ef908
+Author: Yanis KHAROUNI <ykharouni@aneo.fr>
+Date:   Wed May 10 10:06:33 2023 +0200
+
+    Merge branch 'yk/stats_benchmarking' of github.com:aneoconsulting/ArmoniK into yk/stats_benchmarking
