@@ -126,16 +126,19 @@ module "fluent_bit" {
   namespace     = var.namespace
   node_selector = local.fluent_bit_node_selector
   fluent_bit = {
-    container_name     = "fluent-bit"
-    image              = local.fluent_bit_image
-    tag                = local.fluent_bit_tag
-    image_pull_secrets = local.fluent_bit_image_pull_secrets
-    is_daemonset       = local.fluent_bit_is_daemonset
-    parser             = local.fluent_bit_parser
-    http_server        = (local.fluent_bit_http_port == 0 ? "Off" : "On")
-    http_port          = (local.fluent_bit_http_port == 0 ? "" : tostring(local.fluent_bit_http_port))
-    read_from_head     = (local.fluent_bit_read_from_head ? "On" : "Off")
-    read_from_tail     = (local.fluent_bit_read_from_head ? "Off" : "On")
+    container_name                  = "fluent-bit"
+    image                           = local.fluent_bit_image
+    tag                             = local.fluent_bit_tag
+    image_pull_secrets              = local.fluent_bit_image_pull_secrets
+    is_daemonset                    = local.fluent_bit_is_daemonset
+    parser                          = local.fluent_bit_parser
+    http_server                     = (local.fluent_bit_http_port == 0 ? "Off" : "On")
+    http_port                       = (local.fluent_bit_http_port == 0 ? "" : tostring(local.fluent_bit_http_port))
+    read_from_head                  = (local.fluent_bit_read_from_head ? "On" : "Off")
+    read_from_tail                  = (local.fluent_bit_read_from_head ? "Off" : "On")
+    fluentbitstate_hostpath         = var.monitoring.fluent_bit.fluentbitstate_hostpath
+    varlibdockercontainers_hostpath = var.monitoring.fluent_bit.varlibdockercontainers_hostpath
+    runlogjournal_hostpath          = var.monitoring.fluent_bit.runlogjournal_hostpath
   }
   seq = (local.seq_enabled ? {
     host    = module.seq.0.host
@@ -150,7 +153,7 @@ module "fluent_bit" {
   s3 = (local.s3_enabled ? {
     name    = local.s3_name
     region  = local.s3_region
-    prefix  = local.s3_prefix
+    prefix  = local.suffix
     enabled = true
   } : {})
 }
