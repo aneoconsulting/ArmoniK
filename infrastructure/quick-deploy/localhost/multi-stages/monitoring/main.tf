@@ -110,15 +110,18 @@ module "fluent_bit" {
     enabled = true
   } : {})
   fluent_bit = {
-    container_name     = "fluent-bit"
-    image              = var.monitoring.fluent_bit.image_name
-    tag                = try(var.image_tags[var.monitoring.fluent_bit.image_name], var.monitoring.fluent_bit.image_tag)
-    image_pull_secrets = var.monitoring.fluent_bit.image_pull_secrets
-    is_daemonset       = var.monitoring.fluent_bit.is_daemonset
-    parser             = var.monitoring.fluent_bit.parser
-    http_server        = (var.monitoring.fluent_bit.http_port == 0 ? "Off" : "On")
-    http_port          = (var.monitoring.fluent_bit.http_port == 0 ? "" : tostring(var.monitoring.fluent_bit.http_port))
-    read_from_head     = (var.monitoring.fluent_bit.read_from_head ? "On" : "Off")
-    read_from_tail     = (var.monitoring.fluent_bit.read_from_head ? "Off" : "On")
+    container_name                  = "fluent-bit"
+    image                           = var.monitoring.fluent_bit.image_name
+    tag                             = try(var.image_tags[var.monitoring.fluent_bit.image_name], var.monitoring.fluent_bit.image_tag)
+    image_pull_secrets              = var.monitoring.fluent_bit.image_pull_secrets
+    is_daemonset                    = var.monitoring.fluent_bit.is_daemonset
+    parser                          = var.monitoring.fluent_bit.parser
+    http_server                     = (var.monitoring.fluent_bit.http_port == 0 ? "Off" : "On")
+    http_port                       = (var.monitoring.fluent_bit.http_port == 0 ? "" : tostring(var.monitoring.fluent_bit.http_port))
+    read_from_head                  = (var.monitoring.fluent_bit.read_from_head ? "On" : "Off")
+    read_from_tail                  = (var.monitoring.fluent_bit.read_from_head ? "Off" : "On")
+    fluentbitstate_hostpath         = optional(string, "/var/fluent-bit/state")
+    varlibdockercontainers_hostpath = optional(string, "/var/lib/docker/containers")
+    runlogjournal_hostpath          = optional(string, "/run/log/journal")
   }
 }

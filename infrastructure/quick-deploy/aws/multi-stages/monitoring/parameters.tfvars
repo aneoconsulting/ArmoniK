@@ -124,14 +124,17 @@ monitoring = {
     arn     = "arn:aws:s3:::armonik-logs"
   }
   fluent_bit = {
-    image              = "fluent-bit"
-    tag                = "2.1.7"
-    image_pull_secrets = ""
-    is_daemonset       = true
-    http_port          = 2020 # 0 or 2020
-    read_from_head     = true
-    node_selector      = {}
-    parser             = "cri"
+    image                           = "fluent-bit"
+    tag                             = "2.1.7"
+    image_pull_secrets              = ""
+    is_daemonset                    = true
+    http_port                       = 2020 # 0 or 2020
+    read_from_head                  = true
+    node_selector                   = {}
+    parser                          = "cri"
+    fluentbitstate_hostpath         = "/var/fluent-bit/state"
+    varlibdockercontainers_hostpath = "/var/lib/docker/containers"
+    runlogjournal_hostpath          = "/run/log/journal"
   }
 }
 
