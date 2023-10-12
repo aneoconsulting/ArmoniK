@@ -244,14 +244,17 @@ variable "partition_metrics_exporter" {
 variable "fluent_bit" {
   description = "Fluent bit configuration"
   type = object({
-    image_name     = optional(string, "fluent/fluent-bit")
-    image_tag      = optional(string)
-    pull_secrets   = optional(string, "")
-    is_daemonset   = optional(bool, true)
-    http_port      = optional(number, 2020)
-    read_from_head = optional(bool, true)
-    node_selector  = optional(any, {})
-    parser         = optional(string, "cri")
+    image_name                      = optional(string, "fluent/fluent-bit")
+    image_tag                       = optional(string)
+    pull_secrets                    = optional(string, "")
+    is_daemonset                    = optional(bool, true)
+    http_port                       = optional(number, 2020)
+    read_from_head                  = optional(bool, true)
+    node_selector                   = optional(any, {})
+    parser                          = optional(string, "cri")
+    fluentbitstate_hostpath         = var.fluent_bit.fluentbitstate_hostpath
+    varlibdockercontainers_hostpath = var.fluent_bit.varlibdockercontainers_hostpath
+    runlogjournal_hostpath          = var.fluent_bit.runlogjournal_hostpath
   })
   default = {}
 }
