@@ -2,6 +2,20 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.16.1](https://github.com/aneoconsulting/armonik/tree/v2.16.1) (2023-10-12)
+
+Added
+-
+
+* variabilize fluentbit hostpaths
+
+Changed
+-
+
+* Upgrade version of ArmoniK Admin Gui from `0.10.1` to `0.10.3`.
+* Upgrade version of ArmoniK Infra from `0.2.0` to `0.2.1`.
+
+
 ## [v2.16.0](https://github.com/aneoconsulting/armonik/tree/v2.16.0) (2023-09-14)
 
 Added
