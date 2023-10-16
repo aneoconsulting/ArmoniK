@@ -169,7 +169,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "armonik-worker"
-        tag               = "0.12.2"
+        tag               = "0.12.3"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"

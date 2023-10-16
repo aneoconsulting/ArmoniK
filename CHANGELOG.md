@@ -2,6 +2,12 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.16.2](https://github.com/aneoconsulting/armonik/tree/v2.16.2) (2023-10-16)
+
+Changed
+-
+
+* Upgrade version of ArmoniK Extension Csharp from `0.12.2` to `0.12.3`.
 ## [v2.16.1](https://github.com/aneoconsulting/armonik/tree/v2.16.1) (2023-10-12)
 
 Added

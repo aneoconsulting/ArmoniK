@@ -42,7 +42,7 @@ gar = {
   "armonik-worker" = [
     {
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.12.2"
+      tag   = "0.12.3"
     }
   ],
   "armonik-htcmock-worker" = [
