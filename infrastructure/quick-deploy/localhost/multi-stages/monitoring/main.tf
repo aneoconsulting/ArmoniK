@@ -120,8 +120,8 @@ module "fluent_bit" {
     http_port                       = (var.monitoring.fluent_bit.http_port == 0 ? "" : tostring(var.monitoring.fluent_bit.http_port))
     read_from_head                  = (var.monitoring.fluent_bit.read_from_head ? "On" : "Off")
     read_from_tail                  = (var.monitoring.fluent_bit.read_from_head ? "Off" : "On")
-    fluentbitstate_hostpath         = optional(string, "/var/fluent-bit/state")
-    varlibdockercontainers_hostpath = optional(string, "/var/lib/docker/containers")
-    runlogjournal_hostpath          = optional(string, "/run/log/journal")
+    fluentbitstate_hostpath         = var.monitoring.fluent_bit.fluentbitstate_hostpath
+    varlibdockercontainers_hostpath = var.monitoring.fluent_bit.varlibdockercontainers_hostpath
+    runlogjournal_hostpath          = var.monitoring.fluent_bit.runlogjournal_hostpath
   }
 }
