@@ -190,7 +190,7 @@ jobs:
         run: |
             set -ex
             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
-            docker run --ulimit core=0 --rm \
+            ./tools/monitor.sh docker run --ulimit core=0 --rm \
               -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
               -e HtcMock__NTasks=2000 \
               -e HtcMock__TotalCalculationTime=00:00:50.0 \
@@ -207,7 +207,7 @@ jobs:
         run: |
             set -ex
             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
-            docker run --ulimit core=0 --rm \
+            ./tools/monitor.sh docker run --ulimit core=0 --rm \
               -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
               -e HtcMock__NTasks=1000 \
               -e HtcMock__TotalCalculationTime=00:00:00.100 \
@@ -224,7 +224,7 @@ jobs:
         run: |
             set -ex
             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
-            docker run --ulimit core=0 --rm \
+            ./tools/monitor.sh docker run --ulimit core=0 --rm \
               -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
               -e HtcMock__NTasks=1000 \
               -e HtcMock__TotalCalculationTime=00:00:00.100 \
@@ -241,7 +241,7 @@ jobs:
         run: |
             set -ex
             export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
-            docker run --ulimit core=0 --rm \
+            ./tools/monitor.sh docker run --ulimit core=0 --rm \
               -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
               -e HtcMock__NTasks=1000 \
               -e HtcMock__TotalCalculationTime=00:00:00.100 \
@@ -257,6 +257,7 @@ jobs:
         if: always()
         run: |
             set -e
+            cat usage.log
             mkdir -p htcmock/infra/generated \
               htcmock/infra/tfstates \
               htcmock/app
