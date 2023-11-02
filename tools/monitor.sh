@@ -4,6 +4,10 @@ mon() {
   while true; do
     echo "==================="
     top -bn1 | head -20
+    echo "-------------------"
+    df -h
+    echo "-------------------"
+    kubectl top pod -A
     sleep 10
   done
 }
