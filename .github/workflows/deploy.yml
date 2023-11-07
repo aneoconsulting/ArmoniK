@@ -178,16 +178,20 @@ jobs:
             sudo find /var/lib/docker/containers/ -name '*.log' | xargs sudo rm || true
             sudo systemctl restart docker || true
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@fl/docker-test
         with:
             docker: true
             terraform: true
             k3s: true
             aws: true
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@fl/docker-test
         with:
            type: localhost
+      - name: Show logs
+        if: always()
+        run: |
+            cat infrastructure/quick-deploy/localhost/all-in-one/usage.log || true
       - name: Test HTC Mock
         shell: bash
         run: |

@@ -44,7 +44,7 @@ kubectl run -it --rm -n armonik mongoshclient --image=rtsp/mongosh --overrides='
           "-c"
         ],
         "args": [
-          "mongosh --tlsCAFile /mongodb/chain.pem --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD mongodb://mongodb:27017"
+          "mongosh --tlsCAFile /mongodb/chain.pem --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD mongodb://mongodb-0:27017"
         ],
         "env": [
           {

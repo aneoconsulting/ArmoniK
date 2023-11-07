@@ -13,6 +13,7 @@ mon() {
 }
 
 mon > usage.log 2>&1 & mon_pid=$!
+sleep 20
 
 trap "kill $mon_pid" EXIT
 
