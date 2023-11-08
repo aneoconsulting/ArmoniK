@@ -2,7 +2,19 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
-## [v2.13.3](https://github.com/aneoconsulting/armonik/tree/v2.13.2) (2023-07-05)
+## [v2.13.4](https://github.com/aneoconsulting/armonik/tree/v2.13.4) (2023-11-08)
+
+Changed
+-
+
+* Use Armonik.Core version `0.13.3`
+
+Fixed
+-
+
+* better condition on status requirements in start task
+
+## [v2.13.3](https://github.com/aneoconsulting/armonik/tree/v2.13.3) (2023-07-05)
 
 Changed
 -
@@ -10,7 +22,7 @@ Changed
 * Use Armonik.Extension.Csharp version `0.11.2`
 
 Fixed
-
+-
 
 * Bad properties override
 
