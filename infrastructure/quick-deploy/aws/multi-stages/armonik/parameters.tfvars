@@ -433,7 +433,7 @@ extra_conf = {
     MongoDB__AllowInsecureTls                  = true
     Redis__Timeout                             = 3000
     Redis__SslHost                             = ""
-    Redis__DataRetention                       = "1.00:00:00"
+    Redis__TtlTimeSpan                         = "1.00:00:00"
   }
   control = {
     Submitter__MaxErrorAllowed = 50

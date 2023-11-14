@@ -394,11 +394,10 @@ extra_conf = {
     MongoDB__TableStorage__PollingDelayMin = "00:00:01"
     MongoDB__TableStorage__PollingDelayMax = "00:00:10"
     MongoDB__TableStorage__PollingDelay    = "00:00:01"
-    MongoDB__DataRetention                 = "10.00:00:00"
     MongoDB__AllowInsecureTls              = true
+    MongoDB__DataRetention                 = "1.00:00:00" # 1 day retention
     Redis__Timeout                         = 3000
     Redis__SslHost                         = ""
-    MongoDB__DataRetention                 = "1.00:00:00" # 1 day retention
     Redis__TtlTimeSpan                     = "1.00:00:00" # 1 day retention
   }
   control = {
