@@ -14,6 +14,7 @@ Changed
 
 * Upgrade version of ArmoniK Admin Gui from `0.10.1` to `0.10.3`.
 * Upgrade version of ArmoniK Infra from `0.2.0` to `0.2.1`.
+
 ## [v2.16.0](https://github.com/aneoconsulting/armonik/tree/v2.16.0) (2023-09-14)
 
 Added
@@ -74,14 +75,19 @@ Breaking
 Added
 -
 
-* Deployment variable `environment_description` to pass information to the admin gui (defined in `parameters.tfvars`).
+* Deployment variable `environment_description` to pass information
+  to the admin gui (defined in `parameters.tfvars`).
+* Implementation of a TTL for MongoDB. It is now possible to define it using
+  an environment variable `MongodDB__DataRetention`, the life time allocated
+  to the data inside MongoDB (defined in `parameters.tfvars`).
 
 ## [v2.14.0](https://github.com/aneoconsulting/armonik/tree/v2.14.0) (2023-07-05)
 
 Changed
 -
 
-* Move Terraform modules of different resources deployment to GitHub repository [ArmoniK.Infra](https://github.com/aneoconsulting/ArmoniK.Infra).
+* Move Terraform modules of different resources deployment to GitHub repository
+  [ArmoniK.Infra](https://github.com/aneoconsulting/ArmoniK.Infra).
 * Use ArmoniK Infrastructure version `0.0.2`
 * Upgrade ArmoniK.Extension.Csharp version from `0.11.1` to `0.12.1`
 * Upgrade Core version from `0.13.2` to `0.14.3`
@@ -91,15 +97,18 @@ Changed
 Breaking
 - 
 
-* Results metadata for the expected output keys must be created prior to submitting a task
+* Results metadata for the expected output keys must be created prior
+  to submitting a task
   * Result ids are now given as a response to the Api endpoint Results.CreateResultsMetadata
   * This change is transparent for Extension.Csharp client and worker
 
 Added
 -
 
+* Implementation of a TTL for Redis. It is now possible to define it using
+  an environment variable `Redis__TtlTimeSpan`,
+  the life time allocated to the data inside Redis (defined in `parameters.tfvars`).
 * Grpc channel health check when recycling in Extension.Csharp
-* Redis Data TTL (`Redis__TtlTimeSpan` options)
 * Retried status to tasks
 * SessionId and task options in queue adapter
 * Ability to submit data and tasks separately using native Api

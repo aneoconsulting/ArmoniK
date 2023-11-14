@@ -183,7 +183,7 @@ extra_conf = {
     MongoDB__DataRetention                     = "1.00:00:00"
     Redis__Timeout                             = 30000
     Redis__SslHost                             = "127.0.0.1"
-    Redis__DataRetention                       = "1.00:00:00"
+    Redis__TtlTimeSpan                         = "1.00:00:00"
   }
   control = {
     Submitter__MaxErrorAllowed = 50
