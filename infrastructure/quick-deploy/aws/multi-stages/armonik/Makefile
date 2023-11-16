@@ -16,7 +16,7 @@ export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
 export SUFFIX?=main
-export AWS_ACCOUNT_ID=$(shell aws sts get-caller-identity --query "Account" --output text)
+export AWS_ACCOUNT_ID=$(shell aws --profile $(PROFILE) sts get-caller-identity --query "Account" --output text)
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
 export KUBECONFIG?=$(GENERATED_DIR)/eks/kubeconfig
 

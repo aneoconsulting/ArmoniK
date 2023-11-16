@@ -46,12 +46,12 @@ bootstrap-deploy: $(YAML_SRC)
 bootstrap-destroy:
 	aws --profile $(PROFILE) --region $(REGION) s3api delete-objects \
 		--bucket "${TFSTATE_BUCKET_NAME}" \
-		--delete "`aws s3api list-object-versions \
+		--delete "`aws --profile $(PROFILE) s3api list-object-versions \
 		--bucket "${TFSTATE_BUCKET_NAME}" \
 		--output=json \
 		--query='{Objects: Versions[].{Key:Key,VersionId:VersionId}}'`"
 	aws --profile $(PROFILE) cloudformation delete-stack --stack-name $(PREFIX) --region $(REGION)
-	aws --profile $(PROFILE) cloudformation wait stack-delete-complete --stack-name $(shell aws cloudformation describe-stacks --region $(REGION) --stack-name $(PREFIX) --query 'Stacks[0].StackId' --output text) --region $(REGION)
+	aws --profile $(PROFILE) cloudformation wait stack-delete-complete --stack-name $(shell aws --profile $(PROFILE) cloudformation describe-stacks --region $(REGION) --stack-name $(PREFIX) --query 'Stacks[0].StackId' --output text) --region $(REGION)
 
 
 init:

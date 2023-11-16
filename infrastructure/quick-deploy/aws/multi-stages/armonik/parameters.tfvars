@@ -40,7 +40,7 @@ control_plane = {
   image_pull_policy    = "IfNotPresent"
   port                 = 5001
   service_account_name = ""
-  limits = {
+  limits               = {
     cpu    = "1000m"
     memory = "2048Mi"
   }
@@ -51,12 +51,12 @@ control_plane = {
   image_pull_secrets = ""
   node_selector      = { service = "control-plane" }
   annotations        = {}
-  hpa = {
+  hpa                = {
     polling_interval  = 15
     cooldown_period   = 300
     min_replica_count = 3
     max_replica_count = 3
-    behavior = {
+    behavior          = {
       restore_to_original_replica_count = true
       stabilization_window_seconds      = 300
       type                              = "Percent"
@@ -81,6 +81,8 @@ control_plane = {
 
 # Parameters of admin GUI
 admin_gui = {
+  image  = "armonik-admin-gui"
+  tag    = "0.10.3"
   limits = {
     cpu    = "1000m"
     memory = "1024Mi"
@@ -95,6 +97,8 @@ admin_gui = {
 # Deprecated, must be removed in a future version
 # Parameters of admin gui v0.9
 admin_0_9_gui = {
+  image  = "armonik-admin-gui-0.9"
+  tag    = "0.9.5"
   limits = {
     cpu    = "1000m"
     memory = "1024Mi"
@@ -110,8 +114,10 @@ admin_0_9_gui = {
 # Parameters of admin gui v0.8 (previously called old admin gui)
 admin_0_8_gui = {
   api = {
-    name = "admin-api"
-    port = 3333
+    image  = "armonik-admin-gui-app-0.8"
+    tag    = "0.8.1"
+    name   = "admin-api"
+    port   = 3333
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
@@ -122,8 +128,10 @@ admin_0_8_gui = {
     }
   }
   app = {
-    name = "admin-old-gui"
-    port = 1080
+    image  = "armonik-admin-gui-api-0.8"
+    tag    = "0.8.1"
+    name   = "admin-old-gui"
+    port   = 1080
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
@@ -151,11 +159,11 @@ compute_plane = {
     annotations                      = {}
     service_account_name             = ""
     # ArmoniK polling agent
-    polling_agent = {
+    polling_agent                    = {
       image             = "armonik-polling-agent"
       tag               = "0.15.0"
       image_pull_policy = "IfNotPresent"
-      limits = {
+      limits            = {
         cpu    = "2000m"
         memory = "2048Mi"
       }
@@ -171,7 +179,7 @@ compute_plane = {
         image             = "armonik-worker"
         tag               = "0.12.2"
         image_pull_policy = "IfNotPresent"
-        limits = {
+        limits            = {
           cpu    = "1000m"
           memory = "1024Mi"
         }
@@ -187,7 +195,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 100
-      behavior = {
+      behavior          = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
@@ -211,11 +219,11 @@ compute_plane = {
     annotations                      = {}
     service_account_name             = ""
     # ArmoniK polling agent
-    polling_agent = {
+    polling_agent                    = {
       image             = "armonik-polling-agent"
       tag               = "0.15.0"
       image_pull_policy = "IfNotPresent"
-      limits = {
+      limits            = {
         cpu    = "2000m"
         memory = "2048Mi"
       }
@@ -231,7 +239,7 @@ compute_plane = {
         image             = "armonik-htcmock-worker"
         tag               = "0.15.0"
         image_pull_policy = "IfNotPresent"
-        limits = {
+        limits            = {
           cpu    = "1000m"
           memory = "1024Mi"
         }
@@ -247,7 +255,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 100
-      behavior = {
+      behavior          = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
@@ -271,11 +279,11 @@ compute_plane = {
     annotations                      = {}
     service_account_name             = ""
     # ArmoniK polling agent
-    polling_agent = {
+    polling_agent                    = {
       image             = "armonik-polling-agent"
       tag               = "0.15.0"
       image_pull_policy = "IfNotPresent"
-      limits = {
+      limits            = {
         cpu    = "2000m"
         memory = "2048Mi"
       }
@@ -291,7 +299,7 @@ compute_plane = {
         image             = "armonik-bench-worker"
         tag               = "0.15.0"
         image_pull_policy = "IfNotPresent"
-        limits = {
+        limits            = {
           cpu    = "1000m"
           memory = "1024Mi"
         }
@@ -307,7 +315,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 100
-      behavior = {
+      behavior          = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
@@ -331,11 +339,11 @@ compute_plane = {
     annotations                      = {}
     service_account_name             = ""
     # ArmoniK polling agent
-    polling_agent = {
+    polling_agent                    = {
       image             = "armonik-polling-agent"
       tag               = "0.15.0"
       image_pull_policy = "IfNotPresent"
-      limits = {
+      limits            = {
         cpu    = "2000m"
         memory = "2048Mi"
       }
@@ -351,7 +359,7 @@ compute_plane = {
         image             = "armonik-stream-worker"
         tag               = "0.15.0"
         image_pull_policy = "IfNotPresent"
-        limits = {
+        limits            = {
           cpu    = "1000m"
           memory = "1024Mi"
         }
@@ -367,7 +375,7 @@ compute_plane = {
       cooldown_period   = 300
       min_replica_count = 0
       max_replica_count = 100
-      behavior = {
+      behavior          = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
         type                              = "Percent"
