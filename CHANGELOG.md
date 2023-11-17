@@ -2,6 +2,20 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.17.0](https://github.com/aneoconsulting/armonik/tree/v2.17.0) (2023-11-17)
+
+Changed
+-
+
+* Do not cancel start of task in database in pollster to execute ready task before grace delay cancels it
+* Cancel tasks properly (kill task in processing)
+
+Added
+-
+
+* Agent and Worker send data with files
+* Task execution pipelining
+
 ## [v2.16.2](https://github.com/aneoconsulting/armonik/tree/v2.16.2) (2023-10-16)
 
 Changed

@@ -36,7 +36,7 @@ control_plane = {
   service_type         = "ClusterIP"
   replicas             = 1
   image                = "armonik-control-plane"
-  tag                  = "0.15.0"
+  tag                  = "0.19.3"
   image_pull_policy    = "IfNotPresent"
   port                 = 5001
   service_account_name = ""
@@ -161,7 +161,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "armonik-polling-agent"
-      tag               = "0.15.0"
+      tag               = "0.19.3"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"
@@ -177,7 +177,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "armonik-worker"
-        tag               = "0.12.3"
+        tag               = "0.12.5"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
@@ -221,7 +221,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "armonik-polling-agent"
-      tag               = "0.15.0"
+      tag               = "0.19.3"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"
@@ -237,7 +237,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "armonik-htcmock-worker"
-        tag               = "0.15.0"
+        tag               = "0.19.3"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
@@ -281,7 +281,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "armonik-polling-agent"
-      tag               = "0.15.0"
+      tag               = "0.19.3"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"
@@ -297,7 +297,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "armonik-bench-worker"
-        tag               = "0.15.0"
+        tag               = "0.19.3"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
@@ -341,7 +341,7 @@ compute_plane = {
     # ArmoniK polling agent
     polling_agent = {
       image             = "armonik-polling-agent"
-      tag               = "0.15.0"
+      tag               = "0.19.3"
       image_pull_policy = "IfNotPresent"
       limits = {
         cpu    = "2000m"
@@ -357,7 +357,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "armonik-stream-worker"
-        tag               = "0.15.0"
+        tag               = "0.19.3"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
