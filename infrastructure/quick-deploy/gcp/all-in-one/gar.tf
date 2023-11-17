@@ -11,9 +11,6 @@ locals {
       var.job_partitions_in_database.image, var.job_partitions_in_database.tag
     ] : null,
     var.admin_gui != null ? [var.admin_gui.image, var.admin_gui.tag] : null,
-    var.admin_0_9_gui != null ? [var.admin_0_9_gui.image, var.admin_0_9_gui.tag] : null,
-    var.admin_0_8_gui != null ? [var.admin_0_8_gui["api"].image, var.admin_0_8_gui["api"].tag] : null,
-    var.admin_0_8_gui != null ? [var.admin_0_8_gui["app"].image, var.admin_0_8_gui["app"].tag] : null,
     var.control_plane != null ? [var.control_plane.image, var.control_plane.tag] : null,
     var.seq != null ? [var.seq.image_name, var.seq.image_tag] : null,
     var.seq != null ? [var.seq.cli_image_name, var.seq.cli_image_tag] : null,

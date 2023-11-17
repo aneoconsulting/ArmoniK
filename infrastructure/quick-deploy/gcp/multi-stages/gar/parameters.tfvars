@@ -22,57 +22,57 @@ gar = {
   "armonik-control-plane" = [
     {
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.17.0"
+      tag   = "0.19.3"
     },
     {
       image = "submitterpubsub"
-      tag   = "0.17.0-pubsub"
+      tag   = "0.19.3-pubsub"
     }
   ],
   "armonik-polling-agent" = [
     {
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.17.0"
+      tag   = "0.19.3"
     },
     {
       image = "pollingagentpubsub"
-      tag   = "0.17.0-pubsub"
+      tag   = "0.19.3-pubsub"
     }
   ],
   "armonik-worker" = [
     {
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.12.3"
+      tag   = "0.12.5"
     }
   ],
   "armonik-htcmock-worker" = [
     {
       image = "dockerhubaneo/armonik_core_htcmock_test_worker"
-      tag   = "0.17.0"
+      tag   = "0.19.3"
     }
   ],
   "armonik-bench-worker" = [
     {
       image = "dockerhubaneo/armonik_core_bench_test_worker"
-      tag   = "0.17.0"
+      tag   = "0.19.3"
     }
   ],
   "armonik-stream-worker" = [
     {
       image = "dockerhubaneo/armonik_core_stream_test_worker"
-      tag   = "0.17.0"
+      tag   = "0.19.3"
     }
   ],
   "metrics-exporter" = [
     {
       image = "dockerhubaneo/armonik_control_metrics"
-      tag   = "0.17.0"
+      tag   = "0.19.3"
     }
   ],
   "partition-metrics-exporter" = [
     {
       image = "dockerhubaneo/armonik_control_partition_metrics"
-      tag   = "0.17.0"
+      tag   = "0.19.3"
     }
   ],
   "armonik-admin-app" = [
@@ -80,20 +80,6 @@ gar = {
       image = "dockerhubaneo/armonik_admin_app"
       tag   = "0.10.3"
     },
-    {
-      image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.9.5"
-    },
-    {
-      image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.8.1"
-    }
-  ],
-  "armonik-admin-api" = [
-    {
-      image = "dockerhubaneo/armonik_admin_api"
-      tag   = "0.8.1"
-    }
   ],
   mongosh = [
     {
@@ -198,4 +184,3 @@ gar = {
     }
   ]
 }
-

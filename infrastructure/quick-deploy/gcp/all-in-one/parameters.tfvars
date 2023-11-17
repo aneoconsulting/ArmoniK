@@ -90,7 +90,7 @@ control_plane = {
   default_partition = "default"
   node_selector     = { service = "control-plane" }
   image             = "submitterpubsub"
-  tag               = "0.17.0-pubsub"
+  tag               = "0.19.3-pubsub"
 }
 
 # Parameters of admin GUI
@@ -104,54 +104,6 @@ admin_gui = {
     memory = "128Mi"
   }
   node_selector = { service = "monitoring" }
-}
-
-# Deprecated, must be removed in a future version
-# Parameters of admin gui v0.9
-admin_0_9_gui = {
-  limits = {
-    cpu    = "1000m"
-    memory = "1024Mi"
-  }
-  requests = {
-    cpu    = "100m"
-    memory = "128Mi"
-  }
-  node_selector = { service = "monitoring" }
-}
-
-# Deprecated, must be removed in a future version
-# Parameters of admin gui v0.8 (previously called old admin gui)
-admin_0_8_gui = {
-  api = {
-    name = "admin-api"
-    port = 3333
-    limits = {
-      cpu    = "1000m"
-      memory = "1024Mi"
-    }
-    requests = {
-      cpu    = "100m"
-      memory = "128Mi"
-    }
-  }
-  app = {
-    name = "admin-old-gui"
-    port = 1080
-    limits = {
-      cpu    = "1000m"
-      memory = "1024Mi"
-    }
-    requests = {
-      cpu    = "100m"
-      memory = "128Mi"
-    }
-  }
-  service_type       = "ClusterIP"
-  replicas           = 1
-  image_pull_policy  = "IfNotPresent"
-  image_pull_secrets = ""
-  node_selector      = { service = "monitoring" }
 }
 
 # Parameters of the compute plane
@@ -172,7 +124,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.17.0-pubsub"
+      tag   = "0.19.3-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -225,7 +177,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.17.0-pubsub"
+      tag   = "0.19.3-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -278,7 +230,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.17.0-pubsub"
+      tag   = "0.19.3-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -331,7 +283,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.17.0-pubsub"
+      tag   = "0.19.3-pubsub"
     }
     # ArmoniK workers
     worker = [
