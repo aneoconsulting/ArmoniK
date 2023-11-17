@@ -5,9 +5,6 @@ locals {
   polling_agent_image_keys             = { for key, value in var.compute_plane : key => "${value.polling_agent.image}:${value.polling_agent.tag}" }
   worker_image_keys                    = { for key, value in var.compute_plane : key => [for w in value.worker : "${w.image}:${w.tag}"] }
   admin_gui_image_key                  = var.admin_gui != null ? "${var.admin_gui.image}:${var.admin_gui.tag}" : ""
-  admin_0_9_gui_image_key              = var.admin_0_9_gui != null ? "${var.admin_0_9_gui.image}:${var.admin_0_9_gui.tag}" : ""
-  admin_0_8_gui_api_image_key          = var.admin_0_8_gui != null ? "${var.admin_0_8_gui.api.image}:${var.admin_0_8_gui.api.tag}" : ""
-  admin_0_8_gui_app_image_key          = var.admin_0_8_gui != null ? "${var.admin_0_8_gui.app.image}:${var.admin_0_8_gui.app.tag}" : ""
   ingress_image_key                    = var.ingress != null ? "${var.ingress.image}:${var.ingress.tag}" : ""
   job_partitions_in_database_image_key = "${var.job_partitions_in_database.image}:${var.job_partitions_in_database.tag}"
   authentication_image_key             = "${var.authentication.image}:${var.authentication.tag}"
@@ -52,20 +49,6 @@ module "armonik" {
   admin_gui = var.admin_gui != null ? merge(var.admin_gui, {
     image = var.gar.repositories[local.admin_gui_image_key]
     tag   = var.admin_gui.tag
-  }) : null
-  admin_0_9_gui = var.admin_0_9_gui != null ? merge(var.admin_0_9_gui, {
-    image = var.gar.repositories[local.admin_0_9_gui_image_key]
-    tag   = var.admin_0_9_gui.tag
-  }) : null
-  admin_0_8_gui = var.admin_0_8_gui != null ? merge(var.admin_0_8_gui, {
-    api = merge(var.admin_0_8_gui.api, {
-      image = var.gar.repositories[local.admin_0_8_gui_api_image_key]
-      tag   = var.admin_0_8_gui.api.tag
-    })
-    app = merge(var.admin_0_8_gui.app, {
-      image = var.gar.repositories[local.admin_0_8_gui_app_image_key]
-      tag   = var.admin_0_8_gui.app.tag
-    })
   }) : null
   ingress = var.ingress != null ? merge(var.ingress, {
     image = var.gar.repositories[local.ingress_image_key]

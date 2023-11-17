@@ -89,7 +89,7 @@ variable "control_plane" {
     service_type      = optional(string, "ClusterIP")
     replicas          = optional(number, 2)
     image             = optional(string, "dockerhubaneo/armonik_control")
-    tag               = optional(string, "0.17.0")
+    tag               = optional(string, "0.19.3")
     image_pull_policy = optional(string, "IfNotPresent")
     port              = optional(number, 5001)
     limits = optional(object({
@@ -166,74 +166,6 @@ variable "admin_gui" {
       cpu    = optional(string)
       memory = optional(string)
     }))
-    service_type       = optional(string, "ClusterIP")
-    replicas           = optional(number, 1)
-    image_pull_policy  = optional(string, "IfNotPresent")
-    image_pull_secrets = optional(string, "")
-    node_selector      = optional(any, {})
-  })
-  default = {}
-}
-
-# Deprecated, must be removed in a future version
-# Parameters of admin gui v0.9
-variable "admin_0_9_gui" {
-  description = "Parameters of the admin GUI v0.9"
-  type = object({
-    name  = optional(string, "admin-app")
-    image = optional(string, "dockerhubaneo/armonik_admin_app")
-    tag   = optional(string, "0.9.5")
-    port  = optional(number, 1080)
-    limits = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-    requests = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-    service_type       = optional(string, "ClusterIP")
-    replicas           = optional(number, 1)
-    image_pull_policy  = optional(string, "IfNotPresent")
-    image_pull_secrets = optional(string, "")
-    node_selector      = optional(any, {})
-  })
-  default = {}
-}
-
-# Deprecated, must be removed in a future version
-# Parameters of admin gui v0.8 (previously called old admin gui)
-variable "admin_0_8_gui" {
-  description = "Parameters of the admin GUI v0.8"
-  type = object({
-    api = optional(object({
-      name  = optional(string, "admin-api")
-      image = optional(string, "dockerhubaneo/armonik_admin_api")
-      tag   = optional(string, "0.8.1")
-      port  = optional(number, 3333)
-      limits = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-      requests = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-    }), {})
-    app = optional(object({
-      name  = optional(string, "admin-old-gui")
-      image = optional(string, "dockerhubaneo/armonik_admin_app")
-      tag   = optional(string, "0.8.1")
-      port  = optional(number, 1080)
-      limits = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-      requests = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-    }), {})
     service_type       = optional(string, "ClusterIP")
     replicas           = optional(number, 1)
     image_pull_policy  = optional(string, "IfNotPresent")
