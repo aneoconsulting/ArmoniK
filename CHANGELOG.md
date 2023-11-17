@@ -6,6 +6,11 @@
 
 Changed
 -
+* Upgrade version of ArmoniK Infra from `0.2.0` to `0.2.2`.
+* Upgrade version of ArmoniK Core from `0.17.0` to `0.19.3`.
+* Upgrade version of ArmoniK API from `3.11.0` to `3.14.0`.
+* Upgrade version of ArmoniK Extensions.Csharp from `0.12.3` to `0.12.5`.
+* Upgrade version of ArmoniK Extensions.Cpp from `0.2.0` to `0.3.0`.
 
 * Do not cancel start of task in database in pollster to execute ready task before grace delay cancels it
 * Cancel tasks properly (kill task in processing)
