@@ -80,20 +80,6 @@ gar = {
       image = "dockerhubaneo/armonik_admin_app"
       tag   = "0.10.3"
     },
-    {
-      image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.9.5"
-    },
-    {
-      image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.8.1"
-    }
-  ],
-  "armonik-admin-api" = [
-    {
-      image = "dockerhubaneo/armonik_admin_api"
-      tag   = "0.8.1"
-    }
   ],
   mongosh = [
     {
@@ -198,4 +184,3 @@ gar = {
     }
   ]
 }
-

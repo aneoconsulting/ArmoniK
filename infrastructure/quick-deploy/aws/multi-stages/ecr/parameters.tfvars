@@ -80,18 +80,6 @@ ecr = {
       image = "dockerhubaneo/armonik_admin_app"
       tag   = "0.10.3"
     },
-    "armonik-admin-gui-0.9" = {
-      image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.9.5"
-    },
-    "armonik-admin-gui-app-0.8" = {
-      image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.8.1"
-    },
-    "armonik-admin-gui-api-0.8" = {
-      image = "dockerhubaneo/armonik_admin_api"
-      tag   = "0.8.1"
-    },
     mongosh = {
       image = "rtsp/mongosh"
       tag   = "1.10.1"
