@@ -81,6 +81,8 @@ control_plane = {
 
 # Parameters of admin GUI
 admin_gui = {
+  image = "armonik-admin-gui"
+  tag   = "0.10.3"
   limits = {
     cpu    = "1000m"
     memory = "1024Mi"
@@ -95,6 +97,8 @@ admin_gui = {
 # Deprecated, must be removed in a future version
 # Parameters of admin gui v0.9
 admin_0_9_gui = {
+  image = "armonik-admin-gui-0.9"
+  tag   = "0.9.5"
   limits = {
     cpu    = "1000m"
     memory = "1024Mi"
@@ -110,8 +114,10 @@ admin_0_9_gui = {
 # Parameters of admin gui v0.8 (previously called old admin gui)
 admin_0_8_gui = {
   api = {
-    name = "admin-api"
-    port = 3333
+    image = "armonik-admin-gui-app-0.8"
+    tag   = "0.8.1"
+    name  = "admin-api"
+    port  = 3333
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
@@ -122,8 +128,10 @@ admin_0_8_gui = {
     }
   }
   app = {
-    name = "admin-old-gui"
-    port = 1080
+    image = "armonik-admin-gui-api-0.8"
+    tag   = "0.8.1"
+    name  = "admin-old-gui"
+    port  = 1080
     limits = {
       cpu    = "1000m"
       memory = "1024Mi"
