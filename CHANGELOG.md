@@ -2,6 +2,20 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.13.5](https://github.com/aneoconsulting/armonik/tree/v2.13.4) (2023-12-06)
+
+Changed
+-
+
+* Use Armonik.Core version `0.13.4`
+* Use Armonik.Extensions.Csharp version `0.11.3`
+
+Fixed
+* Change blob size of upload size to 2MB
+* Fix retry delay (ExtC#)
+* Add retry while exception log (ExtC#)
+* Backport channel fixes (ExtC#)
+
 ## [v2.13.4](https://github.com/aneoconsulting/armonik/tree/v2.13.4) (2023-11-08)
 
 Changed
