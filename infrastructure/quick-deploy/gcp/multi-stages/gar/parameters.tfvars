@@ -117,12 +117,6 @@ gar = {
       tag   = "v1.23.0"
     }
   ],
-  "aws-node-termination-handler" = [
-    {
-      image = "public.ecr.aws/aws-ec2/aws-node-termination-handler"
-      tag   = "v1.19.0"
-    }
-  ],
   "metrics-server" = [
     {
       image = "registry.k8s.io/metrics-server/metrics-server"
@@ -163,24 +157,6 @@ gar = {
     {
       image = "amazon/aws-efs-csi-driver"
       tag   = "v1.5.1"
-    }
-  ],
-  livenessprobe = [
-    {
-      image = "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe"
-      tag   = "v2.9.0-eks-1-22-19"
-    }
-  ],
-  "node-driver-registrar" = [
-    {
-      image = "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar"
-      tag   = "v2.7.0-eks-1-22-19"
-    }
-  ],
-  "external-provisioner" = [
-    {
-      image = "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner"
-      tag   = "v3.4.0-eks-1-22-19"
     }
   ]
 }
