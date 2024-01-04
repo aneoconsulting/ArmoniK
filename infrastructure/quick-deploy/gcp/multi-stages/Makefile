@@ -43,7 +43,7 @@ deploy-gcs-of-backend:
 		fi; \
 	fi
 
-destroy-s3-of-backend:
+destroy-gcs-of-backend:
 	@if gsutil ls -b gs://${TFSTATE_BUCKET_NAME} > /dev/null 2>&1; then \
 		if gsutil rm -r gs://${TFSTATE_BUCKET_NAME}; then \
 		echo "The bucket : ${TFSTATE_BUCKET_NAME} has been deleted."; \
