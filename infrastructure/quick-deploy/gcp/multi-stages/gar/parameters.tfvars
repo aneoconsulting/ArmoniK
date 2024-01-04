@@ -152,11 +152,5 @@ gar = {
       image = "ghcr.io/kedacore/keda-metrics-apiserver"
       tag   = "2.9.3"
     }
-  ],
-  "aws-efs-csi-driver" = [
-    {
-      image = "amazon/aws-efs-csi-driver"
-      tag   = "v1.5.1"
-    }
   ]
 }
