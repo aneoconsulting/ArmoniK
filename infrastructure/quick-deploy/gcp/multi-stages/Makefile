@@ -23,7 +23,7 @@ SHELL := /bin/bash
 ####################################
 #             TFSTATE Bucket       #
 ####################################
-deploy-s3-of-backend:
+deploy-gcs-of-backend:
 	@if [[ $${TFSTATE_BUCKET_NAME} =~ ^[a-z0-9]([-a-z0-9_]*[a-z0-9])?$$ && $${#TFSTATE_BUCKET_NAME} -ge 3 && $${#TFSTATE_BUCKET_NAME} -le 63 && ! $${TFSTATE_BUCKET_NAME} =~ -- && ! $${TFSTATE_BUCKET_NAME} =~ ^- && ! $${TFSTATE_BUCKET_NAME} =~ -$$ ]]; then \
 		echo "TFSTATE bucket Name : ${TFSTATE_BUCKET_NAME} is valid"; \
 	else \
