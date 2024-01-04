@@ -18,6 +18,43 @@ GENERATED_DIR=$(CURRENT_DIR)/generated
 MODULES_DIR=$(GENERATED_DIR)/infra-modules
 TERRAFORM_PLUGINS?=$(GENERATED_DIR)/terraform-plugins
 VERSIONS_FILE?=$(shell realpath ../../../../versions.tfvars.json)
+SHELL := /bin/bash
+
+####################################
+#             TFSTATE Bucket       #
+####################################
+deploy-gcs-of-backend:
+	@if [[ $${TFSTATE_BUCKET_NAME} =~ ^[a-z0-9]([-a-z0-9_]*[a-z0-9])?$$ && $${#TFSTATE_BUCKET_NAME} -ge 3 && $${#TFSTATE_BUCKET_NAME} -le 63 && ! $${TFSTATE_BUCKET_NAME} =~ -- && ! $${TFSTATE_BUCKET_NAME} =~ ^- && ! $${TFSTATE_BUCKET_NAME} =~ -$$ ]]; then \
+		echo "TFSTATE bucket Name : ${TFSTATE_BUCKET_NAME} is valid"; \
+	else \
+		echo -e "\e[91mError : Invalid TFSTATE bucket Name : '${TFSTATE_BUCKET_NAME}' ref: https://cloud.google.com/storage/docs/buckets#naming \e[0m"; \
+		exit 1; \
+	fi; \
+
+	@if gsutil ls -b gs://${TFSTATE_BUCKET_NAME} > /dev/null 2>&1; then \
+		echo "The bucket : ${TFSTATE_BUCKET_NAME} already exists."; \
+	else \
+		if gsutil mb -l ${ARMONIK_REGION} gs://${TFSTATE_BUCKET_NAME}; then \
+			echo "The bucket ${TFSTATE_BUCKET_NAME} has been successfuly created."; \
+		else \
+			echo -e "\e[91mError : TFSTATE bucket Name : '${TFSTATE_BUCKET_NAME}' has NOT been created. \e[0m"; \
+			gsutil ls -b gs://${TFSTATE_BUCKET_NAME}; \
+			exit 1; \
+		fi; \
+	fi
+
+destroy-gcs-of-backend:
+	@if gsutil ls -b gs://${TFSTATE_BUCKET_NAME} > /dev/null 2>&1; then \
+		if gsutil rm -r gs://${TFSTATE_BUCKET_NAME}; then \
+		echo "The bucket : ${TFSTATE_BUCKET_NAME} has been deleted."; \
+		else \
+			echo -e "\e[91mError : The bucket : ${TFSTATE_BUCKET_NAME} has NOT been deleted. \e[0m"; \
+			gsutil ls -b gs://${TFSTATE_BUCKET_NAME}; \
+			exit 1; \
+		fi \
+	else \
+		echo "The bucket ${TFSTATE_BUCKET_NAME} is not in your bucket list."; \
+	fi 
 
 ####################################
 #             GCP VPC              #
