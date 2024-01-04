@@ -50,20 +50,6 @@ module "armonik" {
     image = var.gar.repositories[local.admin_gui_image_key]
     tag   = var.admin_gui.tag
   }) : null
-  admin_0_9_gui = var.admin_0_9_gui != null ? merge(var.admin_0_9_gui, {
-    image = var.gar.repositories[local.admin_0_9_gui_image_key]
-    tag   = var.admin_0_9_gui.tag
-  }) : null
-  admin_0_8_gui = var.admin_0_8_gui != null ? merge(var.admin_0_8_gui, {
-    api = merge(var.admin_0_8_gui.api, {
-      image = var.gar.repositories[local.admin_0_8_gui_api_image_key]
-      tag   = var.admin_0_8_gui.api.tag
-    })
-    app = merge(var.admin_0_8_gui.app, {
-      image = var.gar.repositories[local.admin_0_8_gui_app_image_key]
-      tag   = var.admin_0_8_gui.app.tag
-    })
-  }) : null
   ingress = var.ingress != null ? merge(var.ingress, {
     image = var.gar.repositories[local.ingress_image_key]
     tag   = var.ingress.tag
