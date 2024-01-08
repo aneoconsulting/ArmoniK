@@ -3,7 +3,7 @@ module "armonik" {
   namespace     = local.namespace
   logging_level = var.logging_level
   extra_conf = merge(var.extra_conf, {
-    core = merge(var.extra_conf.core, { PubSub__ProjectId = data.google_client_config.current.project })
+    core = merge(var.extra_conf.core, { PubSub__ProjectId = data.google_client_config.current.project, PubSub__KmsKeyName = data.google_kms_crypto_key.kms.id })
   })
   jobs_in_database_extra_conf = var.jobs_in_database_extra_conf
 
