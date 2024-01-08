@@ -1,5 +1,15 @@
 data "google_client_config" "current" {}
 
+data "google_kms_key_ring" "kms" {
+  name     = var.kms.key_ring
+  location = var.region
+}
+
+data "google_kms_crypto_key" "kms" {
+  name     = var.kms.crypto_key
+  key_ring = data.google_kms_key_ring.kms.id
+}
+
 locals {
   control_plane_image_key              = "${var.control_plane.image}:${var.control_plane.tag}"
   polling_agent_image_keys             = { for key, value in var.compute_plane : key => "${value.polling_agent.image}:${value.polling_agent.tag}" }
@@ -15,7 +25,7 @@ module "armonik" {
   namespace     = var.namespace
   logging_level = var.logging_level
   extra_conf = merge(var.extra_conf, {
-    core = merge(var.extra_conf.core, { PubSub__ProjectId = var.project })
+    core = merge(var.extra_conf.core, { PubSub__ProjectId = var.project, PubSub__KmsKeyName = data.google_kms_crypto_key.kms.id })
   })
   jobs_in_database_extra_conf = var.jobs_in_database_extra_conf
   control_plane = merge(var.control_plane, {
