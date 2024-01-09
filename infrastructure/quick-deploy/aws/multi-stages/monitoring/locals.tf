@@ -24,7 +24,7 @@ locals {
       directoryPerms   = "755"
       uid              = "999"      # optional
       gid              = "999"      # optional
-      basePath         = "/mongodb" # optional
+      basePath         = "/grafana" # optional
     })
   } : null)
   prometheus_persistent_volume = (try(var.monitoring.prometheus.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
@@ -34,9 +34,9 @@ locals {
       provisioningMode = "efs-ap"
       fileSystemId     = module.prometheus_efs_persistent_volume[0].id
       directoryPerms   = "755"
-      uid              = "999"      # optional
-      gid              = "999"      # optional
-      basePath         = "/mongodb" # optional
+      uid              = "999"         # optional
+      gid              = "999"         # optional
+      basePath         = "/prometheus" # optional
     })
   } : null)
   vpc = {

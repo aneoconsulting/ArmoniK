@@ -86,9 +86,9 @@ module "prometheus" {
     tag                = local.prometheus_tag
     image_pull_secrets = local.prometheus_image_pull_secrets
   }
-  persistent_volume = local.grafana_persistent_volume
+  persistent_volume = local.prometheus_persistent_volume
   depends_on = [
-    module.grafana_efs_persistent_volume,
+    module.prometheus_efs_persistent_volume,
     module.metrics_exporter,
     #module.partition_metrics_exporter
   ]
@@ -109,10 +109,10 @@ module "grafana" {
     image_pull_secrets = local.grafana_image_pull_secrets
   }
   authentication    = var.authentication
-  persistent_volume = local.prometheus_persistent_volume
+  persistent_volume = local.grafana_persistent_volume
   depends_on = [
     module.prometheus,
-  module.prometheus_efs_persistent_volume]
+  module.grafana_efs_persistent_volume]
 }
 
 # AWS EFS as persistent volume for Grafana
@@ -121,7 +121,7 @@ module "grafana_efs_persistent_volume" {
   source = "../generated/infra-modules/storage/aws/efs"
   efs = {
     name                            = local.grafana_efs_name
-    kms_key_id                      = (var.grafana_efs.kms_key_id != "" && var.grafana_efs.kms_key_id != null ? var.grafana_efs.kms_key_id : module.kms.0.arn)
+    kms_key_id                      = (var.grafana_efs.kms_key_id != "" && var.grafana_efs.kms_key_id != null ? var.grafana_efs.kms_key_id : module.kms[0].arn)
     performance_mode                = var.grafana_efs.performance_mode
     throughput_mode                 = var.grafana_efs.throughput_mode
     provisioned_throughput_in_mibps = var.grafana_efs.provisioned_throughput_in_mibps
@@ -138,7 +138,7 @@ module "prometheus_efs_persistent_volume" {
   source = "../generated/infra-modules/storage/aws/efs"
   efs = {
     name                            = local.prometheus_efs_name
-    kms_key_id                      = (var.prometheus_efs.kms_key_id != "" && var.prometheus_efs.kms_key_id != null ? var.prometheus_efs.kms_key_id : module.kms.0.arn)
+    kms_key_id                      = (var.prometheus_efs.kms_key_id != "" && var.prometheus_efs.kms_key_id != null ? var.prometheus_efs.kms_key_id : module.kms[0].arn)
     performance_mode                = var.prometheus_efs.performance_mode
     throughput_mode                 = var.prometheus_efs.throughput_mode
     provisioned_throughput_in_mibps = var.prometheus_efs.provisioned_throughput_in_mibps

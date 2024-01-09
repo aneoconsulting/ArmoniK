@@ -151,7 +151,7 @@ grafana_efs = {
   provisioned_throughput_in_mibps = null
   transition_to_ia                = "AFTER_7_DAYS"
   # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
-  access_point = null #["mongo"]
+  access_point = null #["grafana"]
 }
 
 # AWS EFS as Persistent volume for Prometheus
@@ -163,5 +163,5 @@ prometheus_efs = {
   provisioned_throughput_in_mibps = null
   transition_to_ia                = "AFTER_7_DAYS"
   # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
-  access_point = null #["mongo"]
+  access_point = null #["prometheus"]
 }
