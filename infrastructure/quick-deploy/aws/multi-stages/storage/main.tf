@@ -117,6 +117,21 @@ module "mongodb" {
 
 # AWS EFS as persistent volume
 module "efs_persistent_volume" {
+  count  = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
+  source = "../generated/infra-modules/storage/aws/efs"
+  efs = {
+    name                            = local.efs_name
+    kms_key_id                      = (var.efs.kms_key_id != "" && var.efs.kms_key_id != null ? var.efs.kms_key_id : module.kms.0.arn)
+    performance_mode                = var.efs.performance_mode
+    throughput_mode                 = var.efs.throughput_mode
+    provisioned_throughput_in_mibps = var.efs.provisioned_throughput_in_mibps
+    transition_to_ia                = var.efs.transition_to_ia
+    access_point                    = var.efs.access_point
+  }
+  vpc = local.vpc
+}
+/*
+module "efs_persistent_volume" {
   count      = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
   source     = "../generated/infra-modules/persistent-volume/aws/efs"
   eks_issuer = var.eks.issuer
@@ -157,4 +172,4 @@ module "efs_persistent_volume" {
     }
   }
   tags = local.tags
-}
+}*/

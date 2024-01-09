@@ -22,18 +22,20 @@ locals {
   s3_os_name                                   = var.s3_os != null ? "${var.s3_os.name}-${local.suffix}" : ""
   elasticache_name                             = var.elasticache != null ? "${var.elasticache.name}-${local.suffix}" : ""
   mq_name                                      = "${var.mq.name}-${local.suffix}"
-  efs_name                                     = "${var.pv_efs.efs.name}-${local.suffix}"
-  efs_csi_name                                 = "efs-csi-driver-${local.suffix}"
+  efs_name                                     = "${var.efs.name}-${local.suffix}"
+  #efs_name                                     = "${var.pv_efs.efs.name}-${local.suffix}"
+  #efs_csi_name                                 = "efs-csi-driver-${local.suffix}"
   persistent_volume = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
     storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
     resources           = var.mongodb.persistent_volume.resources
     parameters = merge(var.mongodb.persistent_volume.parameters, {
       provisioningMode = "efs-ap"
-      fileSystemId     = module.efs_persistent_volume.0.efs_id
-      directoryPerms   = "755"
-      gidRangeStart    = "999"      # optional
-      gidRangeEnd      = "2000"     # optional
-      basePath         = "/mongodb" # optional
+      #fileSystemId     = module.efs_persistent_volume.0.efs_id
+      fileSystemId   = module.efs_persistent_volume[0].id
+      directoryPerms = "755"
+      uid            = "999"      # optional
+      gid            = "999"      # optional
+      basePath       = "/mongodb" # optional
     })
   } : null)
 

@@ -68,6 +68,22 @@ variable "eks" {
         image = string
         tag   = string
       })
+      efs_csi = object({
+        image = optional(string, )
+        tag   = string
+      })
+      livenessprobe = object({
+        image = string
+        tag   = string
+      })
+      node_driver_registrar = object({
+        image = string
+        tag   = string
+      })
+      external_provisioner = object({
+        image = string
+        tag   = string
+      })
     })
     cluster_autoscaler = object({
       expander                              = string
@@ -90,6 +106,14 @@ variable "eks" {
       namespace  = optional(string, "kube-system")
       repository = optional(string, "https://aws.github.io/eks-charts")
       version    = optional(string, "0.21.0")
+    })
+    efs_csi = object({
+      name               = optional(string, "efs-csi-driver")
+      namespace          = optional(string, "kube-system")
+      image_pull_secrets = optional(string, "")
+      node_selector      = optional(any, {})
+      repository         = optional(string, "https://kubernetes-sigs.github.io/aws-efs-csi-driver/")
+      version            = optional(string, "2.3.0")
     })
     encryption_keys = object({
       cluster_log_kms_key_id    = string

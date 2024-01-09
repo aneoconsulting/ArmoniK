@@ -66,7 +66,7 @@ destroy-vpc:
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
 clean-vpc:
-	$(MAKE) -C $(CURRENT_DIR)/vpc clean
+	$(MAKE) -C $(CURRENT_DIR)/vpc clean PROFILE=$(ARMONIK_PROFILE)
 
 ####################################
 #            AWS ECR               #
@@ -93,7 +93,7 @@ destroy-ecr:
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
 clean-ecr:
-	$(MAKE) -C $(CURRENT_DIR)/ecr clean
+	$(MAKE) -C $(CURRENT_DIR)/ecr clean PROFILE=$(ARMONIK_PROFILE)
 
 ####################################
 #             AWS EKS              #
@@ -126,7 +126,7 @@ destroy-eks:
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
 clean-eks:
-	$(MAKE) -C $(CURRENT_DIR)/eks clean
+	$(MAKE) -C $(CURRENT_DIR)/eks clean PROFILE=$(ARMONIK_PROFILE)
 
 ####################################
 #       Kubernetes namespace       #
@@ -177,7 +177,7 @@ destroy-keda:
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
 clean-keda:
-	$(MAKE) -C $(CURRENT_DIR)/keda clean
+	$(MAKE) -C $(CURRENT_DIR)/keda clean PROFILE=$(ARMONIK_PROFILE)
 
 ####################################
 #         Metrics server           #
@@ -210,7 +210,7 @@ destroy-metrics-server:
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
 clean-metrics-server:
-	$(MAKE) -C $(CURRENT_DIR)/metrics-server clean
+	$(MAKE) -C $(CURRENT_DIR)/metrics-server clean PROFILE=$(ARMONIK_PROFILE)
 
 ####################################
 #           AWS Storage            #
@@ -247,7 +247,7 @@ destroy-storage:
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
 clean-storage:
-	$(MAKE) -C $(CURRENT_DIR)/storage clean
+	$(MAKE) -C $(CURRENT_DIR)/storage clean PROFILE=$(ARMONIK_PROFILE)
 
 ####################################
 #           Monitoring             #
@@ -284,7 +284,7 @@ destroy-monitoring:
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
 clean-monitoring:
-	$(MAKE) -C $(CURRENT_DIR)/monitoring clean
+	$(MAKE) -C $(CURRENT_DIR)/monitoring clean PROFILE=$(ARMONIK_PROFILE)
 
 ####################################
 #             ArmoniK              #
@@ -321,7 +321,7 @@ destroy-armonik:
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
 clean-armonik:
-	$(MAKE) -C $(CURRENT_DIR)/armonik clean
+	$(MAKE) -C $(CURRENT_DIR)/armonik clean PROFILE=$(ARMONIK_PROFILE)
 
 ####################################
 #          KUBECONFIG              #

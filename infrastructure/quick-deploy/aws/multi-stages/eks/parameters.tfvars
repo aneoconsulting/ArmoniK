@@ -58,6 +58,22 @@ eks = {
       image = "aws-node-termination-handler"
       tag   = "v1.19.0"
     }
+    efs_csi = {
+      image = "aws-efs-csi-driver"
+      tag   = "v1.5.1"
+    }
+    livenessprobe = {
+      image = "livenessprobe"
+      tag   = "v2.9.0-eks-1-22-19"
+    }
+    node_driver_registrar = {
+      image = "node-driver-registrar"
+      tag   = "v2.7.0-eks-1-22-19"
+    }
+    external_provisioner = {
+      image = "external-provisioner"
+      tag   = "v3.4.0-eks-1-22-19"
+    }
   }
   cluster_autoscaler = {
     expander                              = "least-waste" # random, most-pods, least-waste, price, priority
@@ -80,6 +96,14 @@ eks = {
     namespace  = "kube-system"
     repository = "https://aws.github.io/eks-charts"
     version    = "0.21.0"
+  }
+  efs_csi = {
+    name               = "efs-csi-driver"
+    namespace          = "kube-system"
+    image_pull_secrets = ""
+    node_selector      = { service = "control-plane" }
+    repository         = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
+    version            = "2.3.0"
   }
   encryption_keys = {
     cluster_log_kms_key_id    = ""

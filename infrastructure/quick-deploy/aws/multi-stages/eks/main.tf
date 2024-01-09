@@ -37,9 +37,26 @@ module "eks" {
         image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${local.suffix}/${var.eks.docker_images.instance_refresh.image}"
         tag   = var.eks.docker_images.instance_refresh.tag
       }
+      efs_csi = {
+        image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${local.suffix}/${var.eks.docker_images.efs_csi.image}"
+        tag   = var.eks.docker_images.efs_csi.tag
+      }
+      livenessprobe = {
+        image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${local.suffix}/${var.eks.docker_images.livenessprobe.image}"
+        tag   = var.eks.docker_images.livenessprobe.tag
+      }
+      node_driver_registrar = {
+        image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${local.suffix}/${var.eks.docker_images.node_driver_registrar.image}"
+        tag   = var.eks.docker_images.node_driver_registrar.tag
+      }
+      external_provisioner = {
+        image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${local.suffix}/${var.eks.docker_images.external_provisioner.image}"
+        tag   = var.eks.docker_images.external_provisioner.tag
+      }
     }
     instance_refresh   = var.eks.instance_refresh
     cluster_autoscaler = var.eks.cluster_autoscaler
+    efs_csi            = var.eks.efs_csi
     encryption_keys = {
       cluster_log_kms_key_id    = (var.eks.encryption_keys.cluster_log_kms_key_id != "" ? var.eks.encryption_keys.cluster_log_kms_key_id : module.kms.0.arn)
       cluster_encryption_config = (var.eks.encryption_keys.cluster_encryption_config != "" ? var.eks.encryption_keys.cluster_encryption_config : module.kms.0.arn)

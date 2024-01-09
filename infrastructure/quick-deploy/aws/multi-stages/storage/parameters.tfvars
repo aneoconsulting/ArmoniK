@@ -129,13 +129,23 @@ mongodb = {
   tag                = "6.0.7"
   node_selector      = { service = "state-database" }
   image_pull_secrets = ""
-  persistent_volume  = null
+  persistent_volume  = { storage_provisioner = "efs.csi.aws.com", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
   replicas_number    = 1
   # example: {storage_provisioner="efs.csi.aws.com",parameters=null,resources={limits=null,requests={storage="5Gi"}}}
 }
 
 # AWS EFS as Persistent volume
-pv_efs = {
+efs = {
+  name                            = "armonik-efs"
+  kms_key_id                      = ""
+  performance_mode                = "generalPurpose" # "generalPurpose" or "maxIO"
+  throughput_mode                 = "bursting"       #  "bursting" or "provisioned"
+  provisioned_throughput_in_mibps = null
+  transition_to_ia                = "AFTER_7_DAYS"
+  # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+  access_point = null #["mongo"]
+}
+/*pv_efs = {
   # AWS Elastic Filesystem Service
   efs = {
     name                            = "armonik-efs"
@@ -173,4 +183,4 @@ pv_efs = {
       }
     }
   }
-}
+}*/

@@ -170,7 +170,20 @@ variable "mongodb" {
 }
 
 # AWS EFS as Persistent volume
-variable "pv_efs" {
+variable "efs" {
+  description = "AWS EFS as Persistent volume"
+  type = object({
+    name                            = string
+    kms_key_id                      = string
+    performance_mode                = string # "generalPurpose" or "maxIO"
+    throughput_mode                 = string #  "bursting" or "provisioned"
+    provisioned_throughput_in_mibps = number
+    transition_to_ia                = string
+    # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+    access_point = list(string)
+  })
+}
+/*variable "pv_efs" {
   description = "AWS EFS as Persistent volume"
   type = object({
     # AWS Elastic Filesystem Service
@@ -211,7 +224,7 @@ variable "pv_efs" {
       })
     })
   })
-}
+}*/
 
 # S3 as object storage
 variable "s3_os" {
