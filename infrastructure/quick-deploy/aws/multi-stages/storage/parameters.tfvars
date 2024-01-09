@@ -145,42 +145,4 @@ efs = {
   # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
   access_point = null #["mongo"]
 }
-/*pv_efs = {
-  # AWS Elastic Filesystem Service
-  efs = {
-    name                            = "armonik-efs"
-    kms_key_id                      = ""
-    performance_mode                = "generalPurpose" # "generalPurpose" or "maxIO"
-    throughput_mode                 = "bursting"       #  "bursting" or "provisioned"
-    provisioned_throughput_in_mibps = null
-    transition_to_ia                = "AFTER_7_DAYS"
-    # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
-    access_point = null #["mongo"]
-  }
-  # EFS Container Storage Interface (CSI) Driver
-  csi_driver = {
-    namespace          = "kube-system"
-    image_pull_secrets = ""
-    node_selector      = { service = "state-database" }
-    repository         = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
-    version            = "2.3.0"
-    docker_images = {
-      efs_csi = {
-        image = "aws-efs-csi-driver"
-        tag   = "v1.5.1"
-      }
-      livenessprobe = {
-        image = "livenessprobe"
-        tag   = "v2.9.0-eks-1-22-19"
-      }
-      node_driver_registrar = {
-        image = "node-driver-registrar"
-        tag   = "v2.7.0-eks-1-22-19"
-      }
-      external_provisioner = {
-        image = "external-provisioner"
-        tag   = "v3.4.0-eks-1-22-19"
-      }
-    }
-  }
-}*/
+

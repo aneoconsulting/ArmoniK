@@ -128,48 +128,6 @@ module "efs_persistent_volume" {
     transition_to_ia                = var.efs.transition_to_ia
     access_point                    = var.efs.access_point
   }
-  vpc = local.vpc
-}
-/*
-module "efs_persistent_volume" {
-  count      = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
-  source     = "../generated/infra-modules/persistent-volume/aws/efs"
-  eks_issuer = var.eks.issuer
-  vpc        = local.vpc
-  efs = {
-    name                            = local.efs_name
-    kms_key_id                      = (var.pv_efs.efs.kms_key_id != "" && var.pv_efs.efs.kms_key_id != null ? var.pv_efs.efs.kms_key_id : module.kms.0.arn)
-    performance_mode                = var.pv_efs.efs.performance_mode
-    throughput_mode                 = var.pv_efs.efs.throughput_mode
-    provisioned_throughput_in_mibps = var.pv_efs.efs.provisioned_throughput_in_mibps
-    transition_to_ia                = var.pv_efs.efs.transition_to_ia
-    access_point                    = var.pv_efs.efs.access_point
-  }
-  csi_driver = {
-    name               = local.efs_csi_name
-    namespace          = var.pv_efs.csi_driver.namespace
-    image_pull_secrets = var.pv_efs.csi_driver.image_pull_secrets
-    node_selector      = var.pv_efs.csi_driver.node_selector
-    repository         = var.pv_efs.csi_driver.repository
-    version            = var.pv_efs.csi_driver.version
-    docker_images = {
-      efs_csi = {
-        image = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${var.pv_efs.csi_driver.docker_images.efs_csi.image}"
-        tag   = var.pv_efs.csi_driver.docker_images.efs_csi.tag
-      }
-      livenessprobe = {
-        image = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${var.pv_efs.csi_driver.docker_images.livenessprobe.image}"
-        tag   = var.pv_efs.csi_driver.docker_images.livenessprobe.tag
-      }
-      node_driver_registrar = {
-        image = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${var.pv_efs.csi_driver.docker_images.node_driver_registrar.image}"
-        tag   = var.pv_efs.csi_driver.docker_images.node_driver_registrar.tag
-      }
-      external_provisioner = {
-        image = "${var.aws_account_id}.dkr.ecr.${var.region}.amazonaws.com/${var.suffix}/${var.pv_efs.csi_driver.docker_images.external_provisioner.image}"
-        tag   = var.pv_efs.csi_driver.docker_images.external_provisioner.tag
-      }
-    }
-  }
+  vpc  = local.vpc
   tags = local.tags
-}*/
+}
