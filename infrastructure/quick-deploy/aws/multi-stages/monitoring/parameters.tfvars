@@ -68,6 +68,7 @@ monitoring = {
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { service = "monitoring" }
+    persistent_volume  = { storage_provisioner = "efs.csi.aws.com", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
   }
   node_exporter = {
     enabled            = true
@@ -82,6 +83,7 @@ monitoring = {
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { service = "metrics" }
+    persistent_volume  = { storage_provisioner = "efs.csi.aws.com", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
   }
   metrics_exporter = {
     image              = "metrics-exporter"
@@ -139,3 +141,27 @@ monitoring = {
 }
 
 authentication = false
+
+# AWS EFS as Persistent volume for Grafana
+grafana_efs = {
+  name                            = "armonik-grafana-efs"
+  kms_key_id                      = ""
+  performance_mode                = "generalPurpose" # "generalPurpose" or "maxIO"
+  throughput_mode                 = "bursting"       #  "bursting" or "provisioned"
+  provisioned_throughput_in_mibps = null
+  transition_to_ia                = "AFTER_7_DAYS"
+  # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+  access_point = null #["mongo"]
+}
+
+# AWS EFS as Persistent volume for Prometheus
+prometheus_efs = {
+  name                            = "armonik-prometheus-efs"
+  kms_key_id                      = ""
+  performance_mode                = "generalPurpose" # "generalPurpose" or "maxIO"
+  throughput_mode                 = "bursting"       #  "bursting" or "provisioned"
+  provisioned_throughput_in_mibps = null
+  transition_to_ia                = "AFTER_7_DAYS"
+  # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+  access_point = null #["mongo"]
+}

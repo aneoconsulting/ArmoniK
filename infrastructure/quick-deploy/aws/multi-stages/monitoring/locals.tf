@@ -10,9 +10,41 @@ resource "random_string" "random_resources" {
 resource "time_static" "creation_date" {}
 
 locals {
-  random_string             = random_string.random_resources.result
-  suffix                    = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
-  kms_name                  = "armonik-kms-monitoring-${local.suffix}-${local.random_string}"
+  random_string       = random_string.random_resources.result
+  suffix              = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
+  kms_name            = "armonik-kms-monitoring-${local.suffix}-${local.random_string}"
+  grafana_efs_name    = "${var.grafana_efs.name}-${local.suffix}"
+  prometheus_efs_name = "${var.prometheus_efs.name}-${local.suffix}"
+  grafana_persistent_volume = (try(var.monitoring.grafana.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
+    storage_provisioner = var.monitoring.grafana.persistent_volume.storage_provisioner
+    resources           = var.monitoring.grafana.persistent_volume.resources
+    parameters = merge(var.monitoring.grafana.persistent_volume.parameters, {
+      provisioningMode = "efs-ap"
+      fileSystemId     = module.grafana_efs_persistent_volume[0].id
+      directoryPerms   = "755"
+      uid              = "999"      # optional
+      gid              = "999"      # optional
+      basePath         = "/mongodb" # optional
+    })
+  } : null)
+  prometheus_persistent_volume = (try(var.monitoring.prometheus.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
+    storage_provisioner = var.monitoring.prometheus.persistent_volume.storage_provisioner
+    resources           = var.monitoring.prometheus.persistent_volume.resources
+    parameters = merge(var.monitoring.prometheus.persistent_volume.parameters, {
+      provisioningMode = "efs-ap"
+      fileSystemId     = module.prometheus_efs_persistent_volume[0].id
+      directoryPerms   = "755"
+      uid              = "999"      # optional
+      gid              = "999"      # optional
+      basePath         = "/mongodb" # optional
+    })
+  } : null)
+  vpc = {
+    id                 = try(var.vpc.id, "")
+    cidr_block_private = var.vpc.cidr_block_private
+    cidr_blocks        = concat([try(var.vpc.cidr_block, "")], try(var.vpc.pod_cidr_block_private, []))
+    subnet_ids         = try(var.vpc.private_subnet_ids, [])
+  }
   cloudwatch_log_group_name = "/aws/containerinsights/${var.eks.cluster_name}/application"
   tags = merge(var.tags, {
     "application"        = "armonik"

@@ -16,6 +16,7 @@ export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
 export TFSTATE_BUCKET_NAME?=armonik-tfstate-$(SUFFIX)
+export VPC_PARAMETERS_FILE?=$(CURRENT_DIR)/../vpc/generated/vpc-output.json
 export EKS_PARAMETERS_FILE?=$(CURRENT_DIR)/../eks/generated/eks-output.json
 export KUBECONFIG?=$(GENERATED_DIR)/eks/kubeconfig
 
@@ -37,6 +38,7 @@ init:
 apply:
 	terraform apply \
 		-var-file $(PARAMETERS_FILE) \
+		-var-file $(VPC_PARAMETERS_FILE) \
 		-var-file $(EKS_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'suffix=$(SUFFIX)' \
@@ -56,6 +58,7 @@ output:
 delete:
 	terraform destroy \
 		-var-file $(PARAMETERS_FILE) \
+		-var-file $(VPC_PARAMETERS_FILE) \
 		-var-file $(EKS_PARAMETERS_FILE) \
 		-var 'region=$(REGION)' \
 		-var 'suffix=$(SUFFIX)' \

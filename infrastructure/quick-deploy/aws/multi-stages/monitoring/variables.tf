@@ -60,6 +60,12 @@ variable "eks" {
   default     = {}
 }
 
+# VPC infos
+variable "vpc" {
+  description = "AWS VPC info"
+  type        = any
+}
+
 # List of needed storage
 variable "storage_endpoint_url" {
   description = "List of storage needed by ArmoniK"
@@ -93,6 +99,19 @@ variable "monitoring" {
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
+      persistent_volume = object({
+        storage_provisioner = string
+        parameters          = map(string)
+        #Resources for PVC
+        resources = object({
+          limits = object({
+            storage = string
+          })
+          requests = object({
+            storage = string
+          })
+        })
+      })
     })
     node_exporter = object({
       enabled            = bool
@@ -107,6 +126,19 @@ variable "monitoring" {
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
+      persistent_volume = object({
+        storage_provisioner = string
+        parameters          = map(string)
+        #Resources for PVC
+        resources = object({
+          limits = object({
+            storage = string
+          })
+          requests = object({
+            storage = string
+          })
+        })
+      })
     })
     metrics_exporter = object({
       image              = string
@@ -157,4 +189,34 @@ variable "authentication" {
   description = "Enable authentication form in seq and grafana"
   type        = bool
   default     = false
+}
+
+# AWS EFS as Persistent volume for Grafana
+variable "grafana_efs" {
+  description = "AWS EFS as Persistent volume for Grafana"
+  type = object({
+    name                            = string
+    kms_key_id                      = string
+    performance_mode                = string # "generalPurpose" or "maxIO"
+    throughput_mode                 = string #  "bursting" or "provisioned"
+    provisioned_throughput_in_mibps = number
+    transition_to_ia                = string
+    # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+    access_point = list(string)
+  })
+}
+
+# AWS EFS as Persistent volume for Prometheus
+variable "prometheus_efs" {
+  description = "AWS EFS as Persistent volume for Prometheus"
+  type = object({
+    name                            = string
+    kms_key_id                      = string
+    performance_mode                = string # "generalPurpose" or "maxIO"
+    throughput_mode                 = string #  "bursting" or "provisioned"
+    provisioned_throughput_in_mibps = number
+    transition_to_ia                = string
+    # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+    access_point = list(string)
+  })
 }

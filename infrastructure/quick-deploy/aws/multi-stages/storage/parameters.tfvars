@@ -136,7 +136,7 @@ mongodb = {
 
 # AWS EFS as Persistent volume
 efs = {
-  name                            = "armonik-efs"
+  name                            = "armonik-mongodb-efs"
   kms_key_id                      = ""
   performance_mode                = "generalPurpose" # "generalPurpose" or "maxIO"
   throughput_mode                 = "bursting"       #  "bursting" or "provisioned"

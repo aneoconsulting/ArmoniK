@@ -86,7 +86,9 @@ module "prometheus" {
     tag                = local.prometheus_tag
     image_pull_secrets = local.prometheus_image_pull_secrets
   }
+  persistent_volume = local.grafana_persistent_volume
   depends_on = [
+    module.grafana_efs_persistent_volume,
     module.metrics_exporter,
     #module.partition_metrics_exporter
   ]
@@ -106,10 +108,46 @@ module "grafana" {
     tag                = local.grafana_tag
     image_pull_secrets = local.grafana_image_pull_secrets
   }
-  authentication = var.authentication
-  depends_on     = [module.prometheus]
+  authentication    = var.authentication
+  persistent_volume = local.prometheus_persistent_volume
+  depends_on = [
+    module.prometheus,
+  module.prometheus_efs_persistent_volume]
 }
 
+# AWS EFS as persistent volume for Grafana
+module "grafana_efs_persistent_volume" {
+  count  = (try(var.monitoring.grafana.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
+  source = "../generated/infra-modules/storage/aws/efs"
+  efs = {
+    name                            = local.grafana_efs_name
+    kms_key_id                      = (var.grafana_efs.kms_key_id != "" && var.grafana_efs.kms_key_id != null ? var.grafana_efs.kms_key_id : module.kms.0.arn)
+    performance_mode                = var.grafana_efs.performance_mode
+    throughput_mode                 = var.grafana_efs.throughput_mode
+    provisioned_throughput_in_mibps = var.grafana_efs.provisioned_throughput_in_mibps
+    transition_to_ia                = var.grafana_efs.transition_to_ia
+    access_point                    = var.grafana_efs.access_point
+  }
+  vpc  = local.vpc
+  tags = local.tags
+}
+
+# AWS EFS as persistent volume for prometheus
+module "prometheus_efs_persistent_volume" {
+  count  = (try(var.monitoring.prometheus.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
+  source = "../generated/infra-modules/storage/aws/efs"
+  efs = {
+    name                            = local.prometheus_efs_name
+    kms_key_id                      = (var.prometheus_efs.kms_key_id != "" && var.prometheus_efs.kms_key_id != null ? var.prometheus_efs.kms_key_id : module.kms.0.arn)
+    performance_mode                = var.prometheus_efs.performance_mode
+    throughput_mode                 = var.prometheus_efs.throughput_mode
+    provisioned_throughput_in_mibps = var.prometheus_efs.provisioned_throughput_in_mibps
+    transition_to_ia                = var.prometheus_efs.transition_to_ia
+    access_point                    = var.prometheus_efs.access_point
+  }
+  vpc  = local.vpc
+  tags = local.tags
+}
 # CloudWatch
 module "cloudwatch" {
   count             = (local.cloudwatch_enabled ? 1 : 0)
