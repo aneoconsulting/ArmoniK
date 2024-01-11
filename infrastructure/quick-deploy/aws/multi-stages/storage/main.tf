@@ -109,6 +109,7 @@ module "mongodb" {
     tag                = var.mongodb.tag
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.image_pull_secrets
+
     replicas_number    = var.mongodb.replicas_number
   }
   persistent_volume = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {

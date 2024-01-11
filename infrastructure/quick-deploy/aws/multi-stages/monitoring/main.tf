@@ -94,8 +94,8 @@ module "prometheus" {
       provisioningMode = "efs-ap"
       fileSystemId     = module.prometheus_efs_persistent_volume[0].id
       directoryPerms   = "755"
-      uid              = "1000"        # optional
-      gid              = "2000"        # optional
+      uid              = "65534"        # optional
+      gid              = "65534"        # optional
       basePath         = "/prometheus" # optional
     })
   } : null)
