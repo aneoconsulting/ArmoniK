@@ -1,8 +1,8 @@
 # AWS KMS
 module "kms" {
-  count  = (can(coalesce(var.s3_fs.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.log_kms_key_id)) && can(coalesce(var.s3_os.kms_key_id)) && can(coalesce(var.mq.kms_key_id)) ? 0 : 1)
+  count  = can(coalesce(var.s3_fs.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.log_kms_key_id)) && can(coalesce(var.s3_os.kms_key_id)) && can(coalesce(var.mq.kms_key_id)) && can(coalesce(var.efs.kms_key_id)) ? 0 : 1
   source = "../generated/infra-modules/security/aws/kms"
-  name   = local.kms_name
+  name   = "armonik-kms-storage-${local.suffix}-${local.random_string}"
   tags   = local.tags
 }
 
@@ -21,7 +21,7 @@ module "s3_fs" {
     block_public_policy                   = var.s3_fs.block_public_acls
     ignore_public_acls                    = var.s3_fs.block_public_policy
     restrict_public_buckets               = var.s3_fs.restrict_public_buckets
-    kms_key_id                            = local.s3_fs_kms_key_id
+    kms_key_id                            = var.s3_fs.kms_key_id != "" && var.s3_fs.kms_key_id != null ? var.s3_fs.kms_key_id : module.kms[0].arn
     sse_algorithm                         = (var.s3_fs.kms_key_id != "" ? var.s3_fs.sse_algorithm : "aws:kms")
     ownership                             = var.s3_fs.ownership
     versioning                            = var.s3_fs.versioning
@@ -70,7 +70,7 @@ module "s3_os" {
     block_public_policy                   = var.s3_os.block_public_acls
     ignore_public_acls                    = var.s3_os.block_public_policy
     restrict_public_buckets               = var.s3_os.restrict_public_buckets
-    kms_key_id                            = local.s3_os_kms_key_id
+    kms_key_id                            = var.s3_os.kms_key_id != "" && var.s3_os.kms_key_id != null ? var.s3_os.kms_key_id : module.kms[0].arn
     sse_algorithm                         = (var.s3_os.kms_key_id != "" ? var.s3_os.sse_algorithm : "aws:kms")
     ownership                             = var.s3_os.ownership
     versioning                            = var.s3_os.versioning
@@ -111,8 +111,19 @@ module "mongodb" {
     image_pull_secrets = var.mongodb.image_pull_secrets
     replicas_number    = var.mongodb.replicas_number
   }
-  persistent_volume = local.persistent_volume
-  depends_on        = [module.efs_persistent_volume]
+  persistent_volume = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
+    storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
+    volume_binding_mode = var.mongodb.persistent_volume.volume_binding_mode
+    resources           = var.mongodb.persistent_volume.resources
+    parameters = merge(var.mongodb.persistent_volume.parameters, {
+      provisioningMode = "efs-ap"
+      fileSystemId     = module.efs_persistent_volume[0].id
+      directoryPerms   = "755"
+      uid              = "999"      # optional
+      gid              = "999"      # optional
+      basePath         = "/mongodb" # optional
+    })
+  } : null)
 }
 
 # AWS EFS as persistent volume
@@ -120,7 +131,7 @@ module "efs_persistent_volume" {
   count  = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
   source = "../generated/infra-modules/storage/aws/efs"
   efs = {
-    name                            = local.efs_name
+    name                            = "${var.efs.name}-${local.suffix}"
     kms_key_id                      = (var.efs.kms_key_id != "" && var.efs.kms_key_id != null ? var.efs.kms_key_id : module.kms.0.arn)
     performance_mode                = var.efs.performance_mode
     throughput_mode                 = var.efs.throughput_mode

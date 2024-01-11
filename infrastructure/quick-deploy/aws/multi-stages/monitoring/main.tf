@@ -1,8 +1,8 @@
 # AWS KMS
 module "kms" {
-  count  = (local.cloudwatch_kms_key_id == "" && local.cloudwatch_enabled ? 1 : 0)
+  count  = can(coalesce(var.monitoring.cloudwatch.kms_key_id)) && can(coalesce(var.grafana_efs.kms_key_id)) && can(coalesce(var.prometheus_efs.kms_key_id)) ? 0 : 1
   source = "../generated/infra-modules/security/aws/kms"
-  name   = local.kms_name
+  name   = "armonik-kms-monitoring-${local.suffix}-${local.random_string}"
   tags   = local.tags
 }
 
@@ -86,9 +86,20 @@ module "prometheus" {
     tag                = local.prometheus_tag
     image_pull_secrets = local.prometheus_image_pull_secrets
   }
-  persistent_volume = local.prometheus_persistent_volume
+  persistent_volume = (try(var.monitoring.prometheus.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
+    storage_provisioner = var.monitoring.prometheus.persistent_volume.storage_provisioner
+    volume_binding_mode = var.monitoring.prometheus.persistent_volume.volume_binding_mode
+    resources           = var.monitoring.prometheus.persistent_volume.resources
+    parameters = merge(var.monitoring.prometheus.persistent_volume.parameters, {
+      provisioningMode = "efs-ap"
+      fileSystemId     = module.prometheus_efs_persistent_volume[0].id
+      directoryPerms   = "755"
+      uid              = "1000"        # optional
+      gid              = "2000"        # optional
+      basePath         = "/prometheus" # optional
+    })
+  } : null)
   depends_on = [
-    module.prometheus_efs_persistent_volume,
     module.metrics_exporter,
     #module.partition_metrics_exporter
   ]
@@ -108,11 +119,23 @@ module "grafana" {
     tag                = local.grafana_tag
     image_pull_secrets = local.grafana_image_pull_secrets
   }
-  authentication    = var.authentication
-  persistent_volume = local.grafana_persistent_volume
+  authentication = var.authentication
+  persistent_volume = (try(var.monitoring.grafana.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
+    storage_provisioner = var.monitoring.grafana.persistent_volume.storage_provisioner
+    volume_binding_mode = var.monitoring.grafana.persistent_volume.volume_binding_mode
+    resources           = var.monitoring.grafana.persistent_volume.resources
+    parameters = merge(var.monitoring.grafana.persistent_volume.parameters, {
+      provisioningMode = "efs-ap"
+      fileSystemId     = module.grafana_efs_persistent_volume[0].id
+      directoryPerms   = "755"
+      uid              = "999"      # optional
+      gid              = "999"      # optional
+      basePath         = "/grafana" # optional
+    })
+  } : null)
   depends_on = [
     module.prometheus,
-  module.grafana_efs_persistent_volume]
+  ]
 }
 
 # AWS EFS as persistent volume for Grafana
@@ -120,7 +143,7 @@ module "grafana_efs_persistent_volume" {
   count  = (try(var.monitoring.grafana.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
   source = "../generated/infra-modules/storage/aws/efs"
   efs = {
-    name                            = local.grafana_efs_name
+    name                            = "${var.grafana_efs.name}-${local.suffix}"
     kms_key_id                      = (var.grafana_efs.kms_key_id != "" && var.grafana_efs.kms_key_id != null ? var.grafana_efs.kms_key_id : module.kms[0].arn)
     performance_mode                = var.grafana_efs.performance_mode
     throughput_mode                 = var.grafana_efs.throughput_mode
@@ -137,7 +160,7 @@ module "prometheus_efs_persistent_volume" {
   count  = (try(var.monitoring.prometheus.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
   source = "../generated/infra-modules/storage/aws/efs"
   efs = {
-    name                            = local.prometheus_efs_name
+    name                            = "${var.prometheus_efs.name}-${local.suffix}"
     kms_key_id                      = (var.prometheus_efs.kms_key_id != "" && var.prometheus_efs.kms_key_id != null ? var.prometheus_efs.kms_key_id : module.kms[0].arn)
     performance_mode                = var.prometheus_efs.performance_mode
     throughput_mode                 = var.prometheus_efs.throughput_mode
@@ -148,6 +171,7 @@ module "prometheus_efs_persistent_volume" {
   vpc  = local.vpc
   tags = local.tags
 }
+
 # CloudWatch
 module "cloudwatch" {
   count             = (local.cloudwatch_enabled ? 1 : 0)

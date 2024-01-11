@@ -129,9 +129,8 @@ mongodb = {
   tag                = "6.0.7"
   node_selector      = { service = "state-database" }
   image_pull_secrets = ""
-  persistent_volume  = { storage_provisioner = "efs.csi.aws.com", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
+  persistent_volume  = null #{ storage_provisioner = "efs.csi.aws.com", volume_binding_mode = "Immediate", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
   replicas_number    = 1
-  # example: {storage_provisioner="efs.csi.aws.com",parameters=null,resources={limits=null,requests={storage="5Gi"}}}
 }
 
 # AWS EFS as Persistent volume

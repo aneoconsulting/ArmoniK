@@ -101,6 +101,7 @@ variable "monitoring" {
       node_selector      = any
       persistent_volume = object({
         storage_provisioner = string
+        volume_binding_mode = string
         parameters          = map(string)
         #Resources for PVC
         resources = object({
@@ -128,6 +129,7 @@ variable "monitoring" {
       node_selector      = any
       persistent_volume = object({
         storage_provisioner = string
+        volume_binding_mode = string
         parameters          = map(string)
         #Resources for PVC
         resources = object({
