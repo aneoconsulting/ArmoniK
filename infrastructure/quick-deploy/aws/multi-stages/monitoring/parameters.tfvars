@@ -68,7 +68,11 @@ monitoring = {
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { service = "monitoring" }
-    persistent_volume  = null #{ storage_provisioner = "efs.csi.aws.com", volume_binding_mode = "Immediate", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
+    security_context = {
+      run_as_user = 999
+      fs_group    = 999
+    }
+    persistent_volume = null #{ storage_provisioner = "efs.csi.aws.com", volume_binding_mode = "Immediate", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
   }
   node_exporter = {
     enabled            = true
@@ -83,7 +87,11 @@ monitoring = {
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { service = "metrics" }
-    persistent_volume  = null #{ storage_provisioner = "efs.csi.aws.com", volume_binding_mode = "Immediate", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
+    security_context = {
+      run_as_user = 65534
+      fs_group    = 65534
+    }
+    persistent_volume = null #{ storage_provisioner = "efs.csi.aws.com", volume_binding_mode = "Immediate", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
   }
   metrics_exporter = {
     image              = "metrics-exporter"

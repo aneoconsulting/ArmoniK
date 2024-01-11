@@ -99,6 +99,10 @@ variable "monitoring" {
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
+      security_context = object({
+        run_as_user = number
+        fs_group    = number
+      })
       persistent_volume = object({
         storage_provisioner = string
         volume_binding_mode = string
@@ -127,6 +131,10 @@ variable "monitoring" {
       image_pull_secrets = string
       service_type       = string
       node_selector      = any
+      security_context = object({
+        run_as_user = number
+        fs_group    = number
+      })
       persistent_volume = object({
         storage_provisioner = string
         volume_binding_mode = string

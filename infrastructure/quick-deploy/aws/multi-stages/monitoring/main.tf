@@ -86,6 +86,7 @@ module "prometheus" {
     tag                = local.prometheus_tag
     image_pull_secrets = local.prometheus_image_pull_secrets
   }
+  security_context = var.monitoring.prometheus.security_context
   persistent_volume = (try(var.monitoring.prometheus.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
     storage_provisioner = var.monitoring.prometheus.persistent_volume.storage_provisioner
     volume_binding_mode = var.monitoring.prometheus.persistent_volume.volume_binding_mode
@@ -94,9 +95,9 @@ module "prometheus" {
       provisioningMode = "efs-ap"
       fileSystemId     = module.prometheus_efs_persistent_volume[0].id
       directoryPerms   = "755"
-      uid              = "65534"        # optional
-      gid              = "65534"        # optional
-      basePath         = "/prometheus" # optional
+      uid              = var.monitoring.prometheus.security_context.run_as_user # optional
+      gid              = var.monitoring.prometheus.security_context.fs_group    # optional
+      basePath         = "/prometheus"                                          # optional
     })
   } : null)
   depends_on = [
@@ -119,7 +120,8 @@ module "grafana" {
     tag                = local.grafana_tag
     image_pull_secrets = local.grafana_image_pull_secrets
   }
-  authentication = var.authentication
+  authentication   = var.authentication
+  security_context = var.monitoring.grafana.security_context
   persistent_volume = (try(var.monitoring.grafana.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
     storage_provisioner = var.monitoring.grafana.persistent_volume.storage_provisioner
     volume_binding_mode = var.monitoring.grafana.persistent_volume.volume_binding_mode
@@ -128,9 +130,9 @@ module "grafana" {
       provisioningMode = "efs-ap"
       fileSystemId     = module.grafana_efs_persistent_volume[0].id
       directoryPerms   = "755"
-      uid              = "999"      # optional
-      gid              = "999"      # optional
-      basePath         = "/grafana" # optional
+      uid              = var.monitoring.grafana.security_context.run_as_user # optional
+      gid              = var.monitoring.grafana.security_context.fs_group    # optional
+      basePath         = "/grafana"                                          # optional
     })
   } : null)
   depends_on = [

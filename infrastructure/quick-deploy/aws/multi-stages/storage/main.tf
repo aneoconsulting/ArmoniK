@@ -109,7 +109,7 @@ module "mongodb" {
     tag                = var.mongodb.tag
     node_selector      = var.mongodb.node_selector
     image_pull_secrets = var.mongodb.image_pull_secrets
-
+    security_context   = var.mongodb.security_context
     replicas_number    = var.mongodb.replicas_number
   }
   persistent_volume = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
@@ -120,9 +120,9 @@ module "mongodb" {
       provisioningMode = "efs-ap"
       fileSystemId     = module.efs_persistent_volume[0].id
       directoryPerms   = "755"
-      uid              = "999"      # optional
-      gid              = "999"      # optional
-      basePath         = "/mongodb" # optional
+      uid              = var.mongodb.security_context.run_as_user # optional
+      gid              = var.mongodb.security_context.fs_group    # optional
+      basePath         = "/mongodb"                               # optional
     })
   } : null)
 }

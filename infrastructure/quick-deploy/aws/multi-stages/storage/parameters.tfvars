@@ -130,11 +130,11 @@ mongodb = {
   node_selector      = { service = "state-database" }
   image_pull_secrets = ""
   security_context = {
-      run_as_user = 999
-      fs_group    = 999
-    }
-  persistent_volume  = null #{ storage_provisioner = "efs.csi.aws.com", volume_binding_mode = "Immediate", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
-  replicas_number    = 1
+    run_as_user = 999
+    fs_group    = 999
+  }
+  persistent_volume = null #{ storage_provisioner = "efs.csi.aws.com", volume_binding_mode = "Immediate", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
+  replicas_number   = 1
 }
 
 # AWS EFS as Persistent volume
