@@ -61,7 +61,7 @@ variable "metrics_exporter" {
   description = "Metrics exporter configuration"
   type = object({
     image_name    = optional(string, "dockerhubaneo/armonik_control_metrics")
-    image_tag     = optional(string, "0.19.3")
+    image_tag     = optional(string, "0.20.2")
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
@@ -74,7 +74,7 @@ variable "partition_metrics_exporter" {
   description = "Partition metrics exporter configuration (nullable)"
   type = object({
     image_name    = optional(string, "dockerhubaneo/armonik_control_partition_metrics")
-    image_tag     = optional(string, "0.19.3")
+    image_tag     = optional(string, "0.20.2")
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})

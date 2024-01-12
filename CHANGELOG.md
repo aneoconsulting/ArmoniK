@@ -2,6 +2,14 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.18.0](https://github.com/aneoconsulting/armonik/tree/v2.18.0) (2024-01-12)
+
+Changed
+-
+* Upgrade version of ArmoniK Core from `0.19.3` to `0.20.2` [Changelog](https://github.com/aneoconsulting/ArmoniK.Api/releases).
+* Upgrade version of ArmoniK API from `3.14.0` to `3.15.1` [Changelog](https://github.com/aneoconsulting/ArmoniK.Core/releases).
+* Upgrade version of ArmoniK Admin Gui from `0.10.3` to `0.11.1` [Changelog](https://github.com/aneoconsulting/ArmoniK.Admin.GUI/releases).
+
 ## [v2.17.0](https://github.com/aneoconsulting/armonik/tree/v2.17.0) (2023-11-17)
 
 Changed

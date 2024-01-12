@@ -90,7 +90,7 @@ control_plane = {
   default_partition = "default"
   node_selector     = { service = "control-plane" }
   image             = "submitterpubsub"
-  tag               = "0.19.3-pubsub"
+  tag               = "0.20.2-pubsub"
 }
 
 # Parameters of admin GUI
@@ -124,7 +124,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.19.3-pubsub"
+      tag   = "0.20.2-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -177,7 +177,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.19.3-pubsub"
+      tag   = "0.20.2-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -230,7 +230,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.19.3-pubsub"
+      tag   = "0.20.2-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -283,7 +283,7 @@ compute_plane = {
         memory = "256Mi"
       }
       image = "pollingagentpubsub"
-      tag   = "0.19.3-pubsub"
+      tag   = "0.20.2-pubsub"
     }
     # ArmoniK workers
     worker = [

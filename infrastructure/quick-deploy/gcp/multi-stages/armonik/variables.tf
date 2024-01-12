@@ -89,7 +89,7 @@ variable "control_plane" {
     service_type      = optional(string, "ClusterIP")
     replicas          = optional(number, 2)
     image             = optional(string, "dockerhubaneo/armonik_control")
-    tag               = optional(string, "0.19.3")
+    tag               = optional(string, "0.20.2")
     image_pull_policy = optional(string, "IfNotPresent")
     port              = optional(number, 5001)
     limits = optional(object({
@@ -156,7 +156,7 @@ variable "admin_gui" {
   type = object({
     name  = optional(string, "admin-app")
     image = optional(string, "dockerhubaneo/armonik_admin_app")
-    tag   = optional(string, "0.10.3")
+    tag   = optional(string, "0.11.1")
     port  = optional(number, 1080)
     limits = optional(object({
       cpu    = optional(string)
