@@ -101,6 +101,7 @@ module "prometheus" {
     })
   } : null)
   depends_on = [
+    module.prometheus_efs_persistent_volume,
     module.metrics_exporter,
     #module.partition_metrics_exporter
   ]
@@ -137,6 +138,7 @@ module "grafana" {
   } : null)
   depends_on = [
     module.prometheus,
+    module.grafana_efs_persistent_volume
   ]
 }
 

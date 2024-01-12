@@ -125,6 +125,7 @@ module "mongodb" {
       basePath         = "/mongodb"                               # optional
     })
   } : null)
+  depends_on = [module.efs_persistent_volume]
 }
 
 # AWS EFS as persistent volume
