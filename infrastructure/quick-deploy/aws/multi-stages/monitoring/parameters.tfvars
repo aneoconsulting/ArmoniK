@@ -72,7 +72,7 @@ monitoring = {
       run_as_user = 999
       fs_group    = 999
     }
-    persistent_volume = { storage_provisioner = "efs.csi.aws.com", volume_binding_mode = "Immediate", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
+    persistent_volume = null #{ storage_provisioner = "efs.csi.aws.com", volume_binding_mode = "Immediate", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
   }
   node_exporter = {
     enabled            = true
@@ -91,7 +91,7 @@ monitoring = {
       run_as_user = 65534
       fs_group    = 65534
     }
-    persistent_volume = { storage_provisioner = "efs.csi.aws.com", volume_binding_mode = "Immediate", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
+    persistent_volume = null #{ storage_provisioner = "efs.csi.aws.com", volume_binding_mode = "Immediate", parameters = null, resources = { limits = null, requests = { storage = "5Gi" } } }
   }
   metrics_exporter = {
     image              = "metrics-exporter"
