@@ -242,3 +242,16 @@ variable "environment_description" {
   type        = any
   default     = null
 }
+
+# KMS key name to encrypt/decrypt resources
+variable "kms" {
+  description = "Cloud KMS used to encrypt/decrypt resources."
+  type = object({
+    key_ring   = string
+    crypto_key = string
+  })
+  default = {
+    key_ring   = "armonik-europe-west1"
+    crypto_key = "armonik-europe-west1"
+  }
+}
