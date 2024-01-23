@@ -37,8 +37,6 @@ apply:
 		-var 'region=$(REGION)' \
 		-var 'suffix=$(SUFFIX)' \
 		-var 'project=$(GCP_PROJECT_ID)' \
-		-var 'enable_public_gke_access=$(PUBLIC_ACCESS_GKE)' \
-		-var 'kubeconfig_file=$(KUBECONFIG)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 
@@ -55,8 +53,6 @@ delete:
 		-var 'region=$(REGION)' \
 		-var 'suffix=$(SUFFIX)' \
 		-var 'project=$(GCP_PROJECT_ID)' \
-		-var 'enable_public_gke_access=$(PUBLIC_ACCESS_GKE)' \
-		-var 'kubeconfig_file=$(KUBECONFIG)' \
 		-state $(STATE_FILE) \
 		-auto-approve
 

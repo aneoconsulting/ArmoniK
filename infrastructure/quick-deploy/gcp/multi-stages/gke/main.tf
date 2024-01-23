@@ -42,17 +42,17 @@ data "google_kms_crypto_key" "kms" {
 locals {
   random_string = random_string.random_resources.result
   suffix        = var.suffix != null && var.suffix != "" ? var.suffix : local.random_string
-  name          = "gke-${local.suffix}"
+  name          = local.suffix
   kms_key_id    = data.google_kms_crypto_key.kms.id
   labels = merge(var.labels, {
     env             = "dev"
     app             = "armonik"
     "create_by"     = split("@", data.google_client_openid_userinfo.current.email)[0]
-    "creation_date" = null_resource.timestamp.triggers["date"]
+    "creation_date" = "date-${null_resource.timestamp.triggers["date"]}"
   })
-  node_pool_labels = { all = local.labels, default-node-pool = local.labels }
-  node_pool_tags   = { all = values(local.labels), default-node-pool = values(local.labels) }
-  date             = <<-EOT
+  node_pools_labels = { for key, value in var.gke.node_pools_labels : key => merge(local.labels, value) }
+  node_pools_tags   = { for node_pool in coalesce(var.gke.node_pools, []) : node_pool["name"] => values(local.labels) }
+  date              = <<-EOT
 #!/bin/bash
 set -e
 DATE=$(date +%F-%H-%M-%S)
@@ -77,9 +77,12 @@ module "gke" {
     }
   ]
   cluster_resource_labels    = local.labels
-  node_pools_labels          = local.node_pool_labels
-  node_pools_resource_labels = local.node_pool_labels
-  node_pools_tags            = local.node_pool_tags
-  private                    = !var.enable_public_gke_access
+  node_pools_tags            = local.node_pools_tags
+  node_pools_labels          = local.node_pools_labels
+  node_pools_resource_labels = local.node_pools_labels
+  node_pools_taints          = var.gke.node_pools_taints
+  private                    = !var.gke.enable_public_gke_access
+  autopilot                  = var.gke.enable_gke_autopilot
+  node_pools                 = var.gke.node_pools
 }
 

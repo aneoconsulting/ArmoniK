@@ -15,10 +15,13 @@ module "gke" {
     }
   ]
   cluster_resource_labels    = local.labels
-  node_pools_labels          = local.node_pool_labels
-  node_pools_resource_labels = local.node_pool_labels
-  node_pools_tags            = local.node_pool_tags
-  private                    = false
+  node_pools_tags            = local.node_pools_tags
+  node_pools_labels          = local.node_pools_labels
+  node_pools_resource_labels = local.node_pools_labels
+  node_pools_taints          = var.gke.node_pools_taints
+  private                    = !var.gke.enable_public_gke_access
+  autopilot                  = var.gke.enable_gke_autopilot
+  node_pools                 = var.gke.node_pools
 }
 
 resource "kubernetes_namespace" "armonik" {

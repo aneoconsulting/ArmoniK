@@ -47,7 +47,7 @@ control_plane = {
 compute_plane = {
   # Default partition that uses the C# extension for the worker
   default = {
-    #node_selector = { service = "workers" }
+    node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
     replicas = 1
     # ArmoniK polling agent

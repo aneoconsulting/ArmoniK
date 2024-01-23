@@ -60,8 +60,13 @@ variable "gke" {
       services_cidr_block = optional(string, "172.17.17.0/24")
       region              = optional(string, "europe-west1")
     }), {})
-    namespace       = optional(string, "armonik")
-    kubeconfig_file = optional(string, "generated/kubeconfig")
+    namespace                = optional(string, "armonik")
+    kubeconfig_file          = optional(string, "generated/kubeconfig")
+    enable_public_gke_access = optional(bool, true)
+    enable_gke_autopilot     = optional(bool, false)
+    node_pools_labels        = optional(map(map(string)), null)
+    node_pools_taints        = optional(map(list(object({ key = string, value = string, effect = string }))), null)
+    node_pools               = optional(list(map(any)), null)
   })
   default = {}
 }
