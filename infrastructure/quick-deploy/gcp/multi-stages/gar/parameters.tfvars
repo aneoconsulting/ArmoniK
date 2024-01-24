@@ -22,21 +22,21 @@ gar = {
   "armonik-control-plane" = [
     {
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.20.2"
+      tag   = "0.20.5"
     },
     {
       image = "submitterpubsub"
-      tag   = "0.20.2-pubsub"
+      tag   = "0.20.5-pubsub"
     }
   ],
   "armonik-polling-agent" = [
     {
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.20.2"
+      tag   = "0.20.5"
     },
     {
       image = "pollingagentpubsub"
-      tag   = "0.20.2-pubsub"
+      tag   = "0.20.5-pubsub"
     }
   ],
   "armonik-worker" = [
@@ -48,37 +48,37 @@ gar = {
   "armonik-htcmock-worker" = [
     {
       image = "dockerhubaneo/armonik_core_htcmock_test_worker"
-      tag   = "0.20.2"
+      tag   = "0.20.5"
     }
   ],
   "armonik-bench-worker" = [
     {
       image = "dockerhubaneo/armonik_core_bench_test_worker"
-      tag   = "0.20.2"
+      tag   = "0.20.5"
     }
   ],
   "armonik-stream-worker" = [
     {
       image = "dockerhubaneo/armonik_core_stream_test_worker"
-      tag   = "0.20.2"
+      tag   = "0.20.5"
     }
   ],
   "metrics-exporter" = [
     {
       image = "dockerhubaneo/armonik_control_metrics"
-      tag   = "0.20.2"
+      tag   = "0.20.5"
     }
   ],
   "partition-metrics-exporter" = [
     {
       image = "dockerhubaneo/armonik_control_partition_metrics"
-      tag   = "0.20.2"
+      tag   = "0.20.5"
     }
   ],
   "armonik-admin-app" = [
     {
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.11.1"
+      tag   = "0.11.2"
     },
   ],
   mongosh = [
