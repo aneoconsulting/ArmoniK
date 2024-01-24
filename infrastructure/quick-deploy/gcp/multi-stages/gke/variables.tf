@@ -52,9 +52,16 @@ variable "kubeconfig_file" {
   default     = "generated/kubeconfig"
 }
 
-# Enable EKS public access
-variable "enable_public_gke_access" {
-  description = "Enable GKE public access"
-  type        = bool
-  default     = true
+# GCP Kubernetes cluster
+variable "gke" {
+  description = "GKE cluster configuration"
+  type = object({
+    enable_public_gke_access = optional(bool, true)
+    enable_gke_autopilot     = optional(bool, false)
+    kubeconfig_file          = optional(string, "generated/kubeconfig")
+    node_pools_labels        = optional(map(map(string)), null)
+    node_pools_taints        = optional(map(list(object({ key = string, value = string, effect = string }))), null)
+    node_pools               = optional(list(map(any)), null)
+  })
+  default = {}
 }

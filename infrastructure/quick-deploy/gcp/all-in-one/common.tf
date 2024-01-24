@@ -43,18 +43,18 @@ resource "null_resource" "timestamp" {
 
 locals {
   prefix     = try(coalesce(var.prefix), "armonik-${random_string.prefix.result}")
-  gke_name   = "${local.prefix}-gke"
+  gke_name   = local.prefix
   kms_key_id = data.google_kms_crypto_key.kms.id
   namespace  = kubernetes_namespace.armonik.metadata[0].name
   labels = merge({
     "application"        = "armonik"
     "deployment_version" = local.prefix
     "created_by"         = split("@", data.google_client_openid_userinfo.current.email)[0]
-    "creation_date"      = null_resource.timestamp.triggers["date"]
+    "creation_date"      = "date-${null_resource.timestamp.triggers["date"]}"
   }, var.labels)
-  node_pool_labels = { all = local.labels, default-node-pool = local.labels }
-  node_pool_tags   = { all = values(local.labels), default-node-pool = values(local.labels) }
-  date             = <<-EOT
+  node_pools_labels = { for key, value in var.gke.node_pools_labels : key => merge(local.labels, value) }
+  node_pools_tags   = { for node_pool in coalesce(var.gke.node_pools, []) : node_pool["name"] => values(local.labels) }
+  date              = <<-EOT
 #!/bin/bash
 set -e
 DATE=$(date +%F-%H-%M-%S)
