@@ -189,6 +189,10 @@ variable "compute_plane" {
         memory = string
       })
     }))
+    cache_config = object({
+      memory     = bool
+      size_limit = string
+    })
     # KEDA scaler
     hpa = any
   }))
