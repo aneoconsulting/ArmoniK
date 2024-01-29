@@ -189,6 +189,10 @@ variable "compute_plane" {
         memory = optional(string)
       }))
     }))
+    cache_config = optional(object({
+      memory     = optional(bool)
+      size_limit = optional(string)
+    }), {})
     # KEDA scaler
     hpa = optional(any)
   }))

@@ -135,6 +135,7 @@ compute_plane = {
         }
       }
     ]
+    cache_config = null
     hpa = {
       type              = "prometheus"
       polling_interval  = 15
@@ -195,6 +196,7 @@ compute_plane = {
         }
       }
     ]
+    cache_config = null
     hpa = {
       type              = "prometheus"
       polling_interval  = 15
@@ -255,6 +257,7 @@ compute_plane = {
         }
       }
     ]
+    cache_config = null
     hpa = {
       type              = "prometheus"
       polling_interval  = 15
@@ -315,6 +318,7 @@ compute_plane = {
         }
       }
     ]
+    cache_config = null
     hpa = {
       type              = "prometheus"
       polling_interval  = 15
