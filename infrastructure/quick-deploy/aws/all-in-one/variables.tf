@@ -86,14 +86,12 @@ variable "vpc" {
 variable "eks" {
   description = "Parameters of AWS EKS"
   type = object({
-    cluster_version                       = string
-    cluster_endpoint_private_access       = optional(bool, true) # vpc.enable_private_subnet
-    cluster_endpoint_private_access_cidrs = optional(list(string), [])
-    cluster_endpoint_private_access_sg    = optional(list(string), [])
-    cluster_endpoint_public_access        = optional(bool, false)
-    cluster_endpoint_public_access_cidrs  = optional(list(string), ["0.0.0.0/0"])
-    cluster_log_retention_in_days         = optional(number, 30)
-    node_selector                         = optional(any, {})
+    cluster_version                      = string
+    cluster_endpoint_private_access      = optional(bool, true) # vpc.enable_private_subnet
+    cluster_endpoint_public_access       = optional(bool, false)
+    cluster_endpoint_public_access_cidrs = optional(list(string), ["0.0.0.0/0"])
+    cluster_log_retention_in_days        = optional(number, 30)
+    node_selector                        = optional(any, {})
     docker_images = optional(object({
       cluster_autoscaler = optional(object({
         image = optional(string, "registry.k8s.io/autoscaling/cluster-autoscaler")
@@ -447,17 +445,17 @@ variable "partition_metrics_exporter" {
 variable "fluent_bit" {
   description = "Fluent bit configuration"
   type = object({
-    image_name                      = optional(string, "fluent/fluent-bit")
-    image_tag                       = optional(string)
-    pull_secrets                    = optional(string, "")
-    is_daemonset                    = optional(bool, true)
-    http_port                       = optional(number, 2020)
-    read_from_head                  = optional(bool, true)
-    node_selector                   = optional(any, {})
-    parser                          = optional(string, "cri")
-    fluentbitstate_hostpath         = optional(string, "/var/fluent-bit/state")
-    varlibdockercontainers_hostpath = optional(string, "/var/lib/docker/containers")
-    runlogjournal_hostpath          = optional(string, "/run/log/journal")
+    image_name                         = optional(string, "fluent/fluent-bit")
+    image_tag                          = optional(string)
+    pull_secrets                       = optional(string, "")
+    is_daemonset                       = optional(bool, true)
+    http_port                          = optional(number, 2020)
+    read_from_head                     = optional(bool, true)
+    node_selector                      = optional(any, {})
+    parser                             = optional(string, "cri")
+    fluent_bit_state_hostpath          = optional(string, "/var/fluent-bit/state")
+    var_lib_docker_containers_hostpath = optional(string, "/var/lib/docker/containers")
+    run_log_journal_hostpath           = optional(string, "/run/log/journal")
   })
   default = {}
 }

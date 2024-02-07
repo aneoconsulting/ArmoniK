@@ -18,21 +18,20 @@ module "s3_fs" {
   source = "./generated/infra-modules/storage/aws/s3"
   tags   = local.tags
   name   = "${local.prefix}-s3fs"
-  s3 = {
-    policy                                = var.s3_fs.policy
-    attach_policy                         = var.s3_fs.attach_policy
-    attach_deny_insecure_transport_policy = var.s3_fs.attach_deny_insecure_transport_policy
-    attach_require_latest_tls_policy      = var.s3_fs.attach_require_latest_tls_policy
-    attach_public_policy                  = var.s3_fs.attach_public_policy
-    block_public_acls                     = var.s3_fs.attach_public_policy
-    block_public_policy                   = var.s3_fs.block_public_acls
-    ignore_public_acls                    = var.s3_fs.block_public_policy
-    restrict_public_buckets               = var.s3_fs.restrict_public_buckets
-    kms_key_id                            = local.kms_key
-    sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_fs.sse_algorithm : "aws:kms"
-    ownership                             = var.s3_fs.ownership
-    versioning                            = var.s3_fs.versioning
-  }
+
+  policy                                = var.s3_fs.policy
+  attach_policy                         = var.s3_fs.attach_policy
+  attach_deny_insecure_transport_policy = var.s3_fs.attach_deny_insecure_transport_policy
+  attach_require_latest_tls_policy      = var.s3_fs.attach_require_latest_tls_policy
+  attach_public_policy                  = var.s3_fs.attach_public_policy
+  block_public_acls                     = var.s3_fs.attach_public_policy
+  block_public_policy                   = var.s3_fs.block_public_acls
+  ignore_public_acls                    = var.s3_fs.block_public_policy
+  restrict_public_buckets               = var.s3_fs.restrict_public_buckets
+  kms_key_id                            = local.kms_key
+  sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_fs.sse_algorithm : "aws:kms"
+  ownership                             = var.s3_fs.ownership
+  versioning                            = var.s3_fs.versioning
 }
 
 # Shared storage
@@ -60,21 +59,20 @@ module "s3_os" {
   source = "./generated/infra-modules/storage/aws/s3"
   tags   = local.tags
   name   = "${local.prefix}-s3os"
-  s3 = {
-    policy                                = var.s3_os.policy
-    attach_policy                         = var.s3_os.attach_policy
-    attach_deny_insecure_transport_policy = var.s3_os.attach_deny_insecure_transport_policy
-    attach_require_latest_tls_policy      = var.s3_os.attach_require_latest_tls_policy
-    attach_public_policy                  = var.s3_os.attach_public_policy
-    block_public_acls                     = var.s3_os.attach_public_policy
-    block_public_policy                   = var.s3_os.block_public_acls
-    ignore_public_acls                    = var.s3_os.block_public_policy
-    restrict_public_buckets               = var.s3_os.restrict_public_buckets
-    kms_key_id                            = local.kms_key
-    sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_os.sse_algorithm : "aws:kms"
-    ownership                             = var.s3_os.ownership
-    versioning                            = var.s3_os.versioning
-  }
+
+  policy                                = var.s3_os.policy
+  attach_policy                         = var.s3_os.attach_policy
+  attach_deny_insecure_transport_policy = var.s3_os.attach_deny_insecure_transport_policy
+  attach_require_latest_tls_policy      = var.s3_os.attach_require_latest_tls_policy
+  attach_public_policy                  = var.s3_os.attach_public_policy
+  block_public_acls                     = var.s3_os.attach_public_policy
+  block_public_policy                   = var.s3_os.block_public_acls
+  ignore_public_acls                    = var.s3_os.block_public_policy
+  restrict_public_buckets               = var.s3_os.restrict_public_buckets
+  kms_key_id                            = local.kms_key
+  sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_os.sse_algorithm : "aws:kms"
+  ownership                             = var.s3_os.ownership
+  versioning                            = var.s3_os.versioning
 }
 
 resource "kubernetes_secret" "s3" {
@@ -97,28 +95,27 @@ resource "kubernetes_secret" "s3" {
 
 # AWS Elasticache
 module "elasticache" {
-  count  = var.elasticache != null ? 1 : 0
-  source = "./generated/infra-modules/storage/aws/elasticache"
-  tags   = local.tags
-  name   = "${local.prefix}-elasticache"
-  vpc    = local.vpc
-  elasticache = {
-    engine                      = var.elasticache.engine
-    engine_version              = var.elasticache.engine_version
-    node_type                   = var.elasticache.node_type
-    apply_immediately           = var.elasticache.apply_immediately
-    multi_az_enabled            = var.elasticache.multi_az_enabled
-    automatic_failover_enabled  = var.elasticache.automatic_failover_enabled
-    num_cache_clusters          = var.elasticache.num_cache_clusters
-    preferred_cache_cluster_azs = var.elasticache.preferred_cache_cluster_azs
-    data_tiering_enabled        = var.elasticache.data_tiering_enabled
-    log_retention_in_days       = var.elasticache.log_retention_in_days
-    cloudwatch_log_groups       = var.elasticache.cloudwatch_log_groups
-    encryption_keys = {
-      kms_key_id     = local.kms_key
-      log_kms_key_id = local.kms_key
-    }
-  }
+  count           = var.elasticache != null ? 1 : 0
+  source          = "./generated/infra-modules/storage/aws/elasticache"
+  tags            = local.tags
+  name            = "${local.prefix}-elasticache"
+  vpc_id          = local.vpc.id
+  vpc_cidr_blocks = local.vpc.cidr_blocks
+  vpc_subnet_ids  = local.vpc.subnet_ids
+
+  engine                      = var.elasticache.engine
+  engine_version              = var.elasticache.engine_version
+  node_type                   = var.elasticache.node_type
+  apply_immediately           = var.elasticache.apply_immediately
+  multi_az_enabled            = var.elasticache.multi_az_enabled
+  automatic_failover_enabled  = var.elasticache.automatic_failover_enabled
+  num_cache_clusters          = var.elasticache.num_cache_clusters
+  preferred_cache_cluster_azs = var.elasticache.preferred_cache_cluster_azs
+  data_tiering_enabled        = var.elasticache.data_tiering_enabled
+  log_retention_in_days       = var.elasticache.log_retention_in_days
+
+  kms_key_id     = local.kms_key
+  log_kms_key_id = local.kms_key
 }
 
 resource "kubernetes_secret" "elasticache" {
@@ -131,30 +128,32 @@ resource "kubernetes_secret" "elasticache" {
     "chain.pem" = ""
     username    = ""
     password    = ""
-    host        = module.elasticache[0].redis_endpoint_url.host
-    port        = module.elasticache[0].redis_endpoint_url.port
-    url         = module.elasticache[0].redis_endpoint_url.url
+    host        = module.elasticache[0].endpoint_host
+    port        = module.elasticache[0].endpoint_port
+    url         = module.elasticache[0].endpoint_url
   }
 }
 
 # Amazon MQ
 module "mq" {
-  source = "./generated/infra-modules/storage/aws/mq"
-  tags   = local.tags
-  name   = "${local.prefix}-mq"
-  vpc    = local.vpc
-  user   = var.mq_credentials
-  mq = {
-    engine_type             = var.mq.engine_type
-    engine_version          = var.mq.engine_version
-    host_instance_type      = var.mq.host_instance_type
-    apply_immediately       = var.mq.apply_immediately
-    deployment_mode         = var.mq.deployment_mode
-    storage_type            = var.mq.storage_type
-    authentication_strategy = var.mq.authentication_strategy
-    publicly_accessible     = var.mq.publicly_accessible
-    kms_key_id              = local.kms_key
-  }
+  source          = "./generated/infra-modules/storage/aws/mq"
+  tags            = local.tags
+  name            = "${local.prefix}-mq"
+  vpc_id          = local.vpc.id
+  vpc_cidr_blocks = local.vpc.cidr_blocks
+  vpc_subnet_ids  = local.vpc.subnet_ids
+  username        = var.mq_credentials.username
+  password        = var.mq_credentials.password
+
+  engine_type             = var.mq.engine_type
+  engine_version          = var.mq.engine_version
+  host_instance_type      = var.mq.host_instance_type
+  apply_immediately       = var.mq.apply_immediately
+  deployment_mode         = var.mq.deployment_mode
+  storage_type            = var.mq.storage_type
+  authentication_strategy = var.mq.authentication_strategy
+  publicly_accessible     = var.mq.publicly_accessible
+  kms_key_id              = local.kms_key
 }
 
 resource "kubernetes_secret" "mq" {
@@ -164,11 +163,11 @@ resource "kubernetes_secret" "mq" {
   }
   data = {
     "chain.pem"           = ""
-    username              = module.mq.user.username
-    password              = module.mq.user.password
-    host                  = module.mq.activemq_endpoint_url.host
-    port                  = module.mq.activemq_endpoint_url.port
-    url                   = module.mq.activemq_endpoint_url.url
+    username              = module.mq.username
+    password              = module.mq.password
+    host                  = module.mq.endpoint_host
+    port                  = module.mq.endpoint_port
+    url                   = module.mq.endpoint_url
     web-url               = module.mq.web_url
     adapter_class_name    = local.adapter_class_name
     adapter_absolute_path = local.adapter_absolute_path
@@ -193,33 +192,21 @@ module "mongodb" {
 
 # AWS EFS as persistent volume
 module "efs_persistent_volume" {
-  count      = try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0
-  source     = "./generated/infra-modules/persistent-volume/aws/efs"
-  eks_issuer = module.eks.issuer
-  vpc        = local.vpc
-  efs = {
-    name                            = "${local.prefix}-efs"
-    kms_key_id                      = local.kms_key
-    performance_mode                = var.pv_efs.efs.performance_mode
-    throughput_mode                 = var.pv_efs.efs.throughput_mode
-    provisioned_throughput_in_mibps = var.pv_efs.efs.provisioned_throughput_in_mibps
-    transition_to_ia                = var.pv_efs.efs.transition_to_ia
-    access_point                    = var.pv_efs.efs.access_point
-  }
-  csi_driver = {
-    name               = "${local.prefix}-efs-csi-driver"
-    namespace          = var.pv_efs.csi_driver.namespace
-    image_pull_secrets = var.pv_efs.csi_driver.pull_secrets
-    node_selector      = var.pv_efs.csi_driver.node_selector
-    repository         = try(coalesce(var.pv_efs.csi_driver.repository), var.helm_charts.efs_csi_driver.repository)
-    version            = try(coalesce(var.pv_efs.csi_driver.verison), var.helm_charts.efs_csi_driver.version)
-    docker_images = {
-      efs_csi               = local.ecr_images["${var.pv_efs.csi_driver.images.efs_csi.name}:${try(coalesce(var.pv_efs.csi_driver.images.efs_csi.tag), "")}"]
-      livenessprobe         = local.ecr_images["${var.pv_efs.csi_driver.images.livenessprobe.name}:${try(coalesce(var.pv_efs.csi_driver.images.livenessprobe.tag), "")}"]
-      node_driver_registrar = local.ecr_images["${var.pv_efs.csi_driver.images.node_driver_registrar.name}:${try(coalesce(var.pv_efs.csi_driver.images.node_driver_registrar.tag), "")}"]
-      external_provisioner  = local.ecr_images["${var.pv_efs.csi_driver.images.external_provisioner.name}:${try(coalesce(var.pv_efs.csi_driver.images.external_provisioner.tag), "")}"]
-    }
-  }
+  count                  = try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0
+  source                 = "./generated/infra-modules/storage/aws/efs"
+  vpc_id                 = local.vpc.id
+  vpc_cidr_blocks        = local.vpc.cidr_blocks
+  vpc_cidr_block_private = local.vpc.cidr_block_private
+  vpc_subnet_ids         = local.vpc.subnet_ids
+
+  name                            = "${local.prefix}-efs"
+  kms_key_id                      = local.kms_key
+  performance_mode                = var.pv_efs.efs.performance_mode
+  throughput_mode                 = var.pv_efs.efs.throughput_mode
+  provisioned_throughput_in_mibps = var.pv_efs.efs.provisioned_throughput_in_mibps
+  transition_to_ia                = var.pv_efs.efs.transition_to_ia
+  access_point                    = var.pv_efs.efs.access_point
+
   tags = local.tags
 }
 
@@ -362,11 +349,11 @@ locals {
     deployed_table_storages = ["MongoDB"]
     deployed_queue_storages = ["Amqp"]
     activemq = {
-      url     = module.mq.activemq_endpoint_url.url
+      url     = module.mq.endpoint_url
       web_url = module.mq.web_url
     }
     redis = length(module.elasticache) > 0 ? {
-      url = module.elasticache[0].redis_endpoint_url.url
+      url = module.elasticache[0].endpoint_url
     } : null
     s3 = length(module.s3_os) > 0 ? {
       url         = "https://s3.${var.region}.amazonaws.com"

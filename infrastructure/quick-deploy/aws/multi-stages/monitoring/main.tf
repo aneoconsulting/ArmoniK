@@ -1,9 +1,48 @@
 # AWS KMS
 module "kms" {
-  count  = (local.cloudwatch_kms_key_id == "" && local.cloudwatch_enabled ? 1 : 0)
+  count  = local.cloudwatch_enabled && !can(coalesce(local.cloudwatch_kms_key_id)) ? 1 : 0
   source = "../generated/infra-modules/security/aws/kms"
   name   = local.kms_name
   tags   = local.tags
+
+  key_asymmetric_sign_verify_users = [
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+  ]
+  key_service_users = [
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling",
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+  ]
+  key_statements = [
+    {
+      sid = "CloudWatchLogs"
+      actions = [
+        "kms:Encrypt*",
+        "kms:Decrypt*",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*",
+        "kms:Describe*"
+      ]
+      resources = ["*"]
+
+      principals = [
+        {
+          type        = "Service"
+          identifiers = ["logs.${var.region}.amazonaws.com"]
+        }
+      ]
+
+      conditions = [
+        {
+          test     = "ArnLike"
+          variable = "kms:EncryptionContext:aws:logs:arn"
+          values = [
+            "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:*",
+          ]
+        }
+      ]
+    }
+  ]
 }
 
 # Seq
@@ -115,7 +154,7 @@ module "cloudwatch" {
   count             = (local.cloudwatch_enabled ? 1 : 0)
   source            = "../generated/infra-modules/monitoring/aws/cloudwatch-log-group"
   name              = local.cloudwatch_log_group_name
-  kms_key_id        = (local.cloudwatch_kms_key_id != "" ? local.cloudwatch_kms_key_id : module.kms.0.arn)
+  kms_key_id        = try(coalesce(local.cloudwatch_kms_key_id), module.kms[0].key_arn)
   retention_in_days = local.cloudwatch_retention_in_days
   tags              = local.tags
 }
@@ -126,19 +165,19 @@ module "fluent_bit" {
   namespace     = var.namespace
   node_selector = local.fluent_bit_node_selector
   fluent_bit = {
-    container_name                  = "fluent-bit"
-    image                           = local.fluent_bit_image
-    tag                             = local.fluent_bit_tag
-    image_pull_secrets              = local.fluent_bit_image_pull_secrets
-    is_daemonset                    = local.fluent_bit_is_daemonset
-    parser                          = local.fluent_bit_parser
-    http_server                     = (local.fluent_bit_http_port == 0 ? "Off" : "On")
-    http_port                       = (local.fluent_bit_http_port == 0 ? "" : tostring(local.fluent_bit_http_port))
-    read_from_head                  = (local.fluent_bit_read_from_head ? "On" : "Off")
-    read_from_tail                  = (local.fluent_bit_read_from_head ? "Off" : "On")
-    fluentbitstate_hostpath         = var.monitoring.fluent_bit.fluentbitstate_hostpath
-    varlibdockercontainers_hostpath = var.monitoring.fluent_bit.varlibdockercontainers_hostpath
-    runlogjournal_hostpath          = var.monitoring.fluent_bit.runlogjournal_hostpath
+    container_name                     = "fluent-bit"
+    image                              = local.fluent_bit_image
+    tag                                = local.fluent_bit_tag
+    image_pull_secrets                 = local.fluent_bit_image_pull_secrets
+    is_daemonset                       = local.fluent_bit_is_daemonset
+    parser                             = local.fluent_bit_parser
+    http_server                        = (local.fluent_bit_http_port == 0 ? "Off" : "On")
+    http_port                          = (local.fluent_bit_http_port == 0 ? "" : tostring(local.fluent_bit_http_port))
+    read_from_head                     = (local.fluent_bit_read_from_head ? "On" : "Off")
+    read_from_tail                     = (local.fluent_bit_read_from_head ? "Off" : "On")
+    fluent_bit_state_hostpath          = var.monitoring.fluent_bit.fluent_bit_state_hostpath
+    var_lib_docker_containers_hostpath = var.monitoring.fluent_bit.var_lib_docker_containers_hostpath
+    run_log_journal_hostpath           = var.monitoring.fluent_bit.run_log_journal_hostpath
   }
   seq = (local.seq_enabled ? {
     host    = module.seq.0.host

@@ -9,9 +9,9 @@ resource "kubernetes_secret" "elasticache" {
     "chain.pem" = ""
     username    = ""
     password    = ""
-    host        = module.elasticache[0].redis_endpoint_url.host
-    port        = module.elasticache[0].redis_endpoint_url.port
-    url         = module.elasticache[0].redis_endpoint_url.url
+    host        = module.elasticache[0].endpoint_host
+    port        = module.elasticache[0].endpoint_port
+    url         = module.elasticache[0].endpoint_url
   }
 }
 
@@ -22,11 +22,11 @@ resource "kubernetes_secret" "mq" {
   }
   data = {
     "chain.pem" = ""
-    username    = module.mq.user.username
-    password    = module.mq.user.password
-    host        = module.mq.activemq_endpoint_url.host
-    port        = module.mq.activemq_endpoint_url.port
-    url         = module.mq.activemq_endpoint_url.url
+    username    = module.mq.username
+    password    = module.mq.password
+    host        = module.mq.endpoint_host
+    port        = module.mq.endpoint_port
+    url         = module.mq.endpoint_url
     web-url     = module.mq.web_url
   }
 }
