@@ -246,19 +246,19 @@ module "fluent_bit" {
   namespace     = local.namespace
   node_selector = var.fluent_bit.node_selector
   fluent_bit = {
-    container_name                  = "fluent-bit"
-    image                           = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].image
-    tag                             = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].tag
-    parser                          = var.fluent_bit.parser
-    image_pull_secrets              = var.fluent_bit.pull_secrets
-    is_daemonset                    = var.fluent_bit.is_daemonset
-    http_server                     = (var.fluent_bit.http_port == 0 ? "Off" : "On")
-    http_port                       = (var.fluent_bit.http_port == 0 ? "" : tostring(var.fluent_bit.http_port))
-    read_from_head                  = (var.fluent_bit.read_from_head ? "On" : "Off")
-    read_from_tail                  = (var.fluent_bit.read_from_head ? "Off" : "On")
-    fluentbitstate_hostpath         = var.fluent_bit.fluentbitstate_hostpath
-    varlibdockercontainers_hostpath = var.fluent_bit.varlibdockercontainers_hostpath
-    runlogjournal_hostpath          = var.fluent_bit.runlogjournal_hostpath
+    container_name                     = "fluent-bit"
+    image                              = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].image
+    tag                                = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].tag
+    parser                             = var.fluent_bit.parser
+    image_pull_secrets                 = var.fluent_bit.pull_secrets
+    is_daemonset                       = var.fluent_bit.is_daemonset
+    http_server                        = (var.fluent_bit.http_port == 0 ? "Off" : "On")
+    http_port                          = (var.fluent_bit.http_port == 0 ? "" : tostring(var.fluent_bit.http_port))
+    read_from_head                     = (var.fluent_bit.read_from_head ? "On" : "Off")
+    read_from_tail                     = (var.fluent_bit.read_from_head ? "Off" : "On")
+    fluent_bit_state_hostpath          = var.fluent_bit.fluent_bit_state_hostpath
+    var_lib_docker_containers_hostpath = var.fluent_bit.var_lib_docker_containers_hostpath
+    run_log_journal_hostpath           = var.fluent_bit.run_log_journal_hostpath
   }
   seq = length(module.seq) != 0 ? {
     host    = module.seq[0].host

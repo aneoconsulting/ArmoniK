@@ -137,17 +137,17 @@ variable "monitoring" {
       prefix  = string
     })
     fluent_bit = object({
-      image                           = string
-      tag                             = string
-      image_pull_secrets              = string
-      is_daemonset                    = bool
-      http_port                       = number
-      read_from_head                  = string
-      node_selector                   = any
-      parser                          = string
-      fluentbitstate_hostpath         = string
-      varlibdockercontainers_hostpath = string
-      runlogjournal_hostpath          = string
+      image                              = string
+      tag                                = string
+      image_pull_secrets                 = string
+      is_daemonset                       = bool
+      http_port                          = number
+      read_from_head                     = string
+      node_selector                      = any
+      parser                             = string
+      fluent_bit_state_hostpath          = string
+      var_lib_docker_containers_hostpath = string
+      run_log_journal_hostpath           = string
     })
   })
 }
