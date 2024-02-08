@@ -86,6 +86,7 @@ variable "redis" {
     node_selector      = optional(map(string), {})
     image_pull_secrets = optional(string, "")
     max_memory         = optional(string, "12000mb")
+    max_memory_samples = optional(number)
   })
   default = {}
 }
