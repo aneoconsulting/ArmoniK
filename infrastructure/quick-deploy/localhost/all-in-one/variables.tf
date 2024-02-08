@@ -20,10 +20,13 @@ variable "prefix" {
 }
 
 # Kubernetes namespace
-variable "namespace" {
-  description = "Kubernetes namespace for ArmoniK"
-  type        = string
-  default     = "armonik"
+variable "namespaces" {
+  description = "Kubernetes namespaces"
+  type        = map(string)
+  default = {
+    armonik             = "armonik"
+    external_data_plane = "external-data-plane"
+  }
 }
 
 # Logging level
@@ -120,6 +123,7 @@ variable "redis" {
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
     max_memory         = optional(string, "8000gb")
+    service_type       = optional(string, "ClusterIP")
   })
   default = null
 }
@@ -473,4 +477,18 @@ variable "environment_description" {
   description = "Description of the environment"
   type        = any
   default     = null
+}
+
+# Parameters for external cache
+variable "cache" {
+  description = "Parameters of cache"
+  type = object({
+    image_name         = optional(string, "redis")
+    image_tag          = optional(string)
+    node_selector      = optional(any, {})
+    image_pull_secrets = optional(string, "")
+    max_memory         = optional(string, "8000gb")
+    service_type       = optional(string, "ClusterIP")
+  })
+  default = null
 }

@@ -1,8 +1,22 @@
 module "armonik" {
-  source        = "./generated/infra-modules/armonik"
-  namespace     = local.namespace
-  logging_level = var.logging_level
-  extra_conf    = var.extra_conf
+  source                     = "./generated/infra-modules/armonik"
+  namespace                  = local.namespace
+  external_storage_namespace = kubernetes_secret.deployed_cache_storage[0].metadata[0].namespace
+  logging_level              = var.logging_level
+  extra_conf = merge(var.extra_conf, {
+    worker = {
+      Redis__Timeout      = 30000
+      Redis__SslHost      = "127.0.0.1"
+      Redis__TtlTimeSpan  = "1.00:00:00"
+      Redis__InstanceName = "ArmoniKRedis"
+      Redis__ClientName   = "ArmoniK.Core"
+      Redis__Ssl          = "true"
+      Redis__User         = module.cache[0].username
+      Redis__Password     = module.cache[0].password
+      Redis__EndpointUrl  = module.cache[0].url
+      Redis__CaPath       = "/redis/chain.pem"
+    }
+  })
 
   // To avoid the "known after apply" behavior that arises from using depends_on, we are using a ternary expression to impose implicit dependencies on the below secrets.
   fluent_bit_secret_name                 = kubernetes_secret.fluent_bit.id != null ? kubernetes_secret.fluent_bit.metadata[0].name : kubernetes_secret.fluent_bit.metadata[0].name
@@ -60,4 +74,5 @@ module "armonik" {
   metrics_server_chart_name = concat(module.metrics_server[*].metrics_server.chart_name, ["metrics-server"])[0]
 
   environment_description = var.environment_description
+  depends_on              = [kubernetes_secret.deployed_cache_storage]
 }

@@ -5,19 +5,20 @@ resource "random_string" "prefix" {
   numeric = true
 }
 
-resource "kubernetes_namespace" "armonik" {
+resource "kubernetes_namespace" "namespaces" {
+  for_each = var.namespaces
   metadata {
-    name = var.namespace
+    name = each.value
   }
 }
 
 locals {
-  prefix    = try(coalesce(var.prefix), "armonik-${random_string.prefix.result}")
-  namespace = kubernetes_namespace.armonik.metadata[0].name
-
+  prefix                        = try(coalesce(var.prefix), "armonik-${random_string.prefix.result}")
+  namespace                     = kubernetes_namespace.namespaces["armonik"].metadata[0].name
+  external_data_plane_namespace = kubernetes_namespace.namespaces["external_data_plane"].metadata[0].name
 
   # Minio file storage
-  minio_s3_fs_image              = try(var.minio_s3_fs.image, "minio/minio")
+  minio_s3_fs_image              = try(var.minio_s3_fs.image_name, "minio/minio")
   minio_s3_fs_image_pull_secrets = try(var.minio_s3_fs.image_pull_secrets, "")
   minio_s3_fs_host               = try(var.minio_s3_fs.host, "minio_s3_fs")
   minio_s3_fs_bucket_name        = try(var.minio_s3_fs.default_bucket, "minioBucket")
