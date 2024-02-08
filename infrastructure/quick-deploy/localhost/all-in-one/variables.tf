@@ -120,6 +120,7 @@ variable "redis" {
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
     max_memory         = optional(string, "8000gb")
+    max_memory_samples = optional(number)
   })
   default = null
 }
@@ -238,17 +239,17 @@ variable "partition_metrics_exporter" {
 variable "fluent_bit" {
   description = "Fluent bit configuration"
   type = object({
-    image_name                      = optional(string, "fluent/fluent-bit")
-    image_tag                       = optional(string)
-    pull_secrets                    = optional(string, "")
-    is_daemonset                    = optional(bool, true)
-    http_port                       = optional(number, 2020)
-    read_from_head                  = optional(bool, true)
-    node_selector                   = optional(any, {})
-    parser                          = optional(string, "docker")
-    fluentbitstate_hostpath         = optional(string, "/var/fluent-bit/state")
-    varlibdockercontainers_hostpath = optional(string, "/var/lib/docker/containers")
-    runlogjournal_hostpath          = optional(string, "/run/log/journal")
+    image_name                         = optional(string, "fluent/fluent-bit")
+    image_tag                          = optional(string)
+    pull_secrets                       = optional(string, "")
+    is_daemonset                       = optional(bool, true)
+    http_port                          = optional(number, 2020)
+    read_from_head                     = optional(bool, true)
+    node_selector                      = optional(any, {})
+    parser                             = optional(string, "docker")
+    fluent_bit_state_hostpath          = optional(string, "/var/fluent-bit/state")
+    var_lib_docker_containers_hostpath = optional(string, "/var/lib/docker/containers")
+    run_log_journal_hostpath           = optional(string, "/run/log/journal")
   })
   default = {}
 }

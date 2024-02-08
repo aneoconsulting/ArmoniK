@@ -110,18 +110,18 @@ module "fluent_bit" {
     enabled = true
   } : {})
   fluent_bit = {
-    container_name                  = "fluent-bit"
-    image                           = var.monitoring.fluent_bit.image_name
-    tag                             = try(var.image_tags[var.monitoring.fluent_bit.image_name], var.monitoring.fluent_bit.image_tag)
-    image_pull_secrets              = var.monitoring.fluent_bit.image_pull_secrets
-    is_daemonset                    = var.monitoring.fluent_bit.is_daemonset
-    parser                          = var.monitoring.fluent_bit.parser
-    http_server                     = (var.monitoring.fluent_bit.http_port == 0 ? "Off" : "On")
-    http_port                       = (var.monitoring.fluent_bit.http_port == 0 ? "" : tostring(var.monitoring.fluent_bit.http_port))
-    read_from_head                  = (var.monitoring.fluent_bit.read_from_head ? "On" : "Off")
-    read_from_tail                  = (var.monitoring.fluent_bit.read_from_head ? "Off" : "On")
-    fluentbitstate_hostpath         = var.monitoring.fluent_bit.fluentbitstate_hostpath
-    varlibdockercontainers_hostpath = var.monitoring.fluent_bit.varlibdockercontainers_hostpath
-    runlogjournal_hostpath          = var.monitoring.fluent_bit.runlogjournal_hostpath
+    container_name                     = "fluent-bit"
+    image                              = var.monitoring.fluent_bit.image_name
+    tag                                = try(var.image_tags[var.monitoring.fluent_bit.image_name], var.monitoring.fluent_bit.image_tag)
+    image_pull_secrets                 = var.monitoring.fluent_bit.image_pull_secrets
+    is_daemonset                       = var.monitoring.fluent_bit.is_daemonset
+    parser                             = var.monitoring.fluent_bit.parser
+    http_server                        = (var.monitoring.fluent_bit.http_port == 0 ? "Off" : "On")
+    http_port                          = (var.monitoring.fluent_bit.http_port == 0 ? "" : tostring(var.monitoring.fluent_bit.http_port))
+    read_from_head                     = (var.monitoring.fluent_bit.read_from_head ? "On" : "Off")
+    read_from_tail                     = (var.monitoring.fluent_bit.read_from_head ? "Off" : "On")
+    fluent_bit_state_hostpath          = var.monitoring.fluent_bit.fluent_bit_state_hostpath
+    var_lib_docker_containers_hostpath = var.monitoring.fluent_bit.var_lib_docker_containers_hostpath
+    run_log_journal_hostpath           = var.monitoring.fluent_bit.run_log_journal_hostpath
   }
 }
