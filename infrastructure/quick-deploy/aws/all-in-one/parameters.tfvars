@@ -608,6 +608,9 @@ extra_conf = {
   control = {
     Submitter__MaxErrorAllowed = 50
   }
+  worker = {
+    target_zip_path = "/tmp"
+  }
 }
 
 # Extra configuration for jobs connecting to database

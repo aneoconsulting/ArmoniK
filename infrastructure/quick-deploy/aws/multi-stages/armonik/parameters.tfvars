@@ -82,7 +82,7 @@ control_plane = {
 # Parameters of admin GUI
 admin_gui = {
   image = "armonik-admin-gui"
-  tag   = "0.11.2"
+  tag   = "0.11.4"
   limits = {
     cpu    = "1000m"
     memory = "1024Mi"
@@ -123,7 +123,7 @@ compute_plane = {
       {
         name              = "worker"
         image             = "armonik-worker"
-        tag               = "0.12.5"
+        tag               = "0.14.1"
         image_pull_policy = "IfNotPresent"
         limits = {
           cpu    = "1000m"
@@ -391,6 +391,9 @@ extra_conf = {
   }
   control = {
     Submitter__MaxErrorAllowed = 50
+  }
+  worker = {
+    target_zip_path = "/tmp"
   }
 }
 

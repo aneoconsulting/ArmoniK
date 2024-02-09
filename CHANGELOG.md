@@ -1,5 +1,14 @@
 # Changelog
 
+## [v2.18.2](https://github.com/aneoconsulting/armonik/tree/v2.18.2) (2024-02-09)
+
+Changed
+-
+
+* add variable `target_zip_path` that can be used to define the path where the zip file of the library will be unzipped
+* Upgrade version of ArmoniK Admin Gui from `0.11.2` to `0.11.4` [Changelog](https://github.com/aneoconsulting/ArmoniK.Admin.GUI/releases)
+* Upgrade ArmoniK.Extensions.Csharp from `0.12.5` to `0.14.1` [Changelog](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/releases)
+
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
 ## [v2.18.1](https://github.com/aneoconsulting/armonik/tree/v2.18.1) (2024-01-24)
