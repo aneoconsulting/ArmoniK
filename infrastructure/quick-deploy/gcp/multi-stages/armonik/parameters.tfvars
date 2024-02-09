@@ -22,6 +22,9 @@ extra_conf = {
   control = {
     Submitter__MaxErrorAllowed = 50
   }
+  worker = {
+    target_zip_path = "/tmp"
+  }
 }
 
 # Extra configuration for jobs connecting to database
@@ -67,7 +70,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_worker_dll"
-        tag   = "0.12.5"
+        tag   = "0.14.1"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"

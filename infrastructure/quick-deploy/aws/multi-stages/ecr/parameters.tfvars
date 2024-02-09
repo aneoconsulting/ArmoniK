@@ -54,7 +54,7 @@ ecr = {
     },
     "armonik-worker" = {
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.12.5"
+      tag   = "0.14.1"
     },
     "armonik-htcmock-worker" = {
       image = "dockerhubaneo/armonik_core_htcmock_test_worker"
@@ -78,7 +78,7 @@ ecr = {
     },
     "armonik-admin-gui" = {
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.11.2"
+      tag   = "0.11.4"
     },
     mongosh = {
       image = "rtsp/mongosh"
