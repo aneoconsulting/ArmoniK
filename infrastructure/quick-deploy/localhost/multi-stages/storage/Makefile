@@ -12,6 +12,7 @@ export KUBE_CONFIG_PATH?=$(HOME)/.kube/config
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export TF_PLUGIN_CACHE_DIR?=$(TERRAFORM_PLUGINS)
 export NAMESPACE?=armonik
+export EXTERNAL_DATA_PLANE_NAMESPACE?=external-data-plane
 export SHARED_HOST_PATH?=$(HOME)/data
 export FILE_STORAGE_FILE?=HostPath
 export FILE_SERVER_IP?=
@@ -34,6 +35,7 @@ apply:
 		-var-file $(VERSIONS_FILE) \
 		-var 'shared_storage={"host_path":"$(SHARED_HOST_PATH)","file_storage_type":"$(FILE_STORAGE_FILE)","file_server_ip":"$(FILE_SERVER_IP)"}' \
 		-var 'namespace=$(NAMESPACE)' \
+		-var 'external_data_plane_namespace=$(EXTERNAL_DATA_PLANE_NAMESPACE)' \
 		-auto-approve
 
 output:
@@ -48,6 +50,7 @@ delete:
 		-var-file $(VERSIONS_FILE) \
 		-var 'shared_storage={"host_path":"$(SHARED_HOST_PATH)","file_storage_type":"$(FILE_STORAGE_FILE)","file_server_ip":"$(FILE_SERVER_IP)"}' \
 		-var 'namespace=$(NAMESPACE)' \
+		-var 'external_data_plane_namespace=$(EXTERNAL_DATA_PLANE_NAMESPACE)' \
 		-auto-approve
 
 state-pull:

@@ -1,8 +1,9 @@
 module "armonik" {
-  source        = "../generated/infra-modules/armonik"
-  namespace     = var.namespace
-  logging_level = var.logging_level
-  extra_conf    = var.extra_conf
+  source                     = "../generated/infra-modules/armonik"
+  namespace                  = var.namespace
+  external_storage_namespace = var.external_data_plane_namespace
+  logging_level              = var.logging_level
+  extra_conf                 = var.extra_conf
   compute_plane = { for k, v in var.compute_plane : k => merge({
     partition_data = {
       priority              = 1

@@ -12,6 +12,7 @@ export KUBE_CONFIG_PATH?=$(HOME)/.kube/config
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export TF_PLUGIN_CACHE_DIR?=$(TERRAFORM_PLUGINS)
 export NAMESPACE?=armonik
+export EXTERNAL_DATA_PLANE_NAMESPACE?=external-data-plane
 
 .PHONY: apply destroy
 
@@ -30,6 +31,7 @@ apply:
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(VERSIONS_FILE) \
 		-var 'namespace=$(NAMESPACE)' \
+		-var 'external_data_plane_namespace=$(EXTERNAL_DATA_PLANE_NAMESPACE)' \
 		-auto-approve
 
 output:
@@ -43,6 +45,7 @@ delete:
 		-var-file $(PARAMETERS_FILE) \
 		-var-file $(VERSIONS_FILE) \
 		-var 'namespace=$(NAMESPACE)' \
+		-var 'external_data_plane_namespace=$(EXTERNAL_DATA_PLANE_NAMESPACE)' \
 		-auto-approve
 
 state-pull:

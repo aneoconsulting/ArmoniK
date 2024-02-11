@@ -10,3 +10,5 @@ export ARMONIK_FILE_SERVER_IP=""
 export KEDA_KUBERNETES_NAMESPACE="default"
 # The namespace in Kubernetes for metrics server
 export METRICS_SERVER_KUBERNETES_NAMESPACE="kube-system"
+# The namespace in Kubernetes for external data-plane
+export EXTERNAL_DATA_PLANE_NAMESPACE="external-data-plane"

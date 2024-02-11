@@ -4,6 +4,7 @@ export ARMONIK_FILE_STORAGE_FILE?=HostPath
 export ARMONIK_FILE_SERVER_IP?=
 export KEDA_KUBERNETES_NAMESPACE?=default
 export METRICS_SERVER_KUBERNETES_NAMESPACE?=kube-system
+export EXTERNAL_DATA_PLANE_NAMESPACE?=external-data-plane
 export KEDA=$(shell kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
 export METRICS_SERVER=$(shell kubectl get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
 
@@ -21,11 +22,13 @@ create-namespace:
 	@kubectl get namespace $(ARMONIK_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(ARMONIK_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE)
 	@kubectl get namespace $(KEDA_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(KEDA_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(KEDA_KUBERNETES_NAMESPACE)
 	@kubectl get namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 &&  echo "namespace : '$(METRICS_SERVER_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)
+	@kubectl get namespace $(EXTERNAL_DATA_PLANE_NAMESPACE)  > /dev/null 2>&1 &&  echo "namespace : '$(EXTERNAL_DATA_PLANE_NAMESPACE)' is already created." || kubectl create namespace $(EXTERNAL_DATA_PLANE_NAMESPACE)
 
 delete-namespace:
 	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
 	kubectl delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
 	kubectl delete namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE) || true
+	kubectl delete namespace $(EXTERNAL_DATA_PLANE_NAMESPACE) || true
 
 ####################################
 #              KEDA                #
@@ -80,6 +83,7 @@ clean-metrics-server:
 deploy-storage:
 	$(MAKE) -C $(CURRENT_DIR)/storage deploy \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		EXTERNAL_DATA_PLANE_NAMESPACE=$(EXTERNAL_DATA_PLANE_NAMESPACE) \
 		SHARED_HOST_PATH=$(ARMONIK_SHARED_HOST_PATH) \
 		FILE_STORAGE_FILE=$(ARMONIK_FILE_STORAGE_FILE) \
 		FILE_SERVER_IP=$(ARMONIK_FILE_SERVER_IP) \
@@ -90,6 +94,7 @@ deploy-storage:
 destroy-storage:
 	$(MAKE) -C $(CURRENT_DIR)/storage destroy \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		EXTERNAL_DATA_PLANE_NAMESPACE=$(EXTERNAL_DATA_PLANE_NAMESPACE) \
 		SHARED_HOST_PATH=$(ARMONIK_SHARED_HOST_PATH) \
 		FILE_STORAGE_FILE=$(ARMONIK_FILE_STORAGE_FILE) \
 		FILE_SERVER_IP=$(ARMONIK_FILE_SERVER_IP) \
@@ -128,6 +133,7 @@ clean-monitoring:
 deploy-armonik:
 	$(MAKE) -C $(CURRENT_DIR)/armonik deploy \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		EXTERNAL_DATA_PLANE_NAMESPACE=$(EXTERNAL_DATA_PLANE_NAMESPACE) \
 		MODULES_DIR=$(MODULES_DIR) \
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
@@ -135,6 +141,7 @@ deploy-armonik:
 destroy-armonik:
 	$(MAKE) -C $(CURRENT_DIR)/armonik destroy \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
+		EXTERNAL_DATA_PLANE_NAMESPACE=$(EXTERNAL_DATA_PLANE_NAMESPACE) \
 		MODULES_DIR=$(MODULES_DIR) \
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)

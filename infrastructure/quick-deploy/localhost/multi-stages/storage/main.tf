@@ -35,6 +35,7 @@ module "redis" {
     node_selector      = var.redis.node_selector
     image_pull_secrets = var.redis.image_pull_secrets
     max_memory         = var.redis.max_memory
+    service_type       = var.redis.service_type
   }
 }
 

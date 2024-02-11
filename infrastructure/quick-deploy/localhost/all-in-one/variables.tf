@@ -488,7 +488,7 @@ variable "cache" {
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
     max_memory         = optional(string, "8000gb")
-    service_type       = optional(string, "ClusterIP")
+    service_type       = optional(string, "LoadBalancer")
   })
   default = null
 }

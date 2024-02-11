@@ -42,6 +42,13 @@ variable "namespace" {
   default     = "armonik"
 }
 
+# Kubernetes namespace for external data-plane
+variable "external_data_plane_namespace" {
+  description = "Kubernetes namespace for External data-plane"
+  type        = string
+  default     = "external-data-plane"
+}
+
 # Shared storage
 variable "shared_storage" {
   description = "Shared storage infos"
@@ -86,6 +93,7 @@ variable "redis" {
     node_selector      = optional(map(string), {})
     image_pull_secrets = optional(string, "")
     max_memory         = optional(string, "12000mb")
+    service_type       = optional(string, "ClusterIP")
   })
   default = {}
 }
@@ -117,4 +125,18 @@ variable "minio_s3_fs" {
     host               = optional(string, "minio-s3-fs")
   })
   default = null
+}
+
+# Parameters for cache
+variable "cache" {
+  description = "Parameters of Cache"
+  type = object({
+    image_name         = optional(string, "redis"),
+    image_tag          = optional(string),
+    node_selector      = optional(map(string), {})
+    image_pull_secrets = optional(string, "")
+    max_memory         = optional(string, "12000mb")
+    service_type       = optional(string, "LoadBalancer")
+  })
+  default = {}
 }

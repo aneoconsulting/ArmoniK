@@ -290,6 +290,16 @@ extra_conf = {
   control = {
     Submitter__MaxErrorAllowed = 50
   }
+  worker = {
+    target_zip_path     = "/tmp"
+    Redis__Timeout      = 30000
+    Redis__SslHost      = "127.0.0.1"
+    Redis__TtlTimeSpan  = "1.00:00:00"
+    Redis__InstanceName = "ArmoniKRedis"
+    Redis__ClientName   = "ArmoniK.Core"
+    Redis__Ssl          = "true"
+    Redis__CaPath       = "/redis/chain.pem"
+  }
 }
 
 # Extra configuration for jobs connecting to database

@@ -1,5 +1,6 @@
 # Kubernetes namespace
-namespace = "armonik"
+namespace                     = "armonik"
+external_data_plane_namespace = "external-data-plane"
 
 
 # Uncomment this to have minio S3 enabled instead of hostpath shared_storage

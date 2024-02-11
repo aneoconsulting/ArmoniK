@@ -42,6 +42,13 @@ variable "namespace" {
   default     = "armonik"
 }
 
+# Kubernetes namespace for external data-plane
+variable "external_data_plane_namespace" {
+  description = "Kubernetes namespace for External data-plane"
+  type        = string
+  default     = "external-data-plane"
+}
+
 # Node selector
 variable "node_selector" {
   description = "Node selector for Seq"
