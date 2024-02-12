@@ -272,21 +272,17 @@ mq = {
 
 mongodb = {
   node_selector = { service = "state-database" }
-  #persistent_volume = {
-  #  storage_provisioner = "efs.csi.aws.com"
-  #  resources = {
-  #    requests = {
-  #      storage = "5Gi"
-  #    }
-  #  }
-  #}
-}
-
-pv_efs = {
-  csi_driver = {
-    node_selector = { service = "state-database" }
+  persistent_volume = {
+    storage_provisioner = "efs.csi.aws.com"
+    resources = {
+      requests = {
+        storage = "5Gi"
+      }
+    }
   }
 }
+
+mongodb_efs = {}
 
 seq = {
   node_selector = { service = "monitoring" }
@@ -294,7 +290,17 @@ seq = {
 
 grafana = {
   node_selector = { service = "monitoring" }
+  persistent_volume = {
+    storage_provisioner = "efs.csi.aws.com"
+    resources = {
+      requests = {
+        storage = "5Gi"
+      }
+    }
+  }
 }
+
+grafana_efs = {}
 
 node_exporter = {
   node_selector = {}
@@ -302,7 +308,17 @@ node_exporter = {
 
 prometheus = {
   node_selector = { service = "metrics" }
+  persistent_volume = {
+    storage_provisioner = "efs.csi.aws.com"
+    resources = {
+      requests = {
+        storage = "5Gi"
+      }
+    }
+  }
 }
+
+prometheus_efs = {}
 
 metrics_exporter = {
   node_selector = { service = "metrics" }

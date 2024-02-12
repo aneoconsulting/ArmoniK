@@ -1,18 +1,3 @@
-locals {
-  mongodb_persistent_volume = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
-    storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
-    resources           = var.mongodb.persistent_volume.resources
-    parameters = merge(var.mongodb.persistent_volume.parameters, {
-      provisioningMode = "efs-ap"
-      fileSystemId     = module.efs_persistent_volume[0].efs_id
-      directoryPerms   = "755"
-      gidRangeStart    = "999"      # optional
-      gidRangeEnd      = "2000"     # optional
-      basePath         = "/mongodb" # optional
-    })
-  } : null)
-}
-
 # AWS S3 as shared storage
 module "s3_fs" {
   source = "./generated/infra-modules/storage/aws/s3"
@@ -186,28 +171,39 @@ module "mongodb" {
     image_pull_secrets = var.mongodb.pull_secrets
     replicas_number    = var.mongodb.replicas_number
   }
-  persistent_volume = local.mongodb_persistent_volume
-  depends_on        = [module.efs_persistent_volume]
+
+  persistent_volume = var.mongodb.persistent_volume != null ? {
+    storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
+    volume_binding_mode = var.mongodb.persistent_volume.volume_binding_mode
+    resources           = var.mongodb.persistent_volume.resources
+    parameters = merge(var.mongodb.persistent_volume.parameters, try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
+      provisioningMode = "efs-ap"
+      fileSystemId     = module.mongodb_efs_persistent_volume[0].id
+      directoryPerms   = "755"
+      uid              = var.mongodb.security_context.run_as_user # optional
+      gid              = var.mongodb.security_context.fs_group    # optional
+      basePath         = "/mongodb"                               # optional
+    } : {})
+  } : null
+
+  security_context = var.mongodb.security_context
 }
 
-# AWS EFS as persistent volume
-module "efs_persistent_volume" {
-  count                  = try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0
-  source                 = "./generated/infra-modules/storage/aws/efs"
-  vpc_id                 = local.vpc.id
-  vpc_cidr_blocks        = local.vpc.cidr_blocks
-  vpc_cidr_block_private = local.vpc.cidr_block_private
-  vpc_subnet_ids         = local.vpc.subnet_ids
-
-  name                            = "${local.prefix}-efs"
-  kms_key_id                      = local.kms_key
-  performance_mode                = var.pv_efs.efs.performance_mode
-  throughput_mode                 = var.pv_efs.efs.throughput_mode
-  provisioned_throughput_in_mibps = var.pv_efs.efs.provisioned_throughput_in_mibps
-  transition_to_ia                = var.pv_efs.efs.transition_to_ia
-  access_point                    = var.pv_efs.efs.access_point
-
-  tags = local.tags
+module "mongodb_efs_persistent_volume" {
+  count                           = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
+  source                          = "./generated/infra-modules/storage/aws/efs"
+  name                            = "${local.prefix}-mongodb"
+  kms_key_id                      = try(coalesce(var.mongodb_efs.kms_key_id), local.kms_key)
+  performance_mode                = var.mongodb_efs.performance_mode
+  throughput_mode                 = var.mongodb_efs.throughput_mode
+  provisioned_throughput_in_mibps = var.mongodb_efs.provisioned_throughput_in_mibps
+  transition_to_ia                = var.mongodb_efs.transition_to_ia
+  access_point                    = var.mongodb_efs.access_point
+  vpc_id                          = local.vpc.id
+  vpc_cidr_blocks                 = local.vpc.cidr_blocks
+  vpc_cidr_block_private          = local.vpc.cidr_block_private
+  vpc_subnet_ids                  = local.vpc.subnet_ids
+  tags                            = local.tags
 }
 
 # Decrypt objects in S3
