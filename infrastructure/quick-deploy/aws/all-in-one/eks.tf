@@ -24,15 +24,26 @@ module "eks" {
   cluster_autoscaler_scale_down_delay_after_failure        = var.eks.cluster_autoscaler.scale_down_delay_after_failure
   cluster_autoscaler_scale_down_unneeded_time              = var.eks.cluster_autoscaler.scale_down_unneeded_time
   cluster_autoscaler_skip_nodes_with_system_pods           = var.eks.cluster_autoscaler.skip_nodes_with_system_pods
-  cluster_autoscaler_version                               = try(coalesce(var.eks.cluster_autoscaler.verison), var.helm_charts.cluster_autoscaler.version)
+  cluster_autoscaler_version                               = try(coalesce(var.eks.cluster_autoscaler.version), var.helm_charts.cluster_autoscaler.version)
   cluster_autoscaler_repository                            = try(coalesce(var.eks.cluster_autoscaler.repository), var.helm_charts.cluster_autoscaler.repository)
   cluster_autoscaler_namespace                             = var.eks.cluster_autoscaler.namespace
 
   instance_refresh_image      = local.ecr_images["${var.eks.docker_images.instance_refresh.image}:${try(coalesce(var.eks.docker_images.instance_refresh.tag), "")}"].image
   instance_refresh_tag        = local.ecr_images["${var.eks.docker_images.instance_refresh.image}:${try(coalesce(var.eks.docker_images.instance_refresh.tag), "")}"].tag
-  instance_refresh_version    = try(coalesce(var.eks.instance_refresh.verison), var.helm_charts.termination_handler.version)
+  instance_refresh_version    = try(coalesce(var.eks.instance_refresh.version), var.helm_charts.termination_handler.version)
   instance_refresh_repository = try(coalesce(var.eks.instance_refresh.repository), var.helm_charts.termination_handler.repository)
   instance_refresh_namespace  = var.eks.instance_refresh.namespace
+
+  efs_csi_image                       = local.ecr_images["${var.eks.docker_images.efs_csi.image}:${try(coalesce(var.eks.docker_images.efs_csi.tag), "")}"].image
+  efs_csi_tag                         = local.ecr_images["${var.eks.docker_images.efs_csi.image}:${try(coalesce(var.eks.docker_images.efs_csi.tag), "")}"].tag
+  efs_csi_liveness_probe_image        = local.ecr_images["${var.eks.docker_images.efs_csi_liveness_probe.image}:${try(coalesce(var.eks.docker_images.efs_csi_liveness_probe.tag), "")}"].image
+  efs_csi_liveness_probe_tag          = local.ecr_images["${var.eks.docker_images.efs_csi_liveness_probe.image}:${try(coalesce(var.eks.docker_images.efs_csi_liveness_probe.tag), "")}"].tag
+  efs_csi_node_driver_registrar_image = local.ecr_images["${var.eks.docker_images.efs_csi_node_driver_registrar.image}:${try(coalesce(var.eks.docker_images.efs_csi_node_driver_registrar.tag), "")}"].image
+  efs_csi_node_driver_registrar_tag   = local.ecr_images["${var.eks.docker_images.efs_csi_node_driver_registrar.image}:${try(coalesce(var.eks.docker_images.efs_csi_node_driver_registrar.tag), "")}"].tag
+  efs_csi_external_provisioner_image  = local.ecr_images["${var.eks.docker_images.efs_csi_external_provisioner.image}:${try(coalesce(var.eks.docker_images.efs_csi_external_provisioner.tag), "")}"].image
+  efs_csi_external_provisioner_tag    = local.ecr_images["${var.eks.docker_images.efs_csi_external_provisioner.image}:${try(coalesce(var.eks.docker_images.efs_csi_external_provisioner.tag), "")}"].tag
+  efs_csi_version                     = try(coalesce(var.eks.efs_csi.version), var.helm_charts.efs_csi_driver.version)
+  efs_csi_repository                  = try(coalesce(var.eks.efs_csi.repository), var.helm_charts.efs_csi_driver.repository)
 
   cluster_log_kms_key_id    = local.kms_key
   cluster_encryption_config = local.kms_key

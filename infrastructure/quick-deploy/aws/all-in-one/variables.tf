@@ -101,6 +101,22 @@ variable "eks" {
         image = optional(string, "public.ecr.aws/aws-ec2/aws-node-termination-handler")
         tag   = optional(string)
       }), {})
+      efs_csi = optional(object({
+        image = optional(string, "amazon/aws-efs-csi-driver")
+        tag   = optional(string)
+      }), {})
+      efs_csi_liveness_probe = optional(object({
+        image = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe")
+        tag   = optional(string)
+      }), {})
+      efs_csi_node_driver_registrar = optional(object({
+        image = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar")
+        tag   = optional(string)
+      }), {})
+      efs_csi_external_provisioner = optional(object({
+        image = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner")
+        tag   = optional(string)
+      }), {})
     }), {})
     cluster_autoscaler = optional(object({
       expander                              = optional(string, "least-waste")
@@ -118,6 +134,10 @@ variable "eks" {
       version                               = optional(string)
       repository                            = optional(string)
       namespace                             = optional(string, "kube-system")
+    }), {})
+    efs_csi = optional(object({
+      repository = optional(string)
+      version    = optional(string)
     }), {})
     instance_refresh = optional(object({
       namespace  = optional(string, "kube-system")
@@ -301,6 +321,7 @@ variable "mongodb" {
     replicas_number = optional(number, 1)
     persistent_volume = optional(object({
       storage_provisioner = string
+      volume_binding_mode = optional(string, "Immediate")
       parameters          = optional(map(string), {})
       #Resources for PVC
       resources = optional(object({
@@ -312,49 +333,23 @@ variable "mongodb" {
         }))
       }), {})
     }))
+    security_context = optional(object({
+      run_as_user = optional(number, 999)
+      fs_group    = optional(number, 999)
+    }), {})
   })
   default = {}
 }
 
-# AWS EFS as Persistent volume
-variable "pv_efs" {
-  description = "AWS EFS as Persistent volume"
+variable "mongodb_efs" {
+  description = "AWS EFS as Persistent volume for MongoDB"
   type = object({
-    # AWS Elastic Filesystem Service
-    efs = optional(object({
-      performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
-      throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
-      provisioned_throughput_in_mibps = optional(number, null)
-      transition_to_ia                = optional(string, "AFTER_7_DAYS")
-      # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
-      access_point = optional(list(string), [])
-    }), {})
-    # EFS Container Storage Interface (CSI) Driver
-    csi_driver = optional(object({
-      namespace     = optional(string, "kube-system")
-      pull_secrets  = optional(string, "")
-      node_selector = optional(any, {})
-      repository    = optional(string)
-      version       = optional(string)
-      images = optional(object({
-        efs_csi = optional(object({
-          name = optional(string, "amazon/aws-efs-csi-driver")
-          tag  = optional(string)
-        }), {})
-        livenessprobe = optional(object({
-          name = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe")
-          tag  = optional(string)
-        }), {})
-        node_driver_registrar = optional(object({
-          name = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar")
-          tag  = optional(string)
-        }), {})
-        external_provisioner = optional(object({
-          name = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner")
-          tag  = optional(string)
-        }), {})
-      }), {})
-    }), {})
+    performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
+    throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
+    provisioned_throughput_in_mibps = optional(number)
+    transition_to_ia                = optional(string)
+    # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+    access_point = optional(list(string), [])
   })
   default = null
 }
@@ -388,6 +383,37 @@ variable "grafana" {
     service_type   = optional(string, "ClusterIP")
     node_selector  = optional(any, {})
     authentication = optional(bool, false)
+    persistent_volume = optional(object({
+      storage_provisioner = string
+      volume_binding_mode = optional(string, "Immediate")
+      parameters          = optional(map(string), {})
+      #Resources for PVC
+      resources = optional(object({
+        limits = optional(object({
+          storage = optional(string)
+        }))
+        requests = optional(object({
+          storage = optional(string)
+        }))
+      }), {})
+    }))
+    security_context = optional(object({
+      run_as_user = optional(number, 999)
+      fs_group    = optional(number, 999)
+    }), {})
+  })
+  default = null
+}
+
+variable "grafana_efs" {
+  description = "AWS EFS as Persistent volume for Grafana"
+  type = object({
+    performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
+    throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
+    provisioned_throughput_in_mibps = optional(number)
+    transition_to_ia                = optional(string)
+    # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+    access_point = optional(list(string), [])
   })
   default = null
 }
@@ -412,8 +438,39 @@ variable "prometheus" {
     pull_secrets  = optional(string, "")
     service_type  = optional(string, "ClusterIP")
     node_selector = optional(any, {})
+    persistent_volume = optional(object({
+      storage_provisioner = string
+      volume_binding_mode = optional(string, "Immediate")
+      parameters          = optional(map(string), {})
+      #Resources for PVC
+      resources = optional(object({
+        limits = optional(object({
+          storage = optional(string)
+        }))
+        requests = optional(object({
+          storage = optional(string)
+        }))
+      }), {})
+    }))
+    security_context = optional(object({
+      run_as_user = optional(number, 65534)
+      fs_group    = optional(number, 65534)
+    }), {})
   })
   default = {}
+}
+
+variable "prometheus_efs" {
+  description = "AWS EFS as Persistent volume for Promotheus"
+  type = object({
+    performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
+    throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
+    provisioned_throughput_in_mibps = optional(number)
+    transition_to_ia                = optional(string)
+    # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+    access_point = optional(list(string), [])
+  })
+  default = null
 }
 
 variable "metrics_exporter" {
