@@ -125,6 +125,17 @@ variable "redis" {
   default = null
 }
 
+#parameters for Nfs
+variable "nfs" {
+  type = object({
+    server        = optional(string)
+    path          = optional(string)
+    pvc_name      = optional(string, "nfsvolume")
+    nfs_mount_pod = optional(string, "/local_storage")
+  })
+  default = null
+}
+
 # Parameters for Minio
 variable "minio" {
   description = "Parameters of Minio"

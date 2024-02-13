@@ -69,6 +69,17 @@ module "minio_s3_fs" {
   }
 }
 
+#NFS
+module "nfs" {
+  count      = var.nfs != null ? 1 : 0
+  source     = "./generated/infra-modules/storage/onpremise/nfs"
+  namespace  = local.namespace
+  nfs_server = var.nfs.server
+  nfs_path   = var.nfs.path
+  pvc_name   = var.nfs.pvc_name
+}
+
+
 # Shared storage
 resource "kubernetes_secret" "shared_storage" {
   metadata {
@@ -113,18 +124,24 @@ resource "kubernetes_secret" "deployed_queue_storage" {
   }
 }
 
+
+
+
+
 # Storage
 locals {
   storage_endpoint_url = {
     object_storage_adapter = try(coalesce(
       length(module.redis) > 0 ? "Redis" : null,
       length(module.minio) > 0 ? "S3" : null,
+      var.nfs != null ? "LocalStorage" : null,
     ), "")
     table_storage_adapter = "MongoDB"
     queue_storage_adapter = "Amqp"
     deployed_object_storages = concat(
       length(module.redis) > 0 ? ["Redis"] : [],
       length(module.minio) > 0 ? ["S3"] : [],
+      var.nfs != null ? ["LocalStorage"] : [],
     )
     deployed_table_storages = ["MongoDB"]
     deployed_queue_storages = ["Amqp"]
@@ -170,5 +187,8 @@ locals {
       url         = try(module.minio[0].url, "")
       bucket_name = try(module.minio[0].bucket_name, "")
     } : null
+    localstorage = {
+      path = var.nfs.nfs_mount_pod # "/local_storage"
+    }
   }
 }
