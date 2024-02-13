@@ -66,6 +66,22 @@ variable "eks" {
         image = string
         tag   = string
       })
+      efs_csi = object({
+        image = string
+        tag   = string
+      })
+      efs_csi_liveness_probe = object({
+        image = string
+        tag   = string
+      })
+      efs_csi_node_driver_registrar = object({
+        image = string
+        tag   = string
+      })
+      efs_csi_external_provisioner = object({
+        image = string
+        tag   = string
+      })
     })
     cluster_autoscaler = object({
       expander                              = string
@@ -83,6 +99,10 @@ variable "eks" {
       version                               = optional(string, "9.24.0")
       repository                            = optional(string, "https://kubernetes.github.io/autoscaler")
       namespace                             = optional(string, "kube-system")
+    })
+    efs_csi = object({
+      repository = string
+      version    = string
     })
     instance_refresh = object({
       namespace  = optional(string, "kube-system")
