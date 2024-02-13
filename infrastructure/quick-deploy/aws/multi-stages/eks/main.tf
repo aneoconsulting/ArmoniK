@@ -92,6 +92,18 @@ module "eks" {
   cluster_endpoint_public_access_cidrs = var.eks.cluster_endpoint_public_access_cidrs
   cluster_log_retention_in_days        = var.eks.cluster_log_retention_in_days
 
+
+  efs_csi_image                       = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${local.suffix}/${var.eks.docker_images.efs_csi.image}"
+  efs_csi_tag                         = var.eks.docker_images.efs_csi.tag
+  efs_csi_liveness_probe_image        = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${local.suffix}/${var.eks.docker_images.efs_csi_liveness_probe.image}"
+  efs_csi_liveness_probe_tag          = var.eks.docker_images.efs_csi_liveness_probe.tag
+  efs_csi_node_driver_registrar_image = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${local.suffix}/${var.eks.docker_images.efs_csi_node_driver_registrar.image}"
+  efs_csi_node_driver_registrar_tag   = var.eks.docker_images.efs_csi_node_driver_registrar.tag
+  efs_csi_external_provisioner_image  = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com/${local.suffix}/${var.eks.docker_images.efs_csi_external_provisioner.image}"
+  efs_csi_external_provisioner_tag    = var.eks.docker_images.efs_csi_external_provisioner.tag
+  efs_csi_version                     = var.eks.efs_csi.version
+  efs_csi_repository                  = var.eks.efs_csi.repository
+
   map_roles_groups         = var.eks.map_roles
   map_users_groups         = var.eks.map_users
   eks_managed_node_groups  = var.eks_managed_node_groups

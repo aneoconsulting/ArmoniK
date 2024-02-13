@@ -2,7 +2,7 @@
 module "kms" {
   count  = (can(coalesce(var.s3_fs.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.kms_key_id)) && can(coalesce(var.elasticache.encryption_keys.log_kms_key_id)) && can(coalesce(var.s3_os.kms_key_id)) && can(coalesce(var.mq.kms_key_id)) ? 0 : 1)
   source = "../generated/infra-modules/security/aws/kms"
-  name   = local.kms_name
+  name   = "armonik-kms-storage-${local.suffix}-${local.random_string}"
   tags   = local.tags
 
   key_asymmetric_sign_verify_users = [
@@ -150,8 +150,20 @@ module "mongodb" {
     image_pull_secrets = var.mongodb.image_pull_secrets
     replicas_number    = var.mongodb.replicas_number
   }
-  persistent_volume = local.persistent_volume
-  depends_on        = [module.efs_persistent_volume]
+  persistent_volume = (try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
+    storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
+    volume_binding_mode = var.mongodb.persistent_volume.volume_binding_mode
+    resources           = var.mongodb.persistent_volume.resources
+    parameters = merge(var.mongodb.persistent_volume.parameters, {
+      provisioningMode = "efs-ap"
+      fileSystemId     = module.efs_persistent_volume[0].id
+      directoryPerms   = "755"
+      uid              = var.mongodb.security_context.run_as_user # optional
+      gid              = var.mongodb.security_context.fs_group    # optional
+      basePath         = "/mongodb"                               # optional
+    })
+  } : null)
+  depends_on = [module.efs_persistent_volume]
 }
 
 # AWS EFS as persistent volume
@@ -164,12 +176,12 @@ module "efs_persistent_volume" {
   vpc_cidr_block_private = local.vpc.cidr_block_private
   vpc_subnet_ids         = local.vpc.subnet_ids
 
-  name                            = local.efs_name
-  kms_key_id                      = try(coalesce(var.pv_efs.efs.kms_key_id), module.kms[0].key_arn)
-  performance_mode                = var.pv_efs.efs.performance_mode
-  throughput_mode                 = var.pv_efs.efs.throughput_mode
-  provisioned_throughput_in_mibps = var.pv_efs.efs.provisioned_throughput_in_mibps
-  transition_to_ia                = var.pv_efs.efs.transition_to_ia
-  access_point                    = var.pv_efs.efs.access_point
+  name                            = "${var.mongodb_efs.name}-${local.suffix}"
+  kms_key_id                      = try(coalesce(var.mongodb_efs.kms_key_id), module.kms[0].key_arn)
+  performance_mode                = var.mongodb_efs.performance_mode
+  throughput_mode                 = var.mongodb_efs.throughput_mode
+  provisioned_throughput_in_mibps = var.mongodb_efs.provisioned_throughput_in_mibps
+  transition_to_ia                = var.mongodb_efs.transition_to_ia
+  access_point                    = var.mongodb_efs.access_point
   tags                            = local.tags
 }
