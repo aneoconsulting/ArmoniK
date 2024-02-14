@@ -186,6 +186,40 @@ module "prometheus" {
     tag                = local.ecr_images["${var.prometheus.image_name}:${try(coalesce(var.prometheus.image_tag), "")}"].tag
     image_pull_secrets = var.prometheus.pull_secrets
   }
+
+  persistent_volume = var.prometheus.persistent_volume != null ? {
+    storage_provisioner = var.prometheus.persistent_volume.storage_provisioner
+    volume_binding_mode = var.prometheus.persistent_volume.volume_binding_mode
+    resources           = var.prometheus.persistent_volume.resources
+    parameters = merge(var.prometheus.persistent_volume.parameters, try(var.prometheus.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
+      provisioningMode = "efs-ap"
+      fileSystemId     = module.prometheus_efs_persistent_volume[0].id
+      directoryPerms   = "755"
+      uid              = var.prometheus.security_context.run_as_user # optional
+      gid              = var.prometheus.security_context.fs_group    # optional
+      basePath         = "/prometheus"                               # optional
+    } : {})
+  } : null
+
+  security_context = var.prometheus.security_context
+}
+
+
+module "prometheus_efs_persistent_volume" {
+  count                           = (try(var.prometheus.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
+  source                          = "./generated/infra-modules/storage/aws/efs"
+  name                            = "${local.prefix}-prometheus"
+  kms_key_id                      = try(coalesce(var.prometheus_efs.kms_key_id), local.kms_key)
+  performance_mode                = var.prometheus_efs.performance_mode
+  throughput_mode                 = var.prometheus_efs.throughput_mode
+  provisioned_throughput_in_mibps = var.prometheus_efs.provisioned_throughput_in_mibps
+  transition_to_ia                = var.prometheus_efs.transition_to_ia
+  access_point                    = var.prometheus_efs.access_point
+  vpc_id                          = local.vpc.id
+  vpc_cidr_blocks                 = local.vpc.cidr_blocks
+  vpc_cidr_block_private          = local.vpc.cidr_block_private
+  vpc_subnet_ids                  = local.vpc.subnet_ids
+  tags                            = local.tags
 }
 
 resource "kubernetes_secret" "prometheus" {
@@ -215,6 +249,40 @@ module "grafana" {
     image_pull_secrets = var.grafana.pull_secrets
   }
   authentication = var.grafana.authentication
+
+  persistent_volume = var.grafana.persistent_volume != null ? {
+    storage_provisioner = var.grafana.persistent_volume.storage_provisioner
+    volume_binding_mode = var.grafana.persistent_volume.volume_binding_mode
+    resources           = var.grafana.persistent_volume.resources
+    parameters = merge(var.grafana.persistent_volume.parameters, try(var.grafana.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
+      provisioningMode = "efs-ap"
+      fileSystemId     = module.grafana_efs_persistent_volume[0].id
+      directoryPerms   = "755"
+      uid              = var.grafana.security_context.run_as_user # optional
+      gid              = var.grafana.security_context.fs_group    # optional
+      basePath         = "/grafana"                               # optional
+    } : {})
+  } : null
+
+  security_context = var.grafana.security_context
+}
+
+
+module "grafana_efs_persistent_volume" {
+  count                           = (try(var.grafana.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
+  source                          = "./generated/infra-modules/storage/aws/efs"
+  name                            = "${local.prefix}-grafana"
+  kms_key_id                      = try(coalesce(var.grafana_efs.kms_key_id), local.kms_key)
+  performance_mode                = var.grafana_efs.performance_mode
+  throughput_mode                 = var.grafana_efs.throughput_mode
+  provisioned_throughput_in_mibps = var.grafana_efs.provisioned_throughput_in_mibps
+  transition_to_ia                = var.grafana_efs.transition_to_ia
+  access_point                    = var.grafana_efs.access_point
+  vpc_id                          = local.vpc.id
+  vpc_cidr_blocks                 = local.vpc.cidr_blocks
+  vpc_cidr_block_private          = local.vpc.cidr_block_private
+  vpc_subnet_ids                  = local.vpc.subnet_ids
+  tags                            = local.tags
 }
 
 resource "kubernetes_secret" "grafana" {
@@ -246,19 +314,19 @@ module "fluent_bit" {
   namespace     = local.namespace
   node_selector = var.fluent_bit.node_selector
   fluent_bit = {
-    container_name                  = "fluent-bit"
-    image                           = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].image
-    tag                             = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].tag
-    parser                          = var.fluent_bit.parser
-    image_pull_secrets              = var.fluent_bit.pull_secrets
-    is_daemonset                    = var.fluent_bit.is_daemonset
-    http_server                     = (var.fluent_bit.http_port == 0 ? "Off" : "On")
-    http_port                       = (var.fluent_bit.http_port == 0 ? "" : tostring(var.fluent_bit.http_port))
-    read_from_head                  = (var.fluent_bit.read_from_head ? "On" : "Off")
-    read_from_tail                  = (var.fluent_bit.read_from_head ? "Off" : "On")
-    fluentbitstate_hostpath         = var.fluent_bit.fluentbitstate_hostpath
-    varlibdockercontainers_hostpath = var.fluent_bit.varlibdockercontainers_hostpath
-    runlogjournal_hostpath          = var.fluent_bit.runlogjournal_hostpath
+    container_name                     = "fluent-bit"
+    image                              = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].image
+    tag                                = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].tag
+    parser                             = var.fluent_bit.parser
+    image_pull_secrets                 = var.fluent_bit.pull_secrets
+    is_daemonset                       = var.fluent_bit.is_daemonset
+    http_server                        = (var.fluent_bit.http_port == 0 ? "Off" : "On")
+    http_port                          = (var.fluent_bit.http_port == 0 ? "" : tostring(var.fluent_bit.http_port))
+    read_from_head                     = (var.fluent_bit.read_from_head ? "On" : "Off")
+    read_from_tail                     = (var.fluent_bit.read_from_head ? "Off" : "On")
+    fluent_bit_state_hostpath          = var.fluent_bit.fluent_bit_state_hostpath
+    var_lib_docker_containers_hostpath = var.fluent_bit.var_lib_docker_containers_hostpath
+    run_log_journal_hostpath           = var.fluent_bit.run_log_journal_hostpath
   }
   seq = length(module.seq) != 0 ? {
     host    = module.seq[0].host

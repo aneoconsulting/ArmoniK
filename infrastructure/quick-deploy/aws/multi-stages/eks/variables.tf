@@ -51,20 +51,34 @@ variable "kubeconfig_file" {
 variable "eks" {
   description = "Parameters of AWS EKS"
   type = object({
-    name                                  = string
-    cluster_version                       = string
-    cluster_endpoint_private_access       = bool # vpc.enable_private_subnet
-    cluster_endpoint_private_access_cidrs = list(string)
-    cluster_endpoint_private_access_sg    = list(string)
-    cluster_endpoint_public_access        = bool
-    cluster_endpoint_public_access_cidrs  = list(string)
-    cluster_log_retention_in_days         = number
+    name                                 = string
+    cluster_version                      = string
+    cluster_endpoint_private_access      = bool # vpc.enable_private_subnet
+    cluster_endpoint_public_access       = bool
+    cluster_endpoint_public_access_cidrs = list(string)
+    cluster_log_retention_in_days        = number
     docker_images = object({
       cluster_autoscaler = object({
         image = string
         tag   = string
       })
       instance_refresh = object({
+        image = string
+        tag   = string
+      })
+      efs_csi = object({
+        image = string
+        tag   = string
+      })
+      efs_csi_liveness_probe = object({
+        image = string
+        tag   = string
+      })
+      efs_csi_node_driver_registrar = object({
+        image = string
+        tag   = string
+      })
+      efs_csi_external_provisioner = object({
         image = string
         tag   = string
       })
@@ -85,6 +99,10 @@ variable "eks" {
       version                               = optional(string, "9.24.0")
       repository                            = optional(string, "https://kubernetes.github.io/autoscaler")
       namespace                             = optional(string, "kube-system")
+    })
+    efs_csi = object({
+      repository = string
+      version    = string
     })
     instance_refresh = object({
       namespace  = optional(string, "kube-system")

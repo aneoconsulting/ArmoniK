@@ -9,11 +9,11 @@ output "storage_endpoint_url" {
     deployed_table_storages  = local.deployed_table_storages
     deployed_queue_storages  = local.deployed_queue_storages
     activemq = {
-      url     = module.mq.activemq_endpoint_url.url
+      url     = module.mq.endpoint_url
       web_url = module.mq.web_url
     }
     redis = length(module.elasticache) > 0 ? {
-      url = module.elasticache[0].redis_endpoint_url.url
+      url = module.elasticache[0].endpoint_url
     } : null
     s3 = length(module.s3_os) > 0 ? {
       url                   = "https://s3.${var.region}.amazonaws.com"

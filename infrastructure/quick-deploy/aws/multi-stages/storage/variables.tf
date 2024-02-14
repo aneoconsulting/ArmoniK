@@ -166,50 +166,25 @@ variable "mongodb" {
         })
       })
     })
+    security_context = object({
+      run_as_user = number
+      fs_group    = number
+    })
   })
 }
 
 # AWS EFS as Persistent volume
-variable "pv_efs" {
+variable "mongodb_efs" {
   description = "AWS EFS as Persistent volume"
   type = object({
-    # AWS Elastic Filesystem Service
-    efs = object({
-      name                            = string
-      kms_key_id                      = string
-      performance_mode                = string # "generalPurpose" or "maxIO"
-      throughput_mode                 = string #  "bursting" or "provisioned"
-      provisioned_throughput_in_mibps = number
-      transition_to_ia                = string
-      # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
-      access_point = list(string)
-    })
-    # EFS Container Storage Interface (CSI) Driver
-    csi_driver = object({
-      namespace          = string
-      image_pull_secrets = string
-      node_selector      = any
-      repository         = optional(string, "https://kubernetes-sigs.github.io/aws-efs-csi-driver/")
-      version            = optional(string, "2.3.0")
-      docker_images = object({
-        efs_csi = object({
-          image = string
-          tag   = string
-        })
-        livenessprobe = object({
-          image = string
-          tag   = string
-        })
-        node_driver_registrar = object({
-          image = string
-          tag   = string
-        })
-        external_provisioner = object({
-          image = string
-          tag   = string
-        })
-      })
-    })
+    name                            = string
+    kms_key_id                      = string
+    performance_mode                = string # "generalPurpose" or "maxIO"
+    throughput_mode                 = string #  "bursting" or "provisioned"
+    provisioned_throughput_in_mibps = number
+    transition_to_ia                = string
+    # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+    access_point = list(string)
   })
 }
 

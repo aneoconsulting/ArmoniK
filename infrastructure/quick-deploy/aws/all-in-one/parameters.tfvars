@@ -282,18 +282,20 @@ mongodb = {
   #}
 }
 
-pv_efs = {
-  csi_driver = {
-    node_selector = { service = "state-database" }
-  }
-}
-
 seq = {
   node_selector = { service = "monitoring" }
 }
 
 grafana = {
   node_selector = { service = "monitoring" }
+  #persistent_volume = {
+  #  storage_provisioner = "efs.csi.aws.com"
+  #  resources = {
+  #    requests = {
+  #      storage = "5Gi"
+  #    }
+  #  }
+  #}
 }
 
 node_exporter = {
@@ -302,6 +304,14 @@ node_exporter = {
 
 prometheus = {
   node_selector = { service = "metrics" }
+  #persistent_volume = {
+  #  storage_provisioner = "efs.csi.aws.com"
+  #  resources = {
+  #    requests = {
+  #      storage = "5Gi"
+  #    }
+  #  }
+  #}
 }
 
 metrics_exporter = {
