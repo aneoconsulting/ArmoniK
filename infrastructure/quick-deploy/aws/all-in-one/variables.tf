@@ -351,7 +351,7 @@ variable "mongodb_efs" {
     # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
     access_point = optional(list(string), [])
   })
-  default = null
+  default = {}
 }
 
 variable "seq" {
@@ -415,7 +415,7 @@ variable "grafana_efs" {
     # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
     access_point = optional(list(string), [])
   })
-  default = null
+  default = {}
 }
 
 variable "node_exporter" {
@@ -470,7 +470,7 @@ variable "prometheus_efs" {
     # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
     access_point = optional(list(string), [])
   })
-  default = null
+  default = {}
 }
 
 variable "metrics_exporter" {
