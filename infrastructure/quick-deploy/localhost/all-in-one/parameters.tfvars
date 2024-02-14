@@ -11,7 +11,6 @@ redis = {}
 # nfs = {
 #   server     = "172.30.37.125"
 #   path       = "/srv/files"
-#   nfs_client = {}
 # }
 # Uncomment this to have minio S3 enabled instead of hostpath shared_storage
 #minio_s3_fs = {} # Shared storage
