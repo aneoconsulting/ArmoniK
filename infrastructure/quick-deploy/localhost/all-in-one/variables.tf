@@ -125,6 +125,18 @@ variable "redis" {
   default = null
 }
 
+#parameters for Nfs
+variable "nfs" {
+  type = object({
+    image    = optional(string, "k8s.gcr.io/sig-storage/nfs-subdir-external-provisioner")
+    tag      = optional(string)
+    server   = optional(string)
+    path     = optional(string)
+    pvc_name = optional(string, "nfsvolume")
+  })
+  default = null
+}
+
 # Parameters for Minio
 variable "minio" {
   description = "Parameters of Minio"

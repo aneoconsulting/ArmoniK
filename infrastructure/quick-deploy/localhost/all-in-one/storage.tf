@@ -69,6 +69,19 @@ module "minio_s3_fs" {
   }
 }
 
+#NFS
+module "nfs" {
+  count     = var.nfs != null ? 1 : 0
+  source    = "./generated/infra-modules/storage/onpremise/nfs"
+  image     = var.nfs.image
+  tag       = try(coalesce(var.nfs.tag), local.default_tags[var.nfs.image])
+  namespace = local.namespace
+  server    = var.nfs.server
+  path      = var.nfs.path
+  pvc_name  = var.nfs.pvc_name
+}
+
+
 # Shared storage
 resource "kubernetes_secret" "shared_storage" {
   metadata {
@@ -119,12 +132,14 @@ locals {
     object_storage_adapter = try(coalesce(
       length(module.redis) > 0 ? "Redis" : null,
       length(module.minio) > 0 ? "S3" : null,
+      length(module.nfs) > 0 ? "LocalStorage" : null,
     ), "")
     table_storage_adapter = "MongoDB"
     queue_storage_adapter = "Amqp"
     deployed_object_storages = concat(
       length(module.redis) > 0 ? ["Redis"] : [],
       length(module.minio) > 0 ? ["S3"] : [],
+      length(module.nfs) > 0 ? ["LocalStorage"] : [],
     )
     deployed_table_storages = ["MongoDB"]
     deployed_queue_storages = ["Amqp"]
