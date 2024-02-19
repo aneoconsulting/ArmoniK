@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/sh
 
 # This script is used to install jq.
 

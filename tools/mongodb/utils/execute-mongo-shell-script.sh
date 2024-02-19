@@ -15,14 +15,14 @@ fi
 echo "Executing script: $1"
 
 # Get MongoDB Password
-MPASS=$("$DIR/mongodb-password.sh")
+MPASS="$("$DIR/mongodb-password.sh")"
 # Get MongoDB Username
-MUSER=$("$DIR/mongodb-username.sh")
+MUSER="$("$DIR/mongodb-username.sh")"
 # Get MongoDB IPS
-MONGO_IPS=$("$DIR/mongodb-ip.sh")
+MONGO_IPS="$("$DIR/mongodb-ip.sh")"
 
 # Get MongoDB Hosts (IP:PORT)
-MONGO_HOSTS=$(echo $MONGO_IPS | sed 's/ /:27017 /g'):27017
+MONGO_HOSTS="$(echo $MONGO_IPS | sed 's/ /:27017 /g'):27017"
 
 # Generate SSL Certificate
 "$DIR/generate-certificate.sh"

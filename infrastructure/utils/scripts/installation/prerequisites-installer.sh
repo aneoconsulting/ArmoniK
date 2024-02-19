@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
 # Exit immediately if a command exits with a non-zero status.
 set -e
@@ -10,66 +10,66 @@ lsb_release -d -s
 DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
 # Get the pre-requisites directory
-DIR=$DIR/prerequisites
+DIR="$DIR/prerequisites"
 
 # Update packages
 echo "Updating packages"
-$DIR/update-packages.sh
+"$DIR/update-packages.sh"
 echo "Packages updated"
 
 # Install git
 echo "Installing git"
-$DIR/install-git.sh
+"$DIR/install-git.sh"
 echo "Git installed"
 
 # Install jq
 echo "Installing jq"
-$DIR/install-jq.sh
+"$DIR/install-jq.sh"
 echo "Jq installed"
 
 # Install make
 echo "Installing make"
-$DIR/install-make.sh
+"$DIR/install-make.sh"
 echo "Make installed"
 
 # Install python3
 echo "Installing python3"
-$DIR/install-python3.sh
+"$DIR/install-python3.sh"
 echo "Python3 installed"
 
 # Install pip3
 echo "Installing pip3"
-$DIR/install-pip3.sh
+"$DIR/install-pip3.sh"
 echo "Pip3 installed"
 
 # Install helm
 echo "Installing helm"
-$DIR/install-helm.sh
+"$DIR/install-helm.sh"
 echo "Helm installed"
 
 # Install docker
 echo "Installing docker"
-$DIR/install-docker.sh
+"$DIR/install-docker.sh"
 echo "Docker installed"
 
 # Install kubectl
 echo "Installing kubectl"
-$DIR/install-kubectl.sh
+"$DIR/install-kubectl.sh"
 echo "Kubectl installed"
 
 # Install terraform
 echo "Installing terraform"
-$DIR/install-terraform.sh
+"$DIR/install-terraform.sh"
 echo "Terraform installed"
 
 # Install k3s
 echo "Installing k3s"
-$DIR/install-k3s.sh
+"$DIR/install-k3s.sh"
 echo "K3s installed"
 
 # Install dotnet
 echo "Installing dotnet"
-$DIR/install-dotnet.sh
+"$DIR/install-dotnet.sh"
 echo "Dotnet installed"
 
 # Remove unused packages
