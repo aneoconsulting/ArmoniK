@@ -29,7 +29,7 @@ locals {
     resources           = var.mongodb.persistent_volume.resources
     parameters = merge(var.mongodb.persistent_volume.parameters, {
       provisioningMode = "efs-ap"
-      fileSystemId     = module.efs_persistent_volume.0.efs_id
+#      fileSystemId     = module.efs_persistent_volume.0.efs_id
       directoryPerms   = "755"
       gidRangeStart    = "999"      # optional
       gidRangeEnd      = "2000"     # optional
