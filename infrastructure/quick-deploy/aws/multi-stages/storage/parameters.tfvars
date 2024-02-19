@@ -102,8 +102,8 @@ s3_os = {
   versioning                            = "Disabled"
 }
 */
-
-# MQ parameters
+/*
+# MQ parameters: ActiveMQ
 mq = {
   name                    = "armonik-mq"
   engine_type             = "ActiveMQ"
@@ -114,7 +114,21 @@ mq = {
   storage_type            = "ebs"             # "ebs" | "efs"
   kms_key_id              = ""
   authentication_strategy = "simple" # "ldap"
-  publicly_accessible     = false
+  publicly_accessible     = true
+}
+*/
+# MQ parameters: RabbitMQ
+mq = {
+  name                    = "armonik-mq"
+  engine_type             = "RabbitMQ"
+  engine_version          = "3.11.20"
+  host_instance_type      = "mq.m5.xlarge"
+  apply_immediately       = true
+  deployment_mode         = "SINGLE_INSTANCE" # "SINGLE_INSTANCE" | "ACTIVE_STANDBY_MULTI_AZ"
+  storage_type            = "ebs"             # "ebs" | "efs"
+  kms_key_id              = ""
+  authentication_strategy = "simple" # "ldap"
+  publicly_accessible     = true
 }
 
 # MQ Credentials

@@ -62,19 +62,40 @@ init:
 		-backend-config 'region=$(REGION)' \
 		-backend-config 'key=$(STATE_FILE)' \
 		-backend-config 'profile=$(PROFILE)' \
-		-var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)	
+		-var-file=$(VERSIONS_FILE) \
+		-var-file=$(PARAMETERS_FILE) \
+		-var-file=$(EXTRA_PARAMETERS_FILE)
 
 plan:
-	terraform plan -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -out=/dev/null
+	terraform plan \
+	-var-file=$(VERSIONS_FILE) \
+	-var-file=$(PARAMETERS_FILE) \
+	-var-file=$(EXTRA_PARAMETERS_FILE) \
+	-var "profile=$(PROFILE)" \
+	-out=/dev/null
 
 apply:
-	terraform apply -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
+	terraform apply \
+	-var-file=$(VERSIONS_FILE) \
+	-var-file=$(PARAMETERS_FILE) \
+	-var-file=$(EXTRA_PARAMETERS_FILE) \
+	-var "profile=$(PROFILE)" \
+	-auto-approve
 
 refresh:
-	terraform refresh -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)
+	terraform refresh \
+	-var-file=$(VERSIONS_FILE) \
+	-var-file=$(PARAMETERS_FILE) \
+	-var-file=$(EXTRA_PARAMETERS_FILE) \
+	-var "profile=$(PROFILE)"
 
 delete:
-	terraform destroy -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
+	terraform destroy \
+	-var-file=$(VERSIONS_FILE) \
+	-var-file=$(PARAMETERS_FILE) \
+	-var-file=$(EXTRA_PARAMETERS_FILE) \
+	-var "profile=$(PROFILE)" \
+	-auto-approve
 
 state-pull:
 	terraform state pull

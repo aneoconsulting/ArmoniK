@@ -42,7 +42,7 @@ node_selector = { service = "monitoring" }
 # AWS EKS
 eks = {
   name                                  = "armonik-eks"
-  cluster_version                       = "1.25"
+  cluster_version                       = "1.29"
   cluster_endpoint_private_access       = false # vpc.enable_private_subnet
   cluster_endpoint_private_access_cidrs = []
   cluster_endpoint_private_access_sg    = []

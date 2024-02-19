@@ -6,6 +6,7 @@ locals {
     cidr_block_private = var.vpc.cidr_block_private
     cidr_blocks        = concat([module.vpc.cidr_block], module.vpc.pod_subnets_cidr_blocks)
     subnet_ids         = [for i in range(length(var.vpc.cidr_block_private)) : try(module.vpc.private_subnets[i], null)]
+    subnet_ids         = [for i in range(length(var.vpc.cidr_block_public)) : try(module.vpc.public_subnets[i], null)]
   }
 }
 

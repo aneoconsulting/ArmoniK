@@ -263,11 +263,20 @@ elasticache = {
 }
 
 #s3_os = {}
-
+/*
+# MQ parameters: ActiveMQ
 mq = {
   engine_type        = "ActiveMQ"
   engine_version     = "5.17.6"
   host_instance_type = "mq.m5.xlarge"
+}*/
+
+# MQ parameters: RabbitMQ
+mq = {
+  engine_type             = "RabbitMQ"
+  engine_version          = "3.11.20"
+  host_instance_type      = "mq.m5.xlarge"
+  publicly_accessible     = true
 }
 
 mongodb = {

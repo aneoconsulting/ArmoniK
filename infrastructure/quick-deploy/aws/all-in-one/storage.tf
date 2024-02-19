@@ -129,7 +129,6 @@ module "mq" {
   vpc_subnet_ids  = local.vpc.subnet_ids
   username        = var.mq_credentials.username
   password        = var.mq_credentials.password
-
   engine_type             = var.mq.engine_type
   engine_version          = var.mq.engine_version
   host_instance_type      = var.mq.host_instance_type
