@@ -1,18 +1,18 @@
-#! /bin/bash
+#! /usr/bin/env bash
 
-BASEDIR=$(dirname "$0")
+BASEDIR="$(dirname "$0")"
 pushd "${BASEDIR}"
-BASEDIR=$(pwd -P)
+BASEDIR="$(pwd -P)"
 popd
 
 MODE=""
 CLEAN=""
 NAMESPACE="armonik"
-HOST_PATH=$(realpath "${HOME}/data")
+HOST_PATH="$(realpath "${HOME}/data")"
 SERVER_NFS_IP=""
 SHARED_STORAGE_TYPE="HostPath"
-SOURCE_CODES_LOCALHOST_DIR=$(realpath "${BASEDIR}/../../quick-deploy/localhost")
-MODIFY_PARAMETERS_SCRIPT=$(realpath "${BASEDIR}/../../../tools/modify_parameters.py")
+SOURCE_CODES_LOCALHOST_DIR="$(realpath "${BASEDIR}/../../quick-deploy/localhost")"
+MODIFY_PARAMETERS_SCRIPT="$(realpath "${BASEDIR}/../../../tools/modify_parameters.py")"
 CONTROL_PLANE_IMAGE="dockerhubaneo/armonik_control"
 POLLING_AGENT_IMAGE="dockerhubaneo/armonik_pollingagent"
 WORKER_IMAGE="dockerhubaneo/armonik_worker_dll"
@@ -79,7 +79,7 @@ function execute() {
   echo -e "${GREEN}[EXEC] : $@${NC}"
   err=0
   if [[ $DRY_RUN == 0 ]]; then
-    $@
+    "$@"
     onexit
   fi
 }
@@ -198,7 +198,7 @@ set_envvars() {
 
 # Create shared storage
 create_host_path() {
-  STORAGE_TYPE=$(echo "${SHARED_STORAGE_TYPE}" | awk '{print tolower($0)}')
+  STORAGE_TYPE="$(echo "${SHARED_STORAGE_TYPE}" | awk '{print tolower($0)}')"
   if [ "${STORAGE_TYPE}" == "hostpath" ]; then
     mkdir -p "${HOST_PATH}"
   fi
@@ -212,7 +212,7 @@ create_kubernetes_namespace() {
 
 # Check if KEDA is deployed
 check_keda_instance() {
-  KEDA=$(kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)
+  KEDA="$(kubectl get deploy -A -l app=keda-operator --no-headers=true -o name)"
   if [ -z "${KEDA}" ]; then
     echo 0
   else
@@ -222,7 +222,7 @@ check_keda_instance() {
 
 # Check if Metrics server is deployed
 check_metrics_server_instance() {
-  METRICS_SERVER=$(kubectl get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
+  METRICS_SERVER="$(kubectl get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)"
   if [ -z "${METRICS_SERVER}" ]; then
     echo 0
   else
@@ -232,7 +232,7 @@ check_metrics_server_instance() {
 
 # Prepare storage parameters
 prepare_storage_parameters() {
-  STORAGE_TYPE=$(echo "${SHARED_STORAGE_TYPE}" | awk '{print tolower($0)}')
+  STORAGE_TYPE="$(echo "${SHARED_STORAGE_TYPE}" | awk '{print tolower($0)}')"
   python3 "${MODIFY_PARAMETERS_SCRIPT}" \
     -kv shared_storage.file_storage_type="${STORAGE_TYPE}" \
     -kv shared_storage.file_server_ip="${SERVER_NFS_IP}" \
@@ -321,7 +321,7 @@ deploy_armonik() {
 
 # Deploy KEDA
 deploy_keda() {
-  if [ $(check_keda_instance) -eq 0 ]; then
+  if [ "$(check_keda_instance)" -eq 0 ]; then
     prepare_keda_parameters
     cd "${SOURCE_CODES_LOCALHOST_DIR}"
     echo "Deploying KEDA..."
@@ -333,7 +333,7 @@ deploy_keda() {
 
 # Deploy Metrics server
 deploy_metrics_server() {
-  if [ $(check_metrics_server_instance) -eq 0 ]; then
+  if [ "$(check_metrics_server_instance)" -eq 0 ]; then
     prepare_metrics_server_parameters
     cd "${SOURCE_CODES_LOCALHOST_DIR}"
     echo "Deploying Metrics server..."
@@ -502,7 +502,7 @@ clean_all() {
 # Main
 function main() {
   for i in "$@"; do
-    case $i in
+    case "$i" in
     -h | --help)
       usage
       exit
@@ -740,4 +740,4 @@ function main() {
   fi
 }
 
-main $@
+main "$@"

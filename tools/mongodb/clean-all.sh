@@ -1,4 +1,5 @@
 #! /usr/bin/env bash
+
 DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
 #  Add a protection to avoid inadvertent execution of this script

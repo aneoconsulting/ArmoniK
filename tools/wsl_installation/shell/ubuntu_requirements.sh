@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#! /bin/sh
 # usage: $0 <username>
 
 if [ -z "$1" ]; then
@@ -24,9 +24,9 @@ apt -y install curl lsb-release software-properties-common apt-transport-https g
 apt -y install docker.io
 
 ## Create docker group and add user
-echo "Create docker group and add user " $1
+echo "Create docker group and add user " "$1"
 addgroup docker
-adduser $1 docker
+adduser "$1" docker
 
 # To be able to test armonik_core only install just
 snap install --edge --classic just

@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/sh
 # This script is used to install k3s.
 
 curl -sfL https://get.k3s.io |sh -s - --write-kubeconfig-mode 644 --docker --write-kubeconfig ~/.kube/config --kubelet-arg cgroup-driver=systemd
