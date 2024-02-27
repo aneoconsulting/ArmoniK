@@ -67,8 +67,8 @@ resource "kubernetes_secret" "deployed_queue_storage" {
   data = {
     list                  = join(",", local.storage_endpoint_url.deployed_queue_storages)
     adapter               = local.storage_endpoint_url.queue_storage_adapter
-    adapter_class_name    = "ArmoniK.Contrib.Plugin.PubSub.QueueBuilder"
-    adapter_absolute_path = "/adapters/queue/pubsub/ArmoniK.Contrib.Plugin.PubSub.dll"
+    adapter_class_name    = "ArmoniK.Core.Adapters.PubSub.QueueBuilder"
+    adapter_absolute_path = "/adapters/queue/pubsub/ArmoniK.Core.Adapters.PubSub.dll"
   }
 }
 
