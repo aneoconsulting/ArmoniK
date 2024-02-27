@@ -12,6 +12,7 @@ module "vpc" {
 }
 
 module "psa" {
+  count         = var.memorystore != null ? 1 : 0
   source        = "./generated/infra-modules/networking/gcp/psa"
   name          = "${local.prefix}-private-ip-alloc"
   network       = module.vpc.self_link

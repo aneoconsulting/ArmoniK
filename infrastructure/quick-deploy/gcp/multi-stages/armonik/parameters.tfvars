@@ -42,8 +42,6 @@ control_plane = {
   }
   default_partition = "default"
   node_selector     = { service = "control-plane" }
-  image             = "submitterpubsub"
-  tag               = "0.20.5-pubsub"
 }
 
 # Parameters of the compute plane
@@ -63,8 +61,6 @@ compute_plane = {
         cpu    = "500m"
         memory = "256Mi"
       }
-      image = "pollingagentpubsub"
-      tag   = "0.20.5-pubsub"
     }
     # ArmoniK workers
     worker = [
@@ -117,14 +113,12 @@ compute_plane = {
         cpu    = "500m"
         memory = "256Mi"
       }
-      image = "pollingagentpubsub"
-      tag   = "0.20.5-pubsub"
     }
     # ArmoniK workers
     worker = [
       {
         image = "dockerhubaneo/armonik_core_stream_test_worker"
-        tag   = "0.20.5"
+        tag   = "0.21.0"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -171,14 +165,12 @@ compute_plane = {
         cpu    = "500m"
         memory = "256Mi"
       }
-      image = "pollingagentpubsub"
-      tag   = "0.20.5-pubsub"
     }
     # ArmoniK workers
     worker = [
       {
         image = "dockerhubaneo/armonik_core_htcmock_test_worker"
-        tag   = "0.20.5"
+        tag   = "0.21.0"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -225,14 +217,12 @@ compute_plane = {
         cpu    = "500m"
         memory = "256Mi"
       }
-      image = "pollingagentpubsub"
-      tag   = "0.20.5-pubsub"
     }
     # ArmoniK workers
     worker = [
       {
         image = "dockerhubaneo/armonik_core_bench_test_worker"
-        tag   = "0.20.5"
+        tag   = "0.21.0"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
