@@ -98,10 +98,10 @@ admin_gui = {
 compute_plane = {
   default = {
     # number of replicas for each deployment of compute plane
-    replicas                         = 1
+    replicas                         = 0
     termination_grace_period_seconds = 30
     image_pull_secrets               = ""
-    node_selector                    = { service = "workers" }
+    node_selector                    = { service = "default" }
     annotations                      = {}
     service_account_name             = ""
     # ArmoniK polling agent
@@ -159,10 +159,10 @@ compute_plane = {
   },
   htcmock = {
     # number of replicas for each deployment of compute plane
-    replicas                         = 1
+    replicas                         = 0
     termination_grace_period_seconds = 30
     image_pull_secrets               = ""
-    node_selector                    = { service = "workers" }
+    node_selector                    = { service = "htcmock" }
     annotations                      = {}
     service_account_name             = ""
     # ArmoniK polling agent
@@ -220,10 +220,10 @@ compute_plane = {
   },
   bench = {
     # number of replicas for each deployment of compute plane
-    replicas                         = 1
+    replicas                         = 0
     termination_grace_period_seconds = 30
     image_pull_secrets               = ""
-    node_selector                    = { service = "workers" }
+    node_selector                    = { service = "bench" }
     annotations                      = {}
     service_account_name             = ""
     # ArmoniK polling agent
@@ -281,10 +281,10 @@ compute_plane = {
   },
   stream = {
     # number of replicas for each deployment of compute plane
-    replicas                         = 1
+    replicas                         = 0
     termination_grace_period_seconds = 30
     image_pull_secrets               = ""
-    node_selector                    = { service = "workers" }
+    node_selector                    = { service = "stream" }
     annotations                      = {}
     service_account_name             = ""
     # ArmoniK polling agent

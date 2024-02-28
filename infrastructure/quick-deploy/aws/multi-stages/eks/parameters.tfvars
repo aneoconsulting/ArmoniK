@@ -42,17 +42,17 @@ node_selector = { service = "monitoring" }
 # AWS EKS
 eks = {
   name                                  = "armonik-eks"
-  cluster_version                       = "1.25"
+  cluster_version                       = "1.29"
   cluster_endpoint_private_access       = false # vpc.enable_private_subnet
   cluster_endpoint_private_access_cidrs = []
   cluster_endpoint_private_access_sg    = []
   cluster_endpoint_public_access        = true
   cluster_endpoint_public_access_cidrs  = ["0.0.0.0/0"]
   cluster_log_retention_in_days         = 30
-  docker_images = {
+  docker_images                         = {
     cluster_autoscaler = {
       image = "cluster-autoscaler"
-      tag   = "v1.23.0"
+      tag   = "v1.29.0"
     }
     instance_refresh = {
       image = "aws-node-termination-handler"
@@ -88,7 +88,7 @@ eks = {
     scale_down_delay_after_failure        = "3m"
     scale_down_unneeded_time              = "2m"
     skip_nodes_with_system_pods           = true
-    version                               = "9.24.0"
+    version                               = "9.35.0"
     repository                            = "https://kubernetes.github.io/autoscaler"
     namespace                             = "kube-system"
   }
@@ -113,7 +113,7 @@ eks = {
 # List of EKS managed node groups
 eks_managed_node_groups = {
   # Default node group for workers of ArmoniK
-  workers = {
+  /*workers = {
     name                        = "workers"
     launch_template_description = "Node group for ArmoniK Compute-plane pods"
     ami_type                    = "AL2_x86_64"
@@ -137,7 +137,104 @@ eks_managed_node_groups = {
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
+  }*/
+  /*default = {
+    name                        = "default"
+    launch_template_description = "Node group for ArmoniK Compute-plane pods"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.large"]
+    capacity_type               = "SPOT"
+    min_size                    = 0
+    desired_size                = 0
+    max_size                    = 1000
+    labels                      = {
+      service                        = "default"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "default"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix     = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
   }
+  htcmock = {
+    name                        = "htcmock"
+    launch_template_description = "Node group for ArmoniK Compute-plane pods"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.large"]
+    capacity_type               = "SPOT"
+    min_size                    = 0
+    desired_size                = 0
+    max_size                    = 1000
+    labels                      = {
+      service                        = "htcmock"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "htcmock"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix     = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  bench = {
+    name                        = "bench"
+    launch_template_description = "Node group for ArmoniK Compute-plane pods"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.large"]
+    capacity_type               = "SPOT"
+    min_size                    = 0
+    desired_size                = 0
+    max_size                    = 1000
+    labels                      = {
+      service                        = "bench"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "bench"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix     = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  stream = {
+    name                        = "stream"
+    launch_template_description = "Node group for ArmoniK Compute-plane pods"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.large"]
+    capacity_type               = "SPOT"
+    min_size                    = 0
+    desired_size                = 0
+    max_size                    = 1000
+    labels                      = {
+      service                        = "stream"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "stream"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix     = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+*/
   # Node group for metrics: Metrics exporter and Prometheus
   metrics = {
     name                        = "metrics"
@@ -148,7 +245,7 @@ eks_managed_node_groups = {
     min_size                    = 1
     desired_size                = 1
     max_size                    = 5
-    labels = {
+    labels                      = {
       service                        = "metrics"
       "node.kubernetes.io/lifecycle" = "ondemand"
     }
@@ -159,7 +256,7 @@ eks_managed_node_groups = {
         effect = "NO_SCHEDULE"
       }
     }
-    iam_role_use_name_prefix = false
+    iam_role_use_name_prefix     = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
@@ -174,7 +271,7 @@ eks_managed_node_groups = {
     min_size                    = 1
     desired_size                = 1
     max_size                    = 10
-    labels = {
+    labels                      = {
       service                        = "control-plane"
       "node.kubernetes.io/lifecycle" = "ondemand"
     }
@@ -185,7 +282,7 @@ eks_managed_node_groups = {
         effect = "NO_SCHEDULE"
       }
     }
-    iam_role_use_name_prefix = false
+    iam_role_use_name_prefix     = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
@@ -200,7 +297,7 @@ eks_managed_node_groups = {
     min_size                    = 1
     desired_size                = 1
     max_size                    = 5
-    labels = {
+    labels                      = {
       service                        = "monitoring"
       "node.kubernetes.io/lifecycle" = "ondemand"
     }
@@ -211,7 +308,7 @@ eks_managed_node_groups = {
         effect = "NO_SCHEDULE"
       }
     }
-    iam_role_use_name_prefix = false
+    iam_role_use_name_prefix     = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
@@ -224,10 +321,10 @@ eks_managed_node_groups = {
     ami_type                    = "AL2_x86_64"
     instance_types              = ["c5.large"]
     use_custom_launch_template  = true
-    block_device_mappings = {
+    block_device_mappings       = {
       xvda = {
         device_name = "/dev/xvda"
-        ebs = {
+        ebs         = {
           volume_size           = 75
           volume_type           = "gp3"
           iops                  = 3000
@@ -242,7 +339,7 @@ eks_managed_node_groups = {
     min_size      = 1
     desired_size  = 1
     max_size      = 10
-    labels = {
+    labels        = {
       service                        = "state-database"
       "node.kubernetes.io/lifecycle" = "ondemand"
     }
@@ -253,7 +350,7 @@ eks_managed_node_groups = {
         effect = "NO_SCHEDULE"
       }
     }
-    iam_role_use_name_prefix = false
+    iam_role_use_name_prefix     = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
@@ -262,6 +359,194 @@ eks_managed_node_groups = {
 
 # List of self managed node groups
 self_managed_node_groups = {
+  default = {
+    name                         = "default"
+    launch_template_description  = "Node group for default"
+    force_delete                 = true
+    force_delete_warm_pool       = true
+    bootstrap_extra_args         = "--kubelet-extra-args '--node-labels=service=default --register-with-taints=service=default:NoSchedule'"
+    iam_role_use_name_prefix     = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+    min_size              = 0
+    desired_size          = 0
+    max_size              = 1000
+    instance_type         = null
+    instance_requirements = {
+      allowed_instance_types = ["t*", "m*", "c*"]
+      cpu_manufacturers      = ["intel"]
+      instance_generations   = ["current", "previous"]
+      vcpu_count             = {
+        min = 2
+      }
+      memory_mib = {
+        min = 1000
+      }
+    }
+    use_mixed_instances_policy = true
+    mixed_instances_policy     = {
+      instances_distribution = {
+        on_demand_base_capacity                  = 0
+        on_demand_percentage_above_base_capacity = 0
+        on_demand_allocation_strategy            = "lowest-price"
+        spot_allocation_strategy                 = "price-capacity-optimized"
+        spot_instance_pools                      = null
+        spot_max_price                           = null
+      }
+    }
+    labels = {
+      service                        = "default"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "default"
+        effect = "NO_SCHEDULE"
+      }
+    }
+  }
+  htcmock = {
+    name                         = "htcmock"
+    launch_template_description  = "Node group for htcmock"
+    force_delete                 = true
+    force_delete_warm_pool       = true
+    bootstrap_extra_args         = "--kubelet-extra-args '--node-labels=service=htcmock --register-with-taints=service=htcmock:NoSchedule'"
+    iam_role_use_name_prefix     = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+    min_size              = 0
+    desired_size          = 0
+    max_size              = 1000
+    instance_type         = null
+    instance_requirements = {
+      allowed_instance_types = ["t*", "m*", "c*"]
+      cpu_manufacturers      = ["intel"]
+      instance_generations   = ["current", "previous"]
+      vcpu_count             = {
+        min = 2
+      }
+      memory_mib = {
+        min = 1000
+      }
+    }
+    use_mixed_instances_policy = true
+    mixed_instances_policy     = {
+      instances_distribution = {
+        on_demand_base_capacity                  = 0
+        on_demand_percentage_above_base_capacity = 0
+        on_demand_allocation_strategy            = "lowest-price"
+        spot_allocation_strategy                 = "price-capacity-optimized"
+        spot_instance_pools                      = null
+        spot_max_price                           = null
+      }
+    }
+    labels = {
+      service                        = "htcmock"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "htcmock"
+        effect = "NO_SCHEDULE"
+      }
+    }
+  }
+  bench = {
+    name                         = "bench"
+    launch_template_description  = "Node group for bench"
+    force_delete                 = true
+    force_delete_warm_pool       = true
+    bootstrap_extra_args         = "--kubelet-extra-args '--node-labels=service=bench --register-with-taints=service=bench:NoSchedule'"
+    iam_role_use_name_prefix     = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+    min_size              = 0
+    desired_size          = 0
+    max_size              = 1000
+    instance_type         = null
+    instance_requirements = {
+      allowed_instance_types = ["t*", "m*", "c*"]
+      cpu_manufacturers      = ["intel"]
+      instance_generations   = ["current", "previous"]
+      vcpu_count             = {
+        min = 2
+      }
+      memory_mib = {
+        min = 1000
+      }
+    }
+    use_mixed_instances_policy = true
+    mixed_instances_policy     = {
+      instances_distribution = {
+        on_demand_base_capacity                  = 0
+        on_demand_percentage_above_base_capacity = 0
+        on_demand_allocation_strategy            = "lowest-price"
+        spot_allocation_strategy                 = "price-capacity-optimized"
+        spot_instance_pools                      = null
+        spot_max_price                           = null
+      }
+    }
+    labels = {
+      service                        = "bench"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "bench"
+        effect = "NO_SCHEDULE"
+      }
+    }
+  }
+  stream = {
+    name                         = "stream"
+    launch_template_description  = "Node group for stream"
+    force_delete                 = true
+    force_delete_warm_pool       = true
+    bootstrap_extra_args         = "--kubelet-extra-args '--node-labels=service=stream --register-with-taints=service=stream:NoSchedule'"
+    iam_role_use_name_prefix     = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+    min_size              = 0
+    desired_size          = 0
+    max_size              = 1000
+    instance_type         = null
+    instance_requirements = {
+      allowed_instance_types = ["t*", "m*", "c*"]
+      cpu_manufacturers      = ["intel"]
+      instance_generations   = ["current", "previous"]
+      vcpu_count             = {
+        min = 2
+      }
+      memory_mib = {
+        min = 1000
+      }
+    }
+    use_mixed_instances_policy = true
+    mixed_instances_policy     = {
+      instances_distribution = {
+        on_demand_base_capacity                  = 0
+        on_demand_percentage_above_base_capacity = 0
+        on_demand_allocation_strategy            = "lowest-price"
+        spot_allocation_strategy                 = "price-capacity-optimized"
+        spot_instance_pools                      = null
+        spot_max_price                           = null
+      }
+    }
+    labels = {
+      service                        = "stream"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "stream"
+        effect = "NO_SCHEDULE"
+      }
+    }
+  }
   others = {
     name                        = "others"
     launch_template_description = "Node group for others"
@@ -271,11 +556,11 @@ self_managed_node_groups = {
     max_size                    = 5
     force_delete                = true
     force_delete_warm_pool      = true
-    instance_market_options = {
+    instance_market_options     = {
       market_type = "spot"
     }
-    bootstrap_extra_args     = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
-    iam_role_use_name_prefix = false
+    bootstrap_extra_args         = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    iam_role_use_name_prefix     = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
@@ -287,7 +572,7 @@ self_managed_node_groups = {
     desired_size                = 0
     max_size                    = 5
     use_mixed_instances_policy  = true
-    mixed_instances_policy = {
+    mixed_instances_policy      = {
       on_demand_allocation_strategy            = "lowest-price"
       on_demand_base_capacity                  = 0
       on_demand_percentage_above_base_capacity = 20 # 20% On-Demand Instances, 80% Spot Instances
@@ -305,7 +590,7 @@ self_managed_node_groups = {
         weighted_capacity = "2"
       },
     ]
-    iam_role_use_name_prefix = false
+    iam_role_use_name_prefix     = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }

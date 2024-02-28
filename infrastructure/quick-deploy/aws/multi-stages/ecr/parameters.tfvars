@@ -102,7 +102,7 @@ ecr = {
     },
     "cluster-autoscaler" = {
       image = "registry.k8s.io/autoscaling/cluster-autoscaler"
-      tag   = "v1.23.0"
+      tag   = "v1.29.0"
     },
     "aws-node-termination-handler" = {
       image = "public.ecr.aws/aws-ec2/aws-node-termination-handler"

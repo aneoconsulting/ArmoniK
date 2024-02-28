@@ -17,3 +17,4 @@ output "kubeconfig" {
   description = "Use multiple Kubernetes cluster with KUBECONFIG environment variable"
   value       = "export KUBECONFIG=${module.eks.kubeconfig_file}"
 }
+
