@@ -10,13 +10,3 @@ output "armonik" {
     admin_0_8_url     = module.armonik.endpoint_urls.admin_0_8_url
   }
 }
-
-output "rabbitmq" {
-  description = "RabbitMQ endpoint URL"
-  value = {
-    epmd  = "http://${data.external.get_rabbitmq_ip.result.ip}:${data.external.get_rabbitmq_epmd_port.result.port}"
-    amqp  = "http://${data.external.get_rabbitmq_ip.result.ip}:${data.external.get_rabbitmq_amqp_port.result.port}"
-    dist  = "http://${data.external.get_rabbitmq_ip.result.ip}:${data.external.get_rabbitmq_dist_port.result.port}"
-    stats = "http://${data.external.get_rabbitmq_ip.result.ip}:${data.external.get_rabbitmq_stats_port.result.port}"
-  }
-}

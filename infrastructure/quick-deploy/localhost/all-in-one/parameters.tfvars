@@ -5,7 +5,7 @@ logging_level = "Information"
 #metrics_server = {}
 
 # Object storage
-# Uncomment either the `redis` or the `minio` parameter
+# Uncomment either the `redis`, the `minio`or the `nfs` parameter
 redis = {}
 #minio = {}
 # nfs = {
@@ -14,6 +14,11 @@ redis = {}
 # }
 # Uncomment this to have minio S3 enabled instead of hostpath shared_storage
 #minio_s3_fs = {} # Shared storage
+
+# Queue
+# Uncomment either the `activemq` or the `rabbitmq` parameter
+activemq = {}
+#rabbitmq = {}
 
 metrics_exporter = {
   extra_conf = {

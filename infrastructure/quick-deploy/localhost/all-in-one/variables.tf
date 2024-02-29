@@ -95,7 +95,7 @@ variable "activemq" {
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
   })
-  default = {}
+  default = null
 }
 
 # Parameters for RabbitMQ
@@ -103,16 +103,13 @@ variable "rabbitmq" {
   description = "Parameters of RabbitMQ"
   type = object({
     enable                = optional(bool, true)
-    namespace             = optional(string, "rabbitmq")
-    rabbitmq_image_name   = optional(string, "rabbitmq")
-    rabbitmq_image_tag    = optional(string)
-    node_selector         = optional(any, {})
-    image_pull_secrets    = optional(string, "")
+    image                 = optional(string, "bitnami/rabbitmq")
+    tag                   = optional(string)
     helm_chart_repository = optional(string)
     helm_chart_version    = optional(string)
-    service_type          = optional(string, "ClusterIP") # seems can be ClusterIP or NodePort only
+    service_type          = optional(string, "ClusterIP")
   })
-  default = {}
+  default = null
 }
 
 # Parameters for MongoDB
