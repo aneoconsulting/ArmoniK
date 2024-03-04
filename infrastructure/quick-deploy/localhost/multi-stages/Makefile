@@ -13,16 +13,19 @@ MODULES_DIR=$(GENERATED_DIR)/infra-modules
 TERRAFORM_PLUGINS?=$(GENERATED_DIR)/terraform-plugins
 VERSIONS_FILE?=$(shell realpath ../../../../versions.tfvars.json)
 
+deprecated:
+	@echo "Multi-stage deployment is deprecated. Please use the all-in-one deployment."
+
 ####################################
 #       Kubernetes namespace       #
 ####################################
 
-create-namespace:
+create-namespace: deprecated
 	@kubectl get namespace $(ARMONIK_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(ARMONIK_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(ARMONIK_KUBERNETES_NAMESPACE)
 	@kubectl get namespace $(KEDA_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(KEDA_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(KEDA_KUBERNETES_NAMESPACE)
 	@kubectl get namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 &&  echo "namespace : '$(METRICS_SERVER_KUBERNETES_NAMESPACE)' is already created." || kubectl create namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)
 
-delete-namespace:
+delete-namespace: deprecated
 	kubectl delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
 	kubectl delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
 	kubectl delete namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE) || true
@@ -31,7 +34,7 @@ delete-namespace:
 #              KEDA                #
 ####################################
 
-deploy-keda:
+deploy-keda: deprecated
 	@if [ "${KEDA}" = "" ]; then\
         $(MAKE) -C $(CURRENT_DIR)/keda deploy \
         NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE) \
@@ -40,21 +43,21 @@ deploy-keda:
         VERSIONS_FILE=$(VERSIONS_FILE);\
     fi
 
-destroy-keda:
+destroy-keda: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/keda destroy \
 	NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE) \
 	MODULES_DIR=$(MODULES_DIR) \
 	TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 	VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-keda:
+clean-keda: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/keda clean
 
 ####################################
 #         Metrics server           #
 ####################################
 
-deploy-metrics-server:
+deploy-metrics-server: deprecated
 	@if [ "${METRICS_SERVER}" = "" ]; then\
 		$(MAKE) -C $(CURRENT_DIR)/metrics-server deploy \
 		NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE) \
@@ -63,21 +66,21 @@ deploy-metrics-server:
 		VERSIONS_FILE=$(VERSIONS_FILE);\
 	fi
 
-destroy-metrics-server:
+destroy-metrics-server: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/metrics-server destroy \
 	NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE) \
 	MODULES_DIR=$(MODULES_DIR) \
 	TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 	VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-metrics-server:
+clean-metrics-server: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/metrics-server clean
 
 ####################################
 #            Storage               #
 ####################################
 
-deploy-storage:
+deploy-storage: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/storage deploy \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
 		SHARED_HOST_PATH=$(ARMONIK_SHARED_HOST_PATH) \
@@ -87,7 +90,7 @@ deploy-storage:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-storage:
+destroy-storage: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/storage destroy \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
 		SHARED_HOST_PATH=$(ARMONIK_SHARED_HOST_PATH) \
@@ -97,56 +100,56 @@ destroy-storage:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-storage:
+clean-storage: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/storage clean
 
 ####################################
 #           Monitoring             #
 ####################################
 
-deploy-monitoring:
+deploy-monitoring: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/monitoring deploy \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
 		MODULES_DIR=$(MODULES_DIR) \
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-monitoring:
+destroy-monitoring: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/monitoring destroy \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
 		MODULES_DIR=$(MODULES_DIR) \
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-monitoring:
+clean-monitoring: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/monitoring clean
 
 ####################################
 #             ArmoniK              #
 ####################################
 
-deploy-armonik:
+deploy-armonik: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/armonik deploy \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
 		MODULES_DIR=$(MODULES_DIR) \
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-armonik:
+destroy-armonik: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/armonik destroy \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
 		MODULES_DIR=$(MODULES_DIR) \
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-armonik:
+clean-armonik: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/armonik clean
 
 ####################################
 #             Modules              #
 ####################################
 
-clean-modules:
+clean-modules: deprecated
 	@rm -rf $(GENERATED_DIR)
 
 ####################################
