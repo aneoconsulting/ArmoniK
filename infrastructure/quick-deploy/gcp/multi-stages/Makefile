@@ -20,10 +20,13 @@ TERRAFORM_PLUGINS?=$(GENERATED_DIR)/terraform-plugins
 VERSIONS_FILE?=$(shell realpath ../../../../versions.tfvars.json)
 SHELL := /bin/bash
 
+deprecated:
+	@echo "Multi-stage deployment is deprecated. Please use the all-in-one deployment."
+
 ####################################
 #             TFSTATE Bucket       #
 ####################################
-deploy-gcs-of-backend:
+deploy-gcs-of-backend: deprecated
 	@if [[ $${TFSTATE_BUCKET_NAME} =~ ^[a-z0-9]([-a-z0-9_]*[a-z0-9])?$$ && $${#TFSTATE_BUCKET_NAME} -ge 3 && $${#TFSTATE_BUCKET_NAME} -le 63 && ! $${TFSTATE_BUCKET_NAME} =~ -- && ! $${TFSTATE_BUCKET_NAME} =~ ^- && ! $${TFSTATE_BUCKET_NAME} =~ -$$ ]]; then \
 		echo "TFSTATE bucket Name : ${TFSTATE_BUCKET_NAME} is valid"; \
 	else \
@@ -43,7 +46,7 @@ deploy-gcs-of-backend:
 		fi; \
 	fi
 
-destroy-gcs-of-backend:
+destroy-gcs-of-backend: deprecated
 	@if gsutil ls -b gs://${TFSTATE_BUCKET_NAME} > /dev/null 2>&1; then \
 		if gsutil rm -r gs://${TFSTATE_BUCKET_NAME}; then \
 		echo "The bucket : ${TFSTATE_BUCKET_NAME} has been deleted."; \
@@ -60,7 +63,7 @@ destroy-gcs-of-backend:
 #             GCP VPC              #
 ####################################
 
-deploy-vpc:
+deploy-vpc: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/vpc deploy \
 		GCP_PROJECT_ID=$(ARMONIK_GCP_PROJECT_ID) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
@@ -70,7 +73,7 @@ deploy-vpc:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-vpc:
+destroy-vpc: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/vpc destroy \
 		GCP_PROJECT_ID=$(ARMONIK_GCP_PROJECT_ID) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
@@ -80,14 +83,14 @@ destroy-vpc:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-vpc:
+clean-vpc: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/vpc clean
 
 ####################################
 #            GCP GAR               #
 ####################################
 
-deploy-gar:
+deploy-gar: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/gar deploy \
 		GCP_PROJECT_ID=$(ARMONIK_GCP_PROJECT_ID) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
@@ -97,7 +100,7 @@ deploy-gar:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-gar:
+destroy-gar: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/gar destroy \
 		GCP_PROJECT_ID=$(ARMONIK_GCP_PROJECT_ID) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
@@ -107,14 +110,14 @@ destroy-gar:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-gar:
+clean-gar: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/gar clean
 
 ####################################
 #             GCP GKE              #
 ####################################
 
-deploy-gke:
+deploy-gke: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/gke deploy \
 		GCP_PROJECT_ID=$(ARMONIK_GCP_PROJECT_ID) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
@@ -127,7 +130,7 @@ deploy-gke:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-gke:
+destroy-gke: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/gke destroy \
 		GCP_PROJECT_ID=$(ARMONIK_GCP_PROJECT_ID) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
@@ -140,20 +143,20 @@ destroy-gke:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-gke:
+clean-gke: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/gke clean
 
 ####################################
 #       Kubernetes namespace       #
 ####################################
 
-create-namespace:
+create-namespace: deprecated
 	@KEDA=$(shell kubectl --kubeconfig $(KUBECONFIG) get deploy -A -l app=keda-operator --no-headers=true -o name)
 	@METRICS_SERVER=$(shell kubectl --kubeconfig $(KUBECONFIG) get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
 	@kubectl --kubeconfig $(KUBECONFIG) get namespace $(ARMONIK_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(ARMONIK_KUBERNETES_NAMESPACE)' is already created." || kubectl --kubeconfig $(KUBECONFIG) create namespace $(ARMONIK_KUBERNETES_NAMESPACE)
 	@kubectl --kubeconfig $(KUBECONFIG) get namespace $(KEDA_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(KEDA_KUBERNETES_NAMESPACE)' is already created." || kubectl --kubeconfig $(KUBECONFIG) create namespace $(KEDA_KUBERNETES_NAMESPACE)
 
-delete-namespace:
+delete-namespace: deprecated
 	kubectl --kubeconfig $(KUBECONFIG) delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
 	kubectl --kubeconfig $(KUBECONFIG) delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
 
@@ -161,7 +164,7 @@ delete-namespace:
 #              KEDA                #
 ####################################
 
-deploy-keda:
+deploy-keda: deprecated
 	@if [ "${KEDA}" = "" ]; then\
         $(MAKE) -C $(CURRENT_DIR)/keda deploy \
         	GKE_PARAMETERS_FILE=$(GKE_PARAMETERS_FILE) \
@@ -174,7 +177,7 @@ deploy-keda:
         	VERSIONS_FILE=$(VERSIONS_FILE);\
     fi
 
-destroy-keda:
+destroy-keda: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/keda destroy \
 		GKE_PARAMETERS_FILE=$(GKE_PARAMETERS_FILE) \
 		GAR_PARAMETERS_FILE=$(GAR_PARAMETERS_FILE) \
@@ -185,14 +188,14 @@ destroy-keda:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-keda:
+clean-keda: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/keda clean
 
 ####################################
 #           GCP Storage            #
 ####################################
 
-deploy-storage:
+deploy-storage: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/storage deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		GCP_PROJECT_ID=$(ARMONIK_GCP_PROJECT_ID) \
@@ -206,7 +209,7 @@ deploy-storage:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-storage:
+destroy-storage: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/storage destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		GCP_PROJECT_ID=$(ARMONIK_GCP_PROJECT_ID) \
@@ -220,14 +223,14 @@ destroy-storage:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-storage:
+clean-storage: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/storage clean
 
 ####################################
 #           Monitoring             #
 ####################################
 
-deploy-monitoring:
+deploy-monitoring: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/monitoring deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
@@ -239,7 +242,7 @@ deploy-monitoring:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-monitoring:
+destroy-monitoring: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/monitoring destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		NAMESPACE=$(ARMONIK_KUBERNETES_NAMESPACE) \
@@ -251,14 +254,14 @@ destroy-monitoring:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-monitoring:
+clean-monitoring: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/monitoring clean
 
 ####################################
 #             ArmoniK              #
 ####################################
 
-deploy-armonik:
+deploy-armonik: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/armonik deploy \
 		GCP_PROJECT_ID=$(ARMONIK_GCP_PROJECT_ID) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
@@ -272,7 +275,7 @@ deploy-armonik:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-armonik:
+destroy-armonik: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/armonik destroy \
 		GCP_PROJECT_ID=$(ARMONIK_GCP_PROJECT_ID) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
@@ -286,14 +289,14 @@ destroy-armonik:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-armonik:
+clean-armonik: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/armonik clean
 
 ####################################
 #          KUBECONFIG              #
 ####################################
 
-kubeconfig:
+kubeconfig: deprecated
 	@echo "Execute the following commands:"
 	@echo "------------------------------"
 	@echo "export KUBECONFIG=$(shell cat $(GKE_PARAMETERS_FILE) | jq -r '.gke.kubeconfig_path')"
@@ -302,7 +305,7 @@ kubeconfig:
 #             Modules              #
 ####################################
 
-clean-modules:
+clean-modules: deprecated
 	@rm -rf $(GENERATED_DIR)
 
 ####################################

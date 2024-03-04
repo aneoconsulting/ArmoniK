@@ -21,18 +21,21 @@ MODULES_DIR=$(GENERATED_DIR)/infra-modules
 TERRAFORM_PLUGINS?=$(GENERATED_DIR)/terraform-plugins
 VERSIONS_FILE?=$(shell realpath ../../../../versions.tfvars.json)
 
+deprecated:
+	@echo "Multi-stage deployment is deprecated. Please use the all-in-one deployment."
+
 ####################################
 # KSM and S3 buckets for TF states #
 ####################################
 
-deploy-s3-of-backend:
+deploy-s3-of-backend: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/backend deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
 		BUCKET_NAME=$(ARMONIK_BUCKET_NAME) \
 		PROFILE=$(ARMONIK_PROFILE)
 
-destroy-s3-of-backend:
+destroy-s3-of-backend: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/backend destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
@@ -43,7 +46,7 @@ destroy-s3-of-backend:
 #             AWS VPC              #
 ####################################
 
-deploy-vpc:
+deploy-vpc: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/vpc deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
@@ -54,7 +57,7 @@ deploy-vpc:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-vpc:
+destroy-vpc: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/vpc destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
@@ -65,14 +68,14 @@ destroy-vpc:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-vpc:
+clean-vpc: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/vpc clean
 
 ####################################
 #            AWS ECR               #
 ####################################
 
-deploy-ecr:
+deploy-ecr: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/ecr deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
@@ -82,7 +85,7 @@ deploy-ecr:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-ecr:
+destroy-ecr: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/ecr destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
@@ -92,14 +95,14 @@ destroy-ecr:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-ecr:
+clean-ecr: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/ecr clean
 
 ####################################
 #             AWS EKS              #
 ####################################
 
-deploy-eks:
+deploy-eks: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/eks deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
@@ -112,7 +115,7 @@ deploy-eks:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-eks:
+destroy-eks: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/eks destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		REGION=$(ARMONIK_REGION) \
@@ -125,21 +128,21 @@ destroy-eks:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-eks:
+clean-eks: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/eks clean
 
 ####################################
 #       Kubernetes namespace       #
 ####################################
 
-create-namespace:
+create-namespace: deprecated
 	@KEDA=$(shell kubectl --kubeconfig $(KUBECONFIG) get deploy -A -l app=keda-operator --no-headers=true -o name)
 	@METRICS_SERVER=$(shell kubectl --kubeconfig $(KUBECONFIG) get deploy -A -l k8s-app=metrics-server --no-headers=true -o name)
 	@kubectl --kubeconfig $(KUBECONFIG) get namespace $(ARMONIK_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(ARMONIK_KUBERNETES_NAMESPACE)' is already created." || kubectl --kubeconfig $(KUBECONFIG) create namespace $(ARMONIK_KUBERNETES_NAMESPACE)
 	@kubectl --kubeconfig $(KUBECONFIG) get namespace $(KEDA_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 && echo "namespace : '$(KEDA_KUBERNETES_NAMESPACE)' is already created." || kubectl --kubeconfig $(KUBECONFIG) create namespace $(KEDA_KUBERNETES_NAMESPACE)
 	@kubectl --kubeconfig $(KUBECONFIG) get namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)  > /dev/null 2>&1 &&  echo "namespace : '$(METRICS_SERVER_KUBERNETES_NAMESPACE)' is already created." || kubectl --kubeconfig $(KUBECONFIG) create namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE)
 
-delete-namespace:
+delete-namespace: deprecated
 	kubectl --kubeconfig $(KUBECONFIG) delete namespace $(ARMONIK_KUBERNETES_NAMESPACE) || true
 	kubectl --kubeconfig $(KUBECONFIG) delete namespace $(KEDA_KUBERNETES_NAMESPACE) || true
 	kubectl --kubeconfig $(KUBECONFIG) delete namespace $(METRICS_SERVER_KUBERNETES_NAMESPACE) || true
@@ -148,7 +151,7 @@ delete-namespace:
 #              KEDA                #
 ####################################
 
-deploy-keda:
+deploy-keda: deprecated
 	@if [ "${KEDA}" = "" ]; then\
         $(MAKE) -C $(CURRENT_DIR)/keda deploy \
         	NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE) \
@@ -163,7 +166,7 @@ deploy-keda:
         	VERSIONS_FILE=$(VERSIONS_FILE);\
     fi
 
-destroy-keda:
+destroy-keda: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/keda destroy \
 		NAMESPACE=$(KEDA_KUBERNETES_NAMESPACE) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
@@ -176,14 +179,14 @@ destroy-keda:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-keda:
+clean-keda: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/keda clean
 
 ####################################
 #         Metrics server           #
 ####################################
 
-deploy-metrics-server:
+deploy-metrics-server: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/metrics-server deploy \
 		NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
@@ -196,7 +199,7 @@ deploy-metrics-server:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-metrics-server:
+destroy-metrics-server: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/metrics-server destroy \
 		NAMESPACE=$(METRICS_SERVER_KUBERNETES_NAMESPACE) \
 		SUFFIX=$(ARMONIK_SUFFIX) \
@@ -209,14 +212,14 @@ destroy-metrics-server:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-metrics-server:
+clean-metrics-server: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/metrics-server clean
 
 ####################################
 #           AWS Storage            #
 ####################################
 
-deploy-storage:
+deploy-storage: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/storage deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		AWS_ACCOUNT_ID=$(ARMONIK_AWS_ACCOUNT_ID) \
@@ -231,7 +234,7 @@ deploy-storage:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-storage:
+destroy-storage: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/storage destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		AWS_ACCOUNT_ID=$(ARMONIK_AWS_ACCOUNT_ID) \
@@ -246,14 +249,14 @@ destroy-storage:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-storage:
+clean-storage: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/storage clean
 
 ####################################
 #           Monitoring             #
 ####################################
 
-deploy-monitoring:
+deploy-monitoring: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/monitoring deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		AWS_ACCOUNT_ID=$(ARMONIK_AWS_ACCOUNT_ID) \
@@ -268,7 +271,7 @@ deploy-monitoring:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-monitoring:
+destroy-monitoring: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/monitoring destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		AWS_ACCOUNT_ID=$(ARMONIK_AWS_ACCOUNT_ID) \
@@ -283,14 +286,14 @@ destroy-monitoring:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-monitoring:
+clean-monitoring: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/monitoring clean
 
 ####################################
 #             ArmoniK              #
 ####################################
 
-deploy-armonik:
+deploy-armonik: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/armonik deploy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		AWS_ACCOUNT_ID=$(ARMONIK_AWS_ACCOUNT_ID) \
@@ -305,7 +308,7 @@ deploy-armonik:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-destroy-armonik:
+destroy-armonik: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/armonik destroy \
 		SUFFIX=$(ARMONIK_SUFFIX) \
 		AWS_ACCOUNT_ID=$(ARMONIK_AWS_ACCOUNT_ID) \
@@ -320,14 +323,14 @@ destroy-armonik:
 		TERRAFORM_PLUGINS=$(TERRAFORM_PLUGINS) \
 		VERSIONS_FILE=$(VERSIONS_FILE)
 
-clean-armonik:
+clean-armonik: deprecated
 	$(MAKE) -C $(CURRENT_DIR)/armonik clean
 
 ####################################
 #          KUBECONFIG              #
 ####################################
 
-kubeconfig:
+kubeconfig: deprecated
 	@echo "Execute the following commands:"
 	@echo "------------------------------"
 	@echo "export KUBECONFIG=$(shell cat $(EKS_PARAMETERS_FILE) | jq -r '.eks.kubeconfig_file')"
@@ -336,7 +339,7 @@ kubeconfig:
 #             Modules              #
 ####################################
 
-clean-modules:
+clean-modules: deprecated
 	@rm -rf $(GENERATED_DIR)
 
 ####################################

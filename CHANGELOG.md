@@ -4,8 +4,25 @@
 
 Changed
 -
+
 * Upgrade version of ArmoniK Core from `0.21.0` to `0.23.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.Core/releases).
 * Upgrade version of ArmoniK Infra from `0.2.2` to `0.3.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.infra/releases).
+* Deprecate multi-stage deployment
+
+Added
+-
+
+* Adding support for nfs as object storage in localhost deployment
+* Adding support for rabbitmq as queue storage in localhost deployment
+* Option to purge data from session in bench and htcmock
+
+Fixed
+-
+
+* missing version change for the GUI image in GCP multistage deployment
+* Script modes
+* database health check
+
 
 
 ## [v2.18.2](https://github.com/aneoconsulting/armonik/tree/v2.18.2) (2024-02-09)
