@@ -1,5 +1,6 @@
 # ActiveMQ
 module "activemq" {
+  count     = var.activemq != null ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/activemq"
   namespace = local.namespace
   activemq = {
@@ -8,6 +9,16 @@ module "activemq" {
     node_selector      = var.activemq.node_selector
     image_pull_secrets = var.activemq.image_pull_secrets
   }
+}
+
+module "rabbitmq" {
+  count                 = var.rabbitmq != null ? 1 : 0
+  source                = "./generated/infra-modules/storage/onpremise/rabbitmq"
+  namespace             = local.namespace
+  image                 = var.rabbitmq.image
+  tag                   = try(coalesce(var.rabbitmq.tag), local.default_tags[var.rabbitmq.image])
+  helm_chart_repository = try(coalesce(var.rabbitmq.helm_chart_repository), var.helm_charts.rabbitmq.repository)
+  helm_chart_version    = try(coalesce(var.rabbitmq.helm_chart_verison), var.helm_charts.rabbitmq.version)
 }
 
 # MongoDB
@@ -81,7 +92,6 @@ module "nfs" {
   pvc_name  = var.nfs.pvc_name
 }
 
-
 # Shared storage
 resource "kubernetes_secret" "shared_storage" {
   metadata {
@@ -121,8 +131,8 @@ resource "kubernetes_secret" "deployed_queue_storage" {
   data = {
     list                  = join(",", local.storage_endpoint_url.deployed_queue_storages)
     adapter               = local.storage_endpoint_url.queue_storage_adapter
-    adapter_class_name    = module.activemq.adapter_class_name
-    adapter_absolute_path = module.activemq.adapter_absolute_path
+    adapter_class_name    = local.queue_module.adapter_class_name
+    adapter_absolute_path = local.queue_module.adapter_absolute_path
   }
 }
 
@@ -144,16 +154,16 @@ locals {
     deployed_table_storages = ["MongoDB"]
     deployed_queue_storages = ["Amqp"]
     activemq = {
-      url                   = module.activemq.url
-      host                  = module.activemq.host
-      port                  = module.activemq.port
-      web_url               = module.activemq.web_url
-      credentials           = module.activemq.user_credentials
-      certificates          = module.activemq.user_certificate
-      endpoints             = module.activemq.endpoints
-      adapter_class_name    = module.activemq.adapter_class_name
-      adapter_absolute_path = module.activemq.adapter_absolute_path
-      engine_type           = module.activemq.engine_type
+      url                   = local.queue_module.url
+      host                  = local.queue_module.host
+      port                  = local.queue_module.port
+      web_url               = local.queue_module.web_url
+      credentials           = local.queue_module.user_credentials
+      certificates          = local.queue_module.user_certificate
+      endpoints             = local.queue_module.endpoints
+      adapter_class_name    = local.queue_module.adapter_class_name
+      adapter_absolute_path = local.queue_module.adapter_absolute_path
+      engine_type           = local.queue_module.engine_type
       allow_host_mismatch   = true
     }
     redis = length(module.redis) > 0 ? {
@@ -186,4 +196,5 @@ locals {
       bucket_name = try(module.minio[0].bucket_name, "")
     } : null
   }
+  queue_module = coalesce(one(module.activemq), one(module.rabbitmq))
 }
