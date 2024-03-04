@@ -99,7 +99,7 @@ eks = {
   instance_refresh = {
     namespace  = "kube-system"
     repository = "https://aws.github.io/eks-charts"
-    version    = "0.21.0"
+    version    = "0.23.0"
   }
   encryption_keys = {
     cluster_log_kms_key_id    = ""

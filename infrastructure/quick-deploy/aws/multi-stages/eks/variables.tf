@@ -107,7 +107,7 @@ variable "eks" {
     instance_refresh = object({
       namespace  = optional(string, "kube-system")
       repository = optional(string, "https://aws.github.io/eks-charts")
-      version    = optional(string, "0.21.0")
+      version    = optional(string, "0.23.0")
     })
     encryption_keys = object({
       cluster_log_kms_key_id    = string
