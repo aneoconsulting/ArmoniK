@@ -102,7 +102,6 @@ variable "activemq" {
 variable "rabbitmq" {
   description = "Parameters of RabbitMQ"
   type = object({
-    enable                = optional(bool, true)
     image                 = optional(string, "bitnami/rabbitmq")
     tag                   = optional(string)
     helm_chart_repository = optional(string)
