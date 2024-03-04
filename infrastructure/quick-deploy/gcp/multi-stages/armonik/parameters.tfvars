@@ -118,7 +118,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_core_stream_test_worker"
-        tag   = "0.21.0"
+        tag   = "0.23.0"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -170,7 +170,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_core_htcmock_test_worker"
-        tag   = "0.21.0"
+        tag   = "0.23.0"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -222,7 +222,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_core_bench_test_worker"
-        tag   = "0.21.0"
+        tag   = "0.23.0"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"

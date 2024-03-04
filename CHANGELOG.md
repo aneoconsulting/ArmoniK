@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.19.0](https://github.com/aneoconsulting/armonik/tree/v2.19.0) (2024-03-04)
+
+Changed
+-
+* Upgrade version of ArmoniK Core from `0.21.0` to `0.23.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.Core/releases).
+* Upgrade version of ArmoniK Infra from `0.2.2` to `0.3.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.infra/releases).
+
+
 ## [v2.18.2](https://github.com/aneoconsulting/armonik/tree/v2.18.2) (2024-02-09)
 
 Changed
@@ -31,7 +39,7 @@ Changed
 
 Changed
 -
-* Upgrade version of ArmoniK Infra from `0.2.0` to `0.2.2`.
+* Upgrade version of ArmoniK Infra from `0.2.0` to `0.2.3`.
 * Upgrade version of ArmoniK Core from `0.17.0` to `0.19.3`.
 * Upgrade version of ArmoniK API from `3.11.0` to `3.14.0`.
 * Upgrade version of ArmoniK Extensions.Csharp from `0.12.3` to `0.12.5`.
