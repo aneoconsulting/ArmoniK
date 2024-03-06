@@ -75,6 +75,26 @@ variable "keda" {
   default = {}
 }
 
+# Chaos Mesh
+variable "chaos_mesh" {
+  description = "Chaos Mesh configuration"
+  type = object({
+    namespace                 = optional(string, "chaos-mesh")
+    chaosmesh_image_name      = optional(string, "ghcr.io/chaos-mesh/chaos-mesh"),
+    chaosmesh_image_tag       = optional(string),
+    chaosdaemon_image_name    = optional(string, "ghcr.io/chaos-mesh/chaos-daemon"),
+    chaosdaemon_image_tag     = optional(string),
+    chaosdashboard_image_name = optional(string, "ghcr.io/chaos-mesh/chaos-dashboard"),
+    chaosdashboard_image_tag  = optional(string),
+    helm_chart_repository     = optional(string)
+    helm_chart_version        = optional(string)
+    service_type              = optional(string, "LoadBalancer")
+    node_selector             = optional(any, {})
+    endpoint_url              = optional(string)
+  })
+  default = null
+}
+
 # Shared storage
 variable "shared_storage" {
   description = "Shared storage infos"

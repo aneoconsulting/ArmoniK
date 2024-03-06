@@ -15,6 +15,9 @@ locals {
     var.seq != null ? [var.seq.image_name, var.seq.image_tag] : null,
     var.seq != null ? [var.seq.cli_image_name, var.seq.cli_image_tag] : null,
     var.grafana != null ? [var.grafana.image_name, var.grafana.image_tag] : null,
+    var.chaos_mesh != null ? [var.chaos_mesh.chaosmesh_image_name, var.chaos_mesh.chaosmesh_image_tag] : null,
+    var.chaos_mesh != null ? [var.chaos_mesh.chaosdaemon_image_name, var.chaos_mesh.chaosdaemon_image_tag] : null,
+    var.chaos_mesh != null ? [var.chaos_mesh.chaosdashboard_image_name, var.chaos_mesh.chaosdashboard_image_tag] : null,
     var.node_exporter != null ? [var.node_exporter.image_name, var.node_exporter.image_tag] : null,
     var.partition_metrics_exporter != null ? [
       var.partition_metrics_exporter.image_name, var.partition_metrics_exporter.image_tag

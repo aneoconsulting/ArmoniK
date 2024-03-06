@@ -8,5 +8,6 @@ output "armonik" {
     admin_api_url     = module.armonik.endpoint_urls.admin_api_url
     admin_0_9_url     = module.armonik.endpoint_urls.admin_0_9_url
     admin_0_8_url     = module.armonik.endpoint_urls.admin_0_8_url
+    chaos_mesh_url    = one(module.chaos_mesh[*].chaos_mesh_url)
   }
 }
