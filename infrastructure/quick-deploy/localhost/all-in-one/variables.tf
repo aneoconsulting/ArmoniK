@@ -92,7 +92,7 @@ variable "chaos_mesh" {
     node_selector             = optional(any, {})
     endpoint_url              = optional(string)
   })
-  default = {}
+  default = null
 }
 
 # Shared storage
