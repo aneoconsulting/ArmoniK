@@ -307,6 +307,7 @@ variable "extra_conf" {
     control = optional(map(string), {})
     core    = optional(map(string), {})
     log     = optional(map(string), {})
+    metrics = optional(map(string), {})
     polling = optional(map(string), {})
     worker  = optional(map(string), {})
   })
