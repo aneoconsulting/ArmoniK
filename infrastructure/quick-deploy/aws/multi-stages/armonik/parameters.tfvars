@@ -23,7 +23,7 @@ logging_level = "Information"
 job_partitions_in_database = {
   name               = "job-partitions-in-database"
   image              = "mongosh"
-  tag                = "1.10.1"
+  tag                = "2.1.5"
   image_pull_policy  = "IfNotPresent"
   image_pull_secrets = ""
   node_selector      = { service = "control-plane" }
@@ -367,7 +367,7 @@ ingress = {
 authentication = {
   name                    = "job-authentication-in-database"
   image                   = "mongosh"
-  tag                     = "1.10.1"
+  tag                     = "2.1.5"
   image_pull_policy       = "IfNotPresent"
   image_pull_secrets      = ""
   node_selector           = { service = "control-plane" }

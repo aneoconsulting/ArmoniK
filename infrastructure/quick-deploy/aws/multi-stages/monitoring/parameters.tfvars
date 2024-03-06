@@ -49,21 +49,21 @@ monitoring = {
   seq = {
     enabled                = true
     image                  = "seq"
-    tag                    = "2023.3"
+    tag                    = "2024.1"
     port                   = 8080
     image_pull_secrets     = ""
     service_type           = "ClusterIP"
     node_selector          = { service = "monitoring" }
     system_ram_target      = 0.2
     cli_image              = "seqcli"
-    cli_tag                = "2023.2"
+    cli_tag                = "2024.1.791"
     cli_image_pull_secrets = ""
     retention_in_days      = "2d"
   }
   grafana = {
     enabled            = true
     image              = "grafana"
-    tag                = "10.0.2"
+    tag                = "10.2.4"
     port               = 3000
     image_pull_secrets = ""
     service_type       = "ClusterIP"
@@ -72,13 +72,13 @@ monitoring = {
   node_exporter = {
     enabled            = true
     image              = "node-exporter"
-    tag                = "v1.6.0"
+    tag                = "v1.7.0"
     image_pull_secrets = ""
     node_selector      = {}
   }
   prometheus = {
     image              = "prometheus"
-    tag                = "v2.45.0"
+    tag                = "v2.50.1"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { service = "metrics" }
@@ -125,7 +125,7 @@ monitoring = {
   }
   fluent_bit = {
     image                              = "fluent-bit"
-    tag                                = "2.1.7"
+    tag                                = "2.2.2"
     image_pull_secrets                 = ""
     is_daemonset                       = true
     http_port                          = 2020 # 0 or 2020

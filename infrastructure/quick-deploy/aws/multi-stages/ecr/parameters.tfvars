@@ -42,7 +42,7 @@ ecr = {
   repositories = {
     mongodb = {
       image = "mongo"
-      tag   = "6.0.7"
+      tag   = "6.0.13"
     },
     "armonik-control-plane" = {
       image = "dockerhubaneo/armonik_control"
@@ -82,23 +82,23 @@ ecr = {
     },
     mongosh = {
       image = "rtsp/mongosh"
-      tag   = "1.10.1"
+      tag   = "2.1.5"
     },
     seq = {
       image = "datalust/seq"
-      tag   = "2023.3"
+      tag   = "2024.1"
     },
     seqcli = {
       image = "datalust/seqcli"
-      tag   = "2023.2"
+      tag   = "2024.1.791"
     },
     grafana = {
       image = "grafana/grafana"
-      tag   = "10.0.2"
+      tag   = "10.2.4"
     },
     prometheus = {
       image = "prom/prometheus"
-      tag   = "v2.45.0"
+      tag   = "v2.50.1"
     },
     "cluster-autoscaler" = {
       image = "registry.k8s.io/autoscaling/cluster-autoscaler"
@@ -110,15 +110,15 @@ ecr = {
     },
     "metrics-server" = {
       image = "registry.k8s.io/metrics-server/metrics-server"
-      tag   = "v0.6.2"
+      tag   = "v0.7.0"
     },
     "fluent-bit" = {
       image = "fluent/fluent-bit"
-      tag   = "2.1.7"
+      tag   = "2.2.2"
     },
     "node-exporter" = {
       image = "prom/node-exporter"
-      tag   = "v1.6.0"
+      tag   = "v1.7.0"
     },
     nginx = {
       image = "nginxinc/nginx-unprivileged"
@@ -126,27 +126,27 @@ ecr = {
     },
     keda = {
       image = "ghcr.io/kedacore/keda"
-      tag   = "2.9.3"
+      tag   = "2.13.1"
     },
     "keda-metrics-apiserver" = {
       image = "ghcr.io/kedacore/keda-metrics-apiserver"
-      tag   = "2.9.3"
+      tag   = "2.13.1"
     },
     "aws-efs-csi-driver" = {
       image = "amazon/aws-efs-csi-driver"
-      tag   = "v1.5.1"
+      tag   = "v1.7.5"
     },
     livenessprobe = {
       image = "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe"
-      tag   = "v2.9.0-eks-1-22-19"
+      tag   = "v2.11.0-eks-1-29-2"
     },
     "node-driver-registrar" = {
       image = "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar"
-      tag   = "v2.7.0-eks-1-22-19"
+      tag   = "v2.9.3-eks-1-29-2"
     },
     "external-provisioner" = {
       image = "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner"
-      tag   = "v3.4.0-eks-1-22-19"
+      tag   = "v3.6.3-eks-1-29-2"
     }
   }
 }

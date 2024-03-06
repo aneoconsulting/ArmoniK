@@ -13,7 +13,7 @@ suffix = "main"
 # metrics server info
 docker_image = {
   image = "metrics-server"
-  tag   = "v0.6.2"
+  tag   = "v0.7.0"
 }
 
 # Image pull secret
@@ -37,4 +37,4 @@ host_network = false
 helm_chart_repository = "https://kubernetes-sigs.github.io/metrics-server/"
 
 # Version of helm chart
-helm_chart_version = "3.8.3"
+helm_chart_version = "3.12.0"

@@ -42,7 +42,7 @@ node_selector = { service = "monitoring" }
 # AWS EKS
 eks = {
   name                                  = "armonik-eks"
-  cluster_version                       = "1.29"
+  cluster_version                       = "1.25"
   cluster_endpoint_private_access       = false # vpc.enable_private_subnet
   cluster_endpoint_private_access_cidrs = []
   cluster_endpoint_private_access_sg    = []
@@ -60,19 +60,19 @@ eks = {
     }
     efs_csi = {
       image = "aws-efs-csi-driver"
-      tag   = "v1.5.1"
+      tag   = "v1.7.5"
     }
     efs_csi_liveness_probe = {
       image = "livenessprobe"
-      tag   = "v2.9.0-eks-1-22-19"
+      tag   = "v2.11.0-eks-1-29-2"
     }
     efs_csi_node_driver_registrar = {
       image = "node-driver-registrar"
-      tag   = "v2.7.0-eks-1-22-19"
+      tag   = "v2.9.3-eks-1-29-2"
     }
     efs_csi_external_provisioner = {
       image = "external-provisioner"
-      tag   = "v3.4.0-eks-1-22-19"
+      tag   = "v3.6.3-eks-1-29-2"
     }
   }
   cluster_autoscaler = {
@@ -94,7 +94,7 @@ eks = {
   }
   efs_csi = {
     repository = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
-    version    = "2.3.0"
+    version    = "2.5.5"
   }
   instance_refresh = {
     namespace  = "kube-system"

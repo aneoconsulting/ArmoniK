@@ -126,7 +126,7 @@ mq_credentials = {
 # Parameters for MongoDB
 mongodb = {
   image              = "mongodb"
-  tag                = "6.0.7"
+  tag                = "6.0.13"
   node_selector      = { service = "state-database" }
   image_pull_secrets = ""
   replicas_number    = 1

@@ -15,11 +15,11 @@ keda = {
   docker_image = {
     keda = {
       image = "keda"
-      tag   = "2.9.3"
+      tag   = "2.13.1"
     }
     metrics_api_server = {
       image = "keda-metrics-apiserver"
-      tag   = "2.9.3"
+      tag   = "2.13.1"
     }
   }
   image_pull_secrets              = ""
@@ -27,5 +27,5 @@ keda = {
   metrics_server_dns_policy       = "ClusterFirst"
   metrics_server_use_host_network = false
   helm_chart_repository           = "https://kedacore.github.io/charts"
-  helm_chart_version              = "2.9.4"
+  helm_chart_version              = "2.13.2"
 }
