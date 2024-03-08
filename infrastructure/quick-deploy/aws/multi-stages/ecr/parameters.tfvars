@@ -54,7 +54,7 @@ ecr = {
     },
     "armonik-worker" = {
       image = "dockerhubaneo/armonik_worker_dll"
-      tag   = "0.14.1"
+      tag   = "0.14.2"
     },
     "armonik-htcmock-worker" = {
       image = "dockerhubaneo/armonik_core_htcmock_test_worker"

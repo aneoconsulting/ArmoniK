@@ -5,9 +5,10 @@
 Changed
 -
 
+* Upgrade ArmoniK.Extensions.Csharp from `0.14.1` to `0.14.2` [Changelog](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/releases)
 * Upgrade version of ArmoniK Core from `0.21.0` to `0.23.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.Core/releases).
 * Upgrade version of ArmoniK Infra from `0.2.2` to `0.3.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.infra/releases).
-* Deprecate multi-stage deployment
+* **Deprecate multi-stage deployment**
 
 Added
 -
