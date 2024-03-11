@@ -1,6 +1,6 @@
 locals {
-  subnets    = { for key, value in coalesce(var.subnets, {}) : "${local.prefix}-${key}" => value }
-  gke_subnet = merge(var.gke.subnet, { name = "${local.prefix}-${var.gke.subnet.name}" })
+  subnets    = { for key, value in coalesce(var.subnets, {}) : "${local.prefix}-${key}" => merge(value, { region = var.region }) }
+  gke_subnet = merge(var.gke.subnet, { name = "${local.prefix}-${var.gke.subnet.name}", region = var.region })
 }
 
 module "vpc" {

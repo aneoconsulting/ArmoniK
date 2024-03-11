@@ -32,10 +32,6 @@ variable "kms" {
     key_ring   = string
     crypto_key = string
   })
-  default = {
-    key_ring   = "armonik-europe-west1"
-    crypto_key = "armonik-europe-west1"
-  }
 }
 
 # VPC and subnets for resources
@@ -43,7 +39,6 @@ variable "subnets" {
   description = "A map of subnets inside the VPC. Each subnet object has a CIDR block, a region, and a boolean set to true if the subnet is public, or false if the subnet is private"
   type = map(object({
     cidr_block    = optional(string)
-    region        = optional(string)
     public_access = optional(bool)
   }))
   default = null
@@ -58,7 +53,6 @@ variable "gke" {
       nodes_cidr_block    = optional(string, "10.43.0.0/16")
       pods_cidr_block     = optional(string, "172.16.0.0/16")
       services_cidr_block = optional(string, "172.17.17.0/24")
-      region              = optional(string, "europe-west1")
     }), {})
     namespace                = optional(string, "armonik")
     kubeconfig_file          = optional(string, "generated/kubeconfig")
