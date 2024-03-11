@@ -56,8 +56,9 @@ module "node_exporter" {
 
 # Metrics exporter
 module "metrics_exporter" {
-  source    = "./generated/infra-modules/monitoring/onpremise/exporters/metrics-exporter"
-  namespace = local.namespace
+  source       = "./generated/infra-modules/monitoring/onpremise/exporters/metrics-exporter"
+  namespace    = local.namespace
+  service_type = var.metrics_exporter.service_type
 }
 
 resource "kubernetes_secret" "metrics_exporter" {
