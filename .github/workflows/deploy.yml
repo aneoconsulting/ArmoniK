@@ -19,7 +19,7 @@ jobs:
           uname -a
           grep MemTotal /proc/meminfo
       - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -42,7 +42,7 @@ jobs:
           uname -a
           grep MemTotal /proc/meminfo
       - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -101,7 +101,7 @@ jobs:
             uname -a
             grep MemTotal /proc/meminfo
       - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
            ref: ${{ github.head_ref }}
            fetch-depth: 0
@@ -165,7 +165,7 @@ jobs:
           uname -a
           grep MemTotal /proc/meminfo
       - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -290,7 +290,7 @@ jobs:
              uname -a
              grep MemTotal /proc/meminfo
       - name: Checkout
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
              ref: ${{ github.head_ref }}
              fetch-depth: 0
