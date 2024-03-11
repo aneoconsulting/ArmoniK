@@ -64,4 +64,12 @@ module "armonik" {
   metrics_server_chart_name = concat(module.metrics_server[*].metrics_server.chart_name, ["metrics-server"])[0]
 
   environment_description = var.environment_description
+
+  #metrics_exporter
+  metrics_exporter = {
+    image              = local.ecr_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].image
+    tag                = local.ecr_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].tag
+    image_pull_secrets = var.metrics_exporter.pull_secrets
+    node_selector      = var.metrics_exporter.node_selector
+  }
 }
