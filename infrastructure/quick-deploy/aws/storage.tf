@@ -98,6 +98,7 @@ module "elasticache" {
   preferred_cache_cluster_azs = var.elasticache.preferred_cache_cluster_azs
   data_tiering_enabled        = var.elasticache.data_tiering_enabled
   log_retention_in_days       = var.elasticache.log_retention_in_days
+  max_memory_samples          = var.elasticache.max_memory_samples
 
   kms_key_id     = local.kms_key
   log_kms_key_id = local.kms_key

@@ -254,6 +254,7 @@ variable "elasticache" {
     preferred_cache_cluster_azs = optional(list(string), [])
     data_tiering_enabled        = optional(bool, false)
     log_retention_in_days       = optional(number, 30)
+    max_memory_samples          = optional(number)
     cloudwatch_log_groups = optional(object({
       slow_log   = optional(string, "")
       engine_log = optional(string, "")
