@@ -272,9 +272,9 @@ grafana = {
   node_selector = { service = "monitoring" }
 }
 
-#node_exporter = {
-#  node_selector = {}
-#}
+node_exporter = {
+  node_selector = {}
+}
 
 prometheus = {
   node_selector = { service = "metrics" }
