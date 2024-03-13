@@ -41,13 +41,13 @@ Opening Seq will allow you to see the logs of the workers and ArmoniK. If you ha
 Run the command line :
 
 ```bash [shell]
-kubectl –n armonik get po -A
+kubectl -n armonik get po -A
 ```
 
 This command line will show you all the active pods in the armonik namespace. Once you located the malfunctioning pod, you can use :
 
 ```bash [shell]
-kubectl –n armonik describe po <PodName>
+kubectl -n armonik describe po <PodName>
 ```
 
 This command line will show you the statuses of the pod's containers. If the pod crashes, you will get the reason in your terminal.
@@ -58,13 +58,13 @@ ___
 If you have a pod with a "Terminating" status and you want to force it to stop, you can do so with the command:
 
 ```bash [shell]
-kubectl –n armonik delete po –force <PodName>
+kubectl -n armonik delete po -force <PodName>
 ```
 
 This command is to be used only if the ```kubectl delete po -n armonik <PodName>``` used to delete a pod has the pod stuck in a Terminating state for more than a few minutes. To check if the pod has been correctly stopped, run the command:
 
 ``` bash [shell]
-kubectl –n armonik get po --field-selector metadata.name=<PodName>
+kubectl -n armonik get po --field-selector metadata.name=<PodName>
 ```
 
 The deleted pod should not appear in the list and you will have the following message: "No resources found in armonik namespace."
@@ -77,13 +77,13 @@ You might get some information by checking with Seq. However, in some rare cases
 If you can not see the logs in Seq or if you prefer, you can check the logs directly with:
 
 ```bash [shell]
-kubectl –n armonik logs <PodName> –f
+kubectl -n armonik logs <PodName> -f
 ```
 
 This line will show you the logs of a container in the given pod if there is only one container within that pod. If there are multiple containers if your pod, then use the following command :
 
 ```bash [shell]
-kubectl –n armonik logs <PodName> -c <containerName> -f
+kubectl -n armonik logs <PodName> -c <containerName> -f
 ```
 
 This command will give you the logs on the specified container and pod. You can add -f to have live feedback.

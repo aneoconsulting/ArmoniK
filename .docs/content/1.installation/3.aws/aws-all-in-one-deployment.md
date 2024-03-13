@@ -35,7 +35,7 @@ make bootstrap-destroy PREFIX=<PREFIX_KEY>
 To access your Kubernetes cluster, execute the following command after entering your settings in the 3 angle brackets:
 
 ```bash
-aws --profile <AWS_PROFILE>​ eks update-kubeconfig --region <AWS_REGION> --name <NAME_AWS_EKS>​
+aws --profile <AWS_PROFILE> eks update-kubeconfig --region <AWS_REGION> --name <NAME_AWS_EKS>
 ```
 
 or simply enter the following command:
@@ -46,10 +46,10 @@ export KUBECONFIG=<PATH_TO_AWS_FOLDER>/generated/kubeconfig
 
 ## Configuration
 
-All parameters are contained in [`parameters.tfvars`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/all-in-one/parameters.tfvars)
+All parameters are contained in [`parameters.tfvars`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/parameters.tfvars)
 
 ::alert{type="info"}
-By default, all the cloud services are set to launch. To see what kind of parameters are available, read [`variables.tf`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/all-in-one/variables.tf)
+By default, all the cloud services are set to launch. To see what kind of parameters are available, read [`variables.tf`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/variables.tf)
 ::
 
 You can specify a custom parameter file. When executing the `make` command, you may use the `PARAMETERS_FILE` option to set the path to your file.

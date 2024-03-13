@@ -18,7 +18,7 @@ To install and configure the partitioning there are some modifications to implem
 
 In the version 2.8, the partitioning was not available in ArmoniK but the infrastructure was ready for this functionality. A default partition was created at deployment time with the name `default`.
 
-To use multiple partitions, a functionality which is now available with the version 2.9,  the first step is to modify the infrastructure deployment with the desired configuration  for the partitions. On an AWS deployment, this is done in the file  [infrastructure/quick-deploy/*/armonik/parameters.tfvars](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/armonik/parameters.tfvars), specifically in the variable `compute_plane`.
+To use multiple partitions, a functionality which is now available with the version 2.9,  the first step is to modify the infrastructure deployment with the desired configuration  for the partitions. On an AWS deployment, this is done in the file  [infrastructure/quick-deploy/*/parameters.tfvars](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/parameters.tfvars), specifically in the variable `compute_plane`.
 
 This variable is a map whose key is the partition name and the value is the partition configuration.
 
