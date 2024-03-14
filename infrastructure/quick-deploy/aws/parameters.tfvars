@@ -316,13 +316,6 @@ prometheus = {
 
 metrics_exporter = {
   node_selector = { service = "metrics" }
-  extra_conf = {
-    MongoDB__AllowInsecureTls              = true
-    Serilog__MinimumLevel                  = "Information"
-    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
-    MongoDB__DataRetention                 = "1.00:00:00"
-  }
 }
 
 /*parition_metrics_exporter = {

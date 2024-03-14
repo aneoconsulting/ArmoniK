@@ -117,16 +117,9 @@ module "node_exporter" {
 
 # Metrics exporter
 module "metrics_exporter" {
-  source        = "./generated/infra-modules/monitoring/onpremise/exporters/metrics-exporter"
-  namespace     = local.namespace
-  service_type  = var.metrics_exporter.service_type
-  node_selector = var.metrics_exporter.node_selector
-  docker_image = {
-    image              = local.ecr_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].image
-    tag                = local.ecr_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].tag
-    image_pull_secrets = var.metrics_exporter.pull_secrets
-  }
-  extra_conf = var.metrics_exporter.extra_conf
+  source       = "./generated/infra-modules/monitoring/onpremise/exporters/metrics-exporter"
+  namespace    = local.namespace
+  service_type = var.metrics_exporter.service_type
 }
 
 resource "kubernetes_secret" "metrics_exporter" {

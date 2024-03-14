@@ -72,4 +72,12 @@ module "armonik" {
   keda_chart_name = module.keda.keda.chart_name
 
   environment_description = var.environment_description
+
+  #metrics_exporter
+  metrics_exporter = {
+    image              = local.docker_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].image
+    tag                = local.docker_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].tag
+    image_pull_secrets = var.metrics_exporter.pull_secrets
+    node_selector      = var.metrics_exporter.node_selector
+  }
 }
