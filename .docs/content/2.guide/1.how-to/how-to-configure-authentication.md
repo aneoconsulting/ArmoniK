@@ -30,7 +30,7 @@ It is possible to setup the authentication in different ways when deploying Armo
 
 # Deployment configuration
 
-For each of the following configuration, the required parameters in your [```armonik/parameters.tfvars```](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars) to specify are:
+For each of the following configuration, the required parameters in your [```parameters.tfvars```](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/localhost/parameters.tfvars) to specify are:
 
 - ```ingress.mTLS```: Controls whether the ingress requires user certificates
 - ```ingress.generate_client_cert```: Controls whether the deployment generates the default certificates with different roles
@@ -63,7 +63,7 @@ Using this configuration, anyone with access to the endpoints can send any reque
 | ```authentication.require_authorization```   | ```false``` |
 | ```authentication.authentication_datafile``` |  ```""```   |
 
-Using this configuration, a default client certificate will be generated. Anyone can access the endpoints using this certificate. Since this certificate will be put in the database by default, the parameter ```authentication.require_authentication``` can be set to true or false. The default client certificate created is ```infrastructure/quick-deploy/localhost/armonik/generated/certificates/ingress/client.submitter.crt```
+Using this configuration, a default client certificate will be generated. Anyone can access the endpoints using this certificate. Since this certificate will be put in the database by default, the parameter ```authentication.require_authentication``` can be set to true or false. The default client certificate created is ```infrastructure/quick-deploy/localhost/generated/certificates/ingress/client.submitter.crt```
 
 ## How to setup mTLS authentication using a custom certificate authority
 
@@ -89,7 +89,7 @@ Using this configuration, the specified ```ca.pem``` will be used to authenticat
 | ```authentication.require_authorization```   | ```true```  |
 | ```authentication.authentication_datafile``` |  ```""```   |
 
-Default certificates are generated alongside the automatically generated client certificate authority. In this case, two certificates are generated in the ```infrastructure/quick-deploy/localhost/armonik/generated/certificates/ingress``` folder : ```client.submitter.crt``` which corresponds to a user with all permissions, and ```client.monitoring.crt``` which corresponds to a user with only monitoring permissions. You can modify the default users and roles created by modifying the module file [armonik/authentication-roles-default.tf](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/modules/armonik/authentication-roles-default.tf).
+Default certificates are generated alongside the automatically generated client certificate authority. In this case, two certificates are generated in the ```infrastructure/quick-deploy/localhost/generated/certificates/ingress``` folder : ```client.submitter.crt``` which corresponds to a user with all permissions, and ```client.monitoring.crt``` which corresponds to a user with only monitoring permissions.
 
 ## How to setup your own certificates for authentication
 

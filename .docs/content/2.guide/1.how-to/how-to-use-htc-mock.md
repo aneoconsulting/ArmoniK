@@ -16,51 +16,6 @@ To populate the database, you can also use scripts.  See [Populate database](../
 HTC Mock is a development or test tool. It is not intended to be used in production.
 ::
 
-You now have the choice between a multi-stages deployment or an All-in-one deployment. You can use HTC Mock with both but the setup will differ depending on your choice.
-
-### Multi-stages deployment
-
-To use HTC Mock, you need to swap out the ArmoniK worker in `/infrastructure/quick-deploy/localhost/armonik/parameters.tfvars` with the HTC Mock Worker.
-
-```diff [parameters.tfvars]
-    worker = [
-      {
-        name              = "worker"
--       image             = "dockerhubaneo/armonik_worker_dll"
-+       image             = "dockerhubaneo/armonik_core_htcmock_test_worker"
-        tag               = "0.12.1"
-    ]
-```
-
-You can update the tag version. Please verify the [latest of Core on GitHub](https://github.com/aneoconsulting/ArmoniK.Core/release/latest) in order to use it.
-
-:warning: `dockerhubaneo/armonik_control` `dockerhubaneo/armonik_pollingagent` and `dockerhubaneo/armonik_core_htcmock_test_worker` must have the **exact** same tag version. It is necessary so they can talk to each other using the same API.
-
-Then, you can deploy ArmoniK as explained in the [multi-stages deployment page](https://aneoconsulting.github.io/ArmoniK/installation/linux/deployment)
-
-You are now ready to start the HTC mock client container.
-
-```bash [shell]
-docker run --rm \
-            -e HtcMock__NTasks=100 \
-            -e HtcMock__TotalCalculationTime=00:00:00.100 \
-            -e HtcMock__DataSize=1 \
-            -e HtcMock__MemorySize=1 \
-            -e HtcMock__EnableFastCompute=true \
-            -e HtcMock__SubTasksLevels=1 \
-            -e HtcMock__Partition="" \
-            -e GrpcClient__Endpoint=http://<ip>:5001 \
-             dockerhubaneo/armonik_core_htcmock_test_client:0.12.1
-```
-
-Remember to replace `<ip>` with the IP of your machine or the IP of the machine where ArmoniK is deployed.
-
-### All-in-one deployment
-
-For an all-in-one deployment, you will need to specify on which partition you want to deploy HTCMock.
-
-For more information about the All-in-one deployment, please refer to the [All-in-one deployment page](https://aneoconsulting.github.io/ArmoniK/installation/linux/all-in-one-deployment)
-
 ```bash [shell]
 docker run --rm \
             -e HtcMock__NTasks=100 \

@@ -1,7 +1,13 @@
 # How to configure SEQ?
 
-If you want to access outside your Kubernetes cluster, you have to configure Seq to make it accessible from outside.
-To do so, you have to set this service (`seq_web` in [seq.tf](../old/armonik-deployments/armonik/modules/armonik-components/seq.tf#L92) ) as `LoadBalancer` instead of `ClusterIP`.
+If you want to access outside your Kubernetes cluster, you have to configure Seq to make it accessible from the outside.
+Edit the [parameters.tfvars](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/localhost/parameters.tfvars), and edit the `seq` section (or add it if not present). Add the `service_type` option:
+
+```tfvars
+seq = {
+  service_type = "LoadBalancer"
+}
+```
 
 Then, redeploy.
 

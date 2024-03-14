@@ -1,11 +1,10 @@
 <!-- TODO: need have a new title -->
-<!-- TODO: need to create a page where the all in one deployment is explain -->
 
 # Default images
 
-The all-in-one terraform deployments support to omit the image names and tags in the tfvars.
+The terraform deployments support to omit the image names and tags in the tfvars.
 
-If the image name is omitted, a default image name is used, specified directly in [`variables.tf`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/localhost/all/variables.tf).
+If the image name is omitted, a default image name is used, specified directly in [`variables.tf`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/localhost/variables.tf).
 If the image tag is omitted, the default tag for this very image is used.
 The default tags are defined in [`versions.tfvars.json`](https://github.com/aneoconsulting/ArmoniK/blob/main/versions.tfvars.json).
 
@@ -44,7 +43,7 @@ All the examples are for the all-in-one local deployment for mongodb, with the f
 }
 ```
 
-Specifying the image and its version within the tfvars (ex: [`parameters.tfvars`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/all/parameters.tfvars))
+Specifying the image and its version within the tfvars (ex: [`parameters.tfvars`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/aws/parameters.tfvars))
 
 ## Use the default image and tag
 
