@@ -59,7 +59,7 @@ variable "gke" {
     enable_public_gke_access = optional(bool, true)
     enable_gke_autopilot     = optional(bool, false)
     regional                 = optional(bool, true)
-    zones                    = optional(list(string), [""])
+    zones                    = optional(list(string))
     node_pools_labels        = optional(map(map(string)), null)
     node_pools_taints        = optional(map(list(object({ key = string, value = string, effect = string }))), null)
     node_pools               = optional(list(map(any)), null)
