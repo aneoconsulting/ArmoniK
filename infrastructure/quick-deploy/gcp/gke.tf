@@ -14,6 +14,8 @@ module "gke" {
       key_name = local.kms_key_id
     }
   ]
+  regional                   = var.gke.regional
+  zones                      = var.gke.zones
   cluster_resource_labels    = local.labels
   node_pools_tags            = local.node_pools_tags
   node_pools_labels          = local.node_pools_labels
