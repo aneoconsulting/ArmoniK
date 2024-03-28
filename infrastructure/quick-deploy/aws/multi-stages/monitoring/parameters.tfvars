@@ -85,7 +85,7 @@ monitoring = {
   }
   metrics_exporter = {
     image              = "metrics-exporter"
-    tag                = "0.20.5"
+    tag                = "0.23.2"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { service = "metrics" }
@@ -99,7 +99,7 @@ monitoring = {
   }
   partition_metrics_exporter = {
     image              = "partition-metrics-exporter"
-    tag                = "0.20.5"
+    tag                = "0.23.2"
     image_pull_secrets = ""
     service_type       = "ClusterIP"
     node_selector      = { service = "metrics" }
