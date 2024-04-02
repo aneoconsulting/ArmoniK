@@ -46,11 +46,11 @@ ecr = {
     },
     "armonik-control-plane" = {
       image = "dockerhubaneo/armonik_control"
-      tag   = "0.20.5"
+      tag   = "0.23.2"
     },
     "armonik-polling-agent" = {
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.20.5"
+      tag   = "0.23.2"
     },
     "armonik-worker" = {
       image = "dockerhubaneo/armonik_worker_dll"
@@ -58,27 +58,27 @@ ecr = {
     },
     "armonik-htcmock-worker" = {
       image = "dockerhubaneo/armonik_core_htcmock_test_worker"
-      tag   = "0.20.5"
+      tag   = "0.23.2"
     },
     "armonik-bench-worker" = {
       image = "dockerhubaneo/armonik_core_bench_test_worker"
-      tag   = "0.20.5"
+      tag   = "0.23.2"
     },
     "armonik-stream-worker" = {
       image = "dockerhubaneo/armonik_core_stream_test_worker"
-      tag   = "0.20.5"
+      tag   = "0.23.2"
     },
     "metrics-exporter" = {
       image = "dockerhubaneo/armonik_control_metrics"
-      tag   = "0.20.5"
+      tag   = "0.23.2"
     },
     "partition-metrics-exporter" = {
       image = "dockerhubaneo/armonik_control_partition_metrics"
-      tag   = "0.20.5"
+      tag   = "0.23.2"
     },
     "armonik-admin-gui" = {
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.11.2"
+      tag   = "0.11.6"
     },
     mongosh = {
       image = "rtsp/mongosh"
