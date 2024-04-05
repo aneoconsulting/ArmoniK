@@ -3,13 +3,19 @@
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
 
-## [v2.19.1](https://github.com/aneoconsulting/armonik/tree/v2.19.1) (2024-03-29)
+## [v2.19.2](https://github.com/aneoconsulting/armonik/tree/v2.19.2) (2024-04-05)
 
 Changed
 -
 
 * Upgrade version of ArmoniK Core from `0.23.0` to `0.23.2` [Changelog](https://github.com/aneoconsulting/ArmoniK.Core/releases).
 * Upgrade version of ArmoniK Admin Gui from `0.11.4` to `0.11.6` [Changelog](https://github.com/aneoconsulting/ArmoniK.Admin.GUI/releases).
+
+
+## [v2.19.1](https://github.com/aneoconsulting/ArmoniK/tree/v2.19.1) (2024-03-29)
+
+This version has been deleted and replace by the 2.19.2 version which still contains the multi-stage deployment.
+
 
 ## [v2.19.0](https://github.com/aneoconsulting/armonik/tree/v2.19.0) (2024-03-04)
 
