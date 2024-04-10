@@ -102,7 +102,7 @@ variable "eks" {
         tag   = optional(string)
       }), {})
       efs_csi = optional(object({
-        image = optional(string, "amazon/aws-efs-csi-driver")
+        image = optional(string, "public.ecr.aws/efs-csi-driver/amazon/aws-efs-csi-driver")
         tag   = optional(string)
       }), {})
       efs_csi_liveness_probe = optional(object({

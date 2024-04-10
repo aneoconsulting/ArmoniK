@@ -24,6 +24,7 @@ module "gke" {
   private                    = !var.gke.enable_public_gke_access
   autopilot                  = var.gke.enable_gke_autopilot
   node_pools                 = var.gke.node_pools
+  gce_pd_csi_driver          = true
 }
 
 resource "kubernetes_namespace" "armonik" {
