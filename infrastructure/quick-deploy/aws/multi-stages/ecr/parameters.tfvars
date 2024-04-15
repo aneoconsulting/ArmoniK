@@ -78,7 +78,7 @@ ecr = {
     },
     "armonik-admin-gui" = {
       image = "dockerhubaneo/armonik_admin_app"
-      tag   = "0.11.6"
+      tag   = "0.11.7"
     },
     mongosh = {
       image = "rtsp/mongosh"
