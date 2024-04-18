@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
-      - run: npm i -g pnpm @antfu/ni
+      - run: npm install -g pnpm@^9.0.2
 
       - name: Setup Node
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
@@ -44,7 +44,7 @@ jobs:
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
-      - run: npm i -g pnpm @antfu/ni
+      - run: npm install -g pnpm@^9.0.2
 
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
         with:
@@ -62,7 +62,7 @@ jobs:
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
-      - run: npm i -g pnpm @antfu/ni
+      - run: npm install -g pnpm@^9.0.2
 
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4
         with:
