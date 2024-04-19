@@ -302,3 +302,7 @@ environment_description = {
   description = "Local development environment"
   color       = "blue"
 }
+
+static = {
+  gui_configuration = {}
+}

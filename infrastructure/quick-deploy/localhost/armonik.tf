@@ -60,6 +60,7 @@ module "armonik" {
   metrics_server_chart_name = concat(module.metrics_server[*].metrics_server.chart_name, ["metrics-server"])[0]
 
   environment_description = var.environment_description
+  static                  = var.static
 
   #metrics_exporter
   metrics_exporter = {

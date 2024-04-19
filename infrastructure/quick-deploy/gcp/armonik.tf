@@ -72,6 +72,7 @@ module "armonik" {
   keda_chart_name = module.keda.keda.chart_name
 
   environment_description = var.environment_description
+  static                  = var.static
 
   #metrics_exporter
   metrics_exporter = {

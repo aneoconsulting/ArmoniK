@@ -766,6 +766,12 @@ variable "environment_description" {
   default     = null
 }
 
+variable "static" {
+  description = "json files to be served statically by the ingress"
+  type        = any
+  default     = {}
+}
+
 # Extra configuration for jobs connecting to database
 variable "jobs_in_database_extra_conf" {
   description = "Add extra configuration in the configmaps for jobs connecting to database"

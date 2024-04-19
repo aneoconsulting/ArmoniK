@@ -489,3 +489,9 @@ variable "environment_description" {
   type        = any
   default     = null
 }
+
+variable "static" {
+  description = "json files to be served statically by the ingress"
+  type        = any
+  default     = {}
+}
