@@ -2,7 +2,7 @@
 // Need to duplicate component from template because of an import issue.
 import mermaid from "mermaid"
 
-let show = ref(false);
+const show = ref(false);
 
 onMounted(async () => {
   show.value = true
@@ -14,7 +14,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="mermaid" v-if="show">
-    <slot></slot>
+  <div v-if="show" class="mermaid">
+    <slot/>
   </div>
 </template>
