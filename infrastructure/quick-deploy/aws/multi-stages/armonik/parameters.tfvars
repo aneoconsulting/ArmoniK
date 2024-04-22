@@ -82,7 +82,7 @@ control_plane = {
 # Parameters of admin GUI
 admin_gui = {
   image = "armonik-admin-gui"
-  tag   = "0.11.7"
+  tag   = "0.11.8"
   limits = {
     cpu    = "1000m"
     memory = "1024Mi"
