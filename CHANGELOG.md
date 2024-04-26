@@ -2,6 +2,14 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+
+## [v2.19.4](https://github.com/aneoconsulting/armonik/tree/v2.19.4) (2024-04-26)
+
+Changed
+-
+* Upgrade version of ArmoniK Extensions Csharp from `0.14.4` to `0.14.5` [Changelog](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/releases).
+
+
 ## [v2.19.3](https://github.com/aneoconsulting/armonik/tree/v2.19.3) (2024-04-23)
 
 Changed
@@ -13,7 +21,7 @@ eleases).
 eleases).
 * Upgrade version of ArmoniK Admin Gui from `0.11.6` to `0.11.8` [Changelog](https://github.com/aneoconsulting/ArmoniK.A
 dmin.GUI/releases).
-* Upgrade version of ArmoniK Extensions Cshapr from `0.14.2` to `0.14.4` [Changelog](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/releases).
+* Upgrade version of ArmoniK Extensions Csharp from `0.14.2` to `0.14.4` [Changelog](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/releases).
 
 ## [v2.19.2](https://github.com/aneoconsulting/armonik/tree/v2.19.2) (2024-04-05)
 
