@@ -180,6 +180,12 @@ variable "armonik_versions" {
   })
 }
 
+variable "upload_images" {
+  description = "Whether the images are uploaded to the Artifact Registry or not"
+  type        = bool
+  default     = true
+}
+
 variable "seq" {
   description = "Seq configuration (nullable)"
   type = object({

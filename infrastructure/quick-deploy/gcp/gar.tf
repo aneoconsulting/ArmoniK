@@ -65,9 +65,13 @@ locals {
 
   docker_images_raw = {
     for rep in local.docker_repositories :
-    rep.key => {
+    rep.key => var.upload_images ? {
       image = try(module.artifact_registry.docker_repositories["${rep.image}:${rep.tag}"], null),
       name  = try(module.artifact_registry.docker_repositories["${rep.image}:${rep.tag}"], null),
+      tag   = rep.tag,
+      } : {
+      image = rep.image,
+      name  = rep.image,
       tag   = rep.tag,
     }
   }
@@ -96,7 +100,7 @@ module "default_images" {
 
 module "artifact_registry" {
   source        = "./generated/infra-modules/container-registry/gcp/artifact-registry"
-  docker_images = local.repositories
+  docker_images = var.upload_images ? local.repositories : {}
   name          = "${local.prefix}-docker-registry"
   description   = "All docker images for ArmoniK"
   kms_key_id    = local.kms_key_id
