@@ -715,6 +715,12 @@ variable "authentication" {
   default = {}
 }
 
+variable "upload_images" {
+  description = "Whether the images are uploaded to the Artifact Registry or not"
+  type        = bool
+  default     = true
+}
+
 variable "armonik_versions" {
   description = "Versions of all the ArmoniK components"
   type = object({

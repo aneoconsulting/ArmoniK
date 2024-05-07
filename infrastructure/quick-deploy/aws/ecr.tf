@@ -58,9 +58,13 @@ locals {
   }]
 
   ecr_images_raw = { for rep in local.ecr_repositories :
-    rep.key => {
+    rep.key => var.upload_images ? {
       image = try(module.ecr.repositories[rep.name], null),
       name  = try(module.ecr.repositories[rep.name], null),
+      tag   = rep.tag,
+      } : {
+      image = rep.image,
+      name  = rep.image,
       tag   = rep.tag,
     }
   }
@@ -92,7 +96,7 @@ module "ecr" {
   source          = "./generated/infra-modules/container-registry/aws/ecr"
   aws_profile     = var.profile
   kms_key_id      = local.kms_key
-  repositories    = local.repositories
+  repositories    = var.upload_images ? local.repositories : []
   encryption_type = var.ecr.encryption_type
   tags            = local.tags
 }
