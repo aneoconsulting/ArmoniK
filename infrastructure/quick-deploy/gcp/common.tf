@@ -21,15 +21,11 @@ resource "random_string" "prefix" {
   numeric = true
 }
 
-resource "local_file" "date_sh" {
-  filename = "${path.module}/generated/date.sh"
-  content  = local.date
-}
-
 data "external" "static_timestamp" {
-  program     = ["bash", "date.sh"]
-  working_dir = "${path.module}/generated"
-  depends_on  = [local_file.date_sh]
+  program = ["sh", "-c", <<-EOT
+      echo "{\"date\": \"$(date +%F-%H-%M-%S)\"}"
+    EOT
+  ]
 }
 
 resource "null_resource" "timestamp" {
@@ -54,10 +50,4 @@ locals {
   }, var.labels)
   node_pools_labels = { for key, value in var.gke.node_pools_labels : key => merge(local.labels, value) }
   node_pools_tags   = { for node_pool in coalesce(var.gke.node_pools, []) : node_pool["name"] => values(local.labels) }
-  date              = <<-EOT
-#!/bin/bash
-set -e
-DATE=$(date +%F-%H-%M-%S)
-jq -n --arg date "$DATE" '{"date":$date}'
-  EOT
 }

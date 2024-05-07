@@ -6,7 +6,7 @@ module "gke" {
   subnetwork_cidr      = module.vpc.gke_subnet_cidr_block
   ip_range_pods        = module.vpc.gke_subnet_pods_range_name
   ip_range_services    = module.vpc.gke_subnet_svc_range_name
-  kubeconfig_path      = abspath(var.gke.kubeconfig_file)
+  kubeconfig_path      = var.gke.generate_kubeconfig ? abspath(var.gke.kubeconfig_file) : null
   service_account_name = local.gke_name
   database_encryption = [
     {

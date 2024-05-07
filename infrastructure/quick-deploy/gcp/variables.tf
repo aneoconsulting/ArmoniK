@@ -55,6 +55,7 @@ variable "gke" {
       services_cidr_block = optional(string, "172.17.17.0/24")
     }), {})
     namespace                = optional(string, "armonik")
+    generate_kubeconfig      = optional(bool, true)
     kubeconfig_file          = optional(string, "generated/kubeconfig")
     enable_public_gke_access = optional(bool, true)
     enable_gke_autopilot     = optional(bool, false)
