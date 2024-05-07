@@ -2,6 +2,11 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+Added
+-
+
+* Optional upload of images for GCP and AWS
+
 
 ## [v2.19.4](https://github.com/aneoconsulting/armonik/tree/v2.19.4) (2024-04-26)
 
@@ -15,12 +20,9 @@ Changed
 Changed
 -
 
-* Upgrade version of ArmoniK API from `3.16.0` to `3.17.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.Api/r
-eleases).
-* Upgrade version of ArmoniK Core from `0.23.2` to `0.24.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.Core/r
-eleases).
-* Upgrade version of ArmoniK Admin Gui from `0.11.6` to `0.11.8` [Changelog](https://github.com/aneoconsulting/ArmoniK.A
-dmin.GUI/releases).
+* Upgrade version of ArmoniK API from `3.16.0` to `3.17.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.Api/releases).
+* Upgrade version of ArmoniK Core from `0.23.2` to `0.24.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.Core/releases).
+* Upgrade version of ArmoniK Admin Gui from `0.11.6` to `0.11.8` [Changelog](https://github.com/aneoconsulting/ArmoniK.Admin.GUI/releases).
 * Upgrade version of ArmoniK Extensions Csharp from `0.14.2` to `0.14.4` [Changelog](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/releases).
 
 ## [v2.19.2](https://github.com/aneoconsulting/armonik/tree/v2.19.2) (2024-04-05)
@@ -28,10 +30,8 @@ dmin.GUI/releases).
 Changed
 -
 
-* Upgrade version of ArmoniK Core from `0.23.0` to `0.23.2` [Changelog](https://github.com/aneoconsulting/ArmoniK.Core/r
-eleases).
-* Upgrade version of ArmoniK Admin Gui from `0.11.4` to `0.11.6` [Changelog](https://github.com/aneoconsulting/ArmoniK.A
-dmin.GUI/releases).
+* Upgrade version of ArmoniK Core from `0.23.0` to `0.23.2` [Changelog](https://github.com/aneoconsulting/ArmoniK.Core/releases).
+* Upgrade version of ArmoniK Admin Gui from `0.11.4` to `0.11.6` [Changelog](https://github.com/aneoconsulting/ArmoniK.Admin.GUI/releases).
 
 
 ## [v2.19.1](https://github.com/aneoconsulting/ArmoniK/tree/v2.19.1) (2024-03-29)
