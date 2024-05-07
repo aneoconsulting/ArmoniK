@@ -1,8 +1,8 @@
-# Tutorial : HelloWorld with ArmoniK 
+# How to launch HelloWorld Sample
 
-The goal of this tutorial is to learn how to use ArmoniK by doing a HelloWorld.
+The goal of this guide is to learn how to use ArmoniK by launching the HelloWorld Sample.
 
-You need to git clone [ArmoniK](https://github.com/aneoconsulting/ArmoniK/tree/main) and [ArmoniK.Samples](https://github.com/aneoconsulting/ArmoniK.Samples) for this tutorial.
+You need to git clone [ArmoniK](https://github.com/aneoconsulting/ArmoniK/tree/main) and [ArmoniK.Samples](https://github.com/aneoconsulting/ArmoniK.Samples) to follow this guide.
 
 ## Worker
 
@@ -24,7 +24,7 @@ See the example [here](https://github.com/aneoconsulting/ArmoniK/blob/main/.docs
 
 ## Client
 
-   You have 3 equal ways to run the client:
+   You have differents and equivalent ways to run the client:
 
 - Run the client from ArmoniK.Samples root repository using the **.Net** command line:
 

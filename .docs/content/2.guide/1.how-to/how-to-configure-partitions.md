@@ -199,10 +199,9 @@ var createTaskReply = await submitterClient.CreateTasksAsync(
 It is an error to set the `PartitionId` to `null`.
 ::
 
-
 ## Example partition for the HelloWorld tutorial
 
-Follow the HelloWorld tutorial [here](https://github.com/aneoconsulting/ArmoniK/blob/main/.docs/content/2.guide/2.tutorial/HelloWorld)
+Follow the HelloWorld tutorial [here](https://github.com/aneoconsulting/ArmoniK/blob/main/.docs/content/2.guide/how-to-launch-HelloWorld-Sample)
 
 ```terraform
 
