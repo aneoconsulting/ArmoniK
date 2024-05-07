@@ -200,7 +200,7 @@ It is an error to set the `PartitionId` to `null`.
 ::
 
 
-## Example partition for the HelloWorld tutorial
+## Add a partition for the HelloWorld worker
 
 Follow the HelloWorld tutorial [here](https://github.com/aneoconsulting/ArmoniK/blob/main/.docs/content/2.guide/2.tutorial/HelloWorld)
 
