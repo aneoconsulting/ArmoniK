@@ -14,13 +14,13 @@ docker build -f"./csharp/native/HelloWorld/Worker/Dockerfile" -t hello "./csharp
 
 ## Partition
 
-Add a helloworld partition to `parameter.tfvar`.
+Add a helloworld partition to [parameter.tfvar](../../../../infrastructure/quick-deploy/localhost/parameters.tfvars).
 
 Copy the default one and change the partition name, add a tag to "latest", set the image to "hello".
 
 See the example [here](https://github.com/aneoconsulting/ArmoniK/blob/main/.docs/content/2.guide/1.how-to/how-to-configure-partitions.md).
 
-**Deploy** ArmoniK with `make` in [ArmoniK/infrastructure/quick-deploy/localhost](ArmoniK/infrastructure/quick-deploy/localhost).
+**Deploy** ArmoniK with `make` in `ArmoniK/infrastructure/quick-deploy/localhost`.
 
 ## Client
 
@@ -41,7 +41,9 @@ See the example [here](https://github.com/aneoconsulting/ArmoniK/blob/main/.docs
 
 - Run the client **in Visual Studio**:
 
-   Open the .Net file in [csharp/native/HelloWorld/Client/.](./csharp/native/HelloWorld/Client/.) as a project.
+   Open the .Net file in `ArmoniK.Sample/csharp/native/HelloWorld/Client/.` as a project.
+
+   ![Debug property](./Debug-property.jpg)
 
    Open the Debug property and add as arguments using the command line:
 
