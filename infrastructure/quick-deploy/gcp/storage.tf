@@ -5,7 +5,7 @@ locals {
     deployed_table_storages = ["MongoDB"]
     mongodb = {
       url                = module.mongodb.url
-      number_of_replicas = var.mongodb.replicas_number
+      number_of_replicas = var.mongodb.replicas
     }
     queue_storage_adapter   = "PubSub"
     deployed_queue_storages = ["PubSub"]
@@ -38,11 +38,13 @@ module "mongodb" {
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
   mongodb = {
-    image              = local.docker_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
-    tag                = local.docker_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
-    node_selector      = var.mongodb.node_selector
-    image_pull_secrets = var.mongodb.pull_secrets
-    replicas_number    = var.mongodb.replicas_number
+    image                 = local.docker_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
+    tag                   = local.docker_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
+    node_selector         = var.mongodb.node_selector
+    image_pull_secrets    = var.mongodb.pull_secrets
+    replicas              = var.mongodb.replicas
+    helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts.mongodb.repository)
+    helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts.mongodb.version)
   }
   persistent_volume = null
 }
@@ -77,6 +79,7 @@ module "memorystore" {
   count              = var.memorystore != null ? 1 : 0
   source             = "./generated/infra-modules/storage/gcp/memorystore/redis"
   name               = "${local.prefix}-redis"
+  namespace          = local.namespace
   memory_size_gb     = var.memorystore.memory_size_gb
   auth_enabled       = var.memorystore.auth_enabled
   authorized_network = module.vpc.name
@@ -158,6 +161,7 @@ resource "google_project_iam_member" "allow_gcs_access" {
 module "gcs_fs" {
   source               = "./generated/infra-modules/storage/gcp/gcs"
   name                 = "${local.prefix}-gcsfs"
+  namespace            = local.namespace
   location             = local.region
   default_kms_key_name = local.kms_key_id
   force_destroy        = true
@@ -187,6 +191,7 @@ module "gcs_os" {
   count                = var.gcs_os != null ? 1 : 0
   source               = "./generated/infra-modules/storage/gcp/gcs"
   name                 = "${local.prefix}-gcsos"
+  namespace            = local.namespace
   location             = local.region
   default_kms_key_name = local.kms_key_id
   force_destroy        = true

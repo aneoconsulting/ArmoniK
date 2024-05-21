@@ -135,11 +135,13 @@ variable "rabbitmq" {
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type = object({
-    image_name         = optional(string, "mongo")
-    image_tag          = optional(string)
-    node_selector      = optional(any, {})
-    image_pull_secrets = optional(string, "")
-    replicas_number    = optional(number, 1)
+    image_name            = optional(string, "bitnami/mongodb")
+    image_tag             = optional(string)
+    node_selector         = optional(any, {})
+    image_pull_secrets    = optional(string, "")
+    replicas              = optional(number, 1)
+    helm_chart_repository = optional(string)
+    helm_chart_version    = optional(string)
   })
   default = {}
 }
