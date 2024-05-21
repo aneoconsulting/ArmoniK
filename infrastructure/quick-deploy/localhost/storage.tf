@@ -26,11 +26,13 @@ module "mongodb" {
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
   mongodb = {
-    image              = var.mongodb.image_name
-    tag                = try(coalesce(var.mongodb.image_tag), local.default_tags[var.mongodb.image_name])
-    node_selector      = var.mongodb.node_selector
-    image_pull_secrets = var.mongodb.image_pull_secrets
-    replicas_number    = var.mongodb.replicas_number
+    image                 = var.mongodb.image_name
+    tag                   = try(coalesce(var.mongodb.image_tag), local.default_tags[var.mongodb.image_name])
+    node_selector         = var.mongodb.node_selector
+    image_pull_secrets    = var.mongodb.image_pull_secrets
+    replicas_number       = var.mongodb.replicas_number
+    helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts.mongodb.repository)
+    helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts.mongodb.version)
   }
   persistent_volume = null
 }
@@ -181,7 +183,7 @@ locals {
       host               = module.mongodb.host
       port               = module.mongodb.port
       credentials        = module.mongodb.user_credentials
-      certificates       = module.mongodb.user_certificate
+      #certificates       = module.mongodb.user_certificate
       endpoints          = module.mongodb.endpoints
       number_of_replicas = var.mongodb.replicas_number
       allow_insecure_tls = true
