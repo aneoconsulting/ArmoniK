@@ -179,10 +179,10 @@ locals {
       ssl_host     = "127.0.0.1"
     } : null
     mongodb = {
-      url                = module.mongodb.url
-      host               = module.mongodb.host
-      port               = module.mongodb.port
-      credentials        = module.mongodb.user_credentials
+      url         = module.mongodb.url
+      host        = module.mongodb.host
+      port        = module.mongodb.port
+      credentials = module.mongodb.user_credentials
       #certificates       = module.mongodb.user_certificate
       endpoints          = module.mongodb.endpoints
       number_of_replicas = var.mongodb.replicas_number
