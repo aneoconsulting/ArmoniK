@@ -26,12 +26,10 @@ docker run --rm \
             -e HtcMock__SubTasksLevels=1 \
             -e HtcMock__Partition=htcmock \
             -e GrpcClient__Endpoint=http://<ip>:5001 \
-             dockerhubaneo/armonik_core_htcmock_test_client:<armonik_version_core>
+             dockerhubaneo/armonik_core_htcmock_test_client:0.12.1
 ```
 
 Remember to replace `<ip>` with the IP of your machine or the IP of the machine where ArmoniK is deployed.
-
-Remember to replace  `<armonik_version_core>` with the [current core version](https://github.com/aneoconsulting/ArmoniK/blob/main/versions.tfvars.json)
 
 ## Options
 
