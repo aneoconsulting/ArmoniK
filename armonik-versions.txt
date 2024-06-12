@@ -1,5 +1,0 @@
-infra=0.3.1-pre-2-f932f4e
-core=0.24.0
-worker=0.14.6
-admin-gui=0.11.8
-samples=v2.19.5
