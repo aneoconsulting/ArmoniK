@@ -24,6 +24,7 @@ locals {
     ] : null,
     var.ingress != null ? [var.ingress.image, var.ingress.tag] : null,
     var.authentication != null ? [var.authentication.image, var.authentication.tag] : null,
+    var.pod_deletion_cost != null ? [var.pod_deletion_cost.image, var.pod_deletion_cost.tag] : null,
     ], [
     for k, v in var.compute_plane :
     [v.polling_agent.image, v.polling_agent.tag]
