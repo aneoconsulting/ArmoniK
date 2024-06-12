@@ -315,11 +315,14 @@ variable "mq_credentials" {
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type = object({
-    image_name      = optional(string, "mongo")
-    image_tag       = optional(string)
-    node_selector   = optional(any, {})
-    pull_secrets    = optional(string, "")
-    replicas_number = optional(number, 1)
+    image_name            = optional(string, "bitnami/mongodb")
+    image_tag             = optional(string)
+    node_selector         = optional(any, {})
+    pull_secrets          = optional(string, "")
+    replicas_number       = optional(number, 1)
+    helm_chart_repository = optional(string)
+    helm_chart_version    = optional(string)
+
     persistent_volume = optional(object({
       storage_provisioner = string
       volume_binding_mode = optional(string, "Immediate")
@@ -334,6 +337,7 @@ variable "mongodb" {
         }))
       }), {})
     }))
+
     security_context = optional(object({
       run_as_user = optional(number, 999)
       fs_group    = optional(number, 999)
