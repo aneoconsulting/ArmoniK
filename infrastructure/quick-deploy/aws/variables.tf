@@ -718,7 +718,7 @@ variable "authentication" {
 variable "pod_deletion_cost" {
   description = "Configuration of Pod Deletion Cost updater"
   type = object({
-    image               = optional(string, "dockerhubaneo/armonik-pdc-update")
+    image               = optional(string, "dockerhubaneo/armonik_pdc_update")
     tag                 = optional(string)
     image_pull_policy   = optional(string, "IfNotPresent")
     image_pull_secrets  = optional(string, "")
