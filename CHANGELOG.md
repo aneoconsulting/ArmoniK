@@ -2,6 +2,45 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+## [v2.20.0](https://github.com/aneoconsulting/armonik/tree/v2.20.0) (2024-07-03)
+
+Changed
+-
+* Add an infra plugin: Pod Deletion Cost capability [Changelog](https://github.com/aneoconsulting/ArmoniK.Infra.Plugins/releases/tag/0.1.0)
+* Upgrade version of ArmoniK Infra from `0.3.0` to `0.4.3` [Changelog](https://github.com/aneoconsulting/ArmoniK.Infra/releases/tag/0.4.3).
+* Upgrade version of ArmoniK API from `3.17.0` to `3.18.1` [Changelog](https://github.com/aneoconsulting/ArmoniK.Api/releases/tag/3.18.1).
+* Upgrade version of ArmoniK Core from `0.24.0` to `0.24.2` [Changelog](https://github.com/aneoconsulting/ArmoniK.Core/releases/tag/0.24.2).
+* Upgrade version of ArmoniK Admin Gui from `0.11.8` to `0.12.2` [Changelog](https://github.com/aneoconsulting/ArmoniK.Admin.GUI/releases/0.12.2).
+* Upgrade version of ArmoniK Extensions Csharp from `0.14.6` to `0.18.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/releases/tag/0.18.0).
+
+There are some very important modifications and new functionality in this version.
+
+The most consequential is probably the addition of a new service, the Pod Cost Deletion,
+which will imply **a change of the infrastructure**. This service will advise Kubernetes,
+in case of downscaling, to destroy, in priority, the pods with the tasks with the lower execution
+time.
+
+Another important modification is the removal of the legacy Grpc core for .Net used in Extensions.Csharp
+to be able to support legacy system using .Net 4.8. Nowadays the Extensions are using Grpc .Net.
+**Be careful**, due to the release of the use of grpc Core (deprecated) and its replacement with Grpc .Net,
+a consequence is that the client may not use exactly the same type of submission protocol.
+Indeed, http2 was previously provided by grpc core and is now managed by the system.
+Unfortunately, this is only available on Microsoft Windows from the version Microsoft Windows 11 or
+Microsoft Server 2019. For this to work on previous versions (including Microsoft Windows 10),
+a fall back to the grpc web protocol was implemented. Therefore, there may be slightly different
+behavior on Microsoft Windows depending of the OS version.
+Note: the previous version 0.12.6 (debian 11) or 0.12.7 (debian 12) are still compatible.
+
+The Admin Gui has been update to the newer LTS version of the Angular framework and contains
+tons of small improvements and bugs corrections.
+
+
+## [v2.19.5](https://github.com/aneoconsulting/armonik/tree/v2.19.5) (2024-04-26)
+
+Changed
+-
+* Upgrade version of ArmoniK Extensions Csharp from `0.14.4` to `0.14.5` [Changelog](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/releases).
+
 Added
 -
 
