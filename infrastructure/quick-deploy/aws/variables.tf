@@ -715,6 +715,37 @@ variable "authentication" {
   default = {}
 }
 
+variable "pod_deletion_cost" {
+  description = "Configuration of Pod Deletion Cost updater"
+  type = object({
+    image               = optional(string, "dockerhubaneo/armonik_pdc_update")
+    tag                 = optional(string)
+    image_pull_policy   = optional(string, "IfNotPresent")
+    image_pull_secrets  = optional(string, "")
+    node_selector       = optional(any, {})
+    annotations         = optional(any, {})
+    name                = optional(string, "pdc-update")
+    label_app           = optional(string, "armonik")
+    prometheus_url      = optional(string)
+    metrics_name        = optional(string)
+    period              = optional(number)
+    ignore_younger_than = optional(number)
+    concurrency         = optional(number)
+    granularity         = optional(number)
+    extra_conf          = optional(map(string), {})
+
+    limits = optional(object({
+      cpu    = optional(string)
+      memory = optional(string)
+    }))
+    requests = optional(object({
+      cpu    = optional(string)
+      memory = optional(string)
+    }))
+  })
+  default = {}
+}
+
 variable "upload_images" {
   description = "Whether the images are uploaded to the Artifact Registry or not"
   type        = bool
@@ -724,24 +755,26 @@ variable "upload_images" {
 variable "armonik_versions" {
   description = "Versions of all the ArmoniK components"
   type = object({
-    infra     = string
-    core      = string
-    api       = string
-    gui       = string
-    extcsharp = string
-    samples   = string
+    infra         = string
+    infra_plugins = string
+    core          = string
+    api           = string
+    gui           = string
+    extcsharp     = string
+    samples       = string
   })
 }
 
 variable "armonik_images" {
   description = "Image names of all the ArmoniK components"
   type = object({
-    infra     = set(string)
-    core      = set(string)
-    api       = set(string)
-    gui       = set(string)
-    extcsharp = set(string)
-    samples   = set(string)
+    infra         = set(string)
+    infra_plugins = set(string)
+    core          = set(string)
+    api           = set(string)
+    gui           = set(string)
+    extcsharp     = set(string)
+    samples       = set(string)
   })
 }
 

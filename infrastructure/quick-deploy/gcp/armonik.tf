@@ -81,4 +81,10 @@ module "armonik" {
     image_pull_secrets = var.metrics_exporter.pull_secrets
     node_selector      = var.metrics_exporter.node_selector
   }
+
+  # Pod Deletion Cost updater
+  pod_deletion_cost = merge(var.pod_deletion_cost, {
+    image = local.docker_images["${var.pod_deletion_cost.image}:${try(coalesce(var.pod_deletion_cost.tag), "")}"].image
+    tag   = local.docker_images["${var.pod_deletion_cost.image}:${try(coalesce(var.pod_deletion_cost.tag), "")}"].tag
+  })
 }
