@@ -31,16 +31,37 @@ module "armonik" {
       }, v, {
       polling_agent = merge(v.polling_agent, {
         tag = try(coalesce(v.polling_agent.tag), local.default_tags[v.polling_agent.image])
+        }, { conf = [
+          {
+            env          = local.polling_env
+            env_secret   = local.polling_env_secret
+            mount_secret = local.control_mount_secret
+          }
+        ]
       })
       worker = [
         for w in v.worker : merge(w, {
           tag = try(coalesce(w.tag), local.default_tags[w.image])
+          }, { conf = [
+            {
+              env          = local.worker_env
+              env_secret   = local.worker_env_secret
+              mount_secret = local.control_mount_secret
+            }
+          ]
         })
       ]
     })
   }
   control_plane = merge(var.control_plane, {
     tag = try(coalesce(var.control_plane.tag), local.default_tags[var.control_plane.image])
+    }, { conf = [
+      {
+        env          = local.control_env
+        env_secret   = local.control_env_secret
+        mount_secret = local.control_mount_secret
+      }
+    ]
   })
   admin_gui = merge(var.admin_gui, {
     tag = try(coalesce(var.admin_gui.tag), local.default_tags[var.admin_gui.image])
@@ -68,6 +89,14 @@ module "armonik" {
     tag                = try(coalesce(var.metrics_exporter.image_tag), local.default_tags[var.metrics_exporter.image_name])
     image_pull_secrets = var.metrics_exporter.pull_secrets
     node_selector      = var.metrics_exporter.node_selector
+    conf = [
+      {
+        env          = local.metrics_env
+        env_secret   = local.metrics_env_secret
+        mount_secret = local.control_mount_secret
+      }
+    ]
+
   }
 
   # Pod Deletion Cost updater
