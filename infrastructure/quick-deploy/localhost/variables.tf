@@ -267,20 +267,7 @@ variable "metrics_exporter" {
     node_selector = optional(any, {})
     extra_conf    = optional(map(string), {})
     #conf
-    conf = optional(list(object({
-      env        = optional(map(string), {})
-      env_secret = optional(set(string), [])
-      mount_secret = optional(map(object({
-        secret = string
-        path   = string
-        mode   = string
-      })), {})
-      env_configmap = optional(set(string), [])
-      env_from_configmap = optional(map(object({
-        configmap = string
-        field     = string
-      })), {})
-    })), [])
+    conf = optional(any)
   })
   default = {}
 }
@@ -373,21 +360,7 @@ variable "control_plane" {
     hpa               = optional(any)
     default_partition = string
     # module inputs
-    conf = optional(list(object({
-      env        = optional(map(string), {})
-      env_secret = optional(set(string), [])
-      mount_secret = optional(map(object({
-        secret = string
-        path   = string
-        mode   = string
-      })), {})
-      env_configmap = optional(set(string), [])
-      env_from_configmap = optional(map(object({
-        configmap = string
-        field     = string
-      })), {})
-    })), [])
-    //    config_list = optional(list(string))
+    conf = optional(any)
   })
 }
 
@@ -439,20 +412,7 @@ variable "compute_plane" {
         memory = optional(string)
       }))
       #conf
-      conf = optional(list(object({
-        env        = optional(map(string), {})
-        env_secret = optional(set(string), [])
-        mount_secret = optional(map(object({
-          secret = string
-          path   = string
-          mode   = string
-        })), {})
-        env_configmap = optional(set(string), [])
-        env_from_configmap = optional(map(object({
-          configmap = string
-          field     = string
-        })), {})
-      })), [])
+      conf = optional(any)
     })
     worker = list(object({
       name              = optional(string, "worker")
@@ -468,20 +428,7 @@ variable "compute_plane" {
         memory = optional(string)
       }))
       #conf
-      conf = optional(list(object({
-        env        = optional(map(string), {})
-        env_secret = optional(set(string), [])
-        mount_secret = optional(map(object({
-          secret = string
-          path   = string
-          mode   = string
-        })), {})
-        env_configmap = optional(set(string), [])
-        env_from_configmap = optional(map(object({
-          configmap = string
-          field     = string
-        })), {})
-      })), [])
+      conf = optional(any)
     }))
     cache_config = optional(object({
       memory     = optional(bool)
