@@ -7,10 +7,7 @@ cat <<EOF
 ***** This script allows you to connect to mongo directly from inside the cluster => useful for AWS installation *****
 **********************************************************************************************************************
 
-1 - Firstly you have to connect to db :
-  use database
-
-2 - You can execute requests ex :
+- You can execute requests ex :
 - Display all TaskData :
   db.TaskData.find().limit(3).pretty()
 - Filter by  session / output :
@@ -44,23 +41,23 @@ kubectl run -it --rm -n armonik mongoshclient --image=rtsp/mongosh --overrides='
           "-c"
         ],
         "args": [
-          "mongosh --tlsCAFile /mongodb/chain.pem --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD mongodb+srv://mongodb-armonik-headless.armonik.svc.cluster.local/"
+          "mongosh --tlsCAFile /mongodb/chain.pem --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls -u $MONGO_USERNAME -p $MONGO_USER_PASSWORD mongodb+srv://mongodb-armonik-headless.armonik.svc.cluster.local/database"
         ],
         "env": [
           {
-            "name": "MONGO_INITDB_ROOT_USERNAME",
+            "name": "MONGO_USERNAME",
             "valueFrom": {
               "secretKeyRef": {
-                "name": "mongodb-admin",
+                "name": "mongodb-user",
                 "key": "username"
               }
             }
           },
           {
-            "name": "MONGO_INITDB_ROOT_PASSWORD",
+            "name": "MONGO_USER_PASSWORD",
             "valueFrom": {
               "secretKeyRef": {
-                "name": "mongodb-admin",
+                "name": "mongodb-user",
                 "key": "password"
               }
             }

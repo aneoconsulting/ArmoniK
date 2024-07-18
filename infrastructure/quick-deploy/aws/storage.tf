@@ -166,11 +166,13 @@ module "mongodb" {
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
   mongodb = {
-    image              = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
-    tag                = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
-    node_selector      = var.mongodb.node_selector
-    image_pull_secrets = var.mongodb.pull_secrets
-    replicas_number    = var.mongodb.replicas_number
+    image                 = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
+    tag                   = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
+    node_selector         = var.mongodb.node_selector
+    image_pull_secrets    = var.mongodb.pull_secrets
+    replicas              = var.mongodb.replicas
+    helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts.mongodb.repository)
+    helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts.mongodb.version)
   }
 
   persistent_volume = var.mongodb.persistent_volume != null ? {
@@ -359,7 +361,7 @@ locals {
     } : null
     mongodb = {
       url                = module.mongodb.url
-      number_of_replicas = var.mongodb.replicas_number
+      number_of_replicas = var.mongodb.replicas
     }
     shared = {
       service_url = "https://s3.${var.region}.amazonaws.com"
