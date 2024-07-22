@@ -306,3 +306,8 @@ environment_description = {
 static = {
   gui_configuration = {}
 }
+
+mongodb = {
+  # Uncomment the line below to enable persistence, uncomment to disable
+  # persistent_volume = {}
+}

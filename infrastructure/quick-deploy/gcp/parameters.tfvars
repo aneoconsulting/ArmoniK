@@ -245,6 +245,8 @@ keda = {
 
 mongodb = {
   node_selector = { service = "state-database" }
+  # Uncomment the line below to enable persistence, comment to disable
+  # persistent_volume = {}
 }
 
 #memorystore = {

@@ -34,7 +34,7 @@ module "mongodb" {
     helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts.mongodb.repository)
     helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts.mongodb.version)
   }
-  persistent_volume = null
+  persistent_volume = var.mongodb.persistent_volume
 }
 
 # Redis
