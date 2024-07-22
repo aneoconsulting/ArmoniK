@@ -252,6 +252,8 @@ keda = {
 
 mongodb = {
   node_selector = { service = "state-database" }
+  # Uncomment the line below to enable persistence, comment to disable
+  # persistent_volume = {}
 }
 
 # Nullify to disable sharding, each nullification of subobject will result in the use of default values 
