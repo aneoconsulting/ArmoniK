@@ -342,6 +342,9 @@ mongodb = {
   #     "ephemeral-storage" = "500Mi"
   #   }
   # }
+
+  # Uncomment the line below to enable persistence, comment to disable
+  # persistent_volume = {}
 }
 
 # Nullify to disable sharding

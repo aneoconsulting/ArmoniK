@@ -37,7 +37,7 @@ module "mongodb" {
   }
   mongodb_resources = var.mongodb.mongodb_resources
   arbiter_resources = var.mongodb.arbiter_resources
-  persistent_volume = null
+  persistent_volume = var.mongodb.persistent_volume
 }
 
 module "mongodb_sharded" {

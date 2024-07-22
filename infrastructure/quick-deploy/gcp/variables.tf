@@ -128,7 +128,7 @@ variable "mongodb" {
       limits   = optional(map(string))
       requests = optional(map(string))
     }))
-    
+
     persistent_volume = optional(object({
       storage_provisioner = optional(string)
       volume_binding_mode = optional(string, "Immediate")
