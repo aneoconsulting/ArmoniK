@@ -118,6 +118,21 @@ variable "mongodb" {
     replicas              = optional(number, 1)
     helm_chart_repository = optional(string)
     helm_chart_version    = optional(string)
+
+    persistent_volume = optional(object({
+      storage_provisioner = optional(string)
+      volume_binding_mode = optional(string, "Immediate")
+      parameters          = optional(map(string), {})
+      #Resources for PVC
+      resources = optional(object({
+        limits = optional(object({
+          storage = string
+        }))
+        requests = optional(object({
+          storage = string
+        }))
+      }))
+    }))
   })
   default = {}
 }
