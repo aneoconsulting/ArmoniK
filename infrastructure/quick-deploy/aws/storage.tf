@@ -125,6 +125,7 @@ module "mq" {
   source          = "./generated/infra-modules/storage/aws/mq"
   tags            = local.tags
   name            = "${local.prefix}-mq"
+  namespace       = local.namespace
   vpc_id          = local.vpc.id
   vpc_cidr_blocks = local.vpc.cidr_blocks
   vpc_subnet_ids  = local.vpc.subnet_ids
