@@ -272,7 +272,7 @@ mq = {
 
 mongodb = {
   node_selector = { service = "state-database" }
-  # Uncomment persitent_volume to enable persistence, comment to disable
+  # Uncomment persistent_volume to enable persistence, comment to disable
   #persistent_volume = {
   #  storage_provisioner = "efs.csi.aws.com"
   #  resources = {
