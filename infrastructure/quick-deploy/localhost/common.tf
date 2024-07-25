@@ -20,7 +20,7 @@ locals {
   minio_s3_fs_image              = try(var.minio_s3_fs.image, "minio/minio")
   minio_s3_fs_image_pull_secrets = try(var.minio_s3_fs.image_pull_secrets, "")
   minio_s3_fs_host               = try(var.minio_s3_fs.host, "minio_s3_fs")
-  minio_s3_fs_bucket_name        = try(var.minio_s3_fs.default_bucket, "minioBucket")
+  minio_s3_fs_bucket_name        = try(var.minio_s3_fs.default_bucket, "minio-bucket")
   minio_s3_fs_node_selector      = try(var.minio_s3_fs.node_selector, {})
   shared_storage_minio_s3_fs = var.minio_s3_fs != null ? {
     file_storage_type     = "s3"

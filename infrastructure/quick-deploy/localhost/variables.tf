@@ -180,7 +180,7 @@ variable "minio" {
     image_tag          = optional(string)
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
-    default_bucket     = optional(string, "minioBucket")
+    default_bucket     = optional(string, "minio-bucket")
     host               = optional(string, "minio")
   })
   default = null
@@ -194,7 +194,7 @@ variable "minio_s3_fs" {
     image_tag          = optional(string)
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
-    default_bucket     = optional(string, "minioBucket")
+    default_bucket     = optional(string, "minio-bucket")
     host               = optional(string, "minio-s3-fs")
   })
   default = null
