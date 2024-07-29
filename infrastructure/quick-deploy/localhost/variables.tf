@@ -574,3 +574,14 @@ variable "static" {
   type        = any
   default     = {}
 }
+
+# Extra configuration
+variable "others_conf" {
+  description = "Variable"
+  type = object({
+    database = any
+  })
+  default = {
+    database = {}
+  }
+}

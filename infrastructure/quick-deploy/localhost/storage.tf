@@ -125,18 +125,18 @@ resource "kubernetes_secret" "deployed_table_storage" {
   }
 }
 
-resource "kubernetes_secret" "deployed_queue_storage" {
-  metadata {
-    name      = "deployed-queue-storage"
-    namespace = local.namespace
-  }
-  data = {
-    list                  = join(",", local.storage_endpoint_url.deployed_queue_storages)
-    adapter               = local.storage_endpoint_url.queue_storage_adapter
-    adapter_class_name    = local.queue_module.adapter_class_name
-    adapter_absolute_path = local.queue_module.adapter_absolute_path
-  }
-}
+# resource "kubernetes_secret" "deployed_queue_storage" {
+#   metadata {
+#     name      = "deployed-queue-storage"
+#     namespace = local.namespace
+#   }
+#   data = {
+#     list                  = join(",", local.storage_endpoint_url.deployed_queue_storages)
+#     adapter               = local.storage_endpoint_url.queue_storage_adapter
+#     adapter_class_name    = local.queue_module.adapter_class_name
+#     adapter_absolute_path = local.queue_module.adapter_absolute_path
+#   }
+# }
 
 # Storage
 locals {
