@@ -176,6 +176,8 @@ module "mongodb" {
     helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts.mongodb.version)
   }
 
+  mongodb_resources = var.mongodb.resources
+
   persistent_volume = var.mongodb.persistent_volume != null ? {
     storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
     volume_binding_mode = var.mongodb.persistent_volume.volume_binding_mode

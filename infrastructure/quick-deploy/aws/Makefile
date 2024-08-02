@@ -15,8 +15,8 @@ RANDOM_PREFIX != [ -e $(GENERATED_DIR)/.prefix ] || { mkdir -p $(GENERATED_DIR) 
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export TF_PLUGIN_CACHE_DIR?=$(GENERATED_DIR)/terraform-plugins
-export REGION?=eu-west-3
-export PROFILE?=default
+export REGION?=eu-west-1
+export PROFILE?=qdelamea
 export NAMESPACE?=armonik
 export PREFIX?=armonik-$(RANDOM_PREFIX)
 export TFSTATE_BUCKET_NAME?=$(PREFIX)-tfstate

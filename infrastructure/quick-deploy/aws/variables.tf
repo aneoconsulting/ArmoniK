@@ -322,6 +322,16 @@ variable "mongodb" {
     replicas              = optional(number, 1)
     helm_chart_repository = optional(string)
     helm_chart_version    = optional(string)
+    resources = optional(object({
+      limits = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+      requests = optional(object({
+        cpu    = optional(string)
+        memory = optional(string)
+      }))
+    }))
 
     persistent_volume = optional(object({
       storage_provisioner = string
