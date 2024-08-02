@@ -4,17 +4,12 @@ module "armonik" {
   logging_level = var.logging_level
   extra_conf    = var.extra_conf
 
-  // To avoid the "known after apply" behavior that arises from using depends_on, we are using a ternary expression to impose implicit dependencies on the below secrets.
-  fluent_bit_secret_name                 = kubernetes_secret.fluent_bit.id != null ? kubernetes_secret.fluent_bit.metadata[0].name : kubernetes_secret.fluent_bit.metadata[0].name
-  grafana_secret_name                    = kubernetes_secret.grafana.id != null ? kubernetes_secret.grafana.metadata[0].name : kubernetes_secret.grafana.metadata[0].name
-  prometheus_secret_name                 = kubernetes_secret.prometheus.id != null ? kubernetes_secret.prometheus.metadata[0].name : kubernetes_secret.prometheus.metadata[0].name
-  metrics_exporter_secret_name           = kubernetes_secret.metrics_exporter.id != null ? kubernetes_secret.metrics_exporter.metadata[0].name : kubernetes_secret.metrics_exporter.metadata[0].name
-  partition_metrics_exporter_secret_name = kubernetes_secret.partition_metrics_exporter.id != null ? kubernetes_secret.partition_metrics_exporter.metadata[0].name : kubernetes_secret.partition_metrics_exporter.metadata[0].name
-  seq_secret_name                        = kubernetes_secret.seq.id != null ? kubernetes_secret.seq.metadata[0].name : kubernetes_secret.seq.metadata[0].name
-  shared_storage_secret_name             = kubernetes_secret.shared_storage.id != null ? kubernetes_secret.shared_storage.metadata[0].name : kubernetes_secret.shared_storage.metadata[0].name
-  # deployed_object_storage_secret_name    = kubernetes_secret.deployed_object_storage.id != null ? kubernetes_secret.deployed_object_storage.metadata[0].name : kubernetes_secret.deployed_object_storage.metadata[0].name
-  # deployed_table_storage_secret_name     = kubernetes_secret.deployed_table_storage.id != null ? kubernetes_secret.deployed_table_storage.metadata[0].name : kubernetes_secret.deployed_table_storage.metadata[0].name
-  # #  deployed_queue_storage_secret_name     = kubernetes_secret.deployed_queue_storage.id != null ? kubernetes_secret.deployed_queue_storage.metadata[0].name : kubernetes_secret.deployed_queue_storage.metadata[0].name
+  fluent_bit_output       = module.fluent_bit
+  grafana_output          = module.grafana
+  prometheus_output       = module.prometheus
+  metrics_exporter_output = module.metrics_exporter
+  seq_output              = module.seq
+  shared_storage_settings = local.shared_storage
 
   // If compute plane has no partition data, provides a default
   // but always overrides the images
@@ -80,10 +75,6 @@ module "armonik" {
     tag = try(coalesce(var.pod_deletion_cost.tag), local.default_tags[var.pod_deletion_cost.image])
   })
 
-  #config
-  others_conf = {
-    database = local.config_database
-  }
+  #config for in-database jobs
+  others_conf = local.config_database
 }
-
-

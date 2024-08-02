@@ -575,13 +575,9 @@ variable "static" {
   default     = {}
 }
 
-# Extra configuration
+# Extra configuration for in-database jobs
 variable "others_conf" {
-  description = "Variable"
-  type = object({
-    database = any
-  })
-  default = {
-    database = {}
-  }
+  description = "Variable in-database jobs"
+  type        = any
+  default     = {}
 }
