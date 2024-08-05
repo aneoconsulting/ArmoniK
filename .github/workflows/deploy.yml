@@ -78,7 +78,7 @@ jobs:
             cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json logs/infra/generated
           fi
           make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > logs/infra/tfstates/armonik-terraform.tfstate
-          sudo cp -rL /var/log/pods/armonik_* logs/app
+          sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' logs/app/ ';'
           sudo chown $USER -R logs
           tar -czf admin-gui.tar.gz logs
           aws s3 cp admin-gui.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/admin-gui.tar.gz
@@ -142,7 +142,7 @@ jobs:
             cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json core-stream/infra/generated
           fi
           make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > core-stream/infra/tfstates/armonik-terraform.tfstate
-          sudo cp -rL /var/log/pods/armonik_* core-stream/app
+          sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' core-stream/app/ ';'
           sudo chown $USER -R core-stream
           tar -czf core-stream.tar.gz core-stream
           aws s3 cp core-stream.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/core-stream.tar.gz
@@ -265,7 +265,7 @@ jobs:
               cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json htcmock/infra/generated
             fi
             make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > htcmock/infra/tfstates/armonik-terraform.tfstate
-            sudo cp -rL /var/log/pods/armonik_* htcmock/app
+            sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' htcmock/app/ ';'
             sudo chown $USER -R htcmock
             tar -czf htcmock.tar.gz htcmock
             aws s3 cp htcmock.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock.tar.gz
@@ -370,7 +370,7 @@ jobs:
               cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json bench/infra/generated
              fi
              make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > bench/infra/tfstates/armonik-terraform.tfstate
-             sudo cp -rL /var/log/pods/armonik_* bench/app
+             sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' bench/app/ ';'
              sudo chown $USER -R bench
              tar -czf bench.tar.gz bench
              aws s3 cp bench.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/bench.tar.gz
