@@ -2,13 +2,17 @@ module "armonik" {
   source        = "./generated/infra-modules/armonik"
   namespace     = local.namespace
   logging_level = var.logging_level
-  extra_conf    = var.extra_conf
 
-  fluent_bit_output       = module.fluent_bit
-  grafana_output          = module.grafana
-  prometheus_output       = module.prometheus
-  metrics_exporter_output = module.metrics_exporter
-  seq_output              = module.seq
+  configurations = merge(var.configurations, {
+    core   = [module.activemq, module.redis, module.mongodb, var.configurations.core]
+    worker = [var.configurations.worker]
+  })
+
+  fluent_bit              = module.fluent_bit
+  grafana                 = one(module.grafana)
+  prometheus              = module.prometheus
+  metrics                 = module.metrics_exporter
+  seq                     = one(module.seq)
   shared_storage_settings = local.shared_storage
 
   // If compute plane has no partition data, provides a default
@@ -25,20 +29,17 @@ module "armonik" {
       },
       }, v, {
       polling_agent = merge(v.polling_agent, {
-        tag       = try(coalesce(v.polling_agent.tag), local.default_tags[v.polling_agent.image])
-        }, { conf = local.config_list_polling_agent
+        tag = try(coalesce(v.polling_agent.tag), local.default_tags[v.polling_agent.image])
       })
       worker = [
         for w in v.worker : merge(w, {
-          tag       = try(coalesce(w.tag), local.default_tags[w.image])
-          }, { conf = local.config_list_worker
+          tag = try(coalesce(w.tag), local.default_tags[w.image])
         })
       ]
     })
   }
   control_plane = merge(var.control_plane, {
-    tag       = try(coalesce(var.control_plane.tag), local.default_tags[var.control_plane.image])
-    }, { conf = local.config_list_control_plane
+    tag = try(coalesce(var.control_plane.tag), local.default_tags[var.control_plane.image])
   })
   admin_gui = merge(var.admin_gui, {
     tag = try(coalesce(var.admin_gui.tag), local.default_tags[var.admin_gui.image])
@@ -66,15 +67,10 @@ module "armonik" {
     tag                = try(coalesce(var.metrics_exporter.image_tag), local.default_tags[var.metrics_exporter.image_name])
     image_pull_secrets = var.metrics_exporter.pull_secrets
     node_selector      = var.metrics_exporter.node_selector
-    conf               = local.config_list_metrics_exporter
-
   }
 
   # Pod Deletion Cost updater
   pod_deletion_cost = merge(var.pod_deletion_cost, {
     tag = try(coalesce(var.pod_deletion_cost.tag), local.default_tags[var.pod_deletion_cost.image])
   })
-
-  #config for in-database jobs
-  others_conf = local.config_database
 }
