@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.0"
+  required_version = ">= 1.9.4"
   required_providers {
     helm = {
       source  = "hashicorp/helm"
