@@ -30,8 +30,8 @@ module "armonik" {
       })
       worker = [
         for w in v.worker : merge(w, {
-          tag       = try(coalesce(w.tag), local.default_tags[w.image])
-          }, { conf = local.config_list_worker
+          tag  = try(coalesce(w.tag), local.default_tags[w.image])
+          conf = local.config_list_worker 
         })
       ]
     })
