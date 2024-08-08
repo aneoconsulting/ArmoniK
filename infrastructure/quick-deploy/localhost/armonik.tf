@@ -25,8 +25,8 @@ module "armonik" {
       },
       }, v, {
       polling_agent = merge(v.polling_agent, {
-        tag       = try(coalesce(v.polling_agent.tag), local.default_tags[v.polling_agent.image])
-        }, { conf = local.config_list_polling_agent
+        tag  = try(coalesce(v.polling_agent.tag), local.default_tags[v.polling_agent.image])
+        conf = local.config_list_polling_agent
       })
       worker = [
         for w in v.worker : merge(w, {
