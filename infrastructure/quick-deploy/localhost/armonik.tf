@@ -37,8 +37,8 @@ module "armonik" {
     })
   }
   control_plane = merge(var.control_plane, {
-    tag       = try(coalesce(var.control_plane.tag), local.default_tags[var.control_plane.image])
-    }, { conf = local.config_list_control_plane
+    tag  = try(coalesce(var.control_plane.tag), local.default_tags[var.control_plane.image])
+    conf = local.config_list_control_plane
   })
   admin_gui = merge(var.admin_gui, {
     tag = try(coalesce(var.admin_gui.tag), local.default_tags[var.admin_gui.image])
