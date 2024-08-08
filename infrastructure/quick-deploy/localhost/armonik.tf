@@ -67,7 +67,6 @@ module "armonik" {
     image_pull_secrets = var.metrics_exporter.pull_secrets
     node_selector      = var.metrics_exporter.node_selector
     conf               = local.config_list_metrics_exporter
-
   }
 
   # Pod Deletion Cost updater
