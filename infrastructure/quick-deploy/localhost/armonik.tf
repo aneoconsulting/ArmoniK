@@ -4,11 +4,11 @@ module "armonik" {
   logging_level = var.logging_level
   extra_conf    = var.extra_conf
 
-  fluent_bit_output       = local.fluent_bit_output
-  grafana_output          = local.grafana_output
-  prometheus_output       = local.prometheus_output
-  metrics_exporter_output = local.metrics_exporter_output
-  seq_output              = local.seq_output
+  fluent_bit              = local.fluent_bit
+  grafana                 = local.grafana
+  prometheus              = local.prometheus
+  metrics                 = local.metrics_exporter
+  seq                     = local.seq
   shared_storage_settings = local.shared_storage
 
   // If compute plane has no partition data, provides a default
