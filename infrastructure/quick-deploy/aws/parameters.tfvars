@@ -322,11 +322,13 @@ metrics_exporter = {
 /*parition_metrics_exporter = {
   node_selector = { service = "metrics" }
   extra_conf    = {
+  env = {
     MongoDB__AllowInsecureTls           = true
     Serilog__MinimumLevel               = "Information"
     MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
     MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
     MongoDB__DataRetention = "1.00:00:00"
+    }
   }
 }*/
 
@@ -592,33 +594,39 @@ authentication = {
   node_selector = { service = "control-plane" }
 }
 
-extra_conf = {
+configurations = {
   core = {
-    Amqp__AllowHostMismatch                    = false
-    Amqp__MaxPriority                          = "10"
-    Amqp__MaxRetries                           = "5"
-    Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
-    Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
-    Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
-    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
-    MongoDB__TableStorage__PollingDelay        = "00:00:01"
-    MongoDB__DataRetention                     = "1.00:00:00" # 1 day retention
-    MongoDB__AllowInsecureTls                  = true
-    Redis__Timeout                             = 3000
-    Redis__SslHost                             = ""
-    Redis__TtlTimeSpan                         = "1.00:00:00" # 1 day retention
+    env = {
+      Amqp__AllowHostMismatch                    = false
+      Amqp__MaxPriority                          = "10"
+      Amqp__MaxRetries                           = "5"
+      Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
+      Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
+      Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+      MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+      MongoDB__TableStorage__PollingDelay        = "00:00:01"
+      MongoDB__DataRetention                     = "1.00:00:00" # 1 day retention
+      MongoDB__AllowInsecureTls                  = true
+      Redis__Timeout                             = 3000
+      Redis__SslHost                             = ""
+      Redis__TtlTimeSpan                         = "1.00:00:00" # 1 day retention
+    }
   }
   control = {
-    Submitter__MaxErrorAllowed = 50
+    env = {
+      Submitter__MaxErrorAllowed = 50
+    }
   }
   worker = {
-    target_zip_path = "/tmp"
+    env = {
+      target_zip_path = "/tmp"
+    }
   }
+  jobs = { env = { MongoDB__DataRetention = "1.00:00:00" } }
 }
 
-# Extra configuration for jobs connecting to database
-jobs_in_database_extra_conf = { MongoDB__DataRetention = "1.00:00:00" }
+
 
 environment_description = {
   name        = "aws-dev"
