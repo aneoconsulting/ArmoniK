@@ -4,8 +4,7 @@ module "armonik" {
   logging_level = var.logging_level
 
   configurations = merge(var.configurations, {
-    core   = [module.activemq, module.redis, module.mongodb, var.configurations.core]
-    worker = [var.configurations.worker]
+    core = [module.activemq, module.redis, module.mongodb, var.configurations.core]
   })
 
   fluent_bit              = module.fluent_bit

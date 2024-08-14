@@ -305,14 +305,14 @@ variable "fluent_bit" {
 variable "configurations" {
   description = ""
   type = object({
-    core    = optional(any, {})
-    control = optional(any, {})
-    compute = optional(any, {})
-    worker  = optional(any, {})
-    polling = optional(any, {})
-    log     = optional(any, {})
-    metrics = optional(any, {})
-    jobs    = optional(any, {})
+    core    = optional(any, [])
+    control = optional(any, [])
+    compute = optional(any, [])
+    worker  = optional(any, [])
+    polling = optional(any, [])
+    log     = optional(any, [])
+    metrics = optional(any, [])
+    jobs    = optional(any, [])
   })
 }
 
@@ -407,7 +407,6 @@ variable "compute_plane" {
         cpu    = optional(string)
         memory = optional(string)
       }))
-      #conf
       conf = optional(any, [])
     })
     worker = list(object({
@@ -423,7 +422,6 @@ variable "compute_plane" {
         cpu    = optional(string)
         memory = optional(string)
       }))
-      #conf
       conf = optional(any, [])
     }))
     cache_config = optional(object({
