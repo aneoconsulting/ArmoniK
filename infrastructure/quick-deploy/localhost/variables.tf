@@ -142,6 +142,16 @@ variable "mongodb" {
     replicas              = optional(number, 1)
     helm_chart_repository = optional(string)
     helm_chart_version    = optional(string)
+
+    mongodb_resources = optional(object({
+      limits   = optional(map(string))
+      requests = optional(map(string))
+    }))
+
+    arbiter_resources = optional(object({
+      limits   = optional(map(string))
+      requests = optional(map(string))
+    }))
   })
   default = {}
 }

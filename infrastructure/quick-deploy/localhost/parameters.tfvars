@@ -306,3 +306,33 @@ environment_description = {
 static = {
   gui_configuration = {}
 }
+
+mongodb = {
+  # Uncomment to define custom resources for MongoDB pods, comment for default values
+  mongodb_resources = {
+    # limits = {
+    #   "cpu"               = 2
+    #   "memory"            = "1Gi"
+    #   "ephemeral-storage" = "10Gi"
+    # }
+    # requests = {
+    #   "cpu"               = "500m"
+    #   "memory"            = "500Mi"
+    #   "ephemeral-storage" = "1Gi"
+    # }
+  }
+
+  # Uncomment to define custom resources for MongoDB arbiter pods, comment for default values
+  arbiter_resources = {
+    # limits = {
+    #   "cpu"               = "400m"
+    #   "memory"            = "4Gi"
+    #   "ephemeral-storage" = "1Gi"
+    # }
+    # requests = {
+    #   "cpu"               = "100m"
+    #   "memory"            = "2Gi"
+    #   "ephemeral-storage" = "500Mi"
+    # }
+  }
+}

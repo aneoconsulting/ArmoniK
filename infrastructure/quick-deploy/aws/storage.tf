@@ -190,7 +190,10 @@ module "mongodb" {
     } : {})
   } : null
 
-  security_context = var.mongodb.security_context
+  security_context  = var.mongodb.security_context
+  mongodb_resources = var.mongodb.mongodb_resources
+  arbiter_resources = var.mongodb.arbiter_resources
+
 }
 
 module "mongodb_efs_persistent_volume" {
