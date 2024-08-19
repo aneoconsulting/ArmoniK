@@ -143,25 +143,6 @@ module "mq" {
   kms_key_id              = local.kms_key
 }
 
-resource "kubernetes_secret" "mq" {
-  metadata {
-    name      = "activemq"
-    namespace = local.namespace
-  }
-  data = {
-    "chain.pem"           = ""
-    username              = module.mq.username
-    password              = module.mq.password
-    host                  = module.mq.endpoint_host
-    port                  = module.mq.endpoint_port
-    url                   = module.mq.endpoint_url
-    web-url               = module.mq.web_url
-    adapter_class_name    = local.adapter_class_name
-    adapter_absolute_path = local.adapter_absolute_path
-    engine_type           = module.mq.engine_type
-  }
-}
-
 # MongoDB
 module "mongodb" {
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
@@ -270,41 +251,6 @@ resource "aws_iam_policy_attachment" "object" {
   policy_arn = each.value.arn
 }
 
-resource "kubernetes_secret" "deployed_object_storage" {
-  metadata {
-    name      = "deployed-object-storage"
-    namespace = local.namespace
-  }
-  data = {
-    list    = join(",", local.storage_endpoint_url.deployed_object_storages)
-    adapter = local.storage_endpoint_url.object_storage_adapter
-  }
-}
-
-resource "kubernetes_secret" "deployed_table_storage" {
-  metadata {
-    name      = "deployed-table-storage"
-    namespace = local.namespace
-  }
-  data = {
-    list    = join(",", local.storage_endpoint_url.deployed_table_storages)
-    adapter = local.storage_endpoint_url.table_storage_adapter
-  }
-}
-
-resource "kubernetes_secret" "deployed_queue_storage" {
-  metadata {
-    name      = "deployed-queue-storage"
-    namespace = local.namespace
-  }
-  data = {
-    list                  = join(",", local.storage_endpoint_url.deployed_queue_storages)
-    adapter               = local.storage_endpoint_url.queue_storage_adapter
-    adapter_class_name    = local.adapter_class_name
-    adapter_absolute_path = local.adapter_absolute_path
-  }
-}
-
 locals {
   aws_s3 = merge(
     {
@@ -335,39 +281,14 @@ locals {
       )
     },
   )
-  storage_endpoint_url = {
-    object_storage_adapter = try(coalesce(
-      length(module.elasticache) > 0 ? "Redis" : null,
-      length(module.s3_os) > 0 ? "S3" : null,
-    ), "")
-    table_storage_adapter = "MongoDB"
-    queue_storage_adapter = "Amqp"
-    deployed_object_storages = concat(
-      length(module.elasticache) > 0 ? ["Redis"] : [],
-      length(module.s3_os) > 0 ? ["S3"] : [],
-    )
-    deployed_table_storages = ["MongoDB"]
-    deployed_queue_storages = ["Amqp"]
-    activemq = {
-      url     = module.mq.endpoint_url
-      web_url = module.mq.web_url
-    }
-    redis = length(module.elasticache) > 0 ? {
-      url = module.elasticache[0].endpoint_url
-    } : null
-    s3 = length(module.s3_os) > 0 ? {
-      url         = "https://s3.${var.region}.amazonaws.com"
-      bucket_name = module.s3_os[0].s3_bucket_name
-      kms_key_id  = module.s3_os[0].kms_key_id
-    } : null
-    mongodb = {
-      url                = module.mongodb.url
-      number_of_replicas = var.mongodb.replicas
-    }
-    shared = {
-      service_url = "https://s3.${var.region}.amazonaws.com"
-      kms_key_id  = module.s3_fs.kms_key_id
-      name        = module.s3_fs.s3_bucket_name
-    }
+  shared_storage = {
+    file_storage_type     = "S3"
+    service_url           = "https://s3.${var.region}.amazonaws.com"
+    access_key_id         = ""
+    secret_access_key     = ""
+    name                  = module.s3_fs.s3_bucket_name
+    must_force_path_style = false
+    use_chunk_encoding    = true
+    use_check_sum         = true
   }
 }
