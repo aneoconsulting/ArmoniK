@@ -1,35 +1,14 @@
 locals {
   region = coalesce(var.region, data.google_client_config.current.region)
-  storage_endpoint_url = {
-    table_storage_adapter   = "MongoDB"
-    deployed_table_storages = ["MongoDB"]
-    mongodb = {
-      url                = module.mongodb.url
-      number_of_replicas = var.mongodb.replicas
-    }
-    queue_storage_adapter   = "PubSub"
-    deployed_queue_storages = ["PubSub"]
-    deployed_object_storages = concat(
-      length(module.gcs_os) > 0 ? ["S3"] : [],
-      length(module.memorystore) > 0 ? ["Redis"] : [],
-    )
-    object_storage_adapter = try(coalesce(
-      length(module.gcs_os) > 0 ? "S3" : null,
-      length(module.memorystore) > 0 ? "Redis" : null,
-    ), "")
-    redis = length(module.memorystore) > 0 ? {
-      url = module.memorystore[0].url
-    } : null
-    s3 = length(module.gcs_os) > 0 ? {
-      url         = "https://storage.googleapis.com"
-      bucket_name = module.gcs_os[0].name
-      kms_key_id  = local.kms_key_id
-    } : null
-    shared = {
-      service_url = "https://storage.googleapis.com"
-      name        = module.gcs_fs.name
-      kms_key_id  = local.kms_key_id
-    }
+  shared_storage = {
+    file_storage_type     = "S3"
+    service_url           = "https://storage.googleapis.com"
+    access_key_id         = google_storage_hmac_key.cloud_storage.access_id
+    secret_access_key     = google_storage_hmac_key.cloud_storage.secret
+    name                  = module.gcs_fs.name
+    must_force_path_style = false
+    use_chunk_encoding    = false
+    use_check_sum         = false
   }
 }
 
@@ -47,31 +26,6 @@ module "mongodb" {
     helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts.mongodb.version)
   }
   persistent_volume = null
-}
-
-resource "kubernetes_secret" "deployed_table_storage" {
-  metadata {
-    name      = "deployed-table-storage"
-    namespace = local.namespace
-  }
-  data = {
-    list    = join(",", local.storage_endpoint_url.deployed_table_storages)
-    adapter = local.storage_endpoint_url.table_storage_adapter
-  }
-}
-
-# PubSub for task queues
-resource "kubernetes_secret" "deployed_queue_storage" {
-  metadata {
-    name      = "deployed-queue-storage"
-    namespace = local.namespace
-  }
-  data = {
-    list                  = join(",", local.storage_endpoint_url.deployed_queue_storages)
-    adapter               = local.storage_endpoint_url.queue_storage_adapter
-    adapter_class_name    = "ArmoniK.Core.Adapters.PubSub.QueueBuilder"
-    adapter_absolute_path = "/adapters/queue/pubsub/ArmoniK.Core.Adapters.PubSub.dll"
-  }
 }
 
 # Redis for payloads
@@ -101,17 +55,6 @@ module "memorystore" {
   read_replicas_mode      = var.memorystore.read_replicas_mode
   customer_managed_key    = coalesce(var.memorystore.customer_managed_key, local.kms_key_id)
   depends_on              = [module.psa]
-}
-
-resource "kubernetes_secret" "deployed_object_storage" {
-  metadata {
-    name      = "deployed-object-storage"
-    namespace = local.namespace
-  }
-  data = {
-    list    = join(",", local.storage_endpoint_url.deployed_object_storages)
-    adapter = local.storage_endpoint_url.object_storage_adapter
-  }
 }
 
 resource "kubernetes_secret" "memorystore" {
@@ -213,4 +156,10 @@ resource "kubernetes_secret" "gcs" {
     use_chunk_encoding    = false
     use_check_sum         = false
   }
+}
+
+module "pubsub" {
+  source     = "./generated/infra-modules/storage/gcp/pubsub"
+  project_id = data.google_client_config.current.project
+  kms_key_id = data.google_kms_crypto_key.kms.id
 }

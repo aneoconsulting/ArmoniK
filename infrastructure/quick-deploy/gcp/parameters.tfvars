@@ -287,11 +287,13 @@ metrics_exporter = {
 #parition_metrics_exporter = {
 #  node_selector = { service = "metrics" }
 #  extra_conf    = {
+#  env = {
 #    MongoDB__AllowInsecureTls           = true
 #    Serilog__MinimumLevel               = "Information"
 #    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
 #    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
 #    MongoDB__DataRetention                 = "1.00:00:00" # 1 day retention
+#}
 #  }
 #}
 
@@ -554,27 +556,31 @@ authentication = {
   node_selector = { service = "control-plane" }
 }
 
-extra_conf = {
+configurations = {
   core = {
-    MongoDB__TableStorage__PollingDelayMin = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax = "00:00:10"
-    MongoDB__TableStorage__PollingDelay    = "00:00:01"
-    MongoDB__AllowInsecureTls              = true
-    MongoDB__DataRetention                 = "1.00:00:00" # 1 day retention
-    Redis__Timeout                         = 3000
-    Redis__SslHost                         = ""
-    Redis__TtlTimeSpan                     = "1.00:00:00" # 1 day retention
+    env = {
+      MongoDB__TableStorage__PollingDelayMin = "00:00:01"
+      MongoDB__TableStorage__PollingDelayMax = "00:00:10"
+      MongoDB__TableStorage__PollingDelay    = "00:00:01"
+      MongoDB__AllowInsecureTls              = true
+      MongoDB__DataRetention                 = "1.00:00:00" # 1 day retention
+      Redis__Timeout                         = 3000
+      Redis__SslHost                         = ""
+      Redis__TtlTimeSpan                     = "1.00:00:00" # 1 day retention
+    }
   }
   control = {
-    Submitter__MaxErrorAllowed = 50
+    env = {
+      Submitter__MaxErrorAllowed = 50
+    }
   }
   worker = {
-    target_zip_path = "/tmp"
+    env = {
+      target_zip_path = "/tmp"
+    }
   }
+  jobs = { env = { MongoDB__DataRetention = "1.00:00:00" } }
 }
-
-# Extra configuration for jobs connecting to database
-jobs_in_database_extra_conf = { MongoDB__DataRetention = "1.00:00:00" }
 
 environment_description = {
   name        = "gcp-dev"
