@@ -302,18 +302,18 @@ variable "fluent_bit" {
 }
 
 # Extra configuration
-variable "extra_conf" {
-  description = "Add extra configuration in the configmaps"
+variable "configurations" {
+  description = ""
   type = object({
-    compute = optional(map(string), {})
-    control = optional(map(string), {})
-    core    = optional(map(string), {})
-    log     = optional(map(string), {})
-    metrics = optional(map(string), {})
-    polling = optional(map(string), {})
-    worker  = optional(map(string), {})
+    core    = optional(any, [])
+    control = optional(any, [])
+    compute = optional(any, [])
+    worker  = optional(any, [])
+    polling = optional(any, [])
+    log     = optional(any, [])
+    metrics = optional(any, [])
+    jobs    = optional(any, [])
   })
-  default = {}
 }
 
 # Job to insert partitions in the database
@@ -407,6 +407,7 @@ variable "compute_plane" {
         cpu    = optional(string)
         memory = optional(string)
       }))
+      conf = optional(any, [])
     })
     worker = list(object({
       name              = optional(string, "worker")
@@ -421,6 +422,7 @@ variable "compute_plane" {
         cpu    = optional(string)
         memory = optional(string)
       }))
+      conf = optional(any, [])
     }))
     cache_config = optional(object({
       memory     = optional(bool)
@@ -507,13 +509,6 @@ variable "pod_deletion_cost" {
     }))
   })
   default = {}
-}
-
-# Extra configuration for jobs connecting to database
-variable "jobs_in_database_extra_conf" {
-  description = "Add extra configuration in the configmaps for jobs connecting to database"
-  type        = map(string)
-  default     = {}
 }
 
 variable "armonik_versions" {
