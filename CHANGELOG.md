@@ -2,6 +2,11 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+Breaking
+-
+* With Session Lifecycle availability, payloads are not deleted anymore upon task success. Either close session and purge data or set the `Submitter__DeletePayload` environment variable to `true` for core to delete these data.
+
+
 ## [v2.20.0](https://github.com/aneoconsulting/armonik/tree/v2.20.0) (2024-07-03)
 
 Changed
