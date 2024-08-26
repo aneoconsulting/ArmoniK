@@ -35,12 +35,12 @@ activemq = {}
 # Parameters of control plane
 control_plane = {
   limits = {
-    cpu    = "1000m"
+    cpu    = "2000m"
     memory = "2048Mi"
   }
   requests = {
-    cpu    = "50m"
-    memory = "50Mi"
+    cpu    = "500m"
+    memory = "512Mi"
   }
   default_partition = "default"
 }

@@ -336,7 +336,7 @@ variable "control_plane" {
   description = "Parameters of the control plane"
   type = object({
     name                 = optional(string, "control-plane")
-    service_type         = optional(string, "ClusterIP")
+    service_type         = optional(string, "HeadLess")
     replicas             = optional(number, 1)
     image                = optional(string, "dockerhubaneo/armonik_control")
     tag                  = optional(string)
@@ -391,7 +391,7 @@ variable "compute_plane" {
   type = map(object({
     replicas                         = optional(number, 1)
     termination_grace_period_seconds = optional(number, 30)
-    image_pull_secrets               = optional(string, "IfNotPresent")
+    image_pull_secrets               = optional(string, "")
     node_selector                    = optional(any, {})
     annotations                      = optional(any, {})
     service_account_name             = optional(string, "")

@@ -343,12 +343,12 @@ logging_level = "Information"
 # Parameters of control plane
 control_plane = {
   limits = {
-    cpu    = "1000m"
+    cpu    = "2000m"
     memory = "2048Mi"
   }
   requests = {
-    cpu    = "200m"
-    memory = "500Mi"
+    cpu    = "500m"
+    memory = "512Mi"
   }
   default_partition = "default"
   node_selector     = { service = "control-plane" }
