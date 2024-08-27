@@ -245,6 +245,34 @@ keda = {
 
 mongodb = {
   node_selector = { service = "state-database" }
+
+  # Uncomment to define custom resources for MongoDB pods, comment for default values
+  mongodb_resources = {
+    # limits = {
+    #   "cpu"               = 4
+    #   "memory"            = "8Gi"
+    #   "ephemeral-storage" = "20Gi"
+    # }
+    # requests = {
+    #   "cpu"               = 2
+    #   "memory"            = "4Gi"
+    #   "ephemeral-storage" = "2Gi"
+    # }
+  }
+
+  # Uncomment to define custom resources for MongoDB arbiter pods, comment for default values
+  arbiter_resources = {
+    # limits = {
+    #   "cpu"               = "400m"
+    #   "memory"            = "4Gi"
+    #   "ephemeral-storage" = "1Gi"
+    # }
+    # requests = {
+    #   "cpu"               = "100m"
+    #   "memory"            = "2Gi"
+    #   "ephemeral-storage" = "500Mi"
+    # }
+  }
 }
 
 #memorystore = {

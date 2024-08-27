@@ -342,6 +342,16 @@ variable "mongodb" {
       run_as_user = optional(number, 999)
       fs_group    = optional(number, 999)
     }), {})
+
+    mongodb_resources = optional(object({
+      limits   = optional(map(string))
+      requests = optional(map(string))
+    }))
+
+    arbiter_resources = optional(object({
+      limits   = optional(map(string))
+      requests = optional(map(string))
+    }))
   })
   default = {}
 }
