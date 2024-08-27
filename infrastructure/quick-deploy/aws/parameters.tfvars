@@ -68,6 +68,34 @@ eks_managed_node_groups = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
   }
+  /*
+  # Node group for workers of ArmoniK on the GPU
+  gpu_workers = {
+    name                        = "gpu_workers"
+    launch_template_description = "Node group for ArmoniK Compute-plane pods which run on the GPU"
+    ami_type                    = "BOTTLEROCKET_x86_64_NVIDIA"
+    instance_types              = ["g4dn.xlarge"]
+    capacity_type               = "SPOT"
+    min_size                    = 0
+    desired_size                = 0
+    max_size                    = 1000
+    labels = {
+      service                        = "gpu_workers"
+      "node.kubernetes.io/lifecycle" = "spot"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "gpu_workers"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
+  */
   # Node group for metrics: Metrics exporter and Prometheus
   metrics = {
     name                        = "metrics"
@@ -420,6 +448,62 @@ compute_plane = {
       ]
     }
   },
+  /*
+  # Partition that run the workload on gpu
+  gputest = {
+    node_selector = { service = "gpu_workers" }
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "500m"
+        memory = "256Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = # worker image
+        tag   = "latest"
+        limits = {
+          cpu              = "4000m"
+          memory           = "16384Mi"
+          "nvidia.com/gpu" = "1"
+        }
+        requests = {
+          cpu              = "2000m"
+          memory           = "8192Mi"
+          "nvidia.com/gpu" = "1"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 0
+      max_replica_count = 100
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  */
   # Partition for the stream worker
   stream = {
     node_selector = { service = "workers" }
