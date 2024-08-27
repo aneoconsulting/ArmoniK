@@ -611,6 +611,7 @@ configurations = {
       Redis__Timeout                             = 3000
       Redis__SslHost                             = ""
       Redis__TtlTimeSpan                         = "1.00:00:00" # 1 day retention
+      Submitter__DeletePayload                   = true
     }
   }
   control = {
