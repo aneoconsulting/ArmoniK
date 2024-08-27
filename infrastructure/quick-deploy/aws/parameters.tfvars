@@ -298,17 +298,17 @@ mongodb = {
 
   # Uncomment to define custom resources for MongoDB arbiter pods, comment for default values
   arbiter_resources = {
-  #   limits = {
-  #     "cpu"               = "400m"
-  #     "memory"            = "4Gi"
-  #     "ephemeral-storage" = "1Gi"
-  #   }
-  #   requests = {
-  #     "cpu"               = "100m"
-  #     "memory"            = "2Gi"
-  #     "ephemeral-storage" = "500Mi"
-  #   }
-  # }
+    # limits = {
+    #   "cpu"               = "400m"
+    #   "memory"            = "4Gi"
+    #   "ephemeral-storage" = "1Gi"
+    # }
+    # requests = {
+    #   "cpu"               = "100m"
+    #   "memory"            = "2Gi"
+    #   "ephemeral-storage" = "500Mi"
+    # }
+  }
 }
 
 seq = {
