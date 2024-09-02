@@ -33,9 +33,9 @@ module "mongodb" {
     replicas              = var.mongodb.replicas
     helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts.mongodb.repository)
     helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts.mongodb.version)
-    mongodb_resources     = var.mongodb.mongodb_resources
-    arbiter_resources     = var.mongodb.arbiter_resources
   }
+  mongodb_resources = var.mongodb.mongodb_resources
+  arbiter_resources = var.mongodb.arbiter_resources
   persistent_volume = null
 }
 
