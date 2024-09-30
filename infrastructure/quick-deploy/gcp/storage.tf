@@ -74,6 +74,13 @@ module "mongodb_sharded" {
     configsvr = try(coalesce(var.mongodb_sharding.configsvr.resources), null)
     router    = try(coalesce(var.mongodb_sharding.router.resources), null)
   }
+
+  labels = {
+    shards    = try(coalesce(var.mongodb_sharding.shards.labels), null)
+    arbiter   = try(coalesce(var.mongodb_sharding.arbiter.labels), null)
+    configsvr = try(coalesce(var.mongodb_sharding.configsvr.labels), null)
+    router    = try(coalesce(var.mongodb_sharding.router.labels), null)
+  }
 }
 
 # Redis for payloads

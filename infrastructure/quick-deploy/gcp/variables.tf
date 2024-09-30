@@ -143,6 +143,7 @@ variable "mongodb_sharding" {
         limits   = optional(map(string))
         requests = optional(map(string))
       }))
+      labels = optional(map(string))
     }))
 
     arbiter = optional(object({
@@ -151,6 +152,7 @@ variable "mongodb_sharding" {
         limits   = optional(map(string))
         requests = optional(map(string))
       }))
+      labels = optional(map(string))
     }))
 
     router = optional(object({
@@ -160,6 +162,7 @@ variable "mongodb_sharding" {
         limits   = optional(map(string))
         requests = optional(map(string))
       }))
+      labels = optional(map(string))
     }))
 
     configsvr = optional(object({
@@ -169,6 +172,7 @@ variable "mongodb_sharding" {
         limits   = optional(map(string))
         requests = optional(map(string))
       }))
+      labels = optional(map(string))
     }))
   })
   default = null
