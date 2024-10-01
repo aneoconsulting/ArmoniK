@@ -309,11 +309,6 @@ mongodb = {
   #     }
   #   }
 
-  # helm_chart_repository = "https://tschneider-aneo.github.io/charts/"
-  # helm_chart_version    = "8.3.7"
-  # tag                   = "7.0.14-debian-12-r0"
-
-
   # Uncomment to define custom resources for MongoDB pods, comment for default values
   # mongodb_resources = {
   #   limits = {
@@ -343,7 +338,7 @@ mongodb = {
   # }
 }
 
-# Nullify to disable sharding
+# Nullify to disable sharding, each nullification of subobject will result in the use of default values 
 # mongodb_sharding = {
 #   arbiter = {
 #     resources = {
