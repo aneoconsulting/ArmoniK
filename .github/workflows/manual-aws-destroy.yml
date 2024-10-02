@@ -8,7 +8,7 @@ on:
         required: false
         default: "armonik-cicd"
       bootstrap:
-        description: "Deploy the S3 for the tfstate"
+        description: "Destroy the S3 for the tfstate"
         type: boolean
         required: false
         default: true
