@@ -315,10 +315,10 @@ variable "mq_credentials" {
 variable "mongodb" {
   description = "Parameters of MongoDB"
   type = object({
-    image_name            = optional(string, "bitnami/mongodb")
+    image_name            = optional(string)
     image_tag             = optional(string)
     node_selector         = optional(any, {})
-    pull_secrets          = optional(string, "")
+    image_pull_secrets    = optional(string, "")
     replicas              = optional(number, 1)
     helm_chart_repository = optional(string)
     helm_chart_version    = optional(string)
@@ -354,6 +354,52 @@ variable "mongodb" {
     }))
   })
   default = {}
+}
+
+variable "mongodb_sharding" {
+  description = "Configuration for MongoDB sharding, if it is null no sharding will be present"
+  type = object({
+    shards = optional(object({
+      quantity      = optional(number)
+      replicas      = optional(number)
+      node_selector = optional(map(string))
+      resources = optional(object({
+        limits   = optional(map(string))
+        requests = optional(map(string))
+      }))
+      labels = optional(map(string))
+    }))
+
+    arbiter = optional(object({
+      node_selector = optional(map(string), {})
+      resources = optional(object({
+        limits   = optional(map(string))
+        requests = optional(map(string))
+      }))
+      labels = optional(map(string))
+    }))
+
+    router = optional(object({
+      replicas      = optional(number)
+      node_selector = optional(map(string))
+      resources = optional(object({
+        limits   = optional(map(string))
+        requests = optional(map(string))
+      }))
+      labels = optional(map(string))
+    }))
+
+    configsvr = optional(object({
+      replicas      = optional(number)
+      node_selector = optional(map(string))
+      resources = optional(object({
+        limits   = optional(map(string))
+        requests = optional(map(string))
+      }))
+      labels = optional(map(string))
+    }))
+  })
+  default = null
 }
 
 variable "mongodb_efs" {
