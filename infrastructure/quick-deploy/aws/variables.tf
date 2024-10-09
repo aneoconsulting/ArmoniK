@@ -144,16 +144,6 @@ variable "eks" {
       repository = optional(string)
       version    = optional(string)
     }), {})
-    map_roles = optional(list(object({
-      rolearn  = string
-      username = string
-      groups   = list(string)
-    })), [])
-    map_users = optional(list(object({
-      userarn  = string
-      username = string
-      groups   = list(string)
-    })), [])
   })
 }
 
