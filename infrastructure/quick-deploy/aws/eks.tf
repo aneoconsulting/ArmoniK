@@ -55,8 +55,6 @@ module "eks" {
   cluster_endpoint_public_access_cidrs = var.eks.cluster_endpoint_public_access_cidrs
   cluster_log_retention_in_days        = var.eks.cluster_log_retention_in_days
 
-  map_roles_groups         = var.eks.map_roles
-  map_users_groups         = var.eks.map_users
   eks_managed_node_groups  = var.eks_managed_node_groups
   self_managed_node_groups = var.self_managed_node_groups
   fargate_profiles         = var.fargate_profiles
