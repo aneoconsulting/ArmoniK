@@ -1,0 +1,109 @@
+name: "Bench HTC Mock on localhost"
+
+on:
+  push:
+    branches:
+      - "ts/add-htc-mock-worflow"
+      - "main"
+  workflow_dispatch: # Possibility to run this workflow for debugging purposes
+    # inputs can be useful for tests in further developments
+    inputs:
+      ntasks:
+        description: "Number of tasks to be created"
+        default: "100"
+        required: false
+      subtasks-levels:
+        description: "Levels of subtasking"
+        default: "1"
+        required: false
+      purge-data:
+        description: "Whether to purge session"
+        default: "false"
+        required: false
+      polling-limit:
+        description: "Polling duration for HTC Mock session completion"
+        default: 600
+  release:
+    types: [created, published]
+
+jobs:
+  htc-mock:
+    name: Get HTC Mock throughput
+    runs-on: ubuntu-latest
+    outputs:
+      terraform-output: ${{ steps.deploy.outputs.terraform-output }}
+      armonik-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
+    steps:
+        
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Install Dependencies
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        with:
+          terraform: true
+          k3s: true
+          docker: true
+
+      - id: deploy
+        name: "Deploy ArmoniK"
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        with:
+          type: localhost
+
+      - name: Define runner env variables
+        run: |
+          echo "core-version=$(cat versions.tfvars.json | jq '.armonik_versions.core' | sed -r 's/"//g')" >> $GITHUB_ENV
+          echo "ntasks=${{ inputs.ntasks || 500 }}" >> $GITHUB_ENV
+          echo "subtasks-levels=${{ inputs.subtasks-levels || 5 }}" >> $GITHUB_ENV
+          echo "purge-data=${{ inputs.purge-data || false }}" >> $GITHUB_ENV
+
+      - id: get-armonik-endpoint
+        name: "Get ArmoniK's control plane endpoint"
+        run: |
+          endpoint=$(cat infrastructure/quick-deploy/localhost/generated/armonik-output.json | jq '.armonik.control_plane_url' | sed -r 's/("http:\/\/)([^:]*)(:.*)/\2/')
+          echo "endpoint=$endpoint" >> "$GITHUB_OUTPUT"
+
+      - name: Get current date
+        run: |
+          echo "date=$(printf '%(%Y-%m-%d-%Hh%Mm%Ss)T')" >> $GITHUB_ENV
+
+      - id: htcmock
+        name: Run HTC Mock
+        uses: aneoconsulting/ArmoniK.Action.Deploy/htcmock@main
+        with:
+          armonik-core-version: ${{ env.core-version }}
+          ntasks: ${{ env.ntasks}}
+          subtasks-levels: ${{ env.subtasks-levels }}
+          session-name: htcmock1
+          grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
+          purge-data: ${{ env.purge-data }}
+
+      - id: get-throughput
+        name: Get Session Throughput
+        uses: aneoconsulting/ArmoniK.Action.Deploy/get-throughput@main
+        with:
+          grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
+          session-name: ${{ steps.htcmock.outputs.session-name }}
+
+      - name: Upload bench results to artifact registry
+        uses: actions/upload-artifact@v4
+        with:
+          name: main_bench_htcmock_${{ github.run_id }}
+          path: ${{ steps.get-throughput.outputs.bench-file-path }}
+
+      - name: Upload bench results to s3
+        env:
+          BENCH_RESULTS_PATH: ${{ steps.get-throughput.outputs.bench-file-path }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
+        run: |
+          aws s3 cp "$BENCH_RESULTS_PATH" "s3://test-armonik-bench-storage/main_bench_htcmock_$GITHUB_RUN_ID.json"
+          
+      - if: "always()"
+        id: destroy
+        name: Destroy deployment
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        with:
+          type: localhost
