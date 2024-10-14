@@ -1,0 +1,80 @@
+name: "Deploy on localhost and run HTC Mock"
+
+on:
+  push:
+    branches:
+      - "ts/add-htc-mock-worflow"
+      - "ts/ci-**"
+  workflow_dispatch:
+    inputs:
+      core-version:
+        description: "Version of core to deploy"
+        required: false
+        default: ""
+      ntasks:
+        description: "Number of tasks to be created"
+        default: "100"
+        required: false
+      subtasks-levels:
+        description: "Levels of subtasking"
+        default: "1"
+        required: false
+
+jobs:
+  all-in-one:
+    name: Deploy ArmoniK launch HTC Mock session and get throughput
+    runs-on: ubuntu-latest
+    outputs:
+      terraform-output: ${{ steps.deploy.outputs.terraform-output }}
+      armonik-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
+    steps:
+      - name: Define parameters
+        run: |
+          echo "core-version=${{ inputs.core-version || '0.27.0' }}" >> $GITHUB_ENV
+          echo "ntasks=${{ inputs.ntasks || 500 }}" >> $GITHUB_ENV
+          echo "subtasks-levels=${{ inputs.subtasks-levels || 5 }}" >> $GITHUB_ENV
+          
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Install Dependencies
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        with:
+          terraform: true
+          k3s: true
+          docker: true
+
+      - id: deploy
+        name: "Deploy ArmoniK"
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        with:
+          type: localhost
+          core-version: ${{ env.core-version }}
+
+      - id: get-armonik-endpoint
+        name: "Get ArmoniK's control plane endpoint"
+        run: |
+          endpoint=$(cat infrastructure/quick-deploy/localhost/generated/armonik-output.json | jq '.armonik.control_plane_url' | sed -r 's/("http:\/\/)([^:]*)(:.*)/\2/')
+          echo "endpoint=$endpoint" >> "$GITHUB_OUTPUT"
+
+      - id: htcmock
+        name: Run HTC Mock
+        uses: aneoconsulting/ArmoniK.Action.Deploy/htcmock@main
+        with:
+          ntasks: ${{ env.ntasks}}
+          subtasks-levels: ${{ env.subtasks-levels }}
+          session-name: htcmock1
+          grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
+
+      - name: Get Session Throughput
+        uses: aneoconsulting/ArmoniK.Action.Deploy/get-throughput@main
+        with:
+          grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
+          session-name: ${{ steps.htcmock.outputs.session-name }}
+
+      - if: "always()"
+        id: destroy
+        name: Destroy deployment
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        with:
+          type: localhost
