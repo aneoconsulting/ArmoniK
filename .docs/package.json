@@ -15,13 +15,13 @@
   },
   "dependencies": {
     "@aneoconsultingfr/armonik-docs-theme": "^0.6.13",
-    "mermaid": "^10.3.1",
-    "nuxt": "^3.6.5"
+    "mermaid": "^10.9.2",
+    "nuxt": "^3.13.2"
   },
   "devDependencies": {
-    "@nuxt/eslint-config": "^0.3.8",
-    "case-police": "^0.6.1",
-    "eslint": "^9.0.0",
-    "markdownlint-cli": "^0.35.0"
+    "@nuxt/eslint-config": "^0.6.0",
+    "case-police": "^0.7.0",
+    "eslint": "^9.12.0",
+    "markdownlint-cli": "^0.42.0"
   }
 }
