@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: htcmock-session
+  namespace: armonik
+spec:
+  ttlSecondsAfterFinished: 0
+  template:
+    spec:
+      containers:
+      - name: htcmock-session
+        image: dockerhubaneo/armonik_core_htcmock_test_client:@@ARMONIK_CORE_VERSION@@
+        env:
+        - name: HtcMock__NTasks
+          value: "@@NTASKS@@"
+        - name: HtcMock__TotalCalculationTime
+          value: "00:00:00.100"
+        - name: HtcMock__DataSize
+          value: "1"
+        - name: HtcMock__MemorySize
+          value: "1"
+        - name: HtcMock__EnableFastCompute
+          value: "true"
+        - name: HtcMock__SubTasksLevels
+          value: "@@SUBTASKS_LEVELS@@"
+        - name: HtcMock__Partition
+          value: htcmock
+        - name: HtcMock__Options__SessionName
+          value: "@@SESSION_NAME@@"
+        - name: HtcMock__PurgeData
+          value: "@@PURGE_DATA@@"
+        - name: GrpcClient__Endpoint
+          value: http://@@GRPC_CLIENT_ENDPOINT@@:5001
+        
+      restartPolicy: Never
