@@ -18,8 +18,8 @@ module "mongodb" {
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
   mongodb = {
-    image                 = local.docker_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
-    tag                   = local.docker_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
+    image                 = local.docker_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
+    tag                   = local.docker_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
     node_selector         = var.mongodb.node_selector
     image_pull_secrets    = var.mongodb.pull_secrets
     replicas              = var.mongodb.replicas
@@ -40,7 +40,7 @@ module "mongodb_sharded" {
     image                 = local.docker_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
     tag                   = local.docker_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
     node_selector         = var.mongodb.node_selector
-    image_pull_secrets    = var.mongodb.image_pull_secrets
+    image_pull_secrets    = var.mongodb.pull_secrets
     helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts["mongodb-sharded"].repository)
     helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts["mongodb-sharded"].version)
   }

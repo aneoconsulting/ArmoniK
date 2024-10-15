@@ -275,6 +275,65 @@ mongodb = {
   }
 }
 
+# Nullify to disable sharding, each nullification of subobject will result in the use of default values 
+mongodb_sharding = {
+  arbiter = {
+    resources = {
+      requests = {
+        "cpu"    = "250m"
+        "memory" = "250Mi"
+      }
+      limits = {
+        "cpu"    = "1"
+        "memory" = "1Gi"
+      }
+    }
+  }
+
+  configsvr = {
+    replicas = 1
+    resources = {
+      requests = {
+        "cpu"    = "1"
+        "memory" = "1Gi"
+      }
+      limits = {
+        "cpu"    = "2"
+        "memory" = "4Gi"
+      }
+    }
+  }
+
+  router = {
+    replicas = 1
+    resources = {
+      requests = {
+        "cpu"    = "2"
+        "memory" = "1Gi"
+      }
+      limits = {
+        "cpu"    = "4"
+        "memory" = "4Gi"
+      }
+    }
+  }
+
+  shards = {
+    quantity = 2
+    replicas = 2
+    resources = {
+      requests = {
+        "cpu"    = "4"
+        "memory" = "8Gi"
+      }
+      limits = {
+        "cpu"    = "6"
+        "memory" = "8Gi"
+      }
+    }
+  }
+}
+
 #memorystore = {
 #  memory_size_gb = 20
 #  auth_enabled   = true
