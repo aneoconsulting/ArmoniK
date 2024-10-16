@@ -1,4 +1,4 @@
-name: "Bench HTC Mock localhost"
+name: "Bench HTC Mock on localhost"
 
 on:
   push:
