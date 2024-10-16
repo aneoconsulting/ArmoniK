@@ -145,13 +145,14 @@ module "mq" {
 
 # MongoDB
 module "mongodb" {
+  count     = can(coalesce(var.mongodb_sharding)) ? 0 : 1
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
   mongodb = {
-    image                 = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
-    tag                   = local.ecr_images["${var.mongodb.image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
+    image                 = local.ecr_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
+    tag                   = local.ecr_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
     node_selector         = var.mongodb.node_selector
-    image_pull_secrets    = var.mongodb.pull_secrets
+    image_pull_secrets    = var.mongodb.image_pull_secrets
     replicas              = var.mongodb.replicas
     helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts.mongodb.repository)
     helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts.mongodb.version)
@@ -175,6 +176,88 @@ module "mongodb" {
   mongodb_resources = var.mongodb.mongodb_resources
   arbiter_resources = var.mongodb.arbiter_resources
 
+}
+
+module "mongodb_sharded" {
+  count     = can(coalesce(var.mongodb_sharding)) ? 1 : 0
+  source    = "./generated/infra-modules/storage/onpremise/mongodb-sharded"
+  namespace = local.namespace
+
+  mongodb = {
+    image                 = local.ecr_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
+    tag                   = local.ecr_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
+    node_selector         = var.mongodb.node_selector
+    image_pull_secrets    = var.mongodb.image_pull_secrets
+    helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts["mongodb-sharded"].repository)
+    helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts["mongodb-sharded"].version)
+  }
+
+  # All the try(coalesce()) are there to use values from the mongodb variable if the attributes are not defined in the mongodb_sharding variables
+  sharding = {
+    shards = {
+      quantity      = try(coalesce(var.mongodb_sharding.shards.quantity), null)
+      replicas      = try(coalesce(var.mongodb_sharding.shards.replicas), var.mongodb.replicas)
+      node_selector = try(coalesce(var.mongodb_sharding.shards.node_selector), var.mongodb.node_selector)
+    }
+
+    arbiter = {
+      node_selector = try(coalesce(var.mongodb_sharding.arbiter.node_selector), var.mongodb.node_selector)
+    }
+
+    router = merge(var.mongodb_sharding.router, {
+      replicas      = try(coalesce(var.mongodb_sharding.router.replicas), null)
+      node_selector = try(coalesce(var.mongodb_sharding.router.node_selector), var.mongodb.node_selector)
+    })
+
+    configsvr = {
+      replicas      = try(coalesce(var.mongodb_sharding.configsvr.replicas), null)
+      node_selector = try(coalesce(var.mongodb_sharding.configsvr.node_selector), var.mongodb.node_selector)
+    }
+  }
+
+  resources = {
+    shards    = try(coalesce(var.mongodb_sharding.shards.resources), var.mongodb.mongodb_resources)
+    arbiter   = try(coalesce(var.mongodb_sharding.arbiter.resources), var.mongodb.arbiter_resources)
+    configsvr = try(coalesce(var.mongodb_sharding.configsvr.resources), null)
+    router    = try(coalesce(var.mongodb_sharding.router.resources), null)
+  }
+
+  labels = {
+    shards    = try(coalesce(var.mongodb_sharding.shards.labels), null)
+    arbiter   = try(coalesce(var.mongodb_sharding.arbiter.labels), null)
+    configsvr = try(coalesce(var.mongodb_sharding.configsvr.labels), null)
+    router    = try(coalesce(var.mongodb_sharding.router.labels), null)
+  }
+
+  persistence = var.mongodb.persistent_volume != null ? {
+    shards = {
+      storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
+      volume_binding_mode = var.mongodb.persistent_volume.volume_binding_mode
+      resources           = var.mongodb.persistent_volume.resources
+      parameters = merge(var.mongodb.persistent_volume.parameters, try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
+        provisioningMode = "efs-ap"
+        fileSystemId     = module.mongodb_efs_persistent_volume[0].id
+        directoryPerms   = "755"
+        uid              = var.mongodb.security_context.run_as_user # optional
+        gid              = var.mongodb.security_context.fs_group    # optional
+        basePath         = "/mongodb"                               # optional
+      } : {})
+    }
+
+    configsvr = {
+      storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
+      volume_binding_mode = var.mongodb.persistent_volume.volume_binding_mode
+      resources           = var.mongodb.persistent_volume.resources
+      parameters = merge(var.mongodb.persistent_volume.parameters, try(var.mongodb.persistent_volume.storage_provisioner, "") == "efs.csi.aws.com" ? {
+        provisioningMode = "efs-ap"
+        fileSystemId     = module.mongodb_efs_persistent_volume[0].id
+        directoryPerms   = "755"
+        uid              = var.mongodb.security_context.run_as_user # optional
+        gid              = var.mongodb.security_context.fs_group    # optional
+        basePath         = "/mongodb"                               # optional
+      } : {})
+    }
+  } : null
 }
 
 module "mongodb_efs_persistent_volume" {
