@@ -59,7 +59,7 @@ jobs:
 
       - id: htcmock
         name: Run HTC Mock
-        uses: aneoconsulting/ArmoniK.Action.Deploy/htcmock@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/htcmock@ts/fix-htcmock-output
         with:
           ntasks: ${{ env.ntasks}}
           subtasks-levels: ${{ env.subtasks-levels }}
