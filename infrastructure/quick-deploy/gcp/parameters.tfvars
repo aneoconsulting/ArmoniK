@@ -243,11 +243,11 @@ keda = {
   node_selector = { service = "monitoring" }
 }
 
-mongodb = {
-  node_selector = { service = "state-database" }
+# mongodb = {
+#   node_selector = { service = "state-database" }
 
   # Uncomment to define custom resources for MongoDB pods, comment for default values
-  mongodb_resources = {
+  # mongodb_resources = {
     # limits = {
     #   "cpu"               = 4
     #   "memory"            = "8Gi"
@@ -258,10 +258,10 @@ mongodb = {
     #   "memory"            = "4Gi"
     #   "ephemeral-storage" = "2Gi"
     # }
-  }
+  # }
 
   # Uncomment to define custom resources for MongoDB arbiter pods, comment for default values
-  arbiter_resources = {
+  # arbiter_resources = {
     # limits = {
     #   "cpu"               = "400m"
     #   "memory"            = "4Gi"
@@ -272,8 +272,8 @@ mongodb = {
     #   "memory"            = "2Gi"
     #   "ephemeral-storage" = "500Mi"
     # }
-  }
-}
+  # }
+#}
 
 # Nullify to disable sharding, each nullification of subobject will result in the use of default values 
 mongodb_sharding = {
