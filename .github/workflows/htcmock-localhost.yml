@@ -1,4 +1,4 @@
-name: "Deploy on localhost and run HTC Mock"
+name: "Bench HTC Mock localhost"
 
 on:
   push:
@@ -22,7 +22,7 @@ on:
 
 jobs:
   all-in-one:
-    name: Deploy ArmoniK launch HTC Mock session and get throughput
+    name: Get HTC Mock throughput
     runs-on: ubuntu-latest
     outputs:
       terraform-output: ${{ steps.deploy.outputs.terraform-output }}
