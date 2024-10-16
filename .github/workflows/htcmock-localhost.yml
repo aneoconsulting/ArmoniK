@@ -67,7 +67,7 @@ jobs:
           grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
 
       - name: Get Session Throughput
-        uses: aneoconsulting/ArmoniK.Action.Deploy/get-throughput@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/get-throughput@ts/fix-htcmock-output
         with:
           grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
           session-name: ${{ steps.htcmock.outputs.session-name }}
