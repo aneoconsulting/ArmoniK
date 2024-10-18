@@ -80,6 +80,7 @@ jobs:
           output-file-path: ${{ steps.get-throughput.outputs.bench-file-path}}
           gh-pages-branch:  main #${{ github.head_ref || github.ref_name }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
           
       - if: "always()"
         id: destroy
