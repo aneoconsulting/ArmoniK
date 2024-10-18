@@ -243,96 +243,12 @@ keda = {
   node_selector = { service = "monitoring" }
 }
 
-# mongodb = {
-#   node_selector = { service = "state-database" }
-
-  # Uncomment to define custom resources for MongoDB pods, comment for default values
-  # mongodb_resources = {
-    # limits = {
-    #   "cpu"               = 4
-    #   "memory"            = "8Gi"
-    #   "ephemeral-storage" = "20Gi"
-    # }
-    # requests = {
-    #   "cpu"               = 2
-    #   "memory"            = "4Gi"
-    #   "ephemeral-storage" = "2Gi"
-    # }
-  # }
-
-  # Uncomment to define custom resources for MongoDB arbiter pods, comment for default values
-  # arbiter_resources = {
-    # limits = {
-    #   "cpu"               = "400m"
-    #   "memory"            = "4Gi"
-    #   "ephemeral-storage" = "1Gi"
-    # }
-    # requests = {
-    #   "cpu"               = "100m"
-    #   "memory"            = "2Gi"
-    #   "ephemeral-storage" = "500Mi"
-    # }
-  # }
-#}
+mongodb = {
+  node_selector = { service = "state-database" }
+}
 
 # Nullify to disable sharding, each nullification of subobject will result in the use of default values 
-mongodb_sharding = {
-  # arbiter = {
-  #   resources = {
-  #     requests = {
-  #       "cpu"    = "250m"
-  #       "memory" = "250Mi"
-  #     }
-  #     limits = {
-  #       "cpu"    = "1"
-  #       "memory" = "1Gi"
-  #     }
-  #   }
-  # }
-
-  # configsvr = {
-  #   replicas = 1
-  #   resources = {
-  #     requests = {
-  #       "cpu"    = "1"
-  #       "memory" = "1Gi"
-  #     }
-  #     limits = {
-  #       "cpu"    = "2"
-  #       "memory" = "4Gi"
-  #     }
-  #   }
-  # }
-
-  # router = {
-  #   replicas = 1
-  #   resources = {
-  #     requests = {
-  #       "cpu"    = "2"
-  #       "memory" = "1Gi"
-  #     }
-  #     limits = {
-  #       "cpu"    = "4"
-  #       "memory" = "4Gi"
-  #     }
-  #   }
-  # }
-
-  # shards = {
-  #   quantity = 2
-  #   replicas = 2
-  #   resources = {
-  #     requests = {
-  #       "cpu"    = "4"
-  #       "memory" = "8Gi"
-  #     }
-  #     limits = {
-  #       "cpu"    = "6"
-  #       "memory" = "8Gi"
-  #     }
-  #   }
-  # }
-}
+mongodb_sharding = {}
 
 #memorystore = {
 #  memory_size_gb = 20
