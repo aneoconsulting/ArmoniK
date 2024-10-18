@@ -79,6 +79,7 @@ jobs:
           tool: 'customBiggerIsBetter'
           output-file-path: ${{ steps.get-throughput.outputs.bench-file-path}}
           gh-pages-branch:  main #${{ github.head_ref || github.ref_name }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           
       - if: "always()"
         id: destroy
