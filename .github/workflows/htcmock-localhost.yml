@@ -77,7 +77,7 @@ jobs:
         uses: benchmark-action/github-action-benchmark@v1
         with:
           tool: 'customBiggerIsBetter'
-          output-file-path: ${{ steps.get-troughput.outputs.bench-file-path}}
+          output-file-path: ${{ steps.get-throughput.outputs.bench-file-path}}
           gh-pages-branch:  ${{ github.head_ref || github.ref_name }}
           
       - if: "always()"
