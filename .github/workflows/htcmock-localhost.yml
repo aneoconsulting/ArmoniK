@@ -66,12 +66,20 @@ jobs:
           session-name: htcmock1
           grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
 
-      - name: Get Session Throughput
+      - id: get-throughput
+        name: Get Session Throughput
         uses: aneoconsulting/ArmoniK.Action.Deploy/get-throughput@ts/fix-htcmock-output
         with:
           grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
           session-name: ${{ steps.htcmock.outputs.session-name }}
 
+      - name: Store Benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'customBiggerIsBetter'
+          output-file-path: ${{ steps.get-troughput.outputs.bench-file-path}}
+          gh-pages-branch:  ${{ github.head_ref || github.ref_name }}
+          
       - if: "always()"
         id: destroy
         name: Destroy deployment
