@@ -1,7 +1,5 @@
 # WARNING : This branch is only meant to store ArmoniK's benchmarks results and the web pages associated to it !
 
-
-
 # ArmoniK
 
 ![GitHub tag (latest SemVer pre-release)](https://img.shields.io/github/v/tag/aneoconsulting/ArmoniK?color=fe5001&label=latest%20version&sort=semver)
