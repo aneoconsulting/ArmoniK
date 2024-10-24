@@ -76,4 +76,5 @@ module "armonik" {
     image = local.ecr_images["${var.pod_deletion_cost.image}:${try(coalesce(var.pod_deletion_cost.tag), "")}"].image
     tag   = local.ecr_images["${var.pod_deletion_cost.image}:${try(coalesce(var.pod_deletion_cost.tag), "")}"].tag
   })
+  depends_on = [module.ecr]
 }
