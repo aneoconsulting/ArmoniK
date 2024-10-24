@@ -97,7 +97,6 @@ module "default_images" {
 
 module "ecr" {
   source          = "./generated/infra-modules/container-registry/aws/ecr"
-  aws_profile     = var.profile
   kms_key_id      = local.kms_key
   repositories    = var.upload_images ? local.repositories : {}
   encryption_type = var.ecr.encryption_type
