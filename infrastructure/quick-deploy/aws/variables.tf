@@ -823,3 +823,13 @@ variable "static" {
   default     = {}
 }
 
+variable "windows_exporter" {
+  description = "Windows exporter configuration"
+  type = object({
+    image_name    = optional(string, "ghcr.io/prometheus-community/windows-exporter")
+    image_tag     = optional(string)
+    pull_secrets  = optional(string, "")
+    node_selector = optional(any, {})
+  })
+  default = null
+}

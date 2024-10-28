@@ -359,6 +359,13 @@ node_exporter = {
   node_selector = {}
 }
 
+windows_exporter = {
+  node_selector = {
+    "service" = "windows"
+  }
+  # image_tag = "0.29.2-ltsc2022"
+}
+
 prometheus = {
   node_selector = { service = "metrics" }
   #persistent_volume = {

@@ -115,6 +115,20 @@ module "node_exporter" {
   }
 }
 
+# windows exporter
+module "windows_exporter" {
+  count         = var.windows_exporter != null ? 1 : 0
+  source        = "./generated/infra-modules/monitoring/onpremise/exporters/windows-exporter"
+  namespace     = local.namespace
+  node_selector = var.windows_exporter.node_selector
+  docker_image = {
+    image              = local.ecr_images["${var.windows_exporter.image_name}:${try(coalesce(var.windows_exporter.image_tag), "")}"].image
+    tag                = local.ecr_images["${var.windows_exporter.image_name}:${try(coalesce(var.windows_exporter.image_tag), "")}"].tag
+    image_pull_secrets = var.windows_exporter.pull_secrets
+  }
+  kubeconfig_file = module.eks.kubeconfig_file
+}
+
 # Metrics exporter
 module "metrics_exporter" {
   source       = "./generated/infra-modules/monitoring/onpremise/exporters/metrics-exporter"
