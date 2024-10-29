@@ -66,7 +66,7 @@ jobs:
 
       - id: htcmock
         name: Run HTC Mock
-        uses: aneoconsulting/ArmoniK.Action.Deploy/htcmock@ts/fix-htcmock-output
+        uses: aneoconsulting/ArmoniK.Action.Deploy/htcmock@main
         with:
           armonik-core-version: ${{ env.core-version }}
           ntasks: ${{ env.ntasks}}
@@ -77,7 +77,7 @@ jobs:
 
       - id: get-throughput
         name: Get Session Throughput
-        uses: aneoconsulting/ArmoniK.Action.Deploy/get-throughput@ts/fix-htcmock-output
+        uses: aneoconsulting/ArmoniK.Action.Deploy/get-throughput@main
         with:
           grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
           session-name: ${{ steps.htcmock.outputs.session-name }}
