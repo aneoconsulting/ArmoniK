@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
       - name: bench-session
-        image: dockerhubaneo/armonik_core_bench_test_client::@@ARMONIK_CORE_VERSION@@
+        image: dockerhubaneo/armonik_core_bench_test_client:@@ARMONIK_CORE_VERSION@@
         env:
         - name: BenchOptions__NTasks
           value: "@@NTASKS@@"
