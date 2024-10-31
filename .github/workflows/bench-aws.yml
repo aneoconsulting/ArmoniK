@@ -1,0 +1,149 @@
+name: "Benchmark with Bench client"
+
+on:
+  push:
+    branches:
+      - "ts/add-bench-aws"
+  release:
+    types: [published]
+
+jobs:
+  define-matrix:
+    name: Define matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.types.outputs.matrix }}
+    steps:
+      - id: types
+        name: Define matrix
+        env:
+          TRIGGER: ${{ github.event_name }} 
+        run: |
+          set -ex
+          if [ "$TRIGGER" = 'push' ]; then
+            echo '{"include":[{"type": "localhost", "ntasks":100, "polling-limit": 300}, {"type": "aws", "ntasks":1000, "polling-limit": 600}]}' > matrix.json
+          elif [ "$TRIGGER" = 'release' ]; then
+            echo '{"include":[{"type": "localhost", "ntasks":100, "polling-limit": 300}]}' > matrix.json
+          fi
+          echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
+
+  # test-matrix:
+  #   name: Test matrix
+  #   runs-on: ubuntu-latest
+  #   needs: define-matrix
+  #   strategy:
+  #     fail-fast: false
+  #     matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
+  #   steps:
+  #   - id: test
+  #     name: Test matrix
+  #     env:
+  #       TYPE: ${{ matrix.type }}
+  #       NTASKS: ${{ matrix.ntasks }}
+  #       POLLING_LIMIT: ${{ matrix.polling-limit }}
+  #     run: |
+  #       set -ex
+  #       echo "Type: $TYPE, Number of tasks: $NTASKS, Polling Limit: $POLLING_LIMIT"
+
+  benchmark:
+    name: ${{ matrix.type }}
+    runs-on: ubuntu-latest
+    needs: define-matrix
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
+    env:
+      prefix: ci-bench
+    outputs:
+      terraform-output: ${{ steps.deploy.outputs.terraform-output }}
+      armonik-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+
+      - name: Install Dependencies
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        with:
+          terraform: true
+          k3s: true
+          docker: true
+          aws: true
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-west-3
+
+      - name: Get core version
+        run: |
+          set -ex
+          echo "core-version=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')" >> $GITHUB_ENV
+
+      - id: deploy
+        name: "Deploy ArmoniK"
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        with:
+          type: ${{ matrix.type }}
+          prefix: ${{ env.prefix }}
+          core-version: ${{ env.core-version }}
+
+      - id: get-armonik-endpoint
+        name: "Get ArmoniK's control plane endpoint"
+        env:
+          TYPE: ${{ matrix.type }}
+        run: |
+          set -ex
+          grpc_endpoint=$(cat "infrastructure/quick-deploy/$TYPE/generated/armonik-output.json" | jq -r '.armonik.control_plane_url' | sed -r 's/(http:\/\/)([^:]*)(:.*)/\2/')
+          echo "grpc-endpoint=$grpc_endpoint" >> "$GITHUB_OUTPUT"
+
+      - id: bench
+        name: Run Bench
+        uses: aneoconsulting/ArmoniK.Action.Deploy/bench@main
+        with:
+          type: ${{ matrix.type }}
+          armonik-core-version: ${{ env.core-version }}
+          ntasks: ${{ matrix.ntasks }}
+          session-name: bench
+          grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.grpc-endpoint }}
+
+      - id: get-bench-stats
+        name: Get Bench Stats
+        uses: aneoconsulting/ArmoniK.Action.Deploy/get-throughput@main
+        with:
+          grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.grpc-endpoint }}
+          session-name: ${{ steps.bench.outputs.session-name }}
+          poll-duration-limit: ${{ matrix.polling-limit }}
+
+      - name: Upload benchmark results to artifact registry
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchclient_benchmark_${{ github.event_name }}_${{ matrix.type }}_${{ github.run_id }}
+          path: ${{ steps.get-bench-stats.outputs.bench-file-path }}
+    
+      - name: Upload benchmark results to s3
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BENCH_RESULTS_PATH: ${{ steps.get-bench-stats.outputs.bench-file-path }}
+          TYPE: ${{ matrix.type }}
+          GHRUNID: ${{ github.run_id }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
+        run: |
+          aws s3 cp "$BENCH_RESULTS_PATH" "s3://test-armonik-bench-storage/benchclient_benchmark_${EVENT_NAME}_${TYPE}_${GHRUNID}.json"
+
+      - if: always()
+        id: destroy
+        name: Destroy deployment
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        with:
+          type: ${{ matrix.type }}
+          prefix: ${{ env.prefix }}
+
+        # WARNING FOR ARMONIK CORE TEAM
+        
+        # Sometimes infrastructure destruction fails on AWS due to a deadlock 
+        # between a security group and a subnet that happens unpredictably. 
+
+        # When this happens, the destruction must be taken over manually 
+        # by destroying the security group and the network interface associated with it, 
+        # and finished with `make` recipes `destroy` and `bootstrap-destroy` with the prefix 
+        # used by the GitHub workflow (currently `benchmark`). 
