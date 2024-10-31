@@ -85,7 +85,30 @@ locals {
   }
 
   default_tags = module.default_images.image_tags
+
+  #information for fluent-bit image retagging.
+  fluent_bit_repo_details = try(
+    [
+      for repo in local.ecr_repositories :
+      {
+        name = repo.name
+        tag  = repo.tag
+      }
+      if repo.image == var.fluent_bit.image_name
+    ][0],
+    null
+  )
+  fluent_bit_repository_name = local.fluent_bit_repo_details != null ? local.fluent_bit_repo_details.name : null
+  fluent_bit_image_tag       = local.fluent_bit_repo_details != null ? local.fluent_bit_repo_details.tag : null
+
+  fluent_bit_repository_uri = data.aws_ecr_repository.fluent_bit.repository_url
+  region                    = data.aws_region.current.name
 }
+
+data "aws_ecr_repository" "fluent_bit" {
+  name = local.fluent_bit_repository_name
+}
+data "aws_region" "current" {}
 
 # Default tags for all images
 module "default_images" {
@@ -101,4 +124,17 @@ module "ecr" {
   repositories    = var.upload_images ? local.repositories : {}
   encryption_type = var.ecr.encryption_type
   tags            = local.tags
+}
+
+#Temporary solution for image retagging while waiting for the muli-plateform image from fluent-bit: https://github.com/fluent/fluent-bit/issues/9509
+resource "null_resource" "ecr_login_and_build" {
+  count = var.upload_images ? 1 : 0
+
+  provisioner "local-exec" {
+    # Command to log in to ECR and build the image
+    command = <<EOT
+      aws ecr get-login-password --profile ${var.profile} --region --region ${local.region}  | docker login --username AWS --password-stdin ${local.fluent_bit_repository_uri}
+      docker buildx imagetools create ${local.fluent_bit_repository_uri}:${local.fluent_bit_image_tag} --tag ${local.fluent_bit_repository_uri}:${local.fluent_bit_image_tag} --append ${var.fluent_bit.image_name}:windows-2022-${local.fluent_bit_image_tag}
+    EOT
+  }
 }
