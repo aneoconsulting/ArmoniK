@@ -126,7 +126,11 @@ module "windows_exporter" {
     tag                = local.ecr_images["${var.windows_exporter.image_name}:${try(coalesce(var.windows_exporter.image_tag), "")}"].tag
     image_pull_secrets = var.windows_exporter.pull_secrets
   }
-  kubeconfig_file = module.eks.kubeconfig_file
+  init_docker_image = {
+    image              = local.ecr_images["${var.windows_exporter.init_image_name}:${try(coalesce(var.windows_exporter.init_image_tag), "")}"].image
+    tag                = local.ecr_images["${var.windows_exporter.init_image_name}:${try(coalesce(var.windows_exporter.init_image_tag), "")}"].tag
+    image_pull_secrets = var.windows_exporter.init_pull_secrets
+  }
 }
 
 # Metrics exporter

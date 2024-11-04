@@ -361,9 +361,8 @@ node_exporter = {
 
 windows_exporter = {
   node_selector = {
-    "service" = "windows"
+    "plateform" = "windows"
   }
-  # image_tag = "0.29.2-ltsc2022"
 }
 
 prometheus = {

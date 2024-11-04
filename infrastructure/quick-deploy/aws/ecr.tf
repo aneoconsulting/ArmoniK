@@ -21,6 +21,7 @@ locals {
     var.grafana == null ? null : [var.grafana.image_name, var.grafana.image_tag],
     var.node_exporter == null ? null : [var.node_exporter.image_name, var.node_exporter.image_tag],
     var.windows_exporter == null ? null : [var.windows_exporter.image_name, var.windows_exporter.image_tag],
+    var.windows_exporter == null ? null : [var.windows_exporter.init_image_name, var.windows_exporter.init_image_tag],
     var.partition_metrics_exporter == null ? null : [var.partition_metrics_exporter.image_name, var.partition_metrics_exporter.image_tag],
     var.ingress == null ? null : [var.ingress.image, var.ingress.tag],
     var.authentication == null ? null : [var.authentication.image, var.authentication.tag],
