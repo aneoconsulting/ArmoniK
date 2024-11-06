@@ -359,6 +359,12 @@ node_exporter = {
   node_selector = {}
 }
 
+windows_exporter = {
+  node_selector = {
+    "plateform" = "windows"
+  }
+}
+
 prometheus = {
   node_selector = { service = "metrics" }
   #persistent_volume = {
