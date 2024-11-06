@@ -32,5 +32,9 @@ terraform {
       source  = "chilicat/pkcs12"
       version = "~> 0.0.7"
     }
+    generic = {
+      source  = "aneoconsulting.github.io/aneoconsulting/generic"
+      version = "~> 0.1.0"
+    }
   }
 }
