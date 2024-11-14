@@ -180,7 +180,7 @@ eks_managed_node_groups = {
     name                        = "mongodb"
     launch_template_description = "Node group for MongoDB"
     ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.xlarge"]
+    instance_types              = ["c5.2xlarge"]
     use_custom_launch_template  = true
     block_device_mappings = {
       xvda = {
@@ -300,44 +300,10 @@ mq = {
 
 mongodb = {
   node_selector = { service = "state-database" }
-  # Uncomment persistent_volume to enable persistence, comment to disable
-  #persistent_volume = {
-  #  storage_provisioner = "efs.csi.aws.com"
-  #  resources = {
-  #    requests = {
-  #      storage = "5Gi"
-  #    }
-  #  }
-  #}
-
-  # Uncomment to define custom resources for MongoDB pods, comment for default values
-  mongodb_resources = {
-    # limits = {
-    #   "cpu"               = 4
-    #   "memory"            = "8Gi"
-    #   "ephemeral-storage" = "20Gi"
-    # }
-    # requests = {
-    #   "cpu"               = 2
-    #   "memory"            = "4Gi"
-    #   "ephemeral-storage" = "2Gi"
-    # }
-  }
-
-  # Uncomment to define custom resources for MongoDB arbiter pods, comment for default values
-  arbiter_resources = {
-    # limits = {
-    #   "cpu"               = "400m"
-    #   "memory"            = "4Gi"
-    #   "ephemeral-storage" = "1Gi"
-    # }
-    # requests = {
-    #   "cpu"               = "100m"
-    #   "memory"            = "2Gi"
-    #   "ephemeral-storage" = "500Mi"
-    # }
-  }
 }
+
+# Nullify to disable sharding, each nullification of subobject will result in the use of default values 
+mongodb_sharding = {}
 
 seq = {
   node_selector = { service = "monitoring" }
