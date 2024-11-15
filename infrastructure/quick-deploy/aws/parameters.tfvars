@@ -303,7 +303,7 @@ mongodb = {
 }
 
 # Nullify to disable sharding, each nullification of subobject will result in the use of default values 
-mongodb_sharding = {}
+#mongodb_sharding = {}
 
 seq = {
   node_selector = { service = "monitoring" }
