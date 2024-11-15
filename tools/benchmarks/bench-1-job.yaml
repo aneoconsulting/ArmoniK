@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bench-session
+  namespace: armonik
+spec:
+  ttlSecondsAfterFinished: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: bench-session
+          image: dockerhubaneo/armonik_core_bench_test_client:0.24.3
+          env:
+            - name: BenchOptions__NTasks
+              value: 100000
+            - name: BenchOptions__Partition
+              value: bench
+            - name: BenchOptions__Options__SessionName
+              value: benchmark
+            - name: BenchOptions__PurgeData
+              value: false
+            - name: BenchOptions__DownloadResults
+              value: false
+            - name: GrpcClient__Endpoint
+              value:
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "2"
