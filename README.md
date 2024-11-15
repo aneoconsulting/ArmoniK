@@ -1,3 +1,17 @@
+# ArmoniK benchmarking
+
+### Are you lost ?
+
+If you are reading this, you are either involved in <em>ArmoniK</em> benchmarking project, interested in how we defined our infrastructure for benchmarking or you have unpurposely gotten astray from the main trunk !
+
+# Definition of ArmoniK benchmarking infrastructure on AWS
+
+## First one
+
+Related to AK benchmarking project, this branch exists to keep track of the first benchmark configuration used to define AK benchmarking infrastructure on AWS.
+
+This first benchmark configuration basically takes ArmoniK as of v2.20.1 and executes a Bench client session through a Kubernetes job for replication concerns. See the [YAML manifest for this Bench client session](https://github.com/aneoconsulting/ArmoniK/blob/ts/bench-1/tools/benchmarks/bench-1-job.yaml).
+
 # ArmoniK
 
 ![GitHub tag (latest SemVer pre-release)](https://img.shields.io/github/v/tag/aneoconsulting/ArmoniK?color=fe5001&label=latest%20version&sort=semver)
