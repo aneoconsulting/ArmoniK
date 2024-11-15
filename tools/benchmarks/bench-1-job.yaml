@@ -13,18 +13,27 @@ spec:
           image: dockerhubaneo/armonik_core_bench_test_client:0.24.3
           env:
             - name: BenchOptions__NTasks
-              value: 1000000
+              value: "1000000"
             - name: BenchOptions__Partition
               value: bench
             - name: BenchOptions__Options__SessionName
               value: benchmark
             - name: BenchOptions__PurgeData
-              value: false
+              value: "false"
             - name: BenchOptions__DownloadResults
-              value: false
+              value: "false"
+            - name: BenchOptions__PayloadSize
+              value: "1"
+            - name: BenchOptions__ResultSize
+              value: "1"
+            - name: BenchOptions__DegreeOfParallelism
+              value: "10"
+            - name: BenchOptions__PauseSessionDuringSubmission
+              value: "true"
             - name: GrpcClient__Endpoint
-              value:
+              value: 
           resources:
             requests:
-              memory: "1Gi"
-              cpu: "2"
+              memory: "468Mi"
+              cpu: "400m"
+
