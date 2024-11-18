@@ -31,7 +31,7 @@ spec:
             - name: BenchOptions__PauseSessionDuringSubmission
               value: "true"
             - name: GrpcClient__Endpoint
-              value: 
+              value: "" 
           resources:
             requests:
               memory: "1Gi"
