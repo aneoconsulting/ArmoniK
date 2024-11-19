@@ -187,11 +187,12 @@ resource "kubernetes_secret" "partition_metrics_exporter" {
 
 # Prometheus
 module "prometheus" {
-  source               = "./generated/infra-modules/monitoring/onpremise/prometheus"
-  namespace            = local.namespace
-  service_type         = var.prometheus.service_type
-  node_selector        = var.prometheus.node_selector
-  metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
+  source                     = "./generated/infra-modules/monitoring/onpremise/prometheus"
+  namespace                  = local.namespace
+  service_type               = var.prometheus.service_type
+  node_selector              = var.prometheus.node_selector
+  metrics_exporter_url       = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
+  mongo_metrics_exporter_url = "${module.mongodb[0].host}:9216"
   docker_image = {
     image              = local.ecr_images["${var.prometheus.image_name}:${try(coalesce(var.prometheus.image_tag), "")}"].image
     tag                = local.ecr_images["${var.prometheus.image_name}:${try(coalesce(var.prometheus.image_tag), "")}"].tag
@@ -422,4 +423,16 @@ locals {
       }
     }, null)
   }
+}
+
+module "mongodb_exporter" {
+  source    = "./generated/infra-modules/monitoring/onpremise/exporters/mongodb-exporter"
+  namespace = local.namespace
+  docker_image = {
+    image              = "percona/mongodb_exporter"
+    tag                = "0.41.0"
+    image_pull_secrets = ""
+  }
+  certif_mount = module.mongodb[0].mount_secret
+  mongo_url    = "mongodb://mongodb_exporter:mongodb_exporter@mongodb-armonik-headless/admin?tls=true&tlsAllowInvalidCertificates=true&tlsAllowInvalidHostnames=true&tlsCAFile=/mongodb/certificate/mongodb-ca-cert"
 }
