@@ -5,13 +5,13 @@ metadata:
   namespace: armonik
 spec:
   backoffLimit: 0
-  ttlSecondsAfterFinished: 0
+  ttlSecondsAfterFinished: 120
   template:
     spec:
       restartPolicy: Never
       containers:
         - name: bench-session
-          image: dockerhubaneo/armonik_core_bench_test_client:0.24.3
+          image: dockerhubaneo/armonik_core_bench_test_client:0.28.0
           env:
             - name: BenchOptions__NTasks
               value: "1000000"
