@@ -47,11 +47,11 @@ eks_managed_node_groups = {
     name                        = "workers"
     launch_template_description = "Node group for ArmoniK Compute-plane pods"
     ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.large"]
+    instance_types              = ["c5a.4xlarge"]
     capacity_type               = "SPOT"
-    min_size                    = 0
-    desired_size                = 0
-    max_size                    = 1000
+    min_size                    = 8
+    desired_size                = 8
+    max_size                    = 8
     labels = {
       service                        = "workers"
       "node.kubernetes.io/lifecycle" = "spot"
@@ -127,11 +127,11 @@ eks_managed_node_groups = {
     name                        = "control-plane"
     launch_template_description = "Node group for ArmoniK Control-plane and Ingress"
     ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.large"]
+    instance_types              = ["c5a.4xlarge"]
     capacity_type               = "ON_DEMAND"
     min_size                    = 1
     desired_size                = 1
-    max_size                    = 10
+    max_size                    = 2
     labels = {
       service                        = "control-plane"
       "node.kubernetes.io/lifecycle" = "ondemand"
@@ -180,7 +180,7 @@ eks_managed_node_groups = {
     name                        = "mongodb"
     launch_template_description = "Node group for MongoDB"
     ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.2xlarge"]
+    instance_types              = ["c5a.8xlarge"]
     use_custom_launch_template  = true
     block_device_mappings = {
       xvda = {
@@ -199,7 +199,7 @@ eks_managed_node_groups = {
     capacity_type = "ON_DEMAND"
     min_size      = 1
     desired_size  = 1
-    max_size      = 10
+    max_size      = 1
     labels = {
       service                        = "state-database"
       "node.kubernetes.io/lifecycle" = "ondemand"
@@ -300,6 +300,17 @@ mq = {
 
 mongodb = {
   node_selector = { service = "state-database" }
+  replicas = 2
+  mongodb_resources = {
+    limits = {
+      "cpu" = "14"
+      "memory" = "30Gi"
+    }
+    requests = {
+      "cpu" = "7"
+      "memory" = "15Gi"
+    }
+  }
 }
 
 # Nullify to disable sharding, each nullification of subobject will result in the use of default values 
@@ -371,14 +382,15 @@ logging_level = "Information"
 # Parameters of control plane
 control_plane = {
   limits = {
+    cpu    = "2000m"
+    memory = "4096Mi"
+  }
+  requests = {
     cpu    = "1000m"
     memory = "2048Mi"
   }
-  requests = {
-    cpu    = "200m"
-    memory = "500Mi"
-  }
   default_partition = "default"
+  replicas = 12
   node_selector     = { service = "control-plane" }
 }
 
@@ -397,225 +409,16 @@ admin_gui = {
 
 # Parameters of the compute plane
 compute_plane = {
-  # Default partition that uses the C# extension for the worker
-  default = {
-    node_selector = { service = "workers" }
-    # number of replicas for each deployment of compute plane
-    replicas = 1
-    # ArmoniK polling agent
-    polling_agent = {
-      limits = {
-        cpu    = "2000m"
-        memory = "2048Mi"
-      }
-      requests = {
-        cpu    = "500m"
-        memory = "256Mi"
-      }
-    }
-    # ArmoniK workers
-    worker = [
-      {
-        image = "dockerhubaneo/armonik_worker_dll"
-        limits = {
-          cpu    = "1000m"
-          memory = "1024Mi"
-        }
-        requests = {
-          cpu    = "500m"
-          memory = "512Mi"
-        }
-      }
-    ]
-    hpa = {
-      type              = "prometheus"
-      polling_interval  = 15
-      cooldown_period   = 300
-      min_replica_count = 0
-      max_replica_count = 100
-      behavior = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers = [
-        {
-          type      = "prometheus"
-          threshold = 2
-        },
-      ]
-    }
-  },
-  /*
-  # Partition that run the workload on gpu
-  gputest = {
-    node_selector = { service = "gpu_workers" }
-    # number of replicas for each deployment of compute plane
-    replicas = 1
-    # ArmoniK polling agent
-    polling_agent = {
-      limits = {
-        cpu    = "2000m"
-        memory = "2048Mi"
-      }
-      requests = {
-        cpu    = "500m"
-        memory = "256Mi"
-      }
-    }
-    # ArmoniK workers
-    worker = [
-      {
-        image = # worker image
-        tag   = "latest"
-        limits = {
-          cpu              = "4000m"
-          memory           = "16384Mi"
-          "nvidia.com/gpu" = "1"
-        }
-        requests = {
-          cpu              = "2000m"
-          memory           = "8192Mi"
-          "nvidia.com/gpu" = "1"
-        }
-      }
-    ]
-    hpa = {
-      type              = "prometheus"
-      polling_interval  = 15
-      cooldown_period   = 300
-      min_replica_count = 0
-      max_replica_count = 100
-      behavior = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers = [
-        {
-          type      = "prometheus"
-          threshold = 2
-        },
-      ]
-    }
-  },
-  */
-  # Partition for the stream worker
-  stream = {
-    node_selector = { service = "workers" }
-    # number of replicas for each deployment of compute plane
-    replicas = 1
-    # ArmoniK polling agent
-    polling_agent = {
-      limits = {
-        cpu    = "2000m"
-        memory = "2048Mi"
-      }
-      requests = {
-        cpu    = "500m"
-        memory = "256Mi"
-      }
-    }
-    # ArmoniK workers
-    worker = [
-      {
-        image = "dockerhubaneo/armonik_core_stream_test_worker"
-        limits = {
-          cpu    = "1000m"
-          memory = "1024Mi"
-        }
-        requests = {
-          cpu    = "500m"
-          memory = "512Mi"
-        }
-      }
-    ]
-    hpa = {
-      type              = "prometheus"
-      polling_interval  = 15
-      cooldown_period   = 300
-      min_replica_count = 0
-      max_replica_count = 100
-      behavior = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers = [
-        {
-          type      = "prometheus"
-          threshold = 2
-        },
-      ]
-    }
-  },
-  # Partition for the htcmock worker
-  htcmock = {
-    node_selector = { service = "workers" }
-    # number of replicas for each deployment of compute plane
-    replicas = 1
-    # ArmoniK polling agent
-    polling_agent = {
-      limits = {
-        cpu    = "2000m"
-        memory = "2048Mi"
-      }
-      requests = {
-        cpu    = "500m"
-        memory = "256Mi"
-      }
-    }
-    # ArmoniK workers
-    worker = [
-      {
-        image = "dockerhubaneo/armonik_core_htcmock_test_worker"
-        limits = {
-          cpu    = "1000m"
-          memory = "1024Mi"
-        }
-        requests = {
-          cpu    = "500m"
-          memory = "512Mi"
-        }
-      }
-    ]
-    hpa = {
-      type              = "prometheus"
-      polling_interval  = 15
-      cooldown_period   = 300
-      min_replica_count = 0
-      max_replica_count = 100
-      behavior = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers = [
-        {
-          type      = "prometheus"
-          threshold = 2
-        },
-      ]
-    }
-  },
   # Partition for the bench worker
   bench = {
     node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
-    replicas = 1
+    replicas = 120
     # ArmoniK polling agent
     polling_agent = {
       limits = {
-        cpu    = "2000m"
-        memory = "2048Mi"
+        cpu    = "1000m"
+        memory = "1024Mi"
       }
       requests = {
         cpu    = "500m"
@@ -636,26 +439,6 @@ compute_plane = {
         }
       }
     ]
-    hpa = {
-      type              = "prometheus"
-      polling_interval  = 15
-      cooldown_period   = 300
-      min_replica_count = 0
-      max_replica_count = 100
-      behavior = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers = [
-        {
-          type      = "prometheus"
-          threshold = 2
-        },
-      ]
-    }
   },
 }
 
