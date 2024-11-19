@@ -4,6 +4,7 @@ metadata:
   name: bench-session
   namespace: armonik
 spec:
+  backoffLimit: 0
   ttlSecondsAfterFinished: 0
   template:
     spec:
