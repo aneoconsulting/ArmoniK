@@ -300,17 +300,31 @@ mq = {
 
 mongodb = {
   node_selector = { service = "state-database" }
-  replicas = 2
+  replicas      = 2
   mongodb_resources = {
     limits = {
-      "cpu" = "14"
+      "cpu"    = "14"
       "memory" = "30Gi"
+      "ephemeral-storage" = "20Gi"
     }
     requests = {
-      "cpu" = "7"
+      "cpu"    = "7"
       "memory" = "15Gi"
+      "ephemeral-storage" = "4Gi"
     }
   }
+  # persistent_volume = {
+  #   storage_provisioner = "efs.csi.aws.com"
+  #   volume_binding_mode = "WaitForFirstConsumer"
+  #   resources = {
+  #     limits = {
+  #       "storage" = "20Gi"
+  #     }
+  #     requests = {
+  #       "storage" = "4Gi"
+  #     }
+  #   }
+  # }
 }
 
 # Nullify to disable sharding, each nullification of subobject will result in the use of default values 
@@ -390,7 +404,7 @@ control_plane = {
     memory = "2048Mi"
   }
   default_partition = "default"
-  replicas = 12
+  replicas          = 12
   node_selector     = { service = "control-plane" }
 }
 
