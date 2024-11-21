@@ -304,12 +304,12 @@ mongodb = {
   mongodb_resources = {
     limits = {
       "cpu"    = "14"
-      "memory" = "30Gi"
+      "memory" = "29Gi"
       "ephemeral-storage" = "20Gi"
     }
     requests = {
       "cpu"    = "7"
-      "memory" = "15Gi"
+      "memory" = "14Gi"
       "ephemeral-storage" = "4Gi"
     }
   }
