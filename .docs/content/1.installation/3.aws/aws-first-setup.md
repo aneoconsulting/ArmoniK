@@ -1,0 +1,53 @@
+# AWS Setup 🚀
+
+
+This guide will help you install and configure the AWS CLI on your system and set up your AWS environment for use.
+
+# 1. Installation & Configuration 
+
+Follow the official AWS CLI install guide [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+
+For Linux-based systems, you can use the following commands:
+```bash 
+curl "https://awscli.amazonaws.com/aws-cli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+
+Ensure the AWS CLI is installed correctly by checking its version:
+```bash
+aws --version
+```
+
+## 2. Configure AWS CLI
+
+Once installed, you need to configure the AWS CLI with your credentials:
+
+```bash
+aws configure
+```
+During configuration:
+- Enter your **Access Key ID** and **Secret Access Key** (provided by AWS).
+- Choose a default region, e.g., *eu-west-3* (optional but recommended).
+- Specify the default output format (e.g., *json*, *table*, or *text*).
+
+To use AWS environnement, you can use the following:
+
+```bash
+aws sso login
+```
+
+You should click on the URL provided in the output to open the SSO authorization page in a browser.
+
+## Step 1: Authorize in the Browser
+
+- Click on the first URL provided in the output.
+- This will open the SSO authorization page in your default browser.
+- After logging in, you’ll be prompted to grant permissions.
+
+## Step 2: Verify Login
+
+- Once authorized, the CLI will confirm successful login.
+- Your authorization page should look similar to this:
+
+![aws-first-setup](aws-cli-access.png)
