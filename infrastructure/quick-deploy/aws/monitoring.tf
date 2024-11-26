@@ -192,7 +192,7 @@ module "prometheus" {
   service_type               = var.prometheus.service_type
   node_selector              = var.prometheus.node_selector
   metrics_exporter_url       = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  mongo_metrics_exporter_url = "${module.mongodb[0].host}:9216"
+  mongo_metrics_exporter_url = module.mongodb_exporter.url
   docker_image = {
     image              = local.ecr_images["${var.prometheus.image_name}:${try(coalesce(var.prometheus.image_tag), "")}"].image
     tag                = local.ecr_images["${var.prometheus.image_name}:${try(coalesce(var.prometheus.image_tag), "")}"].tag
