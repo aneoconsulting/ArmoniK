@@ -308,8 +308,8 @@ mongodb = {
       "ephemeral-storage" = "20Gi"
     }
     requests = {
-      "cpu"    = "7"
-      "memory" = "14Gi"
+      "cpu"    = "6"
+      "memory" = "13Gi"
       "ephemeral-storage" = "4Gi"
     }
   }
