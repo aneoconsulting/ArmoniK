@@ -180,7 +180,7 @@ eks_managed_node_groups = {
     name                        = "mongodb"
     launch_template_description = "Node group for MongoDB"
     ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5a.4xlarge"]
+    instance_types              = ["c5a.16xlarge"]
     use_custom_launch_template  = true
     block_device_mappings = {
       xvda = {
@@ -303,13 +303,13 @@ mongodb = {
   replicas      = 2
   mongodb_resources = {
     limits = {
-      "cpu"    = "14"
-      "memory" = "29Gi"
+      "cpu"               = "60"
+      "memory"            = "120Gi"
       "ephemeral-storage" = "20Gi"
     }
     requests = {
-      "cpu"    = "6"
-      "memory" = "13Gi"
+      "cpu"               = "28"
+      "memory"            = "50Gi"
       "ephemeral-storage" = "4Gi"
     }
   }
