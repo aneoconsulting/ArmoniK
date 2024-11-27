@@ -31,6 +31,8 @@ spec:
               value: "10"
             - name: BenchOptions__PauseSessionDuringSubmission
               value: "true"
+            - name: BenchOptions__TaskDurationMs
+              value: "0"
             - name: GrpcClient__Endpoint
               value: "" 
           resources:
