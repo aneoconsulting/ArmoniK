@@ -35,7 +35,7 @@ See the example [here](https://github.com/aneoconsulting/ArmoniK/blob/main/.docs
 - Run the client from ArmoniK.Samples root repository using the **Docker** command line:
 
    ```bash
-   docker build -f"./csharp/native/HelloWorld/Client/Dockerfile" -t client "./csharp/native/"
+   docker build -f "./csharp/native/HelloWorld/Client/Dockerfile" -t client "./csharp/native/"
    docker run --rm --name <container name> client --endpoint "http://<ip>:5001" --partition <partition name>
    ```
 
