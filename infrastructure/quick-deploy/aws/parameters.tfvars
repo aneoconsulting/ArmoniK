@@ -295,7 +295,7 @@ elasticache = {
 mq = {
   engine_type        = "ActiveMQ"
   engine_version     = "5.17.6"
-  host_instance_type = "mq.m5.xlarge"
+  host_instance_type = "mq.m5.4xlarge"
 }
 
 mongodb = {
