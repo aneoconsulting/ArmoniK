@@ -1,6 +1,6 @@
 # Tags
 tags = {
-  "name"             = ""
+  "name"             = "bench"
   "env"              = ""
   "entity"           = ""
   "bu"               = ""
