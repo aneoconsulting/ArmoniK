@@ -286,7 +286,7 @@ keda = {
 elasticache = {
   engine             = "redis"
   engine_version     = "6.x"
-  node_type          = "cache.r4.large"
+  node_type          = "cache.r4.2xlarge"
   num_cache_clusters = 1
 }
 
