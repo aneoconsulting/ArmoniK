@@ -48,13 +48,13 @@ eks_managed_node_groups = {
     launch_template_description = "Node group for ArmoniK Compute-plane pods"
     ami_type                    = "AL2_x86_64"
     instance_types              = ["c5a.4xlarge"]
-    capacity_type               = "SPOT"
+    capacity_type               = "ON_DEMAND" # "SPOT"
     min_size                    = 8
     desired_size                = 8
     max_size                    = 8
     labels = {
       service                        = "workers"
-      "node.kubernetes.io/lifecycle" = "spot"
+      "node.kubernetes.io/lifecycle" = "ondemand" # "spot"
     }
     taints = {
       dedicated = {
