@@ -14,7 +14,7 @@ docker build -f"./csharp/native/HelloWorld/Worker/Dockerfile" -t hello "./csharp
 
 ## Partition
 
-Add a helloworld partition to [parameter.tfvar](../../../../infrastructure/quick-deploy/localhost/parameters.tfvars).
+Add a helloworld partition to [parameter.tfvar](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/localhost/parameters.tfvars).
 
 Copy the default one and change the partition name, add a tag to "latest", set the image to "hello".
 
