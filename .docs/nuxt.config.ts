@@ -21,5 +21,13 @@ export default defineNuxtConfig({
       siteName: 'ArmoniK',
       siteDescription: 'The high throughput compute grid project using Kubernetes'
     }
-  }
+  },
+
+  robots: {
+    robotsTxt: false
+  },
+
+  ogImage: {
+    enabled: false,
+  },
 })
