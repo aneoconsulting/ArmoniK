@@ -31,6 +31,8 @@ vpc = {
   enable_private_subnet = false
 }
 
+upload_images = false
+
 # AWS EKS
 eks = {
   cluster_version                = "1.25"
@@ -222,7 +224,7 @@ eks_managed_node_groups = {
     }
   }
   # Node group for windows
-  /*windows = {
+  windows = {
     name                        = "windows"
     launch_template_description = "Node group for ArmoniK windows based pods"
     ami_type                    = "WINDOWS_CORE_2022_x86_64"
@@ -249,7 +251,7 @@ eks_managed_node_groups = {
       AmazonEKSVPCResourceController = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
     }
   }
-  */
+
 }
 
 # List of self managed node groups
@@ -361,11 +363,13 @@ node_exporter = {
 }
 
 #node exporter for windows
-/* windows_exporter = {
+windows_exporter = {
   node_selector = {
-    "platform" = "windows"
+    "platform"           = "windows"
+    "kubernetes.io/os"   = "windows"
+    "kubernetes.io/arch" = "amd64"
   }
-} */
+}
 
 prometheus = {
   node_selector = { service = "metrics" }
@@ -397,25 +401,31 @@ metrics_exporter = {
 }*/
 
 fluent_bit = {
-  is_daemonset  = true
-  node_selector = {}
+  is_daemonset = true
+  node_selector = {
+    "kubernetes.io/os"   = "linux"
+    "kubernetes.io/arch" = "amd64"
+  }
 }
-/*
+
 fluent_bit_windows = {
   is_daemonset = true
   #image_name   = "fluent/fluent-bit"
   image_tag = "windows-2022-3.2.0"
   node_selector_windows = {
-    "platform" = "windows"
+    "platform"           = "windows"
+    "kubernetes.io/arch" = "amd64"
+    "kubernetes.io/os"   = "windows"
   }
 }
-*/
+
 
 # Logging level
 logging_level = "Debug"
 
 # Parameters of control plane
 control_plane = {
+  tag = "0.29.0-jgtls.11.2f24ff0d"
   limits = {
     cpu    = "1000m"
     memory = "2048Mi"
@@ -425,15 +435,15 @@ control_plane = {
     memory = "500Mi"
   }
   default_partition = "default"
-  node_selector     = { service = "control-plane" }
-  /*
-  node_selector     = { 
-  service = "control-plane"
-  "platform"           = "windows"
-  "kubernetes.io/os"   = "windows"
-  "kubernetes.io/arch" = "amd64"
+  #node_selector     = { service = "control-plane" }
+
+  node_selector = {
+    # service              = "control-plane"
+    "platform"           = "windows"
+    "kubernetes.io/os"   = "windows"
+    "kubernetes.io/arch" = "amd64"
   }
-  */
+
 }
 
 # Parameters of admin GUI
@@ -454,7 +464,9 @@ compute_plane = {
   # Default partition that uses the C# extension for the worker
   default = {
     node_selector = {
-      service = "workers"
+      platform             = "windows"
+      "kubernetes.io/os"   = "windows"
+      "kubernetes.io/arch" = "amd64"
     }
     # number of replicas for each deployment of compute plane
     replicas = 1
@@ -580,6 +592,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_core_stream_test_worker"
+        tag   = "0.29.0-jgtls.11.2f24ff0d"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -613,18 +626,19 @@ compute_plane = {
   },
   # Partition for the htcmock worker
   htcmock = {
-    node_selector = { service = "workers" }
-    /*
+    #node_selector = { service = "workers" }
+
     node_selector = {
       "platform"           = "windows"
       "kubernetes.io/os"   = "windows"
       "kubernetes.io/arch" = "amd64"
     }
-*/
+
     # number of replicas for each deployment of compute plane
     replicas = 1
     # ArmoniK polling agent
     polling_agent = {
+      tag = "0.29.0-jgtls.11.2f24ff0d"
       limits = {
         cpu    = "2000m"
         memory = "2048Mi"
@@ -638,6 +652,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_core_htcmock_test_worker"
+        tag   = "0.29.0-jgtls.11.2f24ff0d"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -689,6 +704,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_core_bench_test_worker"
+        tag   = "0.29.0-jgtls.11.2f24ff0d"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
