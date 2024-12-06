@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-export
+  namespace: {{KUBE_NAMESPACE}}
+spec:
+  template:
+    spec:
+      containers:
+      - name: sling
+        image: slingdata/sling
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            # Use the environment variables directly
+            export MONGODB="mongodb://$MONGO_USER:$MONGO_PASS@$MONGO_HOST:$MONGO_PORT/?authSource=database"
+
+            # Run the Sling command
+            sling run --src-conn MONGODB --src-stream 'database.TaskData' --tgt-conn S3 --tgt-object "s3://{{BUCKET_NAME}}/{{FILENAME}}_TaskData.json"
+        env:
+          - name: MONGO_USER
+            valueFrom:
+              secretKeyRef:
+                name: custom-mongodb-sharded
+                key: username
+          - name: MONGO_PASS
+            valueFrom:
+              secretKeyRef:
+                name: custom-mongodb-sharded
+                key: password
+          - name: MONGO_HOST
+            valueFrom:
+              secretKeyRef:
+                name: custom-mongodb-sharded
+                key: host
+          - name: MONGO_PORT
+            valueFrom:
+              secretKeyRef:
+                name: custom-mongodb-sharded
+                key: port
+          - name: "AWS_ACCESS_KEY_ID"
+            value: "{{AWS_ACCESS_KEY_ID}}"
+          - name: "AWS_SECRET_ACCESS_KEY"
+            value: "{{AWS_SECRET_ACCESS_KEY}}"
+          - name: "AWS_SESSION_TOKEN"
+            value: "{{AWS_SESSION_TOKEN}}"
+        volumeMounts:
+          - name: mongodb-cert
+            mountPath: /mongodb/certs
+            readOnly: true
+      restartPolicy: Never
+      volumes:
+        - name: mongodb-cert
+          secret:
+            secretName: custom-mongodb-sharded
+            items:
+              - key: chain.pem
+                path: chain.pem
+  backoffLimit: 4
