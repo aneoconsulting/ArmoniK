@@ -425,7 +425,7 @@ logging_level = "Debug"
 
 # Parameters of control plane
 control_plane = {
-  tag = "0.29.0-jgtls.11.2f24ff0d"
+  tag = "0.29.0-jgtls.17.b7adee05"
   limits = {
     cpu    = "1000m"
     memory = "2048Mi"
@@ -592,7 +592,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_core_stream_test_worker"
-        tag   = "0.29.0-jgtls.11.2f24ff0d"
+        tag   = "0.29.0-jgtls.17.b7adee05"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -638,7 +638,7 @@ compute_plane = {
     replicas = 1
     # ArmoniK polling agent
     polling_agent = {
-      tag = "0.29.0-jgtls.11.2f24ff0d"
+      tag = "0.29.0-jgtls.17.b7adee05"
       limits = {
         cpu    = "2000m"
         memory = "2048Mi"
@@ -652,7 +652,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_core_htcmock_test_worker"
-        tag   = "0.29.0-jgtls.11.2f24ff0d"
+        tag   = "0.29.0-jgtls.17.b7adee05"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -704,7 +704,7 @@ compute_plane = {
     worker = [
       {
         image = "dockerhubaneo/armonik_core_bench_test_worker"
-        tag   = "0.29.0-jgtls.11.2f24ff0d"
+        tag   = "0.29.0-jgtls.17.b7adee05"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
