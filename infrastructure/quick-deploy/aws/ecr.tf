@@ -86,7 +86,20 @@ locals {
   }
 
   default_tags = module.default_images.image_tags
+
+  #information for fluent-bit image retagging.
+  fluent_bit_repository_uri = [
+    for name, uri in module.ecr.repositories : uri
+    if can(regex("fluent-bit", name))
+  ][0]
+  fluent_bit_image_tag = [
+    for name, details in local.repositories :
+    details.tag if can(regex("fluent-bit", details.image))
+  ][0]
+  region = data.aws_region.current.name
 }
+
+data "aws_region" "current" {}
 
 # Default tags for all images
 module "default_images" {
@@ -103,4 +116,16 @@ module "ecr" {
   repositories    = var.upload_images ? local.repositories : {}
   encryption_type = var.ecr.encryption_type
   tags            = local.tags
+}
+
+#Temporary solution for image retagging while waiting for the muli-plateform image from fluent-bit: https://github.com/fluent/fluent-bit/issues/9509
+resource "generic_local_cmd" "build_fluent-bit_image" {
+  count = var.upload_images ? 1 : 0
+
+  provisioner "local-exec" {
+    # build the muti-platform image in the registry
+    command = <<EOT
+      docker buildx imagetools create ${local.fluent_bit_repository_uri}:${local.fluent_bit_image_tag} --tag ${local.fluent_bit_repository_uri}:${local.fluent_bit_image_tag} --append ${var.fluent_bit.image_name}:windows-2022-${local.fluent_bit_image_tag}
+    EOT
+  }
 }
