@@ -31,6 +31,7 @@ variable "kms" {
   type = object({
     key_ring   = string
     crypto_key = string
+    location   = optional(string)
   })
 }
 

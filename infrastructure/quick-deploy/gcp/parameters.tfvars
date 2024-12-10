@@ -231,9 +231,10 @@ gke = {
   ]
 }
 
-kms = {
-  key_ring   = "armonik-europe-west1"
-  crypto_key = "armonik-europe-west1"
+kms = {  
+  key_ring   =  "armonik" # Name the correct key ring
+  crypto_key = "armonik"
+  location = "europa-west1" # Modify to your location depending on where you are deploying
 }
 
 # Logging level
