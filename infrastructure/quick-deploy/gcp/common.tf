@@ -6,7 +6,7 @@ data "google_compute_zones" "available" {}
 
 data "google_kms_key_ring" "kms" {
   name     = var.kms.key_ring
-  location = var.region
+  location = coalesce(var.kms.location, var.region, "global")
 }
 
 data "google_kms_crypto_key" "kms" {
