@@ -2,6 +2,30 @@
 
 ## [main](https://github.com/aneoconsulting/armonik/tree/main)
 
+
+## [v2.21.0](https://github.com/aneoconsulting/armonik/tree/v2.21.0) (2024-12-11)
+
+There are bug corrections in all the ArmoniK services and the most notable new features are describe hereafter. 
+
+
+Changed
+-
+
+* Upgrade version of ArmoniK Infra from `0.4.3` to `0.7.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.Infra/releases/tag/0.7.0).
+* Upgrade version of ArmoniK API from `3.18.1` to `3.21.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.Api/releases/tag/3.21.0).
+* Upgrade version of ArmoniK Core from `0.24.2` to `0.28.0` [Changelog](https://github.com/aneoconsulting/ArmoniK.Core/releases/tag/0.24.2).
+* Upgrade version of ArmoniK Admin Gui from `0.12.2` to `0.13.3` [Changelog](https://github.com/aneoconsulting/ArmoniK.Admin.GUI/releases/0.12.2).
+* Upgrade **legacy** version of ArmoniK Extensions Csharp from `0.12.7` to `0.12.10` [Changelog](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp/releases/tag/0.12.10)
+* A new extension for ArmoniK is now officially supported for the C++ langage (after the API)  [C++](https://github.com/aneoconsulting/ArmoniK.Extensions.Cpp). They are are provided packaged for debian, redhat and as a tar.gz archive with a static compilation.
+
+* [Infra] Simplification MongoDB deployement
+* [Infra] Sharded mongoDB deployement
+* [Infra] Partition with GPU on AWS
+* [API] Improved and more pythonic API especially for the filters
+* [API] New supported langage: Rust
+* [API] Add capacity to pause a session
+* [Core] Preview for a plugin to use SQS as queue system
+
 Breaking
 -
 * With Session Lifecycle availability, payloads are not deleted anymore upon task success. Either close session and purge data or set the `Submitter__DeletePayload` environment variable to `true` for core to delete these data.
