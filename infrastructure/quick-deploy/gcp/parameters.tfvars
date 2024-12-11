@@ -234,7 +234,7 @@ gke = {
 kms = {  
   key_ring   =  "armonik" # Name the correct key ring
   crypto_key = "armonik"
-  location = "europa-west1" # Modify to your location depending on where you are deploying
+  location = "global"
 }
 
 # Logging level
