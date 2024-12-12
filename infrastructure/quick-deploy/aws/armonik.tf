@@ -4,7 +4,7 @@ module "armonik" {
   logging_level = var.logging_level
 
   configurations = merge(var.configurations, {
-    core = [module.mq, module.elasticache, module.mongodb, module.mongodb_sharded, var.configurations.core]
+    core = [module.sqs, module.mq, module.elasticache, module.mongodb, module.mongodb_sharded, var.configurations.core]
   })
 
   fluent_bit              = module.fluent_bit
@@ -17,6 +17,7 @@ module "armonik" {
   // If compute plane has no partition data, provides a default
   // but always overrides the images
   compute_plane = { for k, v in var.compute_plane : k => merge({
+    service_account_name = length(var.sqs_service_account_name) > 0 ? var.sqs_service_account_name : null
     partition_data = {
       priority              = 1
       reserved_pods         = 1
@@ -38,6 +39,7 @@ module "armonik" {
   control_plane = merge(var.control_plane, {
     image = local.ecr_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].name
     tag   = local.ecr_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].tag
+    service_account_name = length(var.sqs_service_account_name) > 0 ? var.sqs_service_account_name : null
   })
   admin_gui = merge(var.admin_gui, {
     image = local.ecr_images["${var.admin_gui.image}:${try(coalesce(var.admin_gui.tag), "")}"].name
