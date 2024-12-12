@@ -301,6 +301,12 @@ variable "mq_credentials" {
   }
 }
 
+variable "sqs_service_account_name" {
+  description = "Name to use for the created SQS service account, SQS will be used when set" # no spaces or _ or else it'll fail to deploy (validation?)
+  type = string
+  default = ""
+}
+
 # Parameters for MongoDB
 variable "mongodb" {
   description = "Parameters of MongoDB"
