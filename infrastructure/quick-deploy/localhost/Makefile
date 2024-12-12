@@ -60,11 +60,10 @@ output:
 
 get-modules:
 	@if [ -d $(MODULES_DIR) ]; then\
-		git -C $(MODULES_DIR) fetch --all --tags;\
+		git -C $(MODULES_DIR) fetch --depth 1 origin $(MODULES_VERSION);\
 		git -C $(MODULES_DIR) -c advice.detachedHead=false checkout $(MODULES_VERSION);\
-		git -C $(MODULES_DIR) pull origin $(MODULES_VERSION);\
     else \
-      	git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) $(MODULES_SOURCE) $(MODULES_DIR);\
+      	git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) --depth 1 $(MODULES_SOURCE) $(MODULES_DIR);\
     fi
 
 clean:
