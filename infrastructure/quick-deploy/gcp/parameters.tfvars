@@ -232,9 +232,9 @@ gke = {
 }
 
 kms = {  
-  key_ring   =  "armonik" # Name the correct key ring
-  crypto_key = "armonik"
-  location = "global"
+  key_ring    = "armonik"
+  crypto_key  = "armonik"
+  location    = "global"
 }
 
 # Logging level
