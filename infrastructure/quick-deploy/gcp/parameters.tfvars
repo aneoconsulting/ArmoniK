@@ -231,10 +231,10 @@ gke = {
   ]
 }
 
-kms = {  
-  key_ring    = "armonik"
-  crypto_key  = "armonik"
-  location    = "global"
+kms = {
+  key_ring   = "armonik"
+  crypto_key = "armonik"
+  location   = "global"
 }
 
 # Logging level
