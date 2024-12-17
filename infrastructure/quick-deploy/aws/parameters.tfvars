@@ -287,7 +287,7 @@ elasticache = {
   engine             = "redis"
   engine_version     = "6.x"
   node_type          = "cache.r4.large"
-  num_cache_clusters = 2
+  num_cache_clusters = 1
 }
 
 #s3_os = {}
