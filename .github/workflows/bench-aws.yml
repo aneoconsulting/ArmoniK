@@ -38,7 +38,7 @@ jobs:
         run: |
           set -ex
           if [ "$TRIGGER" == 'push' ]; then
-            echo '{"include":[{"type": "localhost", "ntasks":1000, "polling-limit": 300}, {"type": "aws", "ntasks":1200000, "polling-limit": 1000}]}' > matrix.json
+            echo '{"include":[{"type": "localhost", "ntasks":1000, "polling-limit": 300}, {"type": "aws", "ntasks":1200000, "polling-limit": 1000, "parameters-file-path": "tools/ci/bench-aws.tfvars"}]}' > matrix.json
           elif [ "$TRIGGER" == 'release' ]; then
             echo '{"include":[{"type": "localhost", "ntasks":1000, "polling-limit": 300}]}' > matrix.json
           elif [ "$TRIGGER" == 'workflow_dispatch' ]; then
@@ -55,7 +55,7 @@ jobs:
       matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
     env:
       prefix: ${{ inputs.prefix || 'ci-bench' }}
-      parameters-file-path: ${{ inputs.parameters.file-path || 'tools/ci/bench-aws.tfvars' }}
+      parameters-file-path: ${{ inputs.parameters.file-path || matrix.parameters-file-path || '' }}
     outputs:
       terraform-output: ${{ steps.deploy.outputs.terraform-output }}
       armonik-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
