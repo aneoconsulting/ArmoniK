@@ -122,6 +122,7 @@ resource "kubernetes_secret" "elasticache" {
 
 # Amazon MQ
 module "mq" {
+  count = length(var.sqs_service_account_name) > 0 ? 0 : 1
   source          = "./generated/infra-modules/storage/aws/mq"
   tags            = local.tags
   name            = "${local.prefix}-mq"
@@ -141,6 +142,25 @@ module "mq" {
   authentication_strategy = var.mq.authentication_strategy
   publicly_accessible     = var.mq.publicly_accessible
   kms_key_id              = local.kms_key
+}
+
+module "sqs" {
+  count = length(var.sqs_service_account_name) > 0 ? 1 : 0
+  source = "./generated/infra-modules/storage/aws/sqs"
+  namespace = local.namespace
+  region = var.region
+  prefix = local.prefix
+}
+
+module "sqs_service_account" {
+  count = length(var.sqs_service_account_name) > 0 ? 1 : 0
+  namespace = local.namespace
+  source = "./generated/infra-modules/service-account/aws"
+  prefix = local.prefix
+  service_account_name = var.sqs_service_account_name
+  oidc_provider_arn = module.eks.aws_eks_module.oidc_provider_arn 
+  oidc_issuer_url = module.eks.aws_eks_module.cluster_oidc_issuer_url
+  decrypt_policy_arn = aws_iam_policy.decrypt_object.arn
 }
 
 # MongoDB
