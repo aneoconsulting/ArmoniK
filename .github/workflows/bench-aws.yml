@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - "ts/add-bench-aws"
   release:
     types: [published, prereleased]
   workflow_dispatch:
