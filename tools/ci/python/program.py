@@ -317,3 +317,10 @@ if __name__ == "__main__":
             "Session not found",
             extra={"context": {"Session name provided": args.session_name}},
         )
+        sys.exit(1)
+    except TimeoutError:
+        logger.error(
+            "Session overseeded the polling duration",
+            extra={"context": {"Session name provided": args.session_name}},
+        )
+        sys.exit(1)

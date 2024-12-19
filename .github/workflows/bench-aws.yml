@@ -3,9 +3,25 @@ name: "Benchmark with Bench client"
 on:
   push:
     branches:
-      - "ts/add-bench-aws"
+      - main
   release:
-    types: [published]
+    types: [published, prereleased]
+  workflow_dispatch:
+    inputs:
+      destroy-on-session-end:
+        description: "Whether to destroy infrastructure right after the bench job has ended"
+        type: boolean
+        required: false
+        default: true
+      prefix:
+        description: "Prefix for the infrastructure. The bucket associated with this prefix must be created before."
+        required: false
+        default: "ci-bench"
+      parameters-file-path:
+        description: "Relative path for the Terraform configuration file, root being the ArmoniK repository"
+        required: false
+        default: "tools/ci/bench-aws.tfvars"
+
 
 jobs:
   define-matrix:
@@ -20,30 +36,14 @@ jobs:
           TRIGGER: ${{ github.event_name }} 
         run: |
           set -ex
-          if [ "$TRIGGER" = 'push' ]; then
-            echo '{"include":[{"type": "localhost", "ntasks":100, "polling-limit": 300}, {"type": "aws", "ntasks":1000, "polling-limit": 600}]}' > matrix.json
-          elif [ "$TRIGGER" = 'release' ]; then
-            echo '{"include":[{"type": "localhost", "ntasks":100, "polling-limit": 300}]}' > matrix.json
+          if [ "$TRIGGER" == 'push' ]; then
+            echo '{"include":[{"type": "localhost", "ntasks":1000, "polling-limit": 300}, {"type": "aws", "ntasks":1200000, "polling-limit": 1000}]}' > matrix.json
+          elif [ "$TRIGGER" == 'release' ]; then
+            echo '{"include":[{"type": "localhost", "ntasks":1000, "polling-limit": 300}]}' > matrix.json
+          elif [ "$TRIGGER" == 'workflow_dispatch' ]; then
+            echo '{"include":[{"type": "aws", "ntasks":1200000, "polling-limit": 1000}]}' > matrix.json
           fi
           echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
-
-  # test-matrix:
-  #   name: Test matrix
-  #   runs-on: ubuntu-latest
-  #   needs: define-matrix
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
-  #   steps:
-  #   - id: test
-  #     name: Test matrix
-  #     env:
-  #       TYPE: ${{ matrix.type }}
-  #       NTASKS: ${{ matrix.ntasks }}
-  #       POLLING_LIMIT: ${{ matrix.polling-limit }}
-  #     run: |
-  #       set -ex
-  #       echo "Type: $TYPE, Number of tasks: $NTASKS, Polling Limit: $POLLING_LIMIT"
 
   benchmark:
     name: ${{ matrix.type }}
@@ -53,7 +53,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
     env:
-      prefix: ci-bench
+      prefix: ${{ inputs.prefix || 'ci-bench' }}
+      parameters-file-path: ${{ inputs.parameters.file-path || 'tools/ci/bench-aws.tfvars' }}
     outputs:
       terraform-output: ${{ steps.deploy.outputs.terraform-output }}
       armonik-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
@@ -79,11 +80,12 @@ jobs:
 
       - id: deploy
         name: "Deploy ArmoniK"
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@ts/parametrize-tfvars
         with:
           type: ${{ matrix.type }}
           prefix: ${{ env.prefix }}
           core-version: ${{ env.core-version }}
+          parameters-file-path: ${{ env.parameters-file-path }}
 
       - id: get-armonik-endpoint
         name: "Get ArmoniK's control plane endpoint"
@@ -122,28 +124,21 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           BENCH_RESULTS_PATH: ${{ steps.get-bench-stats.outputs.bench-file-path }}
+          REF_NAME: ${{ github.ref_name }}
           TYPE: ${{ matrix.type }}
           GHRUNID: ${{ github.run_id }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 cp "$BENCH_RESULTS_PATH" "s3://test-armonik-bench-storage/benchclient_benchmark_${EVENT_NAME}_${TYPE}_${GHRUNID}.json"
+          DATE=$(date +"%Y-%m-%d")
+          aws s3 cp "$BENCH_RESULTS_PATH" "s3://armonik-bench-storage/${REF_NAME}_${DATE}/${GHRUNID}/benchclient_benchmark_${EVENT_NAME}_${TYPE}.json"
 
-      - if: always()
+      - if: ${{ (github.event_name == 'workflow_dispatch' &&  inputs.destroy-on-session-end) || (github.event_name != 'workflow_dispatch' && always()) }}
         id: destroy
         name: Destroy deployment
-        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@ts/parametrize-tfvars
         with:
           type: ${{ matrix.type }}
           prefix: ${{ env.prefix }}
-
-        # WARNING FOR ARMONIK CORE TEAM
-        
-        # Sometimes infrastructure destruction fails on AWS due to a deadlock 
-        # between a security group and a subnet that happens unpredictably. 
-
-        # When this happens, the destruction must be taken over manually 
-        # by destroying the security group and the network interface associated with it, 
-        # and finished with `make` recipes `destroy` and `bootstrap-destroy` with the prefix 
-        # used by the GitHub workflow (currently `benchmark`). 
+          parameters-file-path: ${{ env.parameters-file-path }}
