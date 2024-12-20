@@ -101,6 +101,7 @@ jobs:
           ntasks: ${{ matrix.ntasks }}
           session-name: bench
           grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.grpc-endpoint }}
+          timeout: 1200
 
       - id: get-bench-stats
         name: Get Bench Stats
