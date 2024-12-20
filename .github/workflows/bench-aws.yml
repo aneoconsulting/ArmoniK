@@ -18,11 +18,6 @@ on:
         description: "Prefix for the infrastructure. The bucket associated with this prefix must be created before."
         required: false
         default: "ci-bench"
-      parameters-file-path:
-        description: "Relative path for the Terraform configuration file, root being the ArmoniK repository"
-        required: false
-        default: "tools/ci/bench-aws.tfvars"
-
 
 jobs:
   define-matrix:
@@ -42,7 +37,7 @@ jobs:
           elif [ "$TRIGGER" == 'release' ]; then
             echo '{"include":[{"type": "localhost", "ntasks":1000, "polling-limit": 300}]}' > matrix.json
           elif [ "$TRIGGER" == 'workflow_dispatch' ]; then
-            echo '{"include":[{"type": "aws", "ntasks":1200000, "polling-limit": 1000}]}' > matrix.json
+            echo '{"include":[{"type": "aws", "ntasks":1200000, "polling-limit": 1000, "parameters-file-path": "tools/ci/bench-aws.tfvars"}]}' > matrix.json
           fi
           echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
 
@@ -55,7 +50,7 @@ jobs:
       matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
     env:
       prefix: ${{ inputs.prefix || 'ci-bench' }}
-      parameters-file-path: ${{ inputs.parameters.file-path || matrix.parameters-file-path || '' }}
+      parameters-file-path: ${{ matrix.parameters-file-path }}
     outputs:
       terraform-output: ${{ steps.deploy.outputs.terraform-output }}
       armonik-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
@@ -133,9 +128,9 @@ jobs:
           AWS_EC2_METADATA_DISABLED: true
         run: |
           DATE=$(date +"%Y-%m-%d")
-          aws s3 cp "$BENCH_RESULTS_PATH" "s3://armonik-bench-storage/${REF_NAME}_${DATE}/${GHRUNID}/benchclient_benchmark_${EVENT_NAME}_${TYPE}.json"
+          aws s3 cp "$BENCH_RESULTS_PATH" "s3://armonik-bench-storage/${REF_NAME}/${GHRUNID}_${DATE}/benchclient_benchmark_${EVENT_NAME}_${TYPE}.json"
 
-      - if: ${{ (github.event_name == 'workflow_dispatch' &&  inputs.destroy-on-session-end) || (github.event_name != 'workflow_dispatch' && always()) }}
+      - if: ${{ (github.event_name == 'workflow_dispatch' && inputs.destroy-on-session-end) || (github.event_name != 'workflow_dispatch' && always()) }}
         id: destroy
         name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@ts/parametrize-tfvars
