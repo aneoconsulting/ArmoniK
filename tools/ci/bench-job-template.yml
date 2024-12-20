@@ -5,7 +5,7 @@ metadata:
   namespace: armonik
 spec:
   backoffLimit: 0
-  ttlSecondsAfterFinished: 0
+  ttlSecondsAfterFinished: 1200
   template:
     spec:
       restartPolicy: Never
