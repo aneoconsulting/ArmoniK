@@ -1,0 +1,17 @@
+[project]
+name = "import-manager"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "boto3>=1.35.79",
+    "click>=8.1.7",
+    "colorama>=0.4.6",
+    "dacite>=1.8.1",
+    "filetype>=1.2.0",
+    "randomname>=0.2.1",
+    "requests>=2.32.3",
+    "tabulate>=0.9.0",
+    "tinydb>=4.8.2",
+]

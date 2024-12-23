@@ -1,0 +1,1 @@
+# Should output the urls to grafana, seq and the notebook
