@@ -1,0 +1,221 @@
+diff --git a/infrastructure/quick-deploy/localhost/common.tf b/infrastructure/quick-deploy/localhost/common.tf
+index fb8356d8..c2453c01 100644
+--- a/infrastructure/quick-deploy/localhost/common.tf
++++ b/infrastructure/quick-deploy/localhost/common.tf
+@@ -32,7 +32,7 @@ locals {
+     must_force_path_style = module.minio_s3_fs[0].must_force_path_style
+   } : {}
+   shared_storage_localhost_default = {
+-    host_path         = abspath("data")
++    host_path         = "/tmp"
+     file_storage_type = "HostPath"
+     file_server_ip    = ""
+   }
+diff --git a/infrastructure/quick-deploy/localhost/htmock.yaml b/infrastructure/quick-deploy/localhost/htmock.yaml
+new file mode 100644
+index 00000000..e3ade67f
+--- /dev/null
++++ b/infrastructure/quick-deploy/localhost/htmock.yaml
+@@ -0,0 +1,29 @@
++apiVersion: v1
++kind: Pod
++metadata:
++  name: armonik-htcmock-client
++spec:
++  containers:
++    - name: armonik-htcmock-client
++      image: dockerhubaneo/armonik_core_htcmock_test_client:0.24.3
++      env:
++        - name: GrpcClient__Endpoint
++          value: "http://10.43.91.136:5001"
++        - name: HtcMock__NTasks
++          value: "2000"
++        - name: HtcMock__TotalCalculationTime
++          value: "00:00:50.0"
++        - name: HtcMock__DataSize
++          value: "50"
++        - name: HtcMock__MemorySize
++          value: "50"
++        - name: HtcMock__SubTasksLevels
++          value: "100"
++        - name: HtcMock__EnableUseLowMem
++          value: "false"
++        - name: HtcMock__EnableSmallOutput
++          value: "false"
++        - name: HtcMock__EnableFastCompute
++          value: "false"
++        - name: HtcMock__Partition
++          value: "htcmock"
+diff --git a/infrastructure/quick-deploy/localhost/parameters.tfvars b/infrastructure/quick-deploy/localhost/parameters.tfvars
+index 5f5e0fbc..a8705087 100644
+--- a/infrastructure/quick-deploy/localhost/parameters.tfvars
++++ b/infrastructure/quick-deploy/localhost/parameters.tfvars
+@@ -1,6 +1,8 @@
+ # Logging level
+ logging_level = "Information"
+
++k8s_config_context = "local"
++
+ # Uncomment to deploy metrics server
+ #metrics_server = {}
+
+@@ -63,7 +65,7 @@ compute_plane = {
+   # Default partition that uses the C# extension for the worker
+   default = {
+     # number of replicas for each deployment of compute plane
+-    replicas = 0
++    replicas = 1
+     # ArmoniK polling agent
+     polling_agent = {
+       limits = {
+@@ -89,81 +91,11 @@ compute_plane = {
+         }
+       }
+     ]
+-    hpa = {
+-      type              = "prometheus"
+-      polling_interval  = 15
+-      cooldown_period   = 300
+-      min_replica_count = 0
+-      max_replica_count = 5
+-      behavior = {
+-        restore_to_original_replica_count = true
+-        stabilization_window_seconds      = 300
+-        type                              = "Percent"
+-        value                             = 100
+-        period_seconds                    = 15
+-      }
+-      triggers = [
+-        {
+-          type      = "prometheus"
+-          threshold = 2
+-        },
+-      ]
+-    }
+-  },
+-  # Partition for the stream worker
+-  stream = {
+-    # number of replicas for each deployment of compute plane
+-    replicas = 0
+-    # ArmoniK polling agent
+-    polling_agent = {
+-      limits = {
+-        cpu    = "2000m"
+-        memory = "2048Mi"
+-      }
+-      requests = {
+-        cpu    = "50m"
+-        memory = "50Mi"
+-      }
+-    }
+-    # ArmoniK workers
+-    worker = [
+-      {
+-        image = "dockerhubaneo/armonik_core_stream_test_worker"
+-        limits = {
+-          cpu    = "1000m"
+-          memory = "1024Mi"
+-        }
+-        requests = {
+-          cpu    = "50m"
+-          memory = "50Mi"
+-        }
+-      }
+-    ]
+-    hpa = {
+-      type              = "prometheus"
+-      polling_interval  = 15
+-      cooldown_period   = 300
+-      min_replica_count = 0
+-      max_replica_count = 5
+-      behavior = {
+-        restore_to_original_replica_count = true
+-        stabilization_window_seconds      = 300
+-        type                              = "Percent"
+-        value                             = 100
+-        period_seconds                    = 15
+-      }
+-      triggers = [
+-        {
+-          type      = "prometheus"
+-          threshold = 2
+-        },
+-      ]
+-    }
+   },
+   # Partition for the htcmock worker
+   htcmock = {
+     # number of replicas for each deployment of compute plane
+-    replicas = 0
++    replicas = 10
+     # ArmoniK polling agent
+     polling_agent = {
+       limits = {
+@@ -189,31 +121,11 @@ compute_plane = {
+         }
+       }
+     ]
+-    hpa = {
+-      type              = "prometheus"
+-      polling_interval  = 15
+-      cooldown_period   = 300
+-      min_replica_count = 0
+-      max_replica_count = 5
+-      behavior = {
+-        restore_to_original_replica_count = true
+-        stabilization_window_seconds      = 300
+-        type                              = "Percent"
+-        value                             = 100
+-        period_seconds                    = 15
+-      }
+-      triggers = [
+-        {
+-          type      = "prometheus"
+-          threshold = 2
+-        },
+-      ]
+-    }
+   },
+   # Partition for the bench worker
+   bench = {
+     # number of replicas for each deployment of compute plane
+-    replicas = 0
++    replicas = 10
+     # ArmoniK polling agent
+     polling_agent = {
+       limits = {
+@@ -239,26 +151,6 @@ compute_plane = {
+         }
+       }
+     ]
+-    hpa = {
+-      type              = "prometheus"
+-      polling_interval  = 15
+-      cooldown_period   = 300
+-      min_replica_count = 0
+-      max_replica_count = 5
+-      behavior = {
+-        restore_to_original_replica_count = true
+-        stabilization_window_seconds      = 300
+-        type                              = "Percent"
+-        value                             = 100
+-        period_seconds                    = 15
+-      }
+-      triggers = [
+-        {
+-          type      = "prometheus"
+-          threshold = 2
+-        },
+-      ]
+-    }
+   },
+ }
+
+@@ -268,6 +160,7 @@ ingress = {
+   tls                  = false
+   mtls                 = false
+   generate_client_cert = false
++  service_type = "ClusterIP"
+ }
+
+ configurations = {
