@@ -110,10 +110,9 @@ compute_plane = {
       ]
     }
   },
-  # Partition for the stream worker
-  stream = {
+  "110-dynamic-html-python-3-10" = {
     # number of replicas for each deployment of compute plane
-    replicas = 0
+    replicas = 1
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -128,7 +127,9 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image = "dockerhubaneo/armonik_core_stream_test_worker"
+        image = "qdelamea/serverless-benchmarks"
+        tag = "function.armonik.110.dynamic-html.python-3.10-x64"
+        image_pull_policy = "Always"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -160,10 +161,9 @@ compute_plane = {
       ]
     }
   },
-  # Partition for the htcmock worker
-  htcmock = {
+  "501-graph-pagerank-python-3-10" = {
     # number of replicas for each deployment of compute plane
-    replicas = 0
+    replicas = 1
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -178,7 +178,9 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image = "dockerhubaneo/armonik_core_htcmock_test_worker"
+        image = "qdelamea/serverless-benchmarks"
+        tag = "function.armonik.501.graph-pagerank.python-3.10-x64"
+        image_pull_policy = "Always"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -210,10 +212,9 @@ compute_plane = {
       ]
     }
   },
-  # Partition for the bench worker
-  bench = {
+  "503-graph-bfs-python-3-10" = {
     # number of replicas for each deployment of compute plane
-    replicas = 0
+    replicas = 1
     # ArmoniK polling agent
     polling_agent = {
       limits = {
@@ -228,7 +229,366 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image = "dockerhubaneo/armonik_core_bench_test_worker"
+        image = "qdelamea/serverless-benchmarks"
+        tag = "function.armonik.503.graph-bfs.python-3.10-x64"
+        image_pull_policy = "Always"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "50m"
+          memory = "50Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 0
+      max_replica_count = 5
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  "502-graph-mst.python-3-10" = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "50m"
+        memory = "50Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "qdelamea/serverless-benchmarks"
+        tag = "function.armonik.502.graph-mst.python-3.10-x64"
+        image_pull_policy = "Always"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "50m"
+          memory = "50Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 0
+      max_replica_count = 5
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  "311-compression-python-3-10" = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "50m"
+        memory = "50Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "qdelamea/serverless-benchmarks"
+        tag = "function.armonik.311.compression.python-3.10-x64"
+        image_pull_policy = "Always"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "50m"
+          memory = "50Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 0
+      max_replica_count = 5
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  "120-uploader-python-3-10" = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "50m"
+        memory = "50Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "qdelamea/serverless-benchmarks"
+        tag = "function.armonik.120.uploader.python-3.10-x64"
+        image_pull_policy = "Always"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "50m"
+          memory = "50Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 0
+      max_replica_count = 5
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  "411-image-recognition-python-3-10" = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "50m"
+        memory = "50Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "qdelamea/serverless-benchmarks"
+        tag = "function.armonik.411.image-recognition.python-3.10-x64"
+        image_pull_policy = "Always"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "50m"
+          memory = "50Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 0
+      max_replica_count = 5
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  "210-thumbnailer-python-3-10" = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "50m"
+        memory = "50Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "qdelamea/serverless-benchmarks"
+        tag = "function.armonik.210.thumbnailer.python-3.10-x64"
+        image_pull_policy = "Always"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "50m"
+          memory = "50Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 0
+      max_replica_count = 5
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  "220-video-processing-python-3-10" = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "50m"
+        memory = "50Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "qdelamea/serverless-benchmarks"
+        tag = "function.armonik.220.video-processing.python-3.10-x64"
+        image_pull_policy = "Always"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "50m"
+          memory = "50Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 0
+      max_replica_count = 5
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
+  "504-dna-visualisation-python-3-10" = {
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "50m"
+        memory = "50Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "qdelamea/serverless-benchmarks"
+        tag = "function.armonik.504.dna-visualisation.python-3.10-x64"
+        image_pull_policy = "Always"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -268,6 +628,7 @@ ingress = {
   tls                  = false
   mtls                 = false
   generate_client_cert = false
+  service_type = "ClusterIP"
 }
 
 configurations = {
