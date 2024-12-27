@@ -76,6 +76,9 @@ refresh:
 delete:
 	terraform destroy -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve
 
+hibernate:
+	terraform destroy -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -auto-approve -target=module.vpc -target=module.eks -target=module.mq -target=module.s3_os -target=module.elasticache
+
 state-pull:
 	terraform state pull
 
