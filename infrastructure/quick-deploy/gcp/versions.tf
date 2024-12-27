@@ -13,6 +13,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.21.1"
     }
+    generic = {
+      source  = "aneoconsulting.github.io/aneoconsulting/generic"
+      version = "~> 0.1.2"
+    }
   }
 }
 
