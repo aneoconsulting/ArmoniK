@@ -25,5 +25,5 @@ spec:
       - name: prometheus-volume
         persistentVolumeClaim:
           claimName: prometheus
-      ttlSecondsAfterFinished: 120
+  ttlSecondsAfterFinished: 120
   backoffLimit: 4

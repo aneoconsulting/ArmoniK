@@ -148,17 +148,17 @@ def process_jsongz_log(url: str, file_path: pathlib.Path):
 def tfvars_for_triplet(triplet_name: str):
     db = TinyDB(LOCAL_DATABASE_PATH)
     triplet = db.table(Tables.Triplets).get(Query().name == triplet_name)
-    triplet_folder = CACHE_DIR/pathlib.Path(f"triplets/{str(triplet.doc_id)}")
+    triplet_folder = CACHE_DIR/pathlib.Path(f"triplets/{triplet_name}")
     database_folder = triplet_folder/pathlib.Path("databases")
     terraform_variables = {
         "TF_VAR_database_data_directory": str(database_folder.absolute()),
         "TF_VAR_environment_name": triplet_name,
         "TF_VAR_notebook_volume": str((triplet_folder / pathlib.Path("volume/")).absolute() )
     }
-    if "metrics_id" in triplet:
+    if "metric_id" in triplet:
         terraform_variables["TF_VAR_prometheus_data_directory"] = str(
             (
-                CACHE_DIR/ pathlib.Path(f"metrics/{str(triplet['metrics_id'])}/prometheus")
+                CACHE_DIR/ pathlib.Path(f"metrics/{str(triplet['metric_id'])}/prometheus")
              ).absolute()
             )
     return terraform_variables
@@ -189,10 +189,12 @@ def list_environments():
 
     click.echo(table)
 
+# TODO:
 @cli.command()
 @click.argument("triplet_name")
 def delete_environment(triplet_name:str):
     db = TinyDB(LOCAL_DATABASE_PATH)
+    # TODO: delete local folders and remove any associated/deployed environment
     pass
 
 def _deploy_environment(triplet_name: str):
@@ -238,6 +240,8 @@ def _deploy_environment(triplet_name: str):
                 click.echo(f"Failed in retry={i}, max retries={MAX_NUM_RETRIES}, waiting for {RETRY_WAIT} seconds")
                 time.sleep(RETRY_WAIT)
 
+    # TODO: print out the urls to the different services
+
 @cli.command()
 @click.argument("triplet_name")
 def deploy_environment(triplet_name: str):
@@ -259,15 +263,13 @@ def create_environment(profile: str, metrics: str|None, logs: str|None, database
         click.echo(click.style("Failed to create S3 client, no credentials were found. ", fg="red", bg="white"), err=True)
     
 
-    triplet_already_exists = db.table(Tables.Triplets).search(Query().metric_urls == metrics and Query().log_urls == logs and Query().database_urls == database)
-    print("triplet already exists??? = " ,triplet_already_exists ) #TODO temp
+    triplet_already_exists = db.table(Tables.Triplets).search(Query().metric_urls == metrics and Query().log_urls == logs and Query().database_urls.all(database))
     if len(triplet_already_exists) > 0:
         if not click.confirm(f'The supplied environment already exists with the name {triplet_already_exists[0]["name"]}, are you sure you want to proceed', abort=True):
             click.echo("Environment creation aborted.\nHint: use deploy-environment <triplet-name> to deploy this triplet")
             exit()
-    exit()
     triplet_name = randomname.get_name()
-    triplet_id = db.table(Tables.Triplets).upsert({"name":triplet_name, "metric_urls":metrics, "log_urls":logs, "database_urls":database}, Query().metric_urls == metrics and Query().log_urls == logs and Query().database_urls == database )[0]
+    triplet_id = db.table(Tables.Triplets).insert({"name":triplet_name, "metric_urls":metrics, "log_urls":logs, "database_urls":database})
 
     click.echo(f"Creating triplet with name {triplet_name}")
 
@@ -291,10 +293,10 @@ def create_environment(profile: str, metrics: str|None, logs: str|None, database
                         file_path.unlink() # Delete the tar file
                     else:
                         click.echo(f"Downloaded file {file_name} is not a tar archive.")
-                    db.table(Tables.Triplets).update(tdb_op.set("metric_id", metric_id), doc_ids=[triplet_id])
                 except botocore.exceptions.BotoCoreError as e:
                     click.echo(click.style(f"Failed to download metrics file from S3, got exception: \n{e} ", fg="red", bg="white"), err=True)
                     exit() #fail
+            db.table(Tables.Triplets).update(tdb_op.set("metric_id", metric_id), doc_ids=[triplet_id]) # TODO: should look into this logic? (not add metrics if no metrics are there.. failure)
         else:
             raise NotImplementedError() #TODO: from local
     if logs:
@@ -306,7 +308,7 @@ def create_environment(profile: str, metrics: str|None, logs: str|None, database
                 bucket_name, prefix = logs[5:].split("/", 1)
                 log_files = download_dir_from_s3(bucket_name, prefix, download_folder)
                 db.table(Tables.Logs).update({"path": logs, "log_files": list(map(lambda file: str(file.absolute()),log_files))}, doc_ids=[log_id])
-                db.table(Tables.Triplets).update(tdb_op.set("logs_id", log_id), doc_ids=[triplet_id])
+            db.table(Tables.Triplets).update(tdb_op.set("logs_id", log_id), doc_ids=[triplet_id])
         else:
             raise NotImplementedError() #TODO: from local
 
@@ -339,7 +341,7 @@ def create_environment(profile: str, metrics: str|None, logs: str|None, database
 
     # metrics_folder = ""
     database_folder = triplet_folder/pathlib.Path("databases")
-    if not any(triplet_folder.iterdir()):
+    if len(list(triplet_folder.iterdir())) <= 1:
         triplet_data = db.table(Tables.Triplets).get(doc_id=triplet_id)
         if "database_ids" in triplet_data and len(triplet_data["database_ids"]) > 0:
             for db_id in triplet_data["database_ids"]:
@@ -358,7 +360,7 @@ def create_environment(profile: str, metrics: str|None, logs: str|None, database
             env_file_contents = json.load(env_file)
             if "TF_VAR_environment_name" in env_file_contents:
                 click.echo(f"Found that an environment with the name {env_file_contents["TF_VAR_environment_name"]} is already deployed. Destroying it...")
-                destroy_current_environment()
+                _destroy_current_environment()
     except Exception: 
         pass
     _deploy_environment(triplet_name)
@@ -386,8 +388,7 @@ def destroy_environment(triplet_name: str):
 
 # share_environment command that generates a json with data, uploads volume to S3, env can be then imported to another machine 
 
-@cli.command()
-def destroy_current_environment():
+def _destroy_current_environment():
     try:
         with open(CACHE_DIR/pathlib.Path("current_env")) as env_file: 
             tf_vars = json.load(env_file)
@@ -413,6 +414,10 @@ def destroy_current_environment():
     except Exception as e: # TODO: more specific exception
         click.echo(f"Failed to destroy environment, failed with:\n{e}")
 
+
+@cli.command()
+def destroy_current_environment():
+    _destroy_current_environment()
 
 @cli.command()
 def purge():

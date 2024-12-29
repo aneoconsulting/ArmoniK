@@ -1,12 +1,11 @@
-FROM bitnami/jupyter-base-notebook:latest
-USER root
-RUN conda install --quiet --yes \
-    'matplotlib-base' \
-    'scipy' && \
-    conda clean --all -f -y
-RUN pip install prometheus-api-client
-USER 1001
+FROM python:3.11
 
-# ADD a notebook with some things preimported/ setup.. particularly the database and prom metrics client
+WORKDIR /analysis
 
-ENTRYPOINT [ "jupyter", "notebook", "--no-browser" ]
+# TODO: ADD a requirements file and install things in the startup script/command
+RUN pip install jupyter 
+#matplotlib-base scipy prometheus-api-client
+
+EXPOSE 8888
+
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=''", "--NotebookApp.password=''", "--NotebookApp.allow_origin='*'"]

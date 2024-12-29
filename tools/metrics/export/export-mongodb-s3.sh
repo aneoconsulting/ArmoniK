@@ -54,14 +54,13 @@ if [[ ! -f "$TEMPLATE_FILE" ]]; then
     exit 1
 fi
 
-# Apply the Kubernetes Job
 echo "Applying Kubernetes Job:"
-    sed -e "s|{{KUBE_NAMESPACE}}|$KUBE_NAMESPACE|g" \
+sed -e "s|{{KUBE_NAMESPACE}}|$KUBE_NAMESPACE|g" \
     -e "s|{{AWS_ACCESS_KEY_ID}}|$AWS_ACCESS_KEY_ID|g" \
     -e "s|{{AWS_SECRET_ACCESS_KEY}}|$AWS_SECRET_ACCESS_KEY|g" \
     -e "s|{{AWS_SESSION_TOKEN}}|$AWS_SESSION_TOKEN|g" \
     -e "s|{{FILENAME}}|$FILENAME|g" \
-    -e "s|{{BUCKET_NAME}}|$BUCKET_NAME|g" | kubectl apply -f - || {
+    -e "s|{{BUCKET_NAME}}|$BUCKET_NAME|g" "$TEMPLATE_FILE" | kubectl apply -f - || {
     echo "Error: Failed to apply Kubernetes Job.";
     exit 1;
 }

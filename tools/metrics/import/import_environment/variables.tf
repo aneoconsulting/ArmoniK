@@ -13,3 +13,8 @@ variable "database_data_directory" {
   description = "Local directory to mount the database json files from"
   type = string
 }
+
+variable "notebook_volume" {
+  description = "Local directory to use as the working directory for the jupyter environment"
+  type = string
+}

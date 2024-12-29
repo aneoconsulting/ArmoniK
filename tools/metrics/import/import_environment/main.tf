@@ -13,8 +13,8 @@ resource "docker_image" "seq_image" {
 
 
 resource "docker_network" "import_env_network" {
-    name = "monitoring"
-    driver = "bridge"
+  name = "monitoring"
+  driver = "bridge"
 }
 
 resource "docker_container" "prometheus_container" {
@@ -122,9 +122,19 @@ resource "docker_container" "jupyter_env_container" {
     external = 8888
   }
 
+  networks_advanced {
+      name = docker_network.import_env_network.name
+  }
+
+  env = [ "JUPYTER_ENABLE_LAB=yes", "JUPYTERHUB_SINGLEUSER_APP=''" ]
   # add volume for database later 
   volumes {
     container_path = "/database/"
     host_path = var.database_data_directory
+  }
+
+  volumes {
+    container_path = "/analysis/"
+    host_path = var.notebook_volume
   }
 }
