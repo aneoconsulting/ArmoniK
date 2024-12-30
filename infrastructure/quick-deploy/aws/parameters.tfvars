@@ -464,9 +464,7 @@ compute_plane = {
   # Default partition that uses the C# extension for the worker
   default = {
     node_selector = {
-      platform             = "windows"
-      "kubernetes.io/os"   = "windows"
-      "kubernetes.io/arch" = "amd64"
+      service = "workers"
     }
     # number of replicas for each deployment of compute plane
     replicas = 1
