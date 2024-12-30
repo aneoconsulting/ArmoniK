@@ -16,9 +16,9 @@ RANDOM_PREFIX != [ -e $(GENERATED_DIR)/.prefix ] || { mkdir -p $(GENERATED_DIR) 
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export TF_PLUGIN_CACHE_DIR?=$(GENERATED_DIR)/terraform-plugins
 export REGION?=eu-west-3
-export PROFILE?=default
-export NAMESPACE?=armonik
-export PREFIX?=armonik-$(RANDOM_PREFIX)
+export PROFILE?=sleep
+export NAMESPACE?=ad
+export PREFIX?=ad-$(RANDOM_PREFIX)
 export TFSTATE_BUCKET_NAME?=$(PREFIX)-tfstate
 
 export TF_VAR_region?=$(REGION)
@@ -102,7 +102,7 @@ get-modules:
 		git -C $(MODULES_DIR) -c advice.detachedHead=false checkout $(MODULES_VERSION);\
 		git -C $(MODULES_DIR) pull origin $(MODULES_VERSION);\
     else \
-      	git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) $(MODULES_SOURCE) $(MODULES_DIR);\
+      	git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) $(MODULES_SOURCE) $(MODULES_DIR) --depth=1;\
     fi
 
 clean:

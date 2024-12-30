@@ -45,6 +45,9 @@ control_plane = {
   default_partition = "default"
 }
 
+upload_images = false
+
+
 # Parameters of admin GUI
 admin_gui = {
   limits = {

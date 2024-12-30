@@ -1,0 +1,8 @@
+```
+helm upgrade --install kubecost \
+  --repo https://kubecost.github.io/cost-analyzer/ cost-analyzer \
+  --namespace armonik \
+  --set kubecostToken="YWJkZXJyYWhtYW5lLmRrb3VyQHN0dWRlbnQtY3MuZnI=xm343yadf98" \
+  --set global.prometheus.fqdn=http://prometheus.armonik.svc:9090 \
+  --set global.prometheus.enabled=false
+```
