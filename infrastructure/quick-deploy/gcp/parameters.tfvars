@@ -243,8 +243,12 @@ keda = {
   node_selector = { service = "monitoring" }
 }
 
-activemq = {}
-
+# activemq = {
+#   node_selector = {}
+#   image_name   = "symptoma/activemq"
+#   image_tag    = "latest"
+#   image_pull_secrets = ""
+# }
 
 mongodb = {
   node_selector = { service = "state-database" }

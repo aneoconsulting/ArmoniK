@@ -214,12 +214,12 @@ resource "kubernetes_secret" "gcs" {
 }
 
 # Pub/Sub
-# module "pubsub" {
-#   count      = var.activemq == null ? 1 : 0
-#   source     = "./generated/infra-modules/storage/gcp/pubsub"
-#   project_id = data.google_client_config.current.project
-#   kms_key_id = data.google_kms_crypto_key.kms.id
-# }
+module "pubsub" {
+  count      = var.activemq == null ? 1 : 0
+  source     = "./generated/infra-modules/storage/gcp/pubsub"
+  project_id = data.google_client_config.current.project
+  kms_key_id = data.google_kms_crypto_key.kms.id
+}
 
 # ActiveMQ
 module "activemq" {
