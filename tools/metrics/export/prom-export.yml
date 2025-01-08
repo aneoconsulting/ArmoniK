@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: prom-s3
+  namespace: {{KUBERNETES_NAMESPACE}}
+spec:
+  template:
+    spec:
+      containers:
+      - name: prom-snap
+        image: richarvey/awscli:latest
+        env:
+          - name: "AWS_ACCESS_KEY_ID"
+            value: "{{AWS_ACCESS_KEY_ID}}"
+          - name: "AWS_SECRET_ACCESS_KEY"
+            value: "{{AWS_SECRET_ACCESS_KEY}}"
+          - name: "AWS_SESSION_TOKEN"
+            value: "{{AWS_SESSION_TOKEN}}"
+        command: ["sh", "-c", "tar -czvf /tmp/{{FILENAME}}.tar.gz /prometheus && aws s3 cp /tmp/{{FILENAME}}.tar.gz s3://{{BUCKET_NAME}}/{{FILENAME}}.tar.gz"]
+        volumeMounts:
+        - name: prometheus-volume
+          mountPath: /prometheus
+      restartPolicy: Never
+      volumes:
+      - name: prometheus-volume
+        persistentVolumeClaim:
+          claimName: prometheus
+      ttlSecondsAfterFinished: 120
+  backoffLimit: 4
