@@ -213,8 +213,23 @@ resource "kubernetes_secret" "gcs" {
   }
 }
 
+# Pub/Sub
 module "pubsub" {
+  count      = var.activemq == null ? 1 : 0
   source     = "./generated/infra-modules/storage/gcp/pubsub"
   project_id = data.google_client_config.current.project
   kms_key_id = data.google_kms_crypto_key.kms.id
+}
+
+# ActiveMQ
+module "activemq" {
+  count     = var.activemq != null ? 1 : 0
+  source    = "./generated/infra-modules/storage/onpremise/activemq"
+  namespace = local.namespace
+  activemq = {
+    image              = var.activemq.image_name
+    tag                = try(coalesce(var.activemq.image_tag), local.default_tags[var.activemq.image_name])
+    node_selector      = var.activemq.node_selector
+    image_pull_secrets = var.activemq.image_pull_secrets
+  }
 }
