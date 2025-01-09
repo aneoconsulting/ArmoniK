@@ -26,6 +26,7 @@ module "armonik" {
       pod_configuration     = null
     }
     }, v, {
+    service_account_name = "armonikserviceaccount"
     polling_agent = merge(v.polling_agent, {
       image = local.ecr_images["${v.polling_agent.image}:${try(coalesce(v.polling_agent.tag), "")}"].name
       tag   = local.ecr_images["${v.polling_agent.image}:${try(coalesce(v.polling_agent.tag), "")}"].tag
@@ -36,8 +37,9 @@ module "armonik" {
     })]
   }) }
   control_plane = merge(var.control_plane, {
-    image = local.ecr_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].name
-    tag   = local.ecr_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].tag
+    image                = local.ecr_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].name
+    tag                  = local.ecr_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].tag
+    service_account_name = "armonikserviceaccount"
   })
   admin_gui = merge(var.admin_gui, {
     image = local.ecr_images["${var.admin_gui.image}:${try(coalesce(var.admin_gui.tag), "")}"].name
@@ -76,4 +78,6 @@ module "armonik" {
     image = local.ecr_images["${var.pod_deletion_cost.image}:${try(coalesce(var.pod_deletion_cost.tag), "")}"].image
     tag   = local.ecr_images["${var.pod_deletion_cost.image}:${try(coalesce(var.pod_deletion_cost.tag), "")}"].tag
   })
+
+  depends_on = [module.aws_service_account]
 }
