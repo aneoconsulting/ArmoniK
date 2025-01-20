@@ -1,5 +1,5 @@
 # Logging level
-logging_level = "Information"
+logging_level = "Debug"
 
 # Uncomment to deploy metrics server
 #metrics_server = {}
@@ -160,6 +160,7 @@ compute_plane = {
       ]
     }
   },
+  //test
   # Partition for the htcmock worker
   htcmock = {
     # number of replicas for each deployment of compute plane
@@ -343,6 +344,6 @@ mongodb = {
   #   }
   # }
 }
-
+//test
 # Nullify to disable sharding
 mongodb_sharding = {}
