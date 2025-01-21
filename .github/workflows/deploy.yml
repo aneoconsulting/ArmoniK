@@ -57,6 +57,7 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
           type: localhost
+          log-suffix: admin-gui
       - name: Test ping AdminGUI
         shell: bash
         run: |
@@ -121,6 +122,7 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
            type: localhost
+           log-suffix: core-stream
       - name: Test Core Stream
         shell: bash
         run: |
@@ -185,6 +187,7 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
            type: localhost
+           log-suffix: htc-mock
       - name: Test HTC Mock
         shell: bash
         run: |
@@ -310,6 +313,7 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
             type: localhost
+            log-suffix: bench
       - name: Test Bench - many tasks (200)
         shell: bash
         run: |
