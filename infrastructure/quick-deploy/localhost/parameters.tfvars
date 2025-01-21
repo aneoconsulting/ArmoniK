@@ -315,6 +315,7 @@ static = {
 }
 
 mongodb = {
+  #image = "mongo"
   # Uncomment to define custom resources for MongoDB pods, comment for default values
   # mongodb_resources = {
   #   limits = {
