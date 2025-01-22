@@ -294,7 +294,7 @@ elasticache = {
 
 mq = {
   engine_type        = "ActiveMQ"
-  engine_version     = "5.18.6"
+  engine_version     = "5.18"
   host_instance_type = "mq.m5.xlarge"
 }
 
