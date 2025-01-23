@@ -15,7 +15,13 @@ ArmoniK.Core documentation
 
    content/0.armonik/*
    content/1.installation/*
+<<<<<<< HEAD
    content/2.guide/*
+=======
+   content/1.installation/*/*
+   content/2.guide/*
+   content/2.guide/*/*
+>>>>>>> edff5dc9 (docs: add readTheDocs to ArmoniK)
    content/3.benchmarking/*
    content/armonik/index.rst
 
