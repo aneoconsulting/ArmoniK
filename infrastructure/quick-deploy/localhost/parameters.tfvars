@@ -20,11 +20,11 @@ redis = {}
 activemq = {
   node_selector = { service = "state-database" }
   limits = {
-    cpu = "4000m"
+    cpu    = "4000m"
     memory = "16Gi"
   }
   requests = {
-    cpu = "4000m"
+    cpu    = "4000m"
     memory = "16Gi"
   }
   activemq_opts_memory = "-Xms1g -Xmx3g"
