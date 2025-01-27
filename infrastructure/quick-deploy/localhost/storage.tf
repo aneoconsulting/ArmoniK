@@ -8,6 +8,9 @@ module "activemq" {
     tag                = try(coalesce(var.activemq.image_tag), local.default_tags[var.activemq.image_name])
     node_selector      = var.activemq.node_selector
     image_pull_secrets = var.activemq.image_pull_secrets
+    limits             = var.activemq.limits
+    requests           = var.activemq.requests
+    activemq_opts_memory = var.activemq.activemq_opts_memory
   }
 }
 
