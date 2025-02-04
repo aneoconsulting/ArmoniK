@@ -8,7 +8,7 @@ This guide is useful for the [Admin GUI](https://github.com/aneoconsulting/Armon
 
 ## Prerequisites
 
-You need to have a running ArmoniK cluster. If you don't have one, please follow the [Getting Started](../1.installation/1.linux/1.deployment.md) guide.
+You need to have a running ArmoniK cluster. If you don't have one, please follow the [Getting Started](../getting-started/installation/local.md) guide.
 
 ## Functioning
 

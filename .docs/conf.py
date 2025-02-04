@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "ArmoniK.Core"
+project = "ArmoniK"
 copyright = "2021-%Y, ANEO"
 author = "ANEO"
 release = "main"

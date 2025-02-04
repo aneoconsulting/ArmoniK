@@ -14,7 +14,7 @@
         }
       ],
       "outputFormat": "markdown",
-      "output": ".docs/content/armonik",
+      "output": ".docs/content/docfx",
       "namespaceLayout": "nested"
     }
   ]

@@ -7,7 +7,7 @@ HTC Mock is used in CI to test ArmoniK automatically but it can also be used in 
 Please make sure your version of Core is the same as HTC Mock's. If you use different versions, the test will fail. Please refer to [the Default images page](https://aneoconsulting.github.io/ArmoniK/guide/default-images) for more information on how to correctly set up.
 
 ::alert{type="info"}
-To populate the database, you can also use scripts.  See [Populate database](../populate-database.md)
+To populate the database, you can also use scripts.  See [Populate database](./populate-database.md)
 ::
 
 ## Use it

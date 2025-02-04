@@ -1,6 +1,6 @@
-# ArmoniK.Core Docs
+# ArmoniK Docs
 
-Docs for ArmoniK.Core
+Docs for ArmoniK
 
 ## Installation
 
