@@ -159,9 +159,14 @@ Service = ServiceFactory.CreateService(Props, loggerFactory);
 
 If you set the `PartitionId` to empty (`""`), the default partition will be used.
 
-::alert{type="warning"}
+
+
+```{warning}
+
+
 It is an error to set the `PartitionId` to `null`.
-::
+
+```
 
 ## Use a partition when submitting tasks with native gRPC API
 
@@ -195,9 +200,14 @@ var createTaskReply = await submitterClient.CreateTasksAsync(
 );
 ```
 
-::alert{type="warning"}
+
+
+```{warning}
+
+
 It is an error to set the `PartitionId` to `null`.
-::
+
+```
 
 ## Add a partition for the HelloWorld worker
 

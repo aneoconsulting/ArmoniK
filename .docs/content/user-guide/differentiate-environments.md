@@ -4,9 +4,14 @@ It's important to be able to differentiate environments, to be able to rapidly i
 
 In order to achieve this differentiation, we serve a file called `environment.json` that you can access at `/static/environment.json`.
 
-::alert{type="info"}
+
+
+```{note}
+
+
 In the [Admin GUI](https://github.com/aneoconsulting/ArmoniK.Admin.GUI), we use this file to display the environment name and version in the top middle.
-::
+
+```
 
 ## Content of the `environment.json` file
 
@@ -21,9 +26,14 @@ This file contains the following keys:
 }
 ```
 
-::alert{type="info"}
+
+
+```{note}
+
+
 You can use any valide CSS color in the `color` key. [Read more about CSS colors](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
-::
+
+```
 
 ## Personalize the `environment.json` file
 

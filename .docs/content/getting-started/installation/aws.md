@@ -115,9 +115,13 @@ export KUBECONFIG=<PATH_TO_AWS_FOLDER>/generated/kubeconfig
 
 All parameters are contained in [`parameters.tfvars`](../../../../infrastructure/quick-deploy/aws/parameters.tfvars)
 
-::alert{type="info"}
+
+
+```{note}
+
 By default, all the cloud services are set to launch. To see what kind of parameters are available, read [`variables.tf`](../../../../infrastructure/quick-deploy/aws/variables.tf)
-::
+
+```
 
 You can specify a custom parameter file. When executing the `make` command, you may use the `PARAMETERS_FILE` option to set the path to your file.
 
@@ -136,9 +140,13 @@ The files to achieve this deployment are available [in the repository](https://g
 
 We mount a NFS server on the master node too, from which workers will upload .dll.
 
-::alert{type="info"}
+
+
+```{note}
+
 You muse have an AWS account to use these sources to create a cluster.
-::
+
+```
 
 ### AWS credentials
 
@@ -252,9 +260,13 @@ The files to achieve this deployment are available [here](https://github.com/ane
 
 We mount a NFS server on the master node too, from which workers will upload .dll.
 
-::alert{type="info"}
+
+
+```{note}
+
 You muse have an AWS account to use these sources to create a cluster.
-::
+
+```
 
 ### AWS credentials
 

@@ -2,9 +2,14 @@
 
 This guide will explain you how you can populate your ArmoniK database with **fake data**.
 
-::alert{type="info"}
+
+
+```{note}
+
+
 This guide is useful for the [Admin GUI](https://github.com/aneoconsulting/ArmoniK.Admin.GUI) or for testing purpose.
-::
+
+```
 
 ## Prerequisites
 
@@ -16,9 +21,14 @@ In order to easily populate, we use [MongoDB scripts](https://www.mongodb.com/do
 
 This method allows use to write JavaScript scripts to populate database without having to write dump files manually and insert them with the `mongoimport` command.
 
-::alert{type="info"}
+
+
+```{note}
+
+
 Data are generated randomly, so you can run the script multiple times to generate different data.
-::
+
+```
 
 ### Install dependencies
 
@@ -38,18 +48,28 @@ Data are generated randomly, so you can run the script multiple times to generat
     ./tools/mongodb/<script-name>.sh
     ```
 
-::alert{type="info"}
-You can also use these scripts directly from the mongodb directory.
-::
 
-::alert{type="warning"}
+
+```{note}
+
+
+You can also use these scripts directly from the mongodb directory.
+
+```
+
+
+
+```{warning}
+
+
 If you can't run the script, you may need to give execution rights to the script:
 
 ```sh
 chmod +x ./tools/mongodb/<script-name>.sh
 ```
 
-::
+
+```
 
 ### Available scripts
 
@@ -64,9 +84,14 @@ chmod +x ./tools/mongodb/<script-name>.sh
 | `generate-results`                    | Generate 100 results                                                                |
 | `generate-real-world-run`             | Generate 1 partition, 1 session, 1 application and 1 000 tasks with related results |
 
-::alert{type="info"}
+
+
+```{note}
+
+
 To generate applications, you must generate tasks.
-::
+
+```
 
 ## Going further
 

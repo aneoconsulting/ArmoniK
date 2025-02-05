@@ -4,9 +4,14 @@ ArmoniK is a high throughput compute grid project using Kubernetes.
 
 It provides a reference architecture that can be used to build and adapt a modern high throughput compute solution on-premise or using Cloud services, allowing users to submit high volumes of short and long-running tasks and scaling environments dynamically.
 
-::alert{type="info"}
+
+
+```{note}
+
+
 This project is an Open Source ([Apache 2.0 License](https://github.com/aneoconsulting/ArmoniK/blob/main/LICENSE)).
-::
+
+```
 
 Here is an overview of how Armonik works:
 ![Armonik overview diagram](/architecture-ArmoniK-internals.svg)

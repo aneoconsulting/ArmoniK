@@ -2,9 +2,14 @@
 
 In this document we present the performances of the ArmoniK version 2.12.3.
 
-::alert{type="info"}
+
+
+```{note}
+
+
 The benchmarks follow the [Test Plan](./test-plan.md).
-::
+
+```
 
 ## Tests environment
 
