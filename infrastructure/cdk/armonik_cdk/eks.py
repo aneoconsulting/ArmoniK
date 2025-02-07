@@ -12,7 +12,7 @@ def get_eks(stack: Stack, config: Config) -> Cluster:
         stack,
         "eks-armonik-cf",
         default_capacity=5,
-        version=KubernetesVersion.V1_25,
+        version=KubernetesVersion.V1_29,
         bootstrap_cluster_creator_admin_permissions=True,
         default_capacity_instance=ec2.InstanceType.of(
             ec2.InstanceClass.C5, ec2.InstanceSize.LARGE

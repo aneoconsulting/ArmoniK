@@ -58,12 +58,16 @@ nginxinc/nginx-unprivileged:1.27.3
 quay.io/kiwigrid/k8s-sidecar:1.28.0
 rtsp/mongosh:2.3.8
 symptoma/activemq:5.18.4
+ghcr.io/kedacore/keda-admission-webhooks:2.16.0
+ghcr.io/kedacore/keda-metrics-apiserver:2.16.0
+ghcr.io/kedacore/keda:2.16.0
 EOF
 
 
 for image in ${images[*]}
 do
     docker push $image
+#   docker save $image -o ${image//\//_}.tar.gz
 #   REPO=${BASE%%:*}
 #   REPO=${REPO#*/}
 #   echo
