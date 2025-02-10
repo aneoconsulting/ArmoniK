@@ -1,4 +1,5 @@
 aws-cdk-lib==2.177.0
+aws-cdk.lambda-layer-kubectl-v29
 constructs>=10.0.0,<11.0.0
 msgspec
 ruff

@@ -2,7 +2,7 @@
 
 REG=$(jq -r '.account + ".dkr.ecr." + .region + ".amazonaws.com"' config.json)
 aws ecr get-login-password --region $(jq -r '.region' config.json) | docker login --username AWS --password-stdin $REG
-ECR="${REG}/aneo/"
+ECR="${REG}/"
 
 # docker images --format "{{.Repository}} {{.Tag}}" | grep -v rancher
 
@@ -31,6 +31,18 @@ bitnami/kube-state-metrics:2.14.0-debian-12-r5
 grafana/grafana:11.4.0
 bitnami/prometheus:2.55.1-debian-12-r7
 bitnami/alertmanager:0.28.0-debian-12-r2
+nginxinc/nginx-unprivileged:1.27.3
+dockerhubaneo/armonik_admin_app:0.13.3
+dockerhubaneo/armonik_control:0.31.2
+dockerhubaneo/armonik_control_metrics:0.31.2
+dockerhubaneo/armonik_core_bench_test_client:0.31.2
+dockerhubaneo/armonik_core_bench_test_worker:0.31.2
+dockerhubaneo/armonik_core_htcmock_test_client:0.31.2
+dockerhubaneo/armonik_core_htcmock_test_worker:0.31.2
+dockerhubaneo/armonik_core_stream_test_worker:0.31.2
+dockerhubaneo/armonik_pollingagent:0.31.2
+dockerhubaneo/armonik_worker_dll:0.18.0
+rtsp/mongosh:2.3.8
 EOF
 
 
@@ -44,20 +56,9 @@ while IFS= read -r image; do
 done <<EOF
 datalust/seq:2024.3.13181
 datalust/seqcli:2024.3
-dockerhubaneo/armonik_admin_app:0.13.3
-dockerhubaneo/armonik_control:0.31.2
-dockerhubaneo/armonik_control_metrics:0.31.2
-dockerhubaneo/armonik_core_bench_test_client:0.31.2
-dockerhubaneo/armonik_core_bench_test_worker:0.31.2
-dockerhubaneo/armonik_core_htcmock_test_client:0.31.2
-dockerhubaneo/armonik_core_htcmock_test_worker:0.31.2
-dockerhubaneo/armonik_core_stream_test_worker:0.31.2
-dockerhubaneo/armonik_pollingagent:0.31.2
-dockerhubaneo/armonik_worker_dll:0.18.0
-nginxinc/nginx-unprivileged:1.27.3
 quay.io/kiwigrid/k8s-sidecar:1.28.0
-rtsp/mongosh:2.3.8
 symptoma/activemq:5.18.4
+registry.k8s.io/autoscaling/cluster-autoscaler:v1.26.2
 ghcr.io/kedacore/keda-admission-webhooks:2.16.0
 ghcr.io/kedacore/keda-metrics-apiserver:2.16.0
 ghcr.io/kedacore/keda:2.16.0
