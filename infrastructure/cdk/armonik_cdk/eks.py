@@ -291,7 +291,7 @@ def gen_autoscaler(stack, config, cluster: eks.Cluster, extra_node_group:eks.Nod
                             "serviceAccountName": "cluster-autoscaler",
                             "containers": [
                                 {
-                                    "image": f"{config.account}.dkr.ecr.{config.region}.amazonaws.com/aneo/autoscaling/cluster-autoscaler:v1.26.2",
+                                    "image": f"{config.account}.dkr.ecr.{config.region}.amazonaws.com/autoscaling/cluster-autoscaler:v1.26.2",
                                     "name": "cluster-autoscaler",
                                     "resources": {
                                         "limits": {"cpu": "100m", "memory": "600Mi"},
