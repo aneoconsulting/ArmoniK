@@ -43,6 +43,7 @@ dockerhubaneo/armonik_core_stream_test_worker:0.31.2
 dockerhubaneo/armonik_pollingagent:0.31.2
 dockerhubaneo/armonik_worker_dll:0.18.0
 rtsp/mongosh:2.3.8
+symptoma/activemq:5.18.4
 EOF
 
 
@@ -57,7 +58,6 @@ done <<EOF
 datalust/seq:2024.3.13181
 datalust/seqcli:2024.3
 quay.io/kiwigrid/k8s-sidecar:1.28.0
-symptoma/activemq:5.18.4
 registry.k8s.io/autoscaling/cluster-autoscaler:v1.26.2
 ghcr.io/kedacore/keda-admission-webhooks:2.16.0
 ghcr.io/kedacore/keda-metrics-apiserver:2.16.0

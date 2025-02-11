@@ -24,7 +24,7 @@
     "a/nginxinc/nginx-unprivileged:1.27.3",
     "a/kiwigrid/k8s-sidecar:1.28.0",
     "a/rtsp/mongosh:2.3.8",
-    "a/activemq:5.18.4",
+    "a/symptoma/activemq:5.18.4",
     "a/bitnami/blackbox-exporter:0.25.0-debian-12-r24",
     "a/bitnami/prometheus-operator:0.79.2-debian-12-r2",
     "a/bitnami/kube-state-metrics:2.14.0-debian-12-r5",
