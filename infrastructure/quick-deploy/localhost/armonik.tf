@@ -4,7 +4,7 @@ module "armonik" {
   logging_level = var.logging_level
 
   configurations = merge(var.configurations, {
-    core = [module.activemq, module.rabbitmq, module.redis, module.mongodb, module.mongodb_sharded, var.configurations.core]
+    core = [module.activemq, module.rabbitmq, module.redis, module.mongodb, local.atlas_outputs, module.mongodb_sharded, var.configurations.core]
   })
 
   fluent_bit              = module.fluent_bit
@@ -72,4 +72,8 @@ module "armonik" {
   pod_deletion_cost = merge(var.pod_deletion_cost, {
     tag = try(coalesce(var.pod_deletion_cost.tag), local.default_tags[var.pod_deletion_cost.image])
   })
+
+  depends_on = [ data.mongodbatlas_advanced_cluster.aklocal, mongodbatlas_database_user.admin, kubernetes_secret.mongodb_admin ]
+  #depends_on = [ mongodbatlas_advanced_cluster.aklocal, mongodbatlas_database_user.admin, kubernetes_secret.mongodb_admin ]
+
 }
