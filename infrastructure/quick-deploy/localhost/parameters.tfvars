@@ -19,6 +19,14 @@ redis = {}
 # Uncomment either the `activemq` or the `rabbitmq` parameter
 activemq = {
   activemq_opts_memory = "-Xms1g -Xmx3g"
+  limits = {
+    cpu    = "1"
+    memory = "2048Mi"
+  }
+  requests = {
+    cpu    = "100m"
+    memory = "300Mi"
+  }
 }
 
 #rabbitmq = {}
@@ -37,6 +45,7 @@ activemq = {
 
 # Parameters of control plane
 control_plane = {
+  replicas = 4
   limits = {
     cpu    = "1000m"
     memory = "2048Mi"
@@ -352,3 +361,9 @@ mongodb = {
 
 # Nullify to disable sharding
 # mongodb_sharding = {}
+
+# Fill these fields with the right information
+atlas = {
+  project_id   = "67af6cb9ab9ddf3be94e019f"
+  cluster_name = "AKlocal"
+}
