@@ -176,46 +176,46 @@ eks_managed_node_groups = {
   }
   # Node group for data-plane
   # state_database, inner_storage, task_queue
-  state_database = {
-    name                        = "mongodb"
-    launch_template_description = "Node group for MongoDB"
-    ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.2xlarge"]
-    use_custom_launch_template  = true
-    block_device_mappings = {
-      xvda = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size           = 75
-          volume_type           = "gp3"
-          iops                  = 3000
-          throughput            = 150
-          encrypted             = null
-          kms_key_id            = null
-          delete_on_termination = true
-        }
-      }
-    }
-    capacity_type = "ON_DEMAND"
-    min_size      = 1
-    desired_size  = 1
-    max_size      = 10
-    labels = {
-      service                        = "state-database"
-      "node.kubernetes.io/lifecycle" = "ondemand"
-    }
-    taints = {
-      dedicated = {
-        key    = "service"
-        value  = "state-database"
-        effect = "NO_SCHEDULE"
-      }
-    }
-    iam_role_use_name_prefix = false
-    iam_role_additional_policies = {
-      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    }
-  }
+  # state_database = {
+  #   name                        = "mongodb"
+  #   launch_template_description = "Node group for MongoDB"
+  #   ami_type                    = "AL2_x86_64"
+  #   instance_types              = ["c5.2xlarge"]
+  #   use_custom_launch_template  = true
+  #   block_device_mappings = {
+  #     xvda = {
+  #       device_name = "/dev/xvda"
+  #       ebs = {
+  #         volume_size           = 75
+  #         volume_type           = "gp3"
+  #         iops                  = 3000
+  #         throughput            = 150
+  #         encrypted             = null
+  #         kms_key_id            = null
+  #         delete_on_termination = true
+  #       }
+  #     }
+  #   }
+  #   capacity_type = "ON_DEMAND"
+  #   min_size      = 1
+  #   desired_size  = 1
+  #   max_size      = 10
+  #   labels = {
+  #     service                        = "state-database"
+  #     "node.kubernetes.io/lifecycle" = "ondemand"
+  #   }
+  #   taints = {
+  #     dedicated = {
+  #       key    = "service"
+  #       value  = "state-database"
+  #       effect = "NO_SCHEDULE"
+  #     }
+  #   }
+  #   iam_role_use_name_prefix = false
+  #   iam_role_additional_policies = {
+  #     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  #   }
+  # }
 }
 
 # List of self managed node groups
@@ -411,7 +411,7 @@ fluent_bit = {
 }
 
 # Logging level
-logging_level = "Information"
+logging_level = "Debug"
 
 # Parameters of control plane
 control_plane = {
@@ -735,6 +735,7 @@ configurations = {
       MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
       MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
       MongoDB__TableStorage__PollingDelay        = "00:00:01"
+      MongoDB__MaxRetries                        = 1
       MongoDB__DataRetention                     = "1.00:00:00" # 1 day retention
       MongoDB__AllowInsecureTls                  = true
       Redis__Timeout                             = 3000
@@ -762,3 +763,10 @@ environment_description = {
   description = "AWS environment"
   color       = "#80ff80"
 }
+
+atlas = {
+  project_id   = "67af6cb9ab9ddf3be94e019f"
+  cluster_name = "AKaws"
+}
+
+upload_images = false
