@@ -352,3 +352,9 @@ mongodb = {
 
 # Nullify to disable sharding
 # mongodb_sharding = {}
+
+# Fill these fields with the right information
+atlas = {
+  project_id   = ""
+  cluster_name = "AKtest"
+}
