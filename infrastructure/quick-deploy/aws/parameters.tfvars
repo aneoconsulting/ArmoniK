@@ -762,3 +762,8 @@ environment_description = {
   description = "AWS environment"
   color       = "#80ff80"
 }
+
+atlas = {
+  project_id   = ""
+  cluster_name = "AKtest"
+}

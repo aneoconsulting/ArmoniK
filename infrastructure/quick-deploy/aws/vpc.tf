@@ -110,6 +110,13 @@ module "vpce" {
       subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
       security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
     }
+    mongodb_atlas = {
+      service             = mongodbatlas_privatelink_endpoint.pe.endpoint_service_name
+      service_type        = "Interface"
+      private_dns_enabled = !module.vpc.enable_external_access
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
+      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+    }
   }
   tags = local.tags
 }
