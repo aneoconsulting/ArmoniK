@@ -27,8 +27,8 @@ locals {
     }
 
     env = {
-      "Components__TableStorage"  = "ArmoniK.Adapters.MongoDB.TableStorage"
-      "MongoDB__Host"             = local.mongodb_url.dns
+      "Components__TableStorage" = "ArmoniK.Adapters.MongoDB.TableStorage"
+      "MongoDB__Host"            = local.mongodb_url.dns
       #"MongoDB__Port"             = "27017"
       "MongoDB__Tls" = "true"
       #"MongoDB__ReplicaSet"       = "rs0"
@@ -37,7 +37,7 @@ locals {
       #"MongoDB__CAFile"           = "/mongodb/certificate/mongodb-ca-cert"
       #"MongoDB__AuthSource" = "admin"
       "MongoDB__ConnectionStringScheme" = local.mongodb_url.scheme
-      "MongoDB__ConnectionString" = data.mongodbatlas_advanced_cluster.aktest.connection_strings[0].standard_srv
+      "MongoDB__ConnectionString"       = data.mongodbatlas_advanced_cluster.aktest.connection_strings[0].standard_srv
     }
   }
 }
@@ -108,6 +108,7 @@ resource "mongodbatlas_database_user" "admin" {
 data "mongodbatlas_advanced_cluster" "aktest" {
   project_id = var.atlas.project_id
   name       = var.atlas.cluster_name
+  depends_on = [mongodbatlas_privatelink_endpoint_service.pe_service]
 }
 
 ## Private endpoint creation
