@@ -17,6 +17,7 @@ module "s3_fs" {
   sse_algorithm                         = can(coalesce(var.kms_key)) ? var.s3_fs.sse_algorithm : "aws:kms"
   ownership                             = var.s3_fs.ownership
   versioning                            = var.s3_fs.versioning
+  role_name                             = module.aws_service_account.service_account_iam_role_name
 }
 
 # Shared storage
@@ -122,6 +123,7 @@ resource "kubernetes_secret" "elasticache" {
 
 # Amazon MQ
 module "mq" {
+  count           = var.activemq == null ? 1 : 0
   source          = "./generated/infra-modules/storage/aws/mq"
   tags            = local.tags
   name            = "${local.prefix}-mq"
@@ -141,6 +143,31 @@ module "mq" {
   authentication_strategy = var.mq.authentication_strategy
   publicly_accessible     = var.mq.publicly_accessible
   kms_key_id              = local.kms_key
+}
+
+# ActiveMQ
+module "activemq" {
+  count     = var.activemq != null ? 1 : 0
+  source    = "./generated/infra-modules/storage/onpremise/activemq"
+  namespace = local.namespace
+  activemq = {
+    image                = var.activemq.image_name
+    tag                  = try(coalesce(var.activemq.image_tag), local.default_tags[var.activemq.image_name])
+    node_selector        = var.activemq.node_selector
+    image_pull_secrets   = var.activemq.image_pull_secrets
+    limits               = var.activemq.limits
+    requests             = var.activemq.requests
+    activemq_opts_memory = var.activemq.activemq_opts_memory
+  }
+}
+
+module "aws_service_account" {
+  namespace         = local.namespace
+  source            = "./generated/infra-modules/service-account/aws"
+  prefix            = local.prefix
+  name              = "armonikserviceaccount"
+  oidc_provider_arn = module.eks.aws_eks_module.oidc_provider_arn
+  oidc_issuer_url   = module.eks.aws_eks_module.cluster_oidc_issuer_url
 }
 
 # MongoDB
@@ -276,6 +303,14 @@ module "mongodb_efs_persistent_volume" {
   vpc_subnet_ids                  = local.vpc.subnet_ids
   tags                            = local.tags
 }
+
+
+resource "aws_iam_policy_attachment" "armonik_decrypt_object" {
+  name       = "storage-s3-encrypt-decrypt-armonik"
+  roles      = [module.aws_service_account.service_account_iam_role_name]
+  policy_arn = aws_iam_policy.decrypt_object.arn
+}
+
 
 # Decrypt objects in S3
 data "aws_iam_policy_document" "decrypt_object" {

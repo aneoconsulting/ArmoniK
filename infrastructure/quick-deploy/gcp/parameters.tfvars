@@ -244,18 +244,27 @@ keda = {
 }
 
 # activemq = {
-#   node_selector = {}
-#   image_name   = "symptoma/activemq"
-#   image_tag    = "latest"
-#   image_pull_secrets = ""
+#   node_selector = { service = "state-database" }
+#   limits = {
+#     cpu = "4000m"
+#     memory = "16Gi"
+#   }
+#   requests = {
+#     cpu = "4000m"
+#     memory = "16Gi"
+#   }
+#   activemq_opts_memory = "-Xms1g -Xmx3g"
 # }
+
 
 mongodb = {
   node_selector = { service = "state-database" }
+  # Uncomment the line below to enable persistence, comment to disable
+  # persistent_volume = {}
 }
 
 # Nullify to disable sharding, each nullification of subobject will result in the use of default values 
-mongodb_sharding = {}
+# mongodb_sharding = {}
 
 #memorystore = {
 #  memory_size_gb = 20

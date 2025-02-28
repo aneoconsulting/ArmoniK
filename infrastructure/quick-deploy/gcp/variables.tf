@@ -128,6 +128,21 @@ variable "mongodb" {
       limits   = optional(map(string))
       requests = optional(map(string))
     }))
+
+    persistent_volume = optional(object({
+      storage_provisioner = optional(string)
+      volume_binding_mode = optional(string, "Immediate")
+      parameters          = optional(map(string), {})
+      #Resources for PVC
+      resources = optional(object({
+        limits = optional(object({
+          storage = string
+        }))
+        requests = optional(object({
+          storage = string
+        }))
+      }))
+    }))
   })
   default = {}
 }
@@ -595,6 +610,15 @@ variable "activemq" {
     image_tag          = optional(string)
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
+    limits = optional(object({
+      cpu    = optional(string)
+      memory = optional(string)
+    }))
+    requests = optional(object({
+      cpu    = optional(string)
+      memory = optional(string)
+    }))
+    activemq_opts_memory = optional(string, "-Xms1g -Xmx3g")
   })
   default = null
 }

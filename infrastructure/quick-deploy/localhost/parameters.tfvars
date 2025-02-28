@@ -17,7 +17,10 @@ redis = {}
 
 # Queue
 # Uncomment either the `activemq` or the `rabbitmq` parameter
-activemq = {}
+activemq = {
+  activemq_opts_memory = "-Xms1g -Xmx3g"
+}
+
 #rabbitmq = {}
 
 /*parition_metrics_exporter = {
@@ -342,7 +345,10 @@ mongodb = {
   #     "ephemeral-storage" = "500Mi"
   #   }
   # }
+
+  # Uncomment the line below to enable persistence, comment to disable
+  # persistent_volume = {}
 }
 
 # Nullify to disable sharding
-mongodb_sharding = {}
+# mongodb_sharding = {}

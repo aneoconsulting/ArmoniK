@@ -22,7 +22,7 @@ Please, read [documentation](https://aneoconsulting.github.io/ArmoniK/) for more
 
 You are welcome to raise issues on GitHub. Please, read our [community guidelines](https://aneoconsulting.github.io/ArmoniK.Community/) before doing so.
 
-You can also send us a direct email at [armonik-support@aneo.fr](mailto:armonik-support@aneo.fr).
+You can also send us a direct email at [armonik@aneo.fr](mailto:armonik-support@aneo.fr).
 
 ## Acknowledge
 

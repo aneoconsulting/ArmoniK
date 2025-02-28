@@ -43,7 +43,7 @@ See the example [here](https://github.com/aneoconsulting/ArmoniK/blob/main/.docs
 
    Open the .Net file in `ArmoniK.Sample/csharp/native/HelloWorld/Client/.` as a project.
 
-   ![Debug property](./Debug-property.jpg)
+   ![Debug property](https://armonik-public-images.s3.eu-west-3.amazonaws.com/deployment-doc/Debug-property.jpg)
 
    Open the Debug property and add as arguments using the command line:
 
