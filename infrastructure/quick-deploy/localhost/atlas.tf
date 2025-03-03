@@ -12,7 +12,8 @@ variable "atlas" {
 }
 
 locals {
-  mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", data.mongodbatlas_advanced_cluster.aktest.connection_strings[0].standard_srv)
+  mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", data.mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv)
+  #mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv)
 
   atlas_outputs = {
     env_from_secret = {
@@ -37,7 +38,9 @@ locals {
       #"MongoDB__CAFile"           = "/mongodb/certificate/mongodb-ca-cert"
       #"MongoDB__AuthSource" = "admin"
       "MongoDB__ConnectionStringScheme" = local.mongodb_url.scheme
-      "MongoDB__ConnectionString" = data.mongodbatlas_advanced_cluster.aktest.connection_strings[0].standard_srv
+      "MongoDB__ConnectionString" = data.mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv
+      #"MongoDB__ConnectionString" = mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv
+
     }
   }
 }
@@ -105,7 +108,26 @@ resource "mongodbatlas_database_user" "admin" {
   }
 }
 
-data "mongodbatlas_advanced_cluster" "aktest" {
+# resource "mongodbatlas_advanced_cluster" "aklocal" {
+#   project_id     = var.atlas.project_id
+#   name           = var.atlas.cluster_name
+#   cluster_type   = "REPLICASET"
+#   backup_enabled = true
+
+#   replication_specs {
+#     region_configs {
+#       priority      = 7
+#       provider_name = "AWS"
+#       region_name   = "EU_WEST_3"
+#       electable_specs {
+#         instance_size = "M10"
+#         node_count    = 3
+#       }
+#     }
+#   }
+# }
+
+data "mongodbatlas_advanced_cluster" "aklocal" {
   project_id = var.atlas.project_id
   name       = var.atlas.cluster_name
 }

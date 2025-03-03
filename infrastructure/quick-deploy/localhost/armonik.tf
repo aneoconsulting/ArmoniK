@@ -73,5 +73,7 @@ module "armonik" {
     tag = try(coalesce(var.pod_deletion_cost.tag), local.default_tags[var.pod_deletion_cost.image])
   })
 
-  depends_on = [ data.mongodbatlas_advanced_cluster.aktest, mongodbatlas_database_user.admin, kubernetes_secret.mongodb_admin ]
+  depends_on = [ data.mongodbatlas_advanced_cluster.aklocal, mongodbatlas_database_user.admin, kubernetes_secret.mongodb_admin ]
+  #depends_on = [ mongodbatlas_advanced_cluster.aklocal, mongodbatlas_database_user.admin, kubernetes_secret.mongodb_admin ]
+
 }
