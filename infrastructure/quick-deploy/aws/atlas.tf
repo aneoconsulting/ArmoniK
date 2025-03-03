@@ -12,8 +12,8 @@ variable "atlas" {
 }
 
 locals {
-  mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", data.mongodbatlas_advanced_cluster.aktest.connection_strings[0].standard_srv)
-
+  #mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", data.mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv)
+  mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv)
   atlas_outputs = {
     env_from_secret = {
       "MongoDB__User" = {
@@ -37,7 +37,9 @@ locals {
       #"MongoDB__CAFile"           = "/mongodb/certificate/mongodb-ca-cert"
       #"MongoDB__AuthSource" = "admin"
       "MongoDB__ConnectionStringScheme" = local.mongodb_url.scheme
-      "MongoDB__ConnectionString"       = data.mongodbatlas_advanced_cluster.aktest.connection_strings[0].standard_srv
+      #"MongoDB__ConnectionString"       = data.mongodbatlas_advanced_cluster.aktest.connection_strings[0].standard_srv
+      "MongoDB__ConnectionString"       = mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv
+
     }
   }
 }
@@ -105,11 +107,31 @@ resource "mongodbatlas_database_user" "admin" {
   }
 }
 
-data "mongodbatlas_advanced_cluster" "aktest" {
-  project_id = var.atlas.project_id
-  name       = var.atlas.cluster_name
+resource "mongodbatlas_advanced_cluster" "akaws" {
+  project_id     = var.atlas.project_id
+  name           = var.atlas.cluster_name
+  cluster_type   = "REPLICASET"
+  backup_enabled = true
+
+  replication_specs {
+    region_configs {
+      priority      = 7
+      provider_name = "AWS"
+      region_name   = "EU_WEST_3"
+      electable_specs {
+        instance_size = "M10"
+        node_count    = 3
+      }
+    }
+  }
   depends_on = [mongodbatlas_privatelink_endpoint_service.pe_service]
 }
+
+# data "mongodbatlas_advanced_cluster" "akaws" {
+#   project_id = var.atlas.project_id
+#   name       = var.atlas.cluster_name
+#   depends_on = [mongodbatlas_privatelink_endpoint_service.pe_service]
+# }
 
 ## Private endpoint creation
 
@@ -124,4 +146,5 @@ resource "mongodbatlas_privatelink_endpoint_service" "pe_service" {
   private_link_id     = mongodbatlas_privatelink_endpoint.pe.id
   endpoint_service_id = module.vpce.endpoints["mongodb_atlas"].id
   provider_name       = "AWS"
+  depends_on = [ mongodbatlas_privatelink_endpoint.pe ]
 }
