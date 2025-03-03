@@ -119,4 +119,5 @@ module "vpce" {
     }
   }
   tags = local.tags
+  depends_on = [ mongodbatlas_privatelink_endpoint.pe ]
 }
