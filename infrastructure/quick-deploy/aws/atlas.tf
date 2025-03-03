@@ -12,8 +12,8 @@ variable "atlas" {
 }
 
 locals {
-  #mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", data.mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv)
-  mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv)
+  mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", data.mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv)
+  #mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv)
   atlas_outputs = {
     env_from_secret = {
       "MongoDB__User" = {
@@ -37,8 +37,8 @@ locals {
       #"MongoDB__CAFile"           = "/mongodb/certificate/mongodb-ca-cert"
       #"MongoDB__AuthSource" = "admin"
       "MongoDB__ConnectionStringScheme" = local.mongodb_url.scheme
-      #"MongoDB__ConnectionString"       = data.mongodbatlas_advanced_cluster.aktest.connection_strings[0].standard_srv
-      "MongoDB__ConnectionString"       = mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv
+      "MongoDB__ConnectionString"       = data.mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv
+      #"MongoDB__ConnectionString"       = mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv
 
     }
   }
