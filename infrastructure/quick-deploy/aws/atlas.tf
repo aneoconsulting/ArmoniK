@@ -107,31 +107,31 @@ resource "mongodbatlas_database_user" "admin" {
   }
 }
 
-resource "mongodbatlas_advanced_cluster" "akaws" {
-  project_id     = var.atlas.project_id
-  name           = var.atlas.cluster_name
-  cluster_type   = "REPLICASET"
-  backup_enabled = true
+# resource "mongodbatlas_advanced_cluster" "akaws" {
+#   project_id     = var.atlas.project_id
+#   name           = var.atlas.cluster_name
+#   cluster_type   = "REPLICASET"
+#   backup_enabled = true
 
-  replication_specs {
-    region_configs {
-      priority      = 7
-      provider_name = "AWS"
-      region_name   = "EU_WEST_3"
-      electable_specs {
-        instance_size = "M10"
-        node_count    = 3
-      }
-    }
-  }
-  depends_on = [mongodbatlas_privatelink_endpoint_service.pe_service]
-}
-
-# data "mongodbatlas_advanced_cluster" "akaws" {
-#   project_id = var.atlas.project_id
-#   name       = var.atlas.cluster_name
+#   replication_specs {
+#     region_configs {
+#       priority      = 7
+#       provider_name = "AWS"
+#       region_name   = "EU_WEST_3"
+#       electable_specs {
+#         instance_size = "M10"
+#         node_count    = 3
+#       }
+#     }
+#   }
 #   depends_on = [mongodbatlas_privatelink_endpoint_service.pe_service]
 # }
+
+data "mongodbatlas_advanced_cluster" "akaws" {
+  project_id = var.atlas.project_id
+  name       = var.atlas.cluster_name
+  depends_on = [mongodbatlas_privatelink_endpoint_service.pe_service]
+}
 
 ## Private endpoint creation
 
