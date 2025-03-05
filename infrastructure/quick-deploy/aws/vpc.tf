@@ -113,11 +113,21 @@ module "vpce" {
     mongodb_atlas = {
       service             = mongodbatlas_privatelink_endpoint.pe.endpoint_service_name
       service_type        = "Interface"
-      private_dns_enabled = !module.vpc.enable_external_access
-      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
-      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+      private_dns_enabled = true #!module.vpc.enable_external_access
+      subnet_ids          = module.vpc.private_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
     }
   }
   tags = local.tags
-  depends_on = [ mongodbatlas_privatelink_endpoint.pe ]
+  depends_on = [ mongodbatlas_privatelink_endpoint.pe, module.vpc ]
 }
+
+data "aws_subnet" "private_subnets" {
+  count = length(module.vpc.private_subnets)
+  id = module.vpc.private_subnets[count.index]
+}
+
+# locals {
+#   subnets_by_az = { for subnet in data.aws_subnet.private_subnets : subnet.availability_zone => subnet.id }
+#   selected_subnets = value(local.subnets_b)
+# }

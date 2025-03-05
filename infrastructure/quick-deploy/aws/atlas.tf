@@ -58,19 +58,19 @@ resource "random_password" "mongodb_admin_password" {
 resource "kubernetes_secret" "mongodb_admin" {
   metadata {
     name      = "mongodb-admin"
-    namespace = var.namespace
+    namespace = local.namespace
   }
   data = {
     username = random_string.mongodb_admin_user.result
     password = random_password.mongodb_admin_password.result
   }
-  type = "kubernetes.io/basic-auth"
+  type       = "kubernetes.io/basic-auth"
 }
 
 resource "kubernetes_secret" "mongodb" {
   metadata {
     name      = "mongodb"
-    namespace = var.namespace
+    namespace = local.namespace
   }
   data = {
     # "ca.pem"           = tls_self_signed_cert.root_mongodb.cert_pem
@@ -146,5 +146,5 @@ resource "mongodbatlas_privatelink_endpoint_service" "pe_service" {
   private_link_id     = mongodbatlas_privatelink_endpoint.pe.id
   endpoint_service_id = module.vpce.endpoints["mongodb_atlas"].id
   provider_name       = "AWS"
-  depends_on = [ mongodbatlas_privatelink_endpoint.pe ]
+  depends_on          = [mongodbatlas_privatelink_endpoint.pe, module.vpce]
 }
