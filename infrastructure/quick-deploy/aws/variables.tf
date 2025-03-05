@@ -432,7 +432,7 @@ variable "mongodb_sharding" {
       shards = optional(object({
         access_mode         = optional(list(string), ["ReadWriteOnce"])
         reclaim_policy      = optional(string, "Delete")
-        storage_provisioner = optional(string, "ebs.csi.aws.com")
+        storage_provisioner = optional(string)
         volume_binding_mode = optional(string, "WaitForFirstConsumer")
         parameters          = optional(map(string), {})
 
@@ -444,12 +444,12 @@ variable "mongodb_sharding" {
             storage = string
           }))
         }))
-      }), {})
+      }))
 
       configsvr = optional(object({
         access_mode         = optional(list(string), ["ReadWriteOnce"])
         reclaim_policy      = optional(string, "Delete")
-        storage_provisioner = optional(string, "ebs.csi.aws.com")
+        storage_provisioner = optional(string)
         volume_binding_mode = optional(string, "WaitForFirstConsumer")
         parameters          = optional(map(string), {})
 
@@ -462,7 +462,7 @@ variable "mongodb_sharding" {
           }))
         }))
       }), {})
-    }), {})
+    }))
   })
   default = null
 }
@@ -470,12 +470,40 @@ variable "mongodb_sharding" {
 variable "mongodb_efs" {
   description = "AWS EFS as Persistent volume for MongoDB"
   type = object({
-    performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
-    throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
-    provisioned_throughput_in_mibps = optional(number)
-    transition_to_ia                = optional(string)
-    # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
-    access_point = optional(list(string), [])
+    mongodb = optional(object({
+      performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
+      throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
+      provisioned_throughput_in_mibps = optional(number)
+      transition_to_ia                = optional(string)
+      # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+      access_point = optional(list(string), [])
+    }), {})
+    configsvr = optional(object({
+      performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
+      throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
+      provisioned_throughput_in_mibps = optional(number)
+      transition_to_ia                = optional(string)
+      # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+      access_point = optional(list(string), [])
+    }), {})
+  })
+  default = null
+}
+
+variable "mongodb_ebs" {
+  type = object({
+    mongodb = optional(object({
+      fs         = optional(string, "ext4")
+      type       = optional(string, "gp3")
+      iopsPerGB  = optional(number, 200)
+      parameters = optional(map(string))
+    }), {})
+    configsvr = optional(object({
+      fs         = optional(string, "ext4")
+      type       = optional(string, "gp3")
+      iopsPerGB  = optional(number, 50)
+      parameters = optional(map(string))
+    }), {})
   })
   default = {}
 }
