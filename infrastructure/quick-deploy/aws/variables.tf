@@ -351,7 +351,7 @@ variable "mongodb" {
     helm_chart_version    = optional(string)
 
     persistent_volume = optional(object({
-      storage_provisioner = optional(string, "ebs.csi.aws.com")
+      storage_provisioner = optional(string)
       acces_mode          = optional(list(string), ["ReadWriteOnce"])
       reclaim_policy      = optional(string, "Delete")
       volume_binding_mode = optional(string, "WaitForFirstConsumer")
@@ -473,35 +473,36 @@ variable "mongodb_efs" {
     mongodb = optional(object({
       performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
       throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
-      provisioned_throughput_in_mibps = optional(number)
-      transition_to_ia                = optional(string)
+      provisioned_throughput_in_mibps = optional(number, 0)
+      transition_to_ia                = optional(string, "AFTER_7_DAYS")
       # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
       access_point = optional(list(string), [])
-    }), {})
+    }))
     configsvr = optional(object({
       performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
       throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
-      provisioned_throughput_in_mibps = optional(number)
-      transition_to_ia                = optional(string)
+      provisioned_throughput_in_mibps = optional(number, 0)
+      transition_to_ia                = optional(string, "AFTER_7_DAYS")
       # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
       access_point = optional(list(string), [])
-    }), {})
+    }))
   })
   default = null
 }
 
 variable "mongodb_ebs" {
+  # You can check documentation for relevant EBS storage class paramaters 
+  # https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/docs/parameters.md
+
   type = object({
     mongodb = optional(object({
       fs         = optional(string, "ext4")
       type       = optional(string, "gp3")
-      iopsPerGB  = optional(number, 200)
       parameters = optional(map(string))
     }), {})
     configsvr = optional(object({
       fs         = optional(string, "ext4")
       type       = optional(string, "gp3")
-      iopsPerGB  = optional(number, 50)
       parameters = optional(map(string))
     }), {})
   })

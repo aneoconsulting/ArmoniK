@@ -278,10 +278,10 @@ module "mongodb_sharded" {
 }
 
 module "mongodb_efs_persistent_volume" {
-  count                           = try(coalesce(var.mongodb_sharding.persistence.shards.storage_provisioner), coalesce(var.mongodb.persistent_volume.storage_provisioner), "") == "efs.csi.aws.com" ? 1 : 0
+  count                           = local.mongodb_pvc_provisioner == "efs.csi.aws.com" ? 1 : 0
   source                          = "./generated/infra-modules/storage/aws/efs"
   name                            = "${local.prefix}-mongodb"
-  kms_key_id                      = try(coalesce(var.mongodb_efs.mongodb.kms_key_id), local.kms_key)
+  kms_key_id                      = coalesce(var.mongodb_efs.mongodb.kms_key_id), local.kms_key)
   performance_mode                = var.mongodb_efs.mongodb.performance_mode
   throughput_mode                 = var.mongodb_efs.mongodb.throughput_mode
   provisioned_throughput_in_mibps = var.mongodb_efs.mongodb.provisioned_throughput_in_mibps
@@ -295,7 +295,7 @@ module "mongodb_efs_persistent_volume" {
 }
 
 module "configsvr_efs_persistent_volume" {
-  count                           = (try(var.mongodb_sharding.persistence.configsvr.storage_provisioner, "") == "efs.csi.aws.com" ? 1 : 0)
+  count                           = local.mongodb_configsvr_pvc_provisioner == "efs.csi.aws.com" ? 1 : 0
   source                          = "./generated/infra-modules/storage/aws/efs"
   name                            = "${local.prefix}-mongodb-configsvr"
   kms_key_id                      = try(coalesce(var.mongodb_efs.configsvr.kms_key_id), local.kms_key)
@@ -443,11 +443,11 @@ locals {
       uid              = var.mongodb.security_context.run_as_user # optional
       gid              = var.mongodb.security_context.fs_group    # optional
       basePath         = "/mongodb"                               # optional
-    } : local.mongodb_pvc_provisioner == "ebs.csi.aws.com" ?
+    } : null,
+    local.mongodb_pvc_provisioner == "ebs.csi.aws.com" ?
     merge({
       "csi.storage.k8s.io/fstype" = var.mongodb_ebs.mongodb.fs
       "type"                      = var.mongodb_ebs.mongodb.type
-      "iopsPerGB"                 = var.mongodb_ebs.mongodb.iopsPerGB
     }, var.mongodb_ebs.mongodb.parameters) : null,
     try(coalesce(var.mongodb_sharding.persistence.shards.parameters), coalesce(var.mongodb.persistent_volume.parameters), null)
   )
@@ -465,7 +465,6 @@ locals {
     merge({
       "csi.storage.k8s.io/fstype" = "ext4"
       "type"                      = "gp3"
-      "iopsPerGB"                 = 200
     }, var.mongodb_ebs.configsvr.parameters) : null,
     try(var.mongodb_sharding.persistence.configsvr.parameters, null)
   )
