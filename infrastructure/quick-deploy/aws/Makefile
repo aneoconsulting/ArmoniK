@@ -28,8 +28,8 @@ export TF_VAR_prefix?=$(PREFIX)
 
 .PHONY: apply destroy
 
-all: get-modules init apply output kubeconfig
-deploy: get-modules init apply output kubeconfig
+all: get-modules init apply output cliconfig kubeconfig
+deploy: get-modules init apply output cliconfig kubeconfig
 destroy: init delete
 
 env:
@@ -101,6 +101,11 @@ kubeconfig:
 	@echo "Execute the following commands:"
 	@echo "------------------------------"
 	@echo "export KUBECONFIG=$(shell cat $(GENERATED_DIR)/armonik-output.json | jq -r '.eks.kubeconfig_file')"
+
+cliconfig:
+	@echo "Run to point your ArmoniK CLI to this deployment:"
+	@echo "------------------------------"
+	@echo "export AKCONFIG=$(GENERATED_DIR)/armonik-cli.yaml"
 
 get-modules:
 	@if [ -d $(MODULES_DIR) ]; then\
