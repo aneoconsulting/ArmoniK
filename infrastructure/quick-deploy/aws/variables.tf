@@ -461,7 +461,7 @@ variable "mongodb_sharding" {
             storage = string
           }))
         }))
-      }), {})
+      }))
     }))
   })
   default = null
