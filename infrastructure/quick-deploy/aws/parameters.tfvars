@@ -314,10 +314,45 @@ mq = {
 
 mongodb = {
   node_selector = { service = "state-database" }
+  # persistent_volume = {
+  #   storage_provisioner = "ebs.csi.aws.com"
+  #   parameters = {
+  #     "throughput" = 200
+  #     "iopsPerGB"  = 500
+  #   }
+  #   resources = {
+  #     requests = {
+  #       storage = "10Gi"
+  #     }
+  #   }
+  # }
 }
 
 # Nullify to disable sharding, each nullification of subobject will result in the use of default values 
-# mongodb_sharding = {}
+# mongodb_sharding = {
+#   shards = {
+#     replicas = 2
+#     quantity = 2
+#   }
+#   configsvr = {
+#     replicas = 2
+#   }
+#   router = {
+#     replicas = 2
+#   }
+#   persistence = {
+#     shards = {
+#       resources = {
+#         requests = {
+#           storage = "20Gi"
+#         }
+#       }
+#     }
+#     configsvr = {
+#       storage_provisioner = "ebs.csi.aws.com"
+#     }
+#   }
+# }
 
 seq = {
   node_selector = { service = "monitoring" }
@@ -724,8 +759,6 @@ configurations = {
   }
   jobs = { env = { MongoDB__DataRetention = "1.00:00:00" } }
 }
-
-
 
 environment_description = {
   name        = "aws-dev"
