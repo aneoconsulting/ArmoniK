@@ -281,7 +281,7 @@ module "mongodb_efs_persistent_volume" {
   count                           = local.mongodb_pvc_provisioner == "efs.csi.aws.com" ? 1 : 0
   source                          = "./generated/infra-modules/storage/aws/efs"
   name                            = "${local.prefix}-mongodb"
-  kms_key_id                      = coalesce(var.mongodb_efs.mongodb.kms_key_id), local.kms_key)
+  kms_key_id                      = try(coalesce(var.mongodb_efs.mongodb.kms_key_id), local.kms_key)
   performance_mode                = var.mongodb_efs.mongodb.performance_mode
   throughput_mode                 = var.mongodb_efs.mongodb.throughput_mode
   provisioned_throughput_in_mibps = var.mongodb_efs.mongodb.provisioned_throughput_in_mibps
