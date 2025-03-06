@@ -65,9 +65,9 @@ get-modules:
 	@if [ -d $(MODULES_DIR) ]; then\
 		git -C $(MODULES_DIR) fetch --depth 1 origin $(MODULES_VERSION);\
 		git -C $(MODULES_DIR) -c advice.detachedHead=false checkout $(MODULES_VERSION);\
-    else \
-      	git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) --depth 1 $(MODULES_SOURCE) $(MODULES_DIR);\
-    fi
+	else \
+		git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) --no-single-branch --depth 1 $(MODULES_SOURCE) $(MODULES_DIR);\
+	fi
 
 clean:
 	rm -rf $(TF_DATA_DIR) .terraform.lock.hcl .terraform
