@@ -315,15 +315,15 @@ mq = {
 mongodb = {
   node_selector = { service = "state-database" }
   persistent_volume = {
-  #   parameters = {
-  #     "throughput" = 200
-  #     "iopsPerGB"  = 500
-  #   }
-  #   resources = {
-  #     requests = {
-  #       storage = "10Gi"
-  #     }
-  #   }
+    #   parameters = {
+    #     "throughput" = 200
+    #     "iopsPerGB"  = 500
+    #   }
+    #   resources = {
+    #     requests = {
+    #       storage = "10Gi"
+    #     }
+    #   }
   }
 }
 
