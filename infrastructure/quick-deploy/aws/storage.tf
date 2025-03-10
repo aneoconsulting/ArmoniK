@@ -252,14 +252,14 @@ module "mongodb_sharded" {
   }
 
   persistence = can(try(coalesce(var.mongodb_sharding.persistence), coalesce(var.mongodb.persistent_volume))) ? {
-    shards = {
+    shards =  can(try(coalesce(var.mongodb_sharding.persistence.shards), coalesce(var.mongodb.persistent_volume))) ? {
       storage_provisioner = local.mongodb_pvc_provisioner
       volume_binding_mode = try(coalesce(var.mongodb_sharding.persistence.shards.volume_binding_mode), coalesce(var.mongodb.persistent_volume.volume_binding_mode), null)
       reclaim_policy      = try(coalesce(var.mongodb_sharding.persistence.shards.reclaim_policy), coalesce(var.mongodb.persistent_volume.reclaim_policy), null)
       resources           = try(coalesce(var.mongodb_sharding.persistence.shards.resources), coalesce(var.mongodb.persistent_volume.resources), null)
       parameters          = local.mongodb_storage_class_parameters
-    }
-    configsvr = can(coalesce(var.mongodb_sharding.persistence)) ? {
+    } : null
+    configsvr = can(coalesce(var.mongodb_sharding.persistence.configsvr)) ? {
       storage_provisioner = local.mongodb_configsvr_pvc_provisioner
       volume_binding_mode = var.mongodb_sharding.persistence.configsvr.volume_binding_mode
       reclaim_policy      = var.mongodb_sharding.persistence.configsvr.reclaim_policy
