@@ -477,7 +477,7 @@ variable "mongodb_efs" {
       transition_to_ia                = optional(string, "AFTER_7_DAYS")
       # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
       access_point = optional(list(string), [])
-    }))
+    }), {})
     configsvr = optional(object({
       performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
       throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
@@ -485,9 +485,9 @@ variable "mongodb_efs" {
       transition_to_ia                = optional(string, "AFTER_7_DAYS")
       # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
       access_point = optional(list(string), [])
-    }))
+    }), {})
   })
-  default = null
+  default = {}
 }
 
 variable "mongodb_ebs" {
