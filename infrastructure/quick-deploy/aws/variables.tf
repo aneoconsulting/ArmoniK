@@ -434,7 +434,7 @@ variable "mongodb_sharding" {
         reclaim_policy      = optional(string, "Delete")
         storage_provisioner = optional(string)
         volume_binding_mode = optional(string, "WaitForFirstConsumer")
-        parameters          = optional(map(string), {})
+        parameters          = optional(map(string))
 
         resources = optional(object({
           limits = optional(object({
@@ -444,14 +444,14 @@ variable "mongodb_sharding" {
             storage = string
           }))
         }))
-      }))
+      }), {})
 
       configsvr = optional(object({
         access_mode         = optional(list(string), ["ReadWriteOnce"])
         reclaim_policy      = optional(string, "Delete")
         storage_provisioner = optional(string)
         volume_binding_mode = optional(string, "WaitForFirstConsumer")
-        parameters          = optional(map(string), {})
+        parameters          = optional(map(string))
 
         resources = optional(object({
           limits = optional(object({
@@ -461,7 +461,7 @@ variable "mongodb_sharding" {
             storage = string
           }))
         }))
-      }))
+      }), {})
     }))
   })
   default = null
@@ -487,7 +487,7 @@ variable "mongodb_efs" {
       access_point = optional(list(string), [])
     }), {})
   })
-  default = {}
+  default = null
 }
 
 variable "mongodb_ebs" {
@@ -506,7 +506,7 @@ variable "mongodb_ebs" {
       parameters = optional(map(string))
     }), {})
   })
-  default = {}
+  default = null
 }
 
 variable "seq" {

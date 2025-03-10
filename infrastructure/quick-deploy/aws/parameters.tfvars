@@ -314,8 +314,7 @@ mq = {
 
 mongodb = {
   node_selector = { service = "state-database" }
-  # persistent_volume = {
-  #   storage_provisioner = "ebs.csi.aws.com"
+  persistent_volume = {
   #   parameters = {
   #     "throughput" = 200
   #     "iopsPerGB"  = 500
@@ -325,10 +324,10 @@ mongodb = {
   #       storage = "10Gi"
   #     }
   #   }
-  # }
+  }
 }
 
-# Nullify to disable sharding, each nullification of subobject will result in the use of default values 
+# Nullify to disable sharding
 # mongodb_sharding = {
 #   shards = {
 #     replicas = 2
@@ -347,9 +346,6 @@ mongodb = {
 #           storage = "20Gi"
 #         }
 #       }
-#     }
-#     configsvr = {
-#       storage_provisioner = "ebs.csi.aws.com"
 #     }
 #   }
 # }
