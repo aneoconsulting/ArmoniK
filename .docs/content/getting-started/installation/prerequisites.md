@@ -34,13 +34,13 @@ We do not recommend you to manually install the pre-requisites for compatibility
 
 You could encounter some issues with the execution of the prerequisites installer script. Please verify you've right permissions on the script. If not, you can use `chmod +x <file|directory/*>` to add the execution permissions.
 
+
 ```sh
+
 # Add execution permissions to the prerequisites installer script
 chmod +x ./infrastructure/utils/scripts/installation/prerequisites-installer.sh
 # Add execution permissions to every script in the prerequisites directory
 chmod +x ./infrastructure/utils/scripts/installation/prerequisites/*
-```
-
 
 ```
 
@@ -51,12 +51,15 @@ chmod +x ./infrastructure/utils/scripts/installation/prerequisites/*
 ArmoniK uses Make to run commands. You must have Make installed on your machine. You can follow the [official documentation](https://www.gnu.org/software/make/) to install Make on your machine.
 
 
-
 ```{note}
+
 
 What is Make? Make is a build automation tool that automatically builds executable programs and libraries from source code by reading files called Makefiles which specify how to derive the target program. [Read more](https://en.wikipedia.org/wiki/Make_(software)).
 
+
 ```
+
+
 
 ### JQ
 

@@ -28,7 +28,7 @@ It is possible to setup the authentication in different ways when deploying Armo
 |      Ingress + Control plane authentication       |          ❌           |           ✔️             |             ✔️             |      ❌     |         ❌          |
 | Ingress + Control plane authentication, custom CA |          ❌           |           ✔️             |             ❌             |      ✔️     |         ✔️          |
 
-# Deployment configuration
+## Deployment configuration
 
 For each of the following configuration, the required parameters in your [```parameters.tfvars```](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/localhost/parameters.tfvars) to specify are:
 
@@ -39,7 +39,7 @@ For each of the following configuration, the required parameters in your [```par
 - ```authentication.require_authorization```: Controls whether the control plane checks for user permissions. If used it needs the ```authentication.require_authentication``` to be true.
 - ```authentication.authentication_datafile```: Empty if the default generated certificates will be used, otherwise is a path to a json configuration file (See [How to create a JSON authentication configuration file](#how-to-create-a-json-authentication-configuration-file))
 
-## How to setup a deployment without authentication
+### How to setup a deployment without authentication
 
 | Configuration parameter                      |    Value    |
 |---------------------------------------------|-----------|
@@ -52,7 +52,7 @@ For each of the following configuration, the required parameters in your [```par
 
 Using this configuration, anyone with access to the endpoints can send any request.
 
-## How to setup mTLS authentication using a default certificate authority and a single user certificate
+### How to setup mTLS authentication using a default certificate authority and a single user certificate
 
 | Configuration parameter                      |    Value    |
 |---------------------------------------------|-----------|
@@ -65,7 +65,7 @@ Using this configuration, anyone with access to the endpoints can send any reque
 
 Using this configuration, a default client certificate will be generated. Anyone can access the endpoints using this certificate. Since this certificate will be put in the database by default, the parameter ```authentication.require_authentication``` can be set to true or false. The default client certificate created is ```infrastructure/quick-deploy/localhost/generated/certificates/ingress/client.submitter.crt```
 
-## How to setup mTLS authentication using a custom certificate authority
+### How to setup mTLS authentication using a custom certificate authority
 
 | Configuration parameter                      |    Value    |
 |---------------------------------------------|-----------|
@@ -78,7 +78,7 @@ Using this configuration, a default client certificate will be generated. Anyone
 
 Using this configuration, the specified ```ca.pem``` will be used to authenticate user certificates. The client certificates **are not generated** by the deployment.
 
-## How to setup authentication using default certificates
+### How to setup authentication using default certificates
 
 | Configuration parameter                      |    Value    |
 |---------------------------------------------|-----------|
@@ -91,7 +91,7 @@ Using this configuration, the specified ```ca.pem``` will be used to authenticat
 
 Default certificates are generated alongside the automatically generated client certificate authority. In this case, two certificates are generated in the ```infrastructure/quick-deploy/localhost/generated/certificates/ingress``` folder : ```client.submitter.crt``` which corresponds to a user with all permissions, and ```client.monitoring.crt``` which corresponds to a user with only monitoring permissions.
 
-## How to setup your own certificates for authentication
+### How to setup your own certificates for authentication
 
 | Configuration parameter                      |    Value    |
 |---------------------------------------------|-----------|
@@ -104,7 +104,7 @@ Default certificates are generated alongside the automatically generated client 
 
 Using this configuration, the specified ```ca.pem``` will be used to authenticate the user certificates. The client certificates are **not generated** by the deployment. Each certificate is attributed to a specific user with specific roles. Each role has specific permissions, allowing or denying the user access to specific endpoints. For each certificate, the user and role need to be described in the given json configuration file (See [How to create a JSON authentication configuration file](#how-to-create-a-json-authentication-configuration-file)).
 
-### How to create a JSON authentication configuration file
+#### How to create a JSON authentication configuration file
 
 The JSON authentication configuration file must have the following format (note that the format is **case sensitive**):
 
@@ -140,7 +140,7 @@ The resulting configuration is stored in the MongoDB database. If the database i
 kubectl -n armonik get job authentication-in-database -o json | jq "del(.spec.selector)" | jq "del(.spec.template.metadata.labels)" | kubectl -n armonik replace --force -f -
 ```
 
-### JSON authentication configuration example
+#### JSON authentication configuration example
 
 The following json is an example defining two users, with their own different roles. The role ```Submitter``` does have all the permissions on every current endpoints. The role ```Monitoring``` does have all permissions related to monitoring duties, but cannot start or stop tasks or sessions. Each user has its own certificate.
 
