@@ -9,20 +9,20 @@ services, allowing users to submit high volumes of short and long-running tasks 
 
 ## Documentation
 
-Please, read [documentation](https://aneoconsulting.github.io/ArmoniK/) for more information about ArmoniK.
+Please, read [documentation](https://armonik.readthedocs.io/en/latest/) for more information about ArmoniK.
 
-- 👉 [ArmoniK Architecture](https://aneoconsulting.github.io/ArmoniK/armonik)
-- 👉 [ArmoniK Versions](https://aneoconsulting.github.io/ArmoniK/armonik#versions)
-- 👉 [ArmoniK Installation](https://aneoconsulting.github.io/ArmoniK/installation)
-- 👉 [ArmoniK Configuration](https://aneoconsulting.github.io/ArmoniK/guide/how-to/how-to-configure-authentication)
-- 👉 [ArmoniK Performance](https://aneoconsulting.github.io/ArmoniK/benchmarking/test-plan)
+- 👉 [ArmoniK Architecture](https://armonik.readthedocs.io/en/latest/content/armonik/index.html)
+- 👉 [ArmoniK Versions](https://armonik.readthedocs.io/en/latest/content/armonik/index.html#versions)
+- 👉 [ArmoniK Installation](https://armonik.readthedocs.io/en/latest/content/getting-started/introduction.html)
+- 👉 [ArmoniK Configuration](https://armonik.readthedocs.io/en/latest/content/user-guide/how-to-configure-authentication.html)
+- 👉 [ArmoniK Performance](https://armonik.readthedocs.io/en/latest/content/benchmarking/test-plan.html)
 
 
 ## Bug
 
 You are welcome to raise issues on GitHub. Please, read our [community guidelines](https://aneoconsulting.github.io/ArmoniK.Community/) before doing so.
 
-You can also send us a direct email at [armonik@aneo.fr](mailto:armonik-support@aneo.fr).
+You can also send us a direct email at [armonik@aneo.fr](mailto:armonik@aneo.fr).
 
 ## Acknowledge
 

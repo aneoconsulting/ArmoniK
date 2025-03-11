@@ -4,7 +4,7 @@ HTC Mock is a test tool for ArmoniK. It is used to generate tasks that will be r
 
 HTC Mock is used in CI to test ArmoniK automatically but it can also be used in development to generate realistic tasks.
 
-Please make sure your version of Core is the same as HTC Mock's. If you use different versions, the test will fail. Please refer to [the Default images page](https://aneoconsulting.github.io/ArmoniK/guide/default-images) for more information on how to correctly set up.
+Please make sure your version of Core is the same as HTC Mock's. If you use different versions, the test will fail. Please refer to [the Default images page](./default-images.md) for more information on how to correctly set up.
 
 
 
