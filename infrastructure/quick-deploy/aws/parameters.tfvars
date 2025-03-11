@@ -52,7 +52,7 @@ eks_managed_node_groups = {
     name                        = "workers"
     launch_template_description = "Node group for ArmoniK Compute-plane pods"
     ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.large"]
+    instance_types              = ["c5.xlarge"]
     capacity_type               = "SPOT"
     min_size                    = 0
     desired_size                = 0
@@ -106,7 +106,7 @@ eks_managed_node_groups = {
     name                        = "metrics"
     launch_template_description = "Node group for metrics: Metrics exporter and Prometheus"
     ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.large"]
+    instance_types              = ["c5.xlarge"]
     capacity_type               = "ON_DEMAND"
     min_size                    = 1
     desired_size                = 1
@@ -132,7 +132,7 @@ eks_managed_node_groups = {
     name                        = "control-plane"
     launch_template_description = "Node group for ArmoniK Control-plane and Ingress"
     ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.large"]
+    instance_types              = ["c5.xlarge"]
     capacity_type               = "ON_DEMAND"
     min_size                    = 1
     desired_size                = 1
@@ -158,7 +158,7 @@ eks_managed_node_groups = {
     name                        = "monitoring"
     launch_template_description = "Node group for monitoring"
     ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.large"]
+    instance_types              = ["c5.xlarge"]
     capacity_type               = "ON_DEMAND"
     min_size                    = 1
     desired_size                = 1
@@ -222,11 +222,11 @@ eks_managed_node_groups = {
     }
   }
   # Node group for windows
-  /*windows = {
+  windows = {
     name                        = "windows"
     launch_template_description = "Node group for ArmoniK windows based pods"
     ami_type                    = "WINDOWS_CORE_2022_x86_64"
-    instance_types              = ["c5.large"]
+    instance_types              = ["c5.xlarge"]
     capacity_type               = "ON_DEMAND"
     min_size                    = 1
     desired_size                = 1
@@ -249,7 +249,6 @@ eks_managed_node_groups = {
       AmazonEKSVPCResourceController = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
     }
   }
-  */
 }
 
 # List of self managed node groups
@@ -257,7 +256,7 @@ self_managed_node_groups = {
   others = {
     name                        = "others"
     launch_template_description = "Node group for others"
-    instance_type               = "c5.large"
+    instance_type               = "c5.xlarge"
     min_size                    = 1
     desired_size                = 1
     max_size                    = 5
@@ -352,7 +351,7 @@ mongodb = {
 }
 
 # Nullify to disable sharding, each nullification of subobject will result in the use of default values 
-# mongodb_sharding = {}
+mongodb_sharding = {}
 
 seq = {
   node_selector = { service = "monitoring" }
@@ -370,16 +369,16 @@ grafana = {
   #}
 }
 
-node_exporter = {
-  node_selector = {}
-}
+# node_exporter = {
+#   node_selector = {}
+# }
 
 #node exporter for windows
-/* windows_exporter = {
+ windows_exporter = {
   node_selector = {
     "platform" = "windows"
   }
-} */
+} 
 
 prometheus = {
   node_selector = { service = "metrics" }
@@ -397,33 +396,33 @@ metrics_exporter = {
   node_selector = { service = "metrics" }
 }
 
-/*parition_metrics_exporter = {
-  node_selector = { service = "metrics" }
-  extra_conf    = {
-  env = {
-    MongoDB__AllowInsecureTls           = true
-    Serilog__MinimumLevel               = "Information"
-    MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
-    MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
-    MongoDB__DataRetention = "1.00:00:00"
-    }
-  }
-}*/
+# parition_metrics_exporter = {
+#   node_selector = { service = "metrics" }
+#   extra_conf    = {
+#   env = {
+#     MongoDB__AllowInsecureTls           = true
+#     Serilog__MinimumLevel               = "Information"
+#     MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
+#     MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
+#     MongoDB__DataRetention = "1.00:00:00"
+#     }
+#   }
+# }
 
-fluent_bit = {
-  is_daemonset  = true
-  node_selector = {}
-}
-/*
+# fluent_bit = {
+#   is_daemonset  = true
+#   node_selector = {}
+# }
+
 fluent_bit_windows = {
   is_daemonset = true
-  #image_name   = "fluent/fluent-bit"
+  image_name   = "fluent/fluent-bit"
   image_tag = "windows-2022-3.2.0"
   node_selector_windows = {
     "platform" = "windows"
   }
 }
-*/
+
 
 # Logging level
 logging_level = "Debug"
@@ -440,14 +439,14 @@ control_plane = {
   }
   default_partition = "default"
   node_selector     = { service = "control-plane" }
-  /*
-  node_selector     = { 
-  service = "control-plane"
-  "platform"           = "windows"
-  "kubernetes.io/os"   = "windows"
-  "kubernetes.io/arch" = "amd64"
-  }
-  */
+  
+  # node_selector     = { 
+  # service = "control-plane"
+  # "platform"           = "windows"
+  # "kubernetes.io/os"   = "windows"
+  # "kubernetes.io/arch" = "amd64"
+  # }
+  
 }
 
 # Parameters of admin GUI
@@ -627,14 +626,15 @@ compute_plane = {
   },
   # Partition for the htcmock worker
   htcmock = {
-    node_selector = { service = "workers" }
-    /*
+    # node_selector = { service = "workers" }
+    
     node_selector = {
+      service = "workers"
       "platform"           = "windows"
       "kubernetes.io/os"   = "windows"
       "kubernetes.io/arch" = "amd64"
     }
-*/
+
     # number of replicas for each deployment of compute plane
     replicas = 1
     # ArmoniK polling agent

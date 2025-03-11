@@ -836,7 +836,7 @@ variable "pod_deletion_cost" {
 variable "upload_images" {
   description = "Whether the images are uploaded to the Artifact Registry or not"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "armonik_versions" {
