@@ -105,15 +105,19 @@ variable "eks" {
         image = optional(string, "public.ecr.aws/efs-csi-driver/amazon/aws-efs-csi-driver")
         tag   = optional(string)
       }), {})
-      efs_csi_liveness_probe = optional(object({
+      ebs_csi = optional(object({
+        image = optional(string, "public.ecr.aws/ebs-csi-driver/aws-ebs-csi-driver")
+        tag   = optional(string)
+      }), {})
+      csi_liveness_probe = optional(object({
         image = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe")
         tag   = optional(string)
       }), {})
-      efs_csi_node_driver_registrar = optional(object({
+      csi_node_driver_registrar = optional(object({
         image = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar")
         tag   = optional(string)
       }), {})
-      efs_csi_external_provisioner = optional(object({
+      csi_external_provisioner = optional(object({
         image = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner")
         tag   = optional(string)
       }), {})
@@ -138,6 +142,18 @@ variable "eks" {
     efs_csi = optional(object({
       repository = optional(string)
       version    = optional(string)
+    }), {})
+    ebs_csi = optional(object({
+      repository = optional(string)
+      version    = optional(string)
+      controller_resources = optional(object({
+        limits = optional(object({
+          storage = string
+        }))
+        requests = optional(object({
+          storage = string
+        }))
+      }))
     }), {})
     instance_refresh = optional(object({
       namespace  = optional(string, "kube-system")
@@ -335,8 +351,10 @@ variable "mongodb" {
     helm_chart_version    = optional(string)
 
     persistent_volume = optional(object({
-      storage_provisioner = string
-      volume_binding_mode = optional(string, "Immediate")
+      storage_provisioner = optional(string)
+      acces_mode          = optional(list(string), ["ReadWriteOnce"])
+      reclaim_policy      = optional(string, "Delete")
+      volume_binding_mode = optional(string, "WaitForFirstConsumer")
       parameters          = optional(map(string), {})
       #Resources for PVC
       resources = optional(object({
@@ -409,6 +427,42 @@ variable "mongodb_sharding" {
       }))
       labels = optional(map(string))
     }))
+
+    persistence = optional(object({
+      shards = optional(object({
+        access_mode         = optional(list(string), ["ReadWriteOnce"])
+        reclaim_policy      = optional(string, "Delete")
+        storage_provisioner = optional(string)
+        volume_binding_mode = optional(string, "WaitForFirstConsumer")
+        parameters          = optional(map(string))
+
+        resources = optional(object({
+          limits = optional(object({
+            storage = string
+          }))
+          requests = optional(object({
+            storage = string
+          }))
+        }))
+      }), {})
+
+      configsvr = optional(object({
+        access_mode         = optional(list(string), ["ReadWriteOnce"])
+        reclaim_policy      = optional(string, "Delete")
+        storage_provisioner = optional(string)
+        volume_binding_mode = optional(string, "WaitForFirstConsumer")
+        parameters          = optional(map(string))
+
+        resources = optional(object({
+          limits = optional(object({
+            storage = string
+          }))
+          requests = optional(object({
+            storage = string
+          }))
+        }))
+      }), {})
+    }))
   })
   default = null
 }
@@ -416,14 +470,43 @@ variable "mongodb_sharding" {
 variable "mongodb_efs" {
   description = "AWS EFS as Persistent volume for MongoDB"
   type = object({
-    performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
-    throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
-    provisioned_throughput_in_mibps = optional(number)
-    transition_to_ia                = optional(string)
-    # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
-    access_point = optional(list(string), [])
+    mongodb = optional(object({
+      performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
+      throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
+      provisioned_throughput_in_mibps = optional(number, 0)
+      transition_to_ia                = optional(string, "AFTER_7_DAYS")
+      # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+      access_point = optional(list(string), [])
+    }), {})
+    configsvr = optional(object({
+      performance_mode                = optional(string, "generalPurpose") # "generalPurpose" or "maxIO"
+      throughput_mode                 = optional(string, "bursting")       #  "bursting" or "provisioned"
+      provisioned_throughput_in_mibps = optional(number, 0)
+      transition_to_ia                = optional(string, "AFTER_7_DAYS")
+      # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
+      access_point = optional(list(string), [])
+    }), {})
   })
-  default = {}
+  default = null
+}
+
+variable "mongodb_ebs" {
+  # You can check documentation for relevant EBS storage class paramaters 
+  # https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/docs/parameters.md
+
+  type = object({
+    mongodb = optional(object({
+      fs         = optional(string, "ext4")
+      type       = optional(string, "gp3")
+      parameters = optional(map(string))
+    }), {})
+    configsvr = optional(object({
+      fs         = optional(string, "ext4")
+      type       = optional(string, "gp3")
+      parameters = optional(map(string))
+    }), {})
+  })
+  default = null
 }
 
 variable "seq" {
