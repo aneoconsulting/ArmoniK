@@ -39,9 +39,6 @@ ArmoniK documentation
    content/user-guide/how-to-configure-authentication.md
    content/user-guide/how-to-troubleshoot.md
    content/user-guide/differentiate-environments.md
-   content/user-guide/happy-flow-diagram-sequence.md
-   content/user-guide/clientlargetasks-state-diagram.md
-   content/user-guide/polling-agent.md
    
 .. toctree::
    :maxdepth: 3
