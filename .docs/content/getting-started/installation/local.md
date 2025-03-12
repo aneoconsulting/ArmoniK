@@ -146,7 +146,7 @@ http://<ip_address>:5000
 ### HTC Mock
 
 <!-- TODO: Create a sample in order to test installation (no more Symphony or DataSynapse) -->
-You can now run [HTC Mock](https://aneoconsulting.github.io/ArmoniK/guide/how-to/how-to-use-htc-mock) to see a mock utilisation of ArmoniK and verify your installation.
+You can now run [HTC Mock](../../user-guide/how-to-use-htc-mock.md) to see a mock utilisation of ArmoniK and verify your installation.
 
 
 
