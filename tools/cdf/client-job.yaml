@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: armonik-client-job
+  namespace: armonik
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: armonik-client
+          image: "@@ECR_REGISTRY@@/cdf-client:latest"
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "Starting CDF client..."
+              # Create directories
+              mkdir -p /app/data/results
+              mkdir -p /app/data/.matplotlib
+
+              # Change to data directory
+              cd /app/data
+
+              # Copy files and run the client app
+              cp /app/main.py /app/data/
+              cp /app/*.py /app/data/ 2>/dev/null || echo "No additional Python files to copy"
+              python -u /app/data/main.py --endpoint ${ARMONIK_ENDPOINT} --partition ${ARMONIK_PARTITION}
+
+              # List generated files
+              echo "Files created:"
+              find /app/data -type f | sort
+
+              # Keep container running for file extraction
+              echo "Task completed, sleeping to allow file extraction..."
+              sleep 3600
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: ARMONIK_ENDPOINT
+              value: "@@ARMONIK_ENDPOINT@@"
+            - name: ARMONIK_PARTITION
+              value: "cdf"
+            - name: RESULTS_DIR
+              value: "/app/data/results"
+            - name: MPLCONFIGDIR
+              value: "/app/data/.matplotlib"
+          volumeMounts:
+            - name: app-data
+              mountPath: /app/data
+      volumes:
+        - name: app-data
+          emptyDir:
+            sizeLimit: 1Gi
