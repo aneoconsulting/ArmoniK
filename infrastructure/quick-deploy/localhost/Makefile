@@ -19,8 +19,8 @@ export TF_VAR_prefix?=$(PREFIX)
 
 .PHONY: apply destroy
 
-all: get-modules init apply output
-deploy: get-modules init apply output
+all: get-modules init apply output cliconfig
+deploy: get-modules init apply output cliconfig
 destroy: init delete
 
 env:
@@ -74,3 +74,8 @@ clean:
 
 docs:
 	terraform-docs markdown table --output-file parameters.md --output-mode inject $(CURRENT_DIR)
+
+cliconfig:
+	@echo "Run to point your ArmoniK CLI to this deployment:"
+	@echo "------------------------------"
+	@echo "export AKCONFIG=$(GENERATED_DIR)/armonik-cli.yaml"
