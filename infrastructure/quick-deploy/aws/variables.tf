@@ -37,7 +37,7 @@ variable "namespace" {
 variable "logging_level" {
   description = "Logging level in ArmoniK"
   type        = string
-  default     = "Information"
+  default     = "Debug"
 }
 
 # KMS Key
@@ -919,7 +919,7 @@ variable "pod_deletion_cost" {
 variable "upload_images" {
   description = "Whether the images are uploaded to the Artifact Registry or not"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "armonik_versions" {
