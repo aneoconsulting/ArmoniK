@@ -37,8 +37,8 @@ locals {
       "MongoDB__DirectConnection" = "false"
       #"MongoDB__CAFile"           = "/mongodb/certificate/mongodb-ca-cert"
       #"MongoDB__AuthSource" = "admin"
-      "MongoDB__ConnectionStringScheme" = local.mongodb_url.scheme
-      "MongoDB__ConnectionString" = data.mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv
+      #"MongoDB__ConnectionStringScheme" = local.mongodb_url.scheme
+      "MongoDB__ConnectionString" = "${data.mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv}/database"
       #"MongoDB__ConnectionString" = mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv
 
     }

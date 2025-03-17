@@ -12,8 +12,20 @@ variable "atlas" {
 }
 
 locals {
-  mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", data.mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv)
+  #mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", data.mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv)
   #mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv)
+
+  private_endpoints = flatten([for cs in data.mongodbatlas_advanced_cluster.akaws.connection_strings : cs.private_endpoint])
+  #private_endpoints = flatten([for cs in mongodbatlas_advanced_cluster.akaws.connection_strings : cs.private_endpoint])
+
+  connection_strings = [
+    for pe in local.private_endpoints : pe.srv_connection_string
+    if contains([for e in pe.endpoints : e.endpoint_id], module.vpce.endpoints["mongodb_atlas"].id)
+  ]
+
+  connection_string = length(local.connection_strings) > 0 ? local.connection_strings[0] : ""
+  mongodb_url       = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", local.connection_string)
+
   atlas_outputs = {
     env_from_secret = {
       "MongoDB__User" = {
@@ -34,10 +46,12 @@ locals {
       #"MongoDB__ReplicaSet"       = "rs0"
       "MongoDB__DatabaseName"     = "database"
       "MongoDB__DirectConnection" = "false"
+      "MongoDB__MaxRetries"       = "1"
       #"MongoDB__CAFile"           = "/mongodb/certificate/mongodb-ca-cert"
-      #"MongoDB__AuthSource" = "admin"
-      "MongoDB__ConnectionStringScheme" = local.mongodb_url.scheme
-      "MongoDB__ConnectionString"       = data.mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv
+      "MongoDB__AuthSource" = "admin"
+      #"MongoDB__ConnectionStringScheme" = local.mongodb_url.scheme
+      #"MongoDB__ConnectionString"       = "${data.mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv}/database"
+      "MongoDB__ConnectionString" = "${local.connection_string}/database"
       #"MongoDB__ConnectionString"       = mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv
 
     }
@@ -64,7 +78,7 @@ resource "kubernetes_secret" "mongodb_admin" {
     username = random_string.mongodb_admin_user.result
     password = random_password.mongodb_admin_password.result
   }
-  type       = "kubernetes.io/basic-auth"
+  type = "kubernetes.io/basic-auth"
 }
 
 resource "kubernetes_secret" "mongodb" {
