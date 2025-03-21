@@ -10,28 +10,35 @@ ArmoniK documentation
    :maxdepth: 1
    :glob:
 
-   content/armonik/index.md
    content/armonik/glossary.md
+   content/armonik/getting-started.md
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Getting Started
+   :maxdepth: 1
+   :caption: Installation
    :glob:
 
-   content/getting-started/introduction.md
    content/getting-started/installation/prerequisites.md
+   content/getting-started/installation/kubernetes.md
    content/getting-started/installation/local.md
    content/getting-started/installation/aws.md
    content/getting-started/installation/gcp.md
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
+   :caption: Launch test applications
+   :glob:
+
+   content/getting-started/execution/check.md
+   content/getting-started/execution/how-to-use-htc-mock.md
+   content/getting-started/execution/how-to-launch-HelloWorld-Sample.md
+
+.. toctree::
+   :maxdepth: 1
    :caption: User guide
    :glob:
 
-   content/user-guide/how-to-use-htc-mock.md
    content/user-guide/how-to-configure-partitions.md
-   content/user-guide/how-to-launch-HelloWorld-Sample.md
    content/user-guide/default-images.md
    content/user-guide/populate-database.md
    content/user-guide/how-to-configure-seq.md
@@ -41,7 +48,7 @@ ArmoniK documentation
    content/user-guide/differentiate-environments.md
    
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Benchmarking
    :glob:
 
