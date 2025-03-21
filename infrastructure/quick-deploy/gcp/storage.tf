@@ -104,12 +104,12 @@ module "memorystore" {
   maintenance_policy = var.memorystore.maintenance_policy
   redis_version      = var.memorystore.redis_version
   #reserved_ip_range       = var.memorystore.reserved_ip_range
-  tier                    = var.memorystore.tier
-  transit_encryption_mode = var.memorystore.transit_encryption_mode
-  replica_count           = var.memorystore.replica_count
-  read_replicas_mode      = var.memorystore.read_replicas_mode
-  customer_managed_key    = coalesce(var.memorystore.customer_managed_key, local.kms_key_id)
-  depends_on              = [module.psa]
+  tier                           = var.memorystore.tier
+  transit_encryption_mode        = var.memorystore.transit_encryption_mode
+  replica_count                  = var.memorystore.replica_count
+  read_replicas_mode             = var.memorystore.read_replicas_mode
+  customer_managed_key           = coalesce(var.memorystore.customer_managed_key, local.kms_key_id)
+  private_service_access_peering = module.psa[0].private_service_access_peering
 }
 
 resource "kubernetes_secret" "memorystore" {
@@ -194,6 +194,8 @@ module "gcs_os" {
   default_kms_key_name = local.kms_key_id
   force_destroy        = true
   labels               = local.labels
+  username             = google_storage_hmac_key.cloud_storage.access_id
+  password             = google_storage_hmac_key.cloud_storage.secret
 }
 
 resource "kubernetes_secret" "gcs" {
@@ -219,6 +221,7 @@ module "pubsub" {
   source     = "./generated/infra-modules/storage/gcp/pubsub"
   project_id = data.google_client_config.current.project
   kms_key_id = data.google_kms_crypto_key.kms.id
+  prefix     = local.prefix
 }
 
 # ActiveMQ
