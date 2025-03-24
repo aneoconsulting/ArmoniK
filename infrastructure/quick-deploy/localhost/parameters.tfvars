@@ -292,7 +292,7 @@ configurations = {
       Redis__Timeout                             = 30000
       Redis__SslHost                             = "127.0.0.1"
       Redis__TtlTimeSpan                         = "1.00:00:00"
-      Submitter__DeletePayload                   = true
+      Submitter__DeletePayload                   = false
     }
   }
   control = {
