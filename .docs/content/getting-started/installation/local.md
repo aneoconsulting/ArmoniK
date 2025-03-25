@@ -1,6 +1,6 @@
-# Local all in one deployment
+# Local deployment
 
-If you want to deploy ArmoniK with all the cloud services, this section is for you.
+If you want to deploy ArmoniK on your machine, this section is for you.
 
 
 
@@ -10,11 +10,7 @@ This deployment is for development purposes.
 
 ```
 
-
-## Installation
-
-### Installation on Windows
-
+## WSL installation on Windows
 
 
 ```{warning}
@@ -35,123 +31,89 @@ You can read more about WSL2 on the [Microsoft documentation](https://learn.micr
 
 ```
 
-### Install ArmoniK
+## Prerequisites
 
+
+### Kubernetes
+
+
+
+```{danger}
+
+If you plan to install **ArmoniK for development purposes**, you must install [K3s](#k3s) instead of Kubernetes.
+
+```
+
+ArmoniK uses Kubernetes to orchestrate containers. You must have Kubernetes installed on your machine. You can follow the [official documentation](https://kubernetes.io/releases/download/) to install Kubernetes on your machine.
+
+
+
+```{note}
+
+What is Kubernetes? Kubernetes, also known as K8s, is an open-source system for automating deployment, scaling, and management of containerized applications. It groups containers that make up an application into logical units for easy management and discovery. [Read more](https://en.wikipedia.org/wiki/Kubernetes).
+
+```
+
+### K3s
+
+
+
+```{note}
+
+If you plan to use **ArmoniK for production purposes**, you must install [Kubernetes](#kubernetes) instead of K3s.
+
+```
+
+ArmoniK uses K3s as it uses Kubernetes but for development environment.
+
+
+
+```{note}
+
+What is K3s? K3s is a lightweight Kubernetes distribution built for production workloads in unattended, resource-constrained, remote locations or inside IoT appliances. [Read more](https://k3s.io/).
+
+```
+
+### Simplified installer
+
+
+You can easily install all of them using the [ArmoniK prerequisites installer](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/utils/scripts/installation/prerequisites-installer.sh) from the root repository.
+
+```bash [shell]
+./infrastructure/utils/scripts/installation/prerequisites-installer.sh
+```
+
+
+```{note}
+
+Please, read the script before running it and make sure to have Docker Desktop disabled if you are on Windows.
+
+```
 
 
 ```{warning}
 
-Be careful, you must enable `systemd` support before installing ArmoniK.
+We do not recommend you to manually install the pre-requisites for compatibility reasons. If you want to install them manually, please follow the prerequisites installer script.
 
 ```
 
-First, clone the ArmoniK repository (inside your home directory from WSL2 Ubuntu distribution):
 
-```bash [shell]
-git clone https://github.com/aneoconsulting/ArmoniK.git
-```
+```{warning}
 
-## Deploy
-
-To launch the deployment, go to the [`infrastructure/quick-deploy/localhost`](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/quick-deploy/localhost) directory:
-
-If you want to deploy on AWS, go to the dedicated section on [`AWS`](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/quick-deploy/aws)
-
-Execute the following command:
-
-```bash
-make
-```
-
-or
-
-```bash
-make deploy
-```
-
-### Configuration
-
-All parameters are contained in [`parameters.tfvars`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/localhost/parameters.tfvars)
+You could encounter some issues with the execution of the prerequisites installer script. Please verify you've right permissions on the script. If not, you can use `chmod +x <file|directory/*>` to add the execution permissions.
 
 
+```sh
 
-```{note}
-
-By default, all the cloud services are set to launch. To see what kind of parameters are available, read [`variables.tf`](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/quick-deploy/localhost/variables.tf)
+# Add execution permissions to the prerequisites installer script
+chmod +x ./infrastructure/utils/scripts/installation/prerequisites-installer.sh
+# Add execution permissions to every script in the prerequisites directory
+chmod +x ./infrastructure/utils/scripts/installation/prerequisites/*
 
 ```
 
-You can specify a custom parameter file. When executing the `make` command, you may use the `PARAMETERS_FILE` option to set the path to your file.
 
-```bash
-make PARAMETERS_FILE=my-custom-parameters.tfvars
-```
-
-### Destroy
-
-To destroy the deployment, type:
-
-```bash
-make destroy
-```
-
-## Verify Installation
-
-After installing ArmoniK, it is time to execute some simple tests to check that everything is working as expected. In order to do that, the ArmoniK team is providing three simple tests to verify that the deployment went well.
-
-### Seq
-
-First of all, you can try to connect to the log server [Seq](https://datalust.co/) to check that it is working correctly.
-
-You can find the Seq URL printed on your console after the deployment.
+## Install ArmoniK
 
 
-
-```{note}
-
-You can also retrieve the `seq.web_url` from the Terraform outputs `monitoring/generated/monitoring-output.json`. The default port is `8080` but the ip address can be different depending on your machine.
-
-```
-
-Example:
-
-```bash [shell]
-http://<ip_address>:8080
-```
-
-<!-- TODO: Link 'enable it' with guide about https -->
-No credentials are required to connect to Seq by default. Also, connexion is not encrypted by default (no HTTPS) but you can enable it.
-
-### Admin GUI
-
-You can also try to connect to the [ArmoniK Admin GUI](https://aneoconsulting.github.io/ArmoniK.Admin.GUI/) to check that it is working correctly.
-
-You can find the Admin GUI URL printed on your console after the deployment.
-
-<!-- TODO: need to be confirmed -->
-
-
-```{note}
-
-You can also retrieve the `armonik.admin_gui_url` from the Terraform outputs `armonik/generated/armonik-output.json`. The default port is `5000` but the ip address can be different depending on your machine.
-
-```
-
-Example:
-
-```bash [shell]
-http://<ip_address>:5000
-```
-
-### HTC Mock
-
-<!-- TODO: Create a sample in order to test installation (no more Symphony or DataSynapse) -->
-You can now run [HTC Mock](../../user-guide/how-to-use-htc-mock.md) to see a mock utilisation of ArmoniK and verify your installation.
-
-
-
-```{note}
-
-You can check the logs using Seq.
-
-```
+Now, you are ready to deploy ArmoniK on Kubernetes ! See [Kubernetes deployment](./kubernetes.md) for how to do so !
