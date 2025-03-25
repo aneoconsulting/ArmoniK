@@ -1,6 +1,6 @@
 # Check the GUI and logs
 
-After installing ArmoniK, it is time to execute some simple tests to check that everything is working as expected. In order to do that, the ArmoniK team is providing three simple tests to verify that the deployment went well.
+After installing ArmoniK, it is time to execute some simple tests to check that all its components work as expected. In order to do that, the ArmoniK team is providing three simple tests to verify that the deployment went well.
 
 ## Seq
 
