@@ -348,9 +348,14 @@ mongodb = {
   #   }
   # }
 
-  # Uncomment the line below to enable persistence, comment to disable
-  # persistent_volume = {}
+  # Comment the line below to diable persistence
+  persistent_volume = {}
 }
 
-# Nullify to disable sharding
-# mongodb_sharding = {}
+# Uncomment to enable sharding
+# mongodb_sharding = {
+#   persistence = {
+#     shards = {}
+#     configsvr = {}
+#   }
+# }
