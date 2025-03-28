@@ -12,7 +12,7 @@ variable "atlas" {
 }
 
 locals {
-  mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", data.mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv)
+  #mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", data.mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv)
   #mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv)
 
   atlas_outputs = {
@@ -25,22 +25,23 @@ locals {
         secret = kubernetes_secret.mongodb_admin.metadata[0].name
         field  = "password"
       }
+      "MongoDB__ConnectionString" = {
+        secret = kubernetes_secret.mongodbatlas_connection_string.metadata[0].name
+        field  = "string"
+      }
     }
 
     env = {
-      "Components__TableStorage"  = "ArmoniK.Adapters.MongoDB.TableStorage"
-      "MongoDB__Host"             = local.mongodb_url.dns
+      "Components__TableStorage" = "ArmoniK.Adapters.MongoDB.TableStorage"
+      "MongoDB__Host"            = local.mongodb_url.dns
       #"MongoDB__Port"             = "27017"
       "MongoDB__Tls" = "true"
       #"MongoDB__ReplicaSet"       = "rs0"
       "MongoDB__DatabaseName"     = "database"
       "MongoDB__DirectConnection" = "false"
       #"MongoDB__CAFile"           = "/mongodb/certificate/mongodb-ca-cert"
-      #"MongoDB__AuthSource" = "admin"
-      #"MongoDB__ConnectionStringScheme" = local.mongodb_url.scheme
-      "MongoDB__ConnectionString" = "${data.mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv}/database"
-      #"MongoDB__ConnectionString" = mongodbatlas_advanced_cluster.aklocal.connection_strings[0].standard_srv
-
+      "MongoDB__AuthSource" = "admin"
+      #"MongoDB__Sharding" = true
     }
   }
 }

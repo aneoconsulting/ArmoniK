@@ -12,9 +12,6 @@ variable "atlas" {
 }
 
 locals {
-  #mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", data.mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv)
-  #mongodb_url = regex("^(?:(?P<scheme>[^:/?#]+):)?(?://(?P<dns>[^/?#]*))", mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv)
-
   private_endpoints = flatten([for cs in data.mongodbatlas_advanced_cluster.akaws.connection_strings : cs.private_endpoint])
   #private_endpoints = flatten([for cs in mongodbatlas_advanced_cluster.akaws.connection_strings : cs.private_endpoint])
 
@@ -29,12 +26,16 @@ locals {
   atlas_outputs = {
     env_from_secret = {
       "MongoDB__User" = {
-        "secret" = kubernetes_secret.mongodb_admin.metadata[0].name
-        "field"  = "username"
+        secret = kubernetes_secret.mongodb_admin.metadata[0].name
+        field  = "username"
       }
       "MongoDB__Password" = {
         secret = kubernetes_secret.mongodb_admin.metadata[0].name
         field  = "password"
+      }
+      "MongoDB__ConnectionString" = {
+        secret = kubernetes_secret.mongodbatlas_connection_string.metadata[0].name
+        field  = "string"
       }
     }
 
@@ -46,14 +47,9 @@ locals {
       #"MongoDB__ReplicaSet"       = "rs0"
       "MongoDB__DatabaseName"     = "database"
       "MongoDB__DirectConnection" = "false"
-      "MongoDB__MaxRetries"       = "1"
       #"MongoDB__CAFile"           = "/mongodb/certificate/mongodb-ca-cert"
       "MongoDB__AuthSource" = "admin"
-      #"MongoDB__ConnectionStringScheme" = local.mongodb_url.scheme
-      #"MongoDB__ConnectionString"       = "${data.mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv}/database"
-      "MongoDB__ConnectionString" = "${local.connection_string}/database"
-      #"MongoDB__ConnectionString"       = mongodbatlas_advanced_cluster.akaws.connection_strings[0].standard_srv
-
+      "MongoDB__Sharding" = "true"
     }
   }
 }
@@ -80,6 +76,17 @@ resource "kubernetes_secret" "mongodb_admin" {
   }
   type = "kubernetes.io/basic-auth"
 }
+
+resource "kubernetes_secret" "mongodbatlas_connection_string" {
+  metadata {
+    name      = "mongodbatlas-connection-string"
+    namespace = local.namespace
+  }
+  data = {
+    string = "mongodb+srv://${random_string.mongodb_admin_user.result}:${random_password.mongodb_admin_password.result}@${local.mongodb_url.dns}/database"
+  }
+}
+
 
 resource "kubernetes_secret" "mongodb" {
   metadata {
@@ -114,6 +121,11 @@ resource "mongodbatlas_database_user" "admin" {
     role_name     = "readWrite"
     database_name = "admin"
   }
+
+  # roles {
+  #   role_name     = "enableSharding"
+  #   database_name = "admin"
+  # }
 
   scopes {
     name = var.atlas.cluster_name
