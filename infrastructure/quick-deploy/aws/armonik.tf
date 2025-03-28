@@ -78,6 +78,6 @@ module "armonik" {
     image = local.ecr_images["${var.pod_deletion_cost.image}:${try(coalesce(var.pod_deletion_cost.tag), "")}"].image
     tag   = local.ecr_images["${var.pod_deletion_cost.image}:${try(coalesce(var.pod_deletion_cost.tag), "")}"].tag
   })
-  depends_on = [module.aws_service_account, data.mongodbatlas_advanced_cluster.akaws, mongodbatlas_privatelink_endpoint_service.pe_service]
-  #depends_on = [module.aws_service_account, mongodbatlas_advanced_cluster.akaws, mongodbatlas_privatelink_endpoint_service.pe_service]
+  depends_on = [module.aws_service_account, mongodbatlas_privatelink_endpoint_service.pe_service]
+  #depends_on = [module.aws_service_account, mongodbatlas_privatelink_endpoint_service.pe_service]
 }
