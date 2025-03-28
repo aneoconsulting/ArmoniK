@@ -366,6 +366,6 @@ mongodb = {
 
 # Fill these fields with the right information
 atlas = {
-  project_id   = "67af6cb9ab9ddf3be94e019f"
+  project_id   = ""
   cluster_name = "AKlocal"
 }
