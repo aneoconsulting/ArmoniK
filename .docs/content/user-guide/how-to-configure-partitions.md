@@ -211,7 +211,7 @@ It is an error to set the `PartitionId` to `null`.
 
 ## Add a partition for the HelloWorld worker
 
-Follow the HelloWorld tutorial [here](https://github.com/aneoconsulting/ArmoniK/blob/main/.docs/content/2.guide/how-to-launch-HelloWorld-Sample)
+Follow the HelloWorld tutorial [here](../getting-started/execution/how-to-launch-HelloWorld-Sample)
 
 ```terraform
 
