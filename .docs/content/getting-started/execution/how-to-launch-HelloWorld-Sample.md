@@ -18,7 +18,7 @@ Add a helloworld partition to [parameter.tfvar](https://github.com/aneoconsultin
 
 Copy the default one and change the partition name, add a tag to "latest", set the image to "hello".
 
-See the example [here](https://github.com/aneoconsulting/ArmoniK/blob/main/.docs/content/2.guide/1.how-to/how-to-configure-partitions.md).
+See the example [here](../../user-guide/how-to-configure-partitions.md).
 
 **Deploy** ArmoniK with `make` in `ArmoniK/infrastructure/quick-deploy/localhost`.
 
