@@ -302,7 +302,7 @@ variable "mq" {
     authentication_strategy = optional(string, "simple")
     publicly_accessible     = optional(bool, false)
   })
-    default = null
+  default = null
 }
 
 variable "sqs" {

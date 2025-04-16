@@ -163,11 +163,11 @@ module "activemq" {
 
 # Amazon SQS
 module "sqs" {
-  count = var.sqs != null ? 1 : 0
-  source = "./generated/infra-modules/storage/aws/sqs"
-  tags = local.tags
-  region = var.region
-  prefix = local.prefix
+  count                     = var.sqs != null ? 1 : 0
+  source                    = "./generated/infra-modules/storage/aws/sqs"
+  tags                      = local.tags
+  region                    = var.region
+  prefix                    = local.prefix
   service_account_role_name = module.aws_service_account.service_account_iam_role_name
 }
 
