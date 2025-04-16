@@ -312,6 +312,8 @@ mq = {
   host_instance_type = "mq.m5.xlarge"
 }
 
+# sqs = {}
+
 mongodb = {
   node_selector = { service = "state-database" }
   persistent_volume = {
