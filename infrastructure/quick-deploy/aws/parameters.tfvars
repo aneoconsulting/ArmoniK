@@ -176,46 +176,46 @@ eks_managed_node_groups = {
   }
   # Node group for data-plane
   # state_database, inner_storage, task_queue
-  # state_database = {
-  #   name                        = "mongodb"
-  #   launch_template_description = "Node group for MongoDB"
-  #   ami_type                    = "AL2_x86_64"
-  #   instance_types              = ["c5.2xlarge"]
-  #   use_custom_launch_template  = true
-  #   block_device_mappings = {
-  #     xvda = {
-  #       device_name = "/dev/xvda"
-  #       ebs = {
-  #         volume_size           = 75
-  #         volume_type           = "gp3"
-  #         iops                  = 3000
-  #         throughput            = 150
-  #         encrypted             = null
-  #         kms_key_id            = null
-  #         delete_on_termination = true
-  #       }
-  #     }
-  #   }
-  #   capacity_type = "ON_DEMAND"
-  #   min_size      = 1
-  #   desired_size  = 1
-  #   max_size      = 10
-  #   labels = {
-  #     service                        = "state-database"
-  #     "node.kubernetes.io/lifecycle" = "ondemand"
-  #   }
-  #   taints = {
-  #     dedicated = {
-  #       key    = "service"
-  #       value  = "state-database"
-  #       effect = "NO_SCHEDULE"
-  #     }
-  #   }
-  #   iam_role_use_name_prefix = false
-  #   iam_role_additional_policies = {
-  #     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  #   }
-  # }
+  state_database = {
+    name                        = "mongodb"
+    launch_template_description = "Node group for MongoDB"
+    ami_type                    = "AL2_x86_64"
+    instance_types              = ["c5.2xlarge"]
+    use_custom_launch_template  = true
+    block_device_mappings = {
+      xvda = {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = 75
+          volume_type           = "gp3"
+          iops                  = 3000
+          throughput            = 150
+          encrypted             = null
+          kms_key_id            = null
+          delete_on_termination = true
+        }
+      }
+    }
+    capacity_type = "ON_DEMAND"
+    min_size      = 1
+    desired_size  = 1
+    max_size      = 10
+    labels = {
+      service                        = "state-database"
+      "node.kubernetes.io/lifecycle" = "ondemand"
+    }
+    taints = {
+      dedicated = {
+        key    = "service"
+        value  = "state-database"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+  }
 }
 
 # List of self managed node groups
@@ -312,6 +312,11 @@ mq = {
   host_instance_type = "mq.m5.xlarge"
 }
 
+mongodb_deployment = {
+  # The values are : atlas, self-hosted and sharded
+  type = "self-hosted"
+}
+
 mongodb = {
   node_selector = { service = "state-database" }
   persistent_volume = {
@@ -326,6 +331,14 @@ mongodb = {
     #   }
   }
 }
+
+# In order to use MongoDB Atlas, you need to create a project and a cluster
+# in MongoDB Atlas and set the project_id and cluster_name below.
+# You will also comment the state_database node group above.
+# atlas = {
+#   project_id   = "67af6cb9ab9ddf3be94e019f"
+#   cluster_name = "armonik-db"
+# }
 
 # Nullify to disable sharding
 # mongodb_sharding = {
@@ -762,11 +775,6 @@ environment_description = {
   version     = "0.0.0"
   description = "AWS environment"
   color       = "#80ff80"
-}
-
-atlas = {
-  project_id   = "67af6cb9ab9ddf3be94e019f"
-  cluster_name = "AKaws"
 }
 
 upload_images = false
