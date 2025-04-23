@@ -172,7 +172,7 @@ module "aws_service_account" {
 
 # MongoDB
 module "mongodb" {
-  count     = 0 # can(coalesce(var.mongodb_sharding)) ? 0 : 1
+  count     = local.mongodb_type == "self-hosted" ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
   mongodb = {
@@ -201,7 +201,7 @@ module "mongodb" {
 }
 
 module "mongodb_sharded" {
-  count     = 0 #can(coalesce(var.mongodb_sharding)) ? 1 : 0
+  count     = local.mongodb_type == "sharded" ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb-sharded"
   namespace = local.namespace
 
@@ -474,4 +474,20 @@ locals {
     ) : null,
     try(coalesce(var.mongodb_sharding.persistence.configsvr.parameters), null)
   )
+
+  # Determine MongoDB deployment type - use explicit setting or infer from variables
+  mongodb_type = var.mongodb_deployment.type != null ? var.mongodb_deployment.type : (
+    var.atlas != null ? "atlas" : (
+      var.mongodb_sharding != null ? "sharded" : "self-hosted"
+    )
+  )
+
+  # Unified MongoDB outputs for different deployment types
+  mongodb_config_outputs = {
+    "self-hosted" = local.mongodb_type == "self-hosted" ? module.mongodb[0] : null
+
+    "sharded" = local.mongodb_type == "sharded" ? module.mongodb_sharded[0] : null
+
+    "atlas" = local.mongodb_type == "atlas" ? local.atlas_outputs : null
+  }
 }

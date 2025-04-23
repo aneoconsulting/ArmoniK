@@ -4,7 +4,10 @@ module "armonik" {
   logging_level = var.logging_level
 
   configurations = merge(var.configurations, {
-    core = [module.activemq, module.mq, module.elasticache, module.mongodb, module.mongodb_sharded, local.atlas_outputs, var.configurations.core]
+    core = [module.activemq, module.mq, module.elasticache,
+      local.mongodb_config_outputs[local.mongodb_type],
+      var.configurations.core
+    ]
   })
 
   fluent_bit              = module.fluent_bit
@@ -16,26 +19,28 @@ module "armonik" {
 
   // If compute plane has no partition data, provides a default
   // but always overrides the images
-  compute_plane = { for k, v in var.compute_plane : k => merge({
-    partition_data = {
-      priority              = 1
-      reserved_pods         = 1
-      max_pods              = 100
-      preemption_percentage = 50
-      parent_partition_ids  = []
-      pod_configuration     = null
-    }
-    }, v, {
-    service_account_name = "armonikserviceaccount"
-    polling_agent = merge(v.polling_agent, {
-      image = local.ecr_images["${v.polling_agent.image}:${try(coalesce(v.polling_agent.tag), "")}"].name
-      tag   = local.ecr_images["${v.polling_agent.image}:${try(coalesce(v.polling_agent.tag), "")}"].tag
+  compute_plane = {
+    for k, v in var.compute_plane : k => merge({
+      partition_data = {
+        priority              = 1
+        reserved_pods         = 1
+        max_pods              = 100
+        preemption_percentage = 50
+        parent_partition_ids  = []
+        pod_configuration     = null
+      }
+      }, v, {
+      service_account_name = "armonikserviceaccount"
+      polling_agent = merge(v.polling_agent, {
+        image = local.ecr_images["${v.polling_agent.image}:${try(coalesce(v.polling_agent.tag), "")}"].name
+        tag   = local.ecr_images["${v.polling_agent.image}:${try(coalesce(v.polling_agent.tag), "")}"].tag
+      })
+      worker = [for w in v.worker : merge(w, {
+        image = local.ecr_images["${w.image}:${try(coalesce(w.tag), "")}"].name
+        tag   = local.ecr_images["${w.image}:${try(coalesce(w.tag), "")}"].tag
+      })]
     })
-    worker = [for w in v.worker : merge(w, {
-      image = local.ecr_images["${w.image}:${try(coalesce(w.tag), "")}"].name
-      tag   = local.ecr_images["${w.image}:${try(coalesce(w.tag), "")}"].tag
-    })]
-  }) }
+  }
   control_plane = merge(var.control_plane, {
     image                = local.ecr_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].name
     tag                  = local.ecr_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].tag
@@ -65,7 +70,7 @@ module "armonik" {
   environment_description = var.environment_description
   static                  = var.static
 
-  #metrics_exporter
+  # Metrics exporter
   metrics_exporter = {
     image              = local.ecr_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].image
     tag                = local.ecr_images["${var.metrics_exporter.image_name}:${try(coalesce(var.metrics_exporter.image_tag), "")}"].tag
@@ -79,5 +84,4 @@ module "armonik" {
     tag   = local.ecr_images["${var.pod_deletion_cost.image}:${try(coalesce(var.pod_deletion_cost.tag), "")}"].tag
   })
   depends_on = [module.aws_service_account, mongodbatlas_privatelink_endpoint_service.pe_service]
-  #depends_on = [module.aws_service_account, mongodbatlas_privatelink_endpoint_service.pe_service]
 }
