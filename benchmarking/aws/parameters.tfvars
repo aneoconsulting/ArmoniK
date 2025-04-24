@@ -406,3 +406,8 @@ environment_description = {
 }
 
 upload_images = false
+
+atlas = {
+  project_id   = "67af6cb9ab9ddf3be94e019f"
+  cluster_name = "AKaws"
+}

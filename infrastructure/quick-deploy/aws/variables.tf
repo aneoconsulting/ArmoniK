@@ -338,6 +338,15 @@ variable "activemq" {
   default = null
 }
 
+variable "mongodb_deployment" {
+  description = "MongoDB deployment configuration type: atlas, self-hosted, or sharded"
+  type = object({
+    # Required: Deployment type ("atlas", "self-hosted", "sharded")
+    type = string
+  })
+  default = null
+}
+
 # Parameters for MongoDB
 variable "mongodb" {
   description = "Parameters of MongoDB"

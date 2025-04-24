@@ -312,6 +312,11 @@ mq = {
   host_instance_type = "mq.m5.xlarge"
 }
 
+mongodb_deployment = {
+  # The values are : atlas, self-hosted and sharded
+  type = "self-hosted"
+}
+
 mongodb = {
   node_selector = { service = "state-database" }
   persistent_volume = {
@@ -326,6 +331,14 @@ mongodb = {
     #   }
   }
 }
+
+# In order to use MongoDB Atlas, you need to create a project and a cluster
+# in MongoDB Atlas and set the project_id and cluster_name below.
+# You will also comment the state_database node group above.
+# atlas = {
+#   project_id   = "67af6cb9ab9ddf3be94e019f"
+#   cluster_name = "armonik-db"
+# }
 
 # Nullify to disable sharding
 # mongodb_sharding = {
@@ -411,7 +424,7 @@ fluent_bit = {
 }
 
 # Logging level
-logging_level = "Information"
+logging_level = "Debug"
 
 # Parameters of control plane
 control_plane = {
@@ -735,6 +748,7 @@ configurations = {
       MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
       MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
       MongoDB__TableStorage__PollingDelay        = "00:00:01"
+      MongoDB__MaxRetries                        = 1
       MongoDB__DataRetention                     = "1.00:00:00" # 1 day retention
       MongoDB__AllowInsecureTls                  = true
       Redis__Timeout                             = 3000
@@ -762,3 +776,5 @@ environment_description = {
   description = "AWS environment"
   color       = "#80ff80"
 }
+
+upload_images = false

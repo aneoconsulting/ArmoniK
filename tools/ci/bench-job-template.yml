@@ -5,20 +5,20 @@ metadata:
   namespace: armonik
 spec:
   backoffLimit: 0
-  ttlSecondsAfterFinished: 1200
+  ttlSecondsAfterFinished: 600
   template:
     spec:
       restartPolicy: Never
       containers:
         - name: bench-session
-          image: dockerhubaneo/armonik_core_bench_test_client:@@ARMONIK_CORE_VERSION@@ # version should at least be 0.27.4
+          image: dockerhubaneo/armonik_core_bench_test_client:0.31.2 # version should at least be 0.27.4
           env:
             - name: BenchOptions__NTasks
-              value: "@@NTASKS@@"
+              value: "50000"
             - name: BenchOptions__Partition
               value: bench
             - name: BenchOptions__Options__SessionName
-              value: "@@SESSION_NAME@@"
+              value: "my-session"
             - name: BenchOptions__PayloadSize
               value: "1"
             - name: BenchOptions__ResultSize
@@ -34,7 +34,7 @@ spec:
             - name: BenchOptions__DownloadResults
               value: "false"
             - name: GrpcClient__Endpoint
-              value: http://@@GRPC_CLIENT_ENDPOINT@@:5001
+              value: http://:5001
           resources:
             requests:
               cpu: "1"
