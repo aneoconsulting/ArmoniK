@@ -67,11 +67,6 @@ echo "Installing k3s"
 "$DIR/install-k3s.sh"
 echo "K3s installed"
 
-# Install dotnet
-echo "Installing dotnet"
-"$DIR/install-dotnet.sh"
-echo "Dotnet installed"
-
 # Remove unused packages
 sudo apt autoremove -y
 
