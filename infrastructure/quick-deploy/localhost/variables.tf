@@ -225,6 +225,42 @@ variable "mongodb_sharding" {
       }))
       labels = optional(map(string))
     }))
+
+    persistence = optional(object({
+      shards = optional(object({
+        access_mode         = optional(list(string), ["ReadWriteOnce"])
+        reclaim_policy      = optional(string, "Delete")
+        storage_provisioner = optional(string)
+        volume_binding_mode = optional(string, "WaitForFirstConsumer")
+        parameters          = optional(map(string))
+
+        resources = optional(object({
+          limits = optional(object({
+            storage = string
+          }))
+          requests = optional(object({
+            storage = string
+          }))
+        }))
+      }), {})
+
+      configsvr = optional(object({
+        access_mode         = optional(list(string), ["ReadWriteOnce"])
+        reclaim_policy      = optional(string, "Delete")
+        storage_provisioner = optional(string)
+        volume_binding_mode = optional(string, "WaitForFirstConsumer")
+        parameters          = optional(map(string))
+
+        resources = optional(object({
+          limits = optional(object({
+            storage = string
+          }))
+          requests = optional(object({
+            storage = string
+          }))
+        }))
+      }), {})
+    }))
   })
   default = null
 }
