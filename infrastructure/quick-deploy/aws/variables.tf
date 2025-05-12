@@ -490,6 +490,16 @@ variable "mongodb_efs" {
   default = null
 }
 
+variable "TF_var_mongodb_atlas" {
+  description = "MongoDB Atlas configuration"
+  type = object({
+    project_id   = string
+    cluster_name = string
+  })
+  default = null
+}
+
+
 variable "mongodb_ebs" {
   # You can check documentation for relevant EBS storage class paramaters 
   # https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/docs/parameters.md

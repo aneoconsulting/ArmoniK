@@ -44,3 +44,9 @@ provider "helm" {
     }
   }
 }
+
+
+provider "mongodbatlas" {
+  alias = "default"
+}
+
