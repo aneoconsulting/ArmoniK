@@ -181,6 +181,25 @@ module "aws_service_account" {
   oidc_issuer_url   = module.eks.aws_eks_module.cluster_oidc_issuer_url
 }
 
+# Atlas MongoDB
+module "atlas_mongodb" {
+  count     = var.TF_var_mongodb_atlas != null ? 1 : 0
+  source    = "./generated/infra-modules/storage/atlas"
+  namespace = local.namespace
+  region    = var.region
+  atlas = {
+    cluster_name = var.TF_var_mongodb_atlas.cluster_name
+    project_id   = var.TF_var_mongodb_atlas.project_id
+  }
+  vpc_id          = module.vpc.id
+
+
+  providers = {
+    mongodbatlas = mongodbatlas.default
+  }
+}
+
+
 # MongoDB
 module "mongodb" {
   count     = can(coalesce(var.mongodb_sharding)) ? 0 : 1
