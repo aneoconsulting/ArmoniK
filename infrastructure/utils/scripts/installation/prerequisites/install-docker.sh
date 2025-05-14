@@ -1,4 +1,6 @@
 #! /bin/sh
 # This script is used to install docker
 
-sudo apt install docker.io
+if ! which docker >/dev/null 2>&1; then
+    sudo apt install docker.io
+fi
