@@ -181,19 +181,17 @@ module "aws_service_account" {
   oidc_issuer_url   = module.eks.aws_eks_module.cluster_oidc_issuer_url
 }
 
-# Atlas MongoDB
 module "atlas_mongodb" {
-  count     = var.TF_var_mongodb_atlas != null ? 1 : 0
-  source    = "./generated/infra-modules/storage/atlas"
-  namespace = local.namespace
-  region    = var.region
-  atlas = {
-    cluster_name = var.TF_var_mongodb_atlas.cluster_name
-    project_id   = var.TF_var_mongodb_atlas.project_id
-  }
-  vpc_id          = module.vpc.id
-
-
+  count              = var.TF_VAR_mongodb_atlas != null ? 1 : 0
+  source             = "./generated/infra-modules/storage/atlas"
+  namespace          = local.namespace
+  region             = var.region
+  cluster_name       = var.TF_VAR_mongodb_atlas.cluster_name
+  project_id         = var.TF_VAR_mongodb_atlas.project_id
+  vpc_id             = module.vpc.id
+  tags               = local.tags
+  subnet_ids         = local.atlas_privatelink_subnets
+  security_group_ids = [module.eks.node_security_group_id]
   providers = {
     mongodbatlas = mongodbatlas.default
   }
@@ -202,7 +200,8 @@ module "atlas_mongodb" {
 
 # MongoDB
 module "mongodb" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 0 : 1
+  # count     = can(coalesce(var.mongodb_sharding)) ? 0 : 1
+  count     = 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
   mongodb = {
@@ -231,7 +230,8 @@ module "mongodb" {
 }
 
 module "mongodb_sharded" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 1 : 0
+  # count     = can(coalesce(var.mongodb_sharding)) ? 1 : 0
+  count     = 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb-sharded"
   namespace = local.namespace
 
@@ -351,6 +351,11 @@ data "aws_iam_policy_document" "decrypt_object" {
       s3.kms_key_id
     ])
   }
+}
+resource "aws_iam_role_policy_attachment" "worker_decrypt_object" {
+  for_each   = toset(module.eks.worker_iam_role_names)
+  role       = each.value
+  policy_arn = aws_iam_policy.decrypt_object.arn
 }
 
 resource "aws_iam_policy" "decrypt_object" {

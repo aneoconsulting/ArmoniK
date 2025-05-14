@@ -1,5 +1,4 @@
 # AWS VPC
-
 locals {
   vpc = {
     id                 = module.vpc.id
@@ -8,6 +7,12 @@ locals {
     subnet_ids         = [for i in range(length(var.vpc.cidr_block_private)) : try(module.vpc.private_subnets[i], null)]
   }
 }
+
+data "aws_subnet" "private_subnets" {
+  count = length(module.vpc.private_subnets)
+  id    = module.vpc.private_subnets[count.index]
+}
+
 
 module "vpc" {
   source                                          = "./generated/infra-modules/networking/aws/vpc"
@@ -44,72 +49,79 @@ module "vpce" {
       service             = "autoscaling"
       service_type        = "Interface"
       private_dns_enabled = !module.vpc.enable_external_access
-      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
-      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
     }
     ec2 = {
       service             = "ec2"
       service_type        = "Interface"
       private_dns_enabled = !module.vpc.enable_external_access
-      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
-      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
     }
     ecr_dkr = {
       service             = "ecr.dkr"
       service_type        = "Interface"
       private_dns_enabled = !module.vpc.enable_external_access
-      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
-      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
     }
     ecr_api = {
       service             = "ecr.api"
       service_type        = "Interface"
       private_dns_enabled = !module.vpc.enable_external_access
-      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
-      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
     }
     logs = {
       service             = "logs"
       service_type        = "Interface"
       private_dns_enabled = !module.vpc.enable_external_access
-      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
-      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
     }
     sts = {
       service             = "sts"
       service_type        = "Interface"
       private_dns_enabled = !module.vpc.enable_external_access
-      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
-      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
     }
     ssm = {
       service             = "ssm"
       service_type        = "Interface"
       private_dns_enabled = !module.vpc.enable_external_access
-      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
-      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
     }
     ssmmessages = {
       service             = "ssmmessages"
       service_type        = "Interface"
       private_dns_enabled = !module.vpc.enable_external_access
-      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
-      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
     }
     elasticloadbalancing = {
       service             = "elasticloadbalancing"
       service_type        = "Interface"
       private_dns_enabled = !module.vpc.enable_external_access
-      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
-      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
     }
     monitoring = {
       service             = "monitoring"
       service_type        = "Interface"
       private_dns_enabled = !module.vpc.enable_external_access
-      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : []
-      security_group_ids  = !module.vpc.enable_external_access ? [module.vpc.this.default_security_group_id] : []
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
     }
   }
   tags = local.tags
 }
+
+locals {
+  ## This workaround because Atlas private link endpoint's subnets have to be in different availability zones
+  az_subnets_map            = transpose({ for subnet in data.aws_subnet.private_subnets : subnet.id => [subnet.availability_zone] })
+  atlas_privatelink_subnets = [for az in local.az_subnets_map : az[0]]
+}
+
