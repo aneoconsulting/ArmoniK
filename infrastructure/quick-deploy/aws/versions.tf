@@ -32,9 +32,5 @@ terraform {
       source  = "chilicat/pkcs12"
       version = "~> 0.0.7"
     }
-    mongodbatlas = {
-      source  = "mongodb/mongodbatlas"
-      version = "~> 1.12.0"
-    }
   }
 }

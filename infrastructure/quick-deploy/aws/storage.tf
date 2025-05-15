@@ -192,16 +192,12 @@ module "atlas_mongodb" {
   tags               = local.tags
   subnet_ids         = local.atlas_privatelink_subnets
   security_group_ids = [module.eks.node_security_group_id]
-  providers = {
-    mongodbatlas = mongodbatlas.default
-  }
 }
 
 
 # MongoDB
 module "mongodb" {
-  # count     = can(coalesce(var.mongodb_sharding)) ? 0 : 1
-  count     = 0
+  count     = can(coalesce(var.mongodb_sharding)) ? 0 : 1
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
   mongodb = {
@@ -230,8 +226,7 @@ module "mongodb" {
 }
 
 module "mongodb_sharded" {
-  # count     = can(coalesce(var.mongodb_sharding)) ? 1 : 0
-  count     = 0
+  count     = can(coalesce(var.mongodb_sharding)) ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb-sharded"
   namespace = local.namespace
 
