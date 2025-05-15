@@ -1,4 +1,5 @@
 # AWS VPC
+
 locals {
   vpc = {
     id                 = module.vpc.id
@@ -12,7 +13,6 @@ data "aws_subnet" "private_subnets" {
   count = length(module.vpc.private_subnets)
   id    = module.vpc.private_subnets[count.index]
 }
-
 
 module "vpc" {
   source                                          = "./generated/infra-modules/networking/aws/vpc"
@@ -124,4 +124,3 @@ locals {
   az_subnets_map            = transpose({ for subnet in data.aws_subnet.private_subnets : subnet.id => [subnet.availability_zone] })
   atlas_privatelink_subnets = [for az in local.az_subnets_map : az[0]]
 }
-

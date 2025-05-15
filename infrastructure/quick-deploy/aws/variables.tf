@@ -499,7 +499,6 @@ variable "TF_VAR_mongodb_atlas" {
   default = null
 }
 
-
 variable "mongodb_ebs" {
   # You can check documentation for relevant EBS storage class paramaters 
   # https://github.com/kubernetes-sigs/aws-ebs-csi-driver/blob/master/docs/parameters.md
