@@ -197,7 +197,7 @@ module "atlas_mongodb" {
 
 # MongoDB
 module "mongodb" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 0 : 1
+  count     = var.mongodb != null ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
   mongodb = {
@@ -226,7 +226,7 @@ module "mongodb" {
 }
 
 module "mongodb_sharded" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 1 : 0
+  count     = var.mongodb_sharding != null ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb-sharded"
   namespace = local.namespace
 
@@ -346,11 +346,6 @@ data "aws_iam_policy_document" "decrypt_object" {
       s3.kms_key_id
     ])
   }
-}
-resource "aws_iam_role_policy_attachment" "worker_decrypt_object" {
-  for_each   = toset(module.eks.worker_iam_role_names)
-  role       = each.value
-  policy_arn = aws_iam_policy.decrypt_object.arn
 }
 
 resource "aws_iam_policy" "decrypt_object" {

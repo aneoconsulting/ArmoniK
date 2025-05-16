@@ -390,7 +390,7 @@ variable "mongodb" {
       requests = optional(map(string))
     }))
   })
-  default = {}
+  default = null
 }
 
 variable "mongodb_sharding" {
