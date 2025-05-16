@@ -181,75 +181,75 @@ eks_managed_node_groups = {
   }
   # Node group for data-plane
   # state_database, inner_storage, task_queue
-  state_database = {
-    name                        = "mongodb"
-    launch_template_description = "Node group for MongoDB"
-    ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.2xlarge"]
-    use_custom_launch_template  = true
-    block_device_mappings = {
-      xvda = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size           = 75
-          volume_type           = "gp3"
-          iops                  = 3000
-          throughput            = 150
-          encrypted             = null
-          kms_key_id            = null
-          delete_on_termination = true
-        }
-      }
-    }
-    capacity_type = "ON_DEMAND"
-    min_size      = 1
-    desired_size  = 1
-    max_size      = 10
-    labels = {
-      service                        = "state-database"
-      "node.kubernetes.io/lifecycle" = "ondemand"
-    }
-    taints = {
-      dedicated = {
-        key    = "service"
-        value  = "state-database"
-        effect = "NO_SCHEDULE"
-      }
-    }
-    iam_role_use_name_prefix = false
-    iam_role_additional_policies = {
-      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-    }
-  }
-  # Node group for windows
-  # Comment the following node group to disable windows node group
-  windows = {
-    name                        = "windows"
-    launch_template_description = "Node group for ArmoniK windows based pods"
-    ami_type                    = "WINDOWS_CORE_2022_x86_64"
-    instance_types              = ["c5.large"]
-    capacity_type               = "ON_DEMAND"
-    min_size                    = 1
-    desired_size                = 1
-    max_size                    = 10
-    labels = {
-      platform                       = "windows"
-      "node.kubernetes.io/lifecycle" = "ondemand"
-    }
-    taints = {
-      dedicated = {
-        key    = "platform"
-        value  = "windows"
-        effect = "NO_SCHEDULE"
-      }
-    }
-    iam_role_use_name_prefix = false
-    iam_role_additional_policies = {
-      AmazonSSMManagedInstanceCore   = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-      AmazonEKSClusterPolicy         = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-      AmazonEKSVPCResourceController = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
-    }
-  }
+  # state_database = {
+  #   name                        = "mongodb"
+  #   launch_template_description = "Node group for MongoDB"
+  #   ami_type                    = "AL2_x86_64"
+  #   instance_types              = ["c5.2xlarge"]
+  #   use_custom_launch_template  = true
+  #   block_device_mappings = {
+  #     xvda = {
+  #       device_name = "/dev/xvda"
+  #       ebs = {
+  #         volume_size           = 75
+  #         volume_type           = "gp3"
+  #         iops                  = 3000
+  #         throughput            = 150
+  #         encrypted             = null
+  #         kms_key_id            = null
+  #         delete_on_termination = true
+  #       }
+  #     }
+  #   }
+  #   capacity_type = "ON_DEMAND"
+  #   min_size      = 1
+  #   desired_size  = 1
+  #   max_size      = 10
+  #   labels = {
+  #     service                        = "state-database"
+  #     "node.kubernetes.io/lifecycle" = "ondemand"
+  #   }
+  #   taints = {
+  #     dedicated = {
+  #       key    = "service"
+  #       value  = "state-database"
+  #       effect = "NO_SCHEDULE"
+  #     }
+  #   }
+  #   iam_role_use_name_prefix = false
+  #   iam_role_additional_policies = {
+  #     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  #   }
+  # }
+  # # Node group for windows
+  # # Comment the following node group to disable windows node group
+  # windows = {
+  #   name                        = "windows"
+  #   launch_template_description = "Node group for ArmoniK windows based pods"
+  #   ami_type                    = "WINDOWS_CORE_2022_x86_64"
+  #   instance_types              = ["c5.large"]
+  #   capacity_type               = "ON_DEMAND"
+  #   min_size                    = 1
+  #   desired_size                = 1
+  #   max_size                    = 10
+  #   labels = {
+  #     platform                       = "windows"
+  #     "node.kubernetes.io/lifecycle" = "ondemand"
+  #   }
+  #   taints = {
+  #     dedicated = {
+  #       key    = "platform"
+  #       value  = "windows"
+  #       effect = "NO_SCHEDULE"
+  #     }
+  #   }
+  #   iam_role_use_name_prefix = false
+  #   iam_role_additional_policies = {
+  #     AmazonSSMManagedInstanceCore   = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  #     AmazonEKSClusterPolicy         = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  #     AmazonEKSVPCResourceController = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
+  #   }
+  # }
 }
 
 # List of self managed node groups
@@ -347,19 +347,26 @@ mq = {
   host_instance_type = "mq.m5.xlarge"
 }
 
-mongodb = {
-  node_selector = { service = "state-database" }
-  persistent_volume = {
-    #   parameters = {
-    #     "throughput" = 200
-    #     "iopsPerGB"  = 500
-    #   }
-    #   resources = {
-    #     requests = {
-    #       storage = "10Gi"
-    #     }
-    #   }
-  }
+# mongodb = {
+#   node_selector = { service = "state-database" }
+#   persistent_volume = {
+#     #   parameters = {
+#     #     "throughput" = 200
+#     #     "iopsPerGB"  = 500
+#     #   }
+#     #   resources = {
+#     #     requests = {
+#     #       storage = "10Gi"
+#     #     }
+#     #   }
+#   }
+# }
+
+# Comment the mongodb and/or mongodb_sharding parameters to disable the mongodb module and use mongodb atlas
+# Comment also the state_database node group in the eks_managed_node_groups when using mongodb atlas
+TF_VAR_mongodb_atlas = {
+project_id="--armonik-project", 
+  cluster_name="--armonik-cluster",
 }
 
 # Nullify to disable sharding
@@ -874,3 +881,5 @@ environment_description = {
   description = "AWS environment"
   color       = "#80ff80"
 }
+
+upload_images = false
