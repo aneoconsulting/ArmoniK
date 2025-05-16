@@ -889,5 +889,3 @@ environment_description = {
   description = "AWS environment"
   color       = "#80ff80"
 }
-
-upload_images = false
