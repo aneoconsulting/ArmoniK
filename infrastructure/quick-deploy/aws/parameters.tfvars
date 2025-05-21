@@ -223,33 +223,33 @@ eks_managed_node_groups = {
   }
   # Node group for windows
   # Comment the following node group to disable windows node group
-  # windows = {
-  #   name                        = "windows"
-  #   launch_template_description = "Node group for ArmoniK windows based pods"
-  #   ami_type                    = "WINDOWS_CORE_2022_x86_64"
-  #   instance_types              = ["c5.large"]
-  #   capacity_type               = "ON_DEMAND"
-  #   min_size                    = 1
-  #   desired_size                = 1
-  #   max_size                    = 10
-  #   labels = {
-  #     platform                       = "windows"
-  #     "node.kubernetes.io/lifecycle" = "ondemand"
-  #   }
-  #   taints = {
-  #     dedicated = {
-  #       key    = "platform"
-  #       value  = "windows"
-  #       effect = "NO_SCHEDULE"
-  #     }
-  #   }
-  #   iam_role_use_name_prefix = false
-  #   iam_role_additional_policies = {
-  #     AmazonSSMManagedInstanceCore   = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  #     AmazonEKSClusterPolicy         = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  #     AmazonEKSVPCResourceController = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
-  #   }
-  # }
+  windows = {
+    name                        = "windows"
+    launch_template_description = "Node group for ArmoniK windows based pods"
+    ami_type                    = "WINDOWS_CORE_2022_x86_64"
+    instance_types              = ["c5.large"]
+    capacity_type               = "ON_DEMAND"
+    min_size                    = 1
+    desired_size                = 1
+    max_size                    = 10
+    labels = {
+      platform                       = "windows"
+      "node.kubernetes.io/lifecycle" = "ondemand"
+    }
+    taints = {
+      dedicated = {
+        key    = "platform"
+        value  = "windows"
+        effect = "NO_SCHEDULE"
+      }
+    }
+    iam_role_use_name_prefix = false
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore   = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      AmazonEKSClusterPolicy         = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+      AmazonEKSVPCResourceController = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
+    }
+  }
 }
 
 # List of self managed node groups
@@ -364,9 +364,9 @@ mongodb = {
 
 # Comment the mongodb and/or mongodb_sharding parameters to disable the mongodb module and use mongodb atlas
 # Comment also the state_database node group in the eks_managed_node_groups when using mongodb atlas
-# TF_VAR_mongodb_atlas = {
-#   project_id   = "--armonik-project",
-#   cluster_name = "--armonik-cluster",
+# mongodb_atlas = {
+#   project_id   = "<your_project_id>"
+#   cluster_name = "<your_cluster_name>"
 # }
 
 # Nullify to disable sharding

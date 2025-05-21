@@ -490,7 +490,7 @@ variable "mongodb_efs" {
   default = null
 }
 
-variable "TF_VAR_mongodb_atlas" {
+variable "mongodb_atlas" {
   description = "MongoDB Atlas configuration"
   type = object({
     project_id   = string
