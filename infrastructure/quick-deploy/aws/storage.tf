@@ -188,8 +188,8 @@ module "atlas_mongodb" {
   region             = var.region
   cluster_name       = var.mongodb_atlas.cluster_name
   project_id         = var.mongodb_atlas.project_id
-  vpc_id             = module.vpc.id
   tags               = local.tags
+  vpc_id             = local.vpc.id
   subnet_ids         = local.atlas_privatelink_subnets
   security_group_ids = [module.eks.node_security_group_id]
 }
