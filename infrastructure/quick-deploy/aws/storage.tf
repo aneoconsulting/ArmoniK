@@ -182,12 +182,12 @@ module "aws_service_account" {
 }
 
 module "atlas_mongodb" {
-  count              = var.TF_VAR_mongodb_atlas != null ? 1 : 0
+  count              = var.mongodb_atlas != null ? 1 : 0
   source             = "./generated/infra-modules/storage/atlas"
   namespace          = local.namespace
   region             = var.region
-  cluster_name       = var.TF_VAR_mongodb_atlas.cluster_name
-  project_id         = var.TF_VAR_mongodb_atlas.project_id
+  cluster_name       = var.mongodb_atlas.cluster_name
+  project_id         = var.mongodb_atlas.project_id
   vpc_id             = module.vpc.id
   tags               = local.tags
   subnet_ids         = local.atlas_privatelink_subnets

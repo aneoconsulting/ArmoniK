@@ -44,4 +44,3 @@ provider "helm" {
     }
   }
 }
-
