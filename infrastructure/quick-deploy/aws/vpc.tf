@@ -7,11 +7,16 @@ locals {
     cidr_blocks        = concat([module.vpc.cidr_block], module.vpc.pod_subnets_cidr_blocks)
     subnet_ids         = [for i in range(length(var.vpc.cidr_block_private)) : try(module.vpc.private_subnets[i], null)]
   }
-}
-
-data "aws_subnet" "private_subnets" {
-  count = length(module.vpc.private_subnets)
-  id    = module.vpc.private_subnets[count.index]
+  subnet_az_map = module.vpc.private_subnets_details
+  subnets_by_az = {
+    for id, details in local.subnet_az_map :
+    details.availability_zone => id...
+  }
+  // Select one subnet per availability zone for MongoDB Atlas
+  atlas_privatelink_subnets = [
+    for az, subnet_ids in local.subnets_by_az :
+    subnet_ids[0]
+  ]
 }
 
 module "vpc" {
@@ -119,8 +124,4 @@ module "vpce" {
   tags = local.tags
 }
 
-locals {
-  ## This workaround because Atlas private link endpoint's subnets have to be in different availability zones
-  az_subnets_map            = transpose({ for subnet in data.aws_subnet.private_subnets : subnet.id => [subnet.availability_zone] })
-  atlas_privatelink_subnets = [for az in local.az_subnets_map : az[0]]
-}
+
