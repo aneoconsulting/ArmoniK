@@ -223,33 +223,33 @@ eks_managed_node_groups = {
   }
   # Node group for windows
   # Comment the following node group to disable windows node group
-  windows = {
-    name                        = "windows"
-    launch_template_description = "Node group for ArmoniK windows based pods"
-    ami_type                    = "WINDOWS_CORE_2022_x86_64"
-    instance_types              = ["c5.large"]
-    capacity_type               = "ON_DEMAND"
-    min_size                    = 1
-    desired_size                = 1
-    max_size                    = 10
-    labels = {
-      platform                       = "windows"
-      "node.kubernetes.io/lifecycle" = "ondemand"
-    }
-    taints = {
-      dedicated = {
-        key    = "platform"
-        value  = "windows"
-        effect = "NO_SCHEDULE"
-      }
-    }
-    iam_role_use_name_prefix = false
-    iam_role_additional_policies = {
-      AmazonSSMManagedInstanceCore   = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-      AmazonEKSClusterPolicy         = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-      AmazonEKSVPCResourceController = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
-    }
-  }
+  # windows = {
+  #   name                        = "windows"
+  #   launch_template_description = "Node group for ArmoniK windows based pods"
+  #   ami_type                    = "WINDOWS_CORE_2022_x86_64"
+  #   instance_types              = ["c5.large"]
+  #   capacity_type               = "ON_DEMAND"
+  #   min_size                    = 1
+  #   desired_size                = 1
+  #   max_size                    = 10
+  #   labels = {
+  #     platform                       = "windows"
+  #     "node.kubernetes.io/lifecycle" = "ondemand"
+  #   }
+  #   taints = {
+  #     dedicated = {
+  #       key    = "platform"
+  #       value  = "windows"
+  #       effect = "NO_SCHEDULE"
+  #     }
+  #   }
+  #   iam_role_use_name_prefix = false
+  #   iam_role_additional_policies = {
+  #     AmazonSSMManagedInstanceCore   = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  #     AmazonEKSClusterPolicy         = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  #     AmazonEKSVPCResourceController = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
+  #   }
+  # }
 }
 
 # List of self managed node groups
@@ -471,7 +471,7 @@ control_plane = {
   }
   default_partition = "default"
   node_selector     = { service = "control-plane" }
-  # node_selector     = { 
+  # node_selector     = {
   # service = "control-plane"
   # "platform"           = "windows"
   # "kubernetes.io/os"   = "windows"
@@ -869,7 +869,7 @@ configurations = {
 }
 
 environment_description = {
-  name        = "aws-dev"
+  name        = "formation-cagip"
   version     = "0.0.0"
   description = "AWS environment"
   color       = "#80ff80"
