@@ -670,56 +670,56 @@ compute_plane = {
   },
   */
   # Partition for the stream worker
-  stream = {
-    node_selector = { service = "workers" }
-    # number of replicas for each deployment of compute plane
-    replicas = 1
-    # ArmoniK polling agent
-    polling_agent = {
-      limits = {
-        cpu    = "2000m"
-        memory = "2048Mi"
-      }
-      requests = {
-        cpu    = "500m"
-        memory = "256Mi"
-      }
-    }
-    # ArmoniK workers
-    worker = [
-      {
-        image = "dockerhubaneo/armonik_core_stream_test_worker"
-        limits = {
-          cpu    = "1000m"
-          memory = "1024Mi"
-        }
-        requests = {
-          cpu    = "500m"
-          memory = "512Mi"
-        }
-      }
-    ]
-    hpa = {
-      type              = "prometheus"
-      polling_interval  = 15
-      cooldown_period   = 300
-      min_replica_count = 0
-      max_replica_count = 100
-      behavior = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers = [
-        {
-          type      = "prometheus"
-          threshold = 2
-        },
-      ]
-    }
-  },
+#  stream = {
+#    node_selector = { service = "workers" }
+#    # number of replicas for each deployment of compute plane
+#    replicas = 1
+#    # ArmoniK polling agent
+#    polling_agent = {
+#      limits = {
+#        cpu    = "2000m"
+#        memory = "2048Mi"
+#      }
+#      requests = {
+#        cpu    = "500m"
+#        memory = "256Mi"
+#      }
+#    }
+#    # ArmoniK workers
+#    worker = [
+#      {
+#        image = "dockerhubaneo/armonik_core_stream_test_worker"
+#        limits = {
+#          cpu    = "1000m"
+#          memory = "1024Mi"
+#        }
+#        requests = {
+#          cpu    = "500m"
+#          memory = "512Mi"
+#        }
+#      }
+#    ]
+#    hpa = {
+#      type              = "prometheus"
+#      polling_interval  = 15
+#      cooldown_period   = 300
+#      min_replica_count = 0
+#      max_replica_count = 100
+#      behavior = {
+#        restore_to_original_replica_count = true
+#        stabilization_window_seconds      = 300
+#        type                              = "Percent"
+#        value                             = 100
+#        period_seconds                    = 15
+#      }
+#      triggers = [
+#        {
+#          type      = "prometheus"
+#          threshold = 2
+#        },
+#      ]
+#    }
+#  },
   # Partition for the htcmock worker
   htcmock = {
     node_selector = { service = "workers" }
