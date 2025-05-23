@@ -549,6 +549,7 @@ compute_plane = {
   },
   # Partition for the pymonik worker
   pymonik = {
+    node_selector = { service = "workers" }
     # number of replicas for each deployment of compute plane
     replicas = 0
     # ArmoniK polling agent
