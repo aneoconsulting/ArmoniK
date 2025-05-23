@@ -18,7 +18,7 @@ export TF_PLUGIN_CACHE_DIR?=$(GENERATED_DIR)/terraform-plugins
 export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
-export PREFIX?=armonik-$(RANDOM_PREFIX)
+export PREFIX?=armonik-$(USER)
 export TFSTATE_BUCKET_NAME?=$(PREFIX)-tfstate
 
 export TF_VAR_region?=$(REGION)
@@ -62,7 +62,7 @@ init:
 		-backend-config 'region=$(REGION)' \
 		-backend-config 'key=$(STATE_FILE)' \
 		-backend-config 'profile=$(PROFILE)' \
-		-var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)	
+		-var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)
 
 plan:
 	terraform plan -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE) -out=/dev/null
@@ -81,7 +81,7 @@ hibernate:
 
 console:
 	terraform console -var-file=$(VERSIONS_FILE) -var-file=$(PARAMETERS_FILE) -var-file=$(EXTRA_PARAMETERS_FILE)
-	
+
 state-pull:
 	terraform state pull
 
