@@ -33,7 +33,7 @@ vpc = {
 
 # AWS EKS
 eks = {
-  cluster_version                = "1.25"
+  cluster_version                = "1.32"
   node_selector                  = { service = "monitoring" }
   cluster_endpoint_public_access = true
   map_roles                      = []
@@ -384,6 +384,8 @@ mongodb = {
 #     }
 #   }
 # }
+
+mongodb_ebs = {}
 
 seq = {
   node_selector = { service = "monitoring" }

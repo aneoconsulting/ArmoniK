@@ -186,7 +186,7 @@ module "mongodb" {
   }
 
   persistent_volume = var.mongodb.persistent_volume != null ? {
-    storage_provisioner = var.mongodb.persistent_volume.storage_provisioner
+    storage_provisioner = local.mongodb_pvc_provisioner
     access_mode         = var.mongodb.persistent_volume.acces_mode
     reclaim_policy      = var.mongodb.persistent_volume.reclaim_policy
     volume_binding_mode = var.mongodb.persistent_volume.volume_binding_mode
@@ -304,13 +304,6 @@ module "configsvr_efs_persistent_volume" {
 }
 
 
-resource "aws_iam_policy_attachment" "armonik_decrypt_object" {
-  name       = "storage-s3-encrypt-decrypt-armonik"
-  roles      = [module.aws_service_account.service_account_iam_role_name]
-  policy_arn = aws_iam_policy.decrypt_object.arn
-}
-
-
 # Decrypt objects in S3
 data "aws_iam_policy_document" "decrypt_object" {
   statement {
@@ -339,7 +332,7 @@ resource "aws_iam_policy" "decrypt_object" {
 
 resource "aws_iam_policy_attachment" "decrypt_object" {
   name       = "${local.prefix}-s3-encrypt-decrypt"
-  roles      = module.eks.worker_iam_role_names
+  roles      = concat(module.eks.worker_iam_role_names, [module.aws_service_account.service_account_iam_role_name])
   policy_arn = aws_iam_policy.decrypt_object.arn
 }
 
