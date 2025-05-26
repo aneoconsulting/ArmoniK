@@ -123,7 +123,7 @@ resource "kubernetes_secret" "elasticache" {
 
 # Amazon MQ
 module "mq" {
-  count           = var.activemq == null ? 1 : 0
+  count           = var.mq != null ? 1 : 0
   source          = "./generated/infra-modules/storage/aws/mq"
   tags            = local.tags
   name            = "${local.prefix}-mq"
@@ -160,6 +160,17 @@ module "activemq" {
     activemq_opts_memory = var.activemq.activemq_opts_memory
   }
 }
+
+# Amazon SQS
+module "sqs" {
+  count = var.sqs != null ? 1 : 0
+  source = "./generated/infra-modules/storage/aws/sqs"
+  tags = local.tags
+  region = var.region
+  prefix = local.prefix
+  service_account_role_name = module.aws_service_account.service_account_iam_role_name
+}
+
 
 module "aws_service_account" {
   namespace         = local.namespace
