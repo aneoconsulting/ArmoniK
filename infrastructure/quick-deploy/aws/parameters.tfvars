@@ -455,6 +455,9 @@ fluent_bit_windows = {
   }
 }
 
+pod_deletion_cost = {
+  node_selector = { service = "metrics" }
+}
 
 # Logging level
 logging_level = "Information"
