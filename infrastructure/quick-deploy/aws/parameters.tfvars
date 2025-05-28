@@ -556,7 +556,9 @@ compute_plane = {
   },
   # Partition for the pymonik worker
   pymonik = {
-    node_selector = { service = "workers" }
+    node_selector = {
+      service = "workers"
+    }
     # number of replicas for each deployment of compute plane
     replicas = 0
     # ArmoniK polling agent
@@ -827,9 +829,9 @@ compute_plane = {
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
 ingress = {
-  tls                  = false
-  mtls                 = false
-  generate_client_cert = false
+  tls                  = true
+  mtls                 = true
+  generate_client_cert = true
   node_selector        = { service = "control-plane" }
 }
 
@@ -841,6 +843,8 @@ job_partitions_in_database = {
 # Authentication behavior
 authentication = {
   node_selector = { service = "control-plane" }
+  require_authentication = true
+  require_authorization  = true
 }
 
 configurations = {
@@ -856,7 +860,7 @@ configurations = {
       MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
       MongoDB__TableStorage__PollingDelay        = "00:00:01"
       MongoDB__DataRetention                     = "1.00:00:00" # 1 day retention
-      MongoDB__AllowInsecureTls                  = true
+      MongoDB__AllowInsecureTls                  = false
       Redis__Timeout                             = 3000
       Redis__SslHost                             = ""
       Redis__TtlTimeSpan                         = "1.00:00:00" # 1 day retention
