@@ -18,7 +18,7 @@ export TF_PLUGIN_CACHE_DIR?=$(GENERATED_DIR)/terraform-plugins
 export REGION?=eu-west-3
 export PROFILE?=default
 export NAMESPACE?=armonik
-export PREFIX?=armonik-$(USER)
+export PREFIX?=$(shell hostname)
 export TFSTATE_BUCKET_NAME?=$(PREFIX)-tfstate
 
 export TF_VAR_region?=$(REGION)
