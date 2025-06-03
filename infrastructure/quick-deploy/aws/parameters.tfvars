@@ -394,7 +394,7 @@ mongodb = {
 #   }
 # }
 
-mongodb_ebs = {}
+mongodb_efs = {}
 
 seq = {
   node_selector = { service = "monitoring" }
