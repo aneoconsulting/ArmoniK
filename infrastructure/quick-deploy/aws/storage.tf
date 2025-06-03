@@ -371,7 +371,7 @@ resource "aws_iam_policy" "object" {
 resource "aws_iam_policy_attachment" "object" {
   for_each   = aws_iam_policy.object
   name       = "${local.prefix}-permissions-on-s3-${each.key}"
-  roles      = module.eks.worker_iam_role_names
+  roles      = concat(module.eks.worker_iam_role_names, [module.aws_service_account.service_account_iam_role_name])
   policy_arn = each.value.arn
 }
 
