@@ -1,0 +1,69 @@
+{
+  "certificates_list":[
+    {
+      "Cn": "armonik.local.tp.sample",
+      "Username": "tp-participant"
+    }
+  ],
+  "users_list":[
+    {
+      "Username": "tp-participant",
+      "Roles": ["Submitter"]
+    }
+  ],
+  "roles_list":[
+    {
+      "RoleName":"Submitter",
+      "Permissions": [
+        "Submitter:GetServiceConfiguration",
+        "Submitter:CancelSession",
+        "Submitter:CancelTasks",
+        "Submitter:CreateSession",
+        "Submitter:CreateSmallTasks",
+        "Submitter:CreateLargeTasks",
+        "Submitter:CountTasks",
+        "Submitter:TryGetResultStream",
+        "Submitter:WaitForCompletion",
+        "Submitter:TryGetTaskOutput",
+        "Submitter:WaitForAvailability",
+        "Submitter:GetTaskStatus",
+        "Submitter:GetResultStatus",
+        "Submitter:ListTasks",
+        "Submitter:ListSessions",
+        "Sessions:CancelSession",
+        "Sessions:GetSession",
+        "Sessions:ListSessions",
+        "Sessions:PauseSession",
+        "Sessions:CloseSession",
+        "Sessions:PurgeSession",
+        "Sessions:DeleteSession",
+        "Sessions:ResumeSession",
+        "Sessions:StopSubmission",
+        "Tasks:GetTask",
+        "Tasks:ListTasks",
+        "Tasks:GetResultIds",
+        "Tasks:CancelTasks",
+        "Tasks:CountTasksByStatus",
+        "Tasks:ListTasksDetailed",
+        "Tasks:SubmitTasks",
+        "Results:GetOwnerTaskId",
+        "Results:ListResults",
+        "Results:CreateResultsMetaData",
+        "Results:CreateResults",
+        "Results:DeleteResultsData",
+        "Results:DownloadResultData",
+        "Results:GetServiceConfiguration",
+        "Results:UploadResultData",
+        "Results:GetResult",
+        "Results:ImportResultsData",
+        "Applications:ListApplications",
+        "Events:GetEvents",
+        "General:Impersonate",
+        "Partitions:GetPartition",
+        "Partitions:ListPartitions",
+        "Versions:ListVersions"
+      ]
+    }
+  ]
+}
+
