@@ -390,7 +390,7 @@ variable "mongodb" {
       requests = optional(map(string))
     }))
   })
-  default = {}
+  default = null
 }
 
 variable "mongodb_sharding" {
@@ -494,6 +494,15 @@ variable "mongodb_efs" {
       # "AFTER_7_DAYS", "AFTER_14_DAYS", "AFTER_30_DAYS", "AFTER_60_DAYS", or "AFTER_90_DAYS"
       access_point = optional(list(string), [])
     }), {})
+  })
+  default = null
+}
+
+variable "mongodb_atlas" {
+  description = "MongoDB Atlas configuration"
+  type = object({
+    project_id   = string
+    cluster_name = string
   })
   default = null
 }

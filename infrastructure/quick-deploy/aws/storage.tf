@@ -181,9 +181,23 @@ module "aws_service_account" {
   oidc_issuer_url   = module.eks.aws_eks_module.cluster_oidc_issuer_url
 }
 
+module "atlas_mongodb" {
+  count              = var.mongodb_atlas != null ? 1 : 0
+  source             = "./generated/infra-modules/storage/atlas"
+  namespace          = local.namespace
+  region             = var.region
+  cluster_name       = var.mongodb_atlas.cluster_name
+  project_id         = var.mongodb_atlas.project_id
+  tags               = local.tags
+  vpc_id             = local.vpc.id
+  subnet_ids         = local.atlas_privatelink_subnets
+  security_group_ids = [module.eks.node_security_group_id]
+}
+
+
 # MongoDB
 module "mongodb" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 0 : 1
+  count     = var.mongodb != null ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
   mongodb = {
@@ -212,7 +226,7 @@ module "mongodb" {
 }
 
 module "mongodb_sharded" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 1 : 0
+  count     = var.mongodb_sharding != null ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb-sharded"
   namespace = local.namespace
 
