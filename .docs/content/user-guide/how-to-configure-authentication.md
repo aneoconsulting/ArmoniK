@@ -112,7 +112,7 @@ The JSON authentication configuration file must have the following format (note 
 {
   "certificates_list":[
     {
-      "CN": "string", //Common name of the certificate
+      "Cn": "string", //Common name of the certificate
       "Fingerprint" : "string" or null, // Sha1 fingerprint of the certificate (if null, the user will be authenticated using ANY certificate with the given Common Name)
       "Username": "string" // Username
     }
@@ -148,12 +148,12 @@ The following json is an example defining two users, with their own different ro
 {
   "certificates_list":[
     {
-      "CN": "CNOfUserSubmitter",
+      "Cn": "CNOfUserSubmitter",
       "Fingerprint" : "752c14ea195c369bac3c3b7896975ee9fd15eeb7",
       "Username": "UserSubmitter"
     },
     {
-      "CN": "CNOfUserMonitoring",
+      "Cn": "CNOfUserMonitoring",
       "Fingerprint" : "c26dc0bf68e25099bc4a85b631efdb93d0768a20",
       "Username": "UserMonitoring"
     }
