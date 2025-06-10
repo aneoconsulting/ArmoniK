@@ -623,3 +623,52 @@ variable "activemq" {
   })
   default = null
 }
+
+# External Windows MIG configuration (completely separate from GKE)
+variable "gcp_windows_lifecycle" {
+  description = "Configuration for ArmoniK Windows Worker MIG deployment (independent external compute)"
+  type = object({
+    # Service Configuration
+    environment = optional(string, "production")
+    # Instance Configuration
+    base_instance_name = string
+    machine_type       = optional(string, "e2-standard-4")
+    source_image       = optional(string, "projects/windows-cloud/global/images/family/windows-2022-core-containerd")
+    disk_size_gb       = optional(number, 100)
+    disk_type          = optional(string, "pd-ssd")
+    # Network Configuration - separate from GKE
+    instance_tags              = optional(list(string), ["armonik-windows-mig", "external-compute"])
+    create_dedicated_subnet    = optional(bool, true)  # Create separate subnet for MIG
+    subnet_cidr               = optional(string, "10.2.0.0/24")  # Dedicated CIDR range
+    # Instance Template and Group
+    instance_template_name_prefix = string
+    instance_group_name           = string
+    initial_instance_count        = optional(number, 0)  # Start with 0 for cost optimization
+    # Autoscaling Configuration (independent from GKE HPA)
+    enable_autoscaling         = optional(bool, true)
+    min_replicas              = optional(number, 0)
+    max_replicas              = optional(number, 10)
+    target_cpu_utilization    = optional(number, 70)
+    scale_down_stabilization  = optional(number, 600)  # 10 minutes for Windows stability
+    # Auto-healing Configuration
+    auto_healing_delay_sec = optional(number, 1200) # 20 minutes for Windows + ArmoniK installation
+    # Health Check Configuration
+    health_check_name = string
+    health_check_port = optional(number, 8080)
+    health_check_path = optional(string, "/health")
+    # MIG-specific ArmoniK Configuration
+    armonik_worker_image = optional(string, "dockerhubaneo/armonik_worker_dll_windows")
+    armonik_worker_tag   = optional(string, "0.33.1")
+    # External task queue integration (completely separate from GKE partitions)
+    external_queue_name     = optional(string, "external-mig-windows")
+    # Performance optimizations
+    enable_ip_forwarding    = optional(bool, false)
+    enable_oslogin         = optional(bool, true)
+    preemptible            = optional(bool, false)  # Windows needs stability
+    # Monitoring and logging
+    enable_cloud_logging   = optional(bool, true)
+    enable_cloud_monitoring = optional(bool, true)
+  })
+  default = null
+}
+

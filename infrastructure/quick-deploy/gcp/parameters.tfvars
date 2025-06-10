@@ -604,8 +604,61 @@ compute_plane = {
         },
       ]
     }
-  },
+  }
+  # REMOVED: windows-default partition entirely
 }
+
+# External Windows MIG for additional compute capacity (COMPLETELY SEPARATE FROM GKE)
+# This creates an independent Managed Instance Group that operates as external compute
+# with its own networking, scaling, and task processing separate from Kubernetes
+gcp_windows_lifecycle = {
+  environment                   = "mvp"
+  base_instance_name           = "armonik-windows-mig"
+  machine_type                 = "e2-standard-4"
+  source_image                 = "projects/windows-cloud/global/images/family/windows-2022-core-containerd"
+  disk_size_gb                 = 120  # Increased for Windows + Docker + ArmoniK
+  disk_type                    = "pd-ssd"
+  
+  # Network Configuration - completely separate from GKE
+  instance_tags                = ["armonik-windows-mig", "external-compute", "isolated"]
+  create_dedicated_subnet      = true   # Use dedicated subnet (separate from GKE)
+  subnet_cidr                 = "10.2.0.0/24"  # Dedicated CIDR range
+  
+  # Instance Template and Group
+  instance_template_name_prefix = "armonik-mig-template"
+  instance_group_name          = "armonik-windows-external-mig"
+  initial_instance_count       = 0     # Start with 0 for cost optimization
+  
+  # Autoscaling Configuration (independent from GKE HPA)
+  enable_autoscaling           = true
+  min_replicas                 = 0
+  max_replicas                 = 15    # Higher limit for external compute
+  target_cpu_utilization       = 75    # More aggressive scaling
+  scale_down_stabilization     = 900   # 15 minutes for Windows stability
+  
+  # Auto-healing Configuration
+  auto_healing_delay_sec       = 1800  # 30 minutes for Windows + ArmoniK setup
+  
+  # Health Check Configuration
+  health_check_name            = "armonik-mig-health"
+  health_check_port            = 8090  # Different port from GKE health checks
+  health_check_path            = "/health"
+  
+  # MIG-specific ArmoniK Configuration (separate queue system)
+  armonik_worker_image         = "dockerhubaneo/armonik_worker_dll_windows"
+  armonik_worker_tag           = "0.33.1"
+  external_queue_name          = "external-mig-windows"
+  
+  # Performance and reliability optimizations
+  enable_ip_forwarding         = false
+  enable_oslogin              = true
+  preemptible                 = false  # Stability for Windows workloads
+  
+  # Monitoring and observability
+  enable_cloud_logging        = true
+  enable_cloud_monitoring     = true
+}
+
 
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
