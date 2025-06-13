@@ -13,7 +13,7 @@ Please, read [documentation](https://armonik.readthedocs.io/en/latest/) for more
 
 - 👉 [ArmoniK Architecture](https://armonik.readthedocs.io/en/latest/content/armonik/index.html)
 - 👉 [ArmoniK Versions](https://armonik.readthedocs.io/en/latest/content/armonik/index.html#versions)
-- 👉 [ArmoniK Installation](https://armonik.readthedocs.io/en/latest/content/getting-started/introduction.html)
+- 👉 [ArmoniK Getting Started](https://armonik.readthedocs.io/en/latest/content/armonik/getting-started.html)
 - 👉 [ArmoniK Configuration](https://armonik.readthedocs.io/en/latest/content/user-guide/how-to-configure-authentication.html)
 - 👉 [ArmoniK Performance](https://armonik.readthedocs.io/en/latest/content/benchmarking/test-plan.html)
 
