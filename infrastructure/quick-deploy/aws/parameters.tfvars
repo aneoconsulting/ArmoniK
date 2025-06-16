@@ -561,6 +561,59 @@ compute_plane = {
       ]
     }
   },
+  helloterminator = {
+    node_selector = {
+      service = "workers"
+    }
+    # number of replicas for each deployment of compute plane
+    replicas = 1
+    # ArmoniK polling agent
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "500m"
+        memory = "256Mi"
+      }
+    }
+    # ArmoniK workers
+    worker = [
+      {
+        image = "hello_terminator_worker"
+        tag: "v1"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "500m"
+          memory = "512Mi"
+        }
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 0
+      max_replica_count = 100
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        },
+      ]
+    }
+  },
   # Partition for the pymonik worker
   pymonik = {
     node_selector = {
@@ -836,9 +889,9 @@ compute_plane = {
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
 ingress = {
-  tls                  = true
-  mtls                 = true
-  generate_client_cert = true
+  tls                  = false
+  mtls                 = false
+  generate_client_cert = false
   node_selector        = { service = "control-plane" }
 }
 
@@ -850,8 +903,8 @@ job_partitions_in_database = {
 # Authentication behavior
 authentication = {
   node_selector = { service = "control-plane" }
-  require_authentication = true
-  require_authorization  = true
+  require_authentication = false
+  require_authorization  = false
 }
 
 configurations = {
