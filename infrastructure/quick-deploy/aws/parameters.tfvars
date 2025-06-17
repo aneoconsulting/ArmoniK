@@ -318,14 +318,15 @@ keda = {
 
 # Object storage
 # Uncomment either the `elasticache` or the `s3_os` parameter
-elasticache = {
-  engine             = "redis"
-  engine_version     = "6.x"
-  node_type          = "cache.r4.large"
-  num_cache_clusters = 2
-}
+#elasticache = {
+#  engine             = "redis"
+#  engine_version     = "6.x"
+#  node_type          = "cache.r4.large"
+#  num_cache_clusters = 2
+#}
 
-# s3_os = {}
+# Use s3 as object storage
+s3_os = {}
 
 # activemq = {
 #   node_selector = { service = "state-database" }
@@ -341,13 +342,13 @@ elasticache = {
 # }
 
 
-mq = {
-  engine_type        = "ActiveMQ"
-  engine_version     = "5.18"
-  host_instance_type = "mq.m5.xlarge"
-}
+#mq = {
+#  engine_type        = "ActiveMQ"
+#  engine_version     = "5.18"
+#  host_instance_type = "mq.m5.xlarge"
+#}
 
-# sqs = {}
+sqs = {}
 
 mongodb = {
   node_selector = { service = "state-database" }
@@ -561,7 +562,7 @@ compute_plane = {
       ]
     }
   },
-  helloterminator = {
+  helloworld = {
     node_selector = {
       service = "workers"
     }
@@ -581,8 +582,8 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image = "hello_terminator_worker"
-        tag: "v1"
+        image = "dockerhubaneo/armonik_demo_helloworld_worker"
+        tag = "v2.21.0-SNAPSHOT.78.sha.80a7a9d"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
@@ -910,20 +911,20 @@ authentication = {
 configurations = {
   core = {
     env = {
-      Amqp__AllowHostMismatch                    = false
-      Amqp__MaxPriority                          = "10"
-      Amqp__MaxRetries                           = "5"
-      Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
-      Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
-      Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
+#     Amqp__AllowHostMismatch                    = false
+#     Amqp__MaxPriority                          = "10"
+#     Amqp__MaxRetries                           = "5"
+#     Amqp__QueueStorage__LockRefreshPeriodicity = "00:00:45"
+#     Amqp__QueueStorage__PollPeriodicity        = "00:00:10"
+#     Amqp__QueueStorage__LockRefreshExtension   = "00:02:00"
       MongoDB__TableStorage__PollingDelayMin     = "00:00:01"
       MongoDB__TableStorage__PollingDelayMax     = "00:00:10"
       MongoDB__TableStorage__PollingDelay        = "00:00:01"
       MongoDB__DataRetention                     = "1.00:00:00" # 1 day retention
       MongoDB__AllowInsecureTls                  = false
-      Redis__Timeout                             = 3000
-      Redis__SslHost                             = ""
-      Redis__TtlTimeSpan                         = "1.00:00:00" # 1 day retention
+#     Redis__Timeout                             = 3000
+#     Redis__SslHost                             = ""
+#     Redis__TtlTimeSpan                         = "1.00:00:00" # 1 day retention
       Submitter__DeletePayload                   = true
     }
   }
