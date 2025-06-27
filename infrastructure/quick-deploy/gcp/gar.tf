@@ -101,10 +101,11 @@ module "default_images" {
 }
 
 module "artifact_registry" {
-  source        = "./generated/infra-modules/container-registry/gcp/artifact-registry"
-  docker_images = var.upload_images ? local.repositories : {}
-  name          = "${local.prefix}-docker-registry"
-  description   = "All docker images for ArmoniK"
-  kms_key_id    = local.kms_key_id
-  labels        = local.labels
+  source         = "./generated/infra-modules/container-registry/gcp/artifact-registry"
+  docker_images  = var.upload_images ? local.repositories : {}
+  name           = "${local.prefix}-docker-registry"
+  description    = "All docker images for ArmoniK"
+  kms_key_id     = local.kms_key_id
+  labels         = local.labels
+  immutable_tags = false
 }

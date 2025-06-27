@@ -21,6 +21,9 @@ gke = {
     others = {
       service = "others"
     }
+    gpu = {
+      service = "gpu"
+    }
   }
   node_pools_taints = {
     workers = [
@@ -55,6 +58,13 @@ gke = {
       {
         key    = "service"
         value  = "state-database"
+        effect = "NO_SCHEDULE"
+      }
+    ]
+    gpu = [
+      {
+        key    = "service"
+        value  = "gpu"
         effect = "NO_SCHEDULE"
       }
     ]
@@ -227,7 +237,37 @@ gke = {
       boot_disk_kms_key           = ""
       enable_secure_boot          = false
       enable_integrity_monitoring = true
-    }
+    },
+    {
+      name             = "gpu"
+      machine_type     = "n1-standard-8"
+      image_type       = "COS_CONTAINERD"
+      min_cpu_platform = ""
+      # or see https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform#availablezones
+      autoscaling                 = true
+      node_count                  = null # should not be used alongside autoscaling
+      max_pods_per_node           = 110
+      initial_node_count          = 0
+      min_count                   = 0          # per zone. It is null if used alongside total_min_count
+      max_count                   = 100        # per zone. It is null if used alongside total_max_count
+      total_min_count             = 0          # per NodePool
+      total_max_count             = 100        # per NodePool
+      location_policy             = "BALANCED" # or ANY
+      auto_repair                 = true
+      auto_upgrade                = true
+      enable_gcfs                 = false
+      enable_gvnic                = false
+      logging_variant             = "DEFAULT"
+      local_ssd_count             = 0
+      disk_size_gb                = 100
+      disk_type                   = "pd-standard"
+      spot                        = true
+      boot_disk_kms_key           = ""
+      enable_secure_boot          = false
+      enable_integrity_monitoring = true
+      accelerator_count           = 1
+      accelerator_type            = "nvidia-tesla-t4"
+    },
   ]
 }
 
@@ -602,6 +642,105 @@ compute_plane = {
           type      = "prometheus"
           threshold = 2
         },
+      ]
+    }
+  },
+  cpu = {
+    replicas = 0
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "50m"
+        memory = "50Mi"
+      }
+    }
+    worker = [
+      {
+        image = "cpu-worker"
+        tag   = "latest"
+        limits = {
+          cpu    = "1000m"
+          memory = "1024Mi"
+        }
+        requests = {
+          cpu    = "50m"
+          memory = "50Mi"
+        }
+        # image_pull_policy = "Always"
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 0
+      max_replica_count = 5
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        }
+      ]
+    }
+  },
+  gpu = {
+    replicas      = 0
+    node_selector = { service = "gpu" }
+    polling_agent = {
+      limits = {
+        cpu    = "2000m"
+        memory = "2048Mi"
+      }
+      requests = {
+        cpu    = "50m"
+        memory = "50Mi"
+      }
+    }
+    worker = [
+      {
+        image = "gpu-worker:latest"
+        tag   = "latest"
+        limits = {
+          cpu              = "1000m"
+          memory           = "1024Mi"
+          "nvidia.com/gpu" = "1" # Request 1 GPU
+        }
+        requests = {
+          cpu              = "50m"
+          memory           = "50Mi"
+          "nvidia.com/gpu" = "1" # Request 1 GPU
+        }
+        # image_pull_policy = "Always"
+      }
+    ]
+    hpa = {
+      type              = "prometheus"
+      polling_interval  = 15
+      cooldown_period   = 300
+      min_replica_count = 0
+      max_replica_count = 5
+      behavior = {
+        restore_to_original_replica_count = true
+        stabilization_window_seconds      = 300
+        type                              = "Percent"
+        value                             = 100
+        period_seconds                    = 15
+      }
+      triggers = [
+        {
+          type      = "prometheus"
+          threshold = 2
+        }
       ]
     }
   },
