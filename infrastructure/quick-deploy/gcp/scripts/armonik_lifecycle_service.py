@@ -1,666 +1,488 @@
 #!/usr/bin/env python3
 """
-ArmoniK Windows Lifecycle Management Service
+ArmoniK Lifecycle Service - Final Production Version
 
-This service manages ArmoniK Docker containers (polling agent and workers) on Windows VMs
-in GCP Managed Instance Groups. It provides health checks, process monitoring,
-exponential backoff restart logic, and automatic VM shutdown on repeated failures.
-
-Author: ArmoniK Infrastructure Team
-Version: 2.1.0
+Simplified, robust lifecycle service for Windows/GCP deployment.
+Correctly handles armonik_config from GCP metadata or local file.
 """
 
+import argparse
+import asyncio
 import json
 import logging
 import os
 import signal
-import subprocess
 import sys
 import threading
-import time
-from dataclasses import dataclass
-from datetime import datetime
-from http.server import BaseHTTPRequestHandler, HTTPServer
-from socketserver import ThreadingMixIn
+import urllib.request
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
-@dataclass
-class ProcessConfig:
-    """Configuration for a managed process"""
+def setup_logging() -> logging.Logger:
+    """Setup logging configuration"""
+    logger = logging.getLogger("armonik_lifecycle")
+    logger.setLevel(logging.INFO)
 
-    name: str
-    docker_image: str
-    docker_tag: str
-    container_name: str
-    command: List[str]
-    environment: Dict[str, str]
-    restart_policy: str = "always"
-    max_restarts: int = 5
-    health_check_port: Optional[int] = None
-    health_check_path: str = "/health"
+    if not logger.handlers:
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
+
+        # Console handler
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+
+        # File handler for Windows
+        if sys.platform == "win32":
+            try:
+                log_dir = Path("C:/ArmoniK/logs")
+                log_dir.mkdir(parents=True, exist_ok=True)
+                file_handler = logging.FileHandler(log_dir / "armonik_lifecycle.log")
+                file_handler.setFormatter(formatter)
+                logger.addHandler(file_handler)
+            except OSError:
+                pass  # Continue without file logging
+
+    return logger
 
 
-@dataclass
-class ProcessState:
-    """State tracking for a managed process"""
+class ServiceManager:
+    """Manages ArmoniK service lifecycle with Docker"""
 
-    config: ProcessConfig
-    container_id: Optional[str] = None
-    pid: Optional[int] = None
-    start_time: Optional[datetime] = None
-    restart_count: int = 0
-    last_restart: Optional[datetime] = None
-    status: str = "stopped"  # stopped, starting, running, failed
-    failure_count: int = 0
-    backoff_delay: float = 1.0
-    last_health_check: Optional[datetime] = None
-    health_status: str = "unknown"  # unknown, healthy, unhealthy
+    def __init__(self, logger: logging.Logger) -> None:
+        self.logger = logger
+        self.services: Dict[str, Dict[str, Any]] = {}
+
+    async def start_service(self, service_name: str, config: Dict[str, Any]) -> bool:
+        """Start a service using Docker"""
+        try:
+            # Build Docker command
+            cmd = self._build_docker_command(service_name, config)
+
+            # Stop existing container first
+            await self._stop_container(service_name)
+
+            # Start new container
+            self.logger.info("Starting service: %s", service_name)
+            result = await asyncio.create_subprocess_exec(
+                *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            stdout, stderr = await result.communicate()
+
+            if result.returncode == 0:
+                container_id = stdout.decode().strip()
+                self.services[service_name] = {
+                    "id": container_id,
+                    "config": config,
+                    "status": "running",
+                }
+                self.logger.info(
+                    "Started service %s: %s", service_name, container_id[:12]
+                )
+                return True
+            else:
+                self.logger.error(
+                    "Failed to start %s: %s", service_name, stderr.decode()
+                )
+                return False
+
+        except OSError as e:
+            self.logger.error("Error starting service %s: %s", service_name, e)
+            return False
+
+    async def stop_service(self, service_name: str) -> bool:
+        """Stop a service"""
+        try:
+            if service_name in self.services:
+                await self._stop_container(service_name)
+                del self.services[service_name]
+                self.logger.info("Stopped service: %s", service_name)
+                return True
+            return False
+        except OSError as e:
+            self.logger.error("Error stopping service %s: %s", service_name, e)
+            return False
+
+    async def restart_service(self, service_name: str) -> bool:
+        """Restart a service"""
+        if service_name not in self.services:
+            self.logger.warning("Service %s not found for restart", service_name)
+            return False
+
+        config = self.services[service_name]["config"]
+        self.logger.info("Restarting service: %s", service_name)
+
+        await self.stop_service(service_name)
+        await asyncio.sleep(2)
+        return await self.start_service(service_name, config)
+
+    async def _stop_container(self, service_name: str) -> bool:
+        """Stop and remove Docker container"""
+        try:
+            # Stop container
+            stop_result = await asyncio.create_subprocess_exec(
+                "docker",
+                "stop",
+                service_name,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            await stop_result.communicate()
+
+            # Remove container
+            rm_result = await asyncio.create_subprocess_exec(
+                "docker",
+                "rm",
+                service_name,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            await rm_result.communicate()
+
+            return True
+
+        except OSError:
+            return False
+
+    def _build_docker_command(
+        self, service_name: str, config: Dict[str, Any]
+    ) -> List[str]:
+        """Build Docker run command"""
+        cmd = ["docker", "run", "-d", "--name", service_name]
+
+        # Add port mappings
+        if "ports" in config:
+            for port_mapping in config["ports"]:
+                cmd.extend(["-p", port_mapping])
+
+        # Add environment variables
+        if "environment" in config:
+            if isinstance(config["environment"], dict):
+                # Handle dict format (new partition-based config)
+                for key, value in config["environment"].items():
+                    cmd.extend(["-e", f"{key}={value}"])
+            elif isinstance(config["environment"], list):
+                # Handle list format (legacy config)
+                for env_var in config["environment"]:
+                    cmd.extend(["-e", env_var])
+
+        # Add volumes
+        if "volumes" in config:
+            for volume_mapping in config["volumes"]:
+                cmd.extend(["-v", volume_mapping])
+
+        # Add network
+        if "network" in config:
+            cmd.extend(["--network", config["network"]])
+
+        # Add restart policy
+        cmd.extend(["--restart", "unless-stopped"])
+
+        # Add health check if available
+        if "health_check" in config:
+            health_config = config["health_check"]
+            if health_config.get("enabled", True):
+                cmd.extend(
+                    [
+                        "--health-cmd",
+                        health_config.get(
+                            "cmd", "curl -f http://localhost:8080/health || exit 1"
+                        ),
+                        "--health-interval",
+                        f"{health_config.get('interval', 30)}s",
+                        "--health-timeout",
+                        f"{health_config.get('timeout', 10)}s",
+                        "--health-retries",
+                        str(health_config.get("retries", 3)),
+                    ]
+                )
+
+        # Add labels for service identification
+        cmd.extend(["--label", f"armonik.service={service_name}"])
+
+        # Add partition label if available
+        partition_name = config.get("partition_name")
+        if partition_name:
+            cmd.extend(["--label", f"armonik.partition={partition_name}"])
+
+        # Add image
+        image = f"{config['image']}:{config.get('tag', 'latest')}"
+        cmd.append(image)
+
+        # Add command if specified
+        if "command" in config and config["command"]:
+            cmd.extend(config["command"].split())
+
+        return cmd
 
 
 class ArmoniKLifecycleService:
-    """Main lifecycle management service for ArmoniK components"""
+    """Main lifecycle service with proper configuration handling"""
 
-    def __init__(self, config_file: str = "armonik_config.json") -> None:
-        self.config_file = config_file
-        self.processes: Dict[str, ProcessState] = {}
-        self.running = False
-        self.health_server: Optional[HTTPServer] = None
-        self.monitor_thread: Optional[threading.Thread] = None
-        self.health_thread: Optional[threading.Thread] = None
-        self.gcp_metadata_base = "http://metadata.google.internal/computeMetadata/v1"
+    def __init__(self, config_path: Optional[str] = None) -> None:
+        self.logger = setup_logging()
+        self.config_path = Path(config_path or self._get_default_config_path())
+        self.config: Dict[str, Any] = {}
+        self.service_manager = ServiceManager(self.logger)
+        self.shutdown_event = threading.Event()
 
-        # Configure logging
-        logging.basicConfig(
-            level=logging.INFO,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            handlers=[
-                logging.FileHandler("armonik_lifecycle.log"),
-                logging.StreamHandler(sys.stdout),
-            ],
-        )
-        self.logger = logging.getLogger(__name__)
+        # Settings
+        self.health_check_interval = 30
+        self.max_failures = 3
+        self.restart_delay = 10
+
+    def _get_default_config_path(self) -> str:
+        """Get default config path based on platform"""
+        if sys.platform == "win32":
+            return "C:/ArmoniK/config/armonik_config.json"
+        else:
+            return "/etc/armonik/armonik_config.json"
+
+    def load_configuration(self) -> bool:
+        """Load configuration from file or GCP metadata"""
+        try:
+            # Try GCP metadata first
+            if self._load_from_gcp_metadata():
+                self._apply_config_settings()
+                return True
+
+            # Try local file
+            if self.config_path.exists():
+                with open(self.config_path, "r", encoding="utf-8") as f:
+                    raw_config: Dict[str, Any] = json.load(f)
+
+                # Handle nested structure
+                if "armonik_config" in raw_config:
+                    self.config = raw_config["armonik_config"]
+                else:
+                    self.config = raw_config
+
+                self.logger.info("Loaded configuration from file: %s", self.config_path)
+                self._apply_config_settings()
+                return True
+
+            # Create default config
+            self.logger.warning("No configuration found, creating default")
+            self._create_default_config()
+            self._apply_config_settings()
+            return True
+
+        except (OSError, json.JSONDecodeError) as e:
+            self.logger.error("Failed to load configuration: %s", e)
+            self._create_default_config()
+            self._apply_config_settings()
+            return True
+
+    def _load_from_gcp_metadata(self) -> bool:
+        """Load configuration from GCP metadata"""
+        try:
+            req = urllib.request.Request(
+                "http://metadata.google.internal/computeMetadata/v1/instance/attributes/armonik-config-json"
+            )
+            req.add_header("Metadata-Flavor", "Google")
+
+            with urllib.request.urlopen(req, timeout=10) as response:
+                config_json = response.read().decode("utf-8")
+                raw_config: Dict[str, Any] = json.loads(config_json)
+
+                # Handle nested structure
+                if "armonik_config" in raw_config:
+                    self.config = raw_config["armonik_config"]
+                else:
+                    self.config = raw_config
+
+                self.logger.info("Loaded configuration from GCP metadata")
+                return True
+
+        except (urllib.error.URLError, json.JSONDecodeError) as e:
+            self.logger.debug("GCP metadata not available: %s", e)
+            return False
+
+    def _apply_config_settings(self) -> None:
+        """Apply configuration settings"""
+        settings = self.config.get("settings", {})
+        self.health_check_interval = settings.get("health_check_interval", 30)
+        self.max_failures = settings.get("max_failures", 3)
+        self.restart_delay = settings.get("restart_delay", 10)
+
+    def _create_default_config(self) -> None:
+        """Create default configuration"""
+        self.config = {
+            "services": {
+                "armonik-polling-agent": {
+                    "image": "dockerhubaneo/armonik_pollingagent",
+                    "tag": "latest",
+                    "ports": ["8080:8080"],
+                    "environment": [
+                        "ASPNETCORE_ENVIRONMENT=Production",
+                        "ASPNETCORE_URLS=http://+:8080",
+                        "Logging__LogLevel__Default=Information",
+                    ],
+                    "volumes": [
+                        "C:/ArmoniK/shared:/shared",
+                        "C:/ArmoniK/logs:/app/logs",
+                    ],
+                },
+                "armonik-worker": {
+                    "image": "dockerhubaneo/armonik_core_htcmock_test_client",
+                    "tag": "latest",
+                    "ports": ["8090:8090"],
+                    "environment": [
+                        "ASPNETCORE_ENVIRONMENT=Production",
+                        "ASPNETCORE_URLS=http://+:8090",
+                        "Logging__LogLevel__Default=Information",
+                    ],
+                    "volumes": [
+                        "C:/ArmoniK/shared:/shared",
+                        "C:/ArmoniK/logs:/app/logs",
+                    ],
+                },
+            },
+            "settings": {
+                "health_check_interval": 30,
+                "max_failures": 3,
+                "restart_delay": 10,
+            },
+        }
+        self.logger.info("Created default configuration")
+
+    async def start_services(self) -> bool:
+        """Start all configured services"""
+        services = self.config.get("services", {})
+        if not services:
+            self.logger.warning("No services configured")
+            return False
+
+        success_count = 0
+        for service_name, service_config in services.items():
+            if await self.service_manager.start_service(service_name, service_config):
+                success_count += 1
+            else:
+                self.logger.error("Failed to start service: %s", service_name)
+
+        self.logger.info("Started %d/%d services", success_count, len(services))
+        return success_count > 0
+
+    async def stop_services(self) -> None:
+        """Stop all services"""
+        for service_name in list(self.service_manager.services.keys()):
+            await self.service_manager.stop_service(service_name)
+
+    async def health_check_loop(self) -> None:
+        """Monitor service health and restart if needed"""
+        failure_counts: Dict[str, int] = {}
+
+        while not self.shutdown_event.is_set():
+            try:
+                for service_name in self.service_manager.services:
+                    # Check if container is running
+                    result = await asyncio.create_subprocess_exec(
+                        "docker",
+                        "ps",
+                        "--filter",
+                        f"name={service_name}",
+                        "--format",
+                        "{{.Names}}",
+                        stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE,
+                    )
+                    stdout, _ = await result.communicate()
+
+                    if result.returncode == 0 and service_name in stdout.decode():
+                        # Service is healthy, reset failure count
+                        failure_counts[service_name] = 0
+                        self.logger.debug("Service %s is healthy", service_name)
+                    else:
+                        # Service is unhealthy
+                        failure_counts[service_name] = (
+                            failure_counts.get(service_name, 0) + 1
+                        )
+                        self.logger.warning(
+                            "Service %s is unhealthy (failures: %d)",
+                            service_name,
+                            failure_counts[service_name],
+                        )
+
+                        # Restart if max failures reached
+                        if failure_counts[service_name] >= self.max_failures:
+                            self.logger.info(
+                                "Restarting failed service: %s", service_name
+                            )
+                            await self.service_manager.restart_service(service_name)
+                            failure_counts[service_name] = 0
+                            await asyncio.sleep(self.restart_delay)
+
+                await asyncio.sleep(self.health_check_interval)
+
+            except OSError as e:
+                self.logger.error("Health check error: %s", e)
+                await asyncio.sleep(5)
+
+    def get_service_status(self) -> Dict[str, Any]:
+        """Get status of all services"""
+        return {
+            "services": self.service_manager.services,
+            "config": self.config,
+            "health_interval": self.health_check_interval,
+        }
+
+    async def run(self) -> None:
+        """Main service loop"""
+        self.logger.info("Starting ArmoniK Lifecycle Service")
 
         # Load configuration
-        self.load_configuration()
-
-        # Set up signal handlers
-        signal.signal(signal.SIGTERM, self._signal_handler)
-        signal.signal(signal.SIGINT, self._signal_handler)
-
-    def load_configuration(self) -> None:
-        """Load ArmoniK configuration from file or create default"""
-        try:
-            if os.path.exists(self.config_file):
-                with open(self.config_file, "r", encoding="utf-8") as f:
-                    config_data = json.load(f)
-                self.logger.info("Loaded configuration from %s", self.config_file)
-            else:
-                config_data = self._create_default_config()
-                self.logger.info("Created default configuration")
-
-            self._setup_processes(config_data)
-
-        except Exception as e:
-            self.logger.error("Failed to load configuration: %s", e)
-            raise
-
-    def _create_default_config(self) -> dict:
-        """Create default ArmoniK configuration"""
-        # Get versions from metadata or use defaults
-        armonik_version = self._get_metadata("armonik-version", "0.33.1")
-
-        config = {
-            "armonik": {
-                "version": armonik_version,
-                "images": {
-                    "polling_agent": "dockerhubaneo/armonik_pollingagent",
-                    "worker": "dockerhubaneo/armonik_worker_dll",
-                },
-                "environment": {
-                    "ASPNETCORE_ENVIRONMENT": "Production",
-                    "Logging__LogLevel__Default": "Information",
-                    "GrpcClient__Endpoint": self._get_metadata(
-                        "grpc-endpoint", "http://armonik-control:5001"
-                    ),
-                    "Redis__EndpointUrl": self._get_metadata(
-                        "redis-endpoint", "localhost:6379"
-                    ),
-                    "MongoDB__Host": self._get_metadata("mongodb-host", "localhost"),
-                    "MongoDB__Port": self._get_metadata("mongodb-port", "27017"),
-                    "MongoDB__DatabaseName": "ArmoniK",
-                    "MongoDB__DataRetention": "10.00:00:00",
-                    "MongoDB__TableStorage__PollingDelayMin": "00:00:01",
-                    "MongoDB__TableStorage__PollingDelayMax": "00:00:10",
-                },
-                "health_check": {"enabled": True, "port": 8080, "interval": 30},
-                "restart_policy": {
-                    "max_restarts": 5,
-                    "backoff_base": 2.0,
-                    "backoff_max": 300.0,
-                    "failure_threshold": 10,
-                },
-                "partitions": {
-                    "default": {
-                        "image": "dockerhubaneo/armonik_worker_dll",
-                        "tag": armonik_version,
-                        "environment": {},
-                    }
-                },
-            }
-        }
-
-        # Save default config
-        with open(self.config_file, "w", encoding="utf-8") as f:
-            json.dump(config, f, indent=2)
-
-        return config
-
-    def _setup_processes(self, config_data: dict) -> None:
-        """Setup process configurations from config data, supporting partition-specific workers"""
-        armonik_config = config_data.get("armonik", {})
-        images = armonik_config.get("images", {})
-        environment = armonik_config.get("environment", {})
-        version = armonik_config.get("version", "latest")
-        partitions_raw = armonik_config.get("partitions", {})
-
-        # Ensure partitions is treated as a dictionary
-        partitions: Dict[str, Any] = dict(partitions_raw) if partitions_raw else {}
-
-        # Polling Agent Process (global, not per-partition)
-        polling_agent = ProcessConfig(
-            name="armonik-polling-agent",
-            docker_image=images.get(
-                "polling_agent", "dockerhubaneo/armonik_pollingagent"
-            ),
-            docker_tag=version,
-            container_name="armonik-polling-agent",
-            command=[],
-            environment=environment.copy(),
-            health_check_port=8080,
-        )
-
-        self.processes = {"polling-agent": ProcessState(config=polling_agent)}
-
-        # Partition-specific workers
-        for partition, worker_cfg in partitions.items():
-            image = worker_cfg.get(
-                "image", images.get("worker", "dockerhubaneo/armonik_worker_dll")
-            )
-            tag = worker_cfg.get("tag", version)
-            env = environment.copy()
-            env.update(worker_cfg.get("environment", {}))
-            container_name = f"armonik-worker-{partition}"
-            health_port = worker_cfg.get(
-                "health_check_port", 8081 + len(self.processes)
-            )
-
-            self.processes[f"worker-{partition}"] = ProcessState(
-                config=ProcessConfig(
-                    name=f"armonik-worker-{partition}",
-                    docker_image=image,
-                    docker_tag=tag,
-                    container_name=container_name,
-                    command=[],
-                    environment=env,
-                    health_check_port=health_port,
-                )
-            )
-
-    def _get_metadata(self, key: str, default: str = "") -> str:
-        """Get metadata from GCP metadata server"""
-        try:
-            url = f"{self.gcp_metadata_base}/instance/attributes/{key}"
-            headers = {"Metadata-Flavor": "Google"}
-
-            # Use urllib for HTTP requests to avoid external dependencies
-            import urllib.error
-            import urllib.request
-
-            req = urllib.request.Request(url)
-            for k, v in headers.items():
-                req.add_header(k, v)
-
-            with urllib.request.urlopen(req, timeout=5) as response:
-                if response.getcode() == 200:
-                    return response.read().decode("utf-8").strip()
-        except (urllib.error.URLError, Exception) as e:
-            self.logger.debug("Failed to get metadata %s: %s", key, e)
-        return default
-
-    def start(self) -> bool:
-        """Start the lifecycle service"""
-        self.logger.info("Starting ArmoniK Lifecycle Service")
-        self.running = True
-
-        # Ensure Docker is available
-        if not self._check_docker():
-            self.logger.error("Docker is not available")
-            return False
-
-        # Start health check server
-        self._start_health_server()
-
-        # Start monitoring thread
-        self.monitor_thread = threading.Thread(target=self._monitor_processes)
-        self.monitor_thread.daemon = True
-        self.monitor_thread.start()
-
-        # Start health check thread
-        self.health_thread = threading.Thread(target=self._health_check_loop)
-        self.health_thread.daemon = True
-        self.health_thread.start()
-
-        # Start all processes
-        for name in self.processes.keys():
-            self._start_process(name)
-
-        self.logger.info("ArmoniK Lifecycle Service started successfully")
-        return True
-
-    def stop(self) -> None:
-        """Stop the lifecycle service"""
-        self.logger.info("Stopping ArmoniK Lifecycle Service")
-        self.running = False
-
-        # Stop all processes
-        for name in self.processes.keys():
-            self._stop_process(name)
-
-        # Stop health server
-        if self.health_server:
-            self.health_server.shutdown()
-
-        self.logger.info("ArmoniK Lifecycle Service stopped")
-
-    def _check_docker(self) -> bool:
-        """Check if Docker is available and running"""
-        try:
-            result = subprocess.run(
-                ["docker", "version"],
-                capture_output=True,
-                text=True,
-                timeout=30,
-                check=False,
-            )
-            return result.returncode == 0
-        except Exception as e:
-            self.logger.error("Docker check failed: %s", e)
-            return False
-
-    def _start_process(self, name: str) -> bool:
-        """Start a managed process"""
-        if name not in self.processes:
-            self.logger.error("Unknown process: %s", name)
-            return False
-
-        process_state = self.processes[name]
-        config = process_state.config
-
-        try:
-            # Stop existing container if running
-            self._stop_container(config.container_name)
-
-            # Build Docker command
-            docker_cmd = [
-                "docker",
-                "run",
-                "-d",
-                "--name",
-                config.container_name,
-                "--restart",
-                "no",  # We handle restarts ourselves
-            ]
-
-            # Add port mappings
-            if config.health_check_port:
-                docker_cmd.extend(
-                    ["-p", f"{config.health_check_port}:{config.health_check_port}"]
-                )
-
-            # Add environment variables
-            for key, value in config.environment.items():
-                docker_cmd.extend(["-e", f"{key}={value}"])
-
-            # Add image
-            image_with_tag = f"{config.docker_image}:{config.docker_tag}"
-            docker_cmd.append(image_with_tag)
-
-            # Add command if specified
-            if config.command:
-                docker_cmd.extend(config.command)
-
-            # Start container
-            self.logger.info("Starting %s container: %s", name, " ".join(docker_cmd))
-            result = subprocess.run(
-                docker_cmd, capture_output=True, text=True, timeout=60, check=False
-            )
-
-            if result.returncode == 0:
-                container_id = result.stdout.strip()
-                process_state.container_id = container_id
-                process_state.start_time = datetime.now()
-                process_state.status = "starting"
-                self.logger.info("Started %s container: %s", name, container_id[:12])
-
-                # Wait a moment for container to start
-                time.sleep(2)
-
-                # Check if container is still running
-                if self._is_container_running(container_id):
-                    process_state.status = "running"
-                    return True
-                else:
-                    process_state.status = "failed"
-                    self.logger.error("Container %s failed to start properly", name)
-                    return False
-            else:
-                self.logger.error("Failed to start %s: %s", name, result.stderr)
-                process_state.status = "failed"
-                return False
-
-        except Exception as e:
-            self.logger.error("Exception starting %s: %s", name, e)
-            process_state.status = "failed"
-            return False
-
-    def _stop_process(self, name: str) -> None:
-        """Stop a managed process"""
-        if name not in self.processes:
+        if not self.load_configuration():
+            self.logger.error("Failed to load configuration")
             return
 
-        process_state = self.processes[name]
-        config = process_state.config
+        # Start services
+        if not await self.start_services():
+            self.logger.error("Failed to start services")
+            return
 
-        if process_state.container_id:
-            self._stop_container(config.container_name)
-            process_state.container_id = None
+        self.logger.info("ArmoniK Lifecycle Service started successfully")
 
-        process_state.status = "stopped"
-        self.logger.info("Stopped %s", name)
+        # Setup signal handlers
+        def signal_handler(signum: int, _: Any) -> None:
+            self.logger.info("Received signal %s, shutting down...", signum)
+            self.shutdown_event.set()
 
-    def _stop_container(self, container_name: str) -> None:
-        """Stop and remove a Docker container"""
+        signal.signal(signal.SIGTERM, signal_handler)
+        signal.signal(signal.SIGINT, signal_handler)
+
         try:
-            # Stop container
-            subprocess.run(
-                ["docker", "stop", container_name],
-                capture_output=True,
-                timeout=30,
-                check=False,
-            )
-
-            # Remove container
-            subprocess.run(
-                ["docker", "rm", container_name],
-                capture_output=True,
-                timeout=30,
-                check=False,
-            )
-        except Exception as e:
-            self.logger.debug("Error stopping container %s: %s", container_name, e)
-
-    def _is_container_running(self, container_id: str) -> bool:
-        """Check if a container is running"""
-        try:
-            result = subprocess.run(
-                ["docker", "inspect", "--format={{.State.Running}}", container_id],
-                capture_output=True,
-                text=True,
-                timeout=10,
-                check=False,
-            )
-            return result.returncode == 0 and result.stdout.strip() == "true"
-        except Exception:
-            return False
-
-    def _monitor_processes(self) -> None:
-        """Monitor process health and restart if needed"""
-        while self.running:
-            try:
-                for name, process_state in self.processes.items():
-                    if not self.running:
-                        break
-                    self._check_process_health(name, process_state)
-                time.sleep(10)  # Check every 10 seconds
-            except Exception as e:
-                self.logger.error("Error in process monitor: %s", e)
-                time.sleep(30)
-
-    def _check_process_health(self, name: str, process_state: ProcessState) -> None:
-        """Check health of a specific process"""
-        config = process_state.config
-
-        # Check if container is running
-        if process_state.container_id and not self._is_container_running(
-            process_state.container_id
-        ):
-            self.logger.warning("Container %s is not running", name)
-            process_state.status = "failed"
-            process_state.failure_count += 1
-
-            # Implement exponential backoff restart
-            if process_state.failure_count <= config.max_restarts:
-                delay = min(process_state.backoff_delay, 300.0)  # Max 5 minutes
-                self.logger.info(
-                    "Restarting %s after %.1fs delay (attempt %d)",
-                    name,
-                    delay,
-                    process_state.failure_count,
-                )
-
-                time.sleep(delay)
-
-                if self._start_process(name):
-                    process_state.restart_count += 1
-                    process_state.last_restart = datetime.now()
-                    process_state.backoff_delay = 1.0  # Reset backoff on success
-                else:
-                    process_state.backoff_delay *= 2.0  # Exponential backoff
-            else:
-                self.logger.error(
-                    "Process %s exceeded max restarts (%d)", name, config.max_restarts
-                )
-
-    def _health_check_loop(self) -> None:
-        """Perform periodic health checks on processes"""
-        while self.running:
-            try:
-                for name, process_state in self.processes.items():
-                    if not self.running:
-                        break
-
-                    if (
-                        process_state.status == "running"
-                        and process_state.config.health_check_port
-                    ):
-                        self._perform_health_check(name, process_state)
-
-                time.sleep(30)  # Health check every 30 seconds
-            except Exception as e:
-                self.logger.error("Error in health check loop: %s", e)
-                time.sleep(60)
-
-    def _perform_health_check(self, name: str, process_state: ProcessState) -> None:
-        """Perform health check on a specific process"""
-        config = process_state.config
-        try:
-            url = (
-                f"http://localhost:{config.health_check_port}{config.health_check_path}"
-            )
-
-            # Simple HTTP check using urllib
-            import urllib.error
-            import urllib.request
-
-            req = urllib.request.Request(url)
-            with urllib.request.urlopen(req, timeout=10) as response:
-                if response.getcode() == 200:
-                    process_state.health_status = "healthy"
-                    process_state.last_health_check = datetime.now()
-                else:
-                    process_state.health_status = "unhealthy"
-                    self.logger.warning(
-                        "Health check failed for %s: HTTP %d", name, response.getcode()
-                    )
-        except Exception as e:
-            process_state.health_status = "unhealthy"
-            self.logger.warning("Health check failed for %s: %s", name, e)
-
-    def _start_health_server(self) -> None:
-        """Start HTTP health check server"""
-        try:
-            server_address = ("", 8090)  # Listen on all interfaces, port 8090
-            self.health_server = ThreadingHTTPServer(server_address, HealthCheckHandler)
-            self.health_server.lifecycle_service = self
-
-            server_thread = threading.Thread(target=self.health_server.serve_forever)
-            server_thread.daemon = True
-            server_thread.start()
-
-            self.logger.info("Health check server started on port 8090")
-        except Exception as e:
-            self.logger.error("Failed to start health server: %s", e)
-
-    def get_service_status(self) -> dict:
-        """Get current status of all services"""
-        status: Dict = {
-            "timestamp": datetime.now().isoformat(),
-            "service_status": "running" if self.running else "stopped",
-            "processes": {},
-        }
-
-        for name, process_state in self.processes.items():
-            status["processes"][name] = {
-                "status": process_state.status,
-                "health": process_state.health_status,
-                "restart_count": process_state.restart_count,
-                "failure_count": process_state.failure_count,
-                "last_health_check": (
-                    process_state.last_health_check.isoformat()
-                    if process_state.last_health_check
-                    else None
-                ),
-                "start_time": (
-                    process_state.start_time.isoformat()
-                    if process_state.start_time
-                    else None
-                ),
-                "container_id": (
-                    process_state.container_id[:12]
-                    if process_state.container_id
-                    else None
-                ),
-            }
-
-        return status
-
-    def _signal_handler(self, signum: int, frame: Any) -> None:
-        """Handle shutdown signals"""
-        self.logger.info("Received signal %d, shutting down...", signum)
-        self.stop()
-        sys.exit(0)
-
-
-class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
-    """Thread-based HTTP server with lifecycle service attribute"""
-
-    def __init__(self, server_address: tuple, RequestHandlerClass: type) -> None:
-        super().__init__(server_address, RequestHandlerClass)
-        self.lifecycle_service: Optional["ArmoniKLifecycleService"] = None
-
-
-class HealthCheckHandler(BaseHTTPRequestHandler):
-    """HTTP handler for health checks"""
-
-    def do_GET(self) -> None:
-        lifecycle_service = getattr(self.server, "lifecycle_service", None)
-
-        if self.path == "/health":
-            self._handle_health_check(lifecycle_service)
-        elif self.path == "/status":
-            self._handle_status_check(lifecycle_service)
-        else:
-            self.send_error(404)
-
-    def _handle_health_check(
-        self, lifecycle_service: Optional["ArmoniKLifecycleService"]
-    ) -> None:
-        """Handle /health endpoint"""
-        try:
-            if not lifecycle_service:
-                self.send_error(500)
-                return
-
-            # Check if all processes are healthy
-            all_healthy = True
-            for process_state in lifecycle_service.processes.values():
-                if (
-                    process_state.status != "running"
-                    or process_state.health_status != "healthy"
-                ):
-                    all_healthy = False
-                    break
-
-            if all_healthy and lifecycle_service.running:
-                self.send_response(200)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b'{"status": "healthy"}')
-            else:
-                self.send_response(500)
-                self.send_header("Content-type", "application/json")
-                self.end_headers()
-                self.wfile.write(b'{"status": "unhealthy"}')
-        except Exception as e:
-            self.send_response(500)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(f'{{"status": "error", "message": "{str(e)}"}}'.encode())
-
-    def _handle_status_check(
-        self, lifecycle_service: Optional["ArmoniKLifecycleService"]
-    ) -> None:
-        """Handle /status endpoint"""
-        try:
-            if not lifecycle_service:
-                self.send_error(500)
-                return
-
-            status = lifecycle_service.get_service_status()
-            self.send_response(200)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps(status, indent=2).encode())
-        except Exception as e:
-            self.send_response(500)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(f'{{"status": "error", "message": "{str(e)}"}}'.encode())
-
-    def log_message(self, format_str: str, *args: Any) -> None:
-        """Override to reduce log noise"""
-        pass
+            # Health check loop
+            await self.health_check_loop()
+        finally:
+            self.logger.info("Stopping services...")
+            await self.stop_services()
+            self.logger.info("ArmoniK Lifecycle Service stopped")
 
 
 def main() -> None:
     """Main entry point"""
-    service = ArmoniKLifecycleService()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="ArmoniK Lifecycle Service")
+    parser.add_argument("--config", "-c", help="Configuration file path")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+
+    args = parser.parse_args()
+
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+
+    service = ArmoniKLifecycleService(args.config)
 
     try:
-        if service.start():
-            # Keep the service running
-            while service.running:
-                time.sleep(1)
-        else:
-            sys.exit(1)
+        asyncio.run(service.run())
     except KeyboardInterrupt:
-        service.logger.info("Received keyboard interrupt")
+        print("\nService interrupted by user")
     except Exception as e:
-        service.logger.error("Unexpected error: %s", e)
+        print(f"Service error: {e}")
         sys.exit(1)
-    finally:
-        service.stop()
 
 
 if __name__ == "__main__":

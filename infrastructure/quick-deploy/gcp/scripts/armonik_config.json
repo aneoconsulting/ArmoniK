@@ -1,41 +1,69 @@
 {
   "armonik": {
-    "version": "0.33.1",
+    "version": "0.24.4",
     "images": {
-      "polling_agent": "dockerhubaneo/armonik_pollingagent",
-      "worker": "dockerhubaneo/armonik_worker_dll"
+      "polling_agent": "dockerhubaneo/armonik_pollingagent:0.33.1",
+      "worker": "dockerhubaneo/armonik_core_htcmock_test_worker:0.33.1"
     },
-    "environment": {
-      "ASPNETCORE_ENVIRONMENT": "Production",
-      "ASPNETCORE_URLS": "http://+:8080",
-      "Logging__LogLevel__Default": "Information",
-      "Logging__LogLevel__Microsoft": "Warning",
-      "Logging__LogLevel__System": "Warning",
-      "GrpcClient__Endpoint": "http://armonik-control:5001",
-      "Redis__EndpointUrl": "localhost:6379",
-      "MongoDB__Host": "localhost",
-      "MongoDB__Port": "27017",
-      "MongoDB__DatabaseName": "ArmoniK",
-      "MongoDB__DataRetention": "10.00:00:00",
-      "MongoDB__TableStorage__PollingDelayMin": "00:00:01",
-      "MongoDB__TableStorage__PollingDelayMax": "00:00:10",
-      "MongoDB__AllowInsecureTls": "true",
-      "ComputePlane__MessageBatchSize": "1",
-      "ComputePlane__WorkerCheckRetries": "10",
-      "ComputePlane__WorkerCheckDelay": "00:00:10",
-      "ComputePlane__TaskProcessingGracePeriod": "00:02:00",
-      "InitWorker__WorkerCheckRetries": "10",
-      "InitWorker__WorkerCheckDelay": "00:00:10",
-      "Pollster__GraceDelay": "00:00:02",
-      "Pollster__MaxErrorAllowed": "5",
-      "ControlPlane__MessageBatchSize": "1"
+    "polling_agent_files" : {
+      "config_file": "C:\\ArmoniK\\config\\polling_agent_config.json",
+      "log_file": "C:\\ArmoniK\\logs\\polling_agent.log"
+    },
+    "service_account_email": "armonik-worker@$projectId.iam.gserviceaccount.com",
+    "polling_agent_environment": {
+      "ComputePlane__WorkerChannel__Address"   : "armonik-worker:8090",
+      "ComputePlane__WorkerChannel__Port"      : "8090",
+      "ComputePlane__WorkerChannel__SocketType" : "Tcp",
+      "ComputePlane__AgentChannel__Address"    : "armonik-polling-agent:8080",
+      "ComputePlane__AgentChannel__Port"       : "8080",
+      "ComputePlane__AgentChannel__SocketType"  : "Tcp"
+    },
+    "worker_environment": {
+      "ComputePlane__WorkerChannel__Address"   : "armonik-worker:8090",
+      "ComputePlane__WorkerChannel__Port"      : "8090",
+      "ComputePlane__WorkerChannel__SocketType" : "Tcp",
+      "ComputePlane__AgentChannel__Address"    : "armonik-polling-agent:8080",
+      "ComputePlane__AgentChannel__Port"       : "8080",
+      "ComputePlane__AgentChannel__SocketType"  : "Tcp"
+    },
+    "docker_config": {
+      "shared_volume_host_path": "C:\\ArmoniK\\shared",
+      "shared_volume_container_path": "/shared",
+      "network_mode": "armonik-network",
+      "restart_policy": "unless-stopped",
+      "network_name": "armonik-network",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max_size": "10m",
+          "max_file": "3"
+        }
+      },
+      "volumes": {
+        "shared_data": {
+          "host_path": "C:\\ArmoniK\\shared",
+          "container_path": "/shared",
+          "read_write": true
+        },
+        "shared_logs": {
+          "host_path": "C:\\ArmoniK\\logs",
+          "container_path": "/app/logs",
+          "read_write": true
+        }
+      }
     },
     "health_check": {
       "enabled": true,
-      "port": 8080,
+      "port": 8090,
       "interval": 30,
       "timeout": 10,
-      "retries": 3
+      "retries": 3,
+      "path": "/health",
+      "secondary_check": {
+        "port": 8080,
+        "path": "/health",
+        "enabled": true
+      }
     },
     "restart_policy": {
       "max_restarts": 5,
@@ -43,67 +71,6 @@
       "backoff_max": 300.0,
       "failure_threshold": 10,
       "restart_delay": 5
-    },
-    "docker": {
-      "network": "bridge",
-      "restart_policy": "no",
-      "log_driver": "json-file",
-      "log_options": {
-        "max-size": "10m",
-        "max-file": "3"
-      },
-      "memory_limit": "2g",
-      "cpu_limit": "1.0"
-    },
-    "ports": {
-      "polling_agent": 8080,
-      "worker": 8081,
-      "health_check": 8090
-    },
-    "partitions": {
-      "default": {
-        "image": "dockerhubaneo/armonik_worker_dll",
-        "tag": "0.33.1",
-        "environment": {},
-        "health_check_port": 8081
-      },
-      "pymonik": {
-        "image": "dockerhubaneo/harmonic_snake",
-        "tag": "python-3.10.12",
-        "environment": {},
-        "health_check_port": 8082
-      },
-      "stream": {
-        "image": "dockerhubaneo/armonik_core_stream_test_worker",
-        "tag": "latest",
-        "environment": {},
-        "health_check_port": 8083
-      },
-      "htcmock": {
-        "image": "dockerhubaneo/armonik_core_htcmock_test_worker",
-        "tag": "latest",
-        "environment": {},
-        "health_check_port": 8084
-      },
-      "bench": {
-        "image": "dockerhubaneo/armonik_core_bench_test_worker",
-        "tag": "latest",
-        "environment": {},
-        "health_check_port": 8085
-      }
     }
-  },
-  "gcp": {
-    "metadata_server": "http://metadata.google.internal/computeMetadata/v1",
-    "shutdown_on_failure": true,
-    "max_total_failures": 10,
-    "health_check_grace_period": 60
-  },
-  "logging": {
-    "level": "INFO",
-    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    "file": "C:/ArmoniK/logs/armonik_lifecycle.log",
-    "max_size": "10MB",
-    "backup_count": 5
   }
 }
