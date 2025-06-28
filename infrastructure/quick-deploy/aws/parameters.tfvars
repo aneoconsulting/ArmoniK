@@ -364,6 +364,13 @@ mongodb = {
   }
 }
 
+# Comment the mongodb and/or mongodb_sharding parameters to disable the mongodb module and use mongodb atlas
+# Comment also the state_database node group in the eks_managed_node_groups when using mongodb atlas
+# mongodb_atlas = {
+#   project_id   = "<your_project_id>"
+#   cluster_name = "<your_cluster_name>"
+# }
+
 # Nullify to disable sharding
 # mongodb_sharding = {
 #   shards = {
