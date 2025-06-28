@@ -248,6 +248,7 @@ function Create-Container-Agent {
         #"-v", "C:\Program Files\Google:C:\Program Files\Google",
         #"-v", "C:\Program Files (x86)\Google:C:\Program Files (x86)\Google",
         "-v","${SharedHostPath}:C:\shared",
+        "-v", "C:\ArmoniK\scripts:C:\ArmoniK\scripts",
         "--entrypoint", "C:\ArmoniK\scripts\init.bat"
     ) + $envArgs + @($script:DockerImages.polling_agent, "--")
     
