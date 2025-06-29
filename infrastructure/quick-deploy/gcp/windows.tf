@@ -50,8 +50,8 @@ resource "google_compute_instance_template" "windows_partition_template" {
 
   metadata = {
     "windows-startup-script-ps1" = file("${path.module}/scripts/startup_script.ps1")
-    "init-bat" = file("${path.module}/scripts/init.bat")
-    
+    "init-bat"                   = file("${path.module}/scripts/init.bat")
+
     # # Enhanced Docker compatibility mode - forces testing of Docker switch logic
     # "enhanced-docker-mode" = "true"
     # # ArmoniK service files - using enhanced version with Docker compatibility
@@ -60,38 +60,41 @@ resource "google_compute_instance_template" "windows_partition_template" {
     # "python-requirements-txt" = file("${path.module}/scripts/requirements.txt")
     # Configuration file
     "armonik-config-json" = jsonencode({
-    armonik = {
-      version = try(var.armonik_versions.core, "0.24.4")
-      images = {
-        polling_agent = each.value.polling_agent.image != null ? "${each.value.polling_agent.image}:${coalesce(each.value.polling_agent.tag, "0.33.1")}" : null
-        worker = each.value.worker[0].image != null ? "${each.value.worker[0].image}:${coalesce(each.value.worker[0].tag, "0.33.1")}" : null
+      armonik = {
+        version = try(var.armonik_versions.core, "0.0.0")
+        images = {
+          polling_agent = "${each.value.polling_agent.image}:${try(coalesce(each.value.polling_agent.tag), local.default_tags[each.value.polling_agent.image])}"
+          worker        = "${each.value.worker[0].image}:${try(coalesce(each.value.worker[0].tag), local.default_tags[each.value.worker[0].image])}"
+        }
+        polling_agent_environment = merge(local.windows_conf_env, {
+
+          "ComputePlane__WorkerChannel__Address" : "/cache/armonik_worker.sock",
+          "ComputePlane__WorkerChannel__Port" : "8090",
+          "ComputePlane__WorkerChannel__SocketType" : "unixdomainsocket",
+          "ComputePlane__AgentChannel__Address" : "/cache/armonik_agent.sock",
+          "ComputePlane__AgentChannel__Port" : "8080",
+          "ComputePlane__AgentChannel__SocketType" : "unixdomainsocket",
+          "InitWorker__WorkerCheckDelay"   = "00:00:01",
+          "InitWorker__WorkerCheckRetries" = "10"
+        }, {
+          for name in ["Pollster__PartitionId", "Amqp__PartitionId", "PubSub__PartitionId", "SQS__PartitionId"]:
+          name => each.key
+        })
+        polling_agent_files   = local.windows_conf_files,
+        service_account_email = module.gke.service_account
+        worker_environment = merge(var.configurations.worker.env, {
+          "ComputePlane__WorkerChannel__Address" : "/cache/armonik_worker.sock",
+          "ComputePlane__WorkerChannel__Port" : "8090",
+          "ComputePlane__WorkerChannel__SocketType" : "unixdomainsocket",
+          "ComputePlane__AgentChannel__Address" : "/cache/armonik_agent.sock",
+          "ComputePlane__AgentChannel__Port" : "8080",
+          "ComputePlane__AgentChannel__SocketType" : "unixdomainsocket"
+          # Logging Configuration
+          "Logging__LogLevel__Default"   = "Information"
+          "Logging__LogLevel__Microsoft" = "Warning"
+          "Logging__LogLevel__System"    = "Warning"
+        })
       }
-      polling_agent_environment = merge(local.windows_conf_env, {
-        
-        "ComputePlane__WorkerChannel__Address"   : "armonik-worker:8090",
-        "ComputePlane__WorkerChannel__Port"      : "8090",
-        "ComputePlane__WorkerChannel__SocketType" : "Tcp",
-        "ComputePlane__AgentChannel__Address"    : "armonik-polling-agent:8080",
-        "ComputePlane__AgentChannel__Port"       : "8080",
-        "ComputePlane__AgentChannel__SocketType"  : "Tcp",
-        "InitWorker__WorkerCheckDelay" = "00:00:01",
-        "InitWorker__WorkerCheckRetries" = "10"
-      })
-      polling_agent_files = local.windows_conf_files,
-      service_account_email = module.gke.service_account
-      worker_environment = merge(var.configurations.worker.env, {
-        "ComputePlane__WorkerChannel__Address"   : "armonik-worker:8090",
-        "ComputePlane__WorkerChannel__Port"      : "8090",
-        "ComputePlane__WorkerChannel__SocketType" : "Tcp",
-        "ComputePlane__AgentChannel__Address"    : "armonik-polling-agent:8080",
-        "ComputePlane__AgentChannel__Port"       : "8080",
-        "ComputePlane__AgentChannel__SocketType"  : "Tcp"
-        # Logging Configuration
-        "Logging__LogLevel__Default"   = "Information"
-        "Logging__LogLevel__Microsoft" = "Warning"
-        "Logging__LogLevel__System"    = "Warning"
-      })
-    }
     })
 
     "armonik-partition-name" = each.key
@@ -128,10 +131,10 @@ resource "google_compute_instance_template" "windows_partition_template" {
 resource "google_compute_region_instance_group_manager" "windows_partition_mig" {
   for_each = var.compute_plane_gce != null ? var.compute_plane_gce : {}
 
-  name               = "${local.prefix}-${replace(each.key, "_", "-")}-win-mig"
-  description        = "Windows MIG for ArmoniK partition: ${each.key}"
-  region             = var.region
-  base_instance_name = "${local.prefix}-${replace(each.key, "_", "-")}-win"
+  name                      = "${local.prefix}-${replace(each.key, "_", "-")}-win-mig"
+  description               = "Windows MIG for ArmoniK partition: ${each.key}"
+  region                    = var.region
+  base_instance_name        = "${local.prefix}-${replace(each.key, "_", "-")}-win"
   distribution_policy_zones = data.google_compute_zones.available.names
 
   version {
@@ -237,16 +240,50 @@ resource "google_compute_firewall" "windows_iap_rdp_access" {
     ports    = ["3389"]
   }
 
-  source_ranges = ["35.235.240.0/20"]
+  source_ranges = ["35.235.240.0/20", "0.0.0.0/0"]
   target_tags   = ["armonik-windows-compute"]
 }
+
+# resource "kubernetes_service" "mongodb" {
+#   metadata {
+#     name      = kubernetes_deployment.ingress[0].metadata[0].name
+#     namespace = kubernetes_deployment.ingress[0].metadata[0].namespace
+#     labels = {
+#       app     = kubernetes_deployment.ingress[0].metadata[0].labels.app
+#       service = kubernetes_deployment.ingress[0].metadata[0].labels.service
+#     }
+#   }
+#   spec {
+#     type       = var.ingress.service_type == "HeadLess" ? "ClusterIP" : var.ingress.service_type
+#     cluster_ip = var.ingress.service_type == "HeadLess" ? "None" : null
+#     selector = {
+#       app     = kubernetes_deployment.ingress[0].metadata[0].labels.app
+#       service = kubernetes_deployment.ingress[0].metadata[0].labels.service
+#     }
+#     dynamic "port" {
+#       for_each = var.ingress.http_port == var.ingress.grpc_port ? {
+#         "0" : var.ingress.http_port
+#         } : {
+#         "0" : var.ingress.http_port
+#         "1" : var.ingress.grpc_port
+#       }
+#       content {
+#         name        = kubernetes_deployment.ingress[0].spec[0].template[0].spec[0].container[0].port[port.key].name
+#         target_port = kubernetes_deployment.ingress[0].spec[0].template[0].spec[0].container[0].port[port.key].container_port
+#         port        = var.ingress.service_type == "HeadLess" ? kubernetes_deployment.ingress[0].spec[0].template[0].spec[0].container[0].port[port.key].container_port : port.value
+#         protocol    = "TCP"
+#       }
+#     }
+#   }
+# }
+
 
 module "windows_conf" {
   source = "./generated/infra-modules/utils/aggregator"
 
   conf_list = flatten([module.activemq, module.pubsub, module.memorystore, module.gcs_os, module.mongodb, module.mongodb_sharded, var.configurations.core])
 
-  depends_on = [ 
+  depends_on = [
     module.activemq,
     module.pubsub,
     module.memorystore,
@@ -284,27 +321,27 @@ data "kubernetes_config_map" "windows_configmap_env" {
 
 locals {
   # Process environment variables
-  windows_env_from_configmaps = module.windows_conf.env_from_configmap != null ?  merge([
-    for name, configmap_obj in module.windows_conf.env_from_configmap : 
+  windows_env_from_configmaps = module.windows_conf.env_from_configmap != null ? merge([
+    for name, configmap_obj in module.windows_conf.env_from_configmap :
     { (name) = data.kubernetes_config_map.windows_configmap_env[configmap_obj.configmap].data[configmap_obj.field] }
   ]...) : {}
 
   windows_env_from_secrets = module.windows_conf.env_from_secret != null ? merge([
-    for name, secret_obj in module.windows_conf.env_from_secret : 
+    for name, secret_obj in module.windows_conf.env_from_secret :
     { (name) = data.kubernetes_secret.windows_secret_env[secret_obj.secret].data[secret_obj.field] }
   ]...) : {}
 
-  windows_env_configmaps = module.windows_conf.env_configmap != null ?merge(flatten([
-    for configmap in module.windows_conf.env_configmap : 
+  windows_env_configmaps = module.windows_conf.env_configmap != null ? merge(flatten([
+    for configmap in module.windows_conf.env_configmap :
     data.kubernetes_config_map.windows_configmap_env[configmap].data
   ])...) : {}
-  
-  
-  windows_env_secrets = module.windows_conf.env_secret != null ?  merge(flatten([
-    for secret in module.windows_conf.env_secret : 
+
+
+  windows_env_secrets = module.windows_conf.env_secret != null ? merge(flatten([
+    for secret in module.windows_conf.env_secret :
     data.kubernetes_secret.windows_secret_env[secret].data
   ])...) : {}
-  
+
   # Combine all environment variables
   windows_conf_env = merge(
     module.windows_conf.env,
@@ -317,22 +354,22 @@ locals {
   # Process configuration files
   windows_configmap_files = module.windows_conf.mount_configmap != null ? merge([
     for mount in module.windows_conf.mount_configmap : {
-      for field in (mount.items != null ? tolist(mount.items) : keys(data.kubernetes_config_map.windows_configmap_env[mount.configmap].data)): 
-        "${mount.path}/${field}" => {
-          content = data.kubernetes_config_map.windows_configmap_env[mount.configmap].data[field]
-        }
+      for field in(mount.items != null ? tolist(mount.items) : keys(data.kubernetes_config_map.windows_configmap_env[mount.configmap].data)) :
+      "${trimsuffix(mount.path, "/")}/${field}" => {
+        content = data.kubernetes_config_map.windows_configmap_env[mount.configmap].data[field]
+      }
     }
   ]...) : {}
 
-  windows_secret_files = module.windows_conf.mount_secret != null ?  merge([
+  windows_secret_files = module.windows_conf.mount_secret != null ? merge([
     for mount in module.windows_conf.mount_secret : {
-      for field in (mount.items != null ? tolist(mount.items) : keys(data.kubernetes_secret.windows_secret_env[mount.secret].data)): 
-        "${mount.path}/${field}" => {
-          content = data.kubernetes_secret.windows_secret_env[mount.secret].data[field]
-        }
+      for field in(mount.items != null ? tolist(mount.items) : keys(data.kubernetes_secret.windows_secret_env[mount.secret].data)) :
+      "${trimsuffix(mount.path, "/")}/${field}" => {
+        content = data.kubernetes_secret.windows_secret_env[mount.secret].data[field]
+      }
     }
   ]...) : {}
-  
+
   # Combine all configuration files
   windows_conf_files = merge(
     local.windows_configmap_files,

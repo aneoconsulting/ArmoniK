@@ -237,7 +237,7 @@ kms = {
 }
 
 # Logging level
-logging_level = "Information"
+logging_level = "Debug"
 
 keda = {
   node_selector = { service = "monitoring" }
@@ -259,6 +259,7 @@ keda = {
 
 mongodb = {
   node_selector = { service = "state-database" }
+
   # Uncomment the line below to enable persistence, comment to disable
   # persistent_volume = {}
 }
@@ -608,9 +609,9 @@ compute_plane = {
 }
 
 compute_plane_gce = {
-  windows-partition = {
+  windows = {
     scaling = {
-      min_replicas             = 1    # Changed from 0 to 1 to ensure VMs are available
+      min_replicas             = 1 # Changed from 0 to 1 to ensure VMs are available
       max_replicas             = 10
       target_cpu_utilization   = 70
       cooldown_period          = 300
@@ -619,13 +620,11 @@ compute_plane_gce = {
     instance_type = "e2-standard-4"
     polling_agent = {
       image = "dockerhubaneo/armonik_pollingagent"
-      tag   = "0.33.1"
     }
     worker = [
       {
         name  = "windows-worker"
         image = "dockerhubaneo/armonik_core_htcmock_test_worker"
-        tag   = "0.33.1"
       }
     ]
     cache_config = {

@@ -27,8 +27,8 @@ locals {
     var.authentication != null ? [var.authentication.image, var.authentication.tag] : null,
     var.pod_deletion_cost != null ? [var.pod_deletion_cost.image, var.pod_deletion_cost.tag] : null,
     ], [
-      for k, v in var.compute_plane_gce :
-      [v.polling_agent.image, v.polling_agent.tag]
+    for k, v in var.compute_plane_gce :
+    [v.polling_agent.image, v.polling_agent.tag]
     ], concat([
       for k, v in var.compute_plane_gce :
       [
@@ -76,13 +76,15 @@ locals {
   docker_images_raw = {
     for rep in local.docker_repositories :
     rep.key => var.upload_images ? {
-      image = try(module.artifact_registry.docker_repositories["${rep.image}:${rep.tag}"], null),
-      name  = try(module.artifact_registry.docker_repositories["${rep.image}:${rep.tag}"], null),
-      tag   = rep.tag,
+      image    = try(module.artifact_registry.docker_repositories["${rep.image}:${rep.tag}"], null),
+      name     = try(module.artifact_registry.docker_repositories["${rep.image}:${rep.tag}"], null),
+      tag      = rep.tag,
+      fullname = "${try(module.artifact_registry.docker_repositories["${rep.image}:${rep.tag}"], null)}:${rep.tag}"
       } : {
-      image = rep.image,
-      name  = rep.image,
-      tag   = rep.tag,
+      image    = rep.image,
+      name     = rep.image,
+      tag      = rep.tag,
+      fullname = "${rep.image}:${rep.tag}"
     }
   }
 

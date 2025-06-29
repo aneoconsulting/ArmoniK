@@ -11,7 +11,7 @@ Write-Output "=== ArmoniK Startup Script Started $(Get-Date) ==="
 # Global variables
 $FlagFeatures = "C:\flags\features.flag"
 $FlagDocker = "C:\flags\docker.flag"
-$Dirs = @("C:\flags", "C:\temp", "C:\ArmoniK\logs", "C:\ArmoniK\shared", "C:\ArmoniK\config", "C:\ArmoniK\scripts", "C:\ArmoniK\mount", "C:\ArmoniK\empty")
+$Dirs = @("C:\flags", "C:\temp", "C:\ArmoniK\logs", "C:\ArmoniK\shared", "C:\ArmoniK\cache", "C:\ArmoniK\config", "C:\ArmoniK\scripts", "C:\ArmoniK\mount", "C:\ArmoniK\empty")
 $SharedHostPath = "C:\ArmoniK\shared"
 $AddRouteScript = "C:\ArmoniK\scripts\init.bat"
 $script:ArmoniKConfig = $null
@@ -219,6 +219,7 @@ function Create-Agent-Files {
         $filePath = Join-Path $mountPath $_.Name
         if (-not (Test-Path -Path $filePath)) {
             New-Item -Path $filePath -ItemType File -Force | Out-Null
+            $_.Value | Set-Content -Path $filePath
             Write-Log "Created file: $filePath"
         } else {
             Write-Log "File already exists: $filePath"
@@ -230,12 +231,15 @@ function Create-Container-Agent {
     
     $agentPort = $script:ArmoniKConfig.armonik.worker_environment.ComputePlane__AgentChannel__Port
     # Build environment arguments
-    $envArgs = @()
+    $envArgs = @("-e", "MongoDB__AllowInsecureTls=true")
     if ($script:ArmoniKConfig.armonik.polling_agent_environment) {
         $script:ArmoniKConfig.armonik.polling_agent_environment.PSObject.Properties | ForEach-Object {
             $envArgs += @("-e", "$($_.Name)=$($_.Value)")
         }
     }
+
+    # Remove existing container if it exists
+    docker rm -f armonik-polling-agent 2>$null
 
     # docker run --network nat --rm -it --user ContainerAdministrator -v "C:\ArmoniK\:C:\mnt" -v "C:\Program Files\Google\:C:\Program Files\Google" -v "C:\Program Files (x86)\Google\:C:\Program Files (x86)\Google" mcr.microsoft.com/windows/nanoserver:ltsc2022
     # Run container with proper mounts
@@ -244,11 +248,11 @@ function Create-Container-Agent {
         "-p","${agentPort}:${agentPort}",
         "--user", "ContainerAdministrator",
         "--network","nat",
-        #"--add-host","metadata.google.internal:169.254.169.254",
+        #"--add-host","mongodb-armonik-headless.armonik.svc.cluster.local:10.43.0.26",
         #"-v", "C:\Program Files\Google:C:\Program Files\Google",
         #"-v", "C:\Program Files (x86)\Google:C:\Program Files (x86)\Google",
-        "-v","${SharedHostPath}:C:\shared",
-        "-v", "C:\ArmoniK\scripts:C:\ArmoniK\scripts",
+        "-v","C:\ArmoniK\cache:C:\cache",
+        "-v","C:\ArmoniK\shared:C:\cache\shared",
         "--entrypoint", "C:\ArmoniK\scripts\init.bat"
     ) + $envArgs + @($script:DockerImages.polling_agent, "--")
     
@@ -261,11 +265,13 @@ function Create-Container-Agent {
 
 function Copy-Container-Agent {
     Write-Log "Copying files to polling agent container"
+    docker cp "C:\ArmoniK\empty\." "armonik-polling-agent:C:\ArmoniK"
+    docker cp "C:\ArmoniK\empty\." "armonik-polling-agent:C:\ArmoniK\scripts"
     docker cp "C:\ArmoniK\scripts\init.bat" "armonik-polling-agent:C:\ArmoniK\scripts\init.bat"
 
-    foreach ($file in $script:ArmoniKConfig.armonik.polling_agent_files.Keys) {
+    $script:ArmoniKConfig.armonik.polling_agent_files.PSObject.Properties | ForEach-Object {
         # Normalize and convert Unix-style path to Windows-style
-        $file = $file -replace '/', '\'
+        $file = $_.Name -replace '/', '\'
         $container = "armonik-polling-agent"
 
         # Split into parts
@@ -280,7 +286,9 @@ function Copy-Container-Agent {
 
         # Finally, copy the actual file
         $sourceFile = Join-Path "C:\ArmoniK\mount" ($file.TrimStart('\'))
-        $destinationFile = "C:\$file"
+        $destinationFile = "C:\$($file.TrimStart('\'))"
+
+        Write-Log "Copy file ${container}:${destinationFile}"
         docker cp "$sourceFile" "${container}:${destinationFile}"
     }
 }
@@ -353,6 +361,8 @@ function Start-Worker {
     # Run container
     $dockerArgs = @(
         "run", "-d", "--name", "armonik-worker", "--restart", "unless-stopped",
+        "-v","C:\ArmoniK\cache:C:\cache",
+        "-v","C:\ArmoniK\shared:C:\cache\shared",
         "-p", "${workerPort}:${workerPort}",
         "--network","nat",
         "-v",$shared
@@ -486,8 +496,6 @@ if (-not (Test-Flag $FlagFeatures)) {
     exit 0
 }
 
-Get-ServerMetadata
-
 # Step 2: Install Docker (requires reboot)
 if (-not (Test-Flag $FlagDocker)) {
     Write-Log "Step 2: Installing Docker Engine"
@@ -501,16 +509,12 @@ if (-not (Test-Flag $FlagDocker)) {
     exit 0
 }
 
-Get-ServerMetadata
-
 # Step 3: Start Docker and deploy containers
 Write-Log "Step 3: Starting Docker and configuring authentication"
 if (-not (Start-DockerService)) {
     Write-Log "Failed to start Docker" -Level "ERROR"
     exit 1
 }
-
-Get-ServerMetadata
 
 Write-Log "Opening Windows firewall for port "
 try {

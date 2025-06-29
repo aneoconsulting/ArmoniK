@@ -12,10 +12,11 @@ MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
 
 # Randomly generated string that is preserved across calls
 RANDOM_PREFIX != [ -e $(GENERATED_DIR)/.prefix ] || { mkdir -p $(GENERATED_DIR) && tr -dc a-z0-9 </dev/urandom | head -c 5 > $(GENERATED_DIR)/.prefix ; } && cat $(GENERATED_DIR)/.prefix
+DEFAULT_PROJECT_ID:=$(shell gcloud config get-value project)
 
 export TF_DATA_DIR?=$(GENERATED_DIR)
 export TF_PLUGIN_CACHE_DIR?=$(GENERATED_DIR)/terraform-plugins
-export PROJECT_ID?=$(shell gcloud config get-value project)
+export PROJECT_ID?=$(DEFAULT_PROJECT_ID)
 export REGION?=europe-west1
 export NAMESPACE?=armonik
 export PREFIX?=armonik-$(RANDOM_PREFIX)
@@ -25,7 +26,7 @@ export TF_VAR_region?=$(REGION)
 export TF_VAR_namespace?=$(NAMESPACE)
 export TF_VAR_prefix?=$(PREFIX)
 export TF_VAR_project?=$(PROJECT_ID)
-SHELL:=/bin/bash
+#SHELL:=/bin/bash
 
 .PHONY: apply destroy
 

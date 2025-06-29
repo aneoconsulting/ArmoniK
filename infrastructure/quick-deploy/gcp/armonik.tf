@@ -40,7 +40,7 @@ module "armonik" {
       ]
     })
   }
-  
+
   # GCE-based compute plane configuration
   compute_plane_gce = var.compute_plane_gce
   control_plane = merge(var.control_plane, {

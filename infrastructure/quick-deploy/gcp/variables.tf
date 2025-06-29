@@ -505,13 +505,13 @@ variable "compute_plane_gce" {
     instance_type = optional(string, "e2-standard-4")
     polling_agent = optional(object({
       image             = optional(string, "dockerhubaneo/armonik_pollingagent")
-      tag               = optional(string, "0.33.1")
+      tag               = optional(string)
       image_pull_policy = optional(string, "IfNotPresent")
     }), {})
     worker = list(object({
       name              = optional(string, "worker")
       image             = optional(string, "dockerhubaneo/armonik_core_htcmock_test_client")
-      tag               = optional(string, "0.33.1")
+      tag               = optional(string)
       image_pull_policy = optional(string, "IfNotPresent")
     }))
   }))
@@ -650,6 +650,3 @@ variable "activemq" {
   })
   default = null
 }
-
-
-

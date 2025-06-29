@@ -28,6 +28,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
+echo 10.43.0.26 mongodb-armonik-headless.armonik.svc.cluster.local >> "C:\Windows\System32\drivers\etc\hosts"
+
 "C:\Program Files\dotnet\dotnet.exe" ArmoniK.Core.Compute.PollingAgent.dll 
 
 endlocal
