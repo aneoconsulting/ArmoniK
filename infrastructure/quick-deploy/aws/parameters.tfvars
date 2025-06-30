@@ -418,11 +418,11 @@ node_exporter = {
 }
 
 #node exporter for windows
-windows_exporter = {
-  node_selector = {
-    "platform" = "windows"
-  }
-}
+#windows_exporter = {
+#  node_selector = {
+#    "platform" = "windows"
+#  }
+#}
 
 prometheus = {
   node_selector = { service = "metrics" }
@@ -458,14 +458,14 @@ fluent_bit = {
   node_selector = {}
 }
 
-fluent_bit_windows = {
-  is_daemonset = true
-  #image_name   = "fluent/fluent-bit"
-  image_tag = "windows-2022-3.2.0"
-  node_selector_windows = {
-    "platform" = "windows"
-  }
-}
+#fluent_bit_windows = {
+#  is_daemonset = true
+#  #image_name   = "fluent/fluent-bit"
+#  image_tag = "windows-2022-3.2.0"
+#  node_selector_windows = {
+#    "platform" = "windows"
+#  }
+#}
 
 pod_deletion_cost = {
   node_selector = { service = "metrics" }
@@ -926,6 +926,7 @@ configurations = {
 #     Redis__SslHost                             = ""
 #     Redis__TtlTimeSpan                         = "1.00:00:00" # 1 day retention
       Submitter__DeletePayload                   = true
+      SQS__MaxPriority                          = "2"
     }
   }
   control = {
