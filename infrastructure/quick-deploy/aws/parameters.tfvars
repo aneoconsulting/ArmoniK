@@ -458,14 +458,14 @@ fluent_bit = {
   node_selector = {}
 }
 
-#fluent_bit_windows = {
-#  is_daemonset = true
-#  #image_name   = "fluent/fluent-bit"
-#  image_tag = "windows-2022-3.2.0"
-#  node_selector_windows = {
-#    "platform" = "windows"
-#  }
-#}
+fluent_bit_windows = {
+  is_daemonset = true
+  #image_name   = "fluent/fluent-bit"
+  image_tag = "windows-2022-3.2.0"
+  node_selector_windows = {
+    "platform" = "windows"
+  }
+}
 
 pod_deletion_cost = {
   node_selector = { service = "metrics" }
