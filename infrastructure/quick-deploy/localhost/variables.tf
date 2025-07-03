@@ -519,14 +519,8 @@ variable "compute_plane" {
       image             = optional(string, "dockerhubaneo/armonik_pollingagent")
       tag               = optional(string)
       image_pull_policy = optional(string, "IfNotPresent")
-      limits = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-      requests = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
+      limits = optional(map(string))
+      requests = optional(map(string))
       conf = optional(any, [])
     })
     worker = list(object({
@@ -534,14 +528,8 @@ variable "compute_plane" {
       image             = string
       tag               = optional(string)
       image_pull_policy = optional(string, "IfNotPresent")
-      limits = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
-      requests = optional(object({
-        cpu    = optional(string)
-        memory = optional(string)
-      }))
+      limits = optional(map(string))
+      requests = optional(map(string))
       conf = optional(any, [])
     }))
     cache_config = optional(object({
