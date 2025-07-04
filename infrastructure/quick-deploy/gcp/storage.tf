@@ -12,9 +12,25 @@ locals {
   }
 }
 
+# MongoDB Atlas 
+module "atlas_mongodb" {
+  count              = var.mongodb_atlas != null ? 1 : 0
+  source             = "./generated/infra-modules/storage/gcp/atlas-gcp"
+  namespace          = local.namespace
+  region             = var.region
+  cluster_name       = var.mongodb_atlas.cluster_name
+  tags               = local.labels
+  project_id         = var.mongodb_atlas.project_id
+  network_id         = module.vpc.self_link
+  subnetwork_id      = module.vpc.gke_subnet_self_link
+  gcp_project_id     = data.google_client_config.current.project
+  vpc_name           = module.vpc.name
+  ip_cidr_range      = module.vpc.gke_subnet_cidr_block 
+}
+
 # MongoDB for state-database
 module "mongodb" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 0 : 1
+  count     = var.mongodb != null ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb"
   namespace = local.namespace
   mongodb = {
@@ -32,7 +48,7 @@ module "mongodb" {
 }
 
 module "mongodb_sharded" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 1 : 0
+  count     = var.mongodb_sharding != null ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb-sharded"
   namespace = local.namespace
 

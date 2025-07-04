@@ -183,7 +183,7 @@ module "aws_service_account" {
 
 module "atlas_mongodb" {
   count              = var.mongodb_atlas != null ? 1 : 0
-  source             = "./generated/infra-modules/storage/atlas"
+  source             = "./generated/infra-modules/storage/aws/atlas_aws"
   namespace          = local.namespace
   region             = var.region
   cluster_name       = var.mongodb_atlas.cluster_name

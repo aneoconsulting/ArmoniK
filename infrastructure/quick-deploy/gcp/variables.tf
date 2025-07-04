@@ -107,6 +107,16 @@ variable "chaos_mesh" {
   default = null
 }
 
+# Parameters for MongoDB Atlas
+variable "mongodb_atlas" {
+  description = "MongoDB Atlas configuration"
+  type = object({
+    project_id   = string
+    cluster_name = string
+  })
+  default = null
+}
+
 # Parameters for MongoDB
 variable "mongodb" {
   description = "Parameters of MongoDB"
@@ -145,7 +155,7 @@ variable "mongodb" {
       }))
     }))
   })
-  default = {}
+  default = null
 }
 
 variable "mongodb_sharding" {
