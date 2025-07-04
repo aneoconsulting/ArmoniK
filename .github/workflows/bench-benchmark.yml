@@ -122,6 +122,8 @@ jobs:
 
       - name: "Bootstrap ArmoniK Deploy"
         uses: aneoconsulting/ArmoniK.Action.Deploy/bootstrap-deploy@mkg/add-gcp-ti-dependencies
+        env: 
+          REGION: ${{matrix.type == 'gcp' && 'us-central1' || ''}}
         with:
           type: ${{ matrix.type }}
           prefix: ${{ env.prefix }}
@@ -131,6 +133,8 @@ jobs:
       - id: deploy
         name: "Deploy ArmoniK"
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@mkg/add-gcp-ti-dependencies
+        env: 
+          REGION: ${{matrix.type == 'gcp' && 'us-central1' || ''}}
         with:
           type: ${{ matrix.type }}
           prefix: ${{ env.prefix }}
