@@ -28,6 +28,11 @@ on:
         type: boolean
         required: false
         default: false
+      gcp:
+        description: "Whether to bench GCP."
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   define-matrix:
@@ -49,11 +54,12 @@ jobs:
           set -ex
           LOCALHOST='{"type": "localhost", "ntasks":3000, "polling-limit": 300}'
           AWS='{"type": "aws", "ntasks":1200000, "polling-limit": 1000, "parameters-file-path": "benchmarking/aws.tfvars"}'
+          GCP='{"type": "gcp", "ntasks":1200000, "polling-limit": 1000, "parameters-file-path": "benchmarking/gcp.tfvars"}'
           if [ "$TRIGGER" == 'push' ]; then
             echo "{\"include\":[$LOCALHOST]}" > matrix.json
             FILE_PREFIX="$REF_NAME"
           elif [ "$TRIGGER" == 'release' ]; then
-            echo "{\"include\":[$LOCALHOST, $AWS]}" > matrix.json
+            echo "{\"include\":[$LOCALHOST, $AWS, $GCP]}" > matrix.json
             FILE_PREFIX="release/$REF_NAME"
           elif [ "$TRIGGER" == 'workflow_dispatch' ]; then
             INCLUDE=""
@@ -62,6 +68,9 @@ jobs:
             fi
             if [ '${{inputs.aws || false}}' == true ]; then
               INCLUDE="${INCLUDE}${INCLUDE:+,}${AWS}"
+            fi
+            if [ '${{inputs.gcp || false}}' == true ]; then
+              INCLUDE="${INCLUDE}${INCLUDE:+,}${GCP}"
             fi
             echo "{\"include\":[$INCLUDE]}" > matrix.json
             FILE_PREFIX="manual/$REF_NAME"
