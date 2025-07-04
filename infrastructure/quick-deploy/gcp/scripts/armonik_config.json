@@ -1,0 +1,76 @@
+{
+  "armonik": {
+    "version": "0.24.4",
+    "images": {
+      "polling_agent": "dockerhubaneo/armonik_pollingagent:0.33.1",
+      "worker": "dockerhubaneo/armonik_core_htcmock_test_worker:0.33.1"
+    },
+    "polling_agent_files" : {
+      "config_file": "C:\\ArmoniK\\config\\polling_agent_config.json",
+      "log_file": "C:\\ArmoniK\\logs\\polling_agent.log"
+    },
+    "service_account_email": "armonik-worker@$projectId.iam.gserviceaccount.com",
+    "polling_agent_environment": {
+      "ComputePlane__WorkerChannel__Address"   : "armonik-worker:8090",
+      "ComputePlane__WorkerChannel__Port"      : "8090",
+      "ComputePlane__WorkerChannel__SocketType" : "Tcp",
+      "ComputePlane__AgentChannel__Address"    : "armonik-polling-agent:8080",
+      "ComputePlane__AgentChannel__Port"       : "8080",
+      "ComputePlane__AgentChannel__SocketType"  : "Tcp"
+    },
+    "worker_environment": {
+      "ComputePlane__WorkerChannel__Address"   : "armonik-worker:8090",
+      "ComputePlane__WorkerChannel__Port"      : "8090",
+      "ComputePlane__WorkerChannel__SocketType" : "Tcp",
+      "ComputePlane__AgentChannel__Address"    : "armonik-polling-agent:8080",
+      "ComputePlane__AgentChannel__Port"       : "8080",
+      "ComputePlane__AgentChannel__SocketType"  : "Tcp"
+    },
+    "docker_config": {
+      "shared_volume_host_path": "C:\\ArmoniK\\shared",
+      "shared_volume_container_path": "/shared",
+      "network_mode": "armonik-network",
+      "restart_policy": "unless-stopped",
+      "network_name": "armonik-network",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max_size": "10m",
+          "max_file": "3"
+        }
+      },
+      "volumes": {
+        "shared_data": {
+          "host_path": "C:\\ArmoniK\\shared",
+          "container_path": "/shared",
+          "read_write": true
+        },
+        "shared_logs": {
+          "host_path": "C:\\ArmoniK\\logs",
+          "container_path": "/app/logs",
+          "read_write": true
+        }
+      }
+    },
+    "health_check": {
+      "enabled": true,
+      "port": 8090,
+      "interval": 30,
+      "timeout": 10,
+      "retries": 3,
+      "path": "/health",
+      "secondary_check": {
+        "port": 8080,
+        "path": "/health",
+        "enabled": true
+      }
+    },
+    "restart_policy": {
+      "max_restarts": 5,
+      "backoff_base": 2.0,
+      "backoff_max": 300.0,
+      "failure_threshold": 10,
+      "restart_delay": 5
+    }
+  }
+}

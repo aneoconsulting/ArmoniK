@@ -14,8 +14,8 @@ module "armonik" {
   seq                     = one(module.seq)
   shared_storage_settings = local.shared_storage
 
-  // If compute plane has no partition data, provides a default
-  // but always overrides the images
+  # If compute plane has no partition data, provides a default
+  # but always overrides the images
   compute_plane = {
     for k, v in var.compute_plane : k => merge({
       partition_data = {
@@ -40,6 +40,9 @@ module "armonik" {
       ]
     })
   }
+
+  # GCE-based compute plane configuration
+  compute_plane_gce = var.compute_plane_gce
   control_plane = merge(var.control_plane, {
     image                = local.docker_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].name
     tag                  = local.docker_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].tag

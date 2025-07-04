@@ -1,0 +1,33 @@
+# ArmoniK Windows Service Dependencies
+# Production-ready Docker container management for Windows services
+
+# Core async and HTTP libraries
+aiohttp>=3.8.0,<4.0.0
+asyncio-mqtt>=0.10.0
+
+# Windows service support
+pywin32>=304; sys_platform == "win32"
+
+# Configuration and validation with enhanced schema support
+jsonschema>=4.17.0,<5.0.0
+PyYAML>=6.0.0,<7.0.0
+
+# Security and encryption with modern cryptography
+cryptography>=41.0.0,<42.0.0
+
+# HTTP requests with comprehensive retry support
+requests>=2.31.0,<3.0.0
+urllib3>=1.26.12,<3.0.0
+
+# Logging and monitoring with structured output
+structlog>=23.0.0,<24.0.0
+
+# System monitoring and metrics collection
+psutil>=5.9.0,<6.0.0
+
+# Docker container management (Optional - Docker CLI used directly)
+# docker>=6.0.0,<7.0.0
+
+# GCP metadata and service integration
+google-auth>=2.17.0,<3.0.0
+google-cloud-core>=2.3.0,<3.0.0

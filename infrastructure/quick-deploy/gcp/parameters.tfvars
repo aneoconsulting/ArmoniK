@@ -237,7 +237,7 @@ kms = {
 }
 
 # Logging level
-logging_level = "Information"
+logging_level = "Debug"
 
 keda = {
   node_selector = { service = "monitoring" }
@@ -259,6 +259,7 @@ keda = {
 
 mongodb = {
   node_selector = { service = "state-database" }
+
   # Uncomment the line below to enable persistence, comment to disable
   # persistent_volume = {}
 }
@@ -402,210 +403,237 @@ compute_plane = {
     }
   },
   # Partition for the pymonik worker
-  pymonik = {
-    # number of replicas for each deployment of compute plane
-    replicas = 0
-    # ArmoniK polling agent
-    polling_agent = {
-      limits = {
-        cpu    = "2000m"
-        memory = "2048Mi"
-      }
-      requests = {
-        cpu    = "50m"
-        memory = "50Mi"
-      }
-    }
-    # ArmoniK workers
-    worker = [
-      {
-        image = "dockerhubaneo/harmonic_snake"
-        tag   = "python-3.10.12"
-        limits = {
-          cpu    = "1000m"
-          memory = "1024Mi"
-        }
-        requests = {
-          cpu    = "50m"
-          memory = "50Mi"
-        }
-      }
-    ]
-    hpa = {
-      type              = "prometheus"
-      polling_interval  = 15
-      cooldown_period   = 300
-      min_replica_count = 0
-      max_replica_count = 100
-      behavior = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers = [
-        {
-          type      = "prometheus"
-          threshold = 2
-        },
-      ]
-    }
-  },
+  # pymonik = {
+  #   # number of replicas for each deployment of compute plane
+  #   replicas = 0
+  #   # ArmoniK polling agent
+  #   polling_agent = {
+  #     limits = {
+  #       cpu    = "2000m"
+  #       memory = "2048Mi"
+  #     }
+  #     requests = {
+  #       cpu    = "50m"
+  #       memory = "50Mi"
+  #     }
+  #   }
+  #   # ArmoniK workers
+  #   worker = [
+  #     {
+  #       image = "dockerhubaneo/harmonic_snake"
+  #       tag   = "python-3.10.12"
+  #       limits = {
+  #         cpu    = "1000m"
+  #         memory = "1024Mi"
+  #       }
+  #       requests = {
+  #         cpu    = "50m"
+  #         memory = "50Mi"
+  #       }
+  #     }
+  #   ]
+  #   hpa = {
+  #     type              = "prometheus"
+  #     polling_interval  = 15
+  #     cooldown_period   = 300
+  #     min_replica_count = 0
+  #     max_replica_count = 100
+  #     behavior = {
+  #       restore_to_original_replica_count = true
+  #       stabilization_window_seconds      = 300
+  #       type                              = "Percent"
+  #       value                             = 100
+  #       period_seconds                    = 15
+  #     }
+  #     triggers = [
+  #       {
+  #         type      = "prometheus"
+  #         threshold = 2
+  #       },
+  #     ]
+  #   }
+  # },
   # Partition for the stream worker
-  stream = {
-    node_selector = { service = "workers" }
-    # number of replicas for each deployment of compute plane
-    replicas = 1
-    # ArmoniK polling agent
-    polling_agent = {
-      limits = {
-        cpu    = "2000m"
-        memory = "2048Mi"
-      }
-      requests = {
-        cpu    = "500m"
-        memory = "256Mi"
-      }
-    }
-    # ArmoniK workers
-    worker = [
-      {
-        image = "dockerhubaneo/armonik_core_stream_test_worker"
-        limits = {
-          cpu    = "1000m"
-          memory = "1024Mi"
-        }
-        requests = {
-          cpu    = "500m"
-          memory = "512Mi"
-        }
-      }
-    ]
-    hpa = {
-      type              = "prometheus"
-      polling_interval  = 15
-      cooldown_period   = 300
-      min_replica_count = 0
-      max_replica_count = 100
-      behavior = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers = [
-        {
-          type      = "prometheus"
-          threshold = 2
-        },
-      ]
-    }
-  },
+  # stream = {
+  #   node_selector = { service = "workers" }
+  #   # number of replicas for each deployment of compute plane
+  #   replicas = 1
+  #   # ArmoniK polling agent
+  #   polling_agent = {
+  #     limits = {
+  #       cpu    = "2000m"
+  #       memory = "2048Mi"
+  #     }
+  #     requests = {
+  #       cpu    = "500m"
+  #       memory = "256Mi"
+  #     }
+  #   }
+  #   # ArmoniK workers
+  #   worker = [
+  #     {
+  #       image = "dockerhubaneo/armonik_core_stream_test_worker"
+  #       limits = {
+  #         cpu    = "1000m"
+  #         memory = "1024Mi"
+  #       }
+  #       requests = {
+  #         cpu    = "500m"
+  #         memory = "512Mi"
+  #       }
+  #     }
+  #   ]
+  #   hpa = {
+  #     type              = "prometheus"
+  #     polling_interval  = 15
+  #     cooldown_period   = 300
+  #     min_replica_count = 0
+  #     max_replica_count = 100
+  #     behavior = {
+  #       restore_to_original_replica_count = true
+  #       stabilization_window_seconds      = 300
+  #       type                              = "Percent"
+  #       value                             = 100
+  #       period_seconds                    = 15
+  #     }
+  #     triggers = [
+  #       {
+  #         type      = "prometheus"
+  #         threshold = 2
+  #       },
+  #     ]
+  #   }
+  # },
   # Partition for the htcmock worker
-  htcmock = {
-    node_selector = { service = "workers" }
-    # number of replicas for each deployment of compute plane
-    replicas = 1
-    # ArmoniK polling agent
-    polling_agent = {
-      limits = {
-        cpu    = "2000m"
-        memory = "2048Mi"
-      }
-      requests = {
-        cpu    = "500m"
-        memory = "256Mi"
-      }
-    }
-    # ArmoniK workers
-    worker = [
-      {
-        image = "dockerhubaneo/armonik_core_htcmock_test_worker"
-        limits = {
-          cpu    = "1000m"
-          memory = "1024Mi"
-        }
-        requests = {
-          cpu    = "500m"
-          memory = "512Mi"
-        }
-      }
-    ]
-    hpa = {
-      type              = "prometheus"
-      polling_interval  = 15
-      cooldown_period   = 300
-      min_replica_count = 0
-      max_replica_count = 100
-      behavior = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers = [
-        {
-          type      = "prometheus"
-          threshold = 2
-        },
-      ]
-    }
-  },
+  # htcmock = {
+  #   node_selector = { service = "workers" }
+  #   # number of replicas for each deployment of compute plane
+  #   replicas = 1
+  #   # ArmoniK polling agent
+  #   polling_agent = {
+  #     limits = {
+  #       cpu    = "2000m"
+  #       memory = "2048Mi"
+  #     }
+  #     requests = {
+  #       cpu    = "500m"
+  #       memory = "256Mi"
+  #     }
+  #   }
+  #   # ArmoniK workers
+  #   worker = [
+  #     {
+  #       image = "dockerhubaneo/armonik_core_htcmock_test_worker"
+  #       limits = {
+  #         cpu    = "1000m"
+  #         memory = "1024Mi"
+  #       }
+  #       requests = {
+  #         cpu    = "500m"
+  #         memory = "512Mi"
+  #       }
+  #     }
+  #   ]
+  #   hpa = {
+  #     type              = "prometheus"
+  #     polling_interval  = 15
+  #     cooldown_period   = 300
+  #     min_replica_count = 0
+  #     max_replica_count = 100
+  #     behavior = {
+  #       restore_to_original_replica_count = true
+  #       stabilization_window_seconds      = 300
+  #       type                              = "Percent"
+  #       value                             = 100
+  #       period_seconds                    = 15
+  #     }
+  #     triggers = [
+  #       {
+  #         type      = "prometheus"
+  #         threshold = 2
+  #       },
+  #     ]
+  #   }
+  # },
   # Partition for the bench worker
-  bench = {
-    node_selector = { service = "workers" }
-    # number of replicas for each deployment of compute plane
-    replicas = 1
-    # ArmoniK polling agent
-    polling_agent = {
-      limits = {
-        cpu    = "2000m"
-        memory = "2048Mi"
-      }
-      requests = {
-        cpu    = "500m"
-        memory = "256Mi"
-      }
+  # bench = {
+  #   node_selector = { service = "workers" }
+  #   # number of replicas for each deployment of compute plane
+  #   replicas = 1
+  #   # ArmoniK polling agent
+  #   polling_agent = {
+  #     limits = {
+  #       cpu    = "2000m"
+  #       memory = "2048Mi"
+  #     }
+  #     requests = {
+  #       cpu    = "500m"
+  #       memory = "256Mi"
+  #     }
+  #   }
+  #   # ArmoniK workers
+  #   worker = [
+  #     {
+  #       image = "dockerhubaneo/armonik_core_bench_test_worker"
+  #       limits = {
+  #         cpu    = "1000m"
+  #         memory = "1024Mi"
+  #       }
+  #       requests = {
+  #         cpu    = "500m"
+  #         memory = "512Mi"
+  #       }
+  #     }
+  #   ]
+  #   hpa = {
+  #     type              = "prometheus"
+  #     polling_interval  = 15
+  #     cooldown_period   = 300
+  #     min_replica_count = 0
+  #     max_replica_count = 100
+  #     behavior = {
+  #       restore_to_original_replica_count = true
+  #       stabilization_window_seconds      = 300
+  #       type                              = "Percent"
+  #       value                             = 100
+  #       period_seconds                    = 15
+  #     }
+  #     triggers = [
+  #       {
+  #         type      = "prometheus"
+  #         threshold = 2
+  #       },
+  #     ]
+  #   }
+  # }
+}
+
+compute_plane_gce = {
+  windows = {
+    scaling = {
+      min_replicas             = 1 # Changed from 0 to 1 to ensure VMs are available
+      max_replicas             = 10
+      target_cpu_utilization   = 70
+      cooldown_period          = 300
+      scale_down_stabilization = 600
     }
-    # ArmoniK workers
+    instance_type = "e2-standard-4"
+    polling_agent = {
+      image = "dockerhubaneo/armonik_pollingagent"
+    }
     worker = [
       {
-        image = "dockerhubaneo/armonik_core_bench_test_worker"
-        limits = {
-          cpu    = "1000m"
-          memory = "1024Mi"
-        }
-        requests = {
-          cpu    = "500m"
-          memory = "512Mi"
-        }
+        name  = "windows-worker"
+        image = "dockerhubaneo/armonik_core_htcmock_test_worker"
       }
     ]
-    hpa = {
-      type              = "prometheus"
-      polling_interval  = 15
-      cooldown_period   = 300
-      min_replica_count = 0
-      max_replica_count = 100
-      behavior = {
-        restore_to_original_replica_count = true
-        stabilization_window_seconds      = 300
-        type                              = "Percent"
-        value                             = 100
-        period_seconds                    = 15
-      }
-      triggers = [
-        {
-          type      = "prometheus"
-          threshold = 2
-        },
-      ]
+    cache_config = {
+      memory     = true
+      size_limit = "1Gi"
     }
   },
 }
+
 
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"

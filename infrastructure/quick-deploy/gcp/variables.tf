@@ -491,6 +491,33 @@ variable "compute_plane" {
   }))
 }
 
+
+variable "compute_plane_gce" {
+  description = "Parameters of the compute plane in GCE (VM-based deployment)"
+  type = map(object({
+    scaling = object({
+      min_replicas             = optional(number, 0)
+      max_replicas             = optional(number, 10)
+      target_cpu_utilization   = optional(number, 70)
+      cooldown_period          = optional(number, 300)
+      scale_down_stabilization = optional(number, 600)
+    })
+    instance_type = optional(string, "e2-standard-4")
+    polling_agent = optional(object({
+      image             = optional(string, "dockerhubaneo/armonik_pollingagent")
+      tag               = optional(string)
+      image_pull_policy = optional(string, "IfNotPresent")
+    }), {})
+    worker = list(object({
+      name              = optional(string, "worker")
+      image             = optional(string, "dockerhubaneo/armonik_core_htcmock_test_client")
+      tag               = optional(string)
+      image_pull_policy = optional(string, "IfNotPresent")
+    }))
+  }))
+  default = null
+}
+
 variable "ingress" {
   description = "Parameters of the ingress controller (nullable)"
   type = object({
