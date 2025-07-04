@@ -256,6 +256,15 @@ keda = {
 #   activemq_opts_memory = "-Xms1g -Xmx3g"
 # }
 
+# Comment the mongodb and/or mongodb_sharding parameters to disable the mongodb module and use mongodb atlas
+# Comment also the state_database node group in the eks_managed_node_groups when using mongodb atlas
+# Import the environment variables for MongoDB Atlas in the terminal before running the deployment
+# export MONGODB_ATLAS_PUBLIC_KEY="<your-atlas-public-key>"
+# export MONGODB_ATLAS_PRIVATE_KEY="<your-atlas-private-key>"
+# mongodb_atlas = {
+#   project_id   = "<your-atlas-project-id>"
+#   cluster_name = "<your-atlas-cluster-name>"
+# }
 
 mongodb = {
   node_selector = { service = "state-database" }
