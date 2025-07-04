@@ -1,4 +1,5 @@
 import datetime
+import os
 import time
 from typing import Any
 import grpc
@@ -207,7 +208,7 @@ def poll_session_ending(
     raise TimeoutError("Polling duration was exceeded.")
 
 
-def main(session_name: str, grpc_endpoint: str, polling_limit: float) -> list[dict]:
+def main(session_name: str, grpc_endpoint: str, polling_limit: float) -> dict:
     """
     Retrieves a session's stats by its name.
 
@@ -225,23 +226,41 @@ def main(session_name: str, grpc_endpoint: str, polling_limit: float) -> list[di
         poll_session_ending(session_id, channel, polling_limit)
         session_stats = get_session_stats(session_id, channel)
 
-    session_stats_json = [
-        {
-            "metadata": {"session_id": session_id, "session_name": session_name},
-            "metrics": {
-                "throughput": {
-                    "name": "Throughput",
-                    "unit": "Task per second",
-                    "value": session_stats["throughput"],
-                },
-                "tasks_count": {
-                    "name": "Total number of tasks",
-                    "unit": "Task",
-                    "value": session_stats["tasks_count"],
-                },
+    parameters_file = os.getenv("PARAMETERS_FILE_PATH")
+    if not parameters_file:
+        parameters_file = f"infrastructure/quick-deploy/{os.getenv("TYPE")}/parameters.tfvars"
+
+    date = datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d-%H-%M-%S-%Z")
+
+    session_stats_json = {
+        "context": {
+            "parameters": f"{os.getenv("GITHUB_SERVER_URL")}/{os.getenv("GITHUB_REPOSITORY")}/blob/{os.getenv("GITHUB_SHA")}/{parameters_file}",
+            "versions": f"{os.getenv("GITHUB_SERVER_URL")}/{os.getenv("GITHUB_REPOSITORY")}/blob/{os.getenv("GITHUB_SHA")}/versions.tfvars.json",
+            "commit": os.getenv("GITHUB_SHA"),
+            "reference": os.getenv("GITHUB_REF"),
+            "run-id": os.getenv("GITHUB_RUN_ID"),
+            "event": os.getenv("GITHUB_EVENT_NAME"),
+            "type": os.getenv("TYPE"),
+            "date": date,
+            "ntasks": os.getenv("NTASKS"),
+            "polling_limit": os.getenv("POLLING_LIMIT"),
+            "session_id": session_id,
+            "session_name": session_name
+        },
+        "metrics": {
+            "throughput": {
+                "name": "Throughput",
+                "unit": "Task per second",
+                "value": session_stats["throughput"],
             },
-        }
-    ]
+            "tasks_count": {
+                "name": "Total number of tasks",
+                "unit": "Task",
+                "value": session_stats["tasks_count"],
+            },
+        },
+    }
+    
 
     logger.debug(
         "Session stats",
@@ -274,11 +293,11 @@ def write_json_output(session_stats_json: dict, path: str = "") -> str:
     file_directory = Path(path)
     file_directory.mkdir(parents=True, exist_ok=True)
 
-    file_name = f"session_{session_stats[0]['metadata']['session_id']}_benchmark_{session_stats[0]['metrics']['tasks_count']['value']}tasks.json"
+    file_name = f"session_{session_stats['context']['session_id']}_benchmark_{session_stats['metrics']['tasks_count']['value']}tasks.json"
 
     absolute_file_path = file_directory.resolve() / file_name
 
-    content = json.dumps(session_stats)
+    content = json.dumps(session_stats, indent = 2)
 
     logger.debug(
         "JSON file to be written",
@@ -287,7 +306,7 @@ def write_json_output(session_stats_json: dict, path: str = "") -> str:
                 "directory": file_directory,
                 "filename": file_name,
                 "path": absolute_file_path,
-                "content": content,
+                "content": session_stats,
             }
         },
     )
