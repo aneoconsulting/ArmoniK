@@ -19,13 +19,14 @@ module "atlas_mongodb" {
   namespace          = local.namespace
   region             = var.region
   cluster_name       = var.mongodb_atlas.cluster_name
-  tags               = local.labels
   project_id         = var.mongodb_atlas.project_id
-  network_id         = module.vpc.self_link
-  subnetwork_id      = module.vpc.gke_subnet_self_link
+  tags               = local.labels
+
   gcp_project_id     = data.google_client_config.current.project
-  vpc_name           = module.vpc.name
-  ip_cidr_range      = module.vpc.gke_subnet_cidr_block 
+  gke_subnet         = module.vpc.gke_subnet_self_link
+  vpc_network        = module.vpc.self_link
+  
+  nb_psc                = 3
 }
 
 # MongoDB for state-database
