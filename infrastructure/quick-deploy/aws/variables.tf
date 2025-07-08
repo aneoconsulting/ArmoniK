@@ -821,14 +821,14 @@ variable "compute_plane" {
     node_selector                    = optional(any, {})
     annotations                      = optional(any, {})
     service_account_name             = optional(string, "")
-    polling_agent = object({
+    polling_agent = optional(object({
       image             = optional(string, "dockerhubaneo/armonik_pollingagent")
       tag               = optional(string)
       image_pull_policy = optional(string, "IfNotPresent")
       limits            = optional(map(string))
       requests          = optional(map(string))
       conf              = optional(any, [])
-    })
+    }), {})
     worker = list(object({
       name              = optional(string, "worker")
       image             = string
