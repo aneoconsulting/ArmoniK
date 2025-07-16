@@ -1,4 +1,4 @@
-DEFAULT_TAG="0.33.1"
+DEFAULT_TAG="0.33.2"
 DEFAULT_PARTITION="htcmock"
 
 usage() {

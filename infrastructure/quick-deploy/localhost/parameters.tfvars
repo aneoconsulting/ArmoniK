@@ -6,8 +6,8 @@ logging_level = "Information"
 
 # Object storage
 # Uncomment either the `redis`, the `minio`or the `nfs` parameter
-redis = {}
-#minio = {}
+#redis = {}
+minio = {}
 # nfs = {
 #   server     = "172.30.37.125"
 #   path       = "/srv/files"
@@ -321,14 +321,9 @@ compute_plane = {
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
 ingress = {
-  tls                  = true
-  mtls                 = true
-  generate_client_cert = true
-}
-
-authentication = {
-  require_authentication = true
-  require_authorization = true
+  tls                  = false
+  mtls                 = false
+  generate_client_cert = false
 }
 
 configurations = {
@@ -415,3 +410,5 @@ mongodb = {
 #     configsvr = {}
 #   }
 # }
+
+chaos_mesh = {}
