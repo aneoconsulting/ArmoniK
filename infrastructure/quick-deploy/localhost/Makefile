@@ -1,4 +1,4 @@
-CURRENT_DIR:=$(shell pwd)
+CURRENT_DIR != pwd
 GENERATED_DIR=$(CURRENT_DIR)/generated
 INGRESS_CERTIFICATES_DIR=$(GENERATED_DIR)/certificates/ingress
 PARAMETERS_FILE?=parameters.tfvars
@@ -6,8 +6,10 @@ EXTRA_PARAMETERS_FILE?=../../../extra.tfvars.json
 VERSIONS_FILE?=../../../versions.tfvars.json
 OUTPUT_FILE=$(GENERATED_DIR)/armonik-output.json
 MODULES_DIR=$(GENERATED_DIR)/infra-modules
-MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
-MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
+MODULES_SOURCE_DEFAULT != jq -r '.armonik_images.infra[0]' $(VERSIONS_FILE)
+MODULES_VERSION_DEFAULT != jq -r '.armonik_versions.infra' $(VERSIONS_FILE)
+MODULES_SOURCE=$(MODULES_SOURCE_DEFAULT)
+MODULES_VERSION=$(MODULES_VERSION_DEFAULT)
 
 export KUBE_CONFIG_PATH?=$(HOME)/.kube/config
 export TF_DATA_DIR?=$(GENERATED_DIR)
