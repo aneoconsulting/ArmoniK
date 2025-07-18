@@ -256,6 +256,10 @@ keda = {
 #   activemq_opts_memory = "-Xms1g -Xmx3g"
 # }
 
+# Uncomment to enable the MongoDB metrics exporter
+# mongodb_metrics_exporter = {
+#   image_tag = "0.44.0"
+# }
 
 mongodb = {
   node_selector = { service = "state-database" }

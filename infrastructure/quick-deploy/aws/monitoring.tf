@@ -1,19 +1,5 @@
 locals {
   cloudwatch_log_group_name = "/aws/containerinsights/${module.eks.cluster_name}/application"
-
-  mongodb_deployment_type = var.mongodb_atlas != null ? "atlas" : (var.mongodb != null || var.mongodb_sharding != null) ? "onpremise" : "none"
-
-  mongodb_module = local.mongodb_deployment_type == "atlas" ? module.atlas_mongodb[0] : (
-    var.mongodb_sharding != null ? module.mongodb_sharded[0] : module.mongodb[0]
-  )
-
-  onpremise_mongodb_url = "mongodb://${local.cluster_monitor_username}:${local.cluster_monitor_password}@${local.mongodb_module.host}:${local.mongodb_module.port}/admin?tls=true&tlsAllowInvalidCertificates=true&tlsAllowInvalidHostnames=true&tlsCAFile=/mongodb/certificate/mongodb-ca-cert&authSource=admin"
-
-  atlas_mongodb_url = "mongodb+srv://${local.cluster_monitor_username}:${local.cluster_monitor_password}@${local.mongodb_module.mongodb_url.dns}/admin"
-
-  cluster_monitor_username = "mongodb_exporter"
-  cluster_monitor_password = "mongodb_exporter"
-
 }
 
 # Send logs in cloudwatch
@@ -198,7 +184,6 @@ resource "kubernetes_secret" "partition_metrics_exporter" {
     namespace = module.partition_metrics_exporter.namespace
   } : {}
 }
-
 module "mongodb_exporter" {
   count     = var.mongodb_metrics_exporter != null ? 1 : 0
   source    = "./generated/infra-modules/monitoring/onpremise/exporters/mongodb-exporter"
@@ -208,9 +193,8 @@ module "mongodb_exporter" {
     tag                = var.mongodb_metrics_exporter.image_tag
     image_pull_secrets = var.mongodb_metrics_exporter.image_pull_secrets
   }
-  should_split_cluster = local.mongodb_deployment_type == "atlas"
-  certif_mount         = local.mongodb_deployment_type == "onpremise" ? local.mongodb_module.mount_secret : {}
-  mongo_url            = local.mongodb_deployment_type == "atlas" ? local.atlas_mongodb_url : local.onpremise_mongodb_url
+  force_split_cluster = length(module.atlas_mongodb) > 0
+  mongodb_modules     = [module.mongodb_sharded, module.mongodb, module.atlas_mongodb]
 }
 
 # Prometheus
