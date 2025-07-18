@@ -20,6 +20,7 @@ locals {
     var.chaos_mesh != null ? [var.chaos_mesh.chaosdaemon_image_name, var.chaos_mesh.chaosdaemon_image_tag] : null,
     var.chaos_mesh != null ? [var.chaos_mesh.chaosdashboard_image_name, var.chaos_mesh.chaosdashboard_image_tag] : null,
     var.node_exporter != null ? [var.node_exporter.image_name, var.node_exporter.image_tag] : null,
+    var.mongodb_metrics_exporter != null ? [var.mongodb_metrics_exporter.image_name, var.mongodb_metrics_exporter.image_tag] : null,
     var.partition_metrics_exporter != null ? [
       var.partition_metrics_exporter.image_name, var.partition_metrics_exporter.image_tag
     ] : null,

@@ -117,6 +117,18 @@ resource "kubernetes_secret" "metrics_exporter" {
   }
 }
 
+module "mongodb_exporter" {
+  count     = var.mongodb_metrics_exporter != null ? 1 : 0
+  source    = "./generated/infra-modules/monitoring/onpremise/exporters/mongodb-exporter"
+  namespace = local.namespace
+  docker_image = {
+    image              = local.docker_images["${var.mongodb_metrics_exporter.image_name}:${try(coalesce(var.mongodb_metrics_exporter.image_tag), "")}"].image
+    tag                = local.docker_images["${var.mongodb_metrics_exporter.image_name}:${try(coalesce(var.mongodb_metrics_exporter.image_tag), "")}"].tag
+    image_pull_secrets = var.mongodb_metrics_exporter.pull_secrets
+  }
+  mongodb_modules = [module.mongodb_sharded, module.mongodb]
+}
+
 # Partition metrics exporter
 module "partition_metrics_exporter" {
   count                = var.partition_metrics_exporter != null ? 1 : 0

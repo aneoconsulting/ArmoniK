@@ -1,10 +1,3 @@
-locals {
-  mongodb_module = var.mongodb_sharding != null ? module.mongodb_sharded[0] : module.mongodb[0]
-
-  cluster_monitor_username = "mongodb_exporter"
-  cluster_monitor_password = "mongodb_exporter"
-}
-
 # Seq
 module "seq" {
   count         = var.seq != null ? 1 : 0
@@ -125,16 +118,11 @@ module "mongodb_exporter" {
   namespace = local.namespace
   docker_image = {
     image              = var.mongodb_metrics_exporter.image_name
-    tag                = var.mongodb_metrics_exporter.image_tag
-    image_pull_secrets = var.mongodb_metrics_exporter.image_pull_secrets
+    tag                = try(coalesce(var.mongodb_metrics_exporter.image_tag), local.default_tags[var.mongodb_metrics_exporter.image_name])
+    image_pull_secrets = var.mongodb_metrics_exporter.pull_secrets
   }
-  force_split_cluster = false
-  mongodb_modules = [
-    for module in [
-      length(module.mongodb) > 0 ? module.mongodb[0] : null,
-      length(module.mongodb_sharded) > 0 ? module.mongodb_sharded[0] : null
-    ] : module if module != null
-  ]
+  disable_diagnostic_data = length(module.mongodb_sharded) > 0
+  mongodb_modules         = [module.mongodb_sharded, module.mongodb]
 }
 
 # Prometheus
