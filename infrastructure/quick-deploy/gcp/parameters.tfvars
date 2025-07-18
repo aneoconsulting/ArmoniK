@@ -256,6 +256,8 @@ keda = {
 #   activemq_opts_memory = "-Xms1g -Xmx3g"
 # }
 
+# Comment to disable the MongoDB metrics exporter
+mongodb_metrics_exporter = {}
 
 mongodb = {
   node_selector = { service = "state-database" }
