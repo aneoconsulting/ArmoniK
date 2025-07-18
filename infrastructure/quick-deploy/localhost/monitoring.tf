@@ -1,10 +1,3 @@
-locals {
-  mongodb_module = var.mongodb_sharding != null ? module.mongodb_sharded[0] : module.mongodb[0]
-
-  cluster_monitor_username = "mongodb_exporter"
-  cluster_monitor_password = "mongodb_exporter"
-}
-
 # Seq
 module "seq" {
   count         = var.seq != null ? 1 : 0
@@ -125,21 +118,15 @@ module "mongodb_exporter" {
   namespace = local.namespace
   docker_image = {
     image              = var.mongodb_metrics_exporter.image_name
-    tag                = var.mongodb_metrics_exporter.image_tag
-    image_pull_secrets = var.mongodb_metrics_exporter.image_pull_secrets
+    tag                = try(coalesce(var.mongodb_metrics_exporter.image_tag), local.default_tags[var.mongodb_metrics_exporter.image_name])
+    image_pull_secrets = var.mongodb_metrics_exporter.pull_secrets
   }
-  certif_mount = local.mongodb_module.mount_secret
-  mongo_url    = "mongodb://${local.cluster_monitor_username}:${local.cluster_monitor_password}@${local.mongodb_module.host}:${local.mongodb_module.port}/admin?tls=true&tlsAllowInvalidCertificates=true&tlsAllowInvalidHostnames=true&tlsCAFile=/mongodb/certificate/mongodb-ca-cert&authSource=admin"
+  disable_diagnostic_data = length(module.mongodb_sharded) > 0
+  mongodb_modules         = [module.mongodb_sharded, module.mongodb]
 }
 
 # Prometheus
 module "prometheus" {
-  source                     = "./generated/infra-modules/monitoring/onpremise/prometheus"
-  namespace                  = local.namespace
-  service_type               = var.prometheus.service_type
-  node_selector              = var.prometheus.node_selector
-  metrics_exporter_url       = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
-  mongo_metrics_exporter_url = var.mongodb_metrics_exporter != null ? module.mongodb_exporter[0].url : ""
   source                     = "./generated/infra-modules/monitoring/onpremise/prometheus"
   namespace                  = local.namespace
   service_type               = var.prometheus.service_type
