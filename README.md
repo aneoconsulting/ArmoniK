@@ -28,6 +28,8 @@ You can also send us a direct email at [armonik@aneo.fr](mailto:armonik@aneo.fr)
 
 This project was funded by AWS and started with their [HTCGrid project](https://awslabs.github.io/aws-htc-grid/).
 
+I made some changes
+
 ## License
 
 [Apache License, Version 2.0](https://github.com/aneoconsulting/ArmoniK/blob/main/LICENSE)

@@ -371,7 +371,7 @@ static = {
 }
 
 mongodb_metrics_exporter = {
-  image_tag = "0.44.0"
+  image_tag = "0.41.0"
 }
 
 # mongodb = {

@@ -349,20 +349,20 @@ mq = {
 
 # sqs = {}
 
-mongodb = {
-  node_selector = { service = "state-database" }
-  persistent_volume = {
-    #   parameters = {
-    #     "throughput" = 200
-    #     "iopsPerGB"  = 500
-    #   }
-    #   resources = {
-    #     requests = {
-    #       storage = "10Gi"
-    #     }
-    #   }
-  }
-}
+# mongodb = {
+#   node_selector = { service = "state-database" }
+#   persistent_volume = {
+#     #   parameters = {
+#     #     "throughput" = 200
+#     #     "iopsPerGB"  = 500
+#     #   }
+#     #   resources = {
+#     #     requests = {
+#     #       storage = "10Gi"
+#     #     }
+#     #   }
+#   }
+# }
 
 # Comment the mongodb and/or mongodb_sharding parameters to disable the mongodb module and use mongodb atlas
 # Comment also the state_database node group in the eks_managed_node_groups when using mongodb atlas
@@ -372,27 +372,27 @@ mongodb = {
 # }
 
 # Nullify to disable sharding
-# mongodb_sharding = {
-#   shards = {
-#     replicas = 2
-#     quantity = 2
-#   }
-#   configsvr = {
-#     replicas = 2
-#   }
-#   router = {
-#     replicas = 2
-#   }
-#   persistence = {
-#     shards = {
-#       resources = {
-#         requests = {
-#           storage = "20Gi"
-#         }
-#       }
-#     }
-#   }
-# }
+mongodb_sharding = {
+  shards = {
+    replicas = 2
+    quantity = 2
+  }
+  configsvr = {
+    replicas = 2
+  }
+  router = {
+    replicas = 2
+  }
+  persistence = {
+    shards = {
+      resources = {
+        requests = {
+          storage = "20Gi"
+        }
+      }
+    }
+  }
+}
 
 mongodb_ebs = {}
 

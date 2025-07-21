@@ -198,7 +198,6 @@ resource "kubernetes_secret" "partition_metrics_exporter" {
     namespace = module.partition_metrics_exporter.namespace
   } : {}
 }
-
 module "mongodb_exporter" {
   count     = var.mongodb_metrics_exporter != null ? 1 : 0
   source    = "./generated/infra-modules/monitoring/onpremise/exporters/mongodb-exporter"
@@ -208,9 +207,13 @@ module "mongodb_exporter" {
     tag                = var.mongodb_metrics_exporter.image_tag
     image_pull_secrets = var.mongodb_metrics_exporter.image_pull_secrets
   }
-  should_split_cluster = local.mongodb_deployment_type == "atlas"
-  certif_mount         = local.mongodb_deployment_type == "onpremise" ? local.mongodb_module.mount_secret : {}
-  mongo_url            = local.mongodb_deployment_type == "atlas" ? local.atlas_mongodb_url : local.onpremise_mongodb_url
+  force_split_cluster = false
+  mongodb_modules = [
+    for module in [
+      length(module.mongodb) > 0 ? module.mongodb[0] : null,
+      length(module.mongodb_sharded) > 0 ? module.mongodb_sharded[0] : null
+    ] : module if module != null
+  ]
 }
 
 # Prometheus
