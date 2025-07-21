@@ -24,7 +24,7 @@ jobs:
       - name: Install terraform
         run: |
           if ! which terraform 2>/dev/null; then
-            sh tools/install/terraform.sh
-          fi   
+            sh infrastructure/utils/scripts/installation/prerequisites/install-terraform.sh
+          fi
       - name: Check Format
         run: terraform fmt -check -recursive -diff
