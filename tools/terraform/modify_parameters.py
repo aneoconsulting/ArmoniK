@@ -1,5 +1,37 @@
 #! /usr/bin/env python3
 
+"""
+ArmoniK Parameters Modifier Script
+
+Purpose:
+This script modifies the parameters in a Terraform variables file (parameters.tfvars)
+and outputs the modified content as a JSON file (parameters.tfvars.json). It allows
+users to specify key-value pairs that will be updated in the parsed content using
+JSONPath expressions.
+
+Usage:
+python script.py <inputfile> <outputfile> [-kv key=value]
+
+Parameters:
+- inputfile: Path to the input parameters.tfvars file (HCL format).
+- outputfile: Path to the output parameters.tfvars.json file (JSON format).
+- -kv: Optional argument to specify key-value pairs to update in the JSON content.
+       The key should be a valid JSONPath expression, and the value is the new value
+       to set. This option can be specified multiple times.
+
+Process:
+1. The script reads the input parameters.tfvars file and parses it using the hcl2 library.
+2. If any key-value pairs are provided via the -kv argument, it updates the parsed content
+   using the specified JSONPath expressions.
+3. The modified content is then written to the specified output file in JSON format.
+
+Requirements:
+- Python 3.x must be installed.
+- The following Python packages must be installed:
+  - hcl2
+  - jsonpath-ng
+"""
+
 from distutils.dir_util import copy_tree
 from email import message
 import json

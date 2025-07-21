@@ -1,5 +1,37 @@
 #! /usr/bin/env bash
 
+# ArmoniK Solution Setup Script
+#
+# Purpose:
+# This script automates the setup of a .NET solution for the ArmoniK project.
+# It creates a new solution file, adds project files to the solution, and generates
+# NuGet configuration files for local development. The script also includes error
+# handling and supports a dry run mode.
+#
+# Usage:
+# ./script.sh [options]
+#
+# Options:
+# - DRY_RUN: Set to 1 to enable dry run mode, where commands are not executed but
+#   printed to the console.
+#
+# Process:
+# 1. The script changes the directory to the source directory of the project.
+# 2. It defines the solution name and the template for the NuGet configuration.
+# 3. It sets up error handling to catch and report errors during execution.
+# 4. The `generate_solution` function creates a new .NET solution and adds project
+#    files found in the current directory.
+# 5. The `generate_nuget` function creates a NuGet configuration file for local
+#    development.
+# 6. The `generate_samples_nuget` function creates a NuGet configuration file for
+#    sample projects.
+# 7. The `clean` function removes any existing solution and NuGet configuration files
+#    before generating new ones.
+#
+# Requirements:
+# - .NET SDK must be installed and available in the system PATH.
+# - The script should be run from a directory containing the project files.
+
 pushd "$(dirname "$0")"
 SCRIPT_DIR="$(pwd -P)"
 popd
@@ -23,7 +55,7 @@ NC='\033[0m' # No Color
 DRY_RUN="${DRY_RUN:-0}"
 
 # Let shell functions inherit ERR trap.  Same as `set -E'.
-set -o errtrace 
+set -o errtrace
 # Trigger error when expanding unset variables.  Same as `set -u'.
 set -o nounset
 #  Trap non-normal exit signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM, ERR

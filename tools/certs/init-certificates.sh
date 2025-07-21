@@ -1,5 +1,48 @@
 #! /bin/sh
 
+
+# Certificate Generation Script
+#
+# Purpose:
+# This script automates the process of generating a self-signed root certificate
+# and a certificate for a specified Fully Qualified Domain Name (FQDN) or IP address.
+# It utilizes OpenSSL to create a root private key, self-sign a root certificate,
+# generate a certificate signing request (CSR), and sign the request with the root
+# certificate. The script also converts the generated certificate and private key
+# into various formats for easy use.
+#
+# Features:
+# - Generates a root private key and self-signed root certificate.
+# - Creates a certificate signing request (CSR) for a specified FQDN or IP address.
+# - Signs the CSR with the root certificate to produce a valid certificate.
+# - Outputs the certificate and private key in PEM format.
+# - Exports the certificate and private key to a PKCS#12 (.pfx) file for compatibility
+#   with various applications.
+# - Generates a certificate chain in both PKCS#7 and PEM formats.
+#
+# Usage:
+# To use the script, provide the desired root common name (CN) as the second argument
+# when executing the script. Ensure that the output directory (`OUTDIR`) is set correctly
+# to store the generated files.
+#
+# Example:
+# ./script.sh <other_arguments> <root_common_name>
+#
+# Output:
+# The script will generate the following files in the specified output directory:
+# - root.key: The private key for the root certificate.
+# - root.crt: The self-signed root certificate.
+# - cert.key: The private key for the generated certificate.
+# - cert.csr: The certificate signing request.
+# - cert.crt: The signed certificate.
+# - cert.pem: The combined certificate and private key in PEM format.
+# - certificate.pfx: The PKCS#12 file containing the certificate and private key.
+# - chain.p7b: The certificate chain in PKCS#7 format.
+# - chain.pem: The certificate chain in PEM format.
+#
+# Requirements:
+# - OpenSSL must be installed on the system to run this script.
+
 set -ex
 
 OUTDIR="$1"
