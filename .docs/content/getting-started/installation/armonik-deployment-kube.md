@@ -14,9 +14,12 @@ git clone https://github.com/aneoconsulting/ArmoniK.git
 
 ## Deploy
 
-To launch the deployment, go to the [`infrastructure/quick-deploy/localhost`](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/quick-deploy/localhost) directory:
 
 If you want to deploy on AWS, go to the dedicated section on [`AWS`](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/quick-deploy/aws)
+
+If you want to deploy on GCP, go to the dedicated section on [`GCP`](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/quick-deploy/gcp)
+
+To launch the deployment, go to the [`infrastructure/quick-deploy/localhost`](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/quick-deploy/localhost) directory:
 
 Execute the following command:
 

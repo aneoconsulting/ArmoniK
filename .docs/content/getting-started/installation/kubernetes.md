@@ -2,13 +2,7 @@
 
 If you already have a K3s installation, start by uninstalling it properly.
 
-## Step 1: Stop the K3s service
-
-```bash
-sudo systemctl stop k3s
-```
-
-## Step 2: Run the uninstall script
+## Step 1: Run the uninstall script
 
 K3s provides an uninstall script to remove all installed components.
 
@@ -16,26 +10,11 @@ K3s provides an uninstall script to remove all installed components.
 sudo /usr/local/bin/k3s-uninstall.sh
 ```
 
-
-
-## Step 3: Clean up remaining files (optional)
-
-After the uninstall script, you can also remove any remaining K3s and Kubernetes files:
-
-```bash
-sudo rm -rf /etc/rancher/k3s
-sudo rm -rf /var/lib/rancher
-sudo rm -rf /var/lib/kubelet
-sudo rm -rf ~/.kube
-```
-
->**Note**: This step completely removes all K3s configuration and data. Only use this if you want a completely clean installation.
-
 # K3s Installation
 
 ## Step 1: Run the installation script
 
-### Option A: Use ArmoniK's installation script (Recommended)
+### Option A: Use custom installation script (Recommended)
 Use the installation script available here: [infrastructure/utils/scripts/installation/prerequisites/install-k3s.sh](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/utils/scripts/installation/prerequisites/install-k3s.sh)
 
 ### Option B: Use the official installation script
@@ -47,6 +26,8 @@ curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644 --docker
 
 
 ## Step 2: Configure kubeconfig for your user (optional)
+
+> Note: This step should not be necessary if you employ the recommended installation script 
 
 In case your Kube config was not created during installation:
 - Create the kube directory
