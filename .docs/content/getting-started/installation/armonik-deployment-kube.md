@@ -1,23 +1,11 @@
-# Kubernetes deployment
-
-If you want to deploy ArmoniK on Kubernetes, this section is for you.
-
-
-## Clone ArmoniK
-
-
-First, clone the ArmoniK repository (inside your home directory from WSL2 Ubuntu distribution):
-
-```bash [shell]
-git clone https://github.com/aneoconsulting/ArmoniK.git
-```
+# ArmoniK Deployment on Kubernetes
 
 ## Deploy
 
 
-If you want to deploy on AWS, go to the dedicated section on [`AWS`](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/quick-deploy/aws)
+If you want to deploy on AWS, go to the dedicated section on [`AWS`](aws.md)
 
-If you want to deploy on GCP, go to the dedicated section on [`GCP`](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/quick-deploy/gcp)
+If you want to deploy on GCP, go to the dedicated section on [`GCP`](gcp.md)
 
 To launch the deployment, go to the [`infrastructure/quick-deploy/localhost`](https://github.com/aneoconsulting/ArmoniK/tree/main/infrastructure/quick-deploy/localhost) directory:
 
@@ -59,3 +47,4 @@ To destroy the deployment, type:
 make destroy
 ```
 
+> **Note**: If the **armonik** namespace fails to delete after several minutes, you can force its deletion using the script [force-delete-namespace.sh](../../../../tools/force-delete-namespace.sh) with the parameter `armonik`:
