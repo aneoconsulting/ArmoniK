@@ -56,23 +56,16 @@ What is Kubernetes? Kubernetes, also known as K8s, is an open-source system for 
 
 ### K3s
 
-
-
-```{note}
-
-If you plan to use **ArmoniK for production purposes**, you must install [Kubernetes](#kubernetes) instead of K3s.
-
-```
-
 ArmoniK uses K3s as it uses Kubernetes but for development environment.
 
-
+Click [here](k3s.md) to learn how to install k3s.
 
 ```{note}
 
 What is K3s? K3s is a lightweight Kubernetes distribution built for production workloads in unattended, resource-constrained, remote locations or inside IoT appliances. [Read more](https://k3s.io/).
 
 ```
+
 
 ### Simplified installer
 
