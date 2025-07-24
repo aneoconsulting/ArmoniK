@@ -9,6 +9,7 @@ OUTPUT_FILE=$(GENERATED_DIR)/armonik-output.json
 MODULES_DIR=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
 MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
+DEVELOPMENT_VERSION?=main
 
 # Randomly generated string that is preserved across calls
 RANDOM_PREFIX != [ -e $(GENERATED_DIR)/.prefix ] || { mkdir -p $(GENERATED_DIR) && tr -dc a-z0-9 </dev/urandom | head -c 10 > $(GENERATED_DIR)/.prefix ; } && cat $(GENERATED_DIR)/.prefix
@@ -34,6 +35,19 @@ destroy: init delete
 
 env:
 	@set
+
+infra-dev:
+	@if [ -d $(MODULES_DIR) ]; then \
+		echo "\e[31mArmoniK.Infra already exists at $(MODULES_DIR). Remove it first if you want to re-initialize.\e[0m"; \
+		exit 1; \
+	fi
+	@echo "Cloning full ArmoniK.Infra repository for development..."
+	git clone $(MODULES_SOURCE) $(MODULES_DIR)
+	@echo "Updating $(VERSIONS_FILE) to use version: \e[3m\e[35m$(DEVELOPMENT_VERSION)\e[0m\e[0m"
+	@cat $(VERSIONS_FILE) | jq '.armonik_versions.infra = "$(DEVELOPMENT_VERSION)"' > $(VERSIONS_FILE).tmp && mv $(VERSIONS_FILE).tmp $(VERSIONS_FILE)
+	@echo "Checking out version: \e[3m\e[35m$(DEVELOPMENT_VERSION)\e[0m\e[0m"
+	git -C $(MODULES_DIR) checkout $(DEVELOPMENT_VERSION)
+	@echo "\e[4mDevelopment environment initialized. You can now work on ArmoniK.Infra and commit/push changes.\e[0m"
 
 bootstrap-deploy: $(YAML_SRC)
 	@mkdir -p $(GENERATED_DIR)
@@ -109,10 +123,16 @@ cliconfig:
 
 get-modules:
 	@if [ -d $(MODULES_DIR) ]; then\
-		git -C $(MODULES_DIR) fetch --depth 1 origin tag $(MODULES_VERSION) ||\
-		git -C $(MODULES_DIR) fetch --depth 1 origin $(MODULES_VERSION) ;\
-		git -C $(MODULES_DIR) -c advice.detachedHead=false checkout $(MODULES_VERSION);\
+		if [ -f $(MODULES_DIR)/.git/shallow ]; then\
+			echo "\e[32mUpdating shallow clone...\e[0m";\
+			git -C $(MODULES_DIR) fetch --depth 1 origin tag $(MODULES_VERSION) ||\
+			git -C $(MODULES_DIR) fetch --depth 1 origin $(MODULES_VERSION) ;\
+			git -C $(MODULES_DIR) -c advice.detachedHead=false checkout $(MODULES_VERSION);\
+		else \
+			echo "\e[1m\e[33mFull repository detected. Skipping get-modules (use git commands directly for development).\e[0m\e[0m";\
+		fi \
 	else \
+		echo "\e[32mCloning ArmoniK.Infra for deployment...\e[0m";\
 		git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) --no-single-branch --depth 1 $(MODULES_SOURCE) $(MODULES_DIR);\
 	fi
 
