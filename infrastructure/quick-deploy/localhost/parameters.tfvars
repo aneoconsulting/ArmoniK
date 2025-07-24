@@ -370,6 +370,11 @@ static = {
   gui_configuration = {}
 }
 
+# Uncomment to enable the MongoDB metrics exporter
+# mongodb_metrics_exporter = {
+#   image_tag = "0.44.0"
+# }
+
 mongodb = {
   # Uncomment to define custom resources for MongoDB pods, comment for default values
   # mongodb_resources = {
