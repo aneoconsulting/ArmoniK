@@ -48,6 +48,22 @@ You can specify a custom parameter file. When executing the `make` command, you 
 make PARAMETERS_FILE=my-custom-parameters.tfvars
 ```
 
+## Custom infrastructure version
+
+If you need to fetch a specific version of the infrastructure, you can set the `MODULES_VERSION` parameter with the tag or branch you want to use.
+
+
+```bash
+# Fetch the main branch of the infrastructure and deploy
+make MODULES_VERSION=main deploy
+```
+If `MODULES_VERSION` is empty, the current version of the infra folder will be used (`generated/infra-modules`).
+
+```bash
+# Deploy without fetching any specific tag or branch
+make MODULES_VERSION= deploy
+```
+
 ## Destroy
 
 To destroy the deployment, type:
@@ -55,4 +71,3 @@ To destroy the deployment, type:
 ```bash
 make destroy
 ```
-

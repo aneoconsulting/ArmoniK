@@ -8,8 +8,8 @@ OUTPUT_FILE=$(GENERATED_DIR)/armonik-output.json
 MODULES_DIR=$(GENERATED_DIR)/infra-modules
 MODULES_SOURCE_DEFAULT != jq -r '.armonik_images.infra[0]' $(VERSIONS_FILE)
 MODULES_VERSION_DEFAULT != jq -r '.armonik_versions.infra' $(VERSIONS_FILE)
-MODULES_SOURCE=$(MODULES_SOURCE_DEFAULT)
-MODULES_VERSION=$(MODULES_VERSION_DEFAULT)
+MODULES_SOURCE?=$(MODULES_SOURCE_DEFAULT)
+MODULES_VERSION?=$(MODULES_VERSION_DEFAULT)
 
 export KUBE_CONFIG_PATH?=$(HOME)/.kube/config
 export TF_DATA_DIR?=$(GENERATED_DIR)
@@ -64,12 +64,20 @@ output:
 	@echo "\nOUTPUT FILE: $(OUTPUT_FILE)"
 
 get-modules:
-	@if [ -d $(MODULES_DIR) ]; then\
-		git -C $(MODULES_DIR) fetch --depth 1 origin tag $(MODULES_VERSION) ||\
-		git -C $(MODULES_DIR) fetch --depth 1 origin $(MODULES_VERSION) ;\
-		git -C $(MODULES_DIR) -c advice.detachedHead=false checkout $(MODULES_VERSION);\
+	@if [ -d $(MODULES_DIR) ]; then \
+		if [ -n "$(MODULES_VERSION)" ]; then \
+			git -C $(MODULES_DIR) fetch --depth 1 origin tag $(MODULES_VERSION) || \
+			git -C $(MODULES_DIR) fetch --depth 1 origin $(MODULES_VERSION) ; \
+			git -C $(MODULES_DIR) -c advice.detachedHead=false switch -d $(MODULES_VERSION); \
+		fi \
 	else \
-		git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) --no-single-branch --depth 1 $(MODULES_SOURCE) $(MODULES_DIR);\
+		if [ -n "$(MODULES_VERSION)" ]; then \
+			git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) --depth 1 $(MODULES_SOURCE) $(MODULES_DIR); \
+			git -C $(MODULES_DIR) config --replace-all remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*" ; \
+		else \
+			echo "MODULES_DIR does not exist and MODULES_VERSION is empty" >&2; \
+			exit 1; \
+		fi \
 	fi
 
 clean:
