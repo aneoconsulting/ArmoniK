@@ -21,7 +21,6 @@ ArmoniK documentation
    content/getting-started/installation/prerequisites.md
    content/getting-started/installation/kubernetes.md
    content/getting-started/installation/local.md
-   content/getting-started/installation/k3s.md
    content/getting-started/installation/aws.md
    content/getting-started/installation/gcp.md
 
