@@ -38,6 +38,7 @@ ArmoniK documentation
    :caption: User guide
    :glob:
 
+   content/user-guide/golden-rules.md
    content/user-guide/how-to-configure-partitions.md
    content/user-guide/default-images.md
    content/user-guide/populate-database.md
@@ -46,7 +47,7 @@ ArmoniK documentation
    content/user-guide/how-to-configure-authentication.md
    content/user-guide/how-to-troubleshoot.md
    content/user-guide/differentiate-environments.md
-   
+
 .. toctree::
    :maxdepth: 1
    :caption: Benchmarking
