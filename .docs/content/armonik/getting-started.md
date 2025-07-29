@@ -6,6 +6,16 @@ First, you'll have to install ArmoniK's [Prerequisites](../getting-started/insta
 
 Then, you will have the choice to either deploy on your local machine, on an existing Kubernetes cluster, on AWS, or on GCP. The steps to do so are available in the following sections. The last step is to check that everything is working.
 
+## Clone ArmoniK
+
+
+First, clone the ArmoniK repository (inside your home directory from WSL2 Ubuntu distribution):
+
+```bash [shell]
+git clone https://github.com/aneoconsulting/ArmoniK.git
+```
+
+
 ## Installation on your Machine
 
 Learn how to set up ArmoniK on your machine:

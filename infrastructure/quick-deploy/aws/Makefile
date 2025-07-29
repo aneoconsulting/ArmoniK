@@ -1,4 +1,4 @@
-CURRENT_DIR:=$(shell pwd)
+CURRENT_DIR != pwd
 GENERATED_DIR=$(CURRENT_DIR)/generated
 INGRESS_CERTIFICATES_DIR=$(GENERATED_DIR)/certificates/ingress
 PARAMETERS_FILE?=parameters.tfvars
@@ -7,8 +7,10 @@ VERSIONS_FILE?=../../../versions.tfvars.json
 STATE_FILE=armonik-terraform.tfstate
 OUTPUT_FILE=$(GENERATED_DIR)/armonik-output.json
 MODULES_DIR=$(GENERATED_DIR)/infra-modules
-MODULES_SOURCE=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_images.infra[0]')
-MODULES_VERSION=$(shell cat $(VERSIONS_FILE) | jq -r '.armonik_versions.infra')
+MODULES_SOURCE_DEFAULT != jq -r '.armonik_images.infra[0]' $(VERSIONS_FILE)
+MODULES_VERSION_DEFAULT != jq -r '.armonik_versions.infra' $(VERSIONS_FILE)
+MODULES_SOURCE?=$(MODULES_SOURCE_DEFAULT)
+MODULES_VERSION?=$(MODULES_VERSION_DEFAULT)
 
 # Randomly generated string that is preserved across calls
 RANDOM_PREFIX != [ -e $(GENERATED_DIR)/.prefix ] || { mkdir -p $(GENERATED_DIR) && tr -dc a-z0-9 </dev/urandom | head -c 10 > $(GENERATED_DIR)/.prefix ; } && cat $(GENERATED_DIR)/.prefix
@@ -108,12 +110,20 @@ cliconfig:
 	@echo "export AKCONFIG=$(GENERATED_DIR)/armonik-cli.yaml"
 
 get-modules:
-	@if [ -d $(MODULES_DIR) ]; then\
-		git -C $(MODULES_DIR) fetch --depth 1 origin tag $(MODULES_VERSION) ||\
-		git -C $(MODULES_DIR) fetch --depth 1 origin $(MODULES_VERSION) ;\
-		git -C $(MODULES_DIR) -c advice.detachedHead=false checkout $(MODULES_VERSION);\
+	@if [ -d $(MODULES_DIR) ]; then \
+		if [ -n "$(MODULES_VERSION)" ]; then \
+			git -C $(MODULES_DIR) fetch --depth 1 origin tag $(MODULES_VERSION) || \
+			git -C $(MODULES_DIR) fetch --depth 1 origin $(MODULES_VERSION) ; \
+			git -C $(MODULES_DIR) -c advice.detachedHead=false switch -d $(MODULES_VERSION); \
+		fi \
 	else \
-		git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) --no-single-branch --depth 1 $(MODULES_SOURCE) $(MODULES_DIR);\
+		if [ -n "$(MODULES_VERSION)" ]; then \
+			git -c advice.detachedHead=false clone --branch $(MODULES_VERSION) --depth 1 $(MODULES_SOURCE) $(MODULES_DIR); \
+			git -C $(MODULES_DIR) config --replace-all remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*" ; \
+		else \
+			echo "MODULES_DIR does not exist and MODULES_VERSION is empty" >&2; \
+			exit 1; \
+		fi \
 	fi
 
 clean:

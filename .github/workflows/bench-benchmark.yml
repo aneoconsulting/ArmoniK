@@ -17,6 +17,16 @@ on:
         description: "Prefix for the infrastructure. The bucket associated with this prefix must be created before."
         required: false
         default: "ci-bench"
+      localhost:
+        description: "Whether to bench localhost."
+        type: boolean
+        required: false
+        default: true
+      aws:
+        description: "Whether to bench AWS."
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   define-matrix:
@@ -24,7 +34,11 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.types.outputs.matrix }}
+      file-prefix: ${{ steps.types.outputs.file-prefix }}
     steps:
+      - id: ctx
+        name: Dump Github context
+        uses: crazy-max/ghaction-dump-context@v2
       - id: types
         name: Define matrix
         env:
@@ -32,17 +46,27 @@ jobs:
           REF_NAME: ${{ github.ref_name }}
         run: |
           set -ex
+          LOCALHOST='{"type": "localhost", "ntasks":3000, "polling-limit": 300}'
+          AWS='{"type": "aws", "ntasks":1200000, "polling-limit": 1000, "parameters-file-path": "benchmarking/aws.tfvars"}'
           if [ "$TRIGGER" == 'push' ]; then
-            echo '{"include":[{"type": "localhost", "ntasks":3000, "polling-limit": 300}]}' > matrix.json
-            echo "FILE_PREFIX=$REF_NAME" >> $GITHUB_ENV
+            echo "{\"include\":[$LOCALHOST]}" > matrix.json
+            FILE_PREFIX="$REF_NAME"
           elif [ "$TRIGGER" == 'release' ]; then
-            echo '{"include":[{"type": "localhost", "ntasks":3000, "polling-limit": 300}, {"type": "aws", "ntasks":1200000, "polling-limit": 1000, "parameters-file-path": "benchmarking/aws/parameters.tfvars"}]}' > matrix.json
-            echo "FILE_PREFIX=release/$REF_NAME" >> $GITHUB_ENV
+            echo "{\"include\":[$LOCALHOST, $AWS]}" > matrix.json
+            FILE_PREFIX="release/$REF_NAME"
           elif [ "$TRIGGER" == 'workflow_dispatch' ]; then
-            echo '{"include":[{"type": "aws", "ntasks":1200000, "polling-limit": 1000, "parameters-file-path": "benchmarking/aws/parameters.tfvars"}]}' > matrix.json
-            echo "FILE_PREFIX=manual/$REF_NAME" >> $GITHUB_ENV
+            INCLUDE=""
+            if [ '${{inputs.localhost || false}}' == true ]; then
+              INCLUDE="${INCLUDE}${INCLUDE:+,}${LOCALHOST}"
+            fi
+            if [ '${{inputs.aws || false}}' == true ]; then
+              INCLUDE="${INCLUDE}${INCLUDE:+,}${AWS}"
+            fi
+            echo "{\"include\":[$INCLUDE]}" > matrix.json
+            FILE_PREFIX="manual/$REF_NAME"
           fi
           echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
+          echo "file-prefix=${FILE_PREFIX}" >> "$GITHUB_OUTPUT"
 
   benchmark:
     name: ${{ matrix.type }}
@@ -53,7 +77,11 @@ jobs:
       matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
     env:
       prefix: ${{ inputs.prefix || 'ci-bench' }}
-      parameters-file-path: ${{ matrix.parameters-file-path }}
+      PARAMETERS_FILE_PATH: ${{ matrix.parameters-file-path }}
+      FILE_PREFIX: ${{ needs.define-matrix.outputs.file-prefix }}
+      NTASKS: ${{ matrix.ntasks }}
+      POLLING_LIMIT: ${{ matrix.polling-limit }}
+      TYPE: ${{ matrix.type }}
     outputs:
       terraform-output: ${{ steps.deploy.outputs.terraform-output }}
       armonik-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
@@ -84,7 +112,7 @@ jobs:
           type: ${{ matrix.type }}
           prefix: ${{ env.prefix }}
           core-version: ${{ env.core-version }}
-          parameters-file-path: ${{ env.parameters-file-path }}
+          parameters-file-path: ${{ env.PARAMETERS_FILE_PATH }}
 
       - id: get-armonik-endpoint
         name: "Get ArmoniK's control plane endpoint"
@@ -123,16 +151,13 @@ jobs:
     
       - name: Upload benchmark results to s3
         env:
-          EVENT_NAME: ${{ github.event_name }}
           BENCH_RESULTS_PATH: ${{ steps.get-bench-stats.outputs.bench-file-path }}
-          TYPE: ${{ matrix.type }}
-          GHRUNID: ${{ github.run_id }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          DATE=$(date +"%Y-%m-%d")
-          aws s3 cp "$BENCH_RESULTS_PATH" "s3://armonik-bench-storage/${FILE_PREFIX}/${GHRUNID}_${DATE}/benchclient_benchmark_${EVENT_NAME}_${TYPE}.json"
+          DATE="$(jq -r '.context.date' "$BENCH_RESULTS_PATH")"
+          aws s3 cp "$BENCH_RESULTS_PATH" "s3://armonik-bench-storage/${FILE_PREFIX}/${GITHUB_RUN_ID}_${DATE}/benchclient_benchmark_${GITHUB_EVENT_NAME}_${TYPE}.json"
 
       - if: ${{ (github.event_name == 'workflow_dispatch' && inputs.destroy-on-session-end) || (github.event_name != 'workflow_dispatch' && always()) }}
         id: destroy
@@ -141,4 +166,4 @@ jobs:
         with:
           type: ${{ matrix.type }}
           prefix: ${{ env.prefix }}
-          parameters-file-path: ${{ env.parameters-file-path }}
+          parameters-file-path: ${{ env.PARAMETERS_FILE_PATH }}

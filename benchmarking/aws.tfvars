@@ -12,14 +12,21 @@ vpc = {
 
 # AWS EKS
 eks = {
-  cluster_version                = "1.25"
+  cluster_version                = "1.32"
   node_selector                  = { service = "monitoring" }
   cluster_endpoint_public_access = true
   map_roles                      = []
   map_users                      = []
+  cluster_addons = {
+    vpc-cni = {
+      most_recent = true
+    }
+  }
 }
 
+# List of EKS managed node groups
 eks_managed_node_groups = {
+  # Default node group for workers of ArmoniK
   workers = {
     name                        = "workers"
     launch_template_description = "Node group for ArmoniK Compute-plane pods"
@@ -242,7 +249,7 @@ elasticache = {
 
 mq = {
   engine_type        = "ActiveMQ"
-  engine_version     = "5.17.6"
+  engine_version     = "5.18"
   host_instance_type = "mq.m5.xlarge"
 }
 
@@ -275,9 +282,10 @@ node_exporter = {
   node_selector = {}
 }
 
+#node exporter for windows
 windows_exporter = {
   node_selector = {
-    "plateform" = "windows"
+    "platform" = "windows"
   }
 }
 
@@ -295,8 +303,23 @@ fluent_bit = {
   node_selector = {}
 }
 
+fluent_bit_windows = {
+  is_daemonset = true
+  #image_name   = "fluent/fluent-bit"
+  image_tag = "windows-2022-3.2.0"
+  node_selector_windows = {
+    "platform" = "windows"
+  }
+}
+
+pod_deletion_cost = {
+  node_selector = { service = "metrics" }
+}
+
+# Logging level
 logging_level = "Information"
 
+# Parameters of control plane
 control_plane = {
   limits = {
     cpu    = "2000m"
@@ -311,6 +334,7 @@ control_plane = {
   node_selector     = { service = "control-plane" }
 }
 
+# Parameters of admin GUI
 admin_gui = {
   limits = {
     cpu    = "1000m"
@@ -323,6 +347,7 @@ admin_gui = {
   node_selector = { service = "monitoring" }
 }
 
+# Parameters of the compute plane
 compute_plane = {
   bench = {
     node_selector = { service = "workers" }
@@ -353,6 +378,8 @@ compute_plane = {
   },
 }
 
+# Deploy ingress
+# PS: to not deploy ingress put: "ingress=null"
 ingress = {
   tls                  = false
   mtls                 = false
@@ -395,6 +422,11 @@ configurations = {
       Submitter__MaxErrorAllowed = 50
     }
   }
+  worker = {
+    env = {
+      target_zip_path = "/tmp"
+    }
+  }
   jobs = { env = { MongoDB__DataRetention = "1.00:00:00" } }
 }
 
@@ -404,5 +436,3 @@ environment_description = {
   description = "AWS environment"
   color       = "#80ff80"
 }
-
-upload_images = false
