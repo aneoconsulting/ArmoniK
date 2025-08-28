@@ -349,6 +349,9 @@ mq = {
 
 # sqs = {}
 
+# Comment to disable the MongoDB metrics exporter
+mongodb_metrics_exporter = {}
+
 mongodb = {
   node_selector = { service = "state-database" }
   persistent_volume = {

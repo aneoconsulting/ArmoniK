@@ -526,6 +526,16 @@ variable "mongodb_ebs" {
   default = null
 }
 
+variable "mongodb_metrics_exporter" {
+  description = "MongoDB Metrics Exporter configuration (nullable)"
+  type = object({
+    image_name   = optional(string, "percona/mongodb_exporter")
+    image_tag    = optional(string)
+    pull_secrets = optional(string)
+  })
+  default = null
+}
+
 variable "seq" {
   description = "Seq configuration (nullable)"
   type = object({
