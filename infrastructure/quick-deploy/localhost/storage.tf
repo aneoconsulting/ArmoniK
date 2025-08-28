@@ -31,7 +31,7 @@ module "mongodb" {
   namespace = local.namespace
   mongodb = {
     image                 = var.mongodb.image_name
-    tag                   = try(coalesce(var.mongodb.image_tag), local.default_tags[coalesce(var.mongodb.image_name, "bitnami/mongodb")])
+    tag                   = try(coalesce(var.mongodb.image_tag), local.default_tags[coalesce(var.mongodb.image_name, "bitnamilegacy/mongodb")])
     node_selector         = var.mongodb.node_selector
     image_pull_secrets    = var.mongodb.image_pull_secrets
     replicas              = var.mongodb.replicas
@@ -50,7 +50,7 @@ module "mongodb_sharded" {
 
   mongodb = {
     image                 = var.mongodb.image_name
-    tag                   = try(coalesce(var.mongodb.image_tag), local.default_tags[coalesce(var.mongodb.image_name, "bitnami/mongodb-sharded")])
+    tag                   = try(coalesce(var.mongodb.image_tag), local.default_tags[coalesce(var.mongodb.image_name, "bitnamilegacy/mongodb-sharded")])
     node_selector         = var.mongodb.node_selector
     image_pull_secrets    = var.mongodb.image_pull_secrets
     helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts["mongodb-sharded"].repository)
