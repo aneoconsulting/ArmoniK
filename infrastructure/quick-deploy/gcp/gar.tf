@@ -1,5 +1,5 @@
 locals {
-  mongodb_image_name = can(coalesce(var.mongodb_sharding)) ? coalesce(var.mongodb.image_name, "bitnami/mongodb-sharded") : coalesce(var.mongodb.image_name, "bitnami/mongodb")
+  mongodb_image_name = can(coalesce(var.mongodb_sharding)) ? coalesce(var.mongodb.image_name, "bitnamilegacy/mongodb-sharded") : coalesce(var.mongodb.image_name, "bitnamilegacy/mongodb")
   default_tags       = module.default_images.image_tags
   input_docker_images = concat([
     var.keda != null ? [var.keda.image_name, var.keda.image_tag] : null,

@@ -1,5 +1,5 @@
 locals {
-  mongodb_image_name = try(coalesce(var.mongodb.image_name), var.mongodb_sharding != null ? "bitnami/mongodb-sharded" : "bitnami/mongodb")
+  mongodb_image_name = try(coalesce(var.mongodb.image_name), var.mongodb_sharding != null ? "bitnamilegacy/mongodb-sharded" : "bitnamilegacy/mongodb")
   ecr_input_images = concat([
     [var.eks.docker_images.cluster_autoscaler.image, var.eks.docker_images.cluster_autoscaler.tag],
     [var.eks.docker_images.instance_refresh.image, var.eks.docker_images.instance_refresh.tag],
