@@ -110,7 +110,7 @@ variable "shared_storage" {
 variable "activemq" {
   description = "Parameters of ActiveMQ"
   type = object({
-    image_name         = optional(string, "symptoma/activemq")
+    image_name         = optional(string, "apache/activemq-classic")
     image_tag          = optional(string)
     node_selector      = optional(any, {})
     image_pull_secrets = optional(string, "")
