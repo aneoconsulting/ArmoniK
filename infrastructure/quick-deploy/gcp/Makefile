@@ -112,9 +112,16 @@ cliconfig:
 get-modules:
 	@if [ -d $(MODULES_DIR) ]; then \
 		if [ -n "$(MODULES_VERSION)" ]; then \
-			git -C $(MODULES_DIR) fetch --depth 1 origin tag $(MODULES_VERSION) || \
-			git -C $(MODULES_DIR) fetch --depth 1 origin $(MODULES_VERSION) ; \
-			git -C $(MODULES_DIR) -c advice.detachedHead=false switch -d $(MODULES_VERSION); \
+			if [ "$$(git -C $(MODULES_DIR) rev-parse --is-shallow-repository)" = true ]; then \
+				SHALLOW=1; \
+			fi; \
+			if git -C $(MODULES_DIR) fetch $${SHALLOW:+--depth 1} origin tag $(MODULES_VERSION); then \
+				git -C $(MODULES_DIR) -c advice.detachedHead=false switch -d $(MODULES_VERSION); \
+			else \
+				git -C $(MODULES_DIR) fetch $${SHALLOW:+--depth 1} origin $(MODULES_VERSION) ; \
+				git -C $(MODULES_DIR) switch $(MODULES_VERSION); \
+				[ "$${SHALLOW:-0}" = 0 ] || echo "Warning: Repository is shallow and can lead to split history if you add commits to the infra branch.\nUse the following command to unshallow the repository if needed:\ngit -C $(MODULES_DIR) fetch --unshallow"; \
+			fi \
 		fi \
 	else \
 		if [ -n "$(MODULES_VERSION)" ]; then \
