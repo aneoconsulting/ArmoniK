@@ -37,14 +37,16 @@
   - Limit the opening of ports for managed services (e.g., ElastiCache, Amazon MQ).
 
 ### Application Principles
-  - Jobs should not access standard file systems or relational database servers during execution. Filesystem mounts are not permitted. If external storage access is necessary, use a dedicated Object Storage plug-in.
-  - To ensure that all nodes can be utilized for all applications, no application can leave any footprints on the computing nodes. Therefore, no application should assume direct access to the compute nodes.
-  - No application data should be stored on local disks. Temporary results should be provided to ArmoniK as a result of the task.
-  - The application and tasks submitted should not have any scheduling functions. Multithreading is allowed, but tasks should not assume scheduling capabilities.
-  - No task-to-task communication is permitted. Tasks should not assume that other tasks are running concurrently and should not attempt to communicate with one another.
+  - Jobs should avoid accessing external storage system during execution. If required, use a dedicated Object Storage plug-in to manage the connection to you external storage system.
+  - Workers can maintain a state; however, you cannot rely on its availability. Tasks must be designed to reconstruct the state when required. Therefore, no application should assume direct access to the compute nodes.
+  - Workers can maintain a state; however, you cannot rely on its availability. Tasks must be designed to reconstruct the state when necessary. Consequently, no application data should be stored on local disks. Instead, temporary results should be returned to ArmoniK as the output of the task.
+  - No task-to-task communication  can be guaranteed. Tasks should not assume that other tasks are running concurrently and should not attempt to communicate with one another.
 
 ### Application Rules
-  - As a best practice, individual tasks should run for between a few seconds and 180 seconds to minimize work loss in case of task failure and to optimize the distributed environment.
+  - A task can have any duration, but consider the following guidelines:
+    - If they are two short (less than 100 milliseconds), the scheduling overhead may outweigh the task duration.
+    - Between 100 milliseconds and 10 minutes, is the sweet spot where you can effectively utilize preemptible instances for cost optimization.
+    - Tasks exceeding 10 minutes may pose a higher risk and potentially lead to increased costs when using preemptible instances.
   - Applications should be designed to support the loss of any worker at any time, ideally using stateless workers.
   - No task should actively wait for another to complete. Instead, utilize ArmoniK's dependency mechanism.
   - Avoid creating never-ending tasks to artificially reserve resources. Define custom autoscaling metrics to pre-allocate compute resources.
