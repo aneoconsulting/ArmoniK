@@ -21,6 +21,12 @@ You can authenticate using the following command:
 gcloud auth login
 ```
 
+then :
+
+```bash
+gcloud auth application-default login
+```
+
 To configure the project, if you don't know the project ID, you can list all the projects using the following command:
 
 ```bash
@@ -70,6 +76,8 @@ make destroy PREFIX=<PREFIX_KEY>
 ```
 
 #### 2. Destroy the GCP Prefix Key - In case you don't need to deploy on GCP anymore
+
+:warning: In case you ALREADY HAVE DESTROYED and you don't need to deploy on GCP anymore :warning:
 
 It's an optional step if you are not willing to use the prefix key in the future. However, please note that if you delete the prefix key and the terraform state from the GCP environment, you will not be able to reproduce this exact deployment on GCP. It is not recommended to perform this step unless you are certain that you will not need the prefix key again, such as when you are leaving the project.
 
