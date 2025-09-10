@@ -39,7 +39,7 @@
 ### Application Principles
   - Jobs should avoid accessing external storage system during execution. If required, use a dedicated Object Storage plug-in to manage the connection to you external storage system.
   - Workers can maintain a state; however, you cannot rely on its availability. Tasks must be designed to reconstruct the state when required. Therefore, no application should assume direct access to the compute nodes.
-  - Workers can maintain a state; however, you cannot rely on its availability. Tasks must be designed to reconstruct the state when necessary. Consequently, no application data should be stored on local disks. Instead, temporary results should be returned to ArmoniK as the output of the task.
+  - Workers can maintain a state; however, you cannot rely on its availability. Tasks must be designed to reconstruct the state when necessary. Consequently and whenever possible, no application data should be stored on local disks. Instead, temporary results should be returned to ArmoniK as the output of the task.
   - No task-to-task communication  can be guaranteed. Tasks should not assume that other tasks are running concurrently and should not attempt to communicate with one another.
 
 ### Application Rules
@@ -50,7 +50,6 @@
   - Applications should be designed to support the loss of any worker at any time, ideally using stateless workers.
   - No task should actively wait for another to complete. Instead, utilize ArmoniK's dependency mechanism.
   - Avoid creating never-ending tasks to artificially reserve resources. Define custom autoscaling metrics to pre-allocate compute resources.
-  - Ensure that tasks can be terminated and rescheduled without negatively impacting the workload (at both session and overall application operating time).
   - The grace period of your application must not exceed the grace period of the physical instances (2 minutes for AWS spot instances, between 15 seconds and 2 minutes on GCP spot instances). In other situations, it should not exceed 3 minutes.
   - Never introduce a potential Single Point of Failure (SPOF) or other centralized sharing or database services that cannot scale with application growth.
   - Long tasks (one hour or more) must be split into smaller tasks (ten or twenty minutes as a best practice target). As a last resort, implement a recovery mechanism to utilize saved data from the G2S mutualized cache service.
