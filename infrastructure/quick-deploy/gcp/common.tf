@@ -49,5 +49,5 @@ locals {
     "creation_date"      = "date-${null_resource.timestamp.triggers["date"]}"
   }, var.labels)
   node_pools_labels = { for key, value in var.gke.node_pools_labels : key => merge(local.labels, value) }
-  node_pools_tags   = { for node_pool in coalesce(var.gke.node_pools, []) : node_pool["name"] => values(local.labels) }
+  node_pools_tags   = { for node_pool in coalesce(var.gke.node_pools, []) : node_pool["name"] => toset(values(local.labels)) }
 }
