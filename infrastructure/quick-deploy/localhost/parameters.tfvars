@@ -370,6 +370,9 @@ static = {
   gui_configuration = {}
 }
 
+# Comment to disable the MongoDB metrics exporter
+mongodb_metrics_exporter = {}
+
 mongodb = {
   # Uncomment to define custom resources for MongoDB pods, comment for default values
   # mongodb_resources = {
