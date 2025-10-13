@@ -41,7 +41,6 @@ ArmoniK documentation
    content/user-guide/golden-rules.md
    content/user-guide/how-to-configure-partitions.md
    content/user-guide/default-images.md
-   content/user-guide/populate-database.md
    content/user-guide/how-to-configure-seq.md
    content/user-guide/configure-gui.md
    content/user-guide/how-to-configure-authentication.md

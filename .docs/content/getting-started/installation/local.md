@@ -73,7 +73,7 @@ If you already have a K3s installation, start by [uninstalling it](https://docs.
 #### Step 1: Run the installation script
 
 ##### Option A: Use custom installation script (Recommended)
-Use our installation script available here: [tools/install/k3s.sh](https://github.com/aneoconsulting/ArmoniK/blob/main/tools/install/k3s.sh)
+Use our installation script available here: [tools/installation/prerequisites/install-k3s.sh](https://github.com/aneoconsulting/ArmoniK/blob/main/tools/installation/prerequisites/install-k3s.sh)
 
 ##### Option B: Use the official installation script
 You can also use the official installation script to [install K3s](https://docs.k3s.io/quick-start)
@@ -94,11 +94,11 @@ kubectl get nodes
 
 
 > **Note**: If your kube configuration was not created during installation or if you get permission errors, you can manually configure it:
-> 
+>
 > - Create the kube directory
-> - Copy your kube config to a new config file  
+> - Copy your kube config to a new config file
 > - Adjust permissions
-> 
+>
 > ```bash
 > mkdir -p ~/.kube
 > sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
@@ -110,10 +110,10 @@ kubectl get nodes
 ### Simplified installer
 
 
-You can easily install all of them using the [ArmoniK prerequisites installer](https://github.com/aneoconsulting/ArmoniK/blob/main/infrastructure/utils/scripts/installation/prerequisites-installer.sh) from the root repository.
+You can easily install all of them using the [ArmoniK prerequisites installer](https://github.com/aneoconsulting/ArmoniK/blob/main/tools/installation/prerequisites-installer.sh) from the root repository.
 
 ```bash [shell]
-./infrastructure/utils/scripts/installation/prerequisites-installer.sh
+./tools/installation/prerequisites-installer.sh
 ```
 
 
@@ -139,9 +139,9 @@ You could encounter some issues with the execution of the prerequisites installe
 ```sh
 
 # Add execution permissions to the prerequisites installer script
-chmod +x ./infrastructure/utils/scripts/installation/prerequisites-installer.sh
+chmod +x ./tools/installation/prerequisites-installer.sh
 # Add execution permissions to every script in the prerequisites directory
-chmod +x ./infrastructure/utils/scripts/installation/prerequisites/*
+chmod +x ./tools/installation/prerequisites/*
 
 ```
 
