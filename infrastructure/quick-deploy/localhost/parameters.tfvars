@@ -134,8 +134,8 @@ compute_plane = {
         image = "dockerhubaneo/harmonic_snake"
         tag   = "python-3.10.12"
         limits = {
-          cpu    = "1000m"
-          memory = "1024Mi"
+          cpu    = "250m"
+          memory = "256Mi"
         }
         requests = {
           cpu    = "50m"
@@ -148,7 +148,7 @@ compute_plane = {
       polling_interval  = 15
       cooldown_period   = 300
       min_replica_count = 0
-      max_replica_count = 5
+      max_replica_count = 20
       behavior = {
         restore_to_original_replica_count = true
         stabilization_window_seconds      = 300
@@ -375,19 +375,18 @@ mongodb_metrics_exporter = {}
 
 mongodb = {
   # Uncomment to define custom resources for MongoDB pods, comment for default values
-  # mongodb_resources = {
-  #   limits = {
-  #     "cpu"               = 2
-  #     "memory"            = "2Gi"
-  #     "ephemeral-storage" = "10Gi"
-  #   }
-  #   requests = {
-  #     "cpu"               = "500m"
-  #     "memory"            = "500Mi"
-  #     "ephemeral-storage" = "1Gi"
-  #   }
-  # }
-
+  mongodb_resources = {
+    limits = {
+      "cpu"               = 0.5
+      "memory"            = "500Mi"
+      "ephemeral-storage" = "10Gi"
+    }
+    requests = {
+      "cpu"               = "500m"
+      "memory"            = "500Mi"
+      "ephemeral-storage" = "1Gi"
+    }
+  }
   # Uncomment to define custom resources for MongoDB arbiter pods, comment for default values
   # arbiter_resources = {
   #   limits = {
