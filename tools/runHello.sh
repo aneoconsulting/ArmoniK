@@ -1,5 +1,7 @@
-DEFAULT_TAG="0.33.1"
-DEFAULT_PARTITION="htcmock"
+#!/bin/bash
+
+DEFAULT_TAG="v1"
+DEFAULT_PARTITION="helloworld"
 
 usage() {
     echo "Usage: $0 [-t TAG] [-p PARTITION] [-a USE_AUTH]"
@@ -33,16 +35,14 @@ PARTITION="${ARG_PARTITION:-$DEFAULT_PARTITION}"
 
 GRPC_CLIENT_END_POINT="https://192.168.1.47:5001"
 
-CERTS_DIR="/home/jose/ArmoniK.Formations/2025internal/AuthSample/customCA/certs"
-#CERTS_DIR="/home/jose/repos/ArmoniK/infrastructure/quick-deploy/localhost/generated/certificates/ingress"
+CERTS_DIR="/home/ubuntu/ArmoniK/infrastructure/quick-deploy/localhost/generated/certificates/ingress/"
 
 if [ "x${ARG_AUTH}" == "xtrue" ]; then
 AUTH_OPTS=$(cat<<EOF
   -u $UID:$(id -g)
   -v $CERTS_DIR:/app/certs
   -e GrpcClient__CaCert=/app/certs/ca.crt
-  -e GrpcClient__CertP12=/app/certs/custom.submitter.p12
-  -e GrpcClient__AllowUnsafeConnection=true
+  -e GrpcClient__CertP12=/app/certs/client.submitter.p12
 EOF
 )
 fi
@@ -51,13 +51,5 @@ echo $AUTH_OPTS
 
 docker run --rm \
   $AUTH_OPTS \
-  -e HtcMock__NTasks=100 \
-  -e HtcMock__TotalCalculationTime=00:00:10 \
-  -e HtcMock__DataSize=1 \
-  -e HtcMock__MemorySize=1 \
-  -e HtcMock__SubTasksLevels=1 \
-  -e HtcMock__Partition=$PARTITION \
-  -e HtcMock__EnableFastCompute=true \
-  -e HtcMock__TaskRpcException="" \
-  -e GrpcClient__Endpoint=$GRPC_CLIENT_END_POINT \
-  dockerhubaneo/armonik_core_htcmock_test_client:$VERSION
+  dockerhubaneo/armonik_demo_helloworld_client:$VERSION \
+  --endpoint $GRPC_CLIENT_END_POINT --partition $PARTITION
