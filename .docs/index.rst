@@ -51,7 +51,6 @@ ArmoniK documentation
    content/user-guide/configure-gui.md
    content/user-guide/how-to-configure-authentication.md
    content/user-guide/how-to-troubleshoot.md
-   content/user-guide/differentiate-environments.md
 
 .. toctree::
    :maxdepth: 1
