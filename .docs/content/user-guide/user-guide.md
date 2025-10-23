@@ -12,6 +12,4 @@
 
 ## Deployment configuration (config files, env vars)
 
-## Differentiate environments (dev/staging/prod)
-
 ## Troubleshooting (detailed section, searchable by error)
