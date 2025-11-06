@@ -11,15 +11,6 @@ resource "kubernetes_namespace" "armonik" {
   }
 }
 
-resource "kubernetes_secret" "shared_storage" {
-  metadata {
-    name = "shared-storage"
-    namespace = var.namespace
-  }
-
-  data = var.shared_storage
-}
-
 locals {
   prefix    = try(coalesce(var.prefix), "armonik-${random_string.prefix.result}")
   namespace = kubernetes_namespace.armonik.metadata[0].name
