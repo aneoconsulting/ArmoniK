@@ -103,7 +103,12 @@ variable "shared_storage" {
     file_storage_type = optional(string, "HostPath")
     file_server_ip    = optional(string, "")
   })
-  default = null
+  default = {
+    host_path         = "data"
+    file_storage_type = "HostPath"
+    file_server_ip    = ""
+  }
+  sensitive = true
 }
 
 # Parameters for ActiveMQ
