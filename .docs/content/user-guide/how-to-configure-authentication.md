@@ -113,7 +113,7 @@ The JSON authentication configuration file must have the following format (note 
   "certificates_list":[
     {
       "Cn": "string", //Common name of the certificate
-      "Fingerprint" : "string" or null, // Sha1 fingerprint of the certificate (if null, the user will be authenticated using ANY certificate with the given Common Name)
+      "Fingerprint" : "string" or null, // Sha1 sum of the certificate's raw binary data
       "Username": "string" // Username
     }
   ],
@@ -132,7 +132,15 @@ The JSON authentication configuration file must have the following format (note 
 }
 ```
 
-Please note that the ```Username``` and ```RoleName``` **MUST** be uniquely defined. A badly defined json may fail silently.
+*Notes*:
+  - The ```Username``` and ```RoleName``` **MUST** be uniquely defined. A badly defined json may fail silently.
+  - The ```Fingerprint``` field represents the SHA-1 hash of the certificate's raw binary data, which can be extracted using the following command
+
+    ```bash
+      openssl x509 -in </path/to/certificate.crt> -outform DER | sha1sum | awk '{print $1}'
+    ```
+
+  - If ```Fingerprint``` is null, the user will be authenticated using ANY certificate with the given Common Name.
 
 The resulting configuration is stored in the MongoDB database. If the database is restarted when MongoDB isn't setup with a persistent volume or if the database is emptied it needs to be repopulated by relaunching the authentication-in-database job. In a local deployment, this can be achieved using the following shell command:
 
