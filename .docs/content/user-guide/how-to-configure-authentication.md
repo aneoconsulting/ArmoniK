@@ -137,7 +137,7 @@ The JSON authentication configuration file must have the following format (note 
   - The ```Fingerprint``` field represents the SHA-1 hash of the certificate's raw binary data, which can be extracted using the following command
 
     ```bash
-      openssl x509 -in </path/to/certificate.crt> -outform DER | sha1sum | awk '{print $1}'
+      openssl x509 -in </path/to/certificate.crt> -noout -fingerprint | sed 's/.*=\|://g' | tr A-F a-f
     ```
 
   - If ```Fingerprint``` is null, the user will be authenticated using ANY certificate with the given Common Name.
