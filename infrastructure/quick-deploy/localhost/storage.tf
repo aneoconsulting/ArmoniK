@@ -168,3 +168,14 @@ module "nfs" {
   path      = var.nfs.path
   pvc_name  = var.nfs.pvc_name
 }
+
+# Shared storage
+
+resource "kubernetes_secret" "shared_storage" {
+  metadata {
+    name      = "shared-storage"
+    namespace = var.namespace
+  }
+
+  data = local.shared_storage
+}

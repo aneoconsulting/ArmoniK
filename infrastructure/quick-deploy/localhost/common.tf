@@ -32,9 +32,9 @@ locals {
     must_force_path_style = module.minio_s3_fs[0].must_force_path_style
   } : {}
   shared_storage_localhost_default = {
-    host_path         = abspath("data")
-    file_storage_type = "HostPath"
-    file_server_ip    = ""
+    host_path         = abspath(var.shared_storage.host_path)
+    file_storage_type = var.shared_storage.file_storage_type
+    file_server_ip    = var.shared_storage.file_server_ip
   }
   shared_storage = var.minio_s3_fs != null ? local.shared_storage_minio_s3_fs : local.shared_storage_localhost_default
 }
