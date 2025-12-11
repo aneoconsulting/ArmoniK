@@ -11,6 +11,7 @@ ArmoniK documentation
    :glob:
 
    content/armonik/glossary.md
+   content/armonik/index.md
    content/armonik/getting-started.md
 
 .. toctree::
