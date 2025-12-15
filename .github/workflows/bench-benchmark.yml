@@ -38,7 +38,7 @@ jobs:
     steps:
       - id: ctx
         name: Dump Github context
-        uses: crazy-max/ghaction-dump-context@v2
+        uses: crazy-max/ghaction-dump-context@5355a8e5e6ac5a302e746a1c4b7747a0393863c8 # v2
       - id: types
         name: Define matrix
         env:
@@ -87,7 +87,7 @@ jobs:
       armonik-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Install Dependencies
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
@@ -144,7 +144,7 @@ jobs:
           poll-duration-limit: ${{ matrix.polling-limit }}
 
       - name: Upload benchmark results to artifact registry
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: benchclient_benchmark_${{ github.event_name }}_${{ matrix.type }}_${{ github.run_id }}
           path: ${{ steps.get-bench-stats.outputs.bench-file-path }}
