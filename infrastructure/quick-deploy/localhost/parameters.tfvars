@@ -371,9 +371,14 @@ compute_plane = {
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
 ingress = {
-  tls                  = false
-  mtls                 = false
-  generate_client_cert = false
+  tls                  = true
+  mtls                 = true
+  generate_client_cert = true
+}
+
+authentication = {
+   require_authentication = true
+   require_authorization = true
 }
 
 configurations = {
