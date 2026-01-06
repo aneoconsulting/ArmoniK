@@ -20,7 +20,7 @@ Please, read [documentation](https://armonik.readthedocs.io/en/latest/) for more
 
 ## Bug
 
-You are welcome to raise issues on GitHub. Please, read our [community guidelines](https://aneoconsulting.github.io/ArmoniK.Community/) before doing so.
+You are welcome to raise issues on GitHub. Please, read our [community guidelines](https://armonikcommunity.readthedocs.io/en/latest/) before doing so.
 
 You can also send us a direct email at [armonik@aneo.fr](mailto:armonik@aneo.fr).
 
