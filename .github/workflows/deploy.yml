@@ -429,7 +429,7 @@ jobs:
           require-authentication: true
           require-authorization: true
           auth-datafile: "${{ github.workspace }}/auth_conf.json"
-          trusted-cns: "[armonik.mcp, armonik.admin]"
+          trusted-cns: '["armonik.mcp", "armonik.admin"]'
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
