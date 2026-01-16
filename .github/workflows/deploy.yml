@@ -396,35 +396,58 @@ jobs:
           lscpu
           uname -a
           grep MemTotal /proc/meminfo
-      - name: Install test prerequesites
-        shell: bash
-        run: |
-          set -ex
-          sudo apt-get update
-          sudo apt-get install -y grpcurl python3-jinja2
-          wget https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_amd64.deb
-          sudo dpkg -i grpcurl_1.9.3_linux_amd64.deb
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@jf/grpcurl
         with:
            docker: true
            terraform: true
            k3s: true
            aws: true
-           require-authentication: true
-           require-authorization: true
-           auth-datafile: 
-           trusted-cns: "[armonik.mcp]"  
+      - name: Generate auth configuration
+        run: |
+          python tools/ci/python/generate_auth_conf.py
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@jf/auth
         with:
           type: localhost
           log-suffix: mcp-auth
+          tls: true
+          mtls: true
+          custom-client-ca: "${{ github.workspace }}/customCA/certs/ca.crt"
+          require-authentication: true
+          require-authorization: true
+          auth-datafile: "${{ github.workspace }}/auth_conf.json"
+          trusted-cns: '["armonik.mcp", "armonik.admin"]'
+      - name: Docker compose up
+        run: |
+          set -ex
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          mkdir -p ${{ github.workspace }}/tools/ci/docker-compose/mcp/ingressclient/
+          cp "${{ github.workspace }}/customCA/certs/ca.crt" "${{ github.workspace }}/tools/ci/docker-compose/mcp/ingressclient/"
+          export MCP_TAG=0.1.2-SNAPSHOT.60.sha.09932b5
+          export CUSTOM_CERTS_ROOT="${{ github.workspace }}/customCA"
+          export MCP_CA="${CUSTOM_CERTS_ROOT}/certs/ca.crt"
+          export MCP_CRT="${CUSTOM_CERTS_ROOT}/certs/armonik.mcp.crt"
+          export MCP_KEY="${CUSTOM_CERTS_ROOT}/private/armonik.mcp.key"
+          export MCP_URL="localhost:8443"
+          export NGINX_SERVER_CRT="${CUSTOM_CERTS_ROOT}/certs/server.mcp.crt"
+          export NGINX_SERVER_KEY="${CUSTOM_CERTS_ROOT}/private/server.mcp.key"
+          export NGINX_CLIENT_CA="${CUSTOM_CERTS_ROOT}/certs/ca.crt"
+          export CACERT="${{ github.workspace }}/infrastructure/quick-deploy/localhost/generated/certificates/ingress/ca.crt"
+          chmod 644 $CACERT
+          cd ${{ github.workspace }}/tools/ci/docker-compose/mcp && docker compose up -d
+      - name: Run tests
+        run: |
+          pytest tools/ci/python/mcp_tests.py
+      - name: Docker-compose down
+        run: |
+          docker logs mcp
+          cd ${{ github.workspace }}/tools/ci/docker-compose/mcp && docker compose down
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
