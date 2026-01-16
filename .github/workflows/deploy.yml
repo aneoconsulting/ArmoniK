@@ -428,8 +428,8 @@ jobs:
           custom-client-ca: customCA/certs/ca.crt
           require-authentication: true
           require-authorization: true
-          auth-datafile: "auth_conf.json"
-          trusted-cns: "[armonik.mcp, armonik.admin]"
+          auth-datafile: auth_conf.json
+          trusted-cns: '["armonik.mcp", "armonik.admin"]'
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
