@@ -401,7 +401,7 @@ jobs:
         run: |
           set -ex
           sudo apt-get update
-          sudo apt-get install -y grpcurl python3-jinja2
+          sudo apt-get install -y python3-jinja2
           wget https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_amd64.deb
           sudo dpkg -i grpcurl_1.9.3_linux_amd64.deb
       - name: Checkout

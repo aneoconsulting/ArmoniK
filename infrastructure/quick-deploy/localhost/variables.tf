@@ -584,7 +584,7 @@ variable "authentication" {
     authentication_datafile = optional(string, "")
     require_authentication  = optional(bool, false)
     require_authorization   = optional(bool, false)
-    trusted_common_names    = optional(list(string), [])
+    trusted_common_names    = optional(set(string), [])
   })
   default = {}
 }
