@@ -280,5 +280,7 @@ if __name__ == '__main__':
     certs_list = create_certs()
     users_list = [{"Username":r['Username'], "Roles":["Monitoring" if "monitoring" in r['Username'] else "Admin"]} for r in certs_list]
     auth_json_path = generate_auth_json_file(certs_list,users_list,ROLES_LIST)
+    logger.info(f"JSON auth configuration file: {auth_json_path}")
     ca_cert_path = os.path.abspath(os.path.join("customCA", "ca.crt"))
+    logger.info(f"Client CA file: {ca_cert_path}")
     generate_auth_params_tfvars(ca_cert_path,auth_json_path)
