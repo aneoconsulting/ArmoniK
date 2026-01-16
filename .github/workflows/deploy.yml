@@ -386,4 +386,46 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
              type: localhost
-             
+
+  mcpAuth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+      - name: Install test prerequesites
+        shell: bash
+        run: |
+          set -ex
+          sudo apt-get update
+          sudo apt-get install -y grpcurl python3-jinja2
+          wget https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_amd64.deb
+          sudo dpkg -i grpcurl_1.9.3_linux_amd64.deb
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Install Dependencies
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        with:
+           docker: true
+           terraform: true
+           k3s: true
+           aws: true
+           require-authentication: true
+           require-authorization: true
+           auth-datafile: 
+           trusted-cns: "[armonik.mcp]"  
+      - name: Deploy
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@jf/auth
+        with:
+          type: localhost
+          log-suffix: mcp-auth
+      - name: Destroy deployment
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        with:
+           type: localhost
