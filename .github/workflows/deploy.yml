@@ -400,8 +400,6 @@ jobs:
         shell: bash
         run: |
           set -ex
-          sudo apt-get update
-          sudo apt-get install -y python3-jinja2
           wget https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_amd64.deb
           sudo dpkg -i grpcurl_1.9.3_linux_amd64.deb
       - name: Checkout
@@ -416,15 +414,22 @@ jobs:
            terraform: true
            k3s: true
            aws: true
-           require-authentication: true
-           require-authorization: true
-           auth-datafile: 
-           trusted-cns: "[armonik.mcp]"  
+      - name: Generate auth configuration
+        run: |
+          python tools/ci/python/generate_auth_conf.py
+
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@jf/auth
         with:
           type: localhost
           log-suffix: mcp-auth
+          tls: true
+          mtls: true
+          custom-client-ca: customCA/certs/ca.crt
+          require-authentication: true
+          require-authorization: true
+          auth-datafile: "auth_conf.json"
+          trusted-cns: "[armonik.mcp, armonik.admin]"
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
