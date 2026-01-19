@@ -669,3 +669,14 @@ variable "static" {
   type        = any
   default     = {}
 }
+
+variable "oauth_configuration" {
+  type = object({
+    provider_root_URI               = string
+    provider_user_info_endpoint     = string
+    provider_authorization_endpoint = string
+    client_id                       = string
+    response_type                   = optional(string, "refresh_token")
+  })
+  default = null
+}
