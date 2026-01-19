@@ -443,7 +443,12 @@ jobs:
           cd ${{ github.workspace }}/tools/ci/docker-compose/mcp && docker compose up -d
       - name: Run tests
         run: |
-          pytest tools/ci/python/mcp_tests.py
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          export CUSTOM_CERTS_ROOT="${{ github.workspace }}/customCA"
+          export MCP_CA="${CUSTOM_CERTS_ROOT}/certs/ca.crt"
+          export MCP_URL="localhost:8443"
+          export CACERT="${{ github.workspace }}/infrastructure/quick-deploy/localhost/generated/certificates/ingress/ca.crt"
+          pytest ${{ github.workspace }}/tools/ci/python/mcp_tests.py
       - name: Docker-compose down
         run: |
           docker logs mcp
