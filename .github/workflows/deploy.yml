@@ -399,6 +399,17 @@ jobs:
   mcpAuth:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      CUSTOM_CERTS_ROOT: "${{ github.workspace }}/customCA"
+      MCP_CA: "${{ github.workspace }}/customCA/certs/ca.crt"
+      MCP_CRT: "${{ github.workspace }}/customCA/certs/armonik.mcp.crt"
+      MCP_KEY: "${{ github.workspace }}/customCA/private/armonik.mcp.key"
+      MCP_URL: "localhost:8443"
+      MCP_TAG: $(cat versions.tfvars.json | jq -r '.armonik_versions.infra_plugins)
+      NGINX_SERVER_CRT: "${{ github.workspace }}/customCA/certs/server.mcp.crt"
+      NGINX_SERVER_KEY: "${{ github.workspace }}/customCA/private/server.mcp.key"
+      NGINX_CLIENT_CA: "${{ github.workspace }}/customCA/certs/ca.crt"
+      CACERT: "${{ github.workspace }}/infrastructure/quick-deploy/localhost/generated/certificates/ingress/ca.crt"
     steps:
       - name: Get type of VM
         run: |
@@ -428,7 +439,7 @@ jobs:
           log-suffix: mcp-auth
           tls: true
           mtls: true
-          custom-client-ca: "${{ github.workspace }}/customCA/certs/ca.crt"
+          custom-client-ca: $MCP_CA
           require-authentication: true
           require-authorization: true
           auth-datafile: "${{ github.workspace }}/auth_conf.json"
@@ -438,45 +449,10 @@ jobs:
         run: |
           set -ex
           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
-          export MCP_TAG=0.1.2-SNAPSHOT.60.sha.09932b5
-
-          export CUSTOM_CERTS_ROOT="${{ github.workspace }}/customCA"
-          echo "custom_certs_root=$CUSTOM_CERTS_ROOT" >> $GITHUB_OUTPUT
-
-          export MCP_CA="${CUSTOM_CERTS_ROOT}/certs/ca.crt"
-          echo "mcp_ca=$MCP_CA" >> $GITHUB_OUTPUT
-
-          export MCP_CRT="${CUSTOM_CERTS_ROOT}/certs/armonik.mcp.crt"
-          echo "mcp_crt=$MCP_CRT" >> $GITHUB_OUTPUT
-
-          export MCP_KEY="${CUSTOM_CERTS_ROOT}/private/armonik.mcp.key"
-          echo "mcp_key=$MCP_KEY" >> $GITHUB_OUTPUT
-
-          export MCP_URL="localhost:8443"
-          echo "mcp_url=$MCP_URL" >> $GITHUB_OUTPUT
-
-          export NGINX_SERVER_CRT="${CUSTOM_CERTS_ROOT}/certs/server.mcp.crt"
-          echo "nginx_server_crt=$NGINX_SERVER_CRT" >> $GITHUB_OUTPUT
-
-          export NGINX_SERVER_KEY="${CUSTOM_CERTS_ROOT}/private/server.mcp.key"
-          echo "nginx_server_key=$NGINX_SERVER_KEY" >> $GITHUB_OUTPUT
-
-          export NGINX_CLIENT_CA="${CUSTOM_CERTS_ROOT}/certs/ca.crt"
-          echo "nginx_client_ca=$NGINX_CLIENT_CA" >> $GITHUB_OUTPUT
-
-          export CACERT="${{ github.workspace }}/infrastructure/quick-deploy/localhost/generated/certificates/ingress/ca.crt"
-          echo "cacert=$CACERT" >> $GITHUB_OUTPUT
-
           chmod 644 $CACERT
           cd ${{ github.workspace }}/tools/ci/docker-compose/mcp && docker compose up -d
-
       - name: Run tests
         run: |
-          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
-          export CUSTOM_CERTS_ROOT=${{ steps.compose.outputs.custom_certs_root }}
-          export MCP_CA=${{ steps.compose.outputs.mcp_ca }}
-          export MCP_URL=${{ steps.compose.outputs.mcp_url }}
-          export CACERT=${{ steps.compose.outputs.cacert }}
           pytest -v ${{ github.workspace }}/tools/ci/python/mcp_tests.py
       - name: Collect logs
         run: |
@@ -484,12 +460,6 @@ jobs:
           docker logs nginx_mcp > nginx_mcp.logs
       - name: Docker-compose down
         run: |
-          export NGINX_SERVER_CRT=${{ steps.compose.outputs.nginx_server_crt }}
-          export NGINX_SERVER_KEY=${{ steps.compose.outputs.nginx_server_key }}
-          export NGINX_CLIENT_CA=${{ steps.compose.outputs.nginx_client_ca }}
-          export MCP_CRT=${{ steps.compose.outputs.mcp_crt }}
-          export MCP_KEY=${{ steps.compose.outputs.mcp_key }}
-          export CACERT=${{ steps.compose.outputs.cacert }}
           cd ${{ github.workspace }}/tools/ci/docker-compose/mcp && docker compose down
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
