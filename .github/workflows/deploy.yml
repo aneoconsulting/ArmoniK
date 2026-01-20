@@ -455,7 +455,31 @@ jobs:
           cd ${{ github.workspace }}/tools/ci/docker-compose/mcp && docker compose up -d
       - name: Run tests
         run: |
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           pytest -v ${{ github.workspace }}/tools/ci/python/mcp_tests.py
+      - name: Show logs
+        if: always()
+        run: |
+             set -e
+             mkdir -p mcp-auth/infra/generated \
+               mcp-auth/infra/tfstates \
+               mcp-auth/app \
+               mcp-auth/compose
+
+             docker logs mcp > mcp-auth/compose/mcp.logs
+             docker logs ngnix-mcp > mcp-auth/compose/ngnix.logs
+
+             if [ -e infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json ] ; then
+              cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json mcp-auth/infra/generated
+             fi
+             make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > mcp-auth/infra/tfstates/armonik-terraform.tfstate
+             sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' mcp-auth/app/ ';'
+             sudo chown $USER -R mcp-auth
+             tar -czf mcp-auth.tar.gz mcp-auth
+             aws s3 cp mcp-auth.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/mcp-auth.tar.gz
+        env:
+             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Collect logs
         run: |
           docker logs mcp > mcp.logs
