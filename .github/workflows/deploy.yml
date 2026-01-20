@@ -405,7 +405,6 @@ jobs:
       MCP_CRT: "${{ github.workspace }}/customCA/certs/armonik.mcp.crt"
       MCP_KEY: "${{ github.workspace }}/customCA/private/armonik.mcp.key"
       MCP_URL: "localhost:8443"
-      MCP_TAG: $(cat versions.tfvars.json | jq -r '.armonik_versions.infra_plugins)
       NGINX_SERVER_CRT: "${{ github.workspace }}/customCA/certs/server.mcp.crt"
       NGINX_SERVER_KEY: "${{ github.workspace }}/customCA/private/server.mcp.key"
       NGINX_CLIENT_CA: "${{ github.workspace }}/customCA/certs/ca.crt"
@@ -422,6 +421,9 @@ jobs:
           repository: ${{ env.REPOSITORY }}
           ref: ${{ env.REFERENCE }}
           fetch-depth: 0
+      - name: Get Load Balancer tag
+        id: mcp
+        run: echo "MCP_TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.infra_plugins')" >> $GITHUB_ENV
       - name: Install Dependencies
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
         with:
@@ -439,7 +441,7 @@ jobs:
           log-suffix: mcp-auth
           tls: true
           mtls: true
-          custom-client-ca: $MCP_CA
+          custom-client-ca: "${{ env.MCP_CA }}"
           require-authentication: true
           require-authorization: true
           auth-datafile: "${{ github.workspace }}/auth_conf.json"
