@@ -5,6 +5,10 @@ on:
     branches: [ '**' ]
     tags-ignore: [ '**' ]
 
+env:
+  REPOSITORY: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+  REFERENCE: ${{ github.head_ref || github.ref }}
+
 jobs:
   versioning:
     name: "Versioning"
@@ -21,7 +25,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
-          ref: ${{ github.head_ref }}
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
           fetch-depth: 0
       - name: Generate Version
         id: genver
@@ -44,7 +49,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
-          ref: ${{ github.head_ref }}
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
           fetch-depth: 0
       - name: Install Dependencies
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
@@ -104,8 +110,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
-           ref: ${{ github.head_ref }}
-           fetch-depth: 0
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
+          fetch-depth: 0
       - name: Get Core Tag
         id: core
         run: |
@@ -169,7 +176,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
-          ref: ${{ github.head_ref }}
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
           fetch-depth: 0
       - name: Get Core Tag
         id: core
@@ -295,8 +303,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
-             ref: ${{ github.head_ref }}
-             fetch-depth: 0
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
+          fetch-depth: 0
       - name: Get Core Tag
         id: core
         run: |
@@ -399,7 +408,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
-          ref: ${{ github.head_ref }}
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
           fetch-depth: 0
       - name: Install Dependencies
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@jf/grpcurl
