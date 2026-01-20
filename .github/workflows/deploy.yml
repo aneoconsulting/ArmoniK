@@ -467,7 +467,7 @@ jobs:
                mcp-auth/compose
 
              docker logs mcp > mcp-auth/compose/mcp.logs
-             docker logs ngnix-mcp > mcp-auth/compose/ngnix.logs
+             docker logs nginx_mcp > mcp-auth/compose/ngnix.logs
 
              if [ -e infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json ] ; then
               cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json mcp-auth/infra/generated
@@ -480,10 +480,6 @@ jobs:
         env:
              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - name: Collect logs
-        run: |
-          docker logs mcp > mcp.logs
-          docker logs nginx_mcp > nginx_mcp.logs
       - name: Docker-compose down
         run: |
           cd ${{ github.workspace }}/tools/ci/docker-compose/mcp && docker compose down
