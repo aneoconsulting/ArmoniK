@@ -412,7 +412,7 @@ jobs:
           ref: ${{ env.REFERENCE }}
           fetch-depth: 0
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@jf/grpcurl
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
         with:
            docker: true
            terraform: true
@@ -422,7 +422,7 @@ jobs:
         run: |
           python tools/ci/python/generate_auth_conf.py
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@jf/auth
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
           type: localhost
           log-suffix: mcp-auth
