@@ -39,7 +39,7 @@ ArmoniK documentation
    :caption: Administration & Operations
    :glob:
 
-   content/admin-ops/admin-ops.md
+   content/admin-ops/*
 
 .. toctree::
    :maxdepth: 1
