@@ -6,51 +6,33 @@
 ArmoniK documentation
 ==========================
 
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Home
-   :glob:
-
-   content/home/what-is-armonik.md
-
 .. toctree::
    :maxdepth: 1
    :caption: Quick Start
    :glob:
 
-   content/quick-start/quick-start.md
+   content/quick-start/*
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Installation
+   :maxdepth: 1
+   :caption: Detailed Installation
    :glob:
 
-   content/installation/installation.md
+   content/installation/*
 
 .. toctree::
    :maxdepth: 1
    :caption: Launching & Examples
    :glob:
 
-   content/examples/examples.md
-.. content/getting-started/execution/check.md
-   content/getting-started/execution/how-to-use-htc-mock.md
-   content/getting-started/execution/how-to-launch-HelloWorld-Sample.md
+   content/examples/*
 
 .. toctree::
    :maxdepth: 1
    :caption: User guide
    :glob:
 
-   content/user-guide/user-guide.md
-.. content/user-guide/golden-rules.md
-   content/user-guide/how-to-configure-partitions.md
-   content/user-guide/default-images.md
-   content/user-guide/how-to-configure-seq.md
-   content/user-guide/configure-gui.md
-   content/user-guide/how-to-configure-authentication.md
-   content/user-guide/how-to-troubleshoot.md
+   content/user-guide/*
 
 .. toctree::
    :maxdepth: 1
@@ -88,5 +70,4 @@ ArmoniK documentation
    :caption: Appendices
    :glob:
 
-   content/armonik/glossary.md
-   content/appendices/appendices.md
+   content/appendices/*

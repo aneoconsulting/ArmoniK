@@ -1,8 +1,5 @@
-## How to contribute (PR process, coding guidelines)
+# How to contribute (PR process, coding guidelines)
 
-## Local development setup
+Please check our [dedicated documentation](https://armonikcommunity.readthedocs.io/en/latest/) to this subject
 
-## Testing & CI
-
-## Roadmap
 
