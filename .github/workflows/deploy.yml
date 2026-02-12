@@ -451,7 +451,7 @@ jobs:
         run: |
           set -ex
           export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
-          chmod 644 $CACERT
+          chmod 644 "$CACERT"
           cd ${{ github.workspace }}/tools/ci/docker-compose/mcp && docker compose up -d
       - name: Run tests
         run: |
