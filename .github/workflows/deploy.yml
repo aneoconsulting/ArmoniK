@@ -5,6 +5,10 @@ on:
     branches: [ '**' ]
     tags-ignore: [ '**' ]
 
+env:
+  REPOSITORY: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+  REFERENCE: ${{ github.head_ref || github.ref }}
+
 jobs:
   versioning:
     name: "Versioning"
@@ -21,7 +25,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
-          ref: ${{ github.head_ref }}
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
           fetch-depth: 0
       - name: Generate Version
         id: genver
@@ -44,7 +49,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
-          ref: ${{ github.head_ref }}
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
           fetch-depth: 0
       - name: Install Dependencies
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
@@ -52,7 +58,7 @@ jobs:
            docker: true
            terraform: true
            k3s: true
-           aws: true 
+           aws: true
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
@@ -104,8 +110,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
-           ref: ${{ github.head_ref }}
-           fetch-depth: 0
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
+          fetch-depth: 0
       - name: Get Core Tag
         id: core
         run: |
@@ -169,7 +176,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
-          ref: ${{ github.head_ref }}
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
           fetch-depth: 0
       - name: Get Core Tag
         id: core
@@ -295,8 +303,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
         with:
-             ref: ${{ github.head_ref }}
-             fetch-depth: 0
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
+          fetch-depth: 0
       - name: Get Core Tag
         id: core
         run: |
@@ -386,4 +395,95 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
              type: localhost
-             
+
+  mcpAuth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CUSTOM_CERTS_ROOT: "${{ github.workspace }}/customCA"
+      MCP_CA: "${{ github.workspace }}/customCA/certs/ca.crt"
+      MCP_CRT: "${{ github.workspace }}/customCA/certs/armonik.mcp.crt"
+      MCP_KEY: "${{ github.workspace }}/customCA/private/armonik.mcp.key"
+      MCP_URL: "localhost:8443"
+      NGINX_SERVER_CRT: "${{ github.workspace }}/customCA/certs/server.mcp.crt"
+      NGINX_SERVER_KEY: "${{ github.workspace }}/customCA/private/server.mcp.key"
+      NGINX_CLIENT_CA: "${{ github.workspace }}/customCA/certs/ca.crt"
+      CACERT: "${{ github.workspace }}/infrastructure/quick-deploy/localhost/generated/certificates/ingress/ca.crt"
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+        with:
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
+          fetch-depth: 0
+      - name: Get Load Balancer tag
+        id: mcp
+        run: echo "MCP_TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.infra_plugins')" >> $GITHUB_ENV
+      - name: Install Dependencies
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        with:
+           docker: true
+           terraform: true
+           k3s: true
+           aws: true
+      - name: Generate auth configuration
+        run: |
+          python tools/ci/python/generate_auth_conf.py
+      - name: Deploy
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        with:
+          type: localhost
+          log-suffix: mcp-auth
+          tls: true
+          mtls: true
+          custom-client-ca: "${{ env.MCP_CA }}"
+          require-authentication: true
+          require-authorization: true
+          auth-datafile: "${{ github.workspace }}/auth_conf.json"
+          trusted-cns: '["armonik.mcp", "armonik.admin"]'
+      - name: Docker compose up
+        id: compose
+        run: |
+          set -ex
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          chmod 644 "$CACERT"
+          cd ${{ github.workspace }}/tools/ci/docker-compose/mcp && docker compose up -d
+      - name: Run tests
+        run: |
+          export CONTROL_PLANE_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          pytest -v ${{ github.workspace }}/tools/ci/python/mcp_tests.py
+      - name: Show logs
+        if: always()
+        run: |
+             set -e
+             mkdir -p mcp-auth/infra/generated \
+               mcp-auth/infra/tfstates \
+               mcp-auth/app \
+               mcp-auth/compose
+
+             docker logs mcp > mcp-auth/compose/mcp.logs
+             docker logs nginx_mcp > mcp-auth/compose/ngnix.logs
+
+             if [ -e infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json ] ; then
+              cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json mcp-auth/infra/generated
+             fi
+             make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > mcp-auth/infra/tfstates/armonik-terraform.tfstate
+             sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' mcp-auth/app/ ';'
+             sudo chown $USER -R mcp-auth
+             tar -czf mcp-auth.tar.gz mcp-auth
+             aws s3 cp mcp-auth.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/mcp-auth.tar.gz
+        env:
+             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Docker-compose down
+        run: |
+          cd ${{ github.workspace }}/tools/ci/docker-compose/mcp && docker compose down
+      - name: Destroy deployment
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        with:
+           type: localhost
