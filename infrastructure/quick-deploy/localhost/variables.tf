@@ -99,11 +99,11 @@ variable "chaos_mesh" {
 variable "shared_storage" {
   description = "Shared storage infos"
   type = object({
-    host_path         = string
+    host_path         = optional(string, "data")
     file_storage_type = optional(string, "HostPath")
     file_server_ip    = optional(string, "")
   })
-  default = null
+  default = {}
 }
 
 # Parameters for ActiveMQ
