@@ -60,6 +60,8 @@ module "armonik" {
   environment_description = var.environment_description
   static                  = var.static
 
+  oauth_configuration = var.oauth_configuration
+
   #metrics_exporter
   metrics_exporter = {
     image              = var.metrics_exporter.image_name
