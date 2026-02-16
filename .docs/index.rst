@@ -21,11 +21,12 @@ ArmoniK documentation
    content/installation/*
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Launching & Examples
    :glob:
 
-   content/examples/*
+   content/examples/0.how-to-launch-HelloWorld-Sample.md
+   content/examples/1.how-to-use-htc-mock.md
 
 .. toctree::
    :maxdepth: 1
