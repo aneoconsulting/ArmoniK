@@ -184,14 +184,27 @@ resource "kubernetes_secret" "partition_metrics_exporter" {
     namespace = module.partition_metrics_exporter.namespace
   } : {}
 }
+module "mongodb_exporter" {
+  count     = var.mongodb_metrics_exporter != null ? 1 : 0
+  source    = "./generated/infra-modules/monitoring/onpremise/exporters/mongodb-exporter"
+  namespace = local.namespace
+  docker_image = {
+    image              = local.ecr_images["${var.mongodb_metrics_exporter.image_name}:${try(coalesce(var.mongodb_metrics_exporter.image_tag), "")}"].image
+    tag                = local.ecr_images["${var.mongodb_metrics_exporter.image_name}:${try(coalesce(var.mongodb_metrics_exporter.image_tag), "")}"].tag
+    image_pull_secrets = var.mongodb_metrics_exporter.pull_secrets
+  }
+  force_split_cluster = length(module.atlas_mongodb) > 0
+  mongodb_modules     = [module.mongodb_sharded, module.mongodb, module.atlas_mongodb]
+}
 
 # Prometheus
 module "prometheus" {
-  source               = "./generated/infra-modules/monitoring/onpremise/prometheus"
-  namespace            = local.namespace
-  service_type         = var.prometheus.service_type
-  node_selector        = var.prometheus.node_selector
-  metrics_exporter_url = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
+  source                     = "./generated/infra-modules/monitoring/onpremise/prometheus"
+  namespace                  = local.namespace
+  service_type               = var.prometheus.service_type
+  node_selector              = var.prometheus.node_selector
+  metrics_exporter_url       = "${module.metrics_exporter.host}:${module.metrics_exporter.port}"
+  mongo_metrics_exporter_url = var.mongodb_metrics_exporter != null ? module.mongodb_exporter[0].url : ""
   docker_image = {
     image              = local.ecr_images["${var.prometheus.image_name}:${try(coalesce(var.prometheus.image_tag), "")}"].image
     tag                = local.ecr_images["${var.prometheus.image_name}:${try(coalesce(var.prometheus.image_tag), "")}"].tag
