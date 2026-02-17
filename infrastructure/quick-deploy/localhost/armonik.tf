@@ -46,12 +46,10 @@ module "armonik" {
   ingress = merge(var.ingress, {
     tag = try(coalesce(var.ingress.tag), local.default_tags[var.ingress.image])
   })
-  job_partitions_in_database = merge(var.job_partitions_in_database, {
-    tag = try(coalesce(var.job_partitions_in_database.tag), local.default_tags[var.job_partitions_in_database.image])
+  init = merge(var.init, {
+    tag = try(coalesce(var.init.tag), local.default_tags[var.init.image])
   })
-  authentication = merge(var.authentication, {
-    tag = try(coalesce(var.authentication.tag), local.default_tags[var.authentication.image])
-  })
+  authentication = var.authentication
 
   # Force the dependency on Keda and metrics-server for the HPA
   keda_chart_name           = module.keda.keda.chart_name
