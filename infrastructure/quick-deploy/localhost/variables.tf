@@ -531,6 +531,10 @@ variable "compute_plane" {
       memory     = optional(bool)
       size_limit = optional(string)
     }), {})
+    node_cache = optional(object({
+      path      = optional(string, "")
+      threshold = optional(number, 0.75)
+    }), {})
     # KEDA scaler
     hpa = optional(any)
   }))
