@@ -445,21 +445,6 @@ variable "configurations" {
   })
 }
 
-# Job to insert partitions in the database
-variable "job_partitions_in_database" {
-  description = "Job to insert partitions IDs in the database"
-  type = object({
-    name               = optional(string, "job-partitions-in-database")
-    image              = optional(string, "rtsp/mongosh")
-    tag                = optional(string)
-    image_pull_policy  = optional(string, "IfNotPresent")
-    image_pull_secrets = optional(string, "")
-    node_selector      = optional(any, {})
-    annotations        = optional(any, {})
-  })
-  default = {}
-}
-
 # Parameters of control plane
 variable "control_plane" {
   description = "Parameters of the control plane"
@@ -546,6 +531,10 @@ variable "compute_plane" {
       memory     = optional(bool)
       size_limit = optional(string)
     }), {})
+    node_cache = optional(object({
+      path      = optional(string, "")
+      threshold = optional(number, 0.75)
+    }), {})
     # KEDA scaler
     hpa = optional(any)
   }))
@@ -589,16 +578,23 @@ variable "ingress" {
 variable "authentication" {
   description = "Authentication behavior"
   type = object({
-    name                    = optional(string, "job-authentication-in-database")
-    image                   = optional(string, "rtsp/mongosh")
-    tag                     = optional(string)
-    image_pull_policy       = optional(string, "IfNotPresent")
-    image_pull_secrets      = optional(string, "")
-    node_selector           = optional(any, {})
     authentication_datafile = optional(string, "")
     require_authentication  = optional(bool, false)
     require_authorization   = optional(bool, false)
     trusted_common_names    = optional(set(string), [])
+  })
+  default = {}
+}
+
+variable "init" {
+  description = "Configuration of Core Init job"
+  type = object({
+    image              = optional(string, "dockerhubaneo/armonik_control")
+    tag                = optional(string)
+    image_pull_policy  = optional(string, "IfNotPresent")
+    image_pull_secrets = optional(string, "")
+    node_selector      = optional(any, {})
+    annotations        = optional(any, {})
   })
   default = {}
 }
@@ -643,6 +639,8 @@ variable "armonik_versions" {
     api           = string
     gui           = string
     extcsharp     = string
+    extjava       = string
+    extcpp        = string
     samples       = string
   })
 }
@@ -656,6 +654,8 @@ variable "armonik_images" {
     api           = set(string)
     gui           = set(string)
     extcsharp     = set(string)
+    extjava       = set(string)
+    extcpp        = set(string)
     samples       = set(string)
   })
 }

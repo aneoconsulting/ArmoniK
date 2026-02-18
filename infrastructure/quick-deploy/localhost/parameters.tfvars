@@ -81,7 +81,7 @@ compute_plane = {
     # ArmoniK workers
     worker = [
       {
-        image = "dockerhubaneo/armonik_worker_dll"
+        image = "dockerhubaneo/armonik-dynamic-dotnet-worker"
         limits = {
           cpu    = "1000m"
           memory = "1024Mi"
