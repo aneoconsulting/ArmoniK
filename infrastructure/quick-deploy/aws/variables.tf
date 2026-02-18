@@ -110,15 +110,15 @@ variable "eks" {
         tag   = optional(string)
       }), {})
       csi_liveness_probe = optional(object({
-        image = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/livenessprobe")
+        image = optional(string, "public.ecr.aws/csi-components/livenessprobe")
         tag   = optional(string)
       }), {})
       csi_node_driver_registrar = optional(object({
-        image = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/node-driver-registrar")
+        image = optional(string, "public.ecr.aws/csi-components/csi-node-driver-registrar")
         tag   = optional(string)
       }), {})
       csi_external_provisioner = optional(object({
-        image = optional(string, "public.ecr.aws/eks-distro/kubernetes-csi/external-provisioner")
+        image = optional(string, "public.ecr.aws/csi-components/csi-provisioner")
         tag   = optional(string)
       }), {})
     }), {})
