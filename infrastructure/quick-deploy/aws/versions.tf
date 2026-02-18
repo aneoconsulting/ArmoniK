@@ -39,7 +39,7 @@ terraform {
     // Workaround for https://github.com/bsquare-corp/terraform-provider-skopeo2/issues/95
     skopeo2 = {
       source  = "bsquare-corp/skopeo2"
-      version = ">= 1.1.1, < 2.0.0"
+      version = ">= 1.1.1, < 1.2.0"
     }
   }
 }
