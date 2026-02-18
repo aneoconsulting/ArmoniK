@@ -11,7 +11,6 @@ locals {
     [var.fluent_bit.image_name, var.fluent_bit.image_tag],
     [var.fluent_bit_windows.image_name, var.fluent_bit_windows.image_tag],
     [var.metrics_exporter.image_name, var.metrics_exporter.image_tag],
-    [var.job_partitions_in_database.image, var.job_partitions_in_database.tag],
     [var.admin_gui.image, var.admin_gui.tag],
     [var.control_plane.image, var.control_plane.tag],
     [var.eks.docker_images.efs_csi.image, var.eks.docker_images.efs_csi.tag],
@@ -28,7 +27,6 @@ locals {
     var.mongodb_metrics_exporter == null ? null : [var.mongodb_metrics_exporter.image_name, var.mongodb_metrics_exporter.image_tag],
     var.partition_metrics_exporter == null ? null : [var.partition_metrics_exporter.image_name, var.partition_metrics_exporter.image_tag],
     var.ingress == null ? null : [var.ingress.image, var.ingress.tag],
-    var.authentication == null ? null : [var.authentication.image, var.authentication.tag],
     var.pod_deletion_cost == null ? null : [var.pod_deletion_cost.image, var.pod_deletion_cost.tag],
     ], [for k, v in var.compute_plane :
     [v.polling_agent.image, v.polling_agent.tag]

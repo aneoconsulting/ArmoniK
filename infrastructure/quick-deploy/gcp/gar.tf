@@ -8,9 +8,6 @@ locals {
     var.prometheus != null ? [var.prometheus.image_name, var.prometheus.image_tag] : null,
     var.fluent_bit != null ? [var.fluent_bit.image_name, var.fluent_bit.image_tag] : null,
     var.metrics_exporter != null ? [var.metrics_exporter.image_name, var.metrics_exporter.image_tag] : null,
-    var.job_partitions_in_database != null ? [
-      var.job_partitions_in_database.image, var.job_partitions_in_database.tag
-    ] : null,
     var.admin_gui != null ? [var.admin_gui.image, var.admin_gui.tag] : null,
     var.control_plane != null ? [var.control_plane.image, var.control_plane.tag] : null,
     var.seq != null ? [var.seq.image_name, var.seq.image_tag] : null,
@@ -25,7 +22,6 @@ locals {
       var.partition_metrics_exporter.image_name, var.partition_metrics_exporter.image_tag
     ] : null,
     var.ingress != null ? [var.ingress.image, var.ingress.tag] : null,
-    var.authentication != null ? [var.authentication.image, var.authentication.tag] : null,
     var.pod_deletion_cost != null ? [var.pod_deletion_cost.image, var.pod_deletion_cost.tag] : null,
     ], [
     for k, v in var.compute_plane :
