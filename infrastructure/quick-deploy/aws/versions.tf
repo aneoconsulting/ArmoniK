@@ -36,5 +36,10 @@ terraform {
       source  = "chilicat/pkcs12"
       version = "~> 0.0.7"
     }
+    // Workaround for https://github.com/bsquare-corp/terraform-provider-skopeo2/issues/95
+    skopeo2 = {
+      source  = "bsquare-corp/skopeo2"
+      version = ">= 1.1.1, < 2.0.0"
+    }
   }
 }
