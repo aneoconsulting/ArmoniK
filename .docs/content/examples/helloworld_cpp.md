@@ -33,7 +33,7 @@ the client executable and the worker shared library directly in your system. Or,
 
 1. Look and install for the right package for your distribution for:
 
-    - [ArmoniK.Api](https://github.com/aneoconsulting/ArmoniK.Api/releases/tag/3.28.3)
+    - [ArmoniK.Api](https://github.com/aneoconsulting/ArmoniK.Api/releases/latest)
     - [ArmoniK.Extensions.Cpp](https://github.com/aneoconsulting/ArmoniK.Extensions.Cpp/releases)
 
 2. Compile the worker shared library and copy it to ArmoniK's shared data folder
