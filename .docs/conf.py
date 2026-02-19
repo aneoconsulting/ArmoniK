@@ -25,8 +25,8 @@ suppress_warnings = ["myst.header", "misc.highlighting_failure"]
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 html_search = True
-
 
 # -- Options for source files ------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-source-files
