@@ -87,7 +87,7 @@ jobs:
       armonik-endpoint: ${{ steps.get-armonik-endpoint.outputs.endpoint }}
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Install Dependencies
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
@@ -144,7 +144,7 @@ jobs:
           poll-duration-limit: ${{ matrix.polling-limit }}
 
       - name: Upload benchmark results to artifact registry
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: benchclient_benchmark_${{ github.event_name }}_${{ matrix.type }}_${{ github.run_id }}
           path: ${{ steps.get-bench-stats.outputs.bench-file-path }}
