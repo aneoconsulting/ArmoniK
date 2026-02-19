@@ -618,16 +618,6 @@ ingress = {
   node_selector        = { service = "control-plane" }
 }
 
-# Job to insert partitions in the database
-job_partitions_in_database = {
-  node_selector = { service = "control-plane" }
-}
-
-# Authentication behavior
-authentication = {
-  node_selector = { service = "control-plane" }
-}
-
 configurations = {
   core = {
     env = {
