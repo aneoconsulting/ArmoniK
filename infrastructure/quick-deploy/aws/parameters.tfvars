@@ -313,14 +313,14 @@ keda = {
 
 # Object storage
 # Uncomment either the `elasticache` or the `s3_os` parameter
-elasticache = {
-  engine             = "redis"
-  engine_version     = "6.x"
-  node_type          = "cache.r4.large"
-  num_cache_clusters = 2
-}
+# elasticache = {
+#   engine             = "redis"
+#   engine_version     = "6.x"
+#   node_type          = "cache.r4.large"
+#   num_cache_clusters = 2
+# }
 
-# s3_os = {}
+s3_os = {}
 
 # activemq = {
 #   node_selector = { service = "state-database" }
@@ -336,13 +336,13 @@ elasticache = {
 # }
 
 
-mq = {
-  engine_type        = "ActiveMQ"
-  engine_version     = "5.18"
-  host_instance_type = "mq.m5.xlarge"
-}
+# mq = {
+#   engine_type        = "ActiveMQ"
+#   engine_version     = "5.18"
+#   host_instance_type = "mq.m5.xlarge"
+# }
 
-# sqs = {}
+sqs = {}
 
 # Comment to disable the MongoDB metrics exporter
 mongodb_metrics_exporter = {}
