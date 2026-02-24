@@ -347,21 +347,6 @@ sqs = {}
 # Comment to disable the MongoDB metrics exporter
 mongodb_metrics_exporter = {}
 
-mongodb = {
-  node_selector = { service = "state-database" }
-  persistent_volume = {
-    #   parameters = {
-    #     "throughput" = 200
-    #     "iopsPerGB"  = 500
-    #   }
-    #   resources = {
-    #     requests = {
-    #       storage = "10Gi"
-    #     }
-    #   }
-  }
-}
-
 # Comment the mongodb and/or mongodb_sharding parameters to disable the mongodb module and use mongodb atlas
 # Comment also the state_database node group in the eks_managed_node_groups when using mongodb atlas
 # mongodb_atlas = {
@@ -369,28 +354,45 @@ mongodb = {
 #   cluster_name = "<your_cluster_name>"
 # }
 
-# Nullify to disable sharding
-# mongodb_sharding = {
-#   shards = {
-#     replicas = 2
-#     quantity = 2
-#   }
-#   configsvr = {
-#     replicas = 2
-#   }
-#   router = {
-#     replicas = 2
-#   }
-#   persistence = {
-#     shards = {
-#       resources = {
-#         requests = {
-#           storage = "20Gi"
-#         }
-#       }
-#     }
-#   }
-# }
+mongodb = {
+  node_selector = { service = "state-database" }
+
+  cluster = {
+    replicas      = 1 # because of same-node scheduling constraints you must have sufficient state-database nodes, 1 per replica.
+    database_name = "database"
+  }
+
+  # Uncomment for sharded deployment:
+  # sharding = {
+  #   enabled         = true
+  #   shards_quantity = 2
+  #   configsvr = {
+  #     replicas = 3
+  #   }
+  #   mongos = {
+  #     replicas = 2
+  #   }
+  # }
+
+  persistence = {
+    shards = {
+      storage_size        = "8Gi"
+      storage_provisioner = "ebs.csi.aws.com"
+      parameters = {
+        "csi.storage.k8s.io/fstype" = "ext4"
+        "type"                      = "gp3"
+      }
+    }
+    configsvr = {
+      storage_size        = "3Gi"
+      storage_provisioner = "ebs.csi.aws.com"
+      parameters = {
+        "csi.storage.k8s.io/fstype" = "ext4"
+        "type"                      = "gp3"
+      }
+    }
+  }
+}
 
 mongodb_ebs = {}
 

@@ -260,9 +260,30 @@ keda = {
 mongodb_metrics_exporter = {}
 
 mongodb = {
-  node_selector = { service = "state-database" }
-  # Uncomment the line below to enable persistence, comment to disable
-  # persistent_volume = {}
+  cluster = {
+    replicas      = 1
+    database_name = "database"
+    node_selector = {
+      service = "state-database"
+    }
+  }
+
+  persistence = {
+    shards = {
+      storage_size        = "8Gi"
+      storage_provisioner = "pd.csi.storage.gke.io"
+      parameters = {
+        type = "pd-ssd"
+      }
+    }
+    configsvr = {
+      storage_size        = "3Gi"
+      storage_provisioner = "pd.csi.storage.gke.io"
+      parameters = {
+        type = "pd-ssd"
+      }
+    }
+  }
 }
 
 # Nullify to disable sharding, each nullification of subobject will result in the use of default values 

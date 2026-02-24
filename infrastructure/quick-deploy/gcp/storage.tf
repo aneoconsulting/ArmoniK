@@ -12,76 +12,34 @@ locals {
   }
 }
 
-# MongoDB for state-database
+# MongoDB (Percona Operator)
 module "mongodb" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 0 : 1
-  source    = "./generated/infra-modules/storage/onpremise/mongodb"
-  namespace = local.namespace
-  mongodb = {
-    image                 = local.docker_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
-    tag                   = local.docker_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
-    node_selector         = var.mongodb.node_selector
-    image_pull_secrets    = var.mongodb.pull_secrets
-    replicas              = var.mongodb.replicas
-    helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts.mongodb.repository)
-    helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts.mongodb.version)
-  }
-  mongodb_resources = var.mongodb.mongodb_resources
-  arbiter_resources = var.mongodb.arbiter_resources
-  persistent_volume = var.mongodb.persistent_volume
+  count      = var.mongodb != null ? 1 : 0
+  depends_on = [kubernetes_namespace.armonik]
+  source     = "./generated/infra-modules/storage/onpremise/mongodb-percona"
+  namespace  = local.namespace
+  name       = "percona-mongodb"
+
+  operator = merge(var.mongodb.operator, {
+    tag                   = coalesce(var.mongodb.operator.tag, local.default_tags[coalesce(var.mongodb.operator.image, "percona/percona-server-mongodb-operator")])
+    node_selector         = coalesce(var.mongodb.operator.node_selector, var.mongodb.node_selector)
+    helm_chart_repository = coalesce(var.mongodb.operator.helm_chart_repository, var.helm_charts.mongodb.repository)
+    helm_chart_version    = coalesce(var.mongodb.operator.helm_chart_version, var.helm_charts.mongodb.version)
+  })
+  cluster = merge(var.mongodb.cluster, {
+    tag           = coalesce(var.mongodb.cluster.tag, local.default_tags[coalesce(var.mongodb.cluster.image, "percona/percona-server-mongodb")])
+    node_selector = coalesce(var.mongodb.cluster.node_selector, var.mongodb.node_selector)
+  })
+
+  resources = var.mongodb.resources
+
+  sharding = var.mongodb.sharding
+
+  persistence = var.mongodb.persistence
+
+  timeout = var.mongodb.timeout
 }
 
-module "mongodb_sharded" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 1 : 0
-  source    = "./generated/infra-modules/storage/onpremise/mongodb-sharded"
-  namespace = local.namespace
-
-  mongodb = {
-    image                 = local.docker_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
-    tag                   = local.docker_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
-    node_selector         = var.mongodb.node_selector
-    image_pull_secrets    = var.mongodb.pull_secrets
-    helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts["mongodb-sharded"].repository)
-    helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts["mongodb-sharded"].version)
-  }
-
-  # All the try(coalesce()) are there to use values from the mongodb variable if the attributes are not defined in the mongodb_sharding variables
-  sharding = {
-    shards = {
-      quantity      = try(coalesce(var.mongodb_sharding.shards.quantity), null)
-      replicas      = try(coalesce(var.mongodb_sharding.shards.replicas), var.mongodb.replicas)
-      node_selector = try(coalesce(var.mongodb_sharding.shards.node_selector), var.mongodb.node_selector)
-    }
-
-    arbiter = {
-      node_selector = try(coalesce(var.mongodb_sharding.arbiter.node_selector), var.mongodb.node_selector)
-    }
-
-    router = merge(var.mongodb_sharding.router, {
-      replicas      = try(coalesce(var.mongodb_sharding.router.replicas), null)
-      node_selector = try(coalesce(var.mongodb_sharding.router.node_selector), var.mongodb.node_selector)
-    })
-
-    configsvr = {
-      replicas      = try(coalesce(var.mongodb_sharding.configsvr.replicas), null)
-      node_selector = try(coalesce(var.mongodb_sharding.configsvr.node_selector), var.mongodb.node_selector)
-    }
-  }
-
-  resources = {
-    shards    = try(coalesce(var.mongodb_sharding.shards.resources), var.mongodb.mongodb_resources)
-    arbiter   = try(coalesce(var.mongodb_sharding.arbiter.resources), var.mongodb.arbiter_resources)
-    configsvr = try(coalesce(var.mongodb_sharding.configsvr.resources), null)
-    router    = try(coalesce(var.mongodb_sharding.router.resources), null)
-  }
-
-  labels = {
-    shards    = try(coalesce(var.mongodb_sharding.shards.labels), null)
-    arbiter   = try(coalesce(var.mongodb_sharding.arbiter.labels), null)
-    configsvr = try(coalesce(var.mongodb_sharding.configsvr.labels), null)
-    router    = try(coalesce(var.mongodb_sharding.router.labels), null)
-  }
-}
 
 # Redis for payloads
 module "memorystore" {

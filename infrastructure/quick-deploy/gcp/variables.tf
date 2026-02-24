@@ -108,90 +108,86 @@ variable "chaos_mesh" {
 }
 
 # Parameters for MongoDB
+# Parameters for MongoDB (Percona)
 variable "mongodb" {
-  description = "Parameters of MongoDB"
+  description = "Parameters for MongoDB using the Percona Operator. Set to null to disable."
   type = object({
-    image_name            = optional(string)
-    image_tag             = optional(string)
-    node_selector         = optional(any, {})
-    pull_secrets          = optional(string, "")
-    replicas              = optional(number, 1)
-    helm_chart_repository = optional(string)
-    helm_chart_version    = optional(string)
+    node_selector = optional(map(string), {})
 
-    mongodb_resources = optional(object({
-      limits   = optional(map(string))
-      requests = optional(map(string))
+    operator = optional(object({
+      helm_chart_repository = optional(string)
+      helm_chart_name       = optional(string)
+      helm_chart_version    = optional(string)
+      image                 = optional(string, "percona/percona-server-mongodb-operator")
+      tag                   = optional(string)
+      node_selector         = optional(map(string), {})
+      annotations           = optional(map(string), {})
+    }), {})
+
+    cluster = optional(object({
+      helm_chart_repository = optional(string)
+      helm_chart_name       = optional(string)
+      helm_chart_version    = optional(string)
+      image                 = optional(string, "percona/percona-server-mongodb")
+      tag                   = optional(string)
+      database_name         = optional(string, "database")
+      replicas              = optional(number, 1)
+      node_selector         = optional(map(string), {})
+      annotations           = optional(map(string), {})
+    }), {})
+
+    resources = optional(object({
+      shards = optional(object({
+        limits   = optional(map(string))
+        requests = optional(map(string))
+      }), {})
+      configsvr = optional(object({
+        limits   = optional(map(string))
+        requests = optional(map(string))
+      }), {})
+      mongos = optional(object({
+        limits   = optional(map(string))
+        requests = optional(map(string))
+      }), {})
+    }), {})
+
+    sharding = optional(object({
+      enabled         = optional(bool, false)
+      shards_quantity = optional(number, 1)
+      configsvr = optional(object({
+        replicas      = optional(number, 1)
+        node_selector = optional(map(string), {})
+      }), {})
+      mongos = optional(object({
+        replicas      = optional(number, 1)
+        node_selector = optional(map(string), {})
+      }), {})
     }))
 
-    arbiter_resources = optional(object({
-      limits   = optional(map(string))
-      requests = optional(map(string))
+    persistence = optional(object({
+      shards = optional(object({
+        storage_size        = optional(string, "8Gi")
+        storage_class_name  = optional(string)
+        storage_provisioner = optional(string)
+        reclaim_policy      = optional(string, "Delete")
+        volume_binding_mode = optional(string, "WaitForFirstConsumer")
+        access_modes        = optional(list(string), ["ReadWriteOnce"])
+        parameters          = optional(map(string), {})
+      }), {})
+      configsvr = optional(object({
+        storage_size        = optional(string, "3Gi")
+        storage_class_name  = optional(string)
+        storage_provisioner = optional(string)
+        reclaim_policy      = optional(string, "Delete")
+        volume_binding_mode = optional(string, "WaitForFirstConsumer")
+        access_modes        = optional(list(string), ["ReadWriteOnce"])
+        parameters          = optional(map(string), {})
+      }), {})
     }))
 
-    persistent_volume = optional(object({
-      storage_provisioner = optional(string)
-      volume_binding_mode = optional(string, "Immediate")
-      reclaim_policy      = optional(string, "Delete")
-      parameters          = optional(map(string), {})
-      #Resources for PVC
-      resources = optional(object({
-        limits = optional(object({
-          storage = string
-        }))
-        requests = optional(object({
-          storage = string
-        }))
-      }))
-    }))
+    timeout = optional(number, 600)
   })
   default = {}
-}
-
-variable "mongodb_sharding" {
-  description = "Configuration for MongoDB sharding, if it is null no sharding will be present"
-  type = object({
-    shards = optional(object({
-      quantity      = optional(number)
-      replicas      = optional(number)
-      node_selector = optional(map(string))
-      resources = optional(object({
-        limits   = optional(map(string))
-        requests = optional(map(string))
-      }))
-      labels = optional(map(string))
-    }))
-
-    arbiter = optional(object({
-      node_selector = optional(map(string), {})
-      resources = optional(object({
-        limits   = optional(map(string))
-        requests = optional(map(string))
-      }))
-      labels = optional(map(string))
-    }))
-
-    router = optional(object({
-      replicas      = optional(number)
-      node_selector = optional(map(string))
-      resources = optional(object({
-        limits   = optional(map(string))
-        requests = optional(map(string))
-      }))
-      labels = optional(map(string))
-    }))
-
-    configsvr = optional(object({
-      replicas      = optional(number)
-      node_selector = optional(map(string))
-      resources = optional(object({
-        limits   = optional(map(string))
-        requests = optional(map(string))
-      }))
-      labels = optional(map(string))
-    }))
-  })
-  default = null
 }
 
 variable "mongodb_metrics_exporter" {

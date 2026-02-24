@@ -121,8 +121,8 @@ module "mongodb_exporter" {
     tag                = try(coalesce(var.mongodb_metrics_exporter.image_tag), local.default_tags[var.mongodb_metrics_exporter.image_name])
     image_pull_secrets = var.mongodb_metrics_exporter.pull_secrets
   }
-  disable_diagnostic_data = length(module.mongodb_sharded) > 0
-  mongodb_modules         = [module.mongodb_sharded, module.mongodb]
+  disable_diagnostic_data = false
+  mongodb_modules         = [module.mongodb]
 }
 
 # Prometheus

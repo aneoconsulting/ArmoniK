@@ -1,10 +1,10 @@
 locals {
-  mongodb_image_name = can(coalesce(var.mongodb_sharding)) ? coalesce(var.mongodb.image_name, "bitnamilegacy/mongodb-sharded") : coalesce(var.mongodb.image_name, "bitnamilegacy/mongodb")
-  default_tags       = module.default_images.image_tags
+  default_tags = module.default_images.image_tags
   input_docker_images = concat([
     var.keda != null ? [var.keda.image_name, var.keda.image_tag] : null,
     var.keda != null ? [var.keda.apiserver_image_name, var.keda.apiserver_image_tag] : null,
-    var.mongodb != null ? [local.mongodb_image_name, var.mongodb.image_tag] : null,
+    [var.mongodb.operator.image, var.mongodb.operator.tag],
+    [var.mongodb.cluster.image, var.mongodb.cluster.tag],
     var.prometheus != null ? [var.prometheus.image_name, var.prometheus.image_tag] : null,
     var.fluent_bit != null ? [var.fluent_bit.image_name, var.fluent_bit.image_tag] : null,
     var.metrics_exporter != null ? [var.metrics_exporter.image_name, var.metrics_exporter.image_tag] : null,
