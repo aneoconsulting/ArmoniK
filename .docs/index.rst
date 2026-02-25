@@ -27,6 +27,7 @@ ArmoniK documentation
 
    content/examples/0.how-to-launch-HelloWorld-Sample.md
    content/examples/1.how-to-use-htc-mock.md
+   content/examples/2.bench.md
 
 .. toctree::
    :maxdepth: 1
