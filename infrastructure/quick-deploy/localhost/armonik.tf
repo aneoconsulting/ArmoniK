@@ -40,15 +40,18 @@ module "armonik" {
   control_plane = merge(var.control_plane, {
     tag = try(coalesce(var.control_plane.tag), local.default_tags[var.control_plane.image])
   })
-  admin_gui = merge(var.admin_gui, {
+  admin_gui = var.admin_gui != null ? merge(var.admin_gui, {
     tag = try(coalesce(var.admin_gui.tag), local.default_tags[var.admin_gui.image])
-  })
-  ingress = merge(var.ingress, {
+  }) : null
+  ingress = var.ingress != null ? merge(var.ingress, {
     tag = try(coalesce(var.ingress.tag), local.default_tags[var.ingress.image])
-  })
-  init = merge(var.init, {
+  }) : null
+  init = var.init != null ? merge(var.init, {
     tag = try(coalesce(var.init.tag), local.default_tags[var.init.image])
-  })
+  }) : null
+  load_balancer = var.load_balancer != null ? merge(var.load_balancer, {
+    tag = try(coalesce(var.load_balancer.tag), local.default_tags[var.load_balancer.image])
+  }) : null
   authentication = var.authentication
 
   # Force the dependency on Keda and metrics-server for the HPA

@@ -318,6 +318,13 @@ compute_plane = {
   },
 }
 
+# load_balancer = {
+#   tag = "0.2.1-0205g74e51eb.5.sha.74e51eb"
+#   extra_env = {
+#     RUST_LOG="info,armonik=info,load_balancer=info"
+#   }
+# }
+
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
 ingress = {
