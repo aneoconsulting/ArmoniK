@@ -199,23 +199,25 @@ module "mongodb" {
   count     = var.mongodb != null ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb-percona"
   namespace = local.namespace
-  name      = "percona-mongodb"
+  name      = "mongodb"
 
   operator = merge(var.mongodb.operator, {
-    tag                   = coalesce(var.mongodb.operator.tag, local.default_tags[coalesce(var.mongodb.operator.image, "percona/percona-server-mongodb-operator")])
-    node_selector         = coalesce(var.mongodb.operator.node_selector, var.mongodb.node_selector)
-    helm_chart_repository = coalesce(var.mongodb.operator.helm_chart_repository, var.helm_charts.mongodb.repository)
-    helm_chart_version    = coalesce(var.mongodb.operator.helm_chart_version, var.helm_charts.mongodb.version)
+    image                 = local.ecr_images["${var.mongodb.operator.image}:${try(coalesce(var.mongodb.operator.tag), "")}"].name
+    tag                   = local.ecr_images["${var.mongodb.operator.image}:${try(coalesce(var.mongodb.operator.tag), "")}"].tag
+    node_selector         = coalesce(var.mongodb.operator.node_selector, var.mongodb.node_selector, {})
+    helm_chart_repository = try(coalesce(var.mongodb.operator.helm_chart_repository), var.helm_charts.mongodb.repository)
+    helm_chart_version    = try(coalesce(var.mongodb.operator.helm_chart_version), var.helm_charts.mongodb.version)
   })
   cluster = merge(var.mongodb.cluster, {
-    tag           = coalesce(var.mongodb.cluster.tag, local.default_tags[coalesce(var.mongodb.cluster.image, "percona/percona-server-mongodb")])
-    node_selector = coalesce(var.mongodb.cluster.node_selector, var.mongodb.node_selector)
+    image         = local.ecr_images["${var.mongodb.cluster.image}:${try(coalesce(var.mongodb.cluster.tag), "")}"].name
+    tag           = local.ecr_images["${var.mongodb.cluster.image}:${try(coalesce(var.mongodb.cluster.tag), "")}"].tag
+    node_selector = coalesce(var.mongodb.cluster.node_selector, var.mongodb.node_selector, {})
   })
 
   resources = var.mongodb.resources
   sharding  = var.mongodb.sharding
 
-  persistence = local.mongodb_storage_provisioner != "none" ? {
+  persistence = local.mongodb_storage_provisioner != "" ? {
     shards = merge(var.mongodb.persistence.shards, {
       storage_provisioner = local.mongodb_storage_provisioner
       parameters          = local.mongodb_shards_parameters
@@ -231,7 +233,7 @@ module "mongodb" {
 
 # AWS EFS for MongoDB (only if using EFS as storage backend)
 module "mongodb_efs_persistent_volume" {
-  count                           = try(var.mongodb.persistence.shards.storage_provisioner, "") == "efs.csi.aws.com" && var.mongodb_efs != null ? 1 : 0
+  count                           = local.mongodb_storage_provisioner == "efs.csi.aws.com" && can(coalesce(var.mongodb_efs.mongodb)) ? 1 : 0
   source                          = "./generated/infra-modules/storage/aws/efs"
   name                            = "${local.prefix}-mongodb"
   kms_key_id                      = try(coalesce(var.mongodb_efs.mongodb.kms_key_id), local.kms_key)
@@ -248,7 +250,7 @@ module "mongodb_efs_persistent_volume" {
 }
 
 module "configsvr_efs_persistent_volume" {
-  count                           = try(var.mongodb.persistence.configsvr.storage_provisioner, "") == "efs.csi.aws.com" && try(var.mongodb_efs.configsvr, null) != null ? 1 : 0
+  count                           = local.mongodb_storage_provisioner == "efs.csi.aws.com" && can(coalesce(var.mongodb_efs.configsvr)) ? 1 : 0
   source                          = "./generated/infra-modules/storage/aws/efs"
   name                            = "${local.prefix}-mongodb-configsvr"
   kms_key_id                      = try(coalesce(var.mongodb_efs.configsvr.kms_key_id), local.kms_key)
@@ -366,19 +368,20 @@ locals {
     use_check_sum         = true
   }
 
-  mongodb_storage_provisioner = coalesce(
-    var.mongodb.persistence.shards.storage_provisioner,
-    var.mongodb_ebs != null ? "ebs.csi.aws.com" : null,
-    var.mongodb_efs != null ? "efs.csi.aws.com" : null,
-    "none"
+  mongodb_storage_provisioner = try(
+    coalesce(var.mongodb.persistence.shards.storage_provisioner),
+    coalesce(var.mongodb_ebs != null ? "ebs.csi.aws.com" : null),
+    coalesce(var.mongodb_efs != null ? "efs.csi.aws.com" : null),
+    ""
   )
 
-  mongodb_configsvr_storage_provisioner = coalesce(
-    var.mongodb.persistence.configsvr.storage_provisioner,
-    var.mongodb_ebs != null ? "ebs.csi.aws.com" : null,
-    var.mongodb_efs != null ? "efs.csi.aws.com" : null,
-    "none"
+  mongodb_configsvr_storage_provisioner = try(
+    coalesce(var.mongodb.persistence.configsvr.storage_provisioner),
+    coalesce(var.mongodb_ebs != null ? "ebs.csi.aws.com" : null),
+    coalesce(var.mongodb_efs != null ? "efs.csi.aws.com" : null),
+    ""
   )
+
 
   # EBS default parameters
   ebs_shards_defaults = local.mongodb_storage_provisioner == "ebs.csi.aws.com" ? merge(

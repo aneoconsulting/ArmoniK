@@ -3,8 +3,8 @@ locals {
   input_docker_images = concat([
     var.keda != null ? [var.keda.image_name, var.keda.image_tag] : null,
     var.keda != null ? [var.keda.apiserver_image_name, var.keda.apiserver_image_tag] : null,
-    [var.mongodb.operator.image, var.mongodb.operator.tag],
-    [var.mongodb.cluster.image, var.mongodb.cluster.tag],
+    var.mongodb != null ? [var.mongodb.operator.image, var.mongodb.operator.tag] : null,
+    var.mongodb != null ? [var.mongodb.cluster.image, var.mongodb.cluster.tag] : null,
     var.prometheus != null ? [var.prometheus.image_name, var.prometheus.image_tag] : null,
     var.fluent_bit != null ? [var.fluent_bit.image_name, var.fluent_bit.image_tag] : null,
     var.metrics_exporter != null ? [var.metrics_exporter.image_name, var.metrics_exporter.image_tag] : null,

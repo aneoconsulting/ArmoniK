@@ -260,12 +260,13 @@ keda = {
 mongodb_metrics_exporter = {}
 
 mongodb = {
+
+  node_selector = {
+    service = "state-database"
+  }
   cluster = {
     replicas      = 1
     database_name = "database"
-    node_selector = {
-      service = "state-database"
-    }
   }
 
   persistence = {

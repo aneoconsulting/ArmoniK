@@ -350,83 +350,95 @@ variable "activemq" {
 variable "mongodb" {
   description = "Parameters for MongoDB using the Percona Operator. Set to null to disable."
   type = object({
-    node_selector = optional(map(string), { service = "state-database" })
+    # Node selector applied to the MongoDB replica set (shard) pods.
+    # Inherits to operator and cluster if their own node_selector is not set.
+    node_selector = optional(map(string))
 
+    # Percona MongoDB Operator settings (the controller that manages the DB cluster).
     operator = optional(object({
-      helm_chart_repository = optional(string)
-      helm_chart_name       = optional(string)
-      helm_chart_version    = optional(string)
-      image                 = optional(string, "percona/percona-server-mongodb-operator")
-      tag                   = optional(string)
-      node_selector         = optional(map(string), {})
-      annotations           = optional(map(string), {})
+      helm_chart_repository = optional(string)                                            # Helm chart repository URL. Uses operator default if unset.
+      helm_chart_name       = optional(string)                                            # Helm chart name. Uses operator default if unset.
+      helm_chart_version    = optional(string)                                            # Helm chart version. Uses operator default (latest) if unset.
+      image                 = optional(string, "percona/percona-server-mongodb-operator") # Operator container image.
+      tag                   = optional(string)                                            # Operator image tag. Uses chart's appVersion if unset.
+      node_selector         = optional(map(string))                                       # Node selector for the operator pod itself.
+      annotations           = optional(map(string), {})                                   # Annotations added to the operator deployment.
     }), {})
 
+    # Percona MongoDB cluster (the actual database instances) settings.
     cluster = optional(object({
-      helm_chart_repository = optional(string)
-      helm_chart_name       = optional(string)
-      helm_chart_version    = optional(string)
-      image                 = optional(string, "percona/percona-server-mongodb")
-      tag                   = optional(string)
-      database_name         = optional(string, "database")
-      replicas              = optional(number, 1)
-      node_selector         = optional(map(string), {})
-      annotations           = optional(map(string), {})
+      image         = optional(string, "percona/percona-server-mongodb") # MongoDB server container image.
+      tag           = optional(string)                                   # MongoDB server image tag. Uses chart's appVersion if unset.
+      database_name = optional(string, "database")                       # Name of the default database to create.
+      replicas      = optional(number, 1)                                # Number of replicas per shard (replica set members).
+      node_selector = optional(map(string))                              # Node selector for the MongoDB data pods.
+      annotations   = optional(map(string), {})                          # Annotations added to the cluster CR.
     }), {})
 
+    # Resource requests and limits for each component.
     resources = optional(object({
+      # Resources for shard (replica set) pods.
       shards = optional(object({
-        limits   = optional(map(string))
-        requests = optional(map(string))
+        limits   = optional(map(string)) # e.g. { "cpu" = "2", "memory" = "4Gi" }
+        requests = optional(map(string)) # e.g. { "cpu" = "500m", "memory" = "1Gi" }
       }), {})
+      # Resources for config server pods (only relevant when sharding is enabled).
       configsvr = optional(object({
         limits   = optional(map(string))
         requests = optional(map(string))
       }), {})
+      # Resources for mongos (router) pods (only relevant when sharding is enabled).
       mongos = optional(object({
         limits   = optional(map(string))
         requests = optional(map(string))
       }), {})
     }), {})
 
+    # Sharding configuration. Set to null (default) to deploy a simple replica set without sharding.
     sharding = optional(object({
-      shards_quantity = optional(number, 1)
+      shards_quantity = optional(number, 1) # Number of shards in the cluster.
       configsvr = optional(object({
-        replicas      = optional(number, 1)
-        node_selector = optional(map(string), {})
+        replicas      = optional(number, 1)       # Number of config server replicas.
+        node_selector = optional(map(string), {}) # Node selector for config server pods.
       }), {})
       mongos = optional(object({
-        replicas      = optional(number, 1)
-        node_selector = optional(map(string), {})
+        replicas      = optional(number, 1)       # Number of mongos (router) replicas.
+        node_selector = optional(map(string), {}) # Node selector for mongos pods.
       }), {})
     }))
 
+    # Persistence configuration for data volumes.
+    # Set to null to use emptyDir (data lost on pod restart).
+    # Set to {} to use PVCs with the cluster's default StorageClass.
     persistence = optional(object({
+      # Persistence settings for shard (replica set) data volumes.
       shards = optional(object({
-        storage_size        = optional(string, "8Gi")
-        storage_class_name  = optional(string)
-        storage_provisioner = optional(string)
-        reclaim_policy      = optional(string, "Delete")
-        volume_binding_mode = optional(string, "WaitForFirstConsumer")
-        access_modes        = optional(list(string), ["ReadWriteOnce"])
-        parameters          = optional(map(string), {})
+        storage_size        = optional(string, "8Gi")                   # Size of the PVC for each shard pod.
+        storage_class_name  = optional(string)                          # Use an existing StorageClass by name. Mutually exclusive with storage_provisioner.
+        storage_provisioner = optional(string)                          # Create a new StorageClass with this provisioner (e.g. "ebs.csi.aws.com", "efs.csi.aws.com").
+        reclaim_policy      = optional(string, "Delete")                # PV reclaim policy: Delete or Retain.
+        volume_binding_mode = optional(string, "WaitForFirstConsumer")  # When to bind PVs: WaitForFirstConsumer or Immediate.
+        access_modes        = optional(list(string), ["ReadWriteOnce"]) # PVC access modes.
+        parameters          = optional(map(string), {})                 # Additional StorageClass parameters (e.g. {"type" = "gp3", "iopsPerGB" = "500"}).
       }), {})
+      # Persistence settings for config server data volumes (only relevant when sharding is enabled).
       configsvr = optional(object({
-        storage_size        = optional(string, "3Gi")
-        storage_class_name  = optional(string)
-        storage_provisioner = optional(string)
-        reclaim_policy      = optional(string, "Delete")
-        volume_binding_mode = optional(string, "WaitForFirstConsumer")
-        access_modes        = optional(list(string), ["ReadWriteOnce"])
-        parameters          = optional(map(string), {})
+        storage_size        = optional(string, "3Gi")                   # Size of the PVC for each config server pod.
+        storage_class_name  = optional(string)                          # Use an existing StorageClass by name. Mutually exclusive with storage_provisioner.
+        storage_provisioner = optional(string)                          # Create a new StorageClass with this provisioner.
+        reclaim_policy      = optional(string, "Delete")                # PV reclaim policy: Delete or Retain.
+        volume_binding_mode = optional(string, "WaitForFirstConsumer")  # When to bind PVs: WaitForFirstConsumer or Immediate.
+        access_modes        = optional(list(string), ["ReadWriteOnce"]) # PVC access modes.
+        parameters          = optional(map(string), {})                 # Additional StorageClass parameters.
       }), {})
     }))
 
+    # Timeout in seconds for Helm release creation and the wait-for-ready job.
     timeout = optional(number, 600)
   })
-  default = {}
+  default  = {}
+  nullable = true
 }
-
 
 variable "mongodb_efs" {
   description = "AWS EFS as Persistent volume for MongoDB"
