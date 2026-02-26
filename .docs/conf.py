@@ -14,7 +14,7 @@ release = "main"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["myst_parser", 'sphinxcontrib.mermaid']
+extensions = ["myst_parser", "sphinxcontrib.mermaid"]
 
 templates_path = ["_templates"]
 exclude_patterns = ["requirements.txt", "README.md"]
@@ -42,9 +42,9 @@ myst_heading_anchors = 3
 
 # -- Options to show "Edit on GitHub" button ---------------------------------
 html_context = {
-    "display_github": True, # Integrate GitHub
-    "github_user": "aneoconsulting", # Username
-    "github_repo": "ArmoniK", # Repo name
-    "github_version": "main", # Version
-    "conf_py_path": "/.docs/", # Path in the checkout to the docs root
+    "display_github": True,  # Integrate GitHub
+    "github_user": "aneoconsulting",  # Username
+    "github_repo": "ArmoniK",  # Repo name
+    "github_version": "main",  # Version
+    "conf_py_path": "/.docs/",  # Path in the checkout to the docs root
 }
