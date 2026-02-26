@@ -364,7 +364,6 @@ mongodb = {
 
   # Uncomment for sharded deployment:
   # sharding = {
-  #   enabled         = true
   #   shards_quantity = 2
   #   configsvr = {
   #     replicas = 3
@@ -376,20 +375,10 @@ mongodb = {
 
   persistence = {
     shards = {
-      storage_size        = "8Gi"
-      storage_provisioner = "ebs.csi.aws.com"
-      parameters = {
-        "csi.storage.k8s.io/fstype" = "ext4"
-        "type"                      = "gp3"
-      }
+      storage_size = "8Gi"
     }
     configsvr = {
-      storage_size        = "3Gi"
-      storage_provisioner = "ebs.csi.aws.com"
-      parameters = {
-        "csi.storage.k8s.io/fstype" = "ext4"
-        "type"                      = "gp3"
-      }
+      storage_size = "3Gi"
     }
   }
 }

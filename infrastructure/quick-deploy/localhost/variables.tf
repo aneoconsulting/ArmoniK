@@ -185,7 +185,6 @@ variable "mongodb" {
     }), {})
 
     sharding = optional(object({
-      enabled         = optional(bool, false)
       shards_quantity = optional(number, 1)
       configsvr = optional(object({
         replicas      = optional(number, 1)
