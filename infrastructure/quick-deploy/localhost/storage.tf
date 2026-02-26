@@ -30,16 +30,16 @@ module "mongodb" {
   count     = var.mongodb != null ? 1 : 0
   source    = "./generated/infra-modules/storage/onpremise/mongodb-percona"
   namespace = local.namespace
-  name      = "percona-mongodb"
+  name      = "mongodb"
 
   operator = merge(var.mongodb.operator, {
     tag           = coalesce(var.mongodb.operator.tag, local.default_tags[coalesce(var.mongodb.operator.image, "percona/percona-server-mongodb-operator")])
-    node_selector = coalesce(var.mongodb.operator.node_selector, var.mongodb.node_selector)
+    node_selector = coalesce(var.mongodb.operator.node_selector, var.mongodb.node_selector, {})
 
   })
   cluster = merge(var.mongodb.cluster, {
     tag           = coalesce(var.mongodb.cluster.tag, local.default_tags[coalesce(var.mongodb.cluster.image, "percona/percona-server-mongodb")])
-    node_selector = coalesce(var.mongodb.cluster.node_selector, var.mongodb.node_selector)
+    node_selector = coalesce(var.mongodb.cluster.node_selector, var.mongodb.node_selector, {})
   })
 
   resources = var.mongodb.resources

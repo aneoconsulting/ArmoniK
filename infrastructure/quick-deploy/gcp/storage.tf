@@ -14,21 +14,22 @@ locals {
 
 # MongoDB (Percona Operator)
 module "mongodb" {
-  count      = var.mongodb != null ? 1 : 0
-  depends_on = [kubernetes_namespace.armonik]
-  source     = "./generated/infra-modules/storage/onpremise/mongodb-percona"
-  namespace  = local.namespace
-  name       = "percona-mongodb"
+  count     = var.mongodb != null ? 1 : 0
+  source    = "./generated/infra-modules/storage/onpremise/mongodb-percona"
+  namespace = local.namespace
+  name      = "mongodb"
 
   operator = merge(var.mongodb.operator, {
-    tag                   = coalesce(var.mongodb.operator.tag, local.default_tags[coalesce(var.mongodb.operator.image, "percona/percona-server-mongodb-operator")])
+    image                 = local.docker_images["${var.mongodb.operator.image}:${try(coalesce(var.mongodb.operator.tag), "")}"].name
+    tag                   = local.docker_images["${var.mongodb.operator.image}:${try(coalesce(var.mongodb.operator.tag), "")}"].tag
     node_selector         = coalesce(var.mongodb.operator.node_selector, var.mongodb.node_selector)
-    helm_chart_repository = coalesce(var.mongodb.operator.helm_chart_repository, var.helm_charts.mongodb.repository)
-    helm_chart_version    = coalesce(var.mongodb.operator.helm_chart_version, var.helm_charts.mongodb.version)
+    helm_chart_repository = try(coalesce(var.mongodb.operator.helm_chart_repository), var.helm_charts.mongodb.repository)
+    helm_chart_version    = try(coalesce(var.mongodb.operator.helm_chart_version), var.helm_charts.mongodb.version)
   })
   cluster = merge(var.mongodb.cluster, {
-    tag           = coalesce(var.mongodb.cluster.tag, local.default_tags[coalesce(var.mongodb.cluster.image, "percona/percona-server-mongodb")])
-    node_selector = coalesce(var.mongodb.cluster.node_selector, var.mongodb.node_selector)
+    image         = local.docker_images["${var.mongodb.cluster.image}:${try(coalesce(var.mongodb.cluster.tag), "")}"].name
+    tag           = local.docker_images["${var.mongodb.cluster.image}:${try(coalesce(var.mongodb.cluster.tag), "")}"].tag
+    node_selector = coalesce(var.mongodb.cluster.node_selector, var.mongodb.node_selector, {})
   })
 
   resources = var.mongodb.resources

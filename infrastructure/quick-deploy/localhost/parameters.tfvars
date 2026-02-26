@@ -376,7 +376,10 @@ mongodb = {
   cluster = {
     replicas = 1
   }
-  # sharding left null = non-sharded replica set
+  # sharding left null = non-sharded replica set, check  aws/parameters for example sharding parameters.
+  # you can't use sharding in localhost anyways because of arch. safety constraints.
+  persistence = {} # This will use the cluster's default storage provisioner
+  # cluster has no default storage provisioner set => PVCs will be stuck on pending.
   # persistence left null = emptyDir (no PV needed for local dev)
 }
 

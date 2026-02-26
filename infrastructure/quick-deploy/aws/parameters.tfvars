@@ -347,8 +347,8 @@ sqs = {}
 # Comment to disable the MongoDB metrics exporter
 mongodb_metrics_exporter = {}
 
-# Comment the mongodb and/or mongodb_sharding parameters to disable the mongodb module and use mongodb atlas
-# Comment also the state_database node group in the eks_managed_node_groups when using mongodb atlas
+# to use MongoDB on MongoDB Atlas, set the mongodb parameter to null to disable the on-prem mongodb module 
+# WARN: Don't forget to comment the state_database node group in the eks_managed_node_groups when using mongodb atlas
 # mongodb_atlas = {
 #   project_id   = "<your_project_id>"
 #   cluster_name = "<your_cluster_name>"
@@ -358,7 +358,7 @@ mongodb = {
   node_selector = { service = "state-database" }
 
   cluster = {
-    replicas      = 1 # because of same-node scheduling constraints you must have sufficient state-database nodes, 1 per replica.
+    replicas      = 1 # NOTE: You can't have more replicas than nodes in your state-database nodepool.
     database_name = "database"
   }
 
