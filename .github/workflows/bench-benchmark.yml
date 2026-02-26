@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - mkg/bench-gcp
   release:
     types: [published, prereleased]
   workflow_dispatch:
@@ -24,6 +25,11 @@ on:
         default: true
       aws:
         description: "Whether to bench AWS."
+        type: boolean
+        required: false
+        default: false
+      gcp:
+        description: "Whether to bench GCP."
         type: boolean
         required: false
         default: false
@@ -48,11 +54,12 @@ jobs:
           set -ex
           LOCALHOST='{"type": "localhost", "ntasks":3000, "polling-limit": 300}'
           AWS='{"type": "aws", "ntasks":1200000, "polling-limit": 1000, "parameters-file-path": "benchmarking/aws.tfvars"}'
+          GCP='{"type": "gcp", "ntasks":1200000, "polling-limit": 1000, "parameters-file-path": "benchmarking/gcp.tfvars"}'
           if [ "$TRIGGER" == 'push' ]; then
             echo "{\"include\":[$LOCALHOST]}" > matrix.json
             FILE_PREFIX="$REF_NAME"
           elif [ "$TRIGGER" == 'release' ]; then
-            echo "{\"include\":[$LOCALHOST, $AWS]}" > matrix.json
+            echo "{\"include\":[$LOCALHOST, $AWS, $GCP]}" > matrix.json
             FILE_PREFIX="release/$REF_NAME"
           elif [ "$TRIGGER" == 'workflow_dispatch' ]; then
             INCLUDE=""
@@ -61,6 +68,9 @@ jobs:
             fi
             if [ '${{inputs.aws || false}}' == true ]; then
               INCLUDE="${INCLUDE}${INCLUDE:+,}${AWS}"
+            fi
+            if [ '${{inputs.gcp || false}}' == true ]; then
+              INCLUDE="${INCLUDE}${INCLUDE:+,}${GCP}"
             fi
             echo "{\"include\":[$INCLUDE]}" > matrix.json
             FILE_PREFIX="manual/$REF_NAME"
@@ -90,24 +100,41 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@mkg/add-gcp-ti-dependencies
         with:
           terraform: true
           k3s: true
           docker: true
           aws: true
+          gcp: true
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: eu-west-3
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+          GCP_REGION:  us-central1
 
       - name: Get Core version
         run: |
           set -ex
           echo "core-version=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')" >> $GITHUB_ENV
 
+
+      - name: "Bootstrap ArmoniK Deploy"
+        uses: aneoconsulting/ArmoniK.Action.Deploy/bootstrap-deploy@mkg/add-gcp-ti-dependencies
+        env: 
+          REGION: ${{matrix.type == 'gcp' && 'us-central1' || ''}}
+        with:
+          type: ${{ matrix.type }}
+          prefix: ${{ env.prefix }}
+        if: ${{ matrix.type != 'localhost' }}
+
+          
       - id: deploy
         name: "Deploy ArmoniK"
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@mkg/add-gcp-ti-dependencies
+        env: 
+          REGION: ${{matrix.type == 'gcp' && 'us-central1' || ''}}
         with:
           type: ${{ matrix.type }}
           prefix: ${{ env.prefix }}
@@ -126,14 +153,14 @@ jobs:
 
       - id: bench
         name: Run Bench
-        uses: aneoconsulting/ArmoniK.Action.Deploy/bench@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/bench@mkg/add-gcp-ti-dependencies
         with:
           type: ${{ matrix.type }}
           armonik-core-version: ${{ env.core-version }}
           ntasks: ${{ matrix.ntasks }}
           session-name: bench
           grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.grpc-endpoint }}
-          timeout: 1200
+          timeout: 2400
 
       - id: get-bench-stats
         name: Get Bench Stats
@@ -162,7 +189,7 @@ jobs:
       - if: ${{ (github.event_name == 'workflow_dispatch' && inputs.destroy-on-session-end) || (github.event_name != 'workflow_dispatch' && always()) }}
         id: destroy
         name: Destroy deployment
-        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@mkg/add-gcp-ti-dependencies
         with:
           type: ${{ matrix.type }}
           prefix: ${{ env.prefix }}
