@@ -9,6 +9,10 @@ build:
   os: ubuntu-24.04
   tools:
     python: "3.13"
+  jobs:
+   pre_build:
+    - python3 tools/doc/gen_docker_images_table.py -o .docs/docker_table.rst
+    - python3 tools/doc/gen_nuget_table.py -o .docs/nuget_table.rst
 
 # Move anchors out of the titles
 # Build documentation in the ".docs/" directory with Sphinx
