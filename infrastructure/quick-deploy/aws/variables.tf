@@ -1009,3 +1009,34 @@ variable "windows_exporter" {
   })
   default = null
 }
+
+variable "load_balancer" {
+  description = "Parameters of the Load Balancer deployment"
+  type = object({
+    image              = optional(string, "dockerhubaneo/armonik_load_balancer")
+    tag                = optional(string)
+    image_pull_policy  = optional(string, "IfNotPresent")
+    limits             = optional(map(string))
+    requests           = optional(map(string))
+    image_pull_secrets = optional(string, "")
+    replicas           = optional(number)
+    node_selector      = optional(map(string))
+    annotations        = optional(map(string))
+    service = optional(object({
+      type        = optional(string)
+      annotations = optional(map(string))
+    }))
+    labels = optional(map(string))
+    conf = optional(object({
+      listen_ip             = optional(string)
+      listen_port           = optional(number)
+      refresh_delay_seconds = optional(number)
+      sqlite_db_path        = optional(string)
+      session_cache_size    = optional(number)
+      result_cache_size     = optional(number)
+      task_cache_size       = optional(number)
+    }))
+    extra_env = optional(map(string))
+  })
+  default = null
+}

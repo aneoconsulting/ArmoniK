@@ -701,8 +701,7 @@ variable "load_balancer" {
       type        = optional(string)
       annotations = optional(map(string))
     }))
-    labels      = optional(map(string))
-    common_name = optional(string)
+    labels = optional(map(string))
     conf = optional(object({
       listen_ip             = optional(string)
       listen_port           = optional(number)

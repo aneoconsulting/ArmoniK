@@ -319,7 +319,6 @@ compute_plane = {
 }
 
 # load_balancer = {
-#   tag = "0.2.1-0205g74e51eb.5.sha.74e51eb"
 #   extra_env = {
 #     RUST_LOG="info,armonik=info,load_balancer=info"
 #   }
@@ -332,6 +331,13 @@ ingress = {
   mtls                 = false
   generate_client_cert = false
 }
+
+# authentication = {
+#   require_authentication  = true
+#   require_authorization   = true
+#   authentication_datafile = "/home/tschneider/dev/certs/ingress/authentication_conf.json"
+#   trusted_common_names    = ["armonik.mcp", "armonik.admin"]
+# }
 
 configurations = {
   core = {
