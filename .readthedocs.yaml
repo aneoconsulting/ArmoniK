@@ -13,6 +13,8 @@ build:
    pre_build:
     - python3 tools/doc/gen_docker_images_table.py -o .docs/docker_images_table.rst
     - python3 tools/doc/gen_nuget_table.py -o .docs/nuget_packages_table.rst
+    - python3 tools/doc/gen_npm_table.py -o .docs/npm_packages_table.rst
+    - python3 tools/doc/gen_crates_table.py -o .docs/crates_table.rst
 
 # Move anchors out of the titles
 # Build documentation in the ".docs/" directory with Sphinx
