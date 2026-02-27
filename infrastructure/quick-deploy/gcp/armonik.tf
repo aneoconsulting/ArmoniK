@@ -45,18 +45,22 @@ module "armonik" {
     tag                  = local.docker_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].tag
     service_account_name = module.control_plane_service_account.kubernetes_service_account_name
   })
-  admin_gui = merge(var.admin_gui, {
+  admin_gui = var.admin_gui != null ? merge(var.admin_gui, {
     image = local.docker_images["${var.admin_gui.image}:${try(coalesce(var.admin_gui.tag), "")}"].name
     tag   = local.docker_images["${var.admin_gui.image}:${try(coalesce(var.admin_gui.tag), "")}"].tag
-  })
-  ingress = merge(var.ingress, {
+  }) : null
+  ingress = var.ingress != null ? merge(var.ingress, {
     image = local.docker_images["${var.ingress.image}:${try(coalesce(var.ingress.tag), "")}"].name
     tag   = local.docker_images["${var.ingress.image}:${try(coalesce(var.ingress.tag), "")}"].tag
-  })
+  }) : null
   init = merge(var.init, {
     image = local.docker_images["${var.init.image}:${try(coalesce(var.init.tag), "")}"].name
     tag   = local.docker_images["${var.init.image}:${try(coalesce(var.init.tag), "")}"].tag
   })
+  load_balancer = var.load_balancer != null ? merge(var.load_balancer, {
+    image = local.docker_images["${var.load_balancer.image}:${try(coalesce(var.load_balancer.tag), "")}"].name
+    tag   = local.docker_images["${var.load_balancer.image}:${try(coalesce(var.load_balancer.tag), "")}"].tag
+  }) : null
   authentication = var.authentication
 
   # Force the dependency on Keda and metrics-server for the HPA

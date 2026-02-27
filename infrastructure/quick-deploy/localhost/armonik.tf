@@ -46,9 +46,9 @@ module "armonik" {
   ingress = var.ingress != null ? merge(var.ingress, {
     tag = try(coalesce(var.ingress.tag), local.default_tags[var.ingress.image])
   }) : null
-  init = var.init != null ? merge(var.init, {
+  init = merge(var.init, {
     tag = try(coalesce(var.init.tag), local.default_tags[var.init.image])
-  }) : null
+  })
   load_balancer = var.load_balancer != null ? merge(var.load_balancer, {
     tag = try(coalesce(var.load_balancer.tag), local.default_tags[var.load_balancer.image])
   }) : null
