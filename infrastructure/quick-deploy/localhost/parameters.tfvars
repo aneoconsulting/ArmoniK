@@ -372,38 +372,15 @@ static = {
 
 # Comment to disable the MongoDB metrics exporter
 mongodb_metrics_exporter = {}
-
 mongodb = {
-  # Uncomment to define custom resources for MongoDB pods, comment for default values
-  # mongodb_resources = {
-  #   limits = {
-  #     "cpu"               = 2
-  #     "memory"            = "2Gi"
-  #     "ephemeral-storage" = "10Gi"
-  #   }
-  #   requests = {
-  #     "cpu"               = "500m"
-  #     "memory"            = "500Mi"
-  #     "ephemeral-storage" = "1Gi"
-  #   }
-  # }
-
-  # Uncomment to define custom resources for MongoDB arbiter pods, comment for default values
-  # arbiter_resources = {
-  #   limits = {
-  #     "cpu"               = "400m"
-  #     "memory"            = "4Gi"
-  #     "ephemeral-storage" = "1Gi"
-  #   }
-  #   requests = {
-  #     "cpu"               = "100m"
-  #     "memory"            = "2Gi"
-  #     "ephemeral-storage" = "500Mi"
-  #   }
-  # }
-
-  # Comment the line below to diable persistence
-  persistent_volume = {}
+  cluster = {
+    replicas = 1
+  }
+  # sharding left null = non-sharded replica set, check  aws/parameters for example sharding parameters.
+  # you can't use sharding in localhost anyways because of arch. safety constraints.
+  persistence = {} # This will use the cluster's default storage provisioner
+  # cluster has no default storage provisioner set => PVCs will be stuck on pending.
+  # persistence left null = emptyDir (no PV needed for local dev)
 }
 
 # Uncomment to enable sharding

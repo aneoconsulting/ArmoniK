@@ -347,50 +347,41 @@ sqs = {}
 # Comment to disable the MongoDB metrics exporter
 mongodb_metrics_exporter = {}
 
-mongodb = {
-  node_selector = { service = "state-database" }
-  persistent_volume = {
-    #   parameters = {
-    #     "throughput" = 200
-    #     "iopsPerGB"  = 500
-    #   }
-    #   resources = {
-    #     requests = {
-    #       storage = "10Gi"
-    #     }
-    #   }
-  }
-}
-
-# Comment the mongodb and/or mongodb_sharding parameters to disable the mongodb module and use mongodb atlas
-# Comment also the state_database node group in the eks_managed_node_groups when using mongodb atlas
+# to use MongoDB on MongoDB Atlas, set the mongodb parameter to null to disable the on-prem mongodb module 
+# WARN: Don't forget to comment the state_database node group in the eks_managed_node_groups when using mongodb atlas
 # mongodb_atlas = {
 #   project_id   = "<your_project_id>"
 #   cluster_name = "<your_cluster_name>"
 # }
 
-# Nullify to disable sharding
-# mongodb_sharding = {
-#   shards = {
-#     replicas = 2
-#     quantity = 2
-#   }
-#   configsvr = {
-#     replicas = 2
-#   }
-#   router = {
-#     replicas = 2
-#   }
-#   persistence = {
-#     shards = {
-#       resources = {
-#         requests = {
-#           storage = "20Gi"
-#         }
-#       }
-#     }
-#   }
-# }
+mongodb = {
+  node_selector = { service = "state-database" }
+
+  cluster = {
+    replicas      = 1 # NOTE: You can't have more replicas than nodes in your state-database nodepool.
+    database_name = "database"
+  }
+
+  # Uncomment for sharded deployment:
+  # sharding = {
+  #   shards_quantity = 2
+  #   configsvr = {
+  #     replicas = 3
+  #   }
+  #   mongos = {
+  #     replicas = 2
+  #   }
+  # }
+
+  persistence = {
+    shards = {
+      storage_size = "8Gi"
+    }
+    configsvr = {
+      storage_size = "3Gi"
+    }
+  }
+}
 
 mongodb_ebs = {}
 

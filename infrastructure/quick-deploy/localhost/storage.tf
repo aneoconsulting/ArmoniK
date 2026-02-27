@@ -24,92 +24,31 @@ module "rabbitmq" {
   helm_chart_version    = try(coalesce(var.rabbitmq.helm_chart_verison), var.helm_charts.rabbitmq.version)
 }
 
-# MongoDB
+
+# MongoDB (Percona Operator)
 module "mongodb" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 0 : 1
-  source    = "./generated/infra-modules/storage/onpremise/mongodb"
+  count     = var.mongodb != null ? 1 : 0
+  source    = "./generated/infra-modules/storage/onpremise/mongodb-percona"
   namespace = local.namespace
-  mongodb = {
-    image                 = var.mongodb.image_name
-    tag                   = try(coalesce(var.mongodb.image_tag), local.default_tags[coalesce(var.mongodb.image_name, "bitnamilegacy/mongodb")])
-    node_selector         = var.mongodb.node_selector
-    image_pull_secrets    = var.mongodb.image_pull_secrets
-    replicas              = var.mongodb.replicas
-    helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts.mongodb.repository)
-    helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts.mongodb.version)
-  }
-  mongodb_resources = var.mongodb.mongodb_resources
-  arbiter_resources = var.mongodb.arbiter_resources
-  persistent_volume = var.mongodb.persistent_volume
-}
+  name      = "mongodb"
 
-module "mongodb_sharded" {
-  count     = can(coalesce(var.mongodb_sharding)) ? 1 : 0
-  source    = "./generated/infra-modules/storage/onpremise/mongodb-sharded"
-  namespace = local.namespace
+  operator = merge(var.mongodb.operator, {
+    tag           = coalesce(var.mongodb.operator.tag, local.default_tags[coalesce(var.mongodb.operator.image, "percona/percona-server-mongodb-operator")])
+    node_selector = coalesce(var.mongodb.operator.node_selector, var.mongodb.node_selector, {})
 
-  mongodb = {
-    image                 = var.mongodb.image_name
-    tag                   = try(coalesce(var.mongodb.image_tag), local.default_tags[coalesce(var.mongodb.image_name, "bitnamilegacy/mongodb-sharded")])
-    node_selector         = var.mongodb.node_selector
-    image_pull_secrets    = var.mongodb.image_pull_secrets
-    helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts["mongodb-sharded"].repository)
-    helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts["mongodb-sharded"].version)
-  }
+  })
+  cluster = merge(var.mongodb.cluster, {
+    tag           = coalesce(var.mongodb.cluster.tag, local.default_tags[coalesce(var.mongodb.cluster.image, "percona/percona-server-mongodb")])
+    node_selector = coalesce(var.mongodb.cluster.node_selector, var.mongodb.node_selector, {})
+  })
 
-  # All the try(coalesce()) are there to use values from the mongodb variable if the attributes are not defined in the mongodb_sharding variables
-  sharding = {
-    shards = {
-      quantity      = try(coalesce(var.mongodb_sharding.shards.quantity), null)
-      replicas      = try(coalesce(var.mongodb_sharding.shards.replicas), var.mongodb.replicas)
-      node_selector = try(coalesce(var.mongodb_sharding.shards.node_selector), var.mongodb.node_selector)
-    }
+  resources = var.mongodb.resources
 
-    arbiter = {
-      node_selector = try(coalesce(var.mongodb_sharding.arbiter.node_selector), var.mongodb.node_selector)
-    }
+  sharding = var.mongodb.sharding
 
-    router = merge(var.mongodb_sharding.router, {
-      replicas      = try(coalesce(var.mongodb_sharding.router.replicas), null)
-      node_selector = try(coalesce(var.mongodb_sharding.router.node_selector), var.mongodb.node_selector)
-    })
+  persistence = var.mongodb.persistence
 
-    configsvr = {
-      replicas      = try(coalesce(var.mongodb_sharding.configsvr.replicas), null)
-      node_selector = try(coalesce(var.mongodb_sharding.configsvr.node_selector), var.mongodb.node_selector)
-    }
-  }
-
-  resources = {
-    shards    = try(coalesce(var.mongodb_sharding.shards.resources), var.mongodb.mongodb_resources)
-    arbiter   = try(coalesce(var.mongodb_sharding.arbiter.resources), var.mongodb.arbiter_resources)
-    configsvr = try(coalesce(var.mongodb_sharding.configsvr.resources), null)
-    router    = try(coalesce(var.mongodb_sharding.router.resources), null)
-  }
-
-  labels = {
-    shards    = try(coalesce(var.mongodb_sharding.shards.labels), null)
-    arbiter   = try(coalesce(var.mongodb_sharding.arbiter.labels), null)
-    configsvr = try(coalesce(var.mongodb_sharding.configsvr.labels), null)
-    router    = try(coalesce(var.mongodb_sharding.router.labels), null)
-  }
-
-  persistence = can(try(coalesce(var.mongodb_sharding.persistence), coalesce(var.mongodb.persistent_volume))) ? {
-    shards = can(try(coalesce(var.mongodb_sharding.persistence.shards), coalesce(var.mongodb.persistent_volume))) ? {
-      storage_provisioner = try(coalesce(var.mongodb_sharding.persistence.shards.storage_provisioner), coalesce(var.mongodb.persistent_volume.storage_provisioner), null)
-      volume_binding_mode = try(coalesce(var.mongodb_sharding.persistence.shards.volume_binding_mode), coalesce(var.mongodb.persistent_volume.volume_binding_mode), null)
-      reclaim_policy      = try(coalesce(var.mongodb_sharding.persistence.shards.reclaim_policy), coalesce(var.mongodb.persistent_volume.reclaim_policy), null)
-      resources           = try(coalesce(var.mongodb_sharding.persistence.shards.resources), coalesce(var.mongodb.persistent_volume.resources), null)
-      parameters          = try(coalesce(var.mongodb_sharding.persistence.shards.parameters), coalesce(var.mongodb.persistent_volume.parameters), null)
-    } : null
-    configsvr = can(coalesce(var.mongodb_sharding.persistence.configsvr)) ? {
-      storage_provisioner = var.mongodb_sharding.persistence.configsvr.storage_provisioner
-      volume_binding_mode = var.mongodb_sharding.persistence.configsvr.volume_binding_mode
-      reclaim_policy      = var.mongodb_sharding.persistence.configsvr.reclaim_policy
-      resources           = var.mongodb_sharding.persistence.configsvr.resources
-      parameters          = var.mongodb_sharding.persistence.configsvr.parameters
-    } : null
-  } : null
+  timeout = var.mongodb.timeout
 }
 
 # Redis

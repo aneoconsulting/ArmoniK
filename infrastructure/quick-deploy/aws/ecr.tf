@@ -1,12 +1,10 @@
 locals {
-  mongodb_image_name = try(coalesce(var.mongodb.image_name), var.mongodb_sharding != null ? "bitnamilegacy/mongodb-sharded" : "bitnamilegacy/mongodb")
   ecr_input_images = concat([
     [var.eks.docker_images.cluster_autoscaler.image, var.eks.docker_images.cluster_autoscaler.tag],
     [var.eks.docker_images.instance_refresh.image, var.eks.docker_images.instance_refresh.tag],
     [var.metrics_server.image_name, var.metrics_server.image_tag],
     [var.keda.keda_image_name, var.keda.keda_image_tag],
     [var.keda.apiserver_image_name, var.keda.apiserver_image_tag],
-    var.mongodb != null ? [local.mongodb_image_name, var.mongodb.image_tag] : null,
     [var.prometheus.image_name, var.prometheus.image_tag],
     [var.fluent_bit.image_name, var.fluent_bit.image_tag],
     [var.fluent_bit_windows.image_name, var.fluent_bit_windows.image_tag],
@@ -18,6 +16,8 @@ locals {
     [var.eks.docker_images.csi_liveness_probe.image, var.eks.docker_images.csi_liveness_probe.tag],
     [var.eks.docker_images.csi_node_driver_registrar.image, var.eks.docker_images.csi_node_driver_registrar.tag],
     [var.eks.docker_images.csi_external_provisioner.image, var.eks.docker_images.csi_external_provisioner.tag],
+    var.mongodb == null ? null : [var.mongodb.operator.image, var.mongodb.operator.tag],
+    var.mongodb == null ? null : [var.mongodb.cluster.image, var.mongodb.cluster.tag],
     var.seq == null ? null : [var.seq.image_name, var.seq.image_tag],
     var.seq == null ? null : [var.seq.cli_image_name, var.seq.cli_image_tag],
     var.grafana == null ? null : [var.grafana.image_name, var.grafana.image_tag],
