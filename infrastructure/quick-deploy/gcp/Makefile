@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 CURRENT_DIR != pwd
 GENERATED_DIR=$(CURRENT_DIR)/generated
 INGRESS_CERTIFICATES_DIR=$(GENERATED_DIR)/certificates/ingress

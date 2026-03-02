@@ -318,6 +318,12 @@ compute_plane = {
   },
 }
 
+# load_balancer = {
+#   extra_env = {
+#     RUST_LOG="info,armonik=info,load_balancer=info"
+#   }
+# }
+
 # Deploy ingress
 # PS: to not deploy ingress put: "ingress=null"
 ingress = {
@@ -325,6 +331,13 @@ ingress = {
   mtls                 = false
   generate_client_cert = false
 }
+
+# authentication = {
+#   require_authentication  = true
+#   require_authorization   = true
+#   authentication_datafile = "/home/tschneider/dev/certs/ingress/authentication_conf.json"
+#   trusted_common_names    = ["armonik.mcp", "armonik.admin"]
+# }
 
 configurations = {
   core = {
