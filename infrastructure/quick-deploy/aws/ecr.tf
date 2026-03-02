@@ -28,6 +28,7 @@ locals {
     var.partition_metrics_exporter == null ? null : [var.partition_metrics_exporter.image_name, var.partition_metrics_exporter.image_tag],
     var.ingress == null ? null : [var.ingress.image, var.ingress.tag],
     var.pod_deletion_cost == null ? null : [var.pod_deletion_cost.image, var.pod_deletion_cost.tag],
+    var.load_balancer != null ? [var.load_balancer.image, var.load_balancer.tag] : null,
     ], [for k, v in var.compute_plane :
     [v.polling_agent.image, v.polling_agent.tag]
     ], concat([for k, v in var.compute_plane :
