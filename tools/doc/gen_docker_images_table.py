@@ -1,5 +1,10 @@
 import argparse
 import requests
+import logging
+
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logger = logging.getLogger(__name__)
 
 # URL to the versions.tfvars.json file
 VERSIONS_JSON_URL = (
@@ -19,7 +24,7 @@ def fetch_versions_from_tfvars():
         response.raise_for_status()
         data = response.json()
     except requests.RequestException as e:
-        print(f"Error fetching {VERSIONS_JSON_URL}: {e}")
+        logger.error(f"Error fetching {VERSIONS_JSON_URL}: {e}")
         return {}, []
 
     armonik_versions = data.get("armonik_versions", {})
@@ -79,4 +84,4 @@ if __name__ == "__main__":
     with open(args.output, "w", encoding="utf-8") as out_file:
         out_file.write(table_text)
 
-    print(f"Wrote table to {args.output}")
+    logger.info(f"Wrote table to {args.output}")

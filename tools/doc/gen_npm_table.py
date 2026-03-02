@@ -1,5 +1,10 @@
 import requests
 import argparse
+import logging
+
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logger = logging.getLogger(__name__)
 
 
 def search_npm_packages(search_term):
@@ -11,7 +16,7 @@ def search_npm_packages(search_term):
         packages = data.get("objects", [])
         return [(pkg["package"]["name"], pkg["package"]["version"]) for pkg in packages]
     else:
-        print(f"Error fetching NPM packages: {response.status_code}")
+        logger.error(f"Error fetching NPM packages: {response.status_code}")
         return []
 
 
@@ -50,4 +55,4 @@ if __name__ == "__main__":
     with open(args.output, "w", encoding="utf-8") as out_file:
         out_file.write(rst_table)
 
-    print(f"Wrote table to {args.output}")
+    logger.info(f"Wrote table to {args.output}")
