@@ -39,36 +39,36 @@ env:
 	@set
 
 bootstrap-deploy:
-	@if [[ $${TFSTATE_BUCKET_NAME} =~ ^[a-z0-9]([-a-z0-9_]*[a-z0-9])?$$ && $${#TFSTATE_BUCKET_NAME} -ge 3 && $${#TFSTATE_BUCKET_NAME} -le 63 && ! $${TFSTATE_BUCKET_NAME} =~ -- && ! $${TFSTATE_BUCKET_NAME} =~ ^- && ! $${TFSTATE_BUCKET_NAME} =~ -$$ ]]; then \
-		echo "TFSTATE bucket Name : ${TFSTATE_BUCKET_NAME} is valid"; \
+	@if echo "$${TFSTATE_BUCKET_NAME}" | grep -Eq '^[a-z0-9][a-z0-9_-]{1,61}[a-z0-9]$$'; then \
+		echo "TFSTATE bucket Name : $${TFSTATE_BUCKET_NAME} is valid"; \
 	else \
-		echo -e "\e[91mError : Invalid TFSTATE bucket Name : '${TFSTATE_BUCKET_NAME}' ref: https://cloud.google.com/storage/docs/buckets#naming \e[0m"; \
+		echo "\e[91mError : Invalid TFSTATE bucket Name : '$${TFSTATE_BUCKET_NAME}' ref: https://cloud.google.com/storage/docs/buckets#naming \e[0m"; \
 		exit 1; \
 	fi; \
 
-	@if gsutil ls -b gs://${TFSTATE_BUCKET_NAME} > /dev/null 2>&1; then \
-		echo "The bucket : ${TFSTATE_BUCKET_NAME} already exists."; \
+	@if gsutil ls -b "gs://$${TFSTATE_BUCKET_NAME}" > /dev/null 2>&1; then \
+		echo "The bucket : $${TFSTATE_BUCKET_NAME} already exists."; \
 	else \
-		if gsutil mb -l ${TF_VAR_region} gs://${TFSTATE_BUCKET_NAME}; then \
-			echo "The bucket ${TFSTATE_BUCKET_NAME} in Region : '${TF_VAR_region}' has been successfuly created."; \
+		if gsutil mb -l "$${TF_VAR_region}" "gs://$${TFSTATE_BUCKET_NAME}"; then \
+			echo "The bucket $${TFSTATE_BUCKET_NAME} in Region : '$${TF_VAR_region}' has been successfuly created."; \
 		else \
-			echo -e "\e[91mError : TFSTATE bucket Name : '${TFSTATE_BUCKET_NAME}' has NOT been created. \e[0m"; \
-			gsutil ls -b gs://${TFSTATE_BUCKET_NAME}; \
+			echo "\e[91mError : TFSTATE bucket Name : '$${TFSTATE_BUCKET_NAME}' has NOT been created. \e[0m"; \
+			gsutil ls -b "gs://$${TFSTATE_BUCKET_NAME}"; \
 			exit 1; \
 		fi; \
 	fi
 
 bootstrap-destroy:
-	@if gsutil ls -b gs://${TFSTATE_BUCKET_NAME} > /dev/null 2>&1; then \
-		if gsutil rm -r gs://${TFSTATE_BUCKET_NAME}; then \
-		echo "The bucket : ${TFSTATE_BUCKET_NAME} has been deleted."; \
+	@if gsutil ls -b "gs://$${TFSTATE_BUCKET_NAME}" > /dev/null 2>&1; then \
+		if gsutil rm -r "gs://$${TFSTATE_BUCKET_NAME}"; then \
+		echo "The bucket : $${TFSTATE_BUCKET_NAME} has been deleted."; \
 		else \
-			echo -e "\e[91mError : The bucket : ${TFSTATE_BUCKET_NAME} has NOT been deleted. \e[0m"; \
-			gsutil ls -b gs://${TFSTATE_BUCKET_NAME}; \
+			echo "\e[91mError : The bucket : $${TFSTATE_BUCKET_NAME} has NOT been deleted. \e[0m"; \
+			gsutil ls -b "gs://$${TFSTATE_BUCKET_NAME}"; \
 			exit 1; \
 		fi \
 	else \
-		echo "The bucket ${TFSTATE_BUCKET_NAME} is not in your bucket list."; \
+		echo "The bucket $${TFSTATE_BUCKET_NAME} is not in your bucket list."; \
 	fi 
 
 
