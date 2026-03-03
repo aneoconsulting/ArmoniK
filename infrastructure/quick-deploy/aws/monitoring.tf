@@ -194,7 +194,7 @@ module "mongodb_exporter" {
     image_pull_secrets = var.mongodb_metrics_exporter.pull_secrets
   }
   force_split_cluster = length(module.atlas_mongodb) > 0
-  mongodb_modules     = [module.mongodb_sharded, module.mongodb, module.atlas_mongodb]
+  mongodb_modules     = [module.mongodb, module.atlas_mongodb]
 }
 
 # Prometheus

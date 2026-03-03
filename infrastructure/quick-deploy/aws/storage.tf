@@ -195,107 +195,45 @@ module "atlas_mongodb" {
 }
 
 
-# MongoDB
 module "mongodb" {
   count     = var.mongodb != null ? 1 : 0
-  source    = "./generated/infra-modules/storage/onpremise/mongodb"
+  source    = "./generated/infra-modules/storage/onpremise/mongodb-percona"
   namespace = local.namespace
-  mongodb = {
-    image                 = local.ecr_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
-    tag                   = local.ecr_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
-    node_selector         = var.mongodb.node_selector
-    image_pull_secrets    = var.mongodb.image_pull_secrets
-    replicas              = var.mongodb.replicas
-    helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts.mongodb.repository)
-    helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts.mongodb.version)
-  }
+  name      = "mongodb"
 
-  persistent_volume = var.mongodb.persistent_volume != null ? {
-    storage_provisioner = local.mongodb_pvc_provisioner
-    access_mode         = var.mongodb.persistent_volume.acces_mode
-    reclaim_policy      = var.mongodb.persistent_volume.reclaim_policy
-    volume_binding_mode = var.mongodb.persistent_volume.volume_binding_mode
-    resources           = var.mongodb.persistent_volume.resources
-    parameters          = local.mongodb_storage_class_parameters
-  } : null
+  operator = merge(var.mongodb.operator, {
+    image                 = local.ecr_images["${var.mongodb.operator.image}:${try(coalesce(var.mongodb.operator.tag), "")}"].name
+    tag                   = local.ecr_images["${var.mongodb.operator.image}:${try(coalesce(var.mongodb.operator.tag), "")}"].tag
+    node_selector         = coalesce(var.mongodb.operator.node_selector, var.mongodb.node_selector, {})
+    helm_chart_repository = try(coalesce(var.mongodb.operator.helm_chart_repository), var.helm_charts.mongodb.repository)
+    helm_chart_version    = try(coalesce(var.mongodb.operator.helm_chart_version), var.helm_charts.mongodb.version)
+  })
+  cluster = merge(var.mongodb.cluster, {
+    image         = local.ecr_images["${var.mongodb.cluster.image}:${try(coalesce(var.mongodb.cluster.tag), "")}"].name
+    tag           = local.ecr_images["${var.mongodb.cluster.image}:${try(coalesce(var.mongodb.cluster.tag), "")}"].tag
+    node_selector = coalesce(var.mongodb.cluster.node_selector, var.mongodb.node_selector, {})
+  })
 
-  security_context  = var.mongodb.security_context
-  mongodb_resources = var.mongodb.mongodb_resources
-  arbiter_resources = var.mongodb.arbiter_resources
+  resources = var.mongodb.resources
+  sharding  = var.mongodb.sharding
 
-}
-
-module "mongodb_sharded" {
-  count     = var.mongodb_sharding != null ? 1 : 0
-  source    = "./generated/infra-modules/storage/onpremise/mongodb-sharded"
-  namespace = local.namespace
-
-  mongodb = {
-    image                 = local.ecr_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].name
-    tag                   = local.ecr_images["${local.mongodb_image_name}:${try(coalesce(var.mongodb.image_tag), "")}"].tag
-    node_selector         = var.mongodb.node_selector
-    image_pull_secrets    = var.mongodb.image_pull_secrets
-    helm_chart_repository = try(coalesce(var.mongodb.helm_chart_repository), var.helm_charts["mongodb-sharded"].repository)
-    helm_chart_version    = try(coalesce(var.mongodb.helm_chart_version), var.helm_charts["mongodb-sharded"].version)
-  }
-
-  # All the try(coalesce()) are there to use values from the mongodb variable if the attributes are not defined in the mongodb_sharding variables
-  sharding = {
-    shards = {
-      quantity      = try(coalesce(var.mongodb_sharding.shards.quantity), null)
-      replicas      = try(coalesce(var.mongodb_sharding.shards.replicas), var.mongodb.replicas)
-      node_selector = try(coalesce(var.mongodb_sharding.shards.node_selector), var.mongodb.node_selector)
-    }
-
-    arbiter = {
-      node_selector = try(coalesce(var.mongodb_sharding.arbiter.node_selector), var.mongodb.node_selector)
-    }
-
-    router = merge(var.mongodb_sharding.router, {
-      replicas      = try(coalesce(var.mongodb_sharding.router.replicas), null)
-      node_selector = try(coalesce(var.mongodb_sharding.router.node_selector), var.mongodb.node_selector)
+  persistence = local.mongodb_storage_provisioner != "" ? {
+    shards = merge(var.mongodb.persistence.shards, {
+      storage_provisioner = local.mongodb_storage_provisioner
+      parameters          = local.mongodb_shards_parameters
     })
+    configsvr = merge(var.mongodb.persistence.configsvr, {
+      storage_provisioner = local.mongodb_configsvr_storage_provisioner
+      parameters          = local.mongodb_configsvr_parameters
+    })
+  } : var.mongodb.persistence
 
-    configsvr = {
-      replicas      = try(coalesce(var.mongodb_sharding.configsvr.replicas), null)
-      node_selector = try(coalesce(var.mongodb_sharding.configsvr.node_selector), var.mongodb.node_selector)
-    }
-  }
-
-  resources = {
-    shards    = try(coalesce(var.mongodb_sharding.shards.resources), var.mongodb.mongodb_resources)
-    arbiter   = try(coalesce(var.mongodb_sharding.arbiter.resources), var.mongodb.arbiter_resources)
-    configsvr = try(coalesce(var.mongodb_sharding.configsvr.resources), null)
-    router    = try(coalesce(var.mongodb_sharding.router.resources), null)
-  }
-
-  labels = {
-    shards    = try(coalesce(var.mongodb_sharding.shards.labels), null)
-    arbiter   = try(coalesce(var.mongodb_sharding.arbiter.labels), null)
-    configsvr = try(coalesce(var.mongodb_sharding.configsvr.labels), null)
-    router    = try(coalesce(var.mongodb_sharding.router.labels), null)
-  }
-
-  persistence = can(try(coalesce(var.mongodb_sharding.persistence), coalesce(var.mongodb.persistent_volume))) ? {
-    shards = can(try(coalesce(var.mongodb_sharding.persistence.shards), coalesce(var.mongodb.persistent_volume))) ? {
-      storage_provisioner = local.mongodb_pvc_provisioner
-      volume_binding_mode = try(coalesce(var.mongodb_sharding.persistence.shards.volume_binding_mode), coalesce(var.mongodb.persistent_volume.volume_binding_mode), null)
-      reclaim_policy      = try(coalesce(var.mongodb_sharding.persistence.shards.reclaim_policy), coalesce(var.mongodb.persistent_volume.reclaim_policy), null)
-      resources           = try(coalesce(var.mongodb_sharding.persistence.shards.resources), coalesce(var.mongodb.persistent_volume.resources), null)
-      parameters          = local.mongodb_storage_class_parameters
-    } : null
-    configsvr = can(coalesce(var.mongodb_sharding.persistence.configsvr)) ? {
-      storage_provisioner = local.mongodb_configsvr_pvc_provisioner
-      volume_binding_mode = var.mongodb_sharding.persistence.configsvr.volume_binding_mode
-      reclaim_policy      = var.mongodb_sharding.persistence.configsvr.reclaim_policy
-      resources           = var.mongodb_sharding.persistence.configsvr.resources
-      parameters          = local.configsvr_storage_class_parameters
-    } : null
-  } : null
+  timeout = var.mongodb.timeout
 }
 
+# AWS EFS for MongoDB (only if using EFS as storage backend)
 module "mongodb_efs_persistent_volume" {
-  count                           = local.mongodb_pvc_provisioner == "efs.csi.aws.com" && can(coalesce(var.mongodb_efs.mongodb)) ? 1 : 0
+  count                           = local.mongodb_storage_provisioner == "efs.csi.aws.com" && can(coalesce(var.mongodb_efs.mongodb)) ? 1 : 0
   source                          = "./generated/infra-modules/storage/aws/efs"
   name                            = "${local.prefix}-mongodb"
   kms_key_id                      = try(coalesce(var.mongodb_efs.mongodb.kms_key_id), local.kms_key)
@@ -312,7 +250,7 @@ module "mongodb_efs_persistent_volume" {
 }
 
 module "configsvr_efs_persistent_volume" {
-  count                           = local.mongodb_configsvr_pvc_provisioner == "efs.csi.aws.com" && can(coalesce(var.mongodb_efs.configsvr)) ? 1 : 0
+  count                           = local.mongodb_storage_provisioner == "efs.csi.aws.com" && can(coalesce(var.mongodb_efs.configsvr)) ? 1 : 0
   source                          = "./generated/infra-modules/storage/aws/efs"
   name                            = "${local.prefix}-mongodb-configsvr"
   kms_key_id                      = try(coalesce(var.mongodb_efs.configsvr.kms_key_id), local.kms_key)
@@ -430,66 +368,63 @@ locals {
     use_check_sum         = true
   }
 
-  mongodb_pvc_provisioner = try(
-    coalesce(var.mongodb_sharding.persistence.shards.storage_provisioner),
-    coalesce(var.mongodb.persistent_volume.storage_provisioner),
-    coalesce(var.mongodb_ebs.mongodb != null ? "ebs.csi.aws.com" : null),
-    coalesce(var.mongodb_efs.mongodb != null ? "efs.csi.aws.com" : null),
+  mongodb_storage_provisioner = try(
+    coalesce(var.mongodb.persistence.shards.storage_provisioner),
+    coalesce(var.mongodb_ebs != null ? "ebs.csi.aws.com" : null),
+    coalesce(var.mongodb_efs != null ? "efs.csi.aws.com" : null),
     ""
   )
 
-  mongodb_configsvr_pvc_provisioner = try(
-    coalesce(var.mongodb_sharding.persistence.configsvr.storage_provisioner),
-    coalesce(var.mongodb_ebs.configsvr != null ? "ebs.csi.aws.com" : null),
-    coalesce(var.mongodb_efs.configsvr != null ? "efs.csi.aws.com" : null),
+  mongodb_configsvr_storage_provisioner = try(
+    coalesce(var.mongodb.persistence.configsvr.storage_provisioner),
+    coalesce(var.mongodb_ebs != null ? "ebs.csi.aws.com" : null),
+    coalesce(var.mongodb_efs != null ? "efs.csi.aws.com" : null),
     ""
   )
 
-  # Ensures some mandatory storage class parameters are effectively passed when persistence is enabled
-  mongodb_storage_class_parameters = merge(
-    local.mongodb_pvc_provisioner == "efs.csi.aws.com" ?
-    merge(
-      length(module.mongodb_efs_persistent_volume) > 0 ? {
-        fileSystemId = module.mongodb_efs_persistent_volume[0].id
-      } : null,
-      {
-        provisioningMode = "efs-ap"
-        directoryPerms   = "755"
-        uid              = var.mongodb.security_context.run_as_user # optional
-        gid              = var.mongodb.security_context.fs_group    # optional
-        basePath         = "/mongodb"                               # optional
-    }) : null,
-    local.mongodb_pvc_provisioner == "ebs.csi.aws.com" ?
-    merge(
-      {
-        "csi.storage.k8s.io/fstype" = try(var.mongodb_ebs.mongodb.fs, "ext4")
-        "type"                      = try(var.mongodb_ebs.mongodb.type, "gp3")
-      },
-      try(coalesce(var.mongodb_ebs.mongodb.parameters), null)
-    ) : null,
-    try(coalesce(var.mongodb_sharding.persistence.shards.parameters, var.mongodb.persistent_volume.parameters), null)
-  )
 
-  configsvr_storage_class_parameters = merge(
-    local.mongodb_pvc_provisioner == "efs.csi.aws.com" ?
-    merge(
-      length(module.configsvr_efs_persistent_volume) > 0 ? {
-        fileSystemId = module.configsvr_efs_persistent_volume[0].id
-      } : null,
-      {
-        provisioningMode = "efs-ap"
-        directoryPerms   = "755"
-        uid              = var.mongodb.security_context.run_as_user # optional
-        gid              = var.mongodb.security_context.fs_group    # optional
-        basePath         = "/mongodb"                               # optional
-    }) : null,
-    try(var.mongodb_sharding.persistence.configsvr.storage_provisioner, "") == "ebs.csi.aws.com" ?
-    merge({
-      "csi.storage.k8s.io/fstype" = try(var.mongodb_ebs.configsvr.fs, "ext4")
-      "type"                      = try(var.mongodb_ebs.configsvr.type, "gp3")
-      },
-      try(var.mongodb_ebs.configsvr.parameters, null)
-    ) : null,
-    try(coalesce(var.mongodb_sharding.persistence.configsvr.parameters), null)
-  )
+  # EBS default parameters
+  ebs_shards_defaults = local.mongodb_storage_provisioner == "ebs.csi.aws.com" ? merge(
+    {
+      "csi.storage.k8s.io/fstype" = var.mongodb_ebs != null ? var.mongodb_ebs.mongodb.fs : "ext4"
+      "type"                      = var.mongodb_ebs != null ? var.mongodb_ebs.mongodb.type : "gp3"
+    },
+    var.mongodb_ebs != null ? coalesce(var.mongodb_ebs.mongodb.parameters, {}) : {}
+  ) : {}
+
+  ebs_configsvr_defaults = local.mongodb_configsvr_storage_provisioner == "ebs.csi.aws.com" ? merge(
+    {
+      "csi.storage.k8s.io/fstype" = var.mongodb_ebs != null ? var.mongodb_ebs.configsvr.fs : "ext4"
+      "type"                      = var.mongodb_ebs != null ? var.mongodb_ebs.configsvr.type : "gp3"
+    },
+    var.mongodb_ebs != null ? coalesce(var.mongodb_ebs.configsvr.parameters, {}) : {}
+  ) : {}
+
+  # EFS default parameters
+  efs_shards_defaults = local.mongodb_storage_provisioner == "efs.csi.aws.com" ? merge(
+    {
+      provisioningMode = "efs-ap"
+      directoryPerms   = "755"
+      basePath         = "/mongodb"
+    },
+    length(module.mongodb_efs_persistent_volume) > 0 ? {
+      fileSystemId = module.mongodb_efs_persistent_volume[0].id
+    } : {}
+  ) : {}
+
+  efs_configsvr_defaults = local.mongodb_configsvr_storage_provisioner == "efs.csi.aws.com" ? merge(
+    {
+      provisioningMode = "efs-ap"
+      directoryPerms   = "755"
+      basePath         = "/mongodb"
+    },
+    length(module.configsvr_efs_persistent_volume) > 0 ? {
+      fileSystemId = module.configsvr_efs_persistent_volume[0].id
+    } : {}
+  ) : {}
+
+  # Final merged parameters: defaults + user overrides
+  mongodb_shards_parameters    = merge(local.ebs_shards_defaults, local.efs_shards_defaults, var.mongodb.persistence.shards.parameters)
+  mongodb_configsvr_parameters = merge(local.ebs_configsvr_defaults, local.efs_configsvr_defaults, var.mongodb.persistence.configsvr.parameters)
+
 }

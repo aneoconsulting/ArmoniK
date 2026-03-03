@@ -126,7 +126,7 @@ module "mongodb_exporter" {
     tag                = local.docker_images["${var.mongodb_metrics_exporter.image_name}:${try(coalesce(var.mongodb_metrics_exporter.image_tag), "")}"].tag
     image_pull_secrets = var.mongodb_metrics_exporter.pull_secrets
   }
-  mongodb_modules = [module.mongodb_sharded, module.mongodb]
+  mongodb_modules = [module.mongodb]
 }
 
 # Partition metrics exporter
