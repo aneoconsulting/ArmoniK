@@ -228,7 +228,7 @@ def generate_certificate(common_name: str):
     }
 
 
-TRUSTED_CNS = ["armonik.admin", "armonik.mcp"]
+TRUSTED_CNS = ["armonik.admin", "loadbalancer"]
 ALL_CNS = TRUSTED_CNS + ["armonik.monitoring"]
 
 
@@ -349,6 +349,3 @@ if __name__ == "__main__":
 
     # Generate another cert which wont be part of the deployment
     generate_certificate("armonik.norole")
-
-    # Generate server certificates for the nginx in front of MCP
-    generate_certificate("server.mcp")
