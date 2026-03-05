@@ -12,11 +12,17 @@ on:
         type: boolean
         required: false
         default: true
+      region:
+        description: "AWS region to deploy to"
+        required: false
+        default: "eu-west-3"
 
 jobs:
   destroy:
     name: "Destroy"
     runs-on: ubuntu-latest
+    env:
+      REGION: ${{ inputs.region }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -27,7 +33,7 @@ jobs:
           terraform: true
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: eu-west-3
+          AWS_REGION: ${{ inputs.region }}
       - id: destroy
         name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main

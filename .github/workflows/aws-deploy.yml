@@ -24,6 +24,10 @@ on:
         description: "Version of Extension Csharp to deploy"
         required: false
         default: ""
+      region:
+        description: "AWS region to deploy to"
+        required: false
+        default: "eu-west-3"
 
 jobs:
   deploy:
@@ -31,6 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       terraform-output: ${{ steps.deploy.outputs.terraform-output }}
+    env:
+      REGION: ${{ inputs.region }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -41,7 +47,7 @@ jobs:
           terraform: true
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: eu-west-3
+          AWS_REGION: ${{ inputs.region }}
       - if: ${{ inputs.bootstrap }}
         id: bootstrap-deploy
         name: Deploy Bootstrap
@@ -66,6 +72,7 @@ jobs:
     env:
       TERRAFORM_OUTPUT: ${{ needs.deploy.outputs.terraform-output }}
       KUBE_CONFIG: ${{ needs.deploy.outputs.kube-config }}
+      REGION: ${{ inputs.region }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -75,7 +82,7 @@ jobs:
           aws: true
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: eu-west-3
+          AWS_REGION: ${{ inputs.region }}
       - name: Terraform Output
         run: |
           echo "$TERRAFORM_OUTPUT"
@@ -90,6 +97,8 @@ jobs:
       - deploy
       - test
     if: "always()"
+    env:
+      REGION: ${{ inputs.region }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -100,7 +109,7 @@ jobs:
           terraform: true
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: eu-west-3
+          AWS_REGION: ${{ inputs.region }}
       - id: destroy
         name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
