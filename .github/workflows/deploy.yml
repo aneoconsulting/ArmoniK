@@ -424,7 +424,7 @@ jobs:
         run: |
           python tools/ci/python/generate_auth_conf.py
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@ts/add-lb
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
         with:
           type: localhost
           log-suffix: mcp-auth
@@ -440,29 +440,99 @@ jobs:
         run: |
           export ARMONIK_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
           pytest -v ${{ github.workspace }}/tools/ci/python/mcp_tests.py
-      # - name: Show logs
-      #   if: always()
-      #   run: |
-      #        set -e
-      #        mkdir -p mcp-auth/infra/generated \
-      #          mcp-auth/infra/tfstates \
-      #          mcp-auth/app \
-      #          mcp-auth/compose
+      - name: Show logs
+        if: always()
+        run: |
+             set -e
+             mkdir -p mcp-auth/infra/generated \
+               mcp-auth/infra/tfstates \
+               mcp-auth/app \
+               mcp-auth/compose
 
-      #        docker logs mcp > mcp-auth/compose/mcp.logs
-      #        docker logs nginx_mcp > mcp-auth/compose/ngnix.logs
+             kubectl -n armonik logs deploy/load-balancer > mcp-auth/compose/mcp.logs
+             kubectl -n armonik logs deploy/nginx > mcp-auth/compose/ngnix.logs
 
-      #        if [ -e infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json ] ; then
-      #         cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json mcp-auth/infra/generated
-      #        fi
-      #        make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > mcp-auth/infra/tfstates/armonik-terraform.tfstate
-      #        sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' mcp-auth/app/ ';'
-      #        sudo chown $USER -R mcp-auth
-      #        tar -czf mcp-auth.tar.gz mcp-auth
-      #        aws s3 cp mcp-auth.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/mcp-auth.tar.gz
-      #   env:
-      #        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+             if [ -e infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json ] ; then
+              cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json mcp-auth/infra/generated
+             fi
+             make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > mcp-auth/infra/tfstates/armonik-terraform.tfstate
+             sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' mcp-auth/app/ ';'
+             sudo chown $USER -R mcp-auth
+             tar -czf mcp-auth.tar.gz mcp-auth
+             aws s3 cp mcp-auth.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/mcp-auth.tar.gz
+        env:
+             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Destroy deployment
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        with:
+           type: localhost
+
+  auth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CUSTOM_CERTS_ROOT: "${{ github.workspace }}/customCA"
+      ARMONIK_CA: "${{ github.workspace }}/infrastructure/quick-deploy/localhost/generated/certificates/ingress/ca.crt"
+    steps:
+      - name: Get type of VM
+        run: |
+          lscpu
+          uname -a
+          grep MemTotal /proc/meminfo
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          repository: ${{ env.REPOSITORY }}
+          ref: ${{ env.REFERENCE }}
+          fetch-depth: 0
+      - name: Install Dependencies
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        with:
+           terraform: true
+           k3s: true
+           aws: true
+      - name: Generate auth configuration
+        run: |
+          python tools/ci/python/generate_auth_conf.py
+      - name: Deploy
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        with:
+          type: localhost
+          log-suffix: mcp-auth
+          tls: true
+          mtls: true
+          custom-client-ca: "${{ github.workspace }}/customCA/certs/ca.crt"
+          require-authentication: true
+          require-authorization: true
+          auth-datafile: "${{ github.workspace }}/auth_conf.json"
+          trusted-cns: '["armonik.admin"]'
+      - name: Run tests
+        run: |
+          export ARMONIK_URL=$(cat infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json | jq -r '.armonik.control_plane_url')
+          pytest -v ${{ github.workspace }}/tools/ci/python/mcp_tests.py
+      - name: Show logs
+        if: always()
+        run: |
+             set -e
+             mkdir -p auth/infra/generated \
+               auth/infra/tfstates \
+               auth/app \
+               auth/compose
+
+             kubectl -n armonik logs deploy/nginx > auth/compose/ngnix.logs
+
+             if [ -e infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json ] ; then
+              cp infrastructure/quick-deploy/localhost/all-in-one/generated/armonik-output.json auth/infra/generated
+             fi
+             make -C infrastructure/quick-deploy/localhost/all-in-one/ state-pull > auth/infra/tfstates/armonik-terraform.tfstate
+             sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' auth/app/ ';'
+             sudo chown $USER -R auth
+             tar -czf auth.tar.gz auth
+             aws s3 cp auth.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/auth.tar.gz
+        env:
+             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
