@@ -538,4 +538,3 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
         with:
            type: localhost
-
