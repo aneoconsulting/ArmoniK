@@ -424,7 +424,7 @@ locals {
   ) : {}
 
   # Final merged parameters: defaults + user overrides
-  mongodb_shards_parameters    = merge(local.ebs_shards_defaults, local.efs_shards_defaults, var.mongodb.persistence.shards.parameters)
-  mongodb_configsvr_parameters = merge(local.ebs_configsvr_defaults, local.efs_configsvr_defaults, var.mongodb.persistence.configsvr.parameters)
+  mongodb_shards_parameters    = merge(local.ebs_shards_defaults, local.efs_shards_defaults, var.mongodb.persistence != null ? var.mongodb.persistence.shards.parameters : {})
+  mongodb_configsvr_parameters = merge(local.ebs_configsvr_defaults, local.efs_configsvr_defaults, var.mongodb.persistence != null ? var.mongodb.persistence.configsvr.parameters : {})
 
 }
