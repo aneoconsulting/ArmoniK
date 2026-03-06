@@ -333,6 +333,7 @@ control_plane = {
   default_partition = "default"
   replicas          = 12
   node_selector     = { service = "control-plane" }
+  service_type      = "HeadLess"
 }
 
 # Parameters of admin GUI
@@ -416,6 +417,7 @@ configurations = {
       Redis__SslHost                             = ""
       Redis__TtlTimeSpan                         = "1.00:00:00" # 1 day retention
       Submitter__DeletePayload                   = true
+      Submitter__DegreeOfParallelism             = 100
     }
   }
   control = {
