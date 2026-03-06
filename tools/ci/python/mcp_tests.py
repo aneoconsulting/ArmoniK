@@ -19,38 +19,20 @@ INTERNAL = "Internal"
 
 
 @pytest.fixture(scope="session")
-def control_plane_endpoint() -> str:
-    endpoint = os.environ.get("CONTROL_PLANE_URL")
+def armonik_endpoint() -> str:
+    endpoint = os.environ.get("ARMONIK_URL")
     if endpoint is None:
-        raise ValueError("CONTROL_PLANE_URL not defined")
+        raise ValueError("ARMONIK_URL not defined")
     if endpoint.startswith("https://"):
         endpoint = endpoint[8:]
     return endpoint
 
 
 @pytest.fixture(scope="session")
-def certificate_authority() -> str:
-    ca = os.environ.get("CACERT")
+def armonik_ca() -> str:
+    ca = os.environ.get("ARMONIK_CA")
     if ca is None:
-        raise ValueError("CACERT not defined")
-    return ca
-
-
-@pytest.fixture(scope="session")
-def mcp_endpoint() -> str:
-    endpoint = os.environ.get("MCP_URL")
-    if endpoint is None:
-        raise ValueError("MCP_URL not defined")
-    if endpoint.startswith("https://"):
-        endpoint = endpoint[8:]
-    return endpoint
-
-
-@pytest.fixture(scope="session")
-def mcp_ca() -> str:
-    ca = os.environ.get("MCP_CA")
-    if ca is None:
-        raise ValueError("MCP_CA not defined")
+        raise ValueError("ARMONIK_CA not defined")
     return ca
 
 
@@ -77,11 +59,9 @@ def armonik_protos() -> Iterator[str]:
 
 @pytest.fixture(scope="session")
 def grpc_config(
-    control_plane_endpoint: str,
-    mcp_endpoint: str,
+    armonik_endpoint: str,
     armonik_protos: str,
-    certificate_authority: str,
-    mcp_ca: str,
+    armonik_ca: str,
 ) -> dict[str, str]:
     """
     Grpcurl configuration to be used in a test session, we use the CheckHealth RPC
@@ -89,10 +69,8 @@ def grpc_config(
     is not activated in the API, we need to provide the protobuf definitions to grpcurl.
     """
     return {
-        "control_plane": control_plane_endpoint,
-        "mcp": mcp_endpoint,
-        "cacert": certificate_authority,
-        "mcp_cacert": mcp_ca,
+        "endpoint": armonik_endpoint,
+        "cacert": armonik_ca,
         "proto_path": armonik_protos,
         "proto_file": "health_checks_service.proto",
         "rpc": "armonik.api.grpc.v1.health_checks.HealthChecksService/CheckHealth",
@@ -239,35 +217,6 @@ def grpcurl(
 @pytest.mark.parametrize(
     "cert_name,expected_code",
     [
-        ("admin", None),
-        ("unknown", INTERNAL),
-    ],
-)
-def test_control_plane_cert_behavior(
-    grpcurl: Callable[..., subprocess.CompletedProcess[str]],
-    grpc_config: Mapping[str, str],
-    certs: Mapping[str, Any],
-    cert_name: str,
-    expected_code: str | None,
-) -> None:
-    cert, key = certs[cert_name]
-
-    result = grpcurl(
-        cacert=grpc_config["cacert"],
-        cert=cert,
-        key=key,
-        endpoint=grpc_config["control_plane"],
-    )
-
-    if expected_code is None:
-        assert result.stderr == ""
-    else:
-        assert extract_code(result.stderr) == expected_code
-
-
-@pytest.mark.parametrize(
-    "cert_name,expected_code",
-    [
         ("admin", UNAUTHENTICATED),
         ("monitoring", None),
     ],
@@ -301,7 +250,7 @@ def test_header_override_behavior(
         cacert=grpc_config["cacert"],
         cert=cert,
         key=key,
-        endpoint=grpc_config["control_plane"],
+        endpoint=grpc_config["endpoint"],
         headers=[f"{header}: {value}"],
     )
 
@@ -319,7 +268,7 @@ def test_header_override_behavior(
         ("unknown", INTERNAL),
     ],
 )
-def test_mcp_cert_behavior(
+def test_auth_behavior(
     grpcurl: Callable[..., subprocess.CompletedProcess[str]],
     grpc_config: Mapping[str, str],
     certs: Mapping[str, Any],
@@ -329,10 +278,10 @@ def test_mcp_cert_behavior(
     cert, key = certs[cert_name]
 
     result = grpcurl(
-        cacert=grpc_config["mcp_cacert"],
+        cacert=grpc_config["cacert"],
         cert=cert,
         key=key,
-        endpoint=grpc_config["mcp"],
+        endpoint=grpc_config["endpoint"],
     )
 
     if expected_code is None:
