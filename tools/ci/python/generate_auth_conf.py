@@ -228,7 +228,7 @@ def generate_certificate(common_name: str):
     }
 
 
-TRUSTED_CNS = ["armonik.admin", "loadbalancer"]
+TRUSTED_CNS = ["armonik.admin"]
 ALL_CNS = TRUSTED_CNS + ["armonik.monitoring"]
 
 
