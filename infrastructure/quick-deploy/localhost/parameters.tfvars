@@ -335,7 +335,7 @@ ingress = {
 # authentication = {
 #   require_authentication  = true
 #   require_authorization   = true
-#   authentication_datafile = "/home/tschneider/dev/certs/ingress/authentication_conf.json"
+#   authentication_datafile = "" # Path to authentication json config file as described in: https://armonik.readthedocs.io/en/latest/content/user-guide/how-to-configure-authentication.html#how-to-create-a-json-authentication-configuration-file
 #   trusted_common_names    = ["armonik.mcp", "armonik.admin"]
 # }
 
