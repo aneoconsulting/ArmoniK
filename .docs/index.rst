@@ -6,6 +6,9 @@
 ArmoniK documentation
 ==========================
 
+.. include:: content/home/0.what-is-armonik.md
+   :parser: myst
+
 .. toctree::
    :maxdepth: 1
    :caption: Quick Start
