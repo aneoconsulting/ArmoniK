@@ -144,7 +144,7 @@ jobs:
           poll-duration-limit: ${{ matrix.polling-limit }}
 
       - name: Upload benchmark results to artifact registry
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: benchclient_benchmark_${{ github.event_name }}_${{ matrix.type }}_${{ github.run_id }}
           path: ${{ steps.get-bench-stats.outputs.bench-file-path }}
