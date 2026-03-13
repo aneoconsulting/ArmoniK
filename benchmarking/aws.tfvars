@@ -12,7 +12,7 @@ vpc = {
 
 # AWS EKS
 eks = {
-  cluster_version                = "1.32"
+  cluster_version                = "1.35"
   node_selector                  = { service = "monitoring" }
   cluster_endpoint_public_access = true
   map_roles                      = []
@@ -30,8 +30,7 @@ eks_managed_node_groups = {
   workers = {
     name                        = "workers"
     launch_template_description = "Node group for ArmoniK Compute-plane pods"
-    ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5a.4xlarge"]
+    instance_types              = ["c8a.4xlarge"]
     capacity_type               = "ON_DEMAND" # "SPOT"
     min_size                    = 8
     desired_size                = 8
@@ -56,8 +55,7 @@ eks_managed_node_groups = {
   metrics = {
     name                        = "metrics"
     launch_template_description = "Node group for metrics: Metrics exporter and Prometheus"
-    ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.large"]
+    instance_types              = ["c8a.large"]
     capacity_type               = "ON_DEMAND"
     min_size                    = 1
     desired_size                = 1
@@ -82,8 +80,7 @@ eks_managed_node_groups = {
   control_plane = {
     name                        = "control-plane"
     launch_template_description = "Node group for ArmoniK Control-plane and Ingress"
-    ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5a.4xlarge"]
+    instance_types              = ["c8a.4xlarge"]
     capacity_type               = "ON_DEMAND"
     min_size                    = 1
     desired_size                = 1
@@ -108,8 +105,7 @@ eks_managed_node_groups = {
   monitoring = {
     name                        = "monitoring"
     launch_template_description = "Node group for monitoring"
-    ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5.large"]
+    instance_types              = ["c8a.large"]
     capacity_type               = "ON_DEMAND"
     min_size                    = 1
     desired_size                = 1
@@ -135,8 +131,7 @@ eks_managed_node_groups = {
   state_database = {
     name                        = "mongodb"
     launch_template_description = "Node group for MongoDB"
-    ami_type                    = "AL2_x86_64"
-    instance_types              = ["c5a.8xlarge"]
+    instance_types              = ["c8a.8xlarge"]
     use_custom_launch_template  = true
     block_device_mappings = {
       xvda = {
@@ -154,8 +149,8 @@ eks_managed_node_groups = {
     }
     capacity_type = "ON_DEMAND"
     min_size      = 1
-    desired_size  = 1
-    max_size      = 1
+    desired_size  = 2
+    max_size      = 2
     labels = {
       service                        = "state-database"
       "node.kubernetes.io/lifecycle" = "ondemand"
@@ -178,7 +173,7 @@ self_managed_node_groups = {
   others = {
     name                        = "others"
     launch_template_description = "Node group for others"
-    instance_type               = "c5.large"
+    instance_type               = "c8a.large"
     min_size                    = 0
     desired_size                = 0
     max_size                    = 5
@@ -210,11 +205,11 @@ self_managed_node_groups = {
     }
     override = [
       {
-        instance_type     = "c5.4xlarge"
+        instance_type     = "c8a.4xlarge"
         weighted_capacity = "1"
       },
       {
-        instance_type     = "c5.2xlarge"
+        instance_type     = "c8a.2xlarge"
         weighted_capacity = "2"
       },
     ]
@@ -241,7 +236,7 @@ keda = {
 elasticache = {
   engine             = "redis"
   engine_version     = "6.x"
-  node_type          = "cache.r4.large"
+  node_type          = "cache.r7g.large"
   num_cache_clusters = 1
 }
 
@@ -255,17 +250,21 @@ mq = {
 
 mongodb = {
   node_selector = { service = "state-database" }
-  replicas      = 2
-  mongodb_resources = {
-    limits = {
-      "cpu"               = "30"
-      "memory"            = "60Gi"
-      "ephemeral-storage" = "20Gi"
-    }
-    requests = {
-      "cpu"               = "14"
-      "memory"            = "29Gi"
-      "ephemeral-storage" = "4Gi"
+  cluster = {
+    replicas = 2
+  }
+  resources = {
+    shards = {
+      limits = {
+        "cpu"               = "30"
+        "memory"            = "60Gi"
+        "ephemeral-storage" = "20Gi"
+      }
+      requests = {
+        "cpu"               = "14"
+        "memory"            = "29Gi"
+        "ephemeral-storage" = "4Gi"
+      }
     }
   }
 }
