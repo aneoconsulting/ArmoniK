@@ -28,6 +28,9 @@ on:
         required: false
         default: false
 
+env:
+  REGION: eu-west-1
+
 jobs:
   define-matrix:
     name: Define matrix
@@ -98,7 +101,7 @@ jobs:
           aws: true
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: eu-west-3
+          AWS_REGION: ${{ env.REGION }}
 
       - name: Get Core version
         run: |
