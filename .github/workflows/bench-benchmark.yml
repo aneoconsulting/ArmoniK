@@ -90,7 +90,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
           terraform: true
           k3s: true
@@ -107,7 +107,7 @@ jobs:
 
       - id: deploy
         name: "Deploy ArmoniK"
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
           type: ${{ matrix.type }}
           prefix: ${{ env.prefix }}
@@ -126,7 +126,7 @@ jobs:
 
       - id: bench
         name: Run Bench
-        uses: aneoconsulting/ArmoniK.Action.Deploy/bench@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/bench@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
           type: ${{ matrix.type }}
           armonik-core-version: ${{ env.core-version }}
@@ -137,7 +137,7 @@ jobs:
 
       - id: get-bench-stats
         name: Get Bench Stats
-        uses: aneoconsulting/ArmoniK.Action.Deploy/get-throughput@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/get-throughput@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
           grpc-client-endpoint: ${{ steps.get-armonik-endpoint.outputs.grpc-endpoint }}
           session-name: ${{ steps.bench.outputs.session-name }}
@@ -162,7 +162,7 @@ jobs:
       - if: ${{ (github.event_name == 'workflow_dispatch' && inputs.destroy-on-session-end) || (github.event_name != 'workflow_dispatch' && always()) }}
         id: destroy
         name: Destroy deployment
-        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
           type: ${{ matrix.type }}
           prefix: ${{ env.prefix }}

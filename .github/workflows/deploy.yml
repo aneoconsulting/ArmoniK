@@ -53,14 +53,14 @@ jobs:
           ref: ${{ env.REFERENCE }}
           fetch-depth: 0
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
            docker: true
            terraform: true
            k3s: true
            aws: true
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
           type: localhost
           log-suffix: admin-gui
@@ -94,7 +94,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
       - name: Destroy deployment
-        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
            type: localhost
 
@@ -119,14 +119,14 @@ jobs:
             TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
             echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
            docker: true
            terraform: true
            k3s: true
            aws: true
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
            type: localhost
            log-suffix: core-stream
@@ -160,7 +160,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
       - name: Destroy deployment
-        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
            type: localhost
 
@@ -185,14 +185,14 @@ jobs:
             TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
             echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
             docker: true
             terraform: true
             k3s: true
             aws: true
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
            type: localhost
            log-suffix: htc-mock
@@ -285,7 +285,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
       - name: Destroy deployment
-        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
                type: localhost
 
@@ -312,14 +312,14 @@ jobs:
             TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
             echo "tag=$TAG" >> $GITHUB_OUTPUT
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
                docker: true
                terraform: true
                k3s: true
                aws: true
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
             type: localhost
             log-suffix: bench
@@ -392,7 +392,7 @@ jobs:
              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
              AWS_EC2_METADATA_DISABLED: true
       - name: Destroy deployment
-        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
              type: localhost
 
@@ -425,7 +425,7 @@ jobs:
         id: mcp
         run: echo "MCP_TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.infra_plugins')" >> $GITHUB_ENV
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
            docker: true
            terraform: true
@@ -435,7 +435,7 @@ jobs:
         run: |
           python tools/ci/python/generate_auth_conf.py
       - name: Deploy
-        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
           type: localhost
           log-suffix: mcp-auth
@@ -484,6 +484,6 @@ jobs:
         run: |
           cd ${{ github.workspace }}/tools/ci/docker-compose/mcp && docker compose down
       - name: Destroy deployment
-        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@6155df8f879a337f230ae5c40ef7a2955624bd46 # main
         with:
            type: localhost
