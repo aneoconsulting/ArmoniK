@@ -2,65 +2,43 @@
 
 set -e
 
+NAMESPACE=${NAMESPACE:-armonik}
+MONGO_SECRET=${MONGO_SECRET:-mongodb-connection-string}
+
 cat <<EOF
-**********************************************************************************************************************
-***** This script allows you to connect to mongo directly from inside the cluster => useful for AWS installation *****
-**********************************************************************************************************************
+Connect to MongoDB inside the cluster.
+Namespace:  $NAMESPACE
+Secret:     $MONGO_SECRET
 
-- You can execute requests ex :
-- Display all TaskData :
+Example queries:
   db.TaskData.find().limit(3).pretty()
-- Filter by  session / output :
-  db.TaskData.find({ SessionId: { \$eq : '7eafe4e3-0aa2-46ef-8ce6-bf9e365c5449' }, ExpectedOutputIds: { \$eq : 'a600dca5-b672-4177-9b4a-880dbcefee4e'}}).pretty()
+  db.TaskData.find({ SessionId: { \$eq: '<id>' } }).pretty()
+  db.TaskData.find({ SessionId: { \$eq: '<id>' }, ExpectedOutputIds: { \$eq: '<id>' } }).pretty()
 
-more informations here : https://www.mongodb.com/docs/manual/reference/method/db.collection.find/
-
+Docs: https://www.mongodb.com/docs/manual/reference/method/db.collection.find/
 EOF
 
-kubectl run -it --rm -n armonik mongoshclient --image=rtsp/mongosh --overrides='
+kubectl run -it --rm -n "$NAMESPACE" mongoshclient \
+  --image=mongo:8 \
+  --restart=Never \
+  --overrides='
 {
   "apiVersion": "v1",
   "kind": "Pod",
-  "metadata": {
-    "creationTimestamp": null,
-    "labels": {
-      "run": "mongoshclient"
-    },
-    "name": "mongoshclient",
-    "namespace": "armonik"
-  },
+  "metadata": { "name": "mongoshclient", "namespace": "'"$NAMESPACE"'" },
   "spec": {
-    "containers": [
-      {
-        "name": "mongosh",
-        "image": "rtsp/mongosh",
-        "stdin": true,
-        "tty": true,
-        "command": [
-          "bash",
-          "-c"
-        ],
-        "args": [
-          "mongosh $MONGODB_URI"
-        ],
-        "env": [
-          {
-            "name": "MONGODB_URI",
-            "valueFrom": {
-              "secretKeyRef": {
-                "name": "mongodb-connection-string",
-                "key": "uri"
-              }
-            }
-          }
-        ],
-        "resources": {}
-      }
-    ],
-    "volumes": [],
-    "dnsPolicy": "ClusterFirst",
-    "restartPolicy": "Always"
-  },
-  "status": {}
-}
-'
+    "containers": [{
+      "name": "mongosh",
+      "image": "mongo:8",
+      "stdin": true,
+      "tty": true,
+      "command": ["bash", "-c"],
+      "args": ["mongosh \"$MONGODB_URI\""],
+      "env": [{
+        "name": "MONGODB_URI",
+        "valueFrom": { "secretKeyRef": { "name": "'"$MONGO_SECRET"'", "key": "uri" } }
+      }]
+    }],
+    "restartPolicy": "Never"
+  }
+}'

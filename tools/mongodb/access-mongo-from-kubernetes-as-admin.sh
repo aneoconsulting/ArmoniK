@@ -2,77 +2,52 @@
 
 set -e
 
+NAMESPACE=${NAMESPACE:-armonik}
+MONGO_SECRET=${MONGO_SECRET:-mongodb-db-ps-secrets}
+MONGO_HOST=${MONGO_HOST:-mongodb-db-ps-rs0.${NAMESPACE}.svc.cluster.local}
+MONGO_PORT=${MONGO_PORT:-27017}
+MONGO_RS=${MONGO_RS:-rs0}
+
 cat <<EOF
-**********************************************************************************************************************
-***** This script allows you to connect to mongo directly from inside the cluster => useful for AWS installation *****
-**********************************************************************************************************************
+Connect to MongoDB as admin inside the cluster.
+Namespace:  $NAMESPACE
+Host:       $MONGO_HOST:$MONGO_PORT  (rs=$MONGO_RS)
+Secret:     $MONGO_SECRET
 
-1 - Firstly you have to connect to db :
-  use database
+1 - Connect to a database:
+      use <database>
+2 - Example queries:
+      db.TaskData.find().limit(3).pretty()
+      db.TaskData.find({ SessionId: { \$eq: '<id>' } }).pretty()
+      db.TaskData.find({ SessionId: { \$eq: '<id>' }, ExpectedOutputIds: { \$eq: '<id>' } }).pretty()
 
-2 - You can execute requests ex :
-- Display all TaskData :
-  db.TaskData.find().limit(3).pretty()
-- Filter by  session / output :
-  db.TaskData.find({ SessionId: { \$eq : '7eafe4e3-0aa2-46ef-8ce6-bf9e365c5449' }, ExpectedOutputIds: { \$eq : 'a600dca5-b672-4177-9b4a-880dbcefee4e'}}).pretty()
-
-more informations here : https://www.mongodb.com/docs/manual/reference/method/db.collection.find/
-
+Docs: https://www.mongodb.com/docs/manual/reference/method/db.collection.find/
 EOF
 
-kubectl run -it --rm -n armonik mongoshclient --image=rtsp/mongosh --overrides='
+kubectl run -it --rm -n "$NAMESPACE" mongoshclient \
+  --image=mongo:8 \
+  --restart=Never \
+  --overrides='
 {
   "apiVersion": "v1",
   "kind": "Pod",
-  "metadata": {
-    "creationTimestamp": null,
-    "labels": {
-      "run": "mongoshclient"
-    },
-    "name": "mongoshclient",
-    "namespace": "armonik"
-  },
+  "metadata": { "name": "mongoshclient", "namespace": "'"$NAMESPACE"'" },
   "spec": {
-    "containers": [
-      {
-        "name": "mongosh",
-        "image": "rtsp/mongosh",
-        "stdin": true,
-        "tty": true,
-        "command": [
-          "bash",
-          "-c"
-        ],
-        "args": [
-          "mongosh -u $MONGO_ADMIN_USERNAME -p $MONGO_ADMIN_PASSWORD 'mongodb://mongodb-db-ps-rs0.armonik.svc.cluster.local:27017/admin?replicaSet=rs0'"
-        ],
-        "env": [
-          {
-            "name": "MONGO_ADMIN_USERNAME",
-            "valueFrom": {
-              "secretKeyRef": {
-                "name": "mongodb-db-ps-secrets",
-                "key": "MONGODB_DATABASE_ADMIN_USER"
-              }
-            }
-          },
-          {
-            "name": "MONGO_ADMIN_PASSWORD",
-            "valueFrom": {
-              "secretKeyRef": {
-                "name": "mongodb-db-ps-secrets",
-                "key": "MONGODB_DATABASE_ADMIN_PASSWORD"
-              }
-            }
-          }
-        ],
-        "resources": {}
-      }
-    ],
-    "volumes": [],
-    "dnsPolicy": "ClusterFirst",
-    "restartPolicy": "Always"
-  },
-  "status": {}
-}
-'
+    "containers": [{
+      "name": "mongosh",
+      "image": "mongo:8",
+      "stdin": true,
+      "tty": true,
+      "command": ["bash", "-c"],
+      "args": ["mongosh \"mongodb://${MONGO_ADMIN_USERNAME}:${MONGO_ADMIN_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/admin?replicaSet=${MONGO_RS}\""],
+      "env": [
+        { "name": "MONGO_ADMIN_USERNAME", "valueFrom": { "secretKeyRef": { "name": "'"$MONGO_SECRET"'", "key": "MONGODB_DATABASE_ADMIN_USER" } } },
+        { "name": "MONGO_ADMIN_PASSWORD", "valueFrom": { "secretKeyRef": { "name": "'"$MONGO_SECRET"'", "key": "MONGODB_DATABASE_ADMIN_PASSWORD" } } },
+        { "name": "MONGO_HOST",           "value": "'"$MONGO_HOST"'" },
+        { "name": "MONGO_PORT",           "value": "'"$MONGO_PORT"'" },
+        { "name": "MONGO_RS",             "value": "'"$MONGO_RS"'" }
+      ]
+    }],
+    "restartPolicy": "Never"
+  }
+}'
