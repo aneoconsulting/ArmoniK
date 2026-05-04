@@ -41,45 +41,23 @@ kubectl run -it --rm -n armonik mongoshclient --image=rtsp/mongosh --overrides='
           "-c"
         ],
         "args": [
-          "mongosh --tlsCAFile /mongodb/chain.pem --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls -u $MONGO_USERNAME -p $MONGO_USER_PASSWORD mongodb+srv://mongodb-armonik-headless.armonik.svc.cluster.local/database"
+          "mongosh $MONGODB_URI"
         ],
         "env": [
           {
-            "name": "MONGO_USERNAME",
+            "name": "MONGODB_URI",
             "valueFrom": {
               "secretKeyRef": {
-                "name": "mongodb-user",
-                "key": "username"
+                "name": "mongodb-connection-string",
+                "key": "uri"
               }
             }
-          },
-          {
-            "name": "MONGO_USER_PASSWORD",
-            "valueFrom": {
-              "secretKeyRef": {
-                "name": "mongodb-user",
-                "key": "password"
-              }
-            }
-          }
-        ],
-        "volumeMounts": [
-          {
-            "name": "mongodb-secret-volume",
-            "mountPath": "/mongodb/"
           }
         ],
         "resources": {}
       }
     ],
-    "volumes": [
-      {
-        "name": "mongodb-secret-volume",
-        "secret": {
-          "secretName": "mongodb"
-        }
-      }
-    ],
+    "volumes": [],
     "dnsPolicy": "ClusterFirst",
     "restartPolicy": "Always"
   },

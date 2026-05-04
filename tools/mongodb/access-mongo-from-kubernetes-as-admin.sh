@@ -44,45 +44,32 @@ kubectl run -it --rm -n armonik mongoshclient --image=rtsp/mongosh --overrides='
           "-c"
         ],
         "args": [
-          "mongosh --tlsCAFile /mongodb/chain.pem --tlsAllowInvalidCertificates --tlsAllowInvalidHostnames --tls -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD mongodb+srv://mongodb-armonik-headless.armonik.svc.cluster.local/"
+          "mongosh -u $MONGO_ADMIN_USERNAME -p $MONGO_ADMIN_PASSWORD 'mongodb://mongodb-db-ps-rs0.armonik.svc.cluster.local:27017/admin?replicaSet=rs0'"
         ],
         "env": [
           {
-            "name": "MONGO_INITDB_ROOT_USERNAME",
+            "name": "MONGO_ADMIN_USERNAME",
             "valueFrom": {
               "secretKeyRef": {
-                "name": "mongodb-admin",
-                "key": "username"
+                "name": "mongodb-db-ps-secrets",
+                "key": "MONGODB_DATABASE_ADMIN_USER"
               }
             }
           },
           {
-            "name": "MONGO_INITDB_ROOT_PASSWORD",
+            "name": "MONGO_ADMIN_PASSWORD",
             "valueFrom": {
               "secretKeyRef": {
-                "name": "mongodb-admin",
-                "key": "password"
+                "name": "mongodb-db-ps-secrets",
+                "key": "MONGODB_DATABASE_ADMIN_PASSWORD"
               }
             }
-          }
-        ],
-        "volumeMounts": [
-          {
-            "name": "mongodb-secret-volume",
-            "mountPath": "/mongodb/"
           }
         ],
         "resources": {}
       }
     ],
-    "volumes": [
-      {
-        "name": "mongodb-secret-volume",
-        "secret": {
-          "secretName": "mongodb"
-        }
-      }
-    ],
+    "volumes": [],
     "dnsPolicy": "ClusterFirst",
     "restartPolicy": "Always"
   },
