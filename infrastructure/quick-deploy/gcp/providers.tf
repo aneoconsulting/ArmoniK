@@ -11,6 +11,13 @@ provider "kubernetes" {
   insecure               = false
 }
 
+provider "kubectl" {
+  host                   = "https://${module.gke.endpoint}"
+  cluster_ca_certificate = base64decode(module.gke.ca_certificate)
+  token                  = data.google_client_config.current.access_token
+  insecure               = false
+}
+
 # package manager for kubernetes
 provider "helm" {
   helm_driver = "configmap"

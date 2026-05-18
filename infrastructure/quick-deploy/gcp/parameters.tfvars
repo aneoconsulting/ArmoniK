@@ -644,6 +644,7 @@ ingress = {
   mtls                 = false
   generate_client_cert = false
   node_selector        = { service = "control-plane" }
+  service_type         = "ClusterIP"
 }
 
 configurations = {

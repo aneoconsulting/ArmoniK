@@ -9,10 +9,6 @@ module "gke" {
   kubeconfig_path      = var.gke.generate_kubeconfig ? abspath(var.gke.kubeconfig_file) : null
   service_account_name = local.gke_name
   database_encryption = [
-    {
-      state    = "ENCRYPTED"
-      key_name = local.kms_key_id
-    }
   ]
   regional                   = var.gke.regional
   zones                      = var.gke.zones
@@ -25,6 +21,7 @@ module "gke" {
   autopilot                  = var.gke.enable_gke_autopilot
   node_pools                 = var.gke.node_pools
   gce_pd_csi_driver          = true
+  gateway_api_channel        = "CHANNEL_STANDARD"
 }
 
 resource "kubernetes_namespace" "armonik" {
