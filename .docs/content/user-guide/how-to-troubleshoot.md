@@ -323,21 +323,34 @@ kubectl get configmap core-configmap -n armonik -o yaml | grep -i s3
 
 ### Google Cloud Storage (GCS)
 
-At the moment of writting this guidelines, there is still no built-in Terraform module for GCS — credentials must be injected manually via `configurations.core` in `parameters.tfvars`. GCS uses its S3-compatible endpoint (`storage.googleapis.com`), so the same S3-style env vars apply, but with important differences from AWS S3 or Minio.
+ArmoniK uses a **native GCS adapter** (`ArmoniK.Core.Adapters.Gcs`) backed by the `Google.Cloud.Storage.V1` client library. It does **not** use GCS's S3-compatible endpoint — HMAC keys and S3-style env vars do not apply here.
+
+Configuration lives under the `Gcs` section (double-underscore convention: `Gcs__BucketName`, etc.):
+
+| Option | Default | Description |
+|---|---|---|
+| `Gcs__ProjectId` | `""` | GCP project that owns the bucket |
+| `Gcs__BucketName` | `""` | Bucket to read from and write to (must pre-exist) |
+| `Gcs__CredentialsFilePath` | `""` | Path to a service account JSON key file. Empty = use Application Default Credentials (ADC) |
+| `Gcs__EmulatorEndpoint` | `""` | Base URI of a local GCS emulator (e.g. `fake-gcs-server`). When set, authentication is skipped. |
+| `Gcs__DegreeOfParallelism` | `0` | Parallel operations for deletes and metadata lookups |
+| `Gcs__MaxRetry` | `5` | Retry count on transient connection errors |
+| `Gcs__MsAfterRetry` | `500` | Delay in ms between retries |
 
 | Symptom | Cause |
 |---|---|
-| `InitObjectStorage` fails, Terraform times out after 2 minutes | GCS credentials missing from `configurations.core` — the init job has no valid config |
-| `403 InvalidAccessKeyId` on every retry | GCS's S3-compatible endpoint only accepts **HMAC key pairs** (access key + secret). Providing a service account JSON key or bearer token instead always produces this error. Generate HMAC keys in the GCP console under _Cloud Storage → Settings → Interoperability_. |
-| `400 InvalidRequest` on every retry | `must_force_path_style` is set to `true`. GCS uses virtual-hosted-style addressing (`bucket.storage.googleapis.com`), not path-style. Set `must_force_path_style = false`. |
-| Bucket not found / `InitObjectStorage` fails | GCS buckets are external and must be pre-created. The init job cannot create a bucket without project-level `storage.buckets.create`, which is typically denied on managed GCP projects. |
-| `403` on every bucket operation | The HMAC key's service account is missing `storage.objects.create`, `storage.objects.get`, or `storage.objects.delete` on the target bucket. |
-| Pod hangs → Terraform 2-minute timeout | Egress to `storage.googleapis.com` is blocked by a `NetworkPolicy` or node firewall rule. |
+| `InitObjectStorage` fails immediately | `Gcs__BucketName` is empty or the bucket does not exist — `Init()` calls `GetBucketAsync` and fails with 404 |
+| `403 Forbidden` during init or at runtime | The service account is missing IAM permissions on the bucket: requires `storage.objects.create`, `storage.objects.get`, `storage.objects.delete` (and `storage.buckets.get` for the health check) |
+| Auth error at startup, pod crashes before init | `Gcs__CredentialsFilePath` points to a non-existent or malformed JSON file — the client fails to build before any GCS call is made |
+| Silent ADC fallback → `403` | `Gcs__CredentialsFilePath` is empty and no ADC is available (no `GOOGLE_APPLICATION_CREDENTIALS` env var, no Workload Identity on the pod's service account, no metadata server reachable) |
+| Pod hangs → Terraform 2-minute timeout | Egress to `storage.googleapis.com:443` is blocked by a `NetworkPolicy` or node firewall rule |
 
 ```bash
-kubectl get configmap core-configmap -n armonik -o yaml | grep -i gcs
-# Verify HMAC key format (should show access key, not a JSON blob)
-kubectl get secret <gcs-credentials-secret> -n armonik -o yaml
+kubectl get configmap core-configmap -n armonik -o yaml | grep Gcs__
+# Check the credentials file is mounted at the path matching Gcs__CredentialsFilePath
+kubectl describe pod -n armonik <control-plane-pod> | grep -A5 "Mounts:"
+# For Workload Identity: verify the SA annotation
+kubectl describe serviceaccount -n armonik <pod-sa> | grep iam.gke.io
 ```
 
 ### Local / HostPath storage
