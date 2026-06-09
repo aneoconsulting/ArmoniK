@@ -6,7 +6,9 @@
     ":semanticCommitTypeAll(chore)",
     "helpers:pinGitHubActionDigests"
   ],
+  "semanticCommits": "enabled",
   "rangeStrategy": "bump",
+  "prBodyTemplate": "# Motivation\n\nAutomated dependency update by Renovate bot.\n\n# Description\n\n{{{table}}}{{{notes}}}\n\n# Testing\n\nThis is an automated dependency update. No functional changes are expected.\n\n# Impact\n\n{{{changelogs}}}\n\n# Additional Information\n\n{{{warnings}}}{{{errors}}}{{{controls}}}This PR was generated automatically by [Renovate](https://docs.renovatebot.com/).\n\n# Checklist\n\n- [x] My code adheres to the coding and style guidelines of the project.\n- [x] I have performed a self-review of my code.\n- [ ] I have commented my code, particularly in hard-to-understand areas.\n- [ ] I have made corresponding changes to the documentation.\n- [x] I have thoroughly tested my modifications and added tests when necessary.\n- [x] Tests pass locally and in the CI.\n- [x] I have assessed the performance impact of my modifications.",
   "packageRules": [
     {
       "groupName": "npm packages",
@@ -35,6 +37,6 @@
       "matchDatasources": [
         "github-tags"
       ]
-    },
+    }
   ]
 }
