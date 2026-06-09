@@ -69,6 +69,7 @@ ArmoniK documentation
    :glob:
 
    content/contrib-and-dev/contrib.md
+   content/contrib-and-dev/local-dev-setup.md
 
 .. toctree::
    :maxdepth: 1
