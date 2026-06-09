@@ -70,6 +70,7 @@ ArmoniK documentation
 
    content/contrib-and-dev/contrib.md
    content/contrib-and-dev/local-dev-setup.md
+   content/contrib-and-dev/testing-and-ci.md
 
 .. toctree::
    :maxdepth: 1
