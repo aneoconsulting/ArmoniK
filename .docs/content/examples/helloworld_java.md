@@ -22,6 +22,7 @@
     +  hpa = {...
     +  }
     +}
+    ```
 
 
 2. Redeploy ArmoniK to include the new partition.

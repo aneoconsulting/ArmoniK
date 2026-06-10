@@ -18,7 +18,7 @@ docker build -f"./csharp/native/HelloWorld/Worker/Dockerfile" -t hello "./csharp
 
 ### Client
 
-   You have differents and equivalent ways to run the client:
+   You have different and equivalent ways to run the client:
 
 - Run the client from ArmoniK.Samples root repository using the **.Net** command line:
 

@@ -174,14 +174,11 @@ docker build -t localhost:5000/armonik_control:dev -f Control/src/Dockerfile .
 docker push localhost:5000/armonik_control:dev
 ```
 
-**2. Override the image in `parameters.tfvars`** using the `configurations` or the partition's `worker.image` / `worker.tag` fields. For Core components, edit the relevant section in `parameters.tfvars`:
+**2. Override the image in `parameters.tfvars`** using the `configurations` or the partition's `worker.image` / `worker.tag` fields. For Core components, edit the relevant section in `parameters.tfvars` to:
 
-```hcl
-# Example: point control-plane to your local image
-# Add to your parameters.tfvars or a custom .tfvars file
-```
-
-Or pass it directly as a Terraform variable override. See [`parameters.tfvars`](../user-guide/6.deployment-configuration.md) for the full field reference.
+- Point control-plane to your local image
+- Add to your parameters.tfvars or a custom .tfvars file
+- Or, pass it directly as a Terraform variable override. See [`parameters.tfvars`](../user-guide/6.deployment-configuration.md) for the full field reference.
 
 **3. Re-apply**:
 

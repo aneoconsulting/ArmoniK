@@ -21,10 +21,11 @@
     +  hpa = {...
     +  }
     +}
+    ```
 
 2. Redeploy ArmoniK to include the new partition.
 
-### Building and runnig
+### Building and running
 
 You have two options to build the example, either you install the ArmoniK API and SDK packages for your distribution and then compile
 the client executable and the worker shared library directly in your system. Or, you might use docker containers. 
