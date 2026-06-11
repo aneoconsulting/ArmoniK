@@ -63,4 +63,4 @@ Tasks cannot be submitted to a session that is closed, cancelled, or paused. Che
 The Control Plane pod is not ready. Check `kubectl get pods -n armonik` and the Control Plane logs. This is also returned transiently for a few seconds during a pod restart — retrying with backoff is safe.
 
 **`PERMISSION_DENIED` or `UNAUTHENTICATED`**
-Authentication is enabled on the cluster. Verify that the correct client certificate is configured and that the certificate's Common Name matches an entry in the authentication data file. See the [authentication guide](../user-guide/3.how-to-configure-authentication.md).
+Authentication is enabled on the cluster. Verify that the correct client certificate is configured and that the certificate's Common Name matches an entry in the authentication data file. See the [authentication guide](../user-guide/4.how-to-configure-authentication.md).

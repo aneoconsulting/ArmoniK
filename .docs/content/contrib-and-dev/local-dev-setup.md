@@ -6,72 +6,9 @@ For a production-grade or cloud deployment, see [Detailed Installation](../insta
 
 ---
 
-## Repository structure
+## Repositories
 
-ArmoniK is spread across multiple repositories. For local development you will typically work in one or two of them depending on what you are changing:
-
-| Repository | What lives there |
-|---|---|
-| [ArmoniK](https://github.com/aneoconsulting/ArmoniK) | Infrastructure deployment (this repo) — Terraform modules, deployment scripts, `parameters.tfvars` |
-| [ArmoniK.Core](https://github.com/aneoconsulting/ArmoniK.Core) | Control Plane, Polling Agent, Metrics Exporter, and storage adapters |
-| [ArmoniK.Api](https://github.com/aneoconsulting/ArmoniK.Api) | gRPC API definitions and generated clients (C#, C++, Python, Rust, Java, JS) |
-| [ArmoniK.Infra](https://github.com/aneoconsulting/ArmoniK.Infra) | Reusable Terraform modules for all supported backends and cloud providers |
-| [ArmoniK.Extensions.Csharp](https://github.com/aneoconsulting/ArmoniK.Extensions.Csharp.New) | High-level C# SDK |
-| [ArmoniK.Extensions.Cpp](https://github.com/aneoconsulting/ArmoniK.Extensions.Cpp) | C++ SDK |
-| [ArmoniK.Extensions.Java](https://github.com/aneoconsulting/ArmoniK.Extensions.Java) | Java SDK |
-| [PymoniK](https://github.com/aneoconsulting/PymoniK) | Python client library |
-| [ArmoniK.Samples](https://github.com/aneoconsulting/ArmoniK.Samples) | Example applications in all supported languages |
-| [ArmoniK.Admin.GUI](https://github.com/aneoconsulting/ArmoniK.Admin.GUI) | Web admin dashboard |
-| [ArmoniK.CLI](https://github.com/aneoconsulting/ArmoniK.CLI) | Command-line tool for managing a deployment |
-
-## Dependencies between repositories
-
-```mermaid
-graph TD
-    API["ArmoniK.Api<br/>gRPC definitions & generated clients"]
-
-    Core["ArmoniK.Core<br/>Control Plane · Polling Agent<br/>Metrics Exporter · Storage adapters"]
-    GUI["ArmoniK.Admin.GUI<br/>Web dashboard"]
-    CLI["ArmoniK.CLI<br/>Command-line tool"]
-
-    ExtCS["ArmoniK.Extensions.Csharp<br/>C# SDK"]
-    ExtCpp["ArmoniK.Extensions.Cpp<br/>C++ SDK"]
-    ExtJava["ArmoniK.Extensions.Java<br/>Java SDK"]
-    PyMoniK["PymoniK<br/>Python SDK"]
-
-    Samples["ArmoniK.Samples<br/>Example applications"]
-
-    Infra["ArmoniK.Infra<br/>Terraform modules"]
-    Deploy["ArmoniK<br/>Deployment & configuration"]
-
-    API --> Core
-    API --> GUI
-    API --> CLI
-    API --> ExtCS
-    API --> ExtCpp
-    API --> ExtJava
-    API --> PyMoniK
-
-    ExtCS  --> Samples
-    ExtCpp --> Samples
-    ExtJava --> Samples
-    PyMoniK --> Samples
-
-    Infra  --> Deploy
-    Core   --> Deploy
-    GUI    --> Deploy
-    Deploy -->|to run| Samples
-
-    style API     fill:#ff5a00,color:#ffffff,stroke:#ff5a00
-    style Deploy  fill:#2d6a9f,color:#ffffff,stroke:#2d6a9f
-    style Infra   fill:#2d6a9f,color:#ffffff,stroke:#2d6a9f
-```
-
-```{note}
-ArmoniK.Samples can be built using only the SDK repositories. A running ArmoniK deployment is only required to **execute** the samples, not to compile or package them.
-```
-
-For most development work you need at minimum the main **ArmoniK** repo (for deploying the stack) and the repo containing the component you are working on.
+ArmoniK is spread across multiple repositories. For local development you will typically work in one or two of them depending on what you are changing — see [Repositories](../user-guide/0.repositories.md) for an overview of what each one contains and how they depend on each other.
 
 ---
 
@@ -178,7 +115,7 @@ docker push localhost:5000/armonik_control:dev
 
 - Point control-plane to your local image
 - Add to your parameters.tfvars or a custom .tfvars file
-- Or, pass it directly as a Terraform variable override. See [`parameters.tfvars`](../user-guide/6.deployment-configuration.md) for the full field reference.
+- Or, pass it directly as a Terraform variable override. See [`parameters.tfvars`](../user-guide/7.deployment-configuration.md) for the full field reference.
 
 **3. Re-apply**:
 
