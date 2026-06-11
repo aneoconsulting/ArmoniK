@@ -78,7 +78,7 @@ Runs four scenarios to cover distinct performance dimensions:
 | Large payloads | 10 | 10 ms | 10 MB | 1 KB |
 | Large results | 10 | 10 ms | 1 KB | 10 MB |
 
-#### MCP Auth
+#### ArmoniK Load Balancer Authentication
 
 The **ArmoniK Load Balancer** (also referred to as the Meta Control Plane, or MCP) is a component that exposes a single gRPC endpoint in front of multiple ArmoniK clusters. When a session is created, the Load Balancer selects a cluster using round-robin scheduling and routes all tasks of that session to the selected cluster. Clients need no modification — they connect to the Load Balancer exactly as they would connect to a single Control Plane.
 
@@ -174,7 +174,7 @@ Examples:
 
 ## Skipping CI
 
-Add `[skip ci]` anywhere in the commit message to skip the integration tests for that push. Use this for documentation-only changes or work-in-progress commits where running a full deployment is unnecessary.
+Add `[skip ci]` anywhere in the commit message to skip the **Deploy & Test (localhost)** workflow for that push. Use this for documentation-only changes or work-in-progress commits where running a full deployment is unnecessary. It does not affect the formatting, PR title, or benchmark workflows.
 
 ```bash
 git commit -m "docs: update README [skip ci]"

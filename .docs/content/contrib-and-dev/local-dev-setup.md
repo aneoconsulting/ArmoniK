@@ -227,9 +227,9 @@ configurations = {
 }
 ```
 
-### Disabling payload deletion
+### Keeping payloads for inspection
 
-Useful for inspecting task inputs after completion:
+`Submitter__DeletePayload = false` is the default, so task input payloads are kept in object storage after completion for inspection. If you have set it to `true` (e.g. to free up storage), revert it during development:
 
 ```hcl
 configurations = {

@@ -11,7 +11,7 @@ Environment variables for each component are documented in the respective projec
 
 ## CLI reference
 
-The ArmoniK CLI (`armonik`) is the primary tool for interacting with a running ArmoniK cluster from the terminal. Full documentation is available at [armonikadmincli.readthedocs.io](https://armonikadmincli.readthedocs.io/en/latest/).
+The ArmoniK CLI (`armonik`) is the primary tool for interacting with a running ArmoniK cluster from the terminal. Source code is available on [ArmoniK.CLI](https://github.com/aneoconsulting/ArmoniK.CLI), and full documentation is available at [armonikadmincli.readthedocs.io](https://armonikadmincli.readthedocs.io/en/latest/).
 
 ### Installation
 
