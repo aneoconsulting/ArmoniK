@@ -163,13 +163,6 @@ This check runs on every PR and on every push to `main`.
 
 PR titles must follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. The CI will post an error comment if the title does not match.
 
-Accepted prefixes: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
-
-Examples:
-- `feat: add GCS object storage adapter`
-- `fix: correct HPA cooldown period default`
-- `docs: add troubleshooting section for PubSub`
-
 ---
 
 ## Skipping CI
