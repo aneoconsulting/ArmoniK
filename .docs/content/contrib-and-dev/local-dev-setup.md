@@ -164,20 +164,6 @@ configurations = {
 }
 ```
 
-### Keeping payloads for inspection
-
-`Submitter__DeletePayload = false` is the default, so task input payloads are kept in object storage after completion for inspection. If you have set it to `true` (e.g. to free up storage), revert it during development:
-
-```hcl
-configurations = {
-  core = {
-    env = {
-      Submitter__DeletePayload = false
-    }
-  }
-}
-```
-
 ---
 
 ## Working with the ArmoniK CLI
