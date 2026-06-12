@@ -50,7 +50,7 @@
 
 ### Step 4: Deploy ArmoniK
 
-- Deploy Armonik using 
+- Deploy ArmoniK using 
 ```
 make deploy
 ```
