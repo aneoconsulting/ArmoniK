@@ -420,6 +420,7 @@ variable "control_plane" {
     # KEDA scaler
     hpa               = optional(any)
     default_partition = string
+    readiness_probe   = optional(bool, true)
   })
 }
 
