@@ -27,7 +27,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@4e5c5c1da3ba2c80f184083a9d7e799a14176021 # main
         with:
           aws: true
           terraform: true
@@ -36,14 +36,14 @@ jobs:
           AWS_REGION: ${{ inputs.region }}
       - id: destroy
         name: Destroy deployment
-        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@4e5c5c1da3ba2c80f184083a9d7e799a14176021 # main
         with:
           type: aws
           prefix: ${{ inputs.prefix }}
       - if: ${{ inputs.bootstrap }}
         id: bootstrap-destroy
         name: Destroy Bootstrap
-        uses: aneoconsulting/ArmoniK.Action.Deploy/bootstrap-destroy@main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/bootstrap-destroy@4e5c5c1da3ba2c80f184083a9d7e799a14176021 # main
         with:
           type: aws
           prefix: ${{ inputs.prefix }}
