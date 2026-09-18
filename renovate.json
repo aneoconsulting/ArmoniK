@@ -37,6 +37,14 @@
       "matchDatasources": [
         "github-tags"
       ]
+    },
+    {
+      "groupName": "documentation dependencies",
+      "groupSlug": "docs",
+      "matchFileNames": [
+        ".docs/requirements.txt"
+      ],
+      "separateMajorMinor": false
     }
   ]
 }
