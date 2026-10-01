@@ -1,0 +1,4 @@
+# -- ClusterSecretStore name, referenced by the ArmoniK conf layers (storeName)
+name: aws-secrets-manager
+# -- AWS region of the secrets
+region: ""

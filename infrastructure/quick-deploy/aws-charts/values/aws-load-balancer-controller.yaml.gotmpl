@@ -1,0 +1,11 @@
+clusterName: {{ .Values.eks.name | quote }}
+# Stated since the nodes' IMDS is out of the pods' reach (hop limit 1)
+region: {{ .Values.eks.region | quote }}
+vpcId: {{ .Values.eks.vpc_id | quote }}
+
+serviceAccount:
+  create: true
+  name: aws-load-balancer-controller
+
+image:
+  repository: {{ printf "%s/eks/aws-load-balancer-controller" .Values.registry.upstreams.ecrPublic | quote }}

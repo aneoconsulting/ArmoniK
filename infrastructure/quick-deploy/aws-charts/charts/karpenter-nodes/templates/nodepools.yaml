@@ -1,0 +1,40 @@
+{{- range $name, $pool := .Values.nodePools }}
+---
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: {{ $name | quote }}
+spec:
+  template:
+    metadata:
+      labels:
+        {{ $.Values.poolLabel }}: {{ $name | quote }}
+    spec:
+      nodeClassRef:
+        group: karpenter.k8s.aws
+        kind: EC2NodeClass
+        name: default
+      {{- if $pool.taint }}
+      taints:
+        - key: {{ $.Values.poolLabel }}
+          value: {{ $name | quote }}
+          effect: NoSchedule
+      {{- end }}
+      requirements:
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values: {{ $pool.capacityTypes | toJson }}
+        - key: kubernetes.io/arch
+          operator: In
+          values: ["amd64"]
+        - key: karpenter.k8s.aws/instance-category
+          operator: In
+          values: {{ $pool.instanceCategories | toJson }}
+        - key: karpenter.k8s.aws/instance-generation
+          operator: Gt
+          values: [{{ $pool.minGeneration | quote }}]
+  limits:
+    {{- toYaml $pool.limits | nindent 4 }}
+  disruption:
+    {{- toYaml $pool.disruption | nindent 4 }}
+{{- end }}

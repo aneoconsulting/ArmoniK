@@ -1,0 +1,51 @@
+# -- Node IAM role (terraform output karpenter.node_role)
+nodeRole: ""
+# -- Value of the karpenter.sh/discovery tag on the subnets and the node security group
+discoveryTag: ""
+
+nodeClass:
+  amiAlias: al2023@latest
+  volumeSize: 50Gi
+  # Many pods per node, each watched by fluent-bit: the AL2023 default of 128 inotify instances runs out
+  userData: |
+    MIME-Version: 1.0
+    Content-Type: multipart/mixed; boundary="//"
+
+    --//
+    Content-Type: text/x-shellscript; charset="us-ascii"
+
+    #!/bin/bash
+    echo fs.inotify.max_user_instances=8192 > /etc/sysctl.d/99-armonik.conf
+    sysctl --system
+    --//--
+
+# Label and taint key selecting a node pool
+poolLabel: armonik.aneo.fr/node-pool
+
+nodePools:
+  # Control plane, ingress, operators, monitoring: on-demand, consolidated when underused
+  core:
+    capacityTypes: ["on-demand"]
+    instanceCategories: ["c", "m", "r"]
+    minGeneration: 5
+    taint: false
+    limits:
+      cpu: 64
+    disruption:
+      consolidationPolicy: WhenEmptyOrUnderutilized
+      consolidateAfter: 5m
+  # Compute plane: spot first, tainted, and never consolidated while a worker runs on the node
+  workers:
+    capacityTypes: ["spot", "on-demand"]
+    instanceCategories: ["c", "m"]
+    minGeneration: 5
+    taint: true
+    limits:
+      cpu: 1000
+    disruption:
+      consolidationPolicy: WhenEmpty
+      consolidateAfter: 1m
+
+storageClass:
+  create: true
+  name: gp3

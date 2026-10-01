@@ -1,0 +1,5 @@
+# Copy to backend.tfbackend (git-ignored) and set an existing S3 bucket for the Terraform state.
+# The Makefile adds key = <PREFIX>/armonik-terraform.tfstate, so one bucket can hold many deployments.
+# Credentials come from the AWS CLI profile (PROFILE).
+bucket = "my-terraform-states"
+region = "eu-west-3"
