@@ -45,6 +45,18 @@ nodePools:
     disruption:
       consolidationPolicy: WhenEmpty
       consolidateAfter: 1m
+  # In-cluster object storage (Valkey): on-demand memory-optimized, tainted, and never consolidated
+  # while the pod runs (it holds every object in memory, without persistence)
+  storage:
+    capacityTypes: ["on-demand"]
+    instanceCategories: ["r"]
+    minGeneration: 5
+    taint: true
+    limits:
+      cpu: 16
+    disruption:
+      consolidationPolicy: WhenEmpty
+      consolidateAfter: 5m
 
 storageClass:
   create: true

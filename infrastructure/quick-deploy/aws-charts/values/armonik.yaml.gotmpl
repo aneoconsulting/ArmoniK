@@ -50,11 +50,13 @@ conf:
       PostgreSQL__Port: {{ $pg.port | quote }}
       PostgreSQL__DatabaseName: {{ $pg.database | quote }}
       PostgreSQL__Ssl: "true"
-      Components__ObjectStorageAdaptorSettings__ClassName: ArmoniK.Core.Adapters.S3.ObjectBuilder
-      Components__ObjectStorageAdaptorSettings__AdapterAbsolutePath: /adapters/object/s3/ArmoniK.Core.Adapters.S3.dll
-      S3__EndpointUrl: {{ .Values.object_storage.endpoint | quote }}
-      S3__BucketName: {{ .Values.object_storage.bucket | quote }}
-      S3__MustForcePathStyle: "false"
+      # S3 object storage, disabled while benchmarking Valkey (dependencies.redis below): conf.core is
+      # merged last, so these would override the Redis object-storage env of the chart
+      # Components__ObjectStorageAdaptorSettings__ClassName: ArmoniK.Core.Adapters.S3.ObjectBuilder
+      # Components__ObjectStorageAdaptorSettings__AdapterAbsolutePath: /adapters/object/s3/ArmoniK.Core.Adapters.S3.dll
+      # S3__EndpointUrl: {{ .Values.object_storage.endpoint | quote }}
+      # S3__BucketName: {{ .Values.object_storage.bucket | quote }}
+      # S3__MustForcePathStyle: "false"
       Components__QueueAdaptorSettings__ClassName: ArmoniK.Core.Adapters.SQS.QueueBuilder
       Components__QueueAdaptorSettings__AdapterAbsolutePath: /adapters/queue/sqs/ArmoniK.Core.Adapters.SQS.dll
       SQS__ServiceURL: {{ .Values.queue.endpoint | quote }}
@@ -161,8 +163,35 @@ dependencies:
     enabled: false
   postgresql:
     enabled: false
+  # Valkey as object storage (the chart wires Core to it); back to S3: enabled false + uncomment the S3 env above
   redis:
-    enabled: false
+    enabled: true
+    image:
+      registry: {{ $r.ecrPublic | quote }}
+    metrics:
+      exporter:
+        image:
+          registry: {{ $r.ghcr | quote }}
+    # Dedicated storage pool: on-demand memory-optimized node, never consolidated while Valkey runs
+    nodeSelector:
+      armonik.aneo.fr/node-pool: storage
+    tolerations:
+      - key: armonik.aneo.fr/node-pool
+        operator: Equal
+        value: storage
+        effect: NoSchedule
+    # requests == limits: Guaranteed QoS, and sizes the node (r-class, 16 GB)
+    resources:
+      requests:
+        cpu: "2"
+        memory: 8Gi
+      limits:
+        cpu: "2"
+        memory: 8Gi
+    valkeyConfig: |
+      save ""
+      appendonly no
+      maxmemory 6gb
   activemq:
     enabled: false
   rabbitmq:
