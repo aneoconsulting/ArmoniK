@@ -3,6 +3,11 @@ clusterName: {{ .Values.eks.name | quote }}
 region: {{ .Values.eks.region | quote }}
 vpcId: {{ .Values.eks.vpc_id | quote }}
 
+# Reuse the webhook TLS secret on upgrade: the chart otherwise generates a new CA on every render, so
+# helmfile upgrades this release on every apply, and the armonik release that follows hits the webhook
+# while the controller still serves the previous certificate (x509: certificate signed by unknown authority)
+keepTLSSecret: true
+
 serviceAccount:
   create: true
   name: aws-load-balancer-controller
