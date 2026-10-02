@@ -26,7 +26,7 @@ DOCKER_HUB=$(jq -r .registry.upstreams.dockerHub generated/armonik-output.json)
 ECR_PUBLIC=$(jq -r .registry.upstreams.ecrPublic generated/armonik-output.json)
 OPERATORS_NS=$(jq -r .namespaces.operators generated/armonik-output.json)
 ARMONIK_NS=$(jq -r .namespaces.armonik generated/armonik-output.json)
-ARMONIK_VERSION=0.16.0-featpostgresmig.296.sha.67d6b6e4   # as pinned in helmfile.yaml.gotmpl
+ARMONIK_VERSION=0.16.0-featexternalsto.301.sha.bf381bd3   # as pinned in helmfile.yaml.gotmpl
 
 aws ecr get-login-password | helm registry login --username AWS --password-stdin "$REGISTRY"
 helm repo add eks https://aws.github.io/eks-charts

@@ -56,16 +56,14 @@ output "postgresql" {
 output "object_storage" {
   description = "S3 bucket of the object storage"
   value = {
-    bucket   = module.object_storage.s3_bucket_id
-    endpoint = "https://s3.${var.region}.amazonaws.com"
+    bucket = module.object_storage.s3_bucket_id
   }
 }
 
 output "queue" {
   description = "SQS settings"
   value = {
-    endpoint = "https://sqs.${var.region}.amazonaws.com"
-    prefix   = local.sqs_prefix
+    prefix = local.sqs_prefix
   }
 }
 

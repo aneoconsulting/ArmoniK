@@ -18,7 +18,7 @@ Deploys ArmoniK on AWS in two layers:
 | Node pools | `core` (on-demand; control plane, ingress, operators, monitoring) and `workers` (spot first, tainted; compute plane only) |
 | Table storage | RDS PostgreSQL with logical replication (Core's task and result watchers stream the WAL) |
 | Object storage | S3, SSE-KMS with a bucket key |
-| Queue | SQS, the queues being created by Core under `SQS__Prefix` |
+| Queue | SQS, the queues being created by Core under the `dependencies.sqs.prefix` of the chart |
 | Credentials | EKS Pod Identity for the AWS APIs; the RDS master password stays in Secrets Manager and reaches the pods through the External Secrets Operator |
 | Images and charts | Everything is pulled through the ECR pull-through cache (Docker Hub, GHCR, Quay, registry.k8s.io, ECR Public) |
 | Ingress | The ArmoniK nginx ingress behind an internet-facing NLB |
@@ -38,7 +38,8 @@ export GITHUB_USERNAME=... GITHUB_TOKEN=...
 ```
 
 They are written to Secrets Manager as Terraform write-only values, so they never reach the state.
-To change them, set new values and bump `registry_credentials_version`.
+Only the first deploy needs them exported: afterwards the Makefile reads them back from Secrets
+Manager. To change them, export new values and bump `registry_credentials_version`.
 
 ## Deploy
 
@@ -51,18 +52,38 @@ make deploy             # terraform apply, then helmfile apply
 export KUBECONFIG=$PWD/generated/kubeconfig AKCONFIG=$PWD/generated/armonik-cli.yaml
 ```
 
-`PREFIX` (default `armonik-<random>`, kept in `generated/.prefix`), `REGION` (default `eu-west-3`),
-`PROFILE`, `NAMESPACE` and `BACKEND_CONFIG` (default `backend.tfbackend`) are Makefile variables. The infrastructure parameters live in
-`parameters.tfvars`; see `terraform/variables.tf` for all of them.
-
-Useful targets:
+The infrastructure parameters live in `parameters.tfvars`; see `terraform/variables.tf` for all of
+them. `make help` lists the targets and variables below.
 
 | Target | Does |
 |---|---|
-| `make plan` | Terraform plan |
-| `make charts` / `make charts-diff` | Apply / diff the helmfile only |
-| `make check-images` | Fails if any rendered image does not come from the pull-through cache |
-| `make destroy` | Removes the charts in order, then the infrastructure, then the cache repositories |
+| `make deploy` | `init`, `apply`, `output`, `kubeconfig`, `registry-login`, `charts`, `cliconfig` |
+| `make destroy` | `init`, `output`, `kubeconfig`, then `delete` |
+| `make init` | Terraform init against the state backend |
+| `make plan` / `make apply` | Terraform plan / apply |
+| `make output` | Writes the Terraform outputs, read by the helmfile, to `generated/armonik-output.json` |
+| `make kubeconfig` | Writes the cluster kubeconfig to `generated/kubeconfig` |
+| `make kubie` | Writes the cluster kubeconfig to `~/.kube/<cluster>.yaml`, for kubie |
+| `make registry-login` | Logs helm in to ECR. The token lasts 12 h: rerun it when a chart pull returns 403 |
+| `make charts` / `make charts-diff` | Applies / diffs the helmfile |
+| `make check-images` | Fails if a rendered image does not come from the pull-through cache |
+| `make cliconfig` | Writes the ArmoniK CLI configuration (NLB endpoint) to `generated/armonik-cli.yaml` |
+| `make charts-destroy` | Removes the charts in reverse order, waiting for the NLB and the Karpenter nodes |
+| `make delete` | `charts-destroy`, `terraform destroy`, then `clean-ecr` |
+| `make clean-ecr` | Deletes the repositories created by the pull-through cache, which are outside the Terraform state |
+| `make clean` | Removes the local Terraform data (providers, modules, lock file) |
+| `make env` | Prints the environment make runs with |
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `PROFILE` | `AWS_PROFILE`, required | AWS CLI profile |
+| `REGION` | `eu-west-3` | AWS region |
+| `PREFIX` | `armonik-<random>`, kept in `generated/.prefix` | Name prefix of every resource, and of the state key |
+| `NAMESPACE` | `armonik` | Namespace of the ArmoniK release |
+| `BACKEND_CONFIG` | `backend.tfbackend` | Terraform backend configuration |
+| `PARAMETERS_FILE` | `parameters.tfvars` | Terraform variables |
+| `KUBIE_DIR` | `~/.kube` | Where `make kubie` writes |
+| `ARMONIK_CHART_VERSION`, `ARMONIK_CHARTS_DIR` | | See [ArmoniK charts version](#armonik-charts-version) |
 
 ## Running a test
 

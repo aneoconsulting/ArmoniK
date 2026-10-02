@@ -30,13 +30,24 @@ export TF_VAR_profile = $(PROFILE)
 export TF_VAR_namespace = $(NAMESPACE)
 export TF_VAR_prefix = $(PREFIX)
 
-# Upstream credentials of the ECR pull-through cache (Docker Hub and GitHub tokens), write-only in Terraform
-TF_CREDENTIALS = TF_VAR_registry_credentials="$$(jq -n \
-	--arg dhu "$${DOCKER_HUB_USERNAME:?DOCKER_HUB_USERNAME is required}" \
-	--arg dht "$${DOCKER_HUB_TOKEN:?DOCKER_HUB_TOKEN is required}" \
-	--arg ghu "$${GITHUB_USERNAME:?GITHUB_USERNAME is required}" \
-	--arg ght "$${GITHUB_TOKEN:?GITHUB_TOKEN is required}" \
-	'{docker_hub: {username: $$dhu, access_token: $$dht}, github: {username: $$ghu, access_token: $$ght}}')"
+# Upstream credentials of the ECR pull-through cache (Docker Hub and GitHub tokens), write-only in Terraform:
+# from the environment when set (first deploy, rotation), else read back from the secrets of a previous apply
+REGISTRY_SECRET = aws secretsmanager get-secret-value --secret-id ecr-pullthroughcache/$(PREFIX)-$(1) \
+	--query SecretString --output text | jq -e '{username, access_token: .accessToken}'
+REGISTRY_CREDENTIALS = \
+	if [ -n "$$DOCKER_HUB_USERNAME$$DOCKER_HUB_TOKEN$$GITHUB_USERNAME$$GITHUB_TOKEN" ]; then \
+		jq -n \
+			--arg dhu "$${DOCKER_HUB_USERNAME:?DOCKER_HUB_USERNAME is required}" \
+			--arg dht "$${DOCKER_HUB_TOKEN:?DOCKER_HUB_TOKEN is required}" \
+			--arg ghu "$${GITHUB_USERNAME:?GITHUB_USERNAME is required}" \
+			--arg ght "$${GITHUB_TOKEN:?GITHUB_TOKEN is required}" \
+			'{docker_hub: {username: $$dhu, access_token: $$dht}, github: {username: $$ghu, access_token: $$ght}}'; \
+	else \
+		dh="$$($(call REGISTRY_SECRET,docker-hub))" && gh="$$($(call REGISTRY_SECRET,github))" \
+			|| { echo "No registry credentials: export DOCKER_HUB_USERNAME, DOCKER_HUB_TOKEN, GITHUB_USERNAME and GITHUB_TOKEN" >&2; exit 1; }; \
+		jq -n --argjson dh "$$dh" --argjson gh "$$gh" '{docker_hub: $$dh, github: $$gh}'; \
+	fi
+TF_CREDENTIALS = creds="$$($(REGISTRY_CREDENTIALS))" && TF_VAR_registry_credentials="$$creds"
 
 TERRAFORM = terraform -chdir=$(TF_DIR)
 TF_VARS = -var-file=$(PARAMETERS_FILE)
@@ -64,7 +75,8 @@ help: ## Show this help
 	@echo
 	@echo "Environment, for plan, apply and delete:"
 	@echo "  DOCKER_HUB_USERNAME, DOCKER_HUB_TOKEN, GITHUB_USERNAME, GITHUB_TOKEN"
-	@echo "                   Upstream credentials of the ECR pull-through cache"
+	@echo "                   Upstream credentials of the ECR pull-through cache, for the first deploy or a"
+	@echo "                   rotation; read back from Secrets Manager otherwise"
 	@echo
 	@echo "Charts, for charts, charts-diff and check-images:"
 	@echo "  ARMONIK_CHART_VERSION  Published ArmoniK charts version (default: pinned in helmfile.yaml.gotmpl)"

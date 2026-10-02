@@ -33,46 +33,10 @@ global:
     monitoring:
       # kube-prometheus-stack of the operators release (fullnameOverride "prometheus")
       prometheusUrl: {{ printf "http://prometheus-prometheus.%s.svc:9090" $ops | quote }}
-    # Core from ArmoniK.Core#1302, which renames the PostgreSQL component identifiers below
-    # (PostgresSQL up to 0.41.0): the version and the identifiers move together
+    # Core from ArmoniK.Core#1302: the chart emits the PostgreSQL component spelling (PostgresSQL up to 0.41.0)
     versions:
       core: "0.42.0-refactorrenamepostgresqladapto.26.sha.4f4d363d"
       gui: "0.16.0"
-
-# Storage: RDS PostgreSQL, S3 and SQS, all outside the cluster
-conf:
-  core:
-    env:
-      AWS_REGION: {{ .Values.eks.region | quote }}
-      Components__TableStorage: ArmoniK.Adapters.PostgreSQL.TableStorage
-      Components__AuthenticationStorage: ArmoniK.Adapters.PostgreSQL.AuthenticationTable
-      PostgreSQL__Host: {{ $pg.host | quote }}
-      PostgreSQL__Port: {{ $pg.port | quote }}
-      PostgreSQL__DatabaseName: {{ $pg.database | quote }}
-      PostgreSQL__Ssl: "true"
-      # S3 object storage, disabled while benchmarking Valkey (dependencies.redis below): conf.core is
-      # merged last, so these would override the Redis object-storage env of the chart
-      # Components__ObjectStorageAdaptorSettings__ClassName: ArmoniK.Core.Adapters.S3.ObjectBuilder
-      # Components__ObjectStorageAdaptorSettings__AdapterAbsolutePath: /adapters/object/s3/ArmoniK.Core.Adapters.S3.dll
-      # S3__EndpointUrl: {{ .Values.object_storage.endpoint | quote }}
-      # S3__BucketName: {{ .Values.object_storage.bucket | quote }}
-      # S3__MustForcePathStyle: "false"
-      Components__QueueAdaptorSettings__ClassName: ArmoniK.Core.Adapters.SQS.QueueBuilder
-      Components__QueueAdaptorSettings__AdapterAbsolutePath: /adapters/queue/sqs/ArmoniK.Core.Adapters.SQS.dll
-      SQS__ServiceURL: {{ .Values.queue.endpoint | quote }}
-      SQS__Prefix: {{ .Values.queue.prefix | quote }}
-    # RDS master user, from the Secrets Manager secret RDS manages
-    envFromSecret:
-      PostgreSQL__User:
-        storeName: aws-secrets-manager
-        storeKind: ClusterSecretStore
-        secret: {{ $pg.secret_arn | quote }}
-        field: username
-      PostgreSQL__Password:
-        storeName: aws-secrets-manager
-        storeKind: ClusterSecretStore
-        secret: {{ $pg.secret_arn | quote }}
-        field: password
 
 control-plane:
   serviceAccount:
@@ -161,9 +125,26 @@ dependencies:
     enabled: false
   mongodb-exporter:
     enabled: false
+  # RDS, master user from the Secrets Manager secret RDS manages
   postgresql:
+    enabled: true
+    connection:
+      host: {{ $pg.host | quote }}
+      port: {{ $pg.port }}
+      database: {{ $pg.database | quote }}
+      credentials:
+        secret: {{ $pg.secret_arn | quote }}
+        storeName: aws-secrets-manager
+        storeKind: ClusterSecretStore
+  sqs:
+    enabled: true
+    region: {{ .Values.eks.region | quote }}
+    prefix: {{ .Values.queue.prefix | quote }}
+  s3:
     enabled: false
-  # Valkey as object storage (the chart wires Core to it); back to S3: enabled false + uncomment the S3 env above
+    region: {{ .Values.eks.region | quote }}
+    bucketName: {{ .Values.object_storage.bucket | quote }}
+  # Valkey as object storage; back to S3: redis.enabled false + s3.enabled true
   redis:
     enabled: true
     image:

@@ -9,7 +9,7 @@ environments:
           # ARMONIK_CHARTS_DIR points to a local ArmoniK.Infra/charts checkout (dependencies vendored
           # with its update-charts.sh), instead of the published charts
           armonikDir: {{ env "ARMONIK_CHARTS_DIR" | default "" | quote }}
-          armonik: {{ env "ARMONIK_CHART_VERSION" | default "0.16.0-featpostgresmig.296.sha.67d6b6e4" | quote }}
+          armonik: {{ env "ARMONIK_CHART_VERSION" | default "0.16.0-featexternalsto.301.sha.bf381bd3" | quote }}
           karpenter: "1.14.1"
           awsLoadBalancerController: "3.5.0"
 ---
