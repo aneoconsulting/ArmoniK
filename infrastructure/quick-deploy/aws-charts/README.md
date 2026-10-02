@@ -139,10 +139,10 @@ A local checkout needs its dependencies vendored first (`charts/update-charts.sh
 
 ## Sizing the compute plane
 
-The compute plane chart ships no resources by default, which keeps it deployable on a laptop but
-makes the pods BestEffort. Here they are set in `values/armonik.yaml.gotmpl`, with `requests` equal to
-`limits` for both the polling agent and the worker. The pods are then Guaranteed: a dedicated CPU
-share, evicted last, and sized exactly by Karpenter, which picks instances from the pods' requests.
+The compute plane chart defaults are Burstable (`requests` below `limits`). Here
+`values/armonik.yaml.gotmpl` sets `requests` equal to `limits` for both the polling agent and the
+worker. The pods are then Guaranteed: a dedicated CPU share, evicted last, and sized exactly by
+Karpenter, which picks instances from the pods' requests.
 
 Per-partition overrides, and any other value, go in `values/local.yaml` (git-ignored), which the
 helmfile layers over the ArmoniK values when it exists:
