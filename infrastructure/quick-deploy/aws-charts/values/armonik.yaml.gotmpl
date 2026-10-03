@@ -126,16 +126,15 @@ dependencies:
   mongodb-exporter:
     enabled: false
   # RDS, master user from the Secrets Manager secret RDS manages
-  postgresql:
+  externalPostgresql:
     enabled: true
-    connection:
-      host: {{ $pg.host | quote }}
-      port: {{ $pg.port }}
-      database: {{ $pg.database | quote }}
-      credentials:
-        secret: {{ $pg.secret_arn | quote }}
-        storeName: aws-secrets-manager
-        storeKind: ClusterSecretStore
+    host: {{ $pg.host | quote }}
+    port: {{ $pg.port }}
+    database: {{ $pg.database | quote }}
+    credentials:
+      secret: {{ $pg.secret_arn | quote }}
+      storeName: aws-secrets-manager
+      storeKind: ClusterSecretStore
   sqs:
     enabled: true
     region: {{ .Values.eks.region | quote }}
