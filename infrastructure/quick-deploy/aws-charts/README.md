@@ -8,7 +8,8 @@ Deploys ArmoniK on AWS in two layers:
 - **helmfile** (`helmfile.yaml.gotmpl`) deploys everything that runs in the cluster, from the
   Terraform outputs: Karpenter and its node pools, the AWS Load Balancer Controller, the
   `armonik-operators` release, then the `armonik` release. [docs/helm-cli.md](docs/helm-cli.md)
-  gives the same deployment with plain `helm` commands.
+  gives the same deployment with plain `helm` commands, with example values for a customer
+  environment (private registry, RDS, Valkey, own Grafana) in [docs/examples](docs/examples).
 
 ## Architecture
 

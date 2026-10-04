@@ -1,0 +1,121 @@
+# Release armonik-operators, chart ${CHARTS_DOCKERHUB}/dockerhubaneo/armonik-operators, namespace ${OPERATORS_NS}.
+# The operators ArmoniK needs, installed once per cluster: External Secrets (ESO), KEDA, cert-manager and
+# kube-prometheus-stack. The armonik release then only emits their custom resources.
+#
+# Every image below is repointed to REG_*: the ECR pull-through cache by default, Artifactory when
+# docs/examples/env.sh says so. Each upstream keeps its own prefix because a registry such as Docker Hub
+# and GHCR do not share a namespace.
+global:
+  armonik:
+    operators:
+      # PostgreSQL is external and MongoDB is not used: neither operator is installed.
+      mongodbOperator:
+        deploy: false
+        available: false
+      postgresqlOperator:
+        deploy: false
+        available: false
+      # GCP only
+      googleCasIssuer:
+        deploy: false
+        available: false
+
+# ---- Only with a registry that needs a pull secret (Artifactory with authentication) ----------------------
+# The Secret (type kubernetes.io/dockerconfigjson) must exist in ${OPERATORS_NS} first, see docs/helm-cli.md.
+# Each subchart has its own key. Uncomment all of them, or give the nodes the credentials instead.
+# external-secrets:
+#   global:                 # reaches the controller, the webhook and the cert controller
+#     imagePullSecrets: [{name: registry-credentials}]
+# keda:
+#   imagePullSecrets: [{name: registry-credentials}]
+# cert-manager:
+#   global:
+#     imagePullSecrets: [{name: registry-credentials}]
+# kube-prometheus:
+#   global:
+#     imagePullSecrets: [{name: registry-credentials}]
+
+external-secrets:
+  # Name bound by Pod Identity to the role that reads the RDS secret (Terraform)
+  serviceAccount:
+    name: external-secrets
+  image:
+    repository: "${REG_GHCR}/external-secrets/external-secrets"
+  webhook:
+    image:
+      repository: "${REG_GHCR}/external-secrets/external-secrets"
+  certController:
+    image:
+      repository: "${REG_GHCR}/external-secrets/external-secrets"
+
+keda:
+  image:
+    keda:
+      registry: "${REG_GHCR}"
+    metricsApiServer:
+      registry: "${REG_GHCR}"
+    webhooks:
+      registry: "${REG_GHCR}"
+
+cert-manager:
+  imageRegistry: "${REG_QUAY}"
+
+# kube-prometheus-stack, as the chart names it in armonik-operators
+kube-prometheus:
+  windowsMonitoring:
+    enabled: false
+  crds:
+    upgradeJob:
+      image:
+        busybox:
+          registry: "${REG_DOCKERHUB}"
+          repository: library/busybox
+        kubectl:
+          registry: "${REG_K8S}"
+  prometheusOperator:
+    image:
+      registry: "${REG_QUAY}"
+    prometheusConfigReloader:
+      image:
+        registry: "${REG_QUAY}"
+    # Unused (no Thanos sidecar), overridden so no image reference points outside the registry you chose
+    thanosImage:
+      registry: "${REG_QUAY}"
+    admissionWebhooks:
+      patch:
+        image:
+          registry: "${REG_GHCR}"
+  prometheus:
+    prometheusSpec:
+      image:
+        registry: "${REG_QUAY}"
+      # Retention and storage: none by default (emptyDir). For a customer environment, keep the metrics:
+      # retention: 15d
+      # storageSpec:
+      #   volumeClaimTemplate:
+      #     spec:
+      #       storageClassName: gp3
+      #       resources:
+      #         requests:
+      #           storage: 50Gi
+  prometheus-node-exporter:
+    # The chart turns it off for Docker Desktop, which does not apply here
+    hostRootFsMount:
+      enabled: true
+    # On every node, the tainted worker nodes included
+    tolerations:
+      - operator: Exists
+    image:
+      registry: "${REG_QUAY}"
+    kubeRBACProxy:
+      image:
+        registry: "${REG_QUAY}"
+    permissionInitContainer:
+      image:
+        registry: "${REG_QUAY}"
+  kube-state-metrics:
+    image:
+      registry: "${REG_K8S}"
+    kubeRBACProxy:
+      image:
+        registry: "${REG_QUAY}"

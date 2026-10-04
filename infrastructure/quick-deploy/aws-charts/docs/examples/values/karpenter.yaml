@@ -1,0 +1,32 @@
+# Release karpenter, chart oci://${CHARTS_ECR_PUBLIC}/karpenter/karpenter, namespace kube-system.
+# Karpenter adds and removes EC2 nodes after the pending pods. It is the only thing that must not run on
+# a node it manages itself, hence the system node group below.
+settings:
+  # Names what Terraform created: the cluster, and the SQS queue fed by EventBridge with the spot
+  # interruptions and rebalance recommendations
+  clusterName: "${CLUSTER_NAME}"
+  interruptionQueue: "${KARPENTER_QUEUE}"
+
+controller:
+  image:
+    # Without this the chart pulls public.ecr.aws/karpenter/controller
+    repository: "${REG_ECR_PUBLIC}/karpenter/controller"
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+
+# Registry with authentication (Artifactory): the Secret must exist in kube-system, see docs/helm-cli.md
+# imagePullSecrets:
+#   - name: registry-credentials
+
+# On the small managed node group Terraform creates (tainted CriticalAddonsOnly, which the chart tolerates)
+nodeSelector:
+  kubernetes.io/os: linux
+  armonik.aneo.fr/node-group: system
+
+# AWS credentials come from EKS Pod Identity (association kube-system/karpenter, created by Terraform):
+# the chart needs no annotation and no secret.

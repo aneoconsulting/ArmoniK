@@ -1,0 +1,230 @@
+# Release armonik, chart ${CHARTS_DOCKERHUB}/dockerhubaneo/armonik, namespace ${ARMONIK_NS}.
+#
+# Customer scenario:
+#   - table storage   RDS PostgreSQL (external), credentials read from Secrets Manager through ESO
+#   - object storage  Valkey in the cluster (S3 variant at the bottom of this file)
+#   - queue           SQS
+#   - monitoring      the operators' Prometheus, the customer's own Grafana (not deployed here)
+#   - registries      REG_* (ECR pull-through cache or Artifactory, see env.sh)
+# The security layer (TLS, mTLS, NetworkPolicies, pull secrets) is armonik-hardening.yaml, layered on top:
+#   helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
+#     -n "$ARMONIK_NS" --create-namespace -f armonik.yaml -f armonik-hardening.yaml --wait --timeout 15m
+global:
+  armonik:
+    # The operators are installed by the armonik-operators release: this release only uses them
+    operators:
+      externalSecrets:
+        deploy: false
+        available: true
+        namespace: "${OPERATORS_NS}"
+      keda:
+        deploy: false
+        available: true
+        namespace: "${OPERATORS_NS}"
+      certManager:
+        deploy: false
+        available: true
+        namespace: "${OPERATORS_NS}"
+      prometheusOperator:
+        deploy: false
+        available: true
+        namespace: "${OPERATORS_NS}"
+      mongodbOperator:
+        deploy: false
+        available: false
+      postgresqlOperator:
+        deploy: false
+        available: false
+      googleCasIssuer:
+        deploy: false
+        available: false
+    monitoring:
+      # Prometheus of the kube-prometheus-stack in armonik-operators (fullnameOverride "prometheus").
+      # KEDA queries it, and so does the Grafana datasource below. Point it elsewhere to reuse the
+      # customer's Prometheus (it must then scrape the ArmoniK ServiceMonitors).
+      prometheusUrl: "http://prometheus-prometheus.${OPERATORS_NS}.svc:9090"
+    # Image tags. Pin them: an empty value follows the chart's appVersion.
+    versions:
+      # The PostgreSQL adapters come with this Core build (ArmoniK.Core#1302)
+      core: "0.42.0-refactorrenamepostgresqladapto.26.sha.4f4d363d"
+      gui: "0.16.0"
+
+control-plane:
+  serviceAccount:
+    create: true
+    # Bound to the S3/SQS role by Pod Identity (Terraform): the name is a contract
+    name: "${SA_CONTROL_PLANE}"
+  image:
+    registry: "${REG_DOCKERHUB}"
+  metricsExporter:
+    image:
+      registry: "${REG_DOCKERHUB}"
+  init:
+    image:
+      registry: "${REG_DOCKERHUB}"
+
+compute-plane:
+  serviceAccount:
+    create: true
+    name: "${SA_COMPUTE_PLANE}"
+  init:
+    image:
+      registry: "${REG_DOCKERHUB}"
+  fluentBit:
+    image:
+      registry: "${REG_DOCKERHUB}"
+  # Partitions accumulate with the chart's own (default, stream, htcmock). Your worker goes here:
+  # partitions:
+  #   my-app:
+  #     worker:
+  #       image:
+  #         registry: "${REG_DOCKERHUB}"        # or your own Artifactory repository
+  #         repository: my-team/my-worker
+  #         tag: 1.2.3
+  #       resources:
+  #         requests: {cpu: "2", memory: 4Gi}
+  #         limits: {cpu: "2", memory: 4Gi}
+  partitionCommon:
+    # Workers node pool (Karpenter, spot first, tainted); do-not-disrupt keeps Karpenter from evicting a task
+    nodeSelector:
+      armonik.aneo.fr/node-pool: workers
+    tolerations:
+      - key: armonik.aneo.fr/node-pool
+        operator: Equal
+        value: workers
+        effect: NoSchedule
+    podAnnotations:
+      karpenter.sh/do-not-disrupt: "true"
+    # KEDA scales a partition on its queue length, from 0 to this many pods
+    hpa:
+      maxReplicaCount: 50
+    # requests == limits: Guaranteed QoS, predictable task runtimes and exact Karpenter sizing
+    agent:
+      image:
+        registry: "${REG_DOCKERHUB}"
+      resources:
+        requests: {cpu: 500m, memory: 512Mi}
+        limits: {cpu: 500m, memory: 512Mi}
+    worker:
+      image:
+        registry: "${REG_DOCKERHUB}"
+      resources:
+        requests: {cpu: "1", memory: 1Gi}
+        limits: {cpu: "1", memory: 1Gi}
+
+ingress:
+  image:
+    registry: "${REG_DOCKERHUB}"
+  loadBalancer:
+    image:
+      registry: "${REG_DOCKERHUB}"
+  gui:
+    image:
+      registry: "${REG_DOCKERHUB}"
+  # The customer's Grafana, proxied by the ingress under /grafana/ (and linked from the admin GUI). Empty
+  # drops the route. Their Grafana needs root_url without a path and serve_from_sub_path=false: the ingress
+  # adds the /grafana prefix itself.
+  grafana_url: "${GRAFANA_URL}"
+  # NLB provisioned by the AWS Load Balancer Controller. Internet-facing keeps the demo reachable from
+  # a laptop; a customer cluster usually wants "internal" (armonik-hardening.yaml).
+  service:
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: external
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+
+dependencies:
+  # ---- Table storage: RDS PostgreSQL --------------------------------------------------------------------
+  # One backend per slot: the chart refuses to render with mongodb and externalPostgresql both enabled.
+  mongodb:
+    enabled: false
+  mongodb-exporter:
+    enabled: false
+  externalPostgresql:
+    enabled: true
+    host: "${PG_HOST}"
+    port: ${PG_PORT}
+    database: "${PG_DATABASE}"
+    # RDS has rds.force_ssl=1 (terraform/rds.tf): Core connects over TLS
+    ssl: true
+    credentials:
+      # The Secrets Manager secret RDS manages for the master user, as {"username", "password"}.
+      # storeName/storeKind make the chart emit an ExternalSecret on the ClusterSecretStore of the
+      # aws-secret-store release, whose pods read it at startup.
+      secret: "${PG_SECRET_ARN}"
+      storeName: aws-secrets-manager
+      storeKind: ClusterSecretStore
+      # Without storeName the secret is a Kubernetes Secret of the namespace with these keys instead:
+      #   secret: my-postgres-credentials
+      #   usernameField: username
+      #   passwordField: password
+
+  # ---- Queue: SQS ---------------------------------------------------------------------------------------
+  # Core creates the queues itself, named after the prefix: the IAM policy of Terraform covers prefix*
+  sqs:
+    enabled: true
+    region: "${AWS_REGION}"
+    prefix: "${SQS_PREFIX}"
+  activemq:
+    enabled: false
+  rabbitmq:
+    enabled: false
+
+  # ---- Object storage: Valkey in the cluster ------------------------------------------------------------
+  # Fast, and everything is lost with the pod: no persistence. Keep S3 for data that must survive a restart.
+  s3:
+    enabled: false
+    region: "${AWS_REGION}"
+    bucketName: "${S3_BUCKET}"
+  redis:
+    enabled: true
+    image:
+      registry: "${REG_ECR_PUBLIC}"
+    metrics:
+      exporter:
+        image:
+          registry: "${REG_GHCR}"
+    # Dedicated node pool: one on-demand memory-optimized node, never consolidated while Valkey runs
+    nodeSelector:
+      armonik.aneo.fr/node-pool: storage
+    tolerations:
+      - key: armonik.aneo.fr/node-pool
+        operator: Equal
+        value: storage
+        effect: NoSchedule
+    # requests == limits, and sizes the node (r-class, 16 GB). maxmemory leaves room for the process.
+    resources:
+      requests: {cpu: "2", memory: 8Gi}
+      limits: {cpu: "2", memory: 8Gi}
+    valkeyConfig: |
+      save ""
+      appendonly no
+      maxmemory 6gb
+
+  # ---- Monitoring -----------------------------------------------------------------------------------------
+  # The customer runs its own Grafana: not deployed here. This also drops the datasource and the dashboards
+  # ConfigMaps the chart renders for its Grafana: see docs/examples/grafana-dashboards.md to load them
+  # in yours.
+  grafana:
+    enabled: false
+  fluent-bit:
+    # cr.fluentbit.io is not an ECR upstream: the same image from Docker Hub
+    image:
+      repository: "${REG_DOCKERHUB}/fluent/fluent-bit"
+    hotReload:
+      image:
+        repository: "${REG_GHCR}/jimmidyson/configmap-reload"
+    # On every node, the tainted worker nodes included
+    tolerations:
+      - operator: Exists
+  seq:
+    image:
+      repository: "${REG_DOCKERHUB}/datalust/seq"
+    gelf:
+      image:
+        repository: "${REG_DOCKERHUB}/datalust/seq-input-gelf"
+    syslog:
+      image:
+        repository: "${REG_DOCKERHUB}/datalust/seq-input-syslog"
+    # Seq (logs) starts without authentication in the chart's defaults: see armonik-hardening.yaml

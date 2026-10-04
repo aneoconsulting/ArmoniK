@@ -1,0 +1,55 @@
+# Optional layer over armonik.yaml, for a customer environment:
+#   helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
+#     -n "$ARMONIK_NS" --create-namespace -f armonik.yaml -f armonik-hardening.yaml --wait --timeout 15m
+# Helm merges the files in order, maps key by key, so only what changes is here. A list replaces the one
+# before it, which is why nothing below touches a list armonik.yaml already sets.
+
+# ---- Private registry with authentication (Artifactory) ---------------------------------------------------
+# The Secret must exist in the release namespace (docs/helm-cli.md, "Pull secrets"). Each chart family reads
+# its own key. A node-level alternative needs none of this: give containerd the credentials in the
+# EC2NodeClass userData.
+global:
+  imagePullSecrets:
+    - name: registry-credentials   # ArmoniK pods
+dependencies:
+  redis:
+    imagePullSecrets:
+      - name: registry-credentials
+  fluent-bit:
+    imagePullSecrets:
+      - name: registry-credentials
+  seq:
+    imagePullSecrets:
+      - name: registry-credentials
+    # Seq starts without authentication in the chart's defaults (firstRunNoAuthentication). Set an admin
+    # password hash instead, from a secret manager rather than from this file: see
+    # firstRunAdminPasswordHash and firstRunAdminPasswordHashSecret in the seq chart.
+
+ingress:
+  # Reachable from the VPC only (VPN, peering, Direct Connect)
+  service:
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+  # TLS terminated by the ArmoniK nginx, the certificate issued by cert-manager (installed by
+  # armonik-operators). With no issuer named, the chart creates a self-signed one: clients must trust
+  # its CA. To use the customer's issuer instead:
+  #   certManager:
+  #     existingIssuer: {enabled: true, kind: ClusterIssuer, name: corporate-ca}
+  tls:
+    enabled: true
+    certManager:
+      enabled: true
+      # Every hostname the clients use to reach the NLB, on top of the in-cluster service names
+      extraDnsNames:
+        - armonik.example.internal
+  # Clients must present a certificate signed by the CA below (cert-manager creates it when neither
+  # pem nor existingSecret is given). Requires tls.enabled.
+  mtls:
+    enabled: true
+
+# ---- NetworkPolicies ---------------------------------------------------------------------------------------
+# The umbrella's own policies: control and compute planes, nginx and fluent-bit egress, KEDA, Valkey.
+# Each dependency and operator has its own networkPolicy.enabled (see charts/network-policies.md).
+# Needs a CNI that enforces them: with the VPC CNI, enable network policy support on the addon first.
+networkPolicy:
+  enabled: true

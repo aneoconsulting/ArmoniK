@@ -1,0 +1,14 @@
+# Release karpenter-nodes, local chart charts/karpenter-nodes, namespace kube-system.
+# What Karpenter may create: one EC2NodeClass (AMI, subnets, security groups, disk) and the NodePools
+# (core, workers, storage). The other defaults are in charts/karpenter-nodes/values.yaml.
+
+# IAM role of the nodes Karpenter starts (Terraform output karpenter.node_role)
+nodeRole: "${KARPENTER_NODE_ROLE}"
+# Karpenter finds the subnets and the node security group by this tag, set by Terraform
+discoveryTag: "${KARPENTER_DISCOVERY_TAG}"
+
+# To change the pools, copy a block of charts/karpenter-nodes/values.yaml here, e.g. to cap the compute plane:
+# nodePools:
+#   workers:
+#     limits:
+#       cpu: 200
