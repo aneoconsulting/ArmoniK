@@ -79,6 +79,7 @@ export GRAFANA_URL="${GRAFANA_URL:-}"
 # --- Chart versions ----------------------------------------------------------------------------------
 export KARPENTER_VERSION=1.14.1
 export LBC_VERSION=3.5.0
+export CILIUM_VERSION=1.20.2   # optional, see docs/helm-cli.md
 export ARMONIK_VERSION=0.16.0-featexternalsto.301.sha.bf381bd3   # armonik and armonik-operators
 
 # envsubst must only touch these: a value file may hold other $ signs

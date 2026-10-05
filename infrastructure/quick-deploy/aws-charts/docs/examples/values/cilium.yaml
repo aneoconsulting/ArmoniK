@@ -1,0 +1,34 @@
+# Release cilium (optional), chart cilium/cilium (https://helm.cilium.io), namespace kube-system.
+# Cilium chained on top of the AWS VPC CNI: the VPC CNI keeps giving the pods their VPC IP addresses (so the
+# NLB with nlb-target-type ip and Pod Identity are untouched), and Cilium enforces the NetworkPolicies.
+# Install it first, before Karpenter. These are the settings of the AWS VPC CNI chaining guide of Cilium.
+cni:
+  chainingMode: aws-cni
+  # Leave the VPC CNI configuration in place
+  exclusive: false
+enableIPv4Masquerade: false
+routingMode: native
+endpointRoutes:
+  enabled: true
+
+# Images come from quay.io. useDigest false: the chart pins digests of the upstream images, which a registry
+# remote or mirror may not serve. The operator image is rendered as <repository>-generic.
+image:
+  repository: "${REG_QUAY}/cilium/cilium"
+  useDigest: false
+envoy:
+  image:
+    repository: "${REG_QUAY}/cilium/cilium-envoy"
+    useDigest: false
+operator:
+  image:
+    repository: "${REG_QUAY}/cilium/operator"
+    useDigest: false
+certgen:
+  image:
+    repository: "${REG_QUAY}/cilium/certgen"
+    useDigest: false
+
+# Registry with authentication (Artifactory): the Secret must exist in kube-system, see docs/helm-cli.md
+# imagePullSecrets:
+#   - name: registry-credentials

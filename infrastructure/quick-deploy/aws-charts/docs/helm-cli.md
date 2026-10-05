@@ -24,6 +24,8 @@ own Grafana. [Customer scenario](#customer-scenario) says where each choice live
 Each release needs the previous ones to be ready, hence `--wait`. The order is the one of
 `helmfile.yaml.gotmpl`, which is the same list.
 
+Optionally, a `cilium` release comes first, to enforce NetworkPolicies: see [4.0](#40-cilium-optional).
+
 ## Prerequisites
 
 `helm` (3.8 or later, for OCI), `kubectl`, `aws`, `jq`, `terraform`, and `envsubst` (package `gettext`). The
@@ -191,6 +193,28 @@ The same commands whichever registry: only `CHARTS_*` and the values change. `--
 safe to rerun. Do not add `--reuse-values`: the next upgrade would replay the old coalesced values and
 ignore the new defaults of the chart.
 
+### 4.0 Cilium (optional)
+
+Only to enforce NetworkPolicies (`networkPolicy.enabled` in `armonik-hardening.yaml`), or to use Hubble. Cilium
+is **chained** on the AWS VPC CNI, which keeps assigning the pod IP addresses: the NLB with
+`nlb-target-type: ip` and Pod Identity keep working, and the `vpc-cni` addon stays in `terraform/eks.tf`.
+
+```sh
+helm repo add cilium https://helm.cilium.io && helm repo update cilium
+helm upgrade --install cilium cilium/cilium --version "$CILIUM_VERSION" \
+  -n kube-system -f $V/cilium.yaml --wait
+kubectl -n kube-system rollout status ds/cilium
+```
+
+Install it before everything else: a pod started before Cilium is not covered by the policies until it is
+restarted. Do not remove the `vpc-cni` addon (the "replace the CNI" modes need extra IAM rights, a Karpenter
+`startupTaint`, and leave the managed node group stuck until Cilium is installed). To only enforce the
+policies, without Hubble, `enableNetworkPolicy` on the `vpc-cni` addon is simpler (see
+[Customer scenario](#customer-scenario)).
+
+With Artifactory, add a Helm remote repository for `https://helm.cilium.io` (like the one for `eks-charts`).
+The `quay.io/cilium/*` images go through the `REG_QUAY` remote, which `$V/cilium.yaml` already uses.
+
 ### 4.1 Karpenter
 
 ```sh
@@ -299,7 +323,7 @@ What each choice of `examples/values/armonik.yaml` is, and what changes with it.
 | Prometheus | `global.armonik.monitoring.prometheusUrl` | The operators' Prometheus: the Grafana datasource, and the PromQL KEDA triggers. The default scaling path reads the metrics exporter of the control plane instead. |
 | Customer's Grafana | `dependencies.grafana.enabled: false`, `ingress.grafana_url` | See [examples/grafana-dashboards.md](examples/grafana-dashboards.md): the chart then renders neither the datasource nor the dashboards. |
 | Ingress, TLS, mTLS | `ingress.service.annotations`, `armonik-hardening.yaml` | `tls.enabled` terminates TLS in nginx, with a certificate from cert-manager; `mtls.enabled` also demands a client certificate signed by a CA cert-manager creates. Clients then connect to the NLB over TLS. |
-| NetworkPolicies | `networkPolicy.enabled` | The umbrella's policies. They are enforced only if the CNI enforces them: on the EKS VPC CNI, `enableNetworkPolicy` must be set on the addon (`terraform/eks.tf` does not set it). |
+| NetworkPolicies | `networkPolicy.enabled` | The umbrella's policies. They are enforced only if the CNI enforces them: on the EKS VPC CNI, `enableNetworkPolicy` must be set on the addon (`terraform/eks.tf` does not set it), or install Cilium in chaining mode ([4.0](#40-cilium-optional)). |
 
 ## Advice for a customer deployment
 
