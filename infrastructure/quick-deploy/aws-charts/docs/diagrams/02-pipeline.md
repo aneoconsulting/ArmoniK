@@ -11,8 +11,8 @@ flowchart LR
 
     subgraph TF["Terraform"]
         direction TB
-        INFRA["EKS, VPC, RDS, S3, SQS,<br/>IAM + Pod Identity"]:::tf
-        OUT["outputs<br/>eks, namespaces, service_accounts,<br/>karpenter, postgresql, queue, object_storage"]:::tf
+        INFRA["EKS, VPC, RDS, S3, IAM + Pod Identity,<br/>Karpenter interruption queue"]:::tf
+        OUT["outputs<br/>eks, namespaces, service_accounts, karpenter,<br/>postgresql, object_storage, queue (prefix only)"]:::tf
         INFRA --> OUT
     end
 
@@ -30,7 +30,7 @@ flowchart LR
 
     subgraph HELM["helm upgrade --install, in this order"]
         direction TB
-        R0["0 cilium"]:::rel
+        R0["0 cilium (+ Envoy Gateway, case B)"]:::rel
         R1["1 karpenter"]:::rel
         R2["2 karpenter-nodes"]:::rel
         R3["3 aws-load-balancer-controller"]:::rel
@@ -50,11 +50,15 @@ flowchart LR
 | `karpenter` (node role, queue, discovery tag) | 1 karpenter, 2 karpenter-nodes | `interruptionQueue`, `nodeRole`, `discoveryTag` |
 | `namespaces`, `service_accounts` | 4, 5, 6 | `-n`, and `serviceAccount.name` of the control plane and compute plane |
 | `postgresql` (host, port, database, secret ARN) | 6 armonik | `dependencies.externalPostgresql.*` |
-| `queue` (prefix) | 6 armonik | `dependencies.sqs.prefix` |
+| `queue` (prefix) | 6 armonik | `dependencies.sqs.prefix` (Core creates the queues itself) |
 | `object_storage` (bucket) | 6 armonik | `dependencies.s3.bucketName` |
 
 Not Terraform outputs: the registry prefixes and the chart versions are CI variables, and the Gateway class depends on
 the Envoy chosen. Everything is read from `docs/examples/env.sh` and `terraform/outputs.tf`.
+
+SQS: Terraform creates no ArmoniK queue. It only creates the queue Karpenter reads its spot interruptions from, and
+grants the Pod Identity role of the control plane and compute plane the right to create and use queues under the
+prefix. The queues appear when Core starts.
 
 ## The "generate the values" step
 
@@ -80,4 +84,33 @@ Each release needs the previous ones to be ready, hence `--wait`:
    release uses.
 5. **armonik**, last. No `--wait-for-jobs`: the init Jobs delete themselves, and helm would fail on them.
 
-Details and the commands: [../helm-cli.md](../helm-cli.md).
+## The commands
+
+Once the values are generated into `$V` and the kubeconfig and the registry login are done. `--install` makes each
+command safe to rerun; never add `--reuse-values`.
+
+```sh
+# 0. Network: Gateway API CRDs (case A and B), then Cilium; case B also installs Envoy Gateway
+kubectl apply -f <gateway-api>/standard-install.yaml
+helm upgrade --install cilium cilium/cilium --version "$CILIUM_VERSION" -n kube-system -f $V/cilium.yaml --wait
+helm upgrade --install eg oci://docker.io/envoyproxy/gateway-helm --version "$EG_VERSION" -n envoy-gateway-system --create-namespace --wait   # case B only
+
+# 1-2. Nodes
+helm upgrade --install karpenter "oci://$CHARTS_ECR_PUBLIC/karpenter/karpenter" --version "$KARPENTER_VERSION" -n kube-system -f $V/karpenter.yaml --wait
+helm upgrade --install karpenter-nodes ./charts/karpenter-nodes -n kube-system -f $V/karpenter-nodes.yaml --wait
+
+# 3. Load balancer controller
+helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller --version "$LBC_VERSION" -n kube-system -f $V/aws-load-balancer-controller.yaml --wait
+
+# 4-5. Operators, then the secret store
+helm upgrade --install armonik-operators "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik-operators" --version "$ARMONIK_VERSION" -n "$OPERATORS_NS" --create-namespace -f $V/armonik-operators.yaml --wait --timeout 10m
+helm upgrade --install aws-secret-store ./charts/aws-secret-store -n "$OPERATORS_NS" -f $V/aws-secret-store.yaml --wait
+
+# 6. ArmoniK
+helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" -n "$ARMONIK_NS" --create-namespace -f $V/armonik.yaml --wait --timeout 15m
+```
+
+The `eks` chart repository of step 3 is added once with `helm repo add eks "$EKS_CHARTS_URL"`. Each line takes one
+values file, and `armonik` can take more (`-f` layers, the last one wins). Variables and details:
+[../helm-cli.md](../helm-cli.md) and `docs/examples/env.sh` (which does not have `EG_VERSION`, nor the Gateway API
+CRDs version, yet).
