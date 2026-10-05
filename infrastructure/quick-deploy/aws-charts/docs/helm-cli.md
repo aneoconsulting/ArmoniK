@@ -16,7 +16,7 @@ own Grafana. [Customer scenario](#customer-scenario) says where each choice live
 |---|---|---|---|---|---|
 | 1 | `karpenter` | `karpenter/karpenter` (OCI, `public.ecr.aws`) | `kube-system` | the EKS cluster | Starts and stops EC2 nodes after the pending pods |
 | 2 | `karpenter-nodes` | `charts/karpenter-nodes` (local) | `kube-system` | 1 (the CRDs) | One `EC2NodeClass`, the `NodePool`s `core`, `workers`, `storage`, and the default `gp3` `StorageClass` |
-| 3 | `aws-load-balancer-controller` | `eks/aws-load-balancer-controller` (HTTP repo) | `kube-system` | 2 (nodes to run on) | Turns a `Service` of type `LoadBalancer` into an NLB |
+| 3 | `aws-load-balancer-controller` | `eks/aws-load-balancer-controller` (HTTP repo, `EKS_CHARTS_URL`) | `kube-system` | 2 (nodes to run on) | Turns a `Service` of type `LoadBalancer` into an NLB |
 | 4 | `armonik-operators` | `armonik-operators` (OCI, Docker Hub) | `armonik-operators` | 3 | Install-once operators: External Secrets, KEDA, cert-manager, kube-prometheus-stack |
 | 5 | `aws-secret-store` | `charts/aws-secret-store` (local) | `armonik-operators` | 4 (the ESO CRDs) | A `ClusterSecretStore` on AWS Secrets Manager |
 | 6 | `armonik` | `armonik` (OCI, Docker Hub) | `armonik` | 3, 4, 5 | Control plane, compute plane, ingress, Valkey, Seq, fluent-bit, and the custom resources of the operators |
@@ -125,7 +125,13 @@ export REG_K8S=$ARTIFACTORY/k8s-remote
 export REG_ECR_PUBLIC=$ARTIFACTORY/ecr-public-remote
 export CHARTS_DOCKERHUB=$ARTIFACTORY/dockerhub-helm-remote
 export CHARTS_ECR_PUBLIC=$ARTIFACTORY/ecr-public-helm-remote
+export EKS_CHARTS_URL=https://$ARTIFACTORY/artifactory/api/helm/eks-helm-remote
 ```
+
+The last one is not OCI: the AWS Load Balancer Controller chart is on a classic Helm repository
+(`https://aws.github.io/eks-charts`), so it needs a **Helm** remote repository in Artifactory pointing to that
+URL, and the URL helm reads is `https://<host>/artifactory/api/helm/<repository key>`. Without it, step
+[4.3](#43-aws-load-balancer-controller) goes to the Internet.
 
 The image paths then read `artifactory.example.com/docker-hub-remote/dockerhubaneo/armonik_control:<tag>`.
 With a sub-domain access method (`docker-hub-remote.artifactory.example.com/...`), only these prefixes change.
@@ -156,7 +162,7 @@ done
 
 Then uncomment the `imagePullSecrets` blocks of `karpenter.yaml`, `aws-load-balancer-controller.yaml`,
 `armonik-operators.yaml` (one key per subchart, each chart names it differently), and use
-`armonik-hardening.yaml`, which sets them for `armonik`. To avoid a Secret per namespace and one key per chart, give
+`armonik-registry-auth.yaml`, which sets them for `armonik`. To avoid a Secret per namespace and one key per chart, give
 the nodes the credentials instead (the container runtime configuration, or a kubelet image credential
 provider, set in the `userData` of the EC2NodeClass: `nodeClass.userData` in `charts/karpenter-nodes/values.yaml`).
 
@@ -166,7 +172,7 @@ Everything below is local: nothing reaches the cluster.
 
 ```sh
 helm template armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
-  -n "$ARMONIK_NS" -f $V/armonik.yaml -f $V/armonik-hardening.yaml > /tmp/armonik.yaml
+  -n "$ARMONIK_NS" -f $V/armonik.yaml -f $V/armonik-registry-auth.yaml -f $V/armonik-hardening.yaml > /tmp/armonik.yaml
 helm template armonik-operators "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik-operators" --version "$ARMONIK_VERSION" \
   -n "$OPERATORS_NS" -f $V/armonik-operators.yaml --include-crds=false > /tmp/operators.yaml
 
@@ -217,7 +223,8 @@ Show it: `kubectl get nodepools,ec2nodeclass` (no node yet: Karpenter starts one
 ### 4.3 AWS Load Balancer Controller
 
 ```sh
-helm repo add eks https://aws.github.io/eks-charts && helm repo update eks
+# With Artifactory, add --username "$ARTIFACTORY_USER" --password "$ARTIFACTORY_TOKEN" (and --ca-file for a private CA)
+helm repo add eks "$EKS_CHARTS_URL" && helm repo update eks
 helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller --version "$LBC_VERSION" \
   -n kube-system -f $V/aws-load-balancer-controller.yaml --wait
 ```
@@ -259,12 +266,14 @@ store by its name and reads the RDS password through an `ExternalSecret`. It is 
 
 ```sh
 helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
-  -n "$ARMONIK_NS" --create-namespace -f $V/armonik.yaml -f $V/armonik-hardening.yaml \
+  -n "$ARMONIK_NS" --create-namespace -f $V/armonik.yaml -f $V/armonik-registry-auth.yaml -f $V/armonik-hardening.yaml \
   --wait --timeout 15m          # no --wait-for-jobs: see below
 ```
 
-Leave `-f $V/armonik-hardening.yaml` out for the first run (internet-facing, no TLS) and add it afterwards
-if you want to show the layering: the second file only holds what changes.
+The three files are layers, merged in order (the last one wins): `armonik.yaml` is the base, and the other two
+are optional. Leave `armonik-registry-auth.yaml` out with the ECR cache (no pull secret needed), and
+`armonik-hardening.yaml` out for a first run (internet-facing NLB, no TLS, no NetworkPolicies). Each only holds
+what changes.
 
 Do not add `--wait-for-jobs`: the init Jobs set `ttlSecondsAfterFinished: 1`, so they are deleted before helm
 looks at them and the release would fail with `jobs.batch ... not found`.

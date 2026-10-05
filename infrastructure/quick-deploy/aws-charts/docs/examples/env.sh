@@ -58,6 +58,8 @@ export REG_ECR_PUBLIC="$(_o .registry.value.upstreams.ecrPublic)"
 # Charts: the OCI prefix of `helm pull oci://<prefix>/<chart>`, one per upstream the charts come from
 export CHARTS_DOCKERHUB="$REG_DOCKERHUB"
 export CHARTS_ECR_PUBLIC="$REG_ECR_PUBLIC"
+# The AWS Load Balancer Controller chart is on a classic HTTP Helm repository, not OCI
+export EKS_CHARTS_URL="https://aws.github.io/eks-charts"
 
 # Artifactory instead (path-based remote repositories, one per upstream, see docs/helm-cli.md):
 # export ARTIFACTORY=artifactory.example.com
@@ -68,6 +70,7 @@ export CHARTS_ECR_PUBLIC="$REG_ECR_PUBLIC"
 # export REG_ECR_PUBLIC=$ARTIFACTORY/ecr-public-remote
 # export CHARTS_DOCKERHUB=$ARTIFACTORY/dockerhub-helm-remote     # Helm OCI remote of registry-1.docker.io
 # export CHARTS_ECR_PUBLIC=$ARTIFACTORY/ecr-public-helm-remote   # Helm OCI remote of public.ecr.aws
+# export EKS_CHARTS_URL=https://$ARTIFACTORY/artifactory/api/helm/eks-helm-remote   # Helm remote of https://aws.github.io/eks-charts
 
 # --- Customer Grafana ---------------------------------------------------------------------------------
 # URL the ArmoniK ingress proxies /grafana/ to, reachable from the cluster. Empty: no /grafana route.

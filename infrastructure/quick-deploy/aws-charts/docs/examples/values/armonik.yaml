@@ -6,7 +6,8 @@
 #   - queue           SQS
 #   - monitoring      the operators' Prometheus, the customer's own Grafana (not deployed here)
 #   - registries      REG_* (ECR pull-through cache or Artifactory, see env.sh)
-# The security layer (TLS, mTLS, NetworkPolicies, pull secrets) is armonik-hardening.yaml, layered on top:
+# Two optional layers go on top, each with its own -f: armonik-hardening.yaml (internal NLB, TLS, mTLS,
+# NetworkPolicies) and armonik-registry-auth.yaml (pull secrets, for Artifactory with authentication):
 #   helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
 #     -n "$ARMONIK_NS" --create-namespace -f armonik.yaml -f armonik-hardening.yaml --wait --timeout 15m
 global:

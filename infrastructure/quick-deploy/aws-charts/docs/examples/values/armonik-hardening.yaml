@@ -1,29 +1,14 @@
-# Optional layer over armonik.yaml, for a customer environment:
+# Optional layer over armonik.yaml, for a customer environment: internal NLB, TLS, mTLS, NetworkPolicies.
+# A registry with authentication is a separate layer, armonik-registry-auth.yaml.
 #   helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
 #     -n "$ARMONIK_NS" --create-namespace -f armonik.yaml -f armonik-hardening.yaml --wait --timeout 15m
 # Helm merges the files in order, maps key by key, so only what changes is here. A list replaces the one
 # before it, which is why nothing below touches a list armonik.yaml already sets.
 
-# ---- Private registry with authentication (Artifactory) ---------------------------------------------------
-# The Secret must exist in the release namespace (docs/helm-cli.md, "Pull secrets"). Each chart family reads
-# its own key. A node-level alternative needs none of this: give containerd the credentials in the
-# EC2NodeClass userData.
-global:
-  imagePullSecrets:
-    - name: registry-credentials   # ArmoniK pods
-dependencies:
-  redis:
-    imagePullSecrets:
-      - name: registry-credentials
-  fluent-bit:
-    imagePullSecrets:
-      - name: registry-credentials
-  seq:
-    imagePullSecrets:
-      - name: registry-credentials
-    # Seq starts without authentication in the chart's defaults (firstRunNoAuthentication). Set an admin
-    # password hash instead, from a secret manager rather than from this file: see
-    # firstRunAdminPasswordHash and firstRunAdminPasswordHashSecret in the seq chart.
+# ---- Seq -----------------------------------------------------------------------------------------------------
+# Seq starts without authentication in the chart's defaults (firstRunNoAuthentication). Set an admin password
+# hash instead (dependencies.seq.firstRunAdminPasswordHash, or firstRunAdminPasswordHashSecret), from a secret
+# manager rather than from this file.
 
 ingress:
   # Reachable from the VPC only (VPN, peering, Direct Connect)
