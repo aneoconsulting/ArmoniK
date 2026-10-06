@@ -7,7 +7,7 @@ installed with `helm`, from the values in `values/`: Cilium + Hubble, Karpenter,
 
 - Diagrams: [what gets deployed](docs/diagrams/01-deployment.md), [from Terraform to the helm releases](docs/diagrams/02-pipeline.md)
 - Reference (variables, Artifactory, customer choices, advice, known limits): [docs/reference.md](docs/reference.md)
-- Hubble (what to watch during an htcmock run, filters): [docs/hubble.md](docs/hubble.md)
+- Hubble UI filters: [docs/hubble.md](docs/hubble.md)
 
 Requirements: `aws`, `terraform` >= 1.11, `helm` >= 3.8, `kubectl`, `jq`, `envsubst` (package `gettext`). Deploying
 from AWX (Ansible) instead of a shell: see [docs/reference.md](docs/reference.md#running-from-awx).
