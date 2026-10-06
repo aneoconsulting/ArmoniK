@@ -1,9 +1,10 @@
-# Release armonik-operators, chart ${CHARTS_DOCKERHUB}/dockerhubaneo/armonik-operators, namespace ${OPERATORS_NS}.
+{{- $r := mergeOverwrite (deepCopy .Values.registry.upstreams) .Values.registries }}
+# Release armonik-operators, chart armonik-charts/armonik-operators (Docker Hub), namespace of the operators.
 # The operators ArmoniK needs, installed once per cluster: External Secrets (ESO), KEDA, cert-manager and
 # kube-prometheus-stack. The armonik release then only emits their custom resources.
 #
-# Every image below is repointed to REG_*: the ECR pull-through cache by default, Artifactory when
-# values/env.sh says so. Each upstream keeps its own prefix because a registry such as Docker Hub
+# Every image below is repointed to $r: the ECR pull-through cache by default, Artifactory when
+# settings.yaml says so. Each upstream keeps its own prefix because a registry such as Docker Hub
 # and GHCR do not share a namespace.
 global:
   armonik:
@@ -20,75 +21,79 @@ global:
         deploy: false
         available: false
 
-# ---- Only with a registry that needs a pull secret (Artifactory with authentication) ----------------------
-# The Secret (type kubernetes.io/dockerconfigjson) must exist in ${OPERATORS_NS} first, see docs/reference.md.
-# Each subchart has its own key. Uncomment all of them, or give the nodes the credentials instead.
-# external-secrets:
-#   global:                 # reaches the controller, the webhook and the cert controller
-#     imagePullSecrets: [{name: registry-credentials}]
-# keda:
-#   imagePullSecrets: [{name: registry-credentials}]
-# cert-manager:
-#   global:
-#     imagePullSecrets: [{name: registry-credentials}]
-# kube-prometheus:
-#   global:
-#     imagePullSecrets: [{name: registry-credentials}]
+# Registry that needs a pull secret (registryAuth in settings.yaml): the Secret (type
+# kubernetes.io/dockerconfigjson) must exist in the operators namespace first (README, step 1). Each subchart
+# reads its own key, hence the imagePullSecrets in each block below.
 
 external-secrets:
+  {{- if .Values.registryAuth }}
+  global:                 # reaches the controller, the webhook and the cert controller
+    imagePullSecrets: [{name: registry-credentials}]
+  {{- end }}
   # Name bound by Pod Identity to the role that reads the RDS secret (Terraform)
   serviceAccount:
     name: external-secrets
   image:
-    repository: "${REG_GHCR}/external-secrets/external-secrets"
+    repository: "{{ $r.ghcr }}/external-secrets/external-secrets"
   webhook:
     image:
-      repository: "${REG_GHCR}/external-secrets/external-secrets"
+      repository: "{{ $r.ghcr }}/external-secrets/external-secrets"
   certController:
     image:
-      repository: "${REG_GHCR}/external-secrets/external-secrets"
+      repository: "{{ $r.ghcr }}/external-secrets/external-secrets"
 
 keda:
+  {{- if .Values.registryAuth }}
+  imagePullSecrets: [{name: registry-credentials}]
+  {{- end }}
   image:
     keda:
-      registry: "${REG_GHCR}"
+      registry: "{{ $r.ghcr }}"
     metricsApiServer:
-      registry: "${REG_GHCR}"
+      registry: "{{ $r.ghcr }}"
     webhooks:
-      registry: "${REG_GHCR}"
+      registry: "{{ $r.ghcr }}"
 
 cert-manager:
-  imageRegistry: "${REG_QUAY}"
+  {{- if .Values.registryAuth }}
+  global:
+    imagePullSecrets: [{name: registry-credentials}]
+  {{- end }}
+  imageRegistry: "{{ $r.quay }}"
 
 # kube-prometheus-stack, as the chart names it in armonik-operators
 kube-prometheus:
+  {{- if .Values.registryAuth }}
+  global:
+    imagePullSecrets: [{name: registry-credentials}]
+  {{- end }}
   windowsMonitoring:
     enabled: false
   crds:
     upgradeJob:
       image:
         busybox:
-          registry: "${REG_DOCKERHUB}"
+          registry: "{{ $r.dockerHub }}"
           repository: library/busybox
         kubectl:
-          registry: "${REG_K8S}"
+          registry: "{{ $r.k8s }}"
   prometheusOperator:
     image:
-      registry: "${REG_QUAY}"
+      registry: "{{ $r.quay }}"
     prometheusConfigReloader:
       image:
-        registry: "${REG_QUAY}"
+        registry: "{{ $r.quay }}"
     # Unused (no Thanos sidecar), overridden so no image reference points outside the registry you chose
     thanosImage:
-      registry: "${REG_QUAY}"
+      registry: "{{ $r.quay }}"
     admissionWebhooks:
       patch:
         image:
-          registry: "${REG_GHCR}"
+          registry: "{{ $r.ghcr }}"
   prometheus:
     prometheusSpec:
       image:
-        registry: "${REG_QUAY}"
+        registry: "{{ $r.quay }}"
       # Retention and storage: none by default (emptyDir). For a customer environment, keep the metrics:
       # retention: 15d
       # storageSpec:
@@ -106,16 +111,16 @@ kube-prometheus:
     tolerations:
       - operator: Exists
     image:
-      registry: "${REG_QUAY}"
+      registry: "{{ $r.quay }}"
     kubeRBACProxy:
       image:
-        registry: "${REG_QUAY}"
+        registry: "{{ $r.quay }}"
     permissionInitContainer:
       image:
-        registry: "${REG_QUAY}"
+        registry: "{{ $r.quay }}"
   kube-state-metrics:
     image:
-      registry: "${REG_K8S}"
+      registry: "{{ $r.k8s }}"
     kubeRBACProxy:
       image:
-        registry: "${REG_QUAY}"
+        registry: "{{ $r.quay }}"

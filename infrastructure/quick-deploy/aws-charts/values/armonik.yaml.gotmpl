@@ -1,15 +1,14 @@
-# Release armonik, chart ${CHARTS_DOCKERHUB}/dockerhubaneo/armonik, namespace ${ARMONIK_NS}.
+{{- $r := mergeOverwrite (deepCopy .Values.registry.upstreams) .Values.registries }}
+# Release armonik, chart armonik-charts/armonik (Docker Hub, dockerhubaneo), namespace of armonik.
 #
 # Customer scenario:
 #   - table storage   RDS PostgreSQL (external), credentials read from Secrets Manager through ESO
 #   - object storage  S3, reached with the Pod Identity of the ArmoniK service accounts
 #   - queue           SQS
 #   - monitoring      the operators' Prometheus, the customer's own Grafana (not deployed here)
-#   - registries      REG_* (ECR pull-through cache or Artifactory, see env.sh)
-# Two optional layers go on top, each with its own -f: armonik-hardening.yaml (internal NLB, TLS, mTLS,
-# NetworkPolicies) and armonik-registry-auth.yaml (pull secrets, for Artifactory with authentication):
-#   helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
-#     -n "$ARMONIK_NS" --create-namespace -f armonik.yaml -f armonik-hardening.yaml --wait --timeout 15m
+#   - registries      ECR pull-through cache, or Artifactory (registries in settings.yaml)
+# Two optional layers go on top, switched in settings.yaml: armonik-hardening.yaml.gotmpl (hardening:
+# NetworkPolicies) and armonik-registry-auth.yaml.gotmpl (registryAuth: pull secrets, for Artifactory).
 global:
   armonik:
     # The operators are installed by the armonik-operators release: this release only uses them
@@ -17,19 +16,19 @@ global:
       externalSecrets:
         deploy: false
         available: true
-        namespace: "${OPERATORS_NS}"
+        namespace: "{{ .Values.namespaces.operators }}"
       keda:
         deploy: false
         available: true
-        namespace: "${OPERATORS_NS}"
+        namespace: "{{ .Values.namespaces.operators }}"
       certManager:
         deploy: false
         available: true
-        namespace: "${OPERATORS_NS}"
+        namespace: "{{ .Values.namespaces.operators }}"
       prometheusOperator:
         deploy: false
         available: true
-        namespace: "${OPERATORS_NS}"
+        namespace: "{{ .Values.namespaces.operators }}"
       mongodbOperator:
         deploy: false
         available: false
@@ -43,7 +42,7 @@ global:
       # Prometheus of the kube-prometheus-stack in armonik-operators (fullnameOverride "prometheus").
       # KEDA queries it, and so does the Grafana datasource below. Point it elsewhere to reuse the
       # customer's Prometheus (it must then scrape the ArmoniK ServiceMonitors).
-      prometheusUrl: "http://prometheus-prometheus.${OPERATORS_NS}.svc:9090"
+      prometheusUrl: "http://prometheus-prometheus.{{ .Values.namespaces.operators }}.svc:9090"
     # Image tags. Pin them: an empty value follows the chart's appVersion.
     versions:
       # The PostgreSQL adapters come with this Core build (ArmoniK.Core#1302)
@@ -54,32 +53,32 @@ control-plane:
   serviceAccount:
     create: true
     # Bound to the S3/SQS role by Pod Identity (Terraform): the name is a contract
-    name: "${SA_CONTROL_PLANE}"
+    name: "{{ .Values.service_accounts.control_plane }}"
   image:
-    registry: "${REG_DOCKERHUB}"
+    registry: "{{ $r.dockerHub }}"
   metricsExporter:
     image:
-      registry: "${REG_DOCKERHUB}"
+      registry: "{{ $r.dockerHub }}"
   init:
     image:
-      registry: "${REG_DOCKERHUB}"
+      registry: "{{ $r.dockerHub }}"
 
 compute-plane:
   serviceAccount:
     create: true
-    name: "${SA_COMPUTE_PLANE}"
+    name: "{{ .Values.service_accounts.compute_plane }}"
   init:
     image:
-      registry: "${REG_DOCKERHUB}"
+      registry: "{{ $r.dockerHub }}"
   fluentBit:
     image:
-      registry: "${REG_DOCKERHUB}"
+      registry: "{{ $r.dockerHub }}"
   # Partitions accumulate with the chart's own (default, stream, htcmock). Your worker goes here:
   # partitions:
   #   my-app:
   #     worker:
   #       image:
-  #         registry: "${REG_DOCKERHUB}"        # or your own Artifactory repository
+  #         registry: {{ $r.dockerHub }}        # or your own Artifactory repository
   #         repository: my-team/my-worker
   #         tag: 1.2.3
   #       resources:
@@ -102,11 +101,11 @@ compute-plane:
     # The agent keeps the chart's resources (requests 500m/256Mi, limits 1/1Gi)
     agent:
       image:
-        registry: "${REG_DOCKERHUB}"
+        registry: "{{ $r.dockerHub }}"
     # The worker runs the tasks: requests == limits, for predictable task runtimes and exact Karpenter sizing
     worker:
       image:
-        registry: "${REG_DOCKERHUB}"
+        registry: "{{ $r.dockerHub }}"
       resources:
         requests: {cpu: "1", memory: 1Gi}
         limits: {cpu: "1", memory: 1Gi}
@@ -123,16 +122,16 @@ ingress:
   httpRoute:
     enabled: false
   image:
-    registry: "${REG_DOCKERHUB}"
+    registry: "{{ $r.dockerHub }}"
   loadBalancer:
     image:
-      registry: "${REG_DOCKERHUB}"
+      registry: "{{ $r.dockerHub }}"
   gui:
     image:
-      registry: "${REG_DOCKERHUB}"
+      registry: "{{ $r.dockerHub }}"
   # The customer's Grafana, linked from the admin GUI. The chart requires one of the *_url values. The
   # /grafana/ proxy was nginx's: with Envoy, users reach their Grafana directly.
-  grafana_url: "${GRAFANA_URL}"
+  grafana_url: "{{ .Values.grafanaUrl }}"
 
 dependencies:
   # ---- Table storage: RDS PostgreSQL --------------------------------------------------------------------
@@ -143,16 +142,16 @@ dependencies:
     enabled: false
   externalPostgresql:
     enabled: true
-    host: "${PG_HOST}"
-    port: ${PG_PORT}
-    database: "${PG_DATABASE}"
+    host: "{{ .Values.postgresql.host }}"
+    port: {{ .Values.postgresql.port }}
+    database: "{{ .Values.postgresql.database }}"
     # RDS has rds.force_ssl=1 (terraform/rds.tf): Core connects over TLS
     ssl: true
     credentials:
       # The Secrets Manager secret RDS manages for the master user, as {"username", "password"}.
       # storeName/storeKind make the chart emit an ExternalSecret on the ClusterSecretStore of the
       # aws-secret-store release, whose pods read it at startup.
-      secret: "${PG_SECRET_ARN}"
+      secret: "{{ .Values.postgresql.secret_arn }}"
       storeName: aws-secrets-manager
       storeKind: ClusterSecretStore
       # Without storeName the secret is a Kubernetes Secret of the namespace with these keys instead:
@@ -164,8 +163,8 @@ dependencies:
   # Core creates the queues itself, named after the prefix: the IAM policy of Terraform covers prefix*
   sqs:
     enabled: true
-    region: "${AWS_REGION}"
-    prefix: "${SQS_PREFIX}"
+    region: "{{ .Values.eks.region }}"
+    prefix: "{{ .Values.queue.prefix }}"
   activemq:
     enabled: false
   rabbitmq:
@@ -176,8 +175,8 @@ dependencies:
   # their Pod Identity role, which grants this bucket and its KMS key.
   s3:
     enabled: true
-    region: "${AWS_REGION}"
-    bucketName: "${S3_BUCKET}"
+    region: "{{ .Values.eks.region }}"
+    bucketName: "{{ .Values.object_storage.bucket }}"
   # Valkey (the chart's default object storage) is not deployed
   redis:
     enabled: false
@@ -191,20 +190,20 @@ dependencies:
   fluent-bit:
     # cr.fluentbit.io is not an ECR upstream: the same image from Docker Hub
     image:
-      repository: "${REG_DOCKERHUB}/fluent/fluent-bit"
+      repository: "{{ $r.dockerHub }}/fluent/fluent-bit"
     hotReload:
       image:
-        repository: "${REG_GHCR}/jimmidyson/configmap-reload"
+        repository: "{{ $r.ghcr }}/jimmidyson/configmap-reload"
     # On every node, the tainted worker nodes included
     tolerations:
       - operator: Exists
   seq:
     image:
-      repository: "${REG_DOCKERHUB}/datalust/seq"
+      repository: "{{ $r.dockerHub }}/datalust/seq"
     gelf:
       image:
-        repository: "${REG_DOCKERHUB}/datalust/seq-input-gelf"
+        repository: "{{ $r.dockerHub }}/datalust/seq-input-gelf"
     syslog:
       image:
-        repository: "${REG_DOCKERHUB}/datalust/seq-input-syslog"
+        repository: "{{ $r.dockerHub }}/datalust/seq-input-syslog"
     # Seq (logs) starts without authentication in the chart's defaults: see armonik-hardening.yaml

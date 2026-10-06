@@ -1,16 +1,17 @@
-# Release karpenter, chart oci://${CHARTS_ECR_PUBLIC}/karpenter/karpenter, namespace kube-system.
+{{- $r := mergeOverwrite (deepCopy .Values.registry.upstreams) .Values.registries }}
+# Release karpenter, chart karpenter/karpenter (public.ecr.aws), namespace kube-system.
 # Karpenter adds and removes EC2 nodes after the pending pods. It is the only thing that must not run on
 # a node it manages itself, hence the system node group below.
 settings:
   # Names what Terraform created: the cluster, and the SQS queue fed by EventBridge with the spot
   # interruptions and rebalance recommendations
-  clusterName: "${CLUSTER_NAME}"
-  interruptionQueue: "${KARPENTER_QUEUE}"
+  clusterName: "{{ .Values.eks.name }}"
+  interruptionQueue: "{{ .Values.karpenter.queue_name }}"
 
 controller:
   image:
     # Without this the chart pulls public.ecr.aws/karpenter/controller
-    repository: "${REG_ECR_PUBLIC}/karpenter/controller"
+    repository: "{{ $r.ecrPublic }}/karpenter/controller"
   resources:
     requests:
       cpu: 250m
@@ -19,9 +20,11 @@ controller:
       cpu: 250m
       memory: 512Mi
 
-# Registry with authentication (Artifactory): the Secret must exist in kube-system, see docs/reference.md
-# imagePullSecrets:
-#   - name: registry-credentials
+{{- if .Values.registryAuth }}
+# Registry with authentication (registryAuth in settings.yaml): the Secret must exist in kube-system
+imagePullSecrets:
+  - name: registry-credentials
+{{- end }}
 
 # On the small managed node group Terraform creates (tainted CriticalAddonsOnly, which the chart tolerates)
 nodeSelector:

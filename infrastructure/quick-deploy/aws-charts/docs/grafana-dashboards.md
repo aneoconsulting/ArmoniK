@@ -1,6 +1,6 @@
 # Using your own Grafana
 
-`values/armonik.yaml` sets `dependencies.grafana.enabled: false`: the release deploys no Grafana. The
+`values/armonik.yaml.gotmpl` sets `dependencies.grafana.enabled: false`: the release deploys no Grafana. The
 Prometheus it needs is the one of `armonik-operators` (kube-prometheus-stack), which stays. Three things
 remain to connect your Grafana to it.
 
@@ -28,7 +28,8 @@ load balancer or an ingress of yours), or the metrics sent to your own Prometheu
 They ship inside the `armonik` chart, in `static-confs/grafana-dashboards/`:
 
 ```sh
-helm pull "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" --untar --untardir /tmp/armonik-chart
+helm pull "oci://$(jq -r .registry.upstreams.dockerHub generated/armonik-output.json)/dockerhubaneo/armonik" \
+  --version <versions.armonik of values/settings.yaml> --untar --untardir /tmp/armonik-chart
 ls /tmp/armonik-chart/armonik/static-confs/grafana-dashboards
 ```
 
@@ -65,4 +66,4 @@ done
 
 Envoy Gateway is the only entry point and has no `/grafana/` route (the ArmoniK nginx had one, see
 `docs/reference.md`): give your users your Grafana URL directly. `ingress.grafana_url`, which
-`values/armonik.yaml` fills from `GRAFANA_URL`, only sets the link the admin GUI shows.
+`values/armonik.yaml.gotmpl` fills from `grafanaUrl` in `values/settings.yaml`, only sets the link the admin GUI shows.

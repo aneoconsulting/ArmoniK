@@ -1,0 +1,135 @@
+# Everything that runs in the cluster, on top of the infrastructure Terraform creates (README, step 3).
+# Environment values: the Terraform outputs, written to generated/armonik-output.json, then values/settings.yaml.
+environments:
+  default:
+    values:
+      - generated/armonik-output.json
+      - values/settings.yaml
+---
+{{- $r := mergeOverwrite (deepCopy .Values.registry.upstreams) .Values.registries }}
+{{- $c := mergeOverwrite (dict "dockerHub" $r.dockerHub "ecrPublic" $r.ecrPublic "quay" $r.quay "eksUrl" "https://aws.github.io/eks-charts") .Values.charts }}
+{{- $armonikCharts := .Values.armonikChartsDir | default "armonik-charts" }}
+{{- $ops := .Values.namespaces.operators }}
+{{- $ns := .Values.namespaces.armonik }}
+
+helmDefaults:
+  wait: true
+  # No waitForJobs: the ArmoniK init Jobs set ttlSecondsAfterFinished: 1, so they are deleted before helm
+  # checks them and the release fails with "jobs.batch ... not found"
+  timeout: 900
+  createNamespace: true
+
+# OCI repositories go through the ECR pull-through cache (or Artifactory, values/settings.yaml): log helm in
+# first (README). The AWS Load Balancer Controller chart is on a classic HTTP repository, which ECR cannot cache.
+repositories:
+  - name: cilium
+    url: {{ $c.quay }}/cilium/charts
+    oci: true
+  - name: karpenter
+    url: {{ $c.ecrPublic }}/karpenter
+    oci: true
+  - name: armonik-charts
+    url: {{ $c.dockerHub }}/dockerhubaneo
+    oci: true
+  - name: envoyproxy
+    url: {{ $c.dockerHub }}/envoyproxy
+    oci: true
+  - name: eks
+    url: {{ $c.eksUrl }}
+
+# Each release needs the previous ones (docs/diagrams/02-pipeline.md, "Order and why")
+releases:
+  # Network policies and Hubble, chained on the VPC CNI. Not waited for: Hubble relay and UI target the core
+  # node pool, which only exists once Karpenter runs. The hook waits for the agents instead.
+  - name: cilium
+    namespace: kube-system
+    chart: cilium/cilium
+    version: {{ .Values.versions.cilium | quote }}
+    wait: false
+    values:
+      - values/cilium.yaml.gotmpl
+    hooks:
+      - events: ["postsync"]
+        showlogs: true
+        command: kubectl
+        args: ["-n", "kube-system", "rollout", "status", "ds/cilium", "--timeout=10m"]
+
+  - name: karpenter
+    namespace: kube-system
+    chart: karpenter/karpenter
+    version: {{ .Values.versions.karpenter | quote }}
+    needs:
+      - kube-system/cilium
+    values:
+      - values/karpenter.yaml.gotmpl
+
+  - name: karpenter-nodes
+    namespace: kube-system
+    chart: ./charts/karpenter-nodes
+    needs:
+      - kube-system/karpenter
+    values:
+      - values/karpenter-nodes.yaml.gotmpl
+
+  - name: aws-load-balancer-controller
+    namespace: kube-system
+    chart: eks/aws-load-balancer-controller
+    version: {{ .Values.versions.awsLoadBalancerController | quote }}
+    needs:
+      - kube-system/karpenter-nodes
+    values:
+      - values/aws-load-balancer-controller.yaml.gotmpl
+
+  - name: armonik-operators
+    namespace: {{ $ops }}
+    chart: {{ $armonikCharts }}/armonik-operators
+    {{- if not .Values.armonikChartsDir }}
+    version: {{ .Values.versions.armonik | quote }}
+    {{- end }}
+    needs:
+      - kube-system/aws-load-balancer-controller
+    values:
+      - values/armonik-operators.yaml.gotmpl
+
+  - name: aws-secret-store
+    namespace: {{ $ops }}
+    chart: ./charts/aws-secret-store
+    needs:
+      - {{ $ops }}/armonik-operators
+    values:
+      - values/aws-secret-store.yaml.gotmpl
+
+  - name: eg
+    namespace: envoy-gateway-system
+    chart: envoyproxy/gateway-helm
+    version: {{ .Values.versions.envoyGateway | quote }}
+    needs:
+      - {{ $ops }}/aws-secret-store
+    values:
+      - values/envoy-gateway.yaml.gotmpl
+
+  - name: armonik
+    namespace: {{ $ns }}
+    chart: {{ $armonikCharts }}/armonik
+    {{- if not .Values.armonikChartsDir }}
+    version: {{ .Values.versions.armonik | quote }}
+    {{- end }}
+    needs:
+      - envoy-gateway-system/eg
+    values:
+      - values/armonik.yaml.gotmpl
+      {{- if .Values.hardening }}
+      - values/armonik-hardening.yaml.gotmpl
+      {{- end }}
+      {{- if .Values.registryAuth }}
+      - values/armonik-registry-auth.yaml.gotmpl
+      {{- end }}
+
+  # The only entry point: NLB, Envoy, gRPC and HTTP routes to the Services of the armonik release
+  - name: armonik-gateway
+    namespace: {{ $ns }}
+    chart: ./charts/armonik-gateway
+    needs:
+      - {{ $ns }}/armonik
+    values:
+      - values/armonik-gateway.yaml.gotmpl

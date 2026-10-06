@@ -1,9 +1,7 @@
-# Optional layer over armonik.yaml, only for a registry that needs authentication (Artifactory):
-#   helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
-#     -n "$ARMONIK_NS" --create-namespace -f armonik.yaml -f armonik-registry-auth.yaml --wait --timeout 15m
+# Layer over armonik.yaml.gotmpl when registryAuth is set (settings.yaml): a registry that needs authentication.
 # The ECR pull-through cache needs none of it: nodes authenticate to ECR with their IAM role.
 #
-# The Secret (type kubernetes.io/dockerconfigjson) must exist in ${ARMONIK_NS} first, see docs/reference.md.
+# The Secret (type kubernetes.io/dockerconfigjson) must exist in the armonik namespace first (README, step 1).
 # Each chart family reads its own key. A node-level alternative needs none of this: give containerd the
 # credentials in the EC2NodeClass userData.
 global:

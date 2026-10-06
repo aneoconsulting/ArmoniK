@@ -1,0 +1,48 @@
+# Deployment settings that are not Terraform outputs. helmfile layers this file over
+# generated/armonik-output.json (the Terraform outputs, see README), and every values/*.gotmpl reads both.
+
+# helm --version of each release. Image tags: docs/reference.md, "Versions".
+versions:
+  cilium: 1.20.2
+  karpenter: 1.14.1
+  awsLoadBalancerController: 3.5.0
+  envoyGateway: 1.9.2
+  # armonik and armonik-operators. ArmoniK.Infra CI publishes every branch as <version>-<branch>.<n>.sha.<commit>,
+  # main as <version>-SNAPSHOT.<n>.sha.<commit>. dependencies.externalPostgresql needs main from 2026-10-02 (#368).
+  armonik: 0.16.1-SNAPSHOT.4.sha.d640d96c
+
+# Local ArmoniK.Infra/charts checkout (dependencies vendored with its update-charts.sh) instead of the published
+# armonik and armonik-operators charts. Empty: the published charts.
+armonikChartsDir: ""
+
+# Image registries, one prefix per upstream. Empty: the ECR pull-through cache (Terraform output registry.upstreams).
+registries: {}
+# Artifactory instead (path-based remote repositories, one per upstream, see docs/reference.md):
+# registries:
+#   dockerHub: artifactory.example.com/docker-hub-remote
+#   ghcr: artifactory.example.com/ghcr-remote
+#   quay: artifactory.example.com/quay-remote
+#   k8s: artifactory.example.com/k8s-remote
+#   ecrPublic: artifactory.example.com/ecr-public-remote
+
+# Chart registries: the OCI prefix of each upstream the charts come from. Empty: the image registries above.
+charts: {}
+# Artifactory instead:
+# charts:
+#   dockerHub: artifactory.example.com/dockerhub-helm-remote     # Helm OCI remote of registry-1.docker.io
+#   ecrPublic: artifactory.example.com/ecr-public-helm-remote    # Helm OCI remote of public.ecr.aws
+#   quay: artifactory.example.com/quay-helm-remote               # Helm OCI remote of quay.io
+#   eksUrl: https://artifactory.example.com/artifactory/api/helm/eks-helm-remote   # Helm remote of https://aws.github.io/eks-charts
+
+# Registry with authentication (Artifactory): every release then references the pull Secret
+# registry-credentials, which must exist in each namespace first (README, step 1).
+registryAuth: false
+
+# Customer environment: NetworkPolicies (enforced by Cilium), internal NLB, TLS terminated by Envoy with a
+# certificate from cert-manager. tlsDnsNames: the names clients use to reach the NLB.
+hardening: false
+tlsDnsNames:
+  - armonik.example.internal
+
+# URL of the customer's Grafana, linked from the admin GUI. Empty: no link.
+grafanaUrl: ""

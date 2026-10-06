@@ -2,7 +2,7 @@
 
 ArmoniK on EKS, with Cilium + Hubble, Karpenter, RDS PostgreSQL, S3 and SQS, and Envoy (Envoy Gateway) as the only
 ingress. The `armonik` umbrella chart is in the middle, what it installs inside. The numbers are the install order of
-the helm releases (README, step 3).
+the helmfile releases (README, step 3).
 
 ```mermaid
 flowchart TD
@@ -70,7 +70,7 @@ flowchart TD
     CSS -.-> SM
 ```
 
-Sources: `ArmoniK.Infra/charts/armonik` and `armonik-operators`, `README.md`, `values/`.
+Sources: `ArmoniK.Infra/charts/armonik` and `armonik-operators`, `helmfile.yaml.gotmpl`, `values/`.
 
 ## Envoy as the only ingress
 
@@ -106,7 +106,7 @@ Identity works unchanged.
 | **AWS credentials** | None stored: S3, SQS, EC2 and Secrets Manager are reached with EKS Pod Identity, bound to the service accounts by namespace and name. | `serviceAccount.name` of each chart |
 | **Karpenter** | Starts and stops nodes after the pending pods. Compute pods run on the `workers` pool (spot first), the rest on `core`. | `karpenter-nodes` values: `nodePools.*` |
 | **Cilium + Hubble** | Enforces NetworkPolicies and shows the flows (Hubble). Helm only: Hubble is a set of values of the Cilium chart. Installed first; new Karpenter nodes start tainted until the Cilium agent is ready. | `networkPolicy.enabled`, Cilium `hubble.relay.enabled`, `hubble.ui.enabled`, `startupTaints` |
-| **Envoy Gateway** | The only entry point: NLB, Envoy, gRPC and HTTP routes. TLS at the Gateway. | `values/armonik-gateway.yaml`: `loadBalancer.scheme`, `tls` |
+| **Envoy Gateway** | The only entry point: NLB, Envoy, gRPC and HTTP routes. TLS at the Gateway. | `hardening` in `values/settings.yaml` (internal NLB, TLS) |
 | **Monitoring** | Prometheus (from the operators, also read by KEDA), fluent-bit and Seq. The customer's own Grafana replaces the chart's (`dependencies.grafana.enabled: false`, see `docs/grafana-dashboards.md`). | `dependencies.grafana.enabled`, `global.armonik.monitoring.prometheusUrl` |
 
 ## Still open

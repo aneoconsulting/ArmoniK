@@ -3,9 +3,9 @@
 # (core, workers). The other defaults are in charts/karpenter-nodes/values.yaml.
 
 # IAM role of the nodes Karpenter starts (Terraform output karpenter.node_role)
-nodeRole: "${KARPENTER_NODE_ROLE}"
+nodeRole: "{{ .Values.karpenter.node_role }}"
 # Karpenter finds the subnets and the node security group by this tag, set by Terraform
-discoveryTag: "${KARPENTER_DISCOVERY_TAG}"
+discoveryTag: "{{ .Values.karpenter.discovery_tag }}"
 
 # No pod on a new node before the Cilium agent covers it: Cilium removes this taint once ready
 startupTaints:

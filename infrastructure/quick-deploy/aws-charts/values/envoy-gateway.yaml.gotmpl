@@ -1,0 +1,23 @@
+{{- $r := mergeOverwrite (deepCopy .Values.registry.upstreams) .Values.registries }}
+# Release eg, chart envoyproxy/gateway-helm (Docker Hub), namespace envoy-gateway-system.
+# The Envoy Gateway controller, and the CRDs of the Gateway API and of Envoy Gateway. It runs the Envoy
+# pods of every Gateway of class "armonik" (charts/armonik-gateway).
+global:
+  images:
+    envoyGateway:
+      image: "{{ $r.dockerHub }}/envoyproxy/gateway:v1.9.2"
+    # The Envoy data plane, started by the controller for each Gateway
+    envoyProxy:
+      image: "{{ $r.dockerHub }}/envoyproxy/envoy:distroless-v1.39.1"
+    # Only referenced in the controller configuration: no rate limit service is deployed
+    ratelimit:
+      image: "{{ $r.dockerHub }}/envoyproxy/ratelimit:0482748e"
+  {{- if .Values.registryAuth }}
+  # Registry with authentication (registryAuth in settings.yaml): the Secret must exist in envoy-gateway-system
+  imagePullSecrets:
+    - name: registry-credentials
+  {{- end }}
+deployment:
+  pod:
+    nodeSelector:
+      armonik.aneo.fr/node-pool: core

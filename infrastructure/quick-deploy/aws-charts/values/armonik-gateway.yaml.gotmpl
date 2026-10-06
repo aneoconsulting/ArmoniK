@@ -1,0 +1,21 @@
+# Release armonik-gateway, local chart charts/armonik-gateway, namespace of armonik. After armonik.
+# The only entry point of ArmoniK: an NLB in front of Envoy (Envoy Gateway), with the ports nginx used.
+#   5001, 5000  ArmoniK gRPC API (GRPCRoute to the control plane) and admin GUI (/admin/)
+#   8080        Seq
+# The other defaults (Envoy replicas and resources, gRPC stream timeouts) are in charts/armonik-gateway/values.yaml.
+
+# Name of the armonik release: the routes target its Services (<release>-control-plane...)
+armonikRelease: armonik
+
+loadBalancer:
+  # internet-facing keeps a demo reachable from a laptop; hardening (settings.yaml) makes it internal
+  scheme: {{ .Values.hardening | ternary "internal" "internet-facing" }}
+
+# Hardening: TLS terminated by Envoy, certificate from cert-manager (installed by armonik-operators).
+# Clients then trust the CA in the Secret armonik-ca of the armonik namespace.
+tls:
+  enabled: {{ .Values.hardening }}
+  {{- if .Values.hardening }}
+  dnsNames:
+    {{- toYaml .Values.tlsDnsNames | nindent 4 }}
+  {{- end }}

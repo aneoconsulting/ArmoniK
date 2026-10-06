@@ -1,9 +1,10 @@
+{{- $r := mergeOverwrite (deepCopy .Values.registry.upstreams) .Values.registries }}
 # Release aws-load-balancer-controller, chart eks/aws-load-balancer-controller (https://aws.github.io/eks-charts),
 # namespace kube-system. Turns the ingress Service of type LoadBalancer into an NLB.
-clusterName: "${CLUSTER_NAME}"
+clusterName: "{{ .Values.eks.name }}"
 # Stated since the nodes' IMDS is out of the pods' reach (hop limit 1, see the EC2NodeClass)
-region: "${AWS_REGION}"
-vpcId: "${VPC_ID}"
+region: "{{ .Values.eks.region }}"
+vpcId: "{{ .Values.eks.vpc_id }}"
 
 # Reuse the webhook TLS secret on upgrade: the chart otherwise generates a new CA on every render, and
 # the armonik release that follows may hit the webhook while the controller still serves the old one
@@ -15,8 +16,10 @@ serviceAccount:
   name: aws-load-balancer-controller
 
 image:
-  repository: "${REG_ECR_PUBLIC}/eks/aws-load-balancer-controller"
+  repository: "{{ $r.ecrPublic }}/eks/aws-load-balancer-controller"
 
-# Registry with authentication (Artifactory): the Secret must exist in kube-system, see docs/reference.md
-# imagePullSecrets:
-#   - name: registry-credentials
+{{- if .Values.registryAuth }}
+# Registry with authentication (registryAuth in settings.yaml): the Secret must exist in kube-system
+imagePullSecrets:
+  - name: registry-credentials
+{{- end }}

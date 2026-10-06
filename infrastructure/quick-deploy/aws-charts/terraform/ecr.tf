@@ -12,7 +12,7 @@ locals {
     ecr-public = { key = "ecrPublic", upstream = "public.ecr.aws", credentials = null }
   }
 
-  # Where each upstream is reachable from the cluster, consumed by values/env.sh
+  # Where each upstream is reachable from the cluster, consumed by the helmfile values
   registries = {
     for name, cache in local.pull_through_cache : cache.key => "${local.registry}/${local.name}/${name}"
   }

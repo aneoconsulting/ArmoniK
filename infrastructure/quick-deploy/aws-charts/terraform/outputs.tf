@@ -1,4 +1,4 @@
-# Read by values/env.sh, which turns them into the variables of the helm values files (see README.md).
+# Written to generated/armonik-output.json, the environment values of helmfile.yaml.gotmpl (see README.md).
 
 output "eks" {
   description = "EKS cluster"
