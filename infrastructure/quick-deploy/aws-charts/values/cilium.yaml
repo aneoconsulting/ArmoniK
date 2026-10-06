@@ -1,0 +1,73 @@
+# Release cilium, chart oci://${CHARTS_QUAY}/cilium/charts/cilium, namespace kube-system. First release.
+# Cilium chained on top of the AWS VPC CNI: the VPC CNI keeps giving the pods their VPC IP addresses (so the
+# NLB with nlb-target-type ip and Pod Identity are untouched), Cilium enforces the NetworkPolicies and
+# Hubble shows the flows. These are the settings of the AWS VPC CNI chaining guide of Cilium.
+# Karpenter nodes start with the taint node.cilium.io/agent-not-ready (values/karpenter-nodes.yaml), which
+# the Cilium agent removes once ready: no pod starts on a node before Cilium covers it.
+cni:
+  chainingMode: aws-cni
+  # Leave the VPC CNI configuration in place
+  exclusive: false
+enableIPv4Masquerade: false
+routingMode: native
+endpointRoutes:
+  enabled: true
+
+# Images come from quay.io. useDigest false: the chart pins digests of the upstream images, which a registry
+# remote or mirror may not serve. The operator image is rendered as <repository>-generic.
+image:
+  repository: "${REG_QUAY}/cilium/cilium"
+  useDigest: false
+envoy:
+  image:
+    repository: "${REG_QUAY}/cilium/cilium-envoy"
+    useDigest: false
+operator:
+  image:
+    repository: "${REG_QUAY}/cilium/operator"
+    useDigest: false
+  # Runs on the system node group (CriticalAddonsOnly), the only nodes before Karpenter: the agents wait for
+  # the operator to register the Cilium CRDs. The list replaces the chart's defaults, kept below.
+  tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+    - key: node.kubernetes.io/not-ready
+      operator: Exists
+    - key: node.cloudprovider.kubernetes.io/uninitialized
+      operator: Exists
+    - key: node.cilium.io/agent-not-ready
+      operator: Exists
+certgen:
+  image:
+    repository: "${REG_QUAY}/cilium/certgen"
+    useDigest: false
+# Hubble: flow observability, read through the relay. UI: kubectl port-forward -n kube-system svc/hubble-ui 12000:80
+hubble:
+  enabled: true
+  relay:
+    enabled: true
+    image:
+      repository: "${REG_QUAY}/cilium/hubble-relay"
+      useDigest: false
+    nodeSelector:
+      armonik.aneo.fr/node-pool: core
+  ui:
+    enabled: true
+    backend:
+      image:
+        repository: "${REG_QUAY}/cilium/hubble-ui-backend"
+        useDigest: false
+    frontend:
+      image:
+        repository: "${REG_QUAY}/cilium/hubble-ui"
+        useDigest: false
+    nodeSelector:
+      armonik.aneo.fr/node-pool: core
+
+# Registry with authentication (Artifactory): the Secret must exist in kube-system, see docs/reference.md
+# imagePullSecrets:
+#   - name: registry-credentials

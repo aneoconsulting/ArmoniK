@@ -12,7 +12,7 @@ locals {
     ecr-public = { key = "ecrPublic", upstream = "public.ecr.aws", credentials = null }
   }
 
-  # Where each upstream is reachable from the cluster, consumed by the helmfile
+  # Where each upstream is reachable from the cluster, consumed by values/env.sh
   registries = {
     for name, cache in local.pull_through_cache : cache.key => "${local.registry}/${local.name}/${name}"
   }
@@ -47,7 +47,7 @@ resource "aws_ecr_pull_through_cache_rule" "this" {
   depends_on = [aws_secretsmanager_secret_version.pull_through_cache]
 }
 
-# Settings of the repositories the cache creates. They are not in the state: make delete removes them.
+# Settings of the repositories the cache creates. They are not in the state: see README.md, Removal.
 # No resource_tags: tagging needs a custom_role_arn, the ECR service-linked role lacking ecr:TagResource,
 # and without it every repository creation fails, so every pull returns "not found".
 resource "aws_ecr_repository_creation_template" "pull_through_cache" {

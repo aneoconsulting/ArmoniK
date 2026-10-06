@@ -19,7 +19,7 @@ controller:
       cpu: 250m
       memory: 512Mi
 
-# Registry with authentication (Artifactory): the Secret must exist in kube-system, see docs/helm-cli.md
+# Registry with authentication (Artifactory): the Secret must exist in kube-system, see docs/reference.md
 # imagePullSecrets:
 #   - name: registry-credentials
 

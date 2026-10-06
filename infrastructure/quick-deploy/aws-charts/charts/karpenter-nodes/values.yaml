@@ -22,6 +22,10 @@ nodeClass:
 # Label and taint key selecting a node pool
 poolLabel: armonik.aneo.fr/node-pool
 
+# -- Taints every new node starts with, removed by an agent once it is ready (e.g. Cilium's
+# node.cilium.io/agent-not-ready). Karpenter ignores them when it simulates scheduling.
+startupTaints: []
+
 nodePools:
   # Control plane, ingress, operators, monitoring: on-demand, consolidated when underused
   core:
@@ -45,18 +49,6 @@ nodePools:
     disruption:
       consolidationPolicy: WhenEmpty
       consolidateAfter: 1m
-  # In-cluster object storage (Valkey): on-demand memory-optimized, tainted, and never consolidated
-  # while the pod runs (it holds every object in memory, without persistence)
-  storage:
-    capacityTypes: ["on-demand"]
-    instanceCategories: ["r"]
-    minGeneration: 5
-    taint: true
-    limits:
-      cpu: 16
-    disruption:
-      consolidationPolicy: WhenEmpty
-      consolidateAfter: 5m
 
 storageClass:
   create: true

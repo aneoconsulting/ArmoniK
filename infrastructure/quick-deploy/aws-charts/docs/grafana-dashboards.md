@@ -61,17 +61,8 @@ for f in $D/dashboard-armonik.json $D/dashboard-compute.json $D/dashboard-taskha
 done
 ```
 
-## 3. The `/grafana/` route of the ArmoniK ingress (optional)
+## 3. Reaching your Grafana
 
-The ingress proxies `/grafana/` to a Grafana and the admin GUI links to it. With the chart's Grafana
-disabled the route exists only if you give it the URL: `ingress.grafana_url`, which `values/armonik.yaml`
-fills from `GRAFANA_URL` (empty: no route). Your Grafana then needs, in `grafana.ini`:
-
-```ini
-[server]
-root_url = https://grafana.corp.example    # no path
-serve_from_sub_path = false
-```
-
-The ingress adds the `/grafana` prefix itself, and the pods of the ingress must be able to reach that
-URL (security group, NetworkPolicy egress). Without this route, give your users your Grafana URL directly.
+Envoy Gateway is the only entry point and has no `/grafana/` route (the ArmoniK nginx had one, see
+`docs/reference.md`): give your users your Grafana URL directly. `ingress.grafana_url`, which
+`values/armonik.yaml` fills from `GRAFANA_URL`, only sets the link the admin GUI shows.

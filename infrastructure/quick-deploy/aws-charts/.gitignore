@@ -1,2 +1,2 @@
-values/local.yaml
 backend.tfbackend
+registry-credentials.tfvars

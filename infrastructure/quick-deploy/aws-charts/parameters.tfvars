@@ -1,5 +1,5 @@
-# region, profile and prefix come from the Makefile (REGION, PROFILE, PREFIX), and
-# registry_credentials from the DOCKER_HUB_* and GITHUB_* environment variables.
+# prefix (and region, eu-west-3 by default) are passed with -var, and registry_credentials in
+# registry-credentials.tfvars: see README.md.
 
 tags = {
   "origin" = "terraform"

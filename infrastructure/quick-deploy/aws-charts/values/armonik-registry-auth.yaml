@@ -3,16 +3,13 @@
 #     -n "$ARMONIK_NS" --create-namespace -f armonik.yaml -f armonik-registry-auth.yaml --wait --timeout 15m
 # The ECR pull-through cache needs none of it: nodes authenticate to ECR with their IAM role.
 #
-# The Secret (type kubernetes.io/dockerconfigjson) must exist in ${ARMONIK_NS} first, see docs/helm-cli.md.
+# The Secret (type kubernetes.io/dockerconfigjson) must exist in ${ARMONIK_NS} first, see docs/reference.md.
 # Each chart family reads its own key. A node-level alternative needs none of this: give containerd the
 # credentials in the EC2NodeClass userData.
 global:
   imagePullSecrets:
     - name: registry-credentials   # ArmoniK pods
 dependencies:
-  redis:
-    imagePullSecrets:
-      - name: registry-credentials
   fluent-bit:
     imagePullSecrets:
       - name: registry-credentials

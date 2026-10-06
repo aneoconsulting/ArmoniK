@@ -1,6 +1,6 @@
-# Variables read by docs/examples/values/*.yaml (rendered with envsubst, see docs/helm-cli.md).
+# Variables read by values/*.yaml (rendered with envsubst, see README.md).
 #
-#   source docs/examples/env.sh
+#   source values/env.sh
 #
 # Every value comes from the Terraform outputs of terraform/outputs.tf, or from the infrastructure you
 # already have: replace any line below by a literal value and nothing else changes.
@@ -8,15 +8,14 @@
 # Where the outputs are read from, in this order:
 #   TF_OUTPUT_JSON  a file holding `terraform output -json`
 #   otherwise       `terraform -chdir=$TF_DIR output -json`, which needs `terraform init` to have run
-#                   against the same backend. `make init` keeps the Terraform data in generated/, hence
-#                   the TF_DATA_DIR default.
+#                   against the same backend.
 
 # cd output is dropped: some zsh setups print an escape sequence on every cd, which would end up in the path
-_qd="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/../.." >/dev/null && pwd)"
+_qd="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." >/dev/null && pwd)"
 if [ -n "${TF_OUTPUT_JSON:-}" ]; then
   _out="$(cat "$TF_OUTPUT_JSON")"
 else
-  _out="$(TF_DATA_DIR="${TF_DATA_DIR:-$_qd/generated}" terraform -chdir="${TF_DIR:-$_qd/terraform}" output -json)"
+  _out="$(terraform -chdir="${TF_DIR:-$_qd/terraform}" output -json)"
 fi
 _o() { printf '%s' "$_out" | jq -er "$1"; }
 
@@ -58,10 +57,11 @@ export REG_ECR_PUBLIC="$(_o .registry.value.upstreams.ecrPublic)"
 # Charts: the OCI prefix of `helm pull oci://<prefix>/<chart>`, one per upstream the charts come from
 export CHARTS_DOCKERHUB="$REG_DOCKERHUB"
 export CHARTS_ECR_PUBLIC="$REG_ECR_PUBLIC"
+export CHARTS_QUAY="$REG_QUAY"
 # The AWS Load Balancer Controller chart is on a classic HTTP Helm repository, not OCI
 export EKS_CHARTS_URL="https://aws.github.io/eks-charts"
 
-# Artifactory instead (path-based remote repositories, one per upstream, see docs/helm-cli.md):
+# Artifactory instead (path-based remote repositories, one per upstream, see docs/reference.md):
 # export ARTIFACTORY=artifactory.example.com
 # export REG_DOCKERHUB=$ARTIFACTORY/docker-hub-remote
 # export REG_GHCR=$ARTIFACTORY/ghcr-remote
@@ -70,6 +70,7 @@ export EKS_CHARTS_URL="https://aws.github.io/eks-charts"
 # export REG_ECR_PUBLIC=$ARTIFACTORY/ecr-public-remote
 # export CHARTS_DOCKERHUB=$ARTIFACTORY/dockerhub-helm-remote     # Helm OCI remote of registry-1.docker.io
 # export CHARTS_ECR_PUBLIC=$ARTIFACTORY/ecr-public-helm-remote   # Helm OCI remote of public.ecr.aws
+# export CHARTS_QUAY=$ARTIFACTORY/quay-helm-remote               # Helm OCI remote of quay.io
 # export EKS_CHARTS_URL=https://$ARTIFACTORY/artifactory/api/helm/eks-helm-remote   # Helm remote of https://aws.github.io/eks-charts
 
 # --- Customer Grafana ---------------------------------------------------------------------------------
@@ -77,16 +78,20 @@ export EKS_CHARTS_URL="https://aws.github.io/eks-charts"
 export GRAFANA_URL="${GRAFANA_URL:-}"
 
 # --- Chart versions ----------------------------------------------------------------------------------
+# helm --version of each release. Every other version: docs/reference.md, "Versions".
 export KARPENTER_VERSION=1.14.1
 export LBC_VERSION=3.5.0
-export CILIUM_VERSION=1.20.2   # optional, see docs/helm-cli.md
-export ARMONIK_VERSION=0.16.0-featexternalsto.301.sha.bf381bd3   # armonik and armonik-operators
+export CILIUM_VERSION=1.20.2
+export EG_VERSION=1.9.2        # Envoy Gateway
+# armonik and armonik-operators. ArmoniK.Infra CI publishes every branch as <version>-<branch>.<n>.sha.<commit>,
+# main as <version>-SNAPSHOT.<n>.sha.<commit>. dependencies.externalPostgresql needs main from 2026-10-02 (#368).
+export ARMONIK_VERSION=0.16.1-SNAPSHOT.4.sha.d640d96c
 
 # envsubst must only touch these: a value file may hold other $ signs
 export ENVSUBST_VARS='${CLUSTER_NAME} ${AWS_REGION} ${VPC_ID} ${ARMONIK_NS} ${OPERATORS_NS} ${SA_CONTROL_PLANE}
 ${SA_COMPUTE_PLANE} ${KARPENTER_NODE_ROLE} ${KARPENTER_QUEUE} ${KARPENTER_DISCOVERY_TAG} ${PG_HOST} ${PG_PORT}
 ${PG_DATABASE} ${PG_SECRET_ARN} ${SQS_PREFIX} ${S3_BUCKET} ${REG_DOCKERHUB} ${REG_GHCR} ${REG_QUAY} ${REG_K8S}
-${REG_ECR_PUBLIC} ${CHARTS_DOCKERHUB} ${CHARTS_ECR_PUBLIC} ${GRAFANA_URL}'
+${REG_ECR_PUBLIC} ${CHARTS_DOCKERHUB} ${CHARTS_ECR_PUBLIC} ${CHARTS_QUAY} ${GRAFANA_URL}'
 
 unset -f _o
 unset _out _qd

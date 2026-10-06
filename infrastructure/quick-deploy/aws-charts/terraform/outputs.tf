@@ -1,5 +1,4 @@
-# make output writes these values, unwrapped, to generated/armonik-output.json: the helmfile reads
-# them as its environment values, and ArmoniK.Action.Deploy reads eks.name and eks.region.
+# Read by values/env.sh, which turns them into the variables of the helm values files (see README.md).
 
 output "eks" {
   description = "EKS cluster"

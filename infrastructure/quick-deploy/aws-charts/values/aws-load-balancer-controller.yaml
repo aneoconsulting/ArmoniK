@@ -17,6 +17,6 @@ serviceAccount:
 image:
   repository: "${REG_ECR_PUBLIC}/eks/aws-load-balancer-controller"
 
-# Registry with authentication (Artifactory): the Secret must exist in kube-system, see docs/helm-cli.md
+# Registry with authentication (Artifactory): the Secret must exist in kube-system, see docs/reference.md
 # imagePullSecrets:
 #   - name: registry-credentials

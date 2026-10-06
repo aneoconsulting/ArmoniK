@@ -20,6 +20,10 @@ spec:
           value: {{ $name | quote }}
           effect: NoSchedule
       {{- end }}
+      {{- with $.Values.startupTaints }}
+      startupTaints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       requirements:
         - key: karpenter.sh/capacity-type
           operator: In

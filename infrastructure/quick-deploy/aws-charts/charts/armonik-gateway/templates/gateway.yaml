@@ -1,0 +1,31 @@
+{{- $protocol := .Values.tls.enabled | ternary "HTTPS" "HTTP" }}
+{{- define "armonik-gateway.tls" }}
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: {{ printf "%s-tls" .Values.name | quote }}
+{{- end }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: {{ .Values.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  gatewayClassName: {{ .Values.name | quote }}
+  listeners:
+    {{- range $listener := list "grpc" "http" }}
+    - name: {{ $listener }}
+      port: {{ index $.Values.ports $listener }}
+      protocol: {{ $protocol }}
+      {{- if $.Values.tls.enabled }}
+      {{- include "armonik-gateway.tls" $ }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.ports.seq }}
+    - name: seq
+      port: {{ .Values.ports.seq }}
+      protocol: {{ $protocol }}
+      {{- if .Values.tls.enabled }}
+      {{- include "armonik-gateway.tls" . }}
+      {{- end }}
+    {{- end }}

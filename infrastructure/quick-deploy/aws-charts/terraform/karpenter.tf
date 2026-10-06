@@ -1,6 +1,6 @@
 # Karpenter controller role (Pod Identity, kube-system/karpenter), node role and access entry, and the
 # SQS queue fed by EventBridge with the spot interruptions and rebalance recommendations. The
-# controller itself, the EC2NodeClass and the NodePools are deployed by the helmfile.
+# controller itself, the EC2NodeClass and the NodePools are deployed with helm (see README.md).
 module "karpenter" {
   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
   version = "~> 21.26"

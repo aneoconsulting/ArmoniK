@@ -1,0 +1,31 @@
+# Long-lived gRPC streams: no stream idle cut on the client side (listener) ...
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: {{ .Values.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: {{ .Values.name | quote }}
+  timeout:
+    http:
+      streamIdleTimeout: {{ .Values.timeouts.streamIdle | quote }}
+---
+# ... nor on the backend side, and no overall request timeout on the API route
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: {{ printf "%s-api" .Values.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: GRPCRoute
+      name: {{ printf "%s-api" .Values.name | quote }}
+  timeout:
+    http:
+      requestTimeout: 0s
+      maxStreamDuration: 0s
+      streamIdleTimeout: {{ .Values.timeouts.streamIdle | quote }}

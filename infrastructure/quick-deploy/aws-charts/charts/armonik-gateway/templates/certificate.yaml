@@ -1,0 +1,46 @@
+{{- if .Values.tls.enabled }}
+# Self-signed CA, then the Gateway certificate it signs. Clients trust the CA of the Secret <name>-ca.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ printf "%s-selfsigned" .Values.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ printf "%s-ca" .Values.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  isCA: true
+  commonName: {{ printf "%s-ca" .Values.name | quote }}
+  secretName: {{ printf "%s-ca" .Values.name | quote }}
+  privateKey: {algorithm: ECDSA, size: 256}
+  issuerRef:
+    name: {{ printf "%s-selfsigned" .Values.name | quote }}
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ printf "%s-ca" .Values.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  ca:
+    secretName: {{ printf "%s-ca" .Values.name | quote }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ printf "%s-tls" .Values.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  secretName: {{ printf "%s-tls" .Values.name | quote }}
+  dnsNames:
+    {{- required "tls.dnsNames is required with tls.enabled" .Values.tls.dnsNames | toYaml | nindent 4 }}
+  issuerRef:
+    name: {{ printf "%s-ca" .Values.name | quote }}
+    kind: Issuer
+{{- end }}

@@ -1,0 +1,44 @@
+# -- Name of the GatewayClass, the EnvoyProxy and the Gateway
+name: armonik
+# -- Full name of the ArmoniK release services: <armonikRelease>-control-plane, <armonikRelease>-ingress-gui...
+armonikRelease: armonik
+
+# NLB in front of the Envoy pods, created by the AWS Load Balancer Controller from the annotations of the
+# Service that Envoy Gateway generates
+loadBalancer:
+  # -- internet-facing, or internal (private subnets only)
+  scheme: internet-facing
+  # -- Extra annotations of the Envoy Service
+  annotations: {}
+
+# Listeners: the ports nginx used, so clients keep their endpoint
+ports:
+  # -- gRPC (ArmoniK API) and the admin GUI
+  grpc: 5001
+  # -- Admin GUI, and the ArmoniK API too
+  http: 5000
+  # -- Seq on a port of its own: under a path prefix Seq needs its HTML rewritten, which only nginx did.
+  # 0 drops the listener.
+  seq: 8080
+
+# TLS terminated by Envoy, with a certificate cert-manager issues from a self-signed CA
+tls:
+  enabled: false
+  # -- DNS names of the certificate: the NLB name, or your own record pointing to it
+  dnsNames: []
+
+# -- Envoy replicas, spread by Kubernetes over the core node pool
+replicas: 2
+# -- Resources of the Envoy container
+resources:
+  requests: {cpu: 500m, memory: 512Mi}
+  limits: {cpu: "1", memory: 512Mi}
+# -- Node selection of the Envoy pods
+nodeSelector:
+  armonik.aneo.fr/node-pool: core
+
+# Timeouts: ArmoniK keeps gRPC streams open for as long as a task runs (nginx allowed 30 days of
+# silence). Envoy's defaults (5 min stream idle, 15 s route timeout) would cut them.
+timeouts:
+  # -- Longest silence on a stream, client and backend side
+  streamIdle: 720h

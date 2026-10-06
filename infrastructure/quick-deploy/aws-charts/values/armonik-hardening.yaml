@@ -1,0 +1,38 @@
+# Optional layer over armonik.yaml, for a customer environment: NetworkPolicies, Seq authentication.
+# The internal NLB and TLS are on the Envoy side: loadBalancer.scheme and tls in armonik-gateway.yaml.
+# A registry with authentication is a separate layer, armonik-registry-auth.yaml.
+#   helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
+#     -n "$ARMONIK_NS" --create-namespace -f armonik.yaml -f armonik-hardening.yaml --wait --timeout 15m
+# Helm merges the files in order, maps key by key, so only what changes is here. A list replaces the one
+# before it, which is why nothing below touches a list armonik.yaml already sets.
+
+# ---- Seq -----------------------------------------------------------------------------------------------------
+# Seq starts without authentication in the chart's defaults (firstRunNoAuthentication). Set an admin password
+# hash instead (dependencies.seq.firstRunAdminPasswordHash, or firstRunAdminPasswordHashSecret), from a secret
+# manager rather than from this file.
+
+# ---- NetworkPolicies ---------------------------------------------------------------------------------------
+# The umbrella's own policies: control and compute planes, fluent-bit egress, KEDA.
+# Each dependency and operator has its own networkPolicy.enabled (see charts/network-policies.md).
+# Enforced by Cilium (values/cilium.yaml).
+networkPolicy:
+  enabled: true
+  # The control plane only admits the compute plane and the ArmoniK nginx: admit the Envoy pods of the
+  # Gateway (charts/armonik-gateway) instead, from their own namespace. GUI and Seq have no ingress policy.
+  extraPolicies:
+    - name: control-plane-from-envoy
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/component: control-plane
+      policyTypes: [Ingress]
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: envoy-gateway-system
+              podSelector:
+                matchLabels:
+                  gateway.envoyproxy.io/owning-gateway-name: armonik
+          ports:
+            - protocol: TCP
+              port: 1080

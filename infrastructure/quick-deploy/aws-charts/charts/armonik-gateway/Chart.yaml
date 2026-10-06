@@ -1,0 +1,5 @@
+apiVersion: v2
+name: armonik-gateway
+description: Envoy Gateway entry point of ArmoniK (NLB, Gateway, gRPC and HTTP routes), in place of the ArmoniK nginx
+type: application
+version: 0.1.0

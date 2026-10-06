@@ -2,7 +2,7 @@
 #
 # Customer scenario:
 #   - table storage   RDS PostgreSQL (external), credentials read from Secrets Manager through ESO
-#   - object storage  Valkey in the cluster (S3 variant at the bottom of this file)
+#   - object storage  S3, reached with the Pod Identity of the ArmoniK service accounts
 #   - queue           SQS
 #   - monitoring      the operators' Prometheus, the customer's own Grafana (not deployed here)
 #   - registries      REG_* (ECR pull-through cache or Artifactory, see env.sh)
@@ -99,13 +99,11 @@ compute-plane:
     # KEDA scales a partition on its queue length, from 0 to this many pods
     hpa:
       maxReplicaCount: 50
-    # requests == limits: Guaranteed QoS, predictable task runtimes and exact Karpenter sizing
+    # The agent keeps the chart's resources (requests 500m/256Mi, limits 1/1Gi)
     agent:
       image:
         registry: "${REG_DOCKERHUB}"
-      resources:
-        requests: {cpu: 500m, memory: 512Mi}
-        limits: {cpu: 500m, memory: 512Mi}
+    # The worker runs the tasks: requests == limits, for predictable task runtimes and exact Karpenter sizing
     worker:
       image:
         registry: "${REG_DOCKERHUB}"
@@ -114,6 +112,16 @@ compute-plane:
         limits: {cpu: "1", memory: 1Gi}
 
 ingress:
+  # Envoy Gateway is the only entry point (charts/armonik-gateway). The chart always renders its nginx,
+  # which has no enabled flag: no pod, and a ClusterIP Service, so no NLB. Its Gateway API objects stay
+  # off: the chart only renders an HTTPRoute, and the control plane needs a GRPCRoute (HTTP/2 upstream).
+  replicas: 0
+  service:
+    type: ClusterIP
+  gateway:
+    enabled: false
+  httpRoute:
+    enabled: false
   image:
     registry: "${REG_DOCKERHUB}"
   loadBalancer:
@@ -122,18 +130,9 @@ ingress:
   gui:
     image:
       registry: "${REG_DOCKERHUB}"
-  # The customer's Grafana, proxied by the ingress under /grafana/ (and linked from the admin GUI). Empty
-  # drops the route. Their Grafana needs root_url without a path and serve_from_sub_path=false: the ingress
-  # adds the /grafana prefix itself.
+  # The customer's Grafana, linked from the admin GUI. The chart requires one of the *_url values. The
+  # /grafana/ proxy was nginx's: with Envoy, users reach their Grafana directly.
   grafana_url: "${GRAFANA_URL}"
-  # NLB provisioned by the AWS Load Balancer Controller. Internet-facing keeps the demo reachable from
-  # a laptop; a customer cluster usually wants "internal" (armonik-hardening.yaml).
-  service:
-    type: LoadBalancer
-    annotations:
-      service.beta.kubernetes.io/aws-load-balancer-type: external
-      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
-      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
 
 dependencies:
   # ---- Table storage: RDS PostgreSQL --------------------------------------------------------------------
@@ -172,40 +171,20 @@ dependencies:
   rabbitmq:
     enabled: false
 
-  # ---- Object storage: Valkey in the cluster ------------------------------------------------------------
-  # Fast, and everything is lost with the pod: no persistence. Keep S3 for data that must survive a restart.
+  # ---- Object storage: S3 --------------------------------------------------------------------------------
+  # Bucket created by Terraform (SSE-KMS). No credentials: the control and compute planes reach it with
+  # their Pod Identity role, which grants this bucket and its KMS key.
   s3:
-    enabled: false
+    enabled: true
     region: "${AWS_REGION}"
     bucketName: "${S3_BUCKET}"
+  # Valkey (the chart's default object storage) is not deployed
   redis:
-    enabled: true
-    image:
-      registry: "${REG_ECR_PUBLIC}"
-    metrics:
-      exporter:
-        image:
-          registry: "${REG_GHCR}"
-    # Dedicated node pool: one on-demand memory-optimized node, never consolidated while Valkey runs
-    nodeSelector:
-      armonik.aneo.fr/node-pool: storage
-    tolerations:
-      - key: armonik.aneo.fr/node-pool
-        operator: Equal
-        value: storage
-        effect: NoSchedule
-    # requests == limits, and sizes the node (r-class, 16 GB). maxmemory leaves room for the process.
-    resources:
-      requests: {cpu: "2", memory: 8Gi}
-      limits: {cpu: "2", memory: 8Gi}
-    valkeyConfig: |
-      save ""
-      appendonly no
-      maxmemory 6gb
+    enabled: false
 
   # ---- Monitoring -----------------------------------------------------------------------------------------
   # The customer runs its own Grafana: not deployed here. This also drops the datasource and the dashboards
-  # ConfigMaps the chart renders for its Grafana: see docs/examples/grafana-dashboards.md to load them
+  # ConfigMaps the chart renders for its Grafana: see docs/grafana-dashboards.md to load them
   # in yours.
   grafana:
     enabled: false

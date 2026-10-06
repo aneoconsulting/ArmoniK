@@ -1,0 +1,29 @@
+# Envoy deployment and its Service. The AWS Load Balancer Controller turns the Service into an NLB that
+# targets the Envoy pod IPs directly.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: {{ .Values.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyDeployment:
+        replicas: {{ .Values.replicas }}
+        container:
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        pod:
+          nodeSelector:
+            {{- toYaml .Values.nodeSelector | nindent 12 }}
+      envoyService:
+        type: LoadBalancer
+        externalTrafficPolicy: Cluster
+        annotations:
+          service.beta.kubernetes.io/aws-load-balancer-type: external
+          service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+          service.beta.kubernetes.io/aws-load-balancer-scheme: {{ .Values.loadBalancer.scheme | quote }}
+          {{- with .Values.loadBalancer.annotations }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
