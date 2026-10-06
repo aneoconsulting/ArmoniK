@@ -22,3 +22,5 @@ RDS IP: `getent hosts "$(terraform -chdir=terraform output -json postgresql | jq
 
 During an htcmock run: `armonik.fr/partition=htcmock`, then `identity=2`. With nothing running there are no
 htcmock pods, and little traffic.
+
+Every flow of the deployment, captured with Hubble, and what the NetworkPolicies need: [network-flows.md](network-flows.md).
