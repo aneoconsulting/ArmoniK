@@ -28,11 +28,10 @@ from the node security group, Envoy Gateway, the Karpenter startup taint.
     eks-pod-identity-agent = { before_compute = true }
     # Tolerates CriticalAddonsOnly by default, so it lands on the system nodes
     coredns = {}
-    aws-ebs-csi-driver = {
-      ...
-    }
   }
 ```
+
+No `aws-ebs-csi-driver` either: no database runs in the cluster (RDS), so nothing needs EBS volumes.
 
 `bootstrap_self_managed_addons` needs no change: module `eks` v21 already sets it to `false`.
 
@@ -163,7 +162,7 @@ kubectl -n kube-system rollout status ds/cilium
 ## 5. Replace the system nodes
 
 They still hold the VPC CNI configuration and ENIs and the kube-proxy iptables rules. Nothing runs on them but
-CoreDNS and the add-ons, so terminate them all; the node group's Auto Scaling group starts new ones, which come
+CoreDNS and the Pod Identity agent, so terminate them all; the node group's Auto Scaling group starts new ones, which come
 up with Cilium only.
 
 ```sh
@@ -193,8 +192,7 @@ Then go on with README step 3 from the `karpenter` release. Karpenter nodes star
 
 ## Deploying from an empty account
 
-The steps above work because CoreDNS and the EBS CSI add-ons already exist when the CNI goes away. On a first
-`terraform apply` without `vpc-cni`, the `system` nodes stay NotReady until Cilium is installed, so these two
-add-ons never become ACTIVE and the apply times out. Either apply twice (first without `coredns` and
-`aws-ebs-csi-driver`, then `helm install cilium`, then with them), or install Cilium from Terraform (`helm_release`)
-between the cluster and these add-ons.
+The steps above work because the CoreDNS add-on already exists when the CNI goes away. On a first
+`terraform apply` without `vpc-cni`, the `system` nodes stay NotReady until Cilium is installed, so CoreDNS never
+becomes ACTIVE and the apply times out. Either apply twice (first without `coredns`, then `helm install cilium`,
+then with it), or install Cilium from Terraform (`helm_release`) between the cluster and the CoreDNS add-on.
