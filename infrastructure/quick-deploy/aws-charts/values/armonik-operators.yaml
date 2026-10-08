@@ -62,6 +62,9 @@ cert-manager:
 
 # kube-prometheus-stack, as the chart names it in armonik-operators
 kube-prometheus:
+  # Short, release-independent names: the Prometheus Service is prometheus-prometheus, the URL
+  # global.armonik.monitoring.prometheusUrl of values/armonik.yaml points to
+  fullnameOverride: prometheus
   windowsMonitoring:
     enabled: false
   crds:
