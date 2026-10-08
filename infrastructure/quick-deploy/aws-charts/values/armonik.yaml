@@ -130,8 +130,8 @@ ingress:
   gui:
     image:
       registry: "${REG_DOCKERHUB}"
-  # The customer's Grafana, linked from the admin GUI. The chart requires one of the *_url values. The
-  # /grafana/ proxy was nginx's: with Envoy, users reach their Grafana directly.
+  # The customer's Grafana, linked from the admin GUI (users reach it directly, Envoy does not proxy it).
+  # Empty: the link points to the chart's Grafana.
   grafana_url: "${GRAFANA_URL}"
 
 dependencies:
@@ -183,11 +183,23 @@ dependencies:
     enabled: false
 
   # ---- Monitoring -----------------------------------------------------------------------------------------
-  # The customer runs its own Grafana: not deployed here. This also drops the datasource and the dashboards
-  # ConfigMaps the chart renders for its Grafana: see docs/grafana-dashboards.md to load them
-  # in yours.
+  # The chart's Grafana, with the ArmoniK dashboards and the Prometheus datasource, served by Envoy under
+  # /grafana/ (grafana.enabled in armonik-gateway.yaml). The customer has its own: enabled: false here and
+  # there, see docs/grafana-dashboards.md.
   grafana:
-    enabled: false
+    enabled: true
+    image:
+      registry: "${REG_DOCKERHUB}"
+    # Dashboards and datasources sidecars
+    sidecar:
+      image:
+        registry: "${REG_QUAY}"
+    # nginx rewrote Grafana's HTML to serve it under /grafana/; Envoy does not, so Grafana serves the prefix
+    # itself. Through env and not grafana.ini: the chart refuses a root_url path there as long as its nginx
+    # exists, and that nginx runs no pod here (ingress.replicas: 0).
+    env:
+      GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
   fluent-bit:
     # cr.fluentbit.io is not an ECR upstream: the same image from Docker Hub
     image:

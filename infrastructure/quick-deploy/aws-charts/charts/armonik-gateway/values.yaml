@@ -9,6 +9,9 @@ loadBalancer:
   # -- internet-facing, or internal (private subnets only)
   scheme: internet-facing
   # -- Extra annotations of the Envoy Service
+  # annotations: {
+  #   service.beta.kubernetes.io/aws-load-balancer-subnets: subnet-0aaa,subnet-0bbb,subnet-0ccc
+  # }
   annotations: {}
 
 # Listeners: the ports nginx used, so clients keep their endpoint
@@ -20,6 +23,11 @@ ports:
   # -- Seq on a port of its own: under a path prefix Seq needs its HTML rewritten, which only nginx did.
   # 0 drops the listener.
   seq: 8080
+
+grafana:
+  # -- Route /grafana/ (on the grpc and http listeners) to the armonik release's own Grafana
+  # (dependencies.grafana in values/armonik.yaml). false when the customer brings its own Grafana.
+  enabled: true
 
 # TLS terminated by Envoy, with a certificate cert-manager issues from a self-signed CA
 tls:

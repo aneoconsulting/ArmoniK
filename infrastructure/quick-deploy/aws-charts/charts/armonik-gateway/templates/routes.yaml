@@ -67,3 +67,33 @@ spec:
         - name: {{ printf "%s-seq" $release | quote }}
           port: 80
 {{- end }}
+{{- if .Values.grafana.enabled }}
+---
+# Grafana under /grafana/, path kept: Grafana serves the prefix itself (dependencies.grafana in values/armonik.yaml)
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ printf "%s-grafana" .Values.name | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  parentRefs:
+    - name: {{ .Values.name | quote }}
+      sectionName: grpc
+    - name: {{ .Values.name | quote }}
+      sectionName: http
+  rules:
+    - matches:
+        - path: {type: Exact, value: /grafana}
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: /grafana/
+            statusCode: 301
+    - matches:
+        - path: {type: PathPrefix, value: /grafana/}
+      backendRefs:
+        - name: {{ printf "%s-grafana" $release | quote }}
+          port: 80
+{{- end }}
