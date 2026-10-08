@@ -34,24 +34,11 @@ from the node security group, Envoy Gateway, the Karpenter startup taint.
   }
 ```
 
-Optional, same file: give the `system` node group the taint Karpenter nodes already have, so no pod starts on a
-node before the Cilium agent is ready. Changing taints updates the node group in place.
-
-```hcl
-      taints = {
-        critical = { ... }
-        cilium = {
-          key    = "node.cilium.io/agent-not-ready"
-          value  = "true"
-          effect = "NO_EXECUTE"
-        }
-      }
-```
-
 `bootstrap_self_managed_addons` needs no change: module `eks` v21 already sets it to `false`.
 
-**`terraform/identities.tf`**: rights of the Cilium operator, which manages the ENIs. Check the list against the
-ENI IAM page of the Cilium docs for the version in `CILIUM_VERSION`.
+**`terraform/identities.tf`**: rights of the Cilium operator, which manages the ENIs. Check the list against
+[Required Privileges](https://docs.cilium.io/en/v1.20/network/concepts/ipam/eni/#required-privileges) in the
+Cilium docs (change `v1.20` to match `CILIUM_VERSION`).
 
 ```hcl
 # Cilium operator (ENI mode): creates and attaches the ENIs and assigns the pod IP addresses
@@ -100,12 +87,6 @@ module "cilium_operator_identity" {
 }
 ```
 
-**`terraform/outputs.tf`**: add the VPC CIDR to the `eks` output (`endpoint` is already there).
-
-```hcl
-    vpc_cidr = module.vpc.vpc_cidr_block
-```
-
 Then:
 
 ```sh
@@ -127,20 +108,19 @@ From here until Cilium runs, new pods cannot get an IP address. Running pods kee
 
 ## 3. Values
 
-**`values/env.sh`**: two variables, under `# --- EKS`, and both added to `ENVSUBST_VARS`.
+Two values to read once and write into the values file: the VPC CIDR, and the API server host. Without
+kube-proxy, the Cilium agents cannot reach the API server through the `kubernetes` Service.
 
 ```sh
-export VPC_CIDR="$(_o .eks.value.vpc_cidr)"
-# API server host for Cilium: without kube-proxy, the agents cannot use the kubernetes Service to reach it
-export EKS_ENDPOINT_HOST="$(_o .eks.value.endpoint | sed 's|^https://||')"
-```
-
-```sh
-export ENVSUBST_VARS='${CLUSTER_NAME} ${AWS_REGION} ${VPC_ID} ${VPC_CIDR} ${EKS_ENDPOINT_HOST} ...'
+CLUSTER_NAME=<cluster>    # terraform -chdir=terraform output -json eks | jq -r .name
+aws eks describe-cluster --name "$CLUSTER_NAME" --query cluster.endpoint --output text   # drop the https://
+aws ec2 describe-vpcs --vpc-ids "$(aws eks describe-cluster --name "$CLUSTER_NAME" \
+  --query cluster.resourcesVpcConfig.vpcId --output text)" --query 'Vpcs[0].CidrBlock' --output text
 ```
 
 **`values/cilium.yaml`**: replace the chaining block (`cni`, `enableIPv4Masquerade`, `routingMode`,
-`endpointRoutes`) with the one below. Images, operator tolerations and Hubble stay as they are.
+`endpointRoutes`) with the one below, with the two values above. Images, operator tolerations and Hubble stay as
+they are.
 
 ```yaml
 # Cilium in ENI mode: the operator attaches ENIs to the nodes and gives the pods VPC addresses (so the NLB with
@@ -154,12 +134,12 @@ eni:
   # awsEnablePrefixDelegation: true
 routingMode: native
 # Not masqueraded inside the VPC (RDS, VPC endpoints see the pod address), masqueraded to the node beyond (NAT)
-ipv4NativeRoutingCIDR: "${VPC_CIDR}"
+ipv4NativeRoutingCIDR: "10.0.0.0/16"                     # VPC CIDR
 enableIPv4Masquerade: true
 bpf:
   masquerade: true
 kubeProxyReplacement: true
-k8sServiceHost: "${EKS_ENDPOINT_HOST}"
+k8sServiceHost: "XXXX.gr7.eu-west-3.eks.amazonaws.com"  # API endpoint, no https://
 k8sServicePort: 443
 cni:
   # Cilium is the only CNI: it moves any other configuration out of /etc/cni/net.d
@@ -171,15 +151,12 @@ The operator runs on the host network, so it starts before any CNI and reaches t
 
 ## 4. Install Cilium
 
-The first commands of README step 3, unchanged:
+The `cilium` release of README step 3, with the filled-in values file (chart registry and version as in
+`values/env.sh`: `CHARTS_QUAY`, `CILIUM_VERSION`):
 
 ```sh
-source values/env.sh
-mkdir -p generated/values && V=generated/values
-for f in values/*.yaml; do envsubst "$ENVSUBST_VARS" < "$f" > "$V/$(basename "$f")"; done
-
-helm upgrade --install cilium "oci://$CHARTS_QUAY/cilium/charts/cilium" --version "$CILIUM_VERSION" \
-  -n kube-system -f $V/cilium.yaml
+helm upgrade --install cilium oci://quay.io/cilium/charts/cilium --version 1.20.2 \
+  -n kube-system -f values/cilium.yaml
 kubectl -n kube-system rollout status ds/cilium
 ```
 
