@@ -4,16 +4,17 @@
 global:
   images:
     envoyGateway:
-      image: "${REG_DOCKERHUB}/envoyproxy/gateway:v1.9.2"
+      image: "${REG_DOCKERHUB}/envoyproxy/gateway"
     # The Envoy data plane, started by the controller for each Gateway
     envoyProxy:
       image: "${REG_DOCKERHUB}/envoyproxy/envoy:distroless-v1.39.1"
     # Only referenced in the controller configuration: no rate limit service is deployed
     ratelimit:
       image: "${REG_DOCKERHUB}/envoyproxy/ratelimit:0482748e"
-  # Registry with authentication (Artifactory): the Secret must exist in envoy-gateway-system, see docs/reference.md
-  # imagePullSecrets:
-  #   - name: registry-credentials
+  # Registry with authentication (Artifactory): the Secret must exist in envoy-gateway-system, see README.md.
+  # The Envoy pods get theirs from the EnvoyProxy of armonik-gateway.
+  imagePullSecrets:
+    - name: registry-credentials
 deployment:
   pod:
     nodeSelector:

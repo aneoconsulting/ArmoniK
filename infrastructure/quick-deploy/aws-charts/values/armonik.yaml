@@ -1,7 +1,7 @@
 # Release armonik, chart ${CHARTS_DOCKERHUB}/dockerhubaneo/armonik, namespace ${ARMONIK_NS}.
 #
 # Customer scenario:
-#   - table storage   RDS PostgreSQL (external), credentials read from Secrets Manager through ESO
+#   - table storage   RDS PostgreSQL (external), credentials written in conf.core.env (no ESO)
 #   - object storage  S3, reached with the Pod Identity of the ArmoniK service accounts
 #   - queue           SQS
 #   - monitoring      the operators' Prometheus, the customer's own Grafana (not deployed here)
@@ -11,13 +11,17 @@
 #   helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
 #     -n "$ARMONIK_NS" --create-namespace -f armonik.yaml -f armonik-hardening.yaml --wait --timeout 15m
 global:
+  # Pull secret registry-credentials, for Artifactory with authentication; absent and ignored with the ECR
+  # pull-through cache. It must exist in ${ARMONIK_NS}, see README.md. ArmoniK pods and Bitnami charts read it.
+  imagePullSecrets: [{name: registry-credentials}]
   armonik:
     # The operators are installed by the armonik-operators release: this release only uses them
     operators:
+      # Not installed (armonik-operators.yaml): the PostgreSQL credentials are plain values of conf.core.env
       externalSecrets:
         deploy: false
-        available: true
-        namespace: "${OPERATORS_NS}"
+        available: false
+        # namespace: "${OPERATORS_NS}"
       keda:
         deploy: false
         available: true
@@ -141,6 +145,8 @@ dependencies:
     enabled: false
   mongodb-exporter:
     enabled: false
+  # Off: it always reads its credentials through ESO, which is not installed. The same settings are in
+  # conf.core.env above, with the credentials as plain values.
   externalPostgresql:
     enabled: true
     host: "${PG_HOST}"
@@ -201,6 +207,7 @@ dependencies:
       GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
       GF_SERVER_SERVE_FROM_SUB_PATH: "true"
   fluent-bit:
+    imagePullSecrets: [{name: registry-credentials}]
     # cr.fluentbit.io is not an ECR upstream: the same image from Docker Hub
     image:
       repository: "${REG_DOCKERHUB}/fluent/fluent-bit"
@@ -211,6 +218,7 @@ dependencies:
     tolerations:
       - operator: Exists
   seq:
+    imagePullSecrets: [{name: registry-credentials}]
     image:
       repository: "${REG_DOCKERHUB}/datalust/seq"
     gelf:

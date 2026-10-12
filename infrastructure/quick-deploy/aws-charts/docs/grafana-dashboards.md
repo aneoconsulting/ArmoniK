@@ -1,6 +1,13 @@
 # Using your own Grafana
 
-`values/armonik.yaml` sets `dependencies.grafana.enabled: false`: the release deploys no Grafana. The
+By default the release deploys the chart's Grafana, with the ArmoniK dashboards and datasource, served
+under `/grafana/` on the NLB. To use yours instead, turn it off in both releases:
+
+- `values/armonik.yaml`: `dependencies.grafana.enabled: false`
+- `values/armonik-gateway.yaml`: `grafana.enabled: false` (no `/grafana/` route)
+- `values/env.sh`: `GRAFANA_URL`, the link the admin GUI shows
+
+With `dependencies.grafana.enabled: false` the release deploys no Grafana. The
 Prometheus it needs is the one of `armonik-operators` (kube-prometheus-stack), which stays. Three things
 remain to connect your Grafana to it.
 
@@ -63,6 +70,6 @@ done
 
 ## 3. Reaching your Grafana
 
-Envoy Gateway is the only entry point and has no `/grafana/` route (the ArmoniK nginx had one, see
-`docs/reference.md`): give your users your Grafana URL directly. `ingress.grafana_url`, which
+Envoy Gateway is the only entry point and routes `/grafana/` only to the chart's Grafana: give your
+users your Grafana URL directly. `ingress.grafana_url`, which
 `values/armonik.yaml` fills from `GRAFANA_URL`, only sets the link the admin GUI shows.

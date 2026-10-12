@@ -67,9 +67,6 @@ helm pull oci://registry-1.docker.io/dockerhubaneo/armonik --version "$ARMONIK_V
 helm push "armonik-$ARMONIK_VERSION.tgz" "oci://$ARTIFACTORY/helm-local/dockerhubaneo"   # CHARTS_DOCKERHUB=$ARTIFACTORY/helm-local
 ```
 
-Instead of a pull Secret per namespace, the nodes can hold the credentials (`nodeClass.userData` in
-`charts/karpenter-nodes/values.yaml`).
-
 ## Running from AWX
 
 The commands of the README run as they are in a shell or a CI job. In AWX (Ansible Automation Platform) they
@@ -98,7 +95,7 @@ What nginx did and Envoy does not:
 | nginx | Now |
 |---|---|
 | `/seq/` with its HTML rewritten | Seq on its own port, 8080 |
-| `/grafana/` proxy to `grafana_url` | Users reach the customer Grafana directly |
+| `/grafana/` proxy to `grafana_url` | The chart's Grafana under `/grafana/`, served on that prefix by Grafana itself (no HTML rewrite). A customer Grafana is reached directly |
 | GUI language from `Accept-Language` | Redirect to `/admin/en/` |
 | `/static/` (environment banner of the GUI) | Not served |
 | mTLS, client certificate passed to Core | Not configured; Envoy supports it (`ClientTrafficPolicy` `tls.clientValidation`) |
@@ -114,7 +111,7 @@ kube-proxy replacement.
 | S3 (`dependencies.s3`, `redis.enabled: false`) | Bucket from Terraform, SSE-KMS. No credentials: Pod Identity of the control and compute planes. |
 | SQS (`dependencies.sqs`) | Core creates its queues under the prefix. |
 | Cilium + Hubble (`values/cilium.yaml`) | Enforce the NetworkPolicies (`armonik-hardening.yaml`) and show the flows. New Karpenter nodes wait for the agent (startup taint). |
-| Own Grafana (`dependencies.grafana.enabled: false`) | See [grafana-dashboards.md](grafana-dashboards.md). |
+| Grafana: the chart's, under `/grafana/` | Customer's own instead: [grafana-dashboards.md](grafana-dashboards.md). |
 | Private registry | Explicit `registry`/`repository` per image: `global.imageRegistry` is not honoured by every dependency. |
 
 ## Advice

@@ -7,6 +7,9 @@
 # Name of the armonik release: the routes target its Services (<release>-control-plane...)
 armonikRelease: armonik
 
+# Pull secret of the Envoy pods, which run in envoy-gateway-system (Artifactory with authentication)
+imagePullSecrets: [{name: registry-credentials}]
+
 loadBalancer:
   # internet-facing keeps a demo reachable from a laptop. Hardened: internal
   scheme: internet-facing

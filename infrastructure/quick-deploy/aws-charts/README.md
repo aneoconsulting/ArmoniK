@@ -34,21 +34,59 @@ cp registry-credentials.tfvars.example registry-credentials.tfvars   # git-ignor
 Terraform writes them to Secrets Manager, never to the state. Keep the file: `apply` and `destroy` read it.
 To rotate a token, edit the file and bump `registry_credentials_version` in it.
 
-**Artifactory instead.** The cache is still created (Terraform needs the credentials above) but stays unused.
-In `values/env.sh`, replace the `REG_*`, `CHARTS_*` and `EKS_CHARTS_URL` lines by the commented Artifactory
-block. In step 3, replace the `aws ecr get-login-password` line by:
+### Artifactory instead of the ECR cache
+
+The ECR cache is still created (Terraform needs the credentials above) but stays unused. Everything Artifactory
+needs is below, in order; nothing else changes in the README.
+
+**a. Repositories.** One remote per upstream, listed in [docs/reference.md](docs/reference.md#artifactory).
+
+**b. Variables.** Set these in step 3, after `source values/env.sh` if you use it (it would overwrite them
+with the ECR cache) and before the `envsubst` loop. In `values/env.sh`, the commented Artifactory block is the
+same list. The values files read the `REG_*` ones through `envsubst`, Helm the `CHARTS_*` ones.
 
 ```sh
+export ARTIFACTORY=artifactory.example.com      # host only: no https://, no path
+export REG_DOCKERHUB=$ARTIFACTORY/docker-hub-remote
+export REG_GHCR=$ARTIFACTORY/ghcr-remote
+export REG_QUAY=$ARTIFACTORY/quay-remote
+export REG_K8S=$ARTIFACTORY/k8s-remote
+export REG_ECR_PUBLIC=$ARTIFACTORY/ecr-public-remote
+export CHARTS_DOCKERHUB=$ARTIFACTORY/dockerhub-helm-remote
+export CHARTS_ECR_PUBLIC=$ARTIFACTORY/ecr-public-helm-remote
+export CHARTS_QUAY=$ARTIFACTORY/quay-helm-remote
+export EKS_CHARTS_URL=https://$ARTIFACTORY/artifactory/api/helm/eks-helm-remote
+# Secrets Manager secret holding the Artifactory credentials, as {"username", "password"}
+export ARTIFACTORY_SECRET=artifactory_pull_secret
+```
+
+Check the keys of the secret once, and adapt the two `jq` lines of c. if they differ:
+`aws secretsmanager get-secret-value --secret-id "$ARTIFACTORY_SECRET" --query SecretString --output text | jq keys`
+
+**c. Login and pull Secret.** In step 3, replace the `aws ecr get-login-password` line by these lines, so they
+run before the `cilium` release. They copy the credentials into a Secret `registry-credentials` in every
+namespace that pulls images. ESO cannot do it: it comes with `armonik-operators`, after Cilium, and its own
+image needs that Secret. Run them again after a token rotation.
+
+```sh
+_creds="$(aws secretsmanager get-secret-value --secret-id "$ARTIFACTORY_SECRET" --query SecretString --output text)"
+ARTIFACTORY_USER="$(jq -r .username <<< "$_creds")"
+ARTIFACTORY_TOKEN="$(jq -r .password <<< "$_creds")"
+unset _creds
+
 helm registry login "$ARTIFACTORY" --username "$ARTIFACTORY_USER" --password-stdin <<< "$ARTIFACTORY_TOKEN"
 for ns in kube-system envoy-gateway-system "$OPERATORS_NS" "$ARMONIK_NS"; do
   kubectl create namespace "$ns" --dry-run=client -o yaml | kubectl apply -f -
   kubectl create secret docker-registry registry-credentials -n "$ns" \
-    --docker-server="$ARTIFACTORY" --docker-username="$ARTIFACTORY_USER" --docker-password="$ARTIFACTORY_TOKEN"
+    --docker-server="$ARTIFACTORY" --docker-username="$ARTIFACTORY_USER" --docker-password="$ARTIFACTORY_TOKEN" \
+    --dry-run=client -o yaml | kubectl apply -f -
 done
 ```
 
-Uncomment the `imagePullSecrets` blocks of the values files and add `-f $V/armonik-registry-auth.yaml` to the
-`armonik` release. Repositories to create: [docs/reference.md](docs/reference.md#artifactory).
+`OPERATORS_NS` and `ARMONIK_NS` are the namespaces of the Terraform outputs (`terraform output namespaces`).
+
+**d. Values files.** Uncomment the `imagePullSecrets` blocks (`grep -rn imagePullSecrets values/`), then in
+step 3 add `-f $V/armonik-registry-auth.yaml` to the `armonik` release.
 
 ## 2. Terraform
 
@@ -68,7 +106,7 @@ for f in values/*.yaml; do envsubst "$ENVSUBST_VARS" < "$f" > "$V/$(basename "$f
 
 export KUBECONFIG=$PWD/generated/kubeconfig
 aws eks update-kubeconfig --name "$CLUSTER_NAME" --region "$AWS_REGION" --kubeconfig "$KUBECONFIG"
-aws ecr get-login-password | helm registry login --username AWS --password-stdin "${REG_DOCKERHUB%%/*}"   # valid 12 h
+aws ecr get-login-password | helm registry login --username AWS --password-stdin "${CHARTS_DOCKERHUB%%/*}"   # valid 12 h
 helm repo add eks "$EKS_CHARTS_URL" && helm repo update eks
 
 helm upgrade --install cilium "oci://$CHARTS_QUAY/cilium/charts/cilium" --version "$CILIUM_VERSION" \
@@ -101,7 +139,8 @@ kubectl get svc -n envoy-gateway-system -l gateway.envoyproxy.io/owning-gateway-
 kubectl port-forward -n kube-system svc/hubble-ui 12000:80                                       # Hubble UI
 ```
 
-The NLB serves the ArmoniK API and the GUI (`/admin/`) on 5001 and 5000, and Seq on 8080.
+The NLB serves the ArmoniK API and the GUI (`/admin/`) on 5001 and 5000, Grafana (`/grafana/`) on both
+too, and Seq on 8080.
 
 ## 4. Test
 

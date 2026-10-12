@@ -74,7 +74,8 @@ export EKS_CHARTS_URL="https://aws.github.io/eks-charts"
 # export EKS_CHARTS_URL=https://$ARTIFACTORY/artifactory/api/helm/eks-helm-remote   # Helm remote of https://aws.github.io/eks-charts
 
 # --- Customer Grafana ---------------------------------------------------------------------------------
-# URL the ArmoniK ingress proxies /grafana/ to, reachable from the cluster. Empty: no /grafana route.
+# URL of the customer's Grafana, only linked from the admin GUI (users reach it directly). Empty: the link
+# points to the chart's Grafana, under /grafana/. See docs/grafana-dashboards.md to use the customer's instead.
 export GRAFANA_URL="${GRAFANA_URL:-}"
 
 # --- Chart versions ----------------------------------------------------------------------------------

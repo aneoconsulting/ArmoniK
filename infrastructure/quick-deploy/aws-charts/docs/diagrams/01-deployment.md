@@ -30,7 +30,7 @@ flowchart TD
             FB["fluent-bit"]:::on
             SEQ["Seq"]:::on
         end
-        OFF["Off: mongodb, activemq, rabbitmq, redis (Valkey), Grafana (the customer's own)<br/>levers: dependencies.NAME.enabled<br/>nginx: rendered by the chart, 0 replica, ClusterIP"]:::off
+        OFF["Off: mongodb, activemq, rabbitmq, redis (Valkey), levers: dependencies.NAME.enabled<br/>nginx: rendered by the chart, 0 replica, ClusterIP"]:::off
     end
     U --> CP
     U --> COMP
@@ -107,7 +107,7 @@ Identity works unchanged.
 | **Karpenter** | Starts and stops nodes after the pending pods. Compute pods run on the `workers` pool (spot first), the rest on `core`. | `karpenter-nodes` values: `nodePools.*` |
 | **Cilium + Hubble** | Enforces NetworkPolicies and shows the flows (Hubble). Helm only: Hubble is a set of values of the Cilium chart. Installed first; new Karpenter nodes start tainted until the Cilium agent is ready. | `networkPolicy.enabled`, Cilium `hubble.relay.enabled`, `hubble.ui.enabled`, `startupTaints` |
 | **Envoy Gateway** | The only entry point: NLB, Envoy, gRPC and HTTP routes. TLS at the Gateway. | `values/armonik-gateway.yaml`: `loadBalancer.scheme`, `tls` |
-| **Monitoring** | Prometheus (from the operators, also read by KEDA), fluent-bit and Seq. The customer's own Grafana replaces the chart's (`dependencies.grafana.enabled: false`, see `docs/grafana-dashboards.md`). | `dependencies.grafana.enabled`, `global.armonik.monitoring.prometheusUrl` |
+| **Monitoring** | Prometheus (from the operators, also read by KEDA), fluent-bit and Seq. Grafana, the chart's, under `/grafana/` (a customer's own instead: `docs/grafana-dashboards.md`). | `dependencies.grafana.enabled`, `global.armonik.monitoring.prometheusUrl` |
 
 ## Still open
 

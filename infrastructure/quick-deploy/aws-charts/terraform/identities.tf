@@ -70,7 +70,8 @@ module "external_secrets_identity" {
   use_name_prefix = false
 
   attach_external_secrets_policy        = true
-  external_secrets_secrets_manager_arns = [module.rds.db_instance_master_user_secret_arn]
+  # Change this shit to reference an existing secret in case of a different rds
+  external_secrets_secrets_manager_arns = ["arn:aws:secretsmanager:eu-west-3:125796369274:secret:rds!db-6c82248e-b24a-4be3-9bf7-50753493a11b-jlIBEC"]
   external_secrets_create_permission    = false
 
   associations = {

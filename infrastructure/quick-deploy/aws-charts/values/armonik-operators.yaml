@@ -19,23 +19,15 @@ global:
       googleCasIssuer:
         deploy: false
         available: false
+      externalSecrets:
+        deploy: false
+        available: false
 
-# ---- Only with a registry that needs a pull secret (Artifactory with authentication) ----------------------
-# The Secret (type kubernetes.io/dockerconfigjson) must exist in ${OPERATORS_NS} first, see docs/reference.md.
-# Each subchart has its own key. Uncomment all of them, or give the nodes the credentials instead.
-# external-secrets:
-#   global:                 # reaches the controller, the webhook and the cert controller
-#     imagePullSecrets: [{name: registry-credentials}]
-# keda:
-#   imagePullSecrets: [{name: registry-credentials}]
-# cert-manager:
-#   global:
-#     imagePullSecrets: [{name: registry-credentials}]
-# kube-prometheus:
-#   global:
-#     imagePullSecrets: [{name: registry-credentials}]
-
+# Pull secret registry-credentials (type kubernetes.io/dockerconfigjson), for Artifactory with authentication.
+# It must exist in ${OPERATORS_NS}, see README.md; with the ECR pull-through cache it is absent and ignored.
 external-secrets:
+  global:                 # reaches the controller, the webhook and the cert controller
+    imagePullSecrets: [{name: registry-credentials}]
   # Name bound by Pod Identity to the role that reads the RDS secret (Terraform)
   serviceAccount:
     name: external-secrets
@@ -49,6 +41,7 @@ external-secrets:
       repository: "${REG_GHCR}/external-secrets/external-secrets"
 
 keda:
+  imagePullSecrets: [{name: registry-credentials}]
   image:
     keda:
       registry: "${REG_GHCR}"
@@ -58,10 +51,14 @@ keda:
       registry: "${REG_GHCR}"
 
 cert-manager:
+  global:
+    imagePullSecrets: [{name: registry-credentials}]
   imageRegistry: "${REG_QUAY}"
 
 # kube-prometheus-stack, as the chart names it in armonik-operators
 kube-prometheus:
+  global:                 # reaches kube-state-metrics and node-exporter too
+    imagePullSecrets: [{name: registry-credentials}]
   # Short, release-independent names: the Prometheus Service is prometheus-prometheus, the URL
   # global.armonik.monitoring.prometheusUrl of values/armonik.yaml points to
   fullnameOverride: prometheus
