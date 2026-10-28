@@ -21,3 +21,14 @@ ingress_allowed_cidrs = ["0.0.0.0/0"]
 #     memory = "4Gi"
 #   }
 # }
+
+partitions = {
+  # Core's Bench worker (tasks of BenchOptions__TaskDurationMs), for the PostgreSQL stress tests
+  bench = {
+    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_bench_test_worker"
+    tag          = "0.41.3"
+    cpu          = "500m"
+    memory       = "512Mi"
+    max_replicas = 100
+  }
+}

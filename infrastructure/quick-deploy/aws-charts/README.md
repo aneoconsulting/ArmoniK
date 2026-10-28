@@ -31,16 +31,46 @@ kubectl get svc -n armonik armonik-ingress   # EXTERNAL-IP: the NLB
 
 The NLB serves the API on 5001, and the GUI (`/admin/`), Grafana (`/grafana/`) and Seq (`/seq/`) on 5000.
 
-## Update a worker
+## Add a partition
 
-```sh
-REPO=$(terraform -chdir=terraform/aws output -raw workers_repository)
-aws ecr get-login-password | docker login --username AWS --password-stdin "${REPO%%/*}"
-docker tag my-worker "$REPO:myapp-1.0.0" && docker push "$REPO:myapp-1.0.0"
-```
+Any ECR repository of the account works, not only `workers_repository` and not only the pull-through cache:
+the nodes pull with `AmazonEC2ContainerRegistryReadOnly`. A repository encrypted with a customer KMS key
+also needs `kms:Decrypt` for the node roles (`terraform -chdir=terraform/aws output node_role_arns`).
 
-Set the tag in `partitions` (`terraform/k8s/terraform.tfvars`), then in `terraform/k8s`:
-`terraform apply -var-file=../backend.tfbackend`.
+1. Push the image, with a new tag for every version (a re-pushed tag is not pulled again):
+
+   ```sh
+   REPO=123456789012.dkr.ecr.eu-west-3.amazonaws.com/my-team/my-worker   # or: terraform -chdir=terraform/aws output -raw workers_repository
+   aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin "${REPO%%/*}"
+   docker tag my-worker "$REPO:1.0.0" && docker push "$REPO:1.0.0"
+   ```
+
+2. Declare it in `terraform/k8s/terraform.tfvars` (name: lowercase letters and digits only):
+
+   ```hcl
+   partitions = {
+     myapp = {
+       image        = "123456789012.dkr.ecr.eu-west-3.amazonaws.com/my-team/my-worker"   # without the tag
+       tag          = "1.0.0"
+       cpu          = "2"       # worker requests = limits
+       memory       = "4Gi"
+       max_replicas = 50        # KEDA scales from 0 to this
+     }
+   }
+   ```
+
+3. Apply, then check:
+
+   ```sh
+   cd terraform/k8s && terraform apply -var-file=../backend.tfbackend
+   kubectl get scaledobject -n armonik armonik-compute-plane-myapp   # READY True
+   ```
+
+The partition runs no pod until tasks arrive: submit to partition `myapp`, then watch
+`kubectl get pods -n armonik -l armonik.fr/partition=myapp`. An `ImagePullBackOff` means a wrong image path or
+tag, or a repository policy or KMS key that refuses the node roles.
+
+To update a worker, push a new tag, change `tag` and apply again: the partition's pods roll over.
 
 ## Test
 
