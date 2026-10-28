@@ -1,3 +1,4 @@
 terraform/backend.tfbackend
 terraform/aws/registry-credentials.auto.tfvars
 .terraform/
+.kubeconfig
