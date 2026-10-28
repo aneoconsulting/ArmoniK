@@ -36,7 +36,7 @@ module "vpc" {
 module "vpce" {
   source = "./generated/infra-modules/networking/aws/vpce"
   vpc_id = module.vpc.id
-  endpoints = {
+  endpoints = merge({
     s3 = {
       service      = "s3"
       service_type = "Gateway"
@@ -120,7 +120,16 @@ module "vpce" {
       subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
       security_group_ids  = [module.vpc.this.default_security_group_id]
     }
-  }
+    }, var.eks.pod_identity ? {
+    # EKS Auth API, used by the Pod Identity agent to fetch the pods credentials
+    eks_auth = {
+      service             = "eks-auth"
+      service_type        = "Interface"
+      private_dns_enabled = !module.vpc.enable_external_access
+      subnet_ids          = !module.vpc.enable_external_access ? module.vpc.private_subnets : module.vpc.public_subnets
+      security_group_ids  = [module.vpc.this.default_security_group_id]
+    }
+  } : {})
   tags = local.tags
 }
 

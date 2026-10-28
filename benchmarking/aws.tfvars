@@ -15,13 +15,6 @@ eks = {
   cluster_version                = "1.35"
   node_selector                  = { service = "monitoring" }
   cluster_endpoint_public_access = true
-  map_roles                      = []
-  map_users                      = []
-  cluster_addons = {
-    vpc-cni = {
-      most_recent = true
-    }
-  }
 }
 
 # List of EKS managed node groups
@@ -178,11 +171,20 @@ self_managed_node_groups = {
     desired_size                = 0
     max_size                    = 5
     force_delete                = true
-    force_delete_warm_pool      = true
     instance_market_options = {
       market_type = "spot"
     }
-    bootstrap_extra_args     = "--kubelet-extra-args '--node-labels=node.kubernetes.io/lifecycle=spot'"
+    cloudinit_pre_nodeadm = [{
+      content_type = "application/node.eks.aws"
+      content      = <<-EOT
+        apiVersion: node.eks.aws/v1alpha1
+        kind: NodeConfig
+        spec:
+          kubelet:
+            flags:
+              - --node-labels=node.kubernetes.io/lifecycle=spot
+      EOT
+    }]
     iam_role_use_name_prefix = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
@@ -196,23 +198,27 @@ self_managed_node_groups = {
     max_size                    = 5
     use_mixed_instances_policy  = true
     mixed_instances_policy = {
-      on_demand_allocation_strategy            = "lowest-price"
-      on_demand_base_capacity                  = 0
-      on_demand_percentage_above_base_capacity = 20 # 20% On-Demand Instances, 80% Spot Instances
-      spot_allocation_strategy                 = "price-capacity-optimized"
-      spot_instance_pools                      = null
-      spot_max_price                           = null
+      instances_distribution = {
+        on_demand_allocation_strategy            = "lowest-price"
+        on_demand_base_capacity                  = 0
+        on_demand_percentage_above_base_capacity = 20 # 20% On-Demand Instances, 80% Spot Instances
+        spot_allocation_strategy                 = "price-capacity-optimized"
+        spot_instance_pools                      = null
+        spot_max_price                           = null
+      }
+      launch_template = {
+        override = [
+          {
+            instance_type     = "c8a.4xlarge"
+            weighted_capacity = "1"
+          },
+          {
+            instance_type     = "c8a.2xlarge"
+            weighted_capacity = "2"
+          },
+        ]
+      }
     }
-    override = [
-      {
-        instance_type     = "c8a.4xlarge"
-        weighted_capacity = "1"
-      },
-      {
-        instance_type     = "c8a.2xlarge"
-        weighted_capacity = "2"
-      },
-    ]
     iam_role_use_name_prefix = false
     iam_role_additional_policies = {
       AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
