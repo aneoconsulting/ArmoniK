@@ -7,5 +7,9 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 6.59, < 7.0"
     }
+    http = {
+      source  = "hashicorp/http"
+      version = ">= 3.5, < 4.0"
+    }
   }
 }

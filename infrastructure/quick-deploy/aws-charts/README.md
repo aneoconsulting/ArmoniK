@@ -1,198 +1,72 @@
 # AWS quick deploy with the ArmoniK Helm charts
 
-Terraform (`terraform/`) creates the AWS infrastructure: VPC, EKS, Karpenter IAM and interruption queue, RDS
-PostgreSQL, S3, the ECR pull-through cache and the EKS Pod Identity roles. Everything in the cluster is then
-installed with `helm`, from the values in `values/`: Cilium + Hubble, Karpenter, the operators, Envoy Gateway
-(the only entry point) and ArmoniK on RDS, S3 and SQS.
+EKS + Karpenter, ArmoniK on RDS PostgreSQL, S3 and SQS, every image and chart through the ECR pull-through
+cache. `terraform/aws` creates the AWS resources, then `terraform/k8s` the Helm releases.
 
-- Diagrams: [what gets deployed](docs/diagrams/01-deployment.md), [from Terraform to the helm releases](docs/diagrams/02-pipeline.md)
-- Reference (variables, Artifactory, customer choices, advice, known limits): [docs/reference.md](docs/reference.md)
-- Hubble UI filters: [docs/hubble.md](docs/hubble.md)
-- Network flows (who talks to whom, for NetworkPolicies): [docs/network-flows.md](docs/network-flows.md)
+## Setup
 
-Requirements: `aws`, `terraform` >= 1.11, `helm` >= 3.8, `kubectl`, `jq`, `envsubst` (package `gettext`). Deploying
-from AWX (Ansible) instead of a shell: see [docs/reference.md](docs/reference.md#running-from-awx).
+- `terraform/backend.tfbackend`: copy the `.example`, set the state bucket.
+- `terraform/aws/registry-credentials.auto.tfvars`: copy the `.example`, fill in the Docker Hub and GitHub tokens.
+- `terraform/aws/terraform.tfvars`: `prefix`.
+- `terraform/k8s/terraform.tfvars`: `ingress_allowed_cidrs`, who may reach the NLB (`0.0.0.0/0`: everyone, no authentication).
 
-## 0. Settings
+## Deploy
 
 ```sh
-export AWS_PROFILE=<profile> AWS_REGION=eu-west-3 PREFIX=armonik-demo   # PREFIX names every resource
-cp backend.tfbackend.example backend.tfbackend                          # set the state bucket and its region
+cd terraform/aws
+terraform init -backend-config=../backend.tfbackend
+terraform apply
+
+cd ../k8s
+terraform init -backend-config=../backend.tfbackend
+terraform apply -var-file=../backend.tfbackend   # finds the state of terraform/aws
 ```
 
-The infrastructure parameters are in `parameters.tfvars` (all of them in `terraform/variables.tf`).
-
-## 1. Registry credentials
-
-All images and charts are pulled through the ECR pull-through cache. AWS requires upstream credentials for
-Docker Hub (a read-only access token) and GitHub (a classic token with `read:packages`):
+## Access
 
 ```sh
-cp registry-credentials.tfvars.example registry-credentials.tfvars   # git-ignored: fill in the two tokens
+aws eks update-kubeconfig --region eu-west-3 --name armonik69 --alias armonik69
+kubectl get svc -n armonik armonik-ingress   # EXTERNAL-IP: the NLB
 ```
 
-Terraform writes them to Secrets Manager, never to the state. Keep the file: `apply` and `destroy` read it.
-To rotate a token, edit the file and bump `registry_credentials_version` in it.
+The NLB serves the API on 5001, and the GUI (`/admin/`), Grafana (`/grafana/`) and Seq (`/seq/`) on 5000.
 
-### Artifactory instead of the ECR cache
-
-The ECR cache is still created (Terraform needs the credentials above) but stays unused. Everything Artifactory
-needs is below, in order; nothing else changes in the README.
-
-**a. Repositories.** One remote per upstream, listed in [docs/reference.md](docs/reference.md#artifactory).
-
-**b. Variables.** Set these in step 3, after `source values/env.sh` if you use it (it would overwrite them
-with the ECR cache) and before the `envsubst` loop. In `values/env.sh`, the commented Artifactory block is the
-same list. The values files read the `REG_*` ones through `envsubst`, Helm the `CHARTS_*` ones.
+## Update a worker
 
 ```sh
-export ARTIFACTORY=artifactory.example.com      # host only: no https://, no path
-export REG_DOCKERHUB=$ARTIFACTORY/docker-hub-remote
-export REG_GHCR=$ARTIFACTORY/ghcr-remote
-export REG_QUAY=$ARTIFACTORY/quay-remote
-export REG_K8S=$ARTIFACTORY/k8s-remote
-export REG_ECR_PUBLIC=$ARTIFACTORY/ecr-public-remote
-export CHARTS_DOCKERHUB=$ARTIFACTORY/dockerhub-helm-remote
-export CHARTS_ECR_PUBLIC=$ARTIFACTORY/ecr-public-helm-remote
-export CHARTS_QUAY=$ARTIFACTORY/quay-helm-remote
-export EKS_CHARTS_URL=https://$ARTIFACTORY/artifactory/api/helm/eks-helm-remote
-# Secrets Manager secret holding the Artifactory credentials, as {"username", "password"}
-export ARTIFACTORY_SECRET=artifactory_pull_secret
+REPO=$(terraform -chdir=terraform/aws output -raw workers_repository)
+aws ecr get-login-password | docker login --username AWS --password-stdin "${REPO%%/*}"
+docker tag my-worker "$REPO:myapp-1.0.0" && docker push "$REPO:myapp-1.0.0"
 ```
 
-Check the keys of the secret once, and adapt the two `jq` lines of c. if they differ:
-`aws secretsmanager get-secret-value --secret-id "$ARTIFACTORY_SECRET" --query SecretString --output text | jq keys`
+Set the tag in `partitions` (`terraform/k8s/terraform.tfvars`), then in `terraform/k8s`:
+`terraform apply -var-file=../backend.tfbackend`.
 
-**c. Login and pull Secret.** In step 3, replace the `aws ecr get-login-password` line by these lines, so they
-run before the `cilium` release. They copy the credentials into a Secret `registry-credentials` in every
-namespace that pulls images. ESO cannot do it: it comes with `armonik-operators`, after Cilium, and its own
-image needs that Secret. Run them again after a token rotation.
+## Test
 
 ```sh
-_creds="$(aws secretsmanager get-secret-value --secret-id "$ARTIFACTORY_SECRET" --query SecretString --output text)"
-ARTIFACTORY_USER="$(jq -r .username <<< "$_creds")"
-ARTIFACTORY_TOKEN="$(jq -r .password <<< "$_creds")"
-unset _creds
-
-helm registry login "$ARTIFACTORY" --username "$ARTIFACTORY_USER" --password-stdin <<< "$ARTIFACTORY_TOKEN"
-for ns in kube-system envoy-gateway-system "$OPERATORS_NS" "$ARMONIK_NS"; do
-  kubectl create namespace "$ns" --dry-run=client -o yaml | kubectl apply -f -
-  kubectl create secret docker-registry registry-credentials -n "$ns" \
-    --docker-server="$ARTIFACTORY" --docker-username="$ARTIFACTORY_USER" --docker-password="$ARTIFACTORY_TOKEN" \
-    --dry-run=client -o yaml | kubectl apply -f -
-done
+NLB=$(kubectl get svc -n armonik armonik-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+docker run --rm -e HtcMock__NTasks=2000 -e HtcMock__TotalCalculationTime=02:00:00 -e HtcMock__SubTasksLevels=1 \
+  -e HtcMock__Partition=htcmock -e GrpcClient__Endpoint=http://$NLB:5001 \
+  dockerhubaneo/armonik_core_htcmock_test_client:0.41.3
 ```
 
-`OPERATORS_NS` and `ARMONIK_NS` are the namespaces of the Terraform outputs (`terraform output namespaces`).
+## Destroy
 
-**d. Values files.** Uncomment the `imagePullSecrets` blocks (`grep -rn imagePullSecrets values/`), then in
-step 3 add `-f $V/armonik-registry-auth.yaml` to the `armonik` release.
-
-## 2. Terraform
+The NLB and the Karpenter nodes belong to controllers: remove them first, while the controllers run.
 
 ```sh
-terraform -chdir=terraform init -backend-config=../backend.tfbackend \
-  -backend-config="key=$PREFIX/armonik-terraform.tfstate"
-terraform -chdir=terraform apply -var-file=../parameters.tfvars -var-file=../registry-credentials.tfvars \
-  -var prefix="$PREFIX" -var region="$AWS_REGION"
-```
-
-## 3. Helm
-
-```sh
-source values/env.sh                       # variables from the Terraform outputs
-mkdir -p generated/values && V=generated/values
-for f in values/*.yaml; do envsubst "$ENVSUBST_VARS" < "$f" > "$V/$(basename "$f")"; done
-
-export KUBECONFIG=$PWD/generated/kubeconfig
-aws eks update-kubeconfig --name "$CLUSTER_NAME" --region "$AWS_REGION" --kubeconfig "$KUBECONFIG"
-aws ecr get-login-password | helm registry login --username AWS --password-stdin "${CHARTS_DOCKERHUB%%/*}"   # valid 12 h
-helm repo add eks "$EKS_CHARTS_URL" && helm repo update eks
-
-helm upgrade --install cilium "oci://$CHARTS_QUAY/cilium/charts/cilium" --version "$CILIUM_VERSION" \
-  -n kube-system -f $V/cilium.yaml
-kubectl -n kube-system rollout status ds/cilium   # Hubble relay and UI start later, on the first core node
-helm upgrade --install karpenter "oci://$CHARTS_ECR_PUBLIC/karpenter/karpenter" --version "$KARPENTER_VERSION" \
-  -n kube-system -f $V/karpenter.yaml --wait
-helm upgrade --install karpenter-nodes ./charts/karpenter-nodes \
-  -n kube-system -f $V/karpenter-nodes.yaml --wait
-helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller --version "$LBC_VERSION" \
-  -n kube-system -f $V/aws-load-balancer-controller.yaml --wait
-helm upgrade --install armonik-operators "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik-operators" --version "$ARMONIK_VERSION" \
-  -n "$OPERATORS_NS" --create-namespace -f $V/armonik-operators.yaml --wait --timeout 10m
-helm upgrade --install aws-secret-store ./charts/aws-secret-store \
-  -n "$OPERATORS_NS" -f $V/aws-secret-store.yaml --wait
-helm upgrade --install eg "oci://$CHARTS_DOCKERHUB/envoyproxy/gateway-helm" --version "$EG_VERSION" \
-  -n envoy-gateway-system --create-namespace -f $V/envoy-gateway.yaml --wait
-helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
-  -n "$ARMONIK_NS" --create-namespace -f $V/armonik.yaml --wait --timeout 15m
-helm upgrade --install armonik-gateway ./charts/armonik-gateway \
-  -n "$ARMONIK_NS" -f $V/armonik-gateway.yaml --wait
-```
-
-Keep the order: each release needs the previous ones. Never add `--reuse-values`, nor `--wait-for-jobs` (the
-init Jobs delete themselves). Hardening: `-f $V/armonik-hardening.yaml` on `armonik` (NetworkPolicies), and
-`loadBalancer.scheme: internal` and `tls` in `values/armonik-gateway.yaml`.
-
-```sh
-kubectl get svc -n envoy-gateway-system -l gateway.envoyproxy.io/owning-gateway-name=armonik   # the NLB
-kubectl port-forward -n kube-system svc/hubble-ui 12000:80                                       # Hubble UI
-```
-
-The NLB serves the ArmoniK API and the GUI (`/admin/`) on 5001 and 5000, Grafana (`/grafana/`) on both
-too, and Seq on 8080.
-
-## 4. Test
-
-The htcmock client, from any machine with Docker, through the NLB. Its image tag is the Core version of the release:
-
-```sh
-NLB=$(kubectl get svc -n envoy-gateway-system -l gateway.envoyproxy.io/owning-gateway-name=armonik \
-  -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}')
-CORE=$(helm get values armonik -n "$ARMONIK_NS" -o json | jq -r .global.armonik.versions.core)
-
-docker run --rm \
-  -e HtcMock__NTasks=2000 \
-  -e HtcMock__TotalCalculationTime=02:00:00 \
-  -e HtcMock__DataSize=1 -e HtcMock__MemorySize=1 \
-  -e HtcMock__EnableFastCompute=false -e HtcMock__SubTasksLevels=1 \
-  -e HtcMock__Partition=htcmock \
-  -e GrpcClient__Endpoint=http://$NLB:5001 \
-  dockerhubaneo/armonik_core_htcmock_test_client:$CORE
-```
-
-The client submits one root task, whose worker creates the `NTasks` subtasks: they reach the queue once their
-payloads are in S3, then KEDA scales the `htcmock` partition (up to 50 pods) and Karpenter adds `workers` nodes.
-Each task computes `TotalCalculationTime / NTasks` (here 3.6 s). To watch it:
-
-```sh
-kubectl get pods -n "$ARMONIK_NS" -l armonik.fr/partition=htcmock -w
-kubectl get nodeclaims -w
-```
-
-Stopping the client does not stop the tasks: cancel or delete the session in the GUI. The partition scales back to 0
-about 5 minutes after the queue is empty (KEDA cooldown).
-
-## 5. Removal
-
-Reverse order, waiting for the NLB and the Karpenter nodes, else `terraform destroy` fails on the VPC:
-
-```sh
-helm uninstall armonik-gateway armonik -n "$ARMONIK_NS" --wait
-kubectl get svc -A | grep LoadBalancer                     # wait until empty
-helm uninstall eg -n envoy-gateway-system
-helm uninstall aws-secret-store armonik-operators -n "$OPERATORS_NS"
-helm uninstall aws-load-balancer-controller -n kube-system
+cd terraform/k8s
+terraform destroy -var-file=../backend.tfbackend -target=helm_release.armonik   # removes the NLB
 kubectl delete nodepools.karpenter.sh --all
-kubectl get nodeclaims.karpenter.sh                        # wait until empty
-helm uninstall karpenter-nodes karpenter cilium -n kube-system
+kubectl get nodeclaims.karpenter.sh                                            # wait until empty
+terraform destroy -var-file=../backend.tfbackend
 
-terraform -chdir=terraform destroy -var-file=../parameters.tfvars -var-file=../registry-credentials.tfvars \
-  -var prefix="$PREFIX" -var region="$AWS_REGION"
-
-# Repositories created by the pull-through cache, outside the Terraform state
-for repo in $(aws ecr describe-repositories --output text \
-    --query "repositories[?starts_with(repositoryName, '$PREFIX/')].repositoryName"); do
-  aws ecr delete-repository --repository-name "$repo" --force > /dev/null && echo "deleted $repo"
+cd ../aws
+terraform destroy
+# Repositories created by the pull-through cache, outside the state
+for r in $(aws ecr describe-repositories --output text \
+    --query "repositories[?starts_with(repositoryName, 'armonik69/')].repositoryName"); do
+  aws ecr delete-repository --repository-name "$r" --force > /dev/null
 done
 ```

@@ -1,0 +1,3 @@
+# Copy to backend.tfbackend (git-ignored): an existing S3 bucket for the states of terraform/aws and terraform/k8s
+bucket = "my-terraform-states"
+region = "eu-west-3"

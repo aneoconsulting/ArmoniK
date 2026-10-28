@@ -1,4 +1,4 @@
-# Release karpenter, chart oci://${CHARTS_ECR_PUBLIC}/karpenter/karpenter, namespace kube-system.
+# Release karpenter, chart karpenter from public.ecr.aws through the ECR cache, namespace kube-system.
 # Karpenter adds and removes EC2 nodes after the pending pods. It is the only thing that must not run on
 # a node it manages itself, hence the system node group below.
 settings:
@@ -18,10 +18,6 @@ controller:
     limits:
       cpu: 250m
       memory: 512Mi
-
-# Registry with authentication (Artifactory): the Secret must exist in kube-system, see docs/reference.md
-# imagePullSecrets:
-#   - name: registry-credentials
 
 # On the small managed node group Terraform creates (tainted CriticalAddonsOnly, which the chart tolerates)
 nodeSelector:

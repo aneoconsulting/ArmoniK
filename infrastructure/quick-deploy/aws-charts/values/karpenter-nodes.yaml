@@ -2,16 +2,10 @@
 # What Karpenter may create: one EC2NodeClass (AMI, subnets, security groups, disk) and the NodePools
 # (core, workers). The other defaults are in charts/karpenter-nodes/values.yaml.
 
-# IAM role of the nodes Karpenter starts (Terraform output karpenter.node_role)
+# IAM role of the nodes Karpenter starts (Terraform, module karpenter)
 nodeRole: "${KARPENTER_NODE_ROLE}"
 # Karpenter finds the subnets and the node security group by this tag, set by Terraform
 discoveryTag: "${KARPENTER_DISCOVERY_TAG}"
-
-# No pod on a new node before the Cilium agent covers it: Cilium removes this taint once ready
-startupTaints:
-  - key: node.cilium.io/agent-not-ready
-    value: "true"
-    effect: NoExecute
 
 # To change the pools, copy a block of charts/karpenter-nodes/values.yaml here, e.g. to cap the compute plane:
 # nodePools:

@@ -68,3 +68,21 @@ module "rds" {
 
   create_db_option_group = false
 }
+
+# CA bundle of the region, which Core validates the server certificate against (rds.force_ssl). Stored next
+# to the master user secret so ESO mounts it the same way. JSON key "ca": ESO reads a property path, where
+# the dot of "ca.crt" would be a separator.
+data "http" "rds_ca" {
+  url = "https://truststore.pki.rds.amazonaws.com/${var.region}/${var.region}-bundle.pem"
+}
+
+resource "aws_secretsmanager_secret" "rds_ca" {
+  name                    = "${local.name}-rds-ca"
+  description             = "CA bundle of RDS in ${var.region}"
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "rds_ca" {
+  secret_id     = aws_secretsmanager_secret.rds_ca.id
+  secret_string = jsonencode({ ca = data.http.rds_ca.response_body })
+}

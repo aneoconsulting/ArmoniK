@@ -1,2 +1,3 @@
-backend.tfbackend
-registry-credentials.tfvars
+terraform/backend.tfbackend
+terraform/aws/registry-credentials.auto.tfvars
+.terraform/

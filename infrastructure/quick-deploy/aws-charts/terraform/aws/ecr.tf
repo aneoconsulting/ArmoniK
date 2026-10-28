@@ -12,7 +12,7 @@ locals {
     ecr-public = { key = "ecrPublic", upstream = "public.ecr.aws", credentials = null }
   }
 
-  # Where each upstream is reachable from the cluster, consumed by values/env.sh
+  # Where each upstream is reachable from the cluster, passed to the values files by terraform/k8s
   registries = {
     for name, cache in local.pull_through_cache : cache.key => "${local.registry}/${local.name}/${name}"
   }
@@ -100,4 +100,20 @@ resource "aws_iam_policy" "ecr_pull_through_cache" {
   name_prefix = "${local.name}-ecr-pull-through-"
   description = "Pull images through the ${local.name} ECR pull-through cache"
   policy      = data.aws_iam_policy_document.ecr_pull_through_cache.json
+}
+
+# Private repository of the workers: one image per partition, told apart by the tag or a sub-path
+# (<prefix>/workers/<name> needs its own repository). Outside the pull-through prefixes above.
+resource "aws_ecr_repository" "workers" {
+  name                 = "${local.name}/workers"
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  encryption_configuration {
+    encryption_type = "AES256"
+  }
 }

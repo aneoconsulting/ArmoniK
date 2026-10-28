@@ -56,7 +56,8 @@ variable "eks" {
     kubernetes_version           = optional(string, "1.35")
     endpoint_public_access       = optional(bool, true)
     endpoint_public_access_cidrs = optional(list(string), ["0.0.0.0/0"])
-    # IAM principals granted cluster admin, on top of the identity running terraform
+    # IAM principals granted cluster admin, on top of the role running terraform (which must not be listed
+    # again). An SSO role goes without its path: arn:aws:iam::<account>:role/AWSReservedSSO_<set>_<suffix>
     admin_principal_arns   = optional(list(string), [])
     log_types              = optional(list(string), ["api", "audit", "authenticator"])
     log_retention_in_days  = optional(number, 7)

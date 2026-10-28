@@ -1,14 +1,13 @@
-# Release armonik-operators, chart ${CHARTS_DOCKERHUB}/dockerhubaneo/armonik-operators, namespace ${OPERATORS_NS}.
+# Release armonik-operators, chart dockerhubaneo/armonik-operators through the ECR cache, namespace ${OPERATORS_NS}.
 # The operators ArmoniK needs, installed once per cluster: External Secrets (ESO), KEDA, cert-manager and
 # kube-prometheus-stack. The armonik release then only emits their custom resources.
 #
-# Every image below is repointed to REG_*: the ECR pull-through cache by default, Artifactory when
-# values/env.sh says so. Each upstream keeps its own prefix because a registry such as Docker Hub
-# and GHCR do not share a namespace.
+# Every image is repointed to its upstream's prefix in the ECR pull-through cache (REG_*): Docker Hub
+# and GHCR do not share a namespace, so each upstream keeps its own prefix.
 global:
   armonik:
     operators:
-      # PostgreSQL is external and MongoDB is not used: neither operator is installed.
+      # PostgreSQL is RDS and MongoDB is not used: neither operator is installed
       mongodbOperator:
         deploy: false
         available: false
@@ -19,16 +18,12 @@ global:
       googleCasIssuer:
         deploy: false
         available: false
+      # Reads the RDS credentials and CA from Secrets Manager (ClusterSecretStore of aws-secret-store)
       externalSecrets:
-        deploy: false
-        available: false
+        deploy: true
 
-# Pull secret registry-credentials (type kubernetes.io/dockerconfigjson), for Artifactory with authentication.
-# It must exist in ${OPERATORS_NS}, see README.md; with the ECR pull-through cache it is absent and ignored.
 external-secrets:
-  global:                 # reaches the controller, the webhook and the cert controller
-    imagePullSecrets: [{name: registry-credentials}]
-  # Name bound by Pod Identity to the role that reads the RDS secret (Terraform)
+  # Name bound by Pod Identity to the role that reads the RDS secrets (Terraform)
   serviceAccount:
     name: external-secrets
   image:
@@ -41,7 +36,6 @@ external-secrets:
       repository: "${REG_GHCR}/external-secrets/external-secrets"
 
 keda:
-  imagePullSecrets: [{name: registry-credentials}]
   image:
     keda:
       registry: "${REG_GHCR}"
@@ -51,14 +45,10 @@ keda:
       registry: "${REG_GHCR}"
 
 cert-manager:
-  global:
-    imagePullSecrets: [{name: registry-credentials}]
   imageRegistry: "${REG_QUAY}"
 
 # kube-prometheus-stack, as the chart names it in armonik-operators
 kube-prometheus:
-  global:                 # reaches kube-state-metrics and node-exporter too
-    imagePullSecrets: [{name: registry-credentials}]
   # Short, release-independent names: the Prometheus Service is prometheus-prometheus, the URL
   # global.armonik.monitoring.prometheusUrl of values/armonik.yaml points to
   fullnameOverride: prometheus
@@ -78,7 +68,7 @@ kube-prometheus:
     prometheusConfigReloader:
       image:
         registry: "${REG_QUAY}"
-    # Unused (no Thanos sidecar), overridden so no image reference points outside the registry you chose
+    # Unused (no Thanos sidecar), overridden so no image reference points outside the cache
     thanosImage:
       registry: "${REG_QUAY}"
     admissionWebhooks:
@@ -89,15 +79,6 @@ kube-prometheus:
     prometheusSpec:
       image:
         registry: "${REG_QUAY}"
-      # Retention and storage: none by default (emptyDir). For a customer environment, keep the metrics:
-      # retention: 15d
-      # storageSpec:
-      #   volumeClaimTemplate:
-      #     spec:
-      #       storageClassName: gp3
-      #       resources:
-      #         requests:
-      #           storage: 50Gi
   prometheus-node-exporter:
     # The chart turns it off for Docker Desktop, which does not apply here
     hostRootFsMount:

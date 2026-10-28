@@ -1,27 +1,20 @@
-# Release armonik, chart ${CHARTS_DOCKERHUB}/dockerhubaneo/armonik, namespace ${ARMONIK_NS}.
+# Release armonik, chart dockerhubaneo/armonik through the ECR cache, namespace ${ARMONIK_NS}.
 #
-# Customer scenario:
-#   - table storage   RDS PostgreSQL (external), credentials written in conf.core.env (no ESO)
+#   - table storage   RDS PostgreSQL, credentials and CA from Secrets Manager through ESO
 #   - object storage  S3, reached with the Pod Identity of the ArmoniK service accounts
 #   - queue           SQS
-#   - monitoring      the operators' Prometheus, the customer's own Grafana (not deployed here)
-#   - registries      REG_* (ECR pull-through cache or Artifactory, see env.sh)
-# Two optional layers go on top, each with its own -f: armonik-hardening.yaml (internal NLB, TLS, mTLS,
-# NetworkPolicies) and armonik-registry-auth.yaml (pull secrets, for Artifactory with authentication):
-#   helm upgrade --install armonik "oci://$CHARTS_DOCKERHUB/dockerhubaneo/armonik" --version "$ARMONIK_VERSION" \
-#     -n "$ARMONIK_NS" --create-namespace -f armonik.yaml -f armonik-hardening.yaml --wait --timeout 15m
+#   - ingress         the chart's nginx, behind an internet-facing NLB filtered on ingress_allowed_cidrs
+#   - monitoring      the operators' Prometheus, the chart's Grafana and Seq (under /grafana/ and /seq/)
+#   - NetworkPolicies none (networkPolicy.enabled stays false)
+# The partitions of var.partitions are a second values document, added by terraform/releases.tf.
 global:
-  # Pull secret registry-credentials, for Artifactory with authentication; absent and ignored with the ECR
-  # pull-through cache. It must exist in ${ARMONIK_NS}, see README.md. ArmoniK pods and Bitnami charts read it.
-  imagePullSecrets: [{name: registry-credentials}]
   armonik:
-    # The operators are installed by the armonik-operators release: this release only uses them
+    # Installed by the armonik-operators release: this release only uses them
     operators:
-      # Not installed (armonik-operators.yaml): the PostgreSQL credentials are plain values of conf.core.env
       externalSecrets:
         deploy: false
-        available: false
-        # namespace: "${OPERATORS_NS}"
+        available: true
+        namespace: "${OPERATORS_NS}"
       keda:
         deploy: false
         available: true
@@ -44,15 +37,13 @@ global:
         deploy: false
         available: false
     monitoring:
-      # Prometheus of the kube-prometheus-stack in armonik-operators (fullnameOverride "prometheus").
-      # KEDA queries it, and so does the Grafana datasource below. Point it elsewhere to reuse the
-      # customer's Prometheus (it must then scrape the ArmoniK ServiceMonitors).
+      # Prometheus of the kube-prometheus-stack in armonik-operators (fullnameOverride "prometheus"), which
+      # KEDA and the Grafana datasource query
       prometheusUrl: "http://prometheus-prometheus.${OPERATORS_NS}.svc:9090"
-    # Image tags. Pin them: an empty value follows the chart's appVersion.
+    # Image tags, pinned: Core above the chart's appVersion, and the GUI has its own release cycle
     versions:
-      # The PostgreSQL adapters come with this Core build (ArmoniK.Core#1302)
-      core: "0.42.0-refactorrenamepostgresqladapto.26.sha.4f4d363d"
-      gui: "0.16.0"
+      core: "${CORE_VERSION}"
+      gui: "${GUI_VERSION}"
 
 control-plane:
   serviceAccount:
@@ -62,6 +53,9 @@ control-plane:
   image:
     registry: "${REG_DOCKERHUB}"
   metricsExporter:
+    image:
+      registry: "${REG_DOCKERHUB}"
+  podDeletionCost:
     image:
       registry: "${REG_DOCKERHUB}"
   init:
@@ -78,17 +72,20 @@ compute-plane:
   fluentBit:
     image:
       registry: "${REG_DOCKERHUB}"
-  # Partitions accumulate with the chart's own (default, stream, htcmock). Your worker goes here:
-  # partitions:
-  #   my-app:
-  #     worker:
-  #       image:
-  #         registry: "${REG_DOCKERHUB}"        # or your own Artifactory repository
-  #         repository: my-team/my-worker
-  #         tag: 1.2.3
-  #       resources:
-  #         requests: {cpu: "2", memory: 4Gi}
-  #         limits: {cpu: "2", memory: 4Gi}
+  # The chart's partitions (default, stream, htcmock) only need their registry; yours come from var.partitions
+  partitions:
+    default:
+      worker:
+        image:
+          registry: "${REG_DOCKERHUB}"
+    stream:
+      worker:
+        image:
+          registry: "${REG_DOCKERHUB}"
+    htcmock:
+      worker:
+        image:
+          registry: "${REG_DOCKERHUB}"
   partitionCommon:
     # Workers node pool (Karpenter, spot first, tainted); do-not-disrupt keeps Karpenter from evicting a task
     nodeSelector:
@@ -109,62 +106,51 @@ compute-plane:
         registry: "${REG_DOCKERHUB}"
     # The worker runs the tasks: requests == limits, for predictable task runtimes and exact Karpenter sizing
     worker:
-      image:
-        registry: "${REG_DOCKERHUB}"
       resources:
         requests: {cpu: "1", memory: 1Gi}
         limits: {cpu: "1", memory: 1Gi}
 
 ingress:
-  # Envoy Gateway is the only entry point (charts/armonik-gateway). The chart always renders its nginx,
-  # which has no enabled flag: no pod, and a ClusterIP Service, so no NLB. Its Gateway API objects stay
-  # off: the chart only renders an HTTPRoute, and the control plane needs a GRPCRoute (HTTP/2 upstream).
-  replicas: 0
-  service:
-    type: ClusterIP
-  gateway:
-    enabled: false
-  httpRoute:
-    enabled: false
   image:
     registry: "${REG_DOCKERHUB}"
-  loadBalancer:
-    image:
-      registry: "${REG_DOCKERHUB}"
   gui:
     image:
       registry: "${REG_DOCKERHUB}"
-  # The customer's Grafana, linked from the admin GUI (users reach it directly, Envoy does not proxy it).
-  # Empty: the link points to the chart's Grafana.
-  grafana_url: "${GRAFANA_URL}"
+  # Turned into an NLB by the AWS Load Balancer Controller: TCP passthrough to nginx, ports 5001 (gRPC)
+  # and 5000 (HTTP: /admin/, /grafana/, /seq/). No TLS: the source ranges are the only protection.
+  service:
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: external
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+      service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+      service.beta.kubernetes.io/load-balancer-source-ranges: "${INGRESS_SOURCE_RANGES}"
 
 dependencies:
   # ---- Table storage: RDS PostgreSQL --------------------------------------------------------------------
-  # One backend per slot: the chart refuses to render with mongodb and externalPostgresql both enabled.
+  # One backend per slot: the chart refuses to render with mongodb and externalPostgresql both enabled
   mongodb:
     enabled: false
   mongodb-exporter:
     enabled: false
-  # Off: it always reads its credentials through ESO, which is not installed. The same settings are in
-  # conf.core.env above, with the credentials as plain values.
   externalPostgresql:
     enabled: true
     host: "${PG_HOST}"
     port: ${PG_PORT}
     database: "${PG_DATABASE}"
-    # RDS has rds.force_ssl=1 (terraform/rds.tf): Core connects over TLS
+    # RDS has rds.force_ssl=1 (terraform/rds.tf): Core connects over TLS and checks the server certificate
     ssl: true
+    # The secret RDS manages for the master user, {"username", "password"}, read by ESO
     credentials:
-      # The Secrets Manager secret RDS manages for the master user, as {"username", "password"}.
-      # storeName/storeKind make the chart emit an ExternalSecret on the ClusterSecretStore of the
-      # aws-secret-store release, whose pods read it at startup.
       secret: "${PG_SECRET_ARN}"
       storeName: aws-secrets-manager
       storeKind: ClusterSecretStore
-      # Without storeName the secret is a Kubernetes Secret of the namespace with these keys instead:
-      #   secret: my-postgres-credentials
-      #   usernameField: username
-      #   passwordField: password
+    # The region's CA bundle, {"ca": "<pem>"}, written by Terraform
+    ca:
+      secret: "${PG_CA_SECRET_ARN}"
+      field: ca
+      storeName: aws-secrets-manager
+      storeKind: ClusterSecretStore
 
   # ---- Queue: SQS ---------------------------------------------------------------------------------------
   # Core creates the queues itself, named after the prefix: the IAM policy of Terraform covers prefix*
@@ -178,8 +164,7 @@ dependencies:
     enabled: false
 
   # ---- Object storage: S3 --------------------------------------------------------------------------------
-  # Bucket created by Terraform (SSE-KMS). No credentials: the control and compute planes reach it with
-  # their Pod Identity role, which grants this bucket and its KMS key.
+  # Bucket created by Terraform (SSE-KMS). No credentials: Pod Identity of the control and compute planes.
   s3:
     enabled: true
     region: "${AWS_REGION}"
@@ -189,25 +174,13 @@ dependencies:
     enabled: false
 
   # ---- Monitoring -----------------------------------------------------------------------------------------
-  # The chart's Grafana, with the ArmoniK dashboards and the Prometheus datasource, served by Envoy under
-  # /grafana/ (grafana.enabled in armonik-gateway.yaml). The customer has its own: enabled: false here and
-  # there, see docs/grafana-dashboards.md.
   grafana:
-    enabled: true
     image:
       registry: "${REG_DOCKERHUB}"
-    # Dashboards and datasources sidecars
     sidecar:
       image:
         registry: "${REG_QUAY}"
-    # nginx rewrote Grafana's HTML to serve it under /grafana/; Envoy does not, so Grafana serves the prefix
-    # itself. Through env and not grafana.ini: the chart refuses a root_url path there as long as its nginx
-    # exists, and that nginx runs no pod here (ingress.replicas: 0).
-    env:
-      GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/grafana/"
-      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
   fluent-bit:
-    imagePullSecrets: [{name: registry-credentials}]
     # cr.fluentbit.io is not an ECR upstream: the same image from Docker Hub
     image:
       repository: "${REG_DOCKERHUB}/fluent/fluent-bit"
@@ -217,8 +190,8 @@ dependencies:
     # On every node, the tainted worker nodes included
     tolerations:
       - operator: Exists
+  # No authentication (firstRunNoAuthentication): only the NLB source ranges keep it private
   seq:
-    imagePullSecrets: [{name: registry-credentials}]
     image:
       repository: "${REG_DOCKERHUB}/datalust/seq"
     gelf:
@@ -227,4 +200,3 @@ dependencies:
     syslog:
       image:
         repository: "${REG_DOCKERHUB}/datalust/seq-input-syslog"
-    # Seq (logs) starts without authentication in the chart's defaults: see armonik-hardening.yaml

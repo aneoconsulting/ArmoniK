@@ -61,7 +61,7 @@ module "armonik_identity" {
   }
 }
 
-# External Secrets Operator: reads the RDS master user secret for the ArmoniK conf layers
+# External Secrets Operator: reads the RDS master user secret and the RDS CA bundle for the ArmoniK conf layers
 module "external_secrets_identity" {
   source  = "terraform-aws-modules/eks-pod-identity/aws"
   version = "~> 2.9"
@@ -69,10 +69,12 @@ module "external_secrets_identity" {
   name            = "${local.name}-external-secrets"
   use_name_prefix = false
 
-  attach_external_secrets_policy        = true
-  # Change this shit to reference an existing secret in case of a different rds
-  external_secrets_secrets_manager_arns = ["arn:aws:secretsmanager:eu-west-3:125796369274:secret:rds!db-6c82248e-b24a-4be3-9bf7-50753493a11b-jlIBEC"]
-  external_secrets_create_permission    = false
+  attach_external_secrets_policy = true
+  external_secrets_secrets_manager_arns = [
+    module.rds.db_instance_master_user_secret_arn,
+    aws_secretsmanager_secret.rds_ca.arn,
+  ]
+  external_secrets_create_permission = false
 
   associations = {
     operator = {
