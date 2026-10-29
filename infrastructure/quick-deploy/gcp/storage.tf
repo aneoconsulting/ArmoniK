@@ -42,33 +42,52 @@ module "mongodb" {
 }
 
 
-# Redis for payloads
+# Valkey for payloads
 module "memorystore" {
-  count              = var.memorystore != null ? 1 : 0
-  source             = "./generated/infra-modules/storage/gcp/memorystore/redis"
-  name               = "${local.prefix}-redis"
-  namespace          = local.namespace
-  memory_size_gb     = var.memorystore.memory_size_gb
-  auth_enabled       = var.memorystore.auth_enabled
-  authorized_network = module.vpc.name
-  connect_mode       = var.memorystore.connect_mode
-  display_name       = "${local.prefix}-redis"
-  labels             = local.labels
-  locations = var.memorystore.tier == "STANDARD_HA" && length(var.memorystore.locations) == 0 ? (length(data.google_compute_zones.available.names) >= 2 ? [
-    data.google_compute_zones.available.names[0],
-    data.google_compute_zones.available.names[1]
-  ] : [data.google_compute_zones.available.names[0]]) : var.memorystore.locations
-  redis_configs      = var.memorystore.redis_configs
-  persistence_config = var.memorystore.persistence_config
-  maintenance_policy = var.memorystore.maintenance_policy
-  redis_version      = var.memorystore.redis_version
-  #reserved_ip_range       = var.memorystore.reserved_ip_range
-  tier                           = var.memorystore.tier
-  transit_encryption_mode        = var.memorystore.transit_encryption_mode
-  replica_count                  = var.memorystore.replica_count
-  read_replicas_mode             = var.memorystore.read_replicas_mode
-  customer_managed_key           = coalesce(var.memorystore.customer_managed_key, local.kms_key_id)
-  private_service_access_peering = module.psa[0].private_service_access_peering
+  count                   = var.memorystore != null ? 1 : 0
+  source                  = "./generated/infra-modules/storage/gcp/memorystore/valkey"
+  name                    = "${local.prefix}-valkey"
+  network                 = module.vpc.id
+  node_type               = var.memorystore.node_type
+  replica_count           = var.memorystore.replica_count
+  engine_version          = var.memorystore.engine_version
+  engine_configs          = var.memorystore.engine_configs
+  transit_encryption_mode = var.memorystore.transit_encryption_mode
+  zone_distribution       = var.memorystore.zone_distribution
+  persistence             = var.memorystore.persistence
+  maintenance_window      = var.memorystore.maintenance_window
+  kms_key = {
+    id = local.kms_key_id
+  }
+  deletion_protection = false
+  labels              = local.labels
+  # The endpoints are only created where a service connection policy exists
+  depends_on = [module.vpc]
+}
+
+locals {
+  memorystore_tls = try(var.memorystore.transit_encryption_mode, null) == "SERVER_AUTHENTICATION"
+  # Redis object storage of Core, without authentication
+  memorystore_configuration = [for instance in module.memorystore : {
+    env = merge({
+      "Components__ObjectStorage"                                     = "ArmoniK.Adapters.Redis.ObjectStorage"
+      "Components__ObjectStorageAdaptorSettings__ClassName"           = "ArmoniK.Core.Adapters.Redis.ObjectBuilder"
+      "Components__ObjectStorageAdaptorSettings__AdapterAbsolutePath" = "/adapters/object/redis/ArmoniK.Core.Adapters.Redis.dll"
+      "Redis__EndpointUrl"                                            = instance.url
+      "Redis__Ssl"                                                    = tostring(local.memorystore_tls)
+      "Redis__ClientName"                                             = "ArmoniK.Core"
+      "Redis__InstanceName"                                           = "ArmoniKRedis"
+      }, local.memorystore_tls ? {
+      "Redis__CaPath" = "/redis/chain.pem"
+    } : {})
+    mount_secret = local.memorystore_tls ? {
+      "redis-secret1" = {
+        secret = kubernetes_secret.memorystore[0].metadata[0].name
+        path   = "/redis"
+        mode   = "0644"
+      }
+    } : {}
+  }]
 }
 
 resource "kubernetes_secret" "memorystore" {
@@ -78,28 +97,54 @@ resource "kubernetes_secret" "memorystore" {
     namespace = local.namespace
   }
   data = {
-    "chain.pem" = one(module.memorystore[0].server_ca_certs[*].cert)
+    "chain.pem" = coalesce(module.memorystore[0].ca_certificates, "")
     username    = ""
-    password    = module.memorystore[0].auth_string
+    password    = ""
     host        = module.memorystore[0].host
     port        = module.memorystore[0].port
     url         = module.memorystore[0].url
   }
 }
 
-# Service account for pods
+# Service accounts of the pods, granted IAM roles through Workload Identity Federation. The Kubernetes
+# service accounts are created after the roles, so that the pods using them start with their permissions
+locals {
+  control_plane_service_account = "${local.prefix}-control-plane-sa"
+  compute_plane_service_account = "${local.prefix}-compute-plane-sa"
+}
+
 module "control_plane_service_account" {
-  source               = "./generated/infra-modules/service-account/gcp"
-  name                 = "${local.prefix}-control-plane-sa"
-  kubernetes_namespace = local.namespace
-  roles                = ["roles/pubsub.editor"]
+  source                     = "./generated/infra-modules/service-account/gcp"
+  kubernetes_namespace       = local.namespace
+  kubernetes_service_account = local.control_plane_service_account
+  project_roles              = ["roles/pubsub.editor"]
+  # The workload identity pool is created with the cluster
+  depends_on = [module.gke]
 }
 
 module "compute_plane_service_account" {
-  source               = "./generated/infra-modules/service-account/gcp"
-  name                 = "${local.prefix}-compute-plane-sa"
-  kubernetes_namespace = local.namespace
-  roles                = ["roles/pubsub.editor"]
+  source                     = "./generated/infra-modules/service-account/gcp"
+  kubernetes_namespace       = local.namespace
+  kubernetes_service_account = local.compute_plane_service_account
+  project_roles              = ["roles/pubsub.editor"]
+  # The workload identity pool is created with the cluster
+  depends_on = [module.gke]
+}
+
+resource "kubernetes_service_account" "control_plane" {
+  metadata {
+    name      = local.control_plane_service_account
+    namespace = local.namespace
+  }
+  depends_on = [module.control_plane_service_account]
+}
+
+resource "kubernetes_service_account" "compute_plane" {
+  metadata {
+    name      = local.compute_plane_service_account
+    namespace = local.namespace
+  }
+  depends_on = [module.compute_plane_service_account]
 }
 
 # HMac for buckets
@@ -116,13 +161,14 @@ resource "google_project_iam_member" "allow_gcs_access" {
 
 # Shared storage for compute-plane
 module "gcs_fs" {
-  source               = "./generated/infra-modules/storage/gcp/gcs"
-  name                 = "${local.prefix}-gcsfs"
-  namespace            = local.namespace
-  location             = local.region
-  default_kms_key_name = local.kms_key_id
-  force_destroy        = true
-  labels               = local.labels
+  source   = "./generated/infra-modules/storage/gcp/gcs"
+  name     = "${local.prefix}-gcsfs"
+  location = local.region
+  kms_key = {
+    id = local.kms_key_id
+  }
+  force_destroy = true
+  labels        = local.labels
 }
 
 # Shared storage
@@ -145,16 +191,44 @@ resource "kubernetes_secret" "shared_storage" {
 
 # GCP bucket as object storage
 module "gcs_os" {
-  count                = var.gcs_os != null ? 1 : 0
-  source               = "./generated/infra-modules/storage/gcp/gcs"
-  name                 = "${local.prefix}-gcsos"
-  namespace            = local.namespace
-  location             = local.region
-  default_kms_key_name = local.kms_key_id
-  force_destroy        = true
-  labels               = local.labels
-  username             = google_storage_hmac_key.cloud_storage.access_id
-  password             = google_storage_hmac_key.cloud_storage.secret
+  count    = var.gcs_os != null ? 1 : 0
+  source   = "./generated/infra-modules/storage/gcp/gcs"
+  name     = "${local.prefix}-gcsos"
+  location = local.region
+  kms_key = {
+    id = local.kms_key_id
+  }
+  force_destroy = true
+  labels        = local.labels
+}
+
+# S3 object storage of Core on the bucket, through the XML API of GCS and the HMAC key
+locals {
+  gcs_os_configuration = [for bucket in module.gcs_os : {
+    env = {
+      "Components__ObjectStorage"                                     = "ArmoniK.Adapters.S3.ObjectStorage"
+      "Components__ObjectStorageAdaptorSettings__ClassName"           = "ArmoniK.Core.Adapters.S3.ObjectBuilder"
+      "Components__ObjectStorageAdaptorSettings__AdapterAbsolutePath" = "/adapters/object/s3/ArmoniK.Core.Adapters.S3.dll"
+      "S3__BucketName"                                                = bucket.name
+      "S3__UseChecksum"                                               = false
+      "S3__MustForcePathStyle"                                        = false
+      "S3__UseChunkEncoding"                                          = false
+      "S3__EndpointUrl"                                               = "https://storage.googleapis.com"
+    }
+    env_secret = [kubernetes_secret.gcs_os_credentials[0].metadata[0].name]
+  }]
+}
+
+resource "kubernetes_secret" "gcs_os_credentials" {
+  count = length(module.gcs_os) > 0 ? 1 : 0
+  metadata {
+    name      = "${local.prefix}-gcsos-s3-user-credentials"
+    namespace = local.namespace
+  }
+  data = {
+    "S3__Login"    = google_storage_hmac_key.cloud_storage.access_id
+    "S3__Password" = google_storage_hmac_key.cloud_storage.secret
+  }
 }
 
 resource "kubernetes_secret" "gcs" {

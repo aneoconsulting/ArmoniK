@@ -2,8 +2,6 @@ data "google_client_openid_userinfo" "current" {}
 
 data "google_client_config" "current" {}
 
-data "google_compute_zones" "available" {}
-
 data "google_kms_key_ring" "kms" {
   name     = var.kms.key_ring
   location = var.region
@@ -48,6 +46,4 @@ locals {
     "created_by"         = split("@", data.google_client_openid_userinfo.current.email)[0]
     "creation_date"      = "date-${null_resource.timestamp.triggers["date"]}"
   }, var.labels)
-  node_pools_labels = { for key, value in var.gke.node_pools_labels : key => merge(local.labels, value) }
-  node_pools_tags   = { for node_pool in coalesce(var.gke.node_pools, []) : node_pool["name"] => toset(values(local.labels)) }
 }

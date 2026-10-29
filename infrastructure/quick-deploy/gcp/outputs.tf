@@ -12,7 +12,7 @@ output "armonik" {
 output "gke" {
   description = "GKE cluster"
   value = {
-    arn    = module.gke.cluster_id
+    arn    = module.gke.id
     name   = module.gke.name
     region = module.gke.region
     #kubeconfig_file = module.gke.kubeconfig_file

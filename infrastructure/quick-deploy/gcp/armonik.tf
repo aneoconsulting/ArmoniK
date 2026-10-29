@@ -4,7 +4,7 @@ module "armonik" {
   logging_level = var.logging_level
 
   configurations = merge(var.configurations, {
-    core = [module.activemq, module.pubsub, module.memorystore, module.gcs_os, module.mongodb, var.configurations.core]
+    core = [module.activemq, module.pubsub, local.memorystore_configuration, local.gcs_os_configuration, module.mongodb, var.configurations.core]
   })
 
   fluent_bit              = module.fluent_bit
@@ -26,7 +26,7 @@ module "armonik" {
         parent_partition_ids  = []
         pod_configuration     = null
       },
-      service_account_name = module.compute_plane_service_account.kubernetes_service_account_name
+      service_account_name = kubernetes_service_account.compute_plane.metadata[0].name
       }, v, {
       polling_agent = merge(v.polling_agent, {
         image = local.docker_images["${v.polling_agent.image}:${try(coalesce(v.polling_agent.tag), "")}"].name
@@ -43,7 +43,7 @@ module "armonik" {
   control_plane = merge(var.control_plane, {
     image                = local.docker_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].name
     tag                  = local.docker_images["${var.control_plane.image}:${try(coalesce(var.control_plane.tag), "")}"].tag
-    service_account_name = module.control_plane_service_account.kubernetes_service_account_name
+    service_account_name = kubernetes_service_account.control_plane.metadata[0].name
   })
   admin_gui = var.admin_gui != null ? merge(var.admin_gui, {
     image = local.docker_images["${var.admin_gui.image}:${try(coalesce(var.admin_gui.tag), "")}"].name
