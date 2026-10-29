@@ -1,5 +1,28 @@
 locals {
   cloudwatch_log_group_name = "/aws/containerinsights/${module.eks.cluster_name}/application"
+
+  # Pods cannot reach the node role (IMDS hop limit of 1): a fluent-bit DaemonSet uses its own role,
+  # a fluent-bit sidecar the role of the ArmoniK service account it runs under
+  fluent_bit_daemonset = var.fluent_bit.is_daemonset || (var.fluent_bit_windows.is_daemonset && length(var.fluent_bit_windows.node_selector_windows) > 0)
+  fluent_bit_role_names = compact([
+    local.fluent_bit_daemonset ? module.fluent_bit_service_account[0].service_account_iam_role_name : "",
+    var.fluent_bit.is_daemonset ? "" : module.aws_service_account.service_account_iam_role_name,
+  ])
+}
+
+# IAM role of the fluent-bit service account, which the fluent-bit module creates for its DaemonSets
+module "fluent_bit_service_account" {
+  count                  = local.fluent_bit_daemonset ? 1 : 0
+  source                 = "./generated/infra-modules/service-account/aws"
+  namespace              = local.namespace
+  prefix                 = local.prefix
+  name                   = "fluent-bit"
+  create_service_account = false
+  oidc_provider_arn      = module.eks.aws_eks_module.oidc_provider_arn
+  oidc_issuer_url        = module.eks.aws_eks_module.cluster_oidc_issuer_url
+  pod_identity           = module.eks.pod_identity
+  cluster_name           = module.eks.cluster_name
+  tags                   = local.tags
 }
 
 # Send logs in cloudwatch
@@ -31,7 +54,7 @@ resource "aws_iam_policy_attachment" "send_logs_from_fluent_bit_to_cloudwatch_at
   count      = length(aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy)
   name       = "${local.prefix}-send-logs-from-fluent-bit-to-cloudwatch-${module.eks.cluster_name}"
   policy_arn = aws_iam_policy.send_logs_from_fluent_bit_to_cloudwatch_policy[0].arn
-  roles      = module.eks.worker_iam_role_names
+  roles      = local.fluent_bit_role_names
 }
 
 # Write objects in S3
@@ -62,7 +85,7 @@ resource "aws_iam_policy_attachment" "write_object" {
   count      = (var.s3.enabled ? 1 : 0)
   name       = "s3-logs-write-${module.eks.cluster_name}"
   policy_arn = aws_iam_policy.write_object[0].arn
-  roles      = module.eks.worker_iam_role_names
+  roles      = local.fluent_bit_role_names
 }
 
 # Seq
@@ -337,6 +360,13 @@ module "fluent_bit" {
   source        = "./generated/infra-modules/monitoring/onpremise/fluent-bit"
   namespace     = local.namespace
   node_selector = var.fluent_bit.node_selector
+  # With Pod Identity, the association made by fluent_bit_service_account gives the role. EKS ignores the
+  # annotation naming it; it only makes the DaemonSets wait for the association, and restart when it changes
+  service_account_annotations = !local.fluent_bit_daemonset ? {} : module.eks.pod_identity ? {
+    "armonik.fr/pod-identity-association" = module.fluent_bit_service_account[0].pod_identity_association_id
+    } : {
+    "eks.amazonaws.com/role-arn" = module.fluent_bit_service_account[0].service_account_iam_role_arn
+  }
   fluent_bit = {
     container_name                     = "fluent-bit"
     image                              = local.ecr_images["${var.fluent_bit.image_name}:${try(coalesce(var.fluent_bit.image_tag), "")}"].image

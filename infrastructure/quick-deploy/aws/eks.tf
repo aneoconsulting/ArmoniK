@@ -34,36 +34,20 @@ module "eks" {
   instance_refresh_repository = try(coalesce(var.eks.instance_refresh.repository), var.helm_charts.termination_handler.repository)
   instance_refresh_namespace  = var.eks.instance_refresh.namespace
 
-  efs_csi = {
-    image      = local.ecr_images["${var.eks.docker_images.efs_csi.image}:${try(coalesce(var.eks.docker_images.efs_csi.tag), "")}"].image
-    tag        = local.ecr_images["${var.eks.docker_images.efs_csi.image}:${try(coalesce(var.eks.docker_images.efs_csi.tag), "")}"].tag
-    repository = try(coalesce(var.eks.efs_csi.repository), var.helm_charts.efs_csi_driver.repository)
-    version    = try(coalesce(var.eks.efs_csi.version), var.helm_charts.efs_csi_driver.version)
-  }
+  # The CSI drivers are EKS add-ons: their images come from the AWS add-on registries and are not copied to ECR
+  efs_csi = var.eks.efs_csi
+  ebs_csi = var.eks.ebs_csi
 
-  ebs_csi = {
-    image      = local.ecr_images["${var.eks.docker_images.ebs_csi.image}:${try(coalesce(var.eks.docker_images.ebs_csi.tag), "")}"].image
-    tag        = local.ecr_images["${var.eks.docker_images.ebs_csi.image}:${try(coalesce(var.eks.docker_images.ebs_csi.tag), "")}"].tag
-    repository = try(coalesce(var.eks.ebs_csi.repository), var.helm_charts.ebs_csi_driver.repository)
-    version    = try(coalesce(var.eks.ebs_csi.version), var.helm_charts.ebs_csi_driver.version)
-  }
+  pod_identity = var.eks.pod_identity
 
-  csi_liveness_probe = {
-    image = local.ecr_images["${var.eks.docker_images.csi_liveness_probe.image}:${try(coalesce(var.eks.docker_images.csi_liveness_probe.tag), "")}"].image
-    tag   = local.ecr_images["${var.eks.docker_images.csi_liveness_probe.image}:${try(coalesce(var.eks.docker_images.csi_liveness_probe.tag), "")}"].tag
-  }
-  csi_node_driver_registrar = {
-    image = local.ecr_images["${var.eks.docker_images.csi_node_driver_registrar.image}:${try(coalesce(var.eks.docker_images.csi_node_driver_registrar.tag), "")}"].image
-    tag   = local.ecr_images["${var.eks.docker_images.csi_node_driver_registrar.image}:${try(coalesce(var.eks.docker_images.csi_node_driver_registrar.tag), "")}"].tag
-  }
-  csi_external_provisioner = {
-    image = local.ecr_images["${var.eks.docker_images.csi_external_provisioner.image}:${try(coalesce(var.eks.docker_images.csi_external_provisioner.tag), "")}"].image
-    tag   = local.ecr_images["${var.eks.docker_images.csi_external_provisioner.image}:${try(coalesce(var.eks.docker_images.csi_external_provisioner.tag), "")}"].tag
-  }
+  cluster_log_kms_key_id = local.kms_key
+  ebs_kms_key_id         = local.kms_key
+  # The KMS key may be created in the same run, so the EKS module cannot derive this from it
+  ebs_kms_key_enabled = true
 
-  cluster_log_kms_key_id    = local.kms_key
-  cluster_encryption_config = local.kms_key
-  ebs_kms_key_id            = local.kms_key
+  # Only passed when used, the EKS module warning otherwise
+  cluster_create_kms_key    = var.eks.cluster_create_kms_key
+  cluster_encryption_config = var.eks.cluster_create_kms_key ? "" : local.kms_key
 
   cluster_version                      = var.eks.cluster_version
   cluster_endpoint_private_access      = var.eks.cluster_endpoint_private_access
@@ -96,4 +80,22 @@ resource "kubernetes_namespace" "armonik" {
 
 locals {
   namespace = kubernetes_namespace.armonik.metadata[0].name
+}
+
+# EKS Pod Identity does not support pods on Windows EC2 nodes
+# (https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html#pod-id-restrictions)
+locals {
+  windows_node_groups = concat(
+    [for name, group in var.eks_managed_node_groups : name if can(regex("^WINDOWS_", group.ami_type))],
+    [for name, group in var.self_managed_node_groups : name if can(regex("^WINDOWS_", group.ami_type))],
+  )
+}
+
+resource "terraform_data" "pod_identity_guard" {
+  lifecycle {
+    precondition {
+      condition     = !var.eks.pod_identity || length(local.windows_node_groups) == 0
+      error_message = "eks.pod_identity is not supported with Windows node groups (${join(", ", local.windows_node_groups)})."
+    }
+  }
 }

@@ -179,6 +179,8 @@ module "aws_service_account" {
   name              = "armonikserviceaccount"
   oidc_provider_arn = module.eks.aws_eks_module.oidc_provider_arn
   oidc_issuer_url   = module.eks.aws_eks_module.cluster_oidc_issuer_url
+  pod_identity      = module.eks.pod_identity
+  cluster_name      = module.eks.cluster_name
 }
 
 module "atlas_mongodb" {
