@@ -9,13 +9,11 @@ module "vpc" {
   subnets              = local.subnets
   gke_subnet           = local.gke_subnet
   enable_google_access = true
-}
-
-module "psa" {
-  count         = var.memorystore != null ? 1 : 0
-  source        = "./generated/infra-modules/networking/gcp/psa"
-  name          = "${local.prefix}-private-ip-alloc"
-  network       = module.vpc.self_link
-  prefix_length = 24
-  address_type  = "INTERNAL"
+  # Memorystore for Valkey creates its endpoints in the GKE subnet through Private Service Connect
+  service_connection_policies = var.memorystore != null ? {
+    "${local.prefix}-memorystore" = {
+      service_class = "gcp-memorystore"
+      subnets       = [local.gke_subnet.name]
+    }
+  } : {}
 }

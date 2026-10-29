@@ -2,233 +2,130 @@
 gke = {
   enable_public_gke_access = true
   enable_gke_autopilot     = false
-  node_pools_labels = {
+  # Zonal cluster: one node per pool at start. On a regional cluster, every pool starts with initial_node_count
+  # nodes in each of the 3 zones, and the small pools never scale down: the GKE system DaemonSets alone request
+  # more than half of an e2-medium, above the threshold under which the autoscaler removes a node
+  regional = false
+  zones    = ["europe-west1-b"]
+  # Autoscaling bounds over all the zones of each pool (min_count and max_count would be per zone).
+  # initial_node_count is per zone
+  node_pools = {
     workers = {
-      service = "workers"
+      machine_type       = "e2-standard-8"
+      image_type         = "COS_CONTAINERD"
+      max_pods_per_node  = 110
+      initial_node_count = 1
+      total_min_count    = 0
+      total_max_count    = 1000
+      location_policy    = "BALANCED" # or ANY
+      disk_size_gb       = 100
+      disk_type          = "pd-standard"
+      spot               = true
+      labels             = { service = "workers" }
+      taints = [
+        {
+          key    = "service"
+          value  = "workers"
+          effect = "NO_SCHEDULE"
+        }
+      ]
     }
     metrics = {
-      service = "metrics"
+      machine_type       = "e2-medium"
+      image_type         = "COS_CONTAINERD"
+      max_pods_per_node  = 110
+      initial_node_count = 1
+      total_min_count    = 1
+      total_max_count    = 5
+      location_policy    = "BALANCED" # or ANY
+      disk_size_gb       = 100
+      disk_type          = "pd-standard"
+      spot               = false
+      labels             = { service = "metrics" }
+      taints = [
+        {
+          key    = "service"
+          value  = "metrics"
+          effect = "NO_SCHEDULE"
+        }
+      ]
     }
     control-plane = {
-      service = "control-plane"
+      machine_type       = "e2-medium"
+      image_type         = "COS_CONTAINERD"
+      max_pods_per_node  = 110
+      initial_node_count = 1
+      total_min_count    = 1
+      total_max_count    = 10
+      location_policy    = "BALANCED" # or ANY
+      disk_size_gb       = 100
+      disk_type          = "pd-standard"
+      spot               = false
+      labels             = { service = "control-plane" }
+      taints = [
+        {
+          key    = "service"
+          value  = "control-plane"
+          effect = "NO_SCHEDULE"
+        }
+      ]
     }
     monitoring = {
-      service = "monitoring"
+      machine_type       = "e2-medium"
+      image_type         = "COS_CONTAINERD"
+      max_pods_per_node  = 110
+      initial_node_count = 1
+      total_min_count    = 1
+      total_max_count    = 5
+      location_policy    = "BALANCED" # or ANY
+      disk_size_gb       = 100
+      disk_type          = "pd-standard"
+      spot               = false
+      labels             = { service = "monitoring" }
+      taints = [
+        {
+          key    = "service"
+          value  = "monitoring"
+          effect = "NO_SCHEDULE"
+        }
+      ]
     }
     state-database = {
-      service = "state-database"
+      # MongoDB starves on an e2-medium next to the GKE DaemonSets: its liveness probe kills it during the
+      # replica set initialization, which leaves the Percona operator stuck
+      machine_type       = "e2-standard-2"
+      image_type         = "COS_CONTAINERD"
+      max_pods_per_node  = 110
+      initial_node_count = 1
+      total_min_count    = 1
+      total_max_count    = 10
+      location_policy    = "BALANCED" # or ANY
+      disk_size_gb       = 100
+      disk_type          = "pd-standard"
+      spot               = false
+      labels             = { service = "state-database" }
+      taints = [
+        {
+          key    = "service"
+          value  = "state-database"
+          effect = "NO_SCHEDULE"
+        }
+      ]
     }
     others = {
-      service = "others"
+      machine_type       = "e2-medium"
+      image_type         = "COS_CONTAINERD"
+      max_pods_per_node  = 110
+      initial_node_count = 0
+      total_min_count    = 0
+      total_max_count    = 100
+      location_policy    = "BALANCED" # or ANY
+      disk_size_gb       = 100
+      disk_type          = "pd-standard"
+      spot               = true
+      labels             = { service = "others" }
     }
   }
-  node_pools_taints = {
-    workers = [
-      {
-        key    = "service"
-        value  = "workers"
-        effect = "NO_SCHEDULE"
-      }
-    ]
-    metrics = [
-      {
-        key    = "service"
-        value  = "metrics"
-        effect = "NO_SCHEDULE"
-      }
-    ]
-    control-plane = [
-      {
-        key    = "service"
-        value  = "control-plane"
-        effect = "NO_SCHEDULE"
-      }
-    ]
-    monitoring = [
-      {
-        key    = "service"
-        value  = "monitoring"
-        effect = "NO_SCHEDULE"
-      }
-    ]
-    state-database = [
-      {
-        key    = "service"
-        value  = "state-database"
-        effect = "NO_SCHEDULE"
-      }
-    ]
-  }
-  node_pools = [
-    {
-      name             = "workers"
-      machine_type     = "e2-standard-8"
-      image_type       = "COS_CONTAINERD"
-      min_cpu_platform = ""
-      # or see https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform#availablezones
-      autoscaling                 = true
-      node_count                  = null # should not be used alongside autoscaling
-      max_pods_per_node           = 110
-      initial_node_count          = 1
-      min_count                   = 0          # per zone. It is null if used alongside total_min_count
-      max_count                   = 1000       # per zone. It is null if used alongside total_max_count
-      total_min_count             = 0          # per NodePool
-      total_max_count             = 1000       # per NodePool
-      location_policy             = "BALANCED" # or ANY
-      auto_repair                 = true
-      auto_upgrade                = true
-      enable_gcfs                 = false
-      enable_gvnic                = false
-      logging_variant             = "DEFAULT"
-      local_ssd_count             = 0
-      disk_size_gb                = 100
-      disk_type                   = "pd-standard"
-      spot                        = true
-      boot_disk_kms_key           = ""
-      enable_secure_boot          = false
-      enable_integrity_monitoring = true
-    },
-    {
-      name             = "metrics"
-      machine_type     = "e2-medium"
-      image_type       = "COS_CONTAINERD"
-      min_cpu_platform = ""
-      # or see https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform#availablezones
-      autoscaling                 = true
-      node_count                  = null # should not be used alongside autoscaling
-      max_pods_per_node           = 110
-      initial_node_count          = 1
-      min_count                   = 1          # per zone. It is null if used alongside total_min_count
-      max_count                   = 5          # per zone. It is null if used alongside total_max_count
-      total_min_count             = 1          # per NodePool
-      total_max_count             = 5          # per NodePool
-      location_policy             = "BALANCED" # or ANY
-      auto_repair                 = true
-      auto_upgrade                = true
-      enable_gcfs                 = false
-      enable_gvnic                = false
-      logging_variant             = "DEFAULT"
-      local_ssd_count             = 0
-      disk_size_gb                = 100
-      disk_type                   = "pd-standard"
-      spot                        = false
-      boot_disk_kms_key           = ""
-      enable_secure_boot          = false
-      enable_integrity_monitoring = true
-    },
-    {
-      name             = "control-plane"
-      machine_type     = "e2-medium"
-      image_type       = "COS_CONTAINERD"
-      min_cpu_platform = ""
-      # or see https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform#availablezones
-      autoscaling                 = true
-      node_count                  = null # should not be used alongside autoscaling
-      max_pods_per_node           = 110
-      initial_node_count          = 1
-      min_count                   = 1          # per zone. It is null if used alongside total_min_count
-      max_count                   = 10         # per zone. It is null if used alongside total_max_count
-      total_min_count             = 1          # per NodePool
-      total_max_count             = 10         # per NodePool
-      location_policy             = "BALANCED" # or ANY
-      auto_repair                 = true
-      auto_upgrade                = true
-      enable_gcfs                 = false
-      enable_gvnic                = false
-      logging_variant             = "DEFAULT"
-      local_ssd_count             = 0
-      disk_size_gb                = 100
-      disk_type                   = "pd-standard"
-      spot                        = false
-      boot_disk_kms_key           = ""
-      enable_secure_boot          = false
-      enable_integrity_monitoring = true
-    },
-    {
-      name             = "monitoring"
-      machine_type     = "e2-medium"
-      image_type       = "COS_CONTAINERD"
-      min_cpu_platform = ""
-      # or see https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform#availablezones
-      autoscaling                 = true
-      node_count                  = null # should not be used alongside autoscaling
-      max_pods_per_node           = 110
-      initial_node_count          = 1
-      min_count                   = 1          # per zone. It is null if used alongside total_min_count
-      max_count                   = 5          # per zone. It is null if used alongside total_max_count
-      total_min_count             = 1          # per NodePool
-      total_max_count             = 5          # per NodePool
-      location_policy             = "BALANCED" # or ANY
-      auto_repair                 = true
-      auto_upgrade                = true
-      enable_gcfs                 = false
-      enable_gvnic                = false
-      logging_variant             = "DEFAULT"
-      local_ssd_count             = 0
-      disk_size_gb                = 100
-      disk_type                   = "pd-standard"
-      spot                        = false
-      boot_disk_kms_key           = ""
-      enable_secure_boot          = false
-      enable_integrity_monitoring = true
-    },
-    {
-      name             = "state-database"
-      machine_type     = "e2-medium"
-      image_type       = "COS_CONTAINERD"
-      min_cpu_platform = ""
-      # or see https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform#availablezones
-      autoscaling                 = true
-      node_count                  = null # should not be used alongside autoscaling
-      max_pods_per_node           = 110
-      initial_node_count          = 1
-      min_count                   = 1          # per zone. It is null if used alongside total_min_count
-      max_count                   = 10         # per zone. It is null if used alongside total_max_count
-      total_min_count             = 1          # per NodePool
-      total_max_count             = 10         # per NodePool
-      location_policy             = "BALANCED" # or ANY
-      auto_repair                 = true
-      auto_upgrade                = true
-      enable_gcfs                 = false
-      enable_gvnic                = false
-      logging_variant             = "DEFAULT"
-      local_ssd_count             = 0
-      disk_size_gb                = 100
-      disk_type                   = "pd-standard"
-      spot                        = false
-      boot_disk_kms_key           = ""
-      enable_secure_boot          = false
-      enable_integrity_monitoring = true
-    },
-    {
-      name             = "others"
-      machine_type     = "e2-medium"
-      image_type       = "COS_CONTAINERD"
-      min_cpu_platform = ""
-      # or see https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform#availablezones
-      autoscaling                 = true
-      node_count                  = null # should not be used alongside autoscaling
-      max_pods_per_node           = 110
-      initial_node_count          = 0
-      min_count                   = 0          # per zone. It is null if used alongside total_min_count
-      max_count                   = 100        # per zone. It is null if used alongside total_max_count
-      total_min_count             = 0          # per NodePool
-      total_max_count             = 100        # per NodePool
-      location_policy             = "BALANCED" # or ANY
-      auto_repair                 = true
-      auto_upgrade                = true
-      enable_gcfs                 = false
-      enable_gvnic                = false
-      logging_variant             = "DEFAULT"
-      local_ssd_count             = 0
-      disk_size_gb                = 100
-      disk_type                   = "pd-standard"
-      spot                        = true
-      boot_disk_kms_key           = ""
-      enable_secure_boot          = false
-      enable_integrity_monitoring = true
-    }
-  ]
 }
 
 kms = {
@@ -291,19 +188,12 @@ mongodb = {
 # mongodb_sharding = {}
 
 #memorystore = {
-#  memory_size_gb = 20
-#  auth_enabled   = true
-#  connect_mode   = "PRIVATE_SERVICE_ACCESS"
-#  redis_configs  = {
-#    "maxmemory-gb"     = "18"
+#  node_type      = "HIGHMEM_MEDIUM"
+#  engine_version = "VALKEY_8_0"
+#  replica_count  = 1
+#  engine_configs = {
 #    "maxmemory-policy" = "volatile-lru"
 #  }
-#  reserved_ip_range       = "10.0.0.0/24"
-#  redis_version           = "REDIS_7_0"
-#  tier                    = "STANDARD_HA"
-#  transit_encryption_mode = "SERVER_AUTHENTICATION"
-#  replica_count           = 3
-#  read_replicas_mode      = "READ_REPLICAS_ENABLED"
 #}
 gcs_os = {}
 

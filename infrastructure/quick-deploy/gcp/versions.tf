@@ -1,9 +1,17 @@
 terraform {
-  required_version = ">= 1.0"
+  required_version = ">= 1.9"
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "> 4.78.0"
+      version = "~> 8.9"
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = "~> 8.9"
+    }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.13"
     }
     random = {
       source  = "hashicorp/random"
@@ -16,6 +24,10 @@ terraform {
     helm = {
       source  = "hashicorp/helm"
       version = "~> 2.17.0"
+    }
+    kubectl = {
+      source  = "alekc/kubectl"
+      version = "~> 2.4"
     }
   }
 }
