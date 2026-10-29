@@ -91,7 +91,9 @@ gke = {
       ]
     }
     state-database = {
-      machine_type       = "e2-medium"
+      # MongoDB starves on an e2-medium next to the GKE DaemonSets: its liveness probe kills it during the
+      # replica set initialization, which leaves the Percona operator stuck
+      machine_type       = "e2-standard-2"
       image_type         = "COS_CONTAINERD"
       max_pods_per_node  = 110
       initial_node_count = 1
