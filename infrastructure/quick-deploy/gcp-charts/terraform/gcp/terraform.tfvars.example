@@ -1,0 +1,16 @@
+# Copy to terraform.tfvars (git-ignored). All the parameters: variables.tf.
+
+project = "my-project"
+
+# region = "europe-west9"
+# zone   = "europe-west9-a"
+
+# Name of the cluster and prefix of every resource: change it to deploy twice in the same project
+# prefix = "armonik"
+
+# node_pools = {
+#   compute = {
+#     machine_type = "n2d-standard-8"
+#     max_count    = 20
+#   }
+# }

@@ -1,0 +1,140 @@
+# Release armonik, namespace armonik.
+#
+#   - table storage   PostgreSQL in the cluster (CloudNativePG Cluster of the chart)
+#   - object storage  GCS, reached with the Workload Identity of the ArmoniK service accounts
+#   - queue           Pub/Sub, topics and subscriptions created by Core
+#   - ingress         the chart's nginx, behind a GKE load balancer filtered on ingress_allowed_cidrs
+#   - monitoring      the operators' Prometheus, the chart's Grafana and Seq (under /grafana/ and /seq/)
+#   - NetworkPolicies none (networkPolicy.enabled stays false)
+# The partitions of var.partitions are a second values document, added by terraform/k8s/releases.tf.
+global:
+  armonik:
+    # Installed by the armonik-operators release: this release only uses them
+    operators:
+      externalSecrets:
+        deploy: false
+        available: true
+        namespace: "${OPERATORS_NS}"
+      keda:
+        deploy: false
+        available: true
+        namespace: "${OPERATORS_NS}"
+      certManager:
+        deploy: false
+        available: true
+        namespace: "${OPERATORS_NS}"
+      postgresqlOperator:
+        deploy: false
+        available: true
+        namespace: "${OPERATORS_NS}"
+      # Also read by the Grafana dashboard sidecar for the namespaces it watches
+      prometheusOperator:
+        deploy: false
+        available: true
+        namespace: "${OPERATORS_NS}"
+      mongodbOperator:
+        deploy: false
+        available: false
+    monitoring:
+      # Mandatory in a layered install: kube-prometheus-stack runs in the operators release (fullnameOverride kps)
+      prometheusUrl: "http://kps-prometheus.${OPERATORS_NS}.svc:9090"
+    # Image tags, pinned: Core above the chart's appVersion, and the GUI has its own release cycle
+    versions:
+      core: "${CORE_VERSION}"
+      gui: "${GUI_VERSION}"
+
+control-plane:
+  # One control plane saturates around 75 submitted tasks/s, and clients spread over the replicas
+  replicas: 3
+  # The cluster autoscaler would otherwise evict it when it empties a node, cutting the clients' streams
+  podAnnotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+  serviceAccount:
+    create: true
+    # Granted the bucket and Pub/Sub roles by Workload Identity (terraform/gcp): the name is a contract
+    name: "${SA_CONTROL_PLANE}"
+
+compute-plane:
+  serviceAccount:
+    create: true
+    name: "${SA_COMPUTE_PLANE}"
+  partitionCommon:
+    # Compute pool (spot, tainted), scaled from 0 by the cluster autoscaler
+    nodeSelector:
+      ${WORKERS_KEY}: "${WORKERS_VALUE}"
+    tolerations:
+      - key: "${WORKERS_KEY}"
+        operator: Equal
+        value: "${WORKERS_VALUE}"
+        effect: NoSchedule
+    # Keeps the cluster autoscaler from evicting a pod in the middle of a task
+    podAnnotations:
+      cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+    # KEDA scales a partition on its queue length, from 0 to this many pods
+    hpa:
+      maxReplicaCount: 20
+    # The worker runs the tasks: requests == limits, for predictable task runtimes and node sizing
+    worker:
+      resources:
+        requests: {cpu: "1", memory: 1Gi}
+        limits: {cpu: "1", memory: 1Gi}
+
+conf:
+  control:
+    env:
+      # Payloads a CreateResults call uploads in parallel. 0 (Core's default) is the CPU count, 1 here, while
+      # each upload is a network round trip to the object storage
+      Submitter__DegreeOfParallelism: "32"
+
+ingress:
+  # A GKE external passthrough load balancer: ports 5001 (gRPC) and 5000 (HTTP: /admin/, /grafana/, /seq/).
+  # No TLS: the source ranges are the only protection.
+  service:
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/load-balancer-source-ranges: "${INGRESS_SOURCE_RANGES}"
+
+dependencies:
+  # ---- Table storage: PostgreSQL ------------------------------------------------------------------------
+  mongodb:
+    enabled: false
+  mongodb-exporter:
+    enabled: false
+  postgresql:
+    enabled: true
+    cluster:
+      # The chart default only names the major version (postgresql:18): pin the minor. Core needs PostgreSQL 18
+      # or later (RETURNING OLD).
+      imageName: ghcr.io/cloudnative-pg/postgresql:18.6
+
+  # ---- Queue: Pub/Sub -----------------------------------------------------------------------------------
+  # Core creates the topics <prefix>-<partition> and their subscriptions itself (roles/pubsub.editor)
+  pubsub:
+    enabled: true
+    projectId: "${PROJECT}"
+    prefix: "${PUBSUB_PREFIX}"
+  activemq:
+    enabled: false
+  rabbitmq:
+    enabled: false
+
+  # ---- Object storage: GCS ------------------------------------------------------------------------------
+  # Bucket created by terraform/gcp. No credentials: Application Default Credentials of Workload Identity.
+  gcs:
+    enabled: true
+    projectId: "${PROJECT}"
+    bucketName: "${BUCKET}"
+  # Valkey (the chart's default object storage) is not deployed
+  redis:
+    enabled: false
+
+  # ---- Monitoring ---------------------------------------------------------------------------------------
+  grafana:
+    # Secret created by terraform/k8s (secrets.tf): the chart would otherwise generate a new password on every
+    # render and restart Grafana
+    admin:
+      existingSecret: grafana-admin
+  fluent-bit:
+    # On every node, the tainted compute nodes included
+    tolerations:
+      - operator: Exists

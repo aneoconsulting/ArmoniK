@@ -1,0 +1,35 @@
+# Release armonik-operators, namespace ${OPERATORS_NS}. The operators ArmoniK needs, installed once per cluster:
+# External Secrets, KEDA, cert-manager, CloudNativePG and kube-prometheus-stack. The armonik release then only
+# emits their custom resources.
+global:
+  armonik:
+    operators:
+      # PostgreSQL (CloudNativePG) only
+      mongodbOperator:
+        deploy: false
+
+kube-prometheus:
+  # Short, release-independent names: the Prometheus Service is kps-prometheus, the
+  # global.armonik.monitoring.prometheusUrl of values/armonik.yaml
+  fullnameOverride: kps
+  # The default renders windows-exporter through the operators alias anyway: stated off
+  windowsMonitoring:
+    enabled: false
+  # Hidden on GKE, and Dataplane V2 has no kube-proxy: their targets would only be down. ArmoniK dashboards do
+  # not use them.
+  kubeControllerManager:
+    enabled: false
+  kubeScheduler:
+    enabled: false
+  kubeEtcd:
+    enabled: false
+  kubeProxy:
+    enabled: false
+  defaultRules:
+    disabled:
+      # The armonik-operators chart deploys no Alertmanager: this alert would fire forever
+      PrometheusNotConnectedToAlertmanagers: true
+  prometheus-node-exporter:
+    # On every node, the tainted compute nodes included
+    tolerations:
+      - operator: Exists

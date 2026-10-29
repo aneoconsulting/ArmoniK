@@ -1,0 +1,7 @@
+terraform/backend.tfbackend
+kubeconfig
+.terraform/
+*.tfstate
+*.tfstate.*
+tfplan
+terraform/gcp/terraform.tfvars
