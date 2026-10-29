@@ -35,4 +35,6 @@ partitions = {
 
 # Npgsql options in a connection string built by ESO (chart postgresql-connection). Empty: Core's own string.
 # After a change, restart Core: kubectl -n armonik rollout restart deploy -l 'app.kubernetes.io/name in (control-plane,compute-plane)'
-postgresql_connection_options = "No Reset On Close=true;Max Auto Prepare=100;Auto Prepare Min Usages=2"
+# Connection Idle Lifetime: idle connections closed after 30 s instead of 300, so a burst does not hold the
+# RDS connections for 5 min. Pool size: PostgreSQL__MaxPoolSize in values/armonik.yaml (Core overrides it here)
+postgresql_connection_options = "No Reset On Close=true;Max Auto Prepare=100;Auto Prepare Min Usages=2;Connection Idle Lifetime=30"

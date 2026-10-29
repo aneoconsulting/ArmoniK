@@ -121,6 +121,13 @@ conf:
       # Payloads a CreateResults call uploads in parallel. 0 (Core's default) is the CPU count, 1 here, while each
       # upload is a ~170 ms S3 multipart: 32 takes a client from ~8 to ~75 submitted tasks/s
       Submitter__DegreeOfParallelism: "32"
+      # Npgsql pool per process (Core's default 100). RDS max_connections is ~830 on db.m7g.large: 3 x 50 here
+      PostgreSQL__MaxPoolSize: "50"
+  polling:
+    env:
+      # An agent runs one task at a time and needs a few connections: 100 agents x 5 = 500, + 150 for the
+      # control planes, under the ~830 of db.m7g.large. Core overrides Maximum Pool Size of the connection string
+      PostgreSQL__MaxPoolSize: "5"
 
 ingress:
   image:

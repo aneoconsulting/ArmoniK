@@ -24,8 +24,10 @@ terraform apply -var-file=../backend.tfbackend   # finds the state of terraform/
 
 ## Access
 
+From this folder, after the `terraform apply` of `terraform/aws` (`.kubeconfig` is git-ignored):
+
 ```sh
-aws eks update-kubeconfig --region eu-west-3 --name armonik69 --alias armonik69
+aws eks update-kubeconfig --region eu-west-3 --name armonik69 --alias armonik69 --kubeconfig .kubeconfig
 kubectl get svc -n armonik armonik-ingress   # EXTERNAL-IP: the NLB
 ```
 
