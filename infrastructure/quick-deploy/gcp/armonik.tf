@@ -82,4 +82,9 @@ module "armonik" {
     image = local.docker_images["${var.pod_deletion_cost.image}:${try(coalesce(var.pod_deletion_cost.tag), "")}"].image
     tag   = local.docker_images["${var.pod_deletion_cost.image}:${try(coalesce(var.pod_deletion_cost.tag), "")}"].tag
   })
+
+  # The data sources of the module, such as the CoreDNS ConfigMap of the ingress module, are read at plan time
+  # unless they depend on a pending change. On a new deployment, the cluster endpoint is still unknown then and
+  # the kubernetes provider would query localhost: depending on the cluster defers them to the apply
+  depends_on = [module.gke]
 }

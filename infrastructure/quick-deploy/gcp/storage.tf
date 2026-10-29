@@ -164,6 +164,9 @@ module "gcs_fs" {
   source   = "./generated/infra-modules/storage/gcp/gcs"
   name     = "${local.prefix}-gcsfs"
   location = local.region
+  # Core reaches the bucket with its S3 adapter, which checks it with GetBucketAcl: GCS rejects it with
+  # "Invalid argument" on a bucket with uniform bucket-level access, so the bucket keeps the legacy ACLs
+  uniform_bucket_level_access = false
   kms_key = {
     id = local.kms_key_id
   }
@@ -195,6 +198,9 @@ module "gcs_os" {
   source   = "./generated/infra-modules/storage/gcp/gcs"
   name     = "${local.prefix}-gcsos"
   location = local.region
+  # Core reaches the bucket with its S3 adapter, which checks it with GetBucketAcl: GCS rejects it with
+  # "Invalid argument" on a bucket with uniform bucket-level access, so the bucket keeps the legacy ACLs
+  uniform_bucket_level_access = false
   kms_key = {
     id = local.kms_key_id
   }
