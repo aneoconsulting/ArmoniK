@@ -24,7 +24,8 @@ terraform apply -var-file=../backend.tfbackend   # finds the state of terraform/
 
 ## Access
 
-From this folder, after the `terraform apply` of `terraform/aws` (`.kubeconfig` is git-ignored):
+Every command works in bash, zsh and fish (3.4+). From this folder, after the `terraform apply` of
+`terraform/aws` (`.kubeconfig` is git-ignored):
 
 ```sh
 aws eks update-kubeconfig --region eu-west-3 --name armonik69 --alias armonik69 --kubeconfig .kubeconfig
@@ -42,9 +43,10 @@ also needs `kms:Decrypt` for the node roles (`terraform -chdir=terraform/aws out
 1. Push the image, with a new tag for every version (a re-pushed tag is not pulled again):
 
    ```sh
-   REPO=123456789012.dkr.ecr.eu-west-3.amazonaws.com/my-team/my-worker   # or: terraform -chdir=terraform/aws output -raw workers_repository
-   aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin "${REPO%%/*}"
-   docker tag my-worker "$REPO:1.0.0" && docker push "$REPO:1.0.0"
+   # Repository: yours, or terraform -chdir=terraform/aws output -raw workers_repository
+   aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.eu-west-3.amazonaws.com
+   docker tag my-worker 123456789012.dkr.ecr.eu-west-3.amazonaws.com/my-team/my-worker:1.0.0
+   docker push 123456789012.dkr.ecr.eu-west-3.amazonaws.com/my-team/my-worker:1.0.0
    ```
 
 2. Declare it in `terraform/k8s/terraform.tfvars` (name: lowercase letters and digits only):
@@ -77,10 +79,22 @@ To update a worker, push a new tag, change `tag` and apply again: the partition'
 ## Test
 
 ```sh
-NLB=$(kubectl get svc -n armonik armonik-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-docker run --rm -e HtcMock__NTasks=2000 -e HtcMock__TotalCalculationTime=02:00:00 -e HtcMock__SubTasksLevels=1 \
-  -e HtcMock__Partition=htcmock -e GrpcClient__Endpoint=http://$NLB:5001 \
+docker run --rm -e HtcMock__NTasks=2000 -e HtcMock__TotalCalculationTime=02:00:00 -e HtcMock__SubTasksLevels=3 \
+  -e HtcMock__Partition=htcmock \
+  -e GrpcClient__Endpoint=http://$(kubectl get svc -n armonik armonik-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):5001 \
   dockerhubaneo/armonik_core_htcmock_test_client:0.41.3
+```
+
+HtcMock submits one root task that creates all the others as subtasks: nothing runs while the agent uploads
+their payloads (~170 ms each, one after the other, ~6 min for 2000). The Bench client submits its tasks
+directly, to the `bench` partition of `terraform/k8s/terraform.tfvars`: 10 000 tasks of 100 ms, a few minutes
+and a few cents of spot nodes.
+
+```sh
+docker run --rm -e BenchOptions__NTasks=10000 -e BenchOptions__TaskDurationMs=100 \
+  -e BenchOptions__Partition=bench -e BenchOptions__DegreeOfParallelism=8 \
+  -e GrpcClient__Endpoint=http://$(kubectl get svc -n armonik armonik-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):5001 \
+  dockerhubaneo/armonik_core_bench_test_client:0.41.3
 ```
 
 ## Destroy
@@ -102,14 +116,12 @@ terraform destroy -var-file=../backend.tfbackend
 cd ../aws
 terraform destroy
 # Repositories created by the pull-through cache, outside the state
-for r in $(aws ecr describe-repositories --output text \
-    --query "repositories[?starts_with(repositoryName, 'armonik69/')].repositoryName"); do
-  aws ecr delete-repository --repository-name "$r" --force > /dev/null
-done
+aws ecr describe-repositories --output text \
+    --query "repositories[?starts_with(repositoryName, 'armonik69/')].repositoryName" \
+  | xargs -rn1 aws ecr delete-repository --force --output text --query repository.repositoryName --repository-name
 # Queues Core created for the partitions that ran, outside the state too
-for q in $(aws sqs list-queues --queue-name-prefix armonik69 --query 'QueueUrls' --output text); do
-  aws sqs delete-queue --queue-url "$q"
-done
+aws sqs list-queues --queue-name-prefix armonik69 --query 'QueueUrls' --output text \
+  | xargs -rn1 aws sqs delete-queue --queue-url
 ```
 
 If the node pools went first anyway, `terraform destroy` fails with `Unable to uninstall Helm release
