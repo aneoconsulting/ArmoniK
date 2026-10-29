@@ -36,10 +36,10 @@ variable "kms" {
 
 # VPC and subnets for resources
 variable "subnets" {
-  description = "A map of subnets inside the VPC. Each subnet object has a CIDR block, a region, and a boolean set to true if the subnet is public, or false if the subnet is private"
+  description = "A map of subnets inside the VPC. Each subnet object has a CIDR block, and a boolean set to true if its outbound internet traffic goes through Cloud NAT"
   type = map(object({
-    cidr_block    = optional(string)
-    public_access = optional(bool)
+    cidr_block = string
+    enable_nat = optional(bool, false)
   }))
   default = null
 }
@@ -54,16 +54,16 @@ variable "gke" {
       pods_cidr_block     = optional(string, "172.16.0.0/16")
       services_cidr_block = optional(string, "172.17.17.0/24")
     }), {})
-    namespace                = optional(string, "armonik")
-    generate_kubeconfig      = optional(bool, true)
-    kubeconfig_file          = optional(string, "generated/kubeconfig")
+    namespace           = optional(string, "armonik")
+    generate_kubeconfig = optional(bool, true)
+    kubeconfig_file     = optional(string, "generated/kubeconfig")
+    # Lets Terraform and kubectl reach the DNS endpoint of the control plane from outside the VPC, authenticated by IAM
     enable_public_gke_access = optional(bool, true)
     enable_gke_autopilot     = optional(bool, false)
     regional                 = optional(bool, true)
     zones                    = optional(list(string), [])
-    node_pools_labels        = optional(map(map(string)), null)
-    node_pools_taints        = optional(map(list(object({ key = string, value = string, effect = string }))), null)
-    node_pools               = optional(list(map(any)), null)
+    # Node pools keyed by name, see the node_pools variable of the gke module of ArmoniK.Infra
+    node_pools = optional(any)
   })
   default = {}
 }
@@ -211,29 +211,30 @@ variable "mongodb_metrics_exporter" {
   default = null
 }
 
-# GCP Memorystore for Redis
+# GCP Memorystore for Valkey
 variable "memorystore" {
-  description = "Configuration of GCP Memorystore for Redis"
+  description = "Configuration of GCP Memorystore for Valkey, see the valkey module of ArmoniK.Infra"
   type = object({
-    memory_size_gb     = number
-    auth_enabled       = optional(bool, true)
-    connect_mode       = optional(string, "DIRECT_PEERING") # or PRIVATE_SERVICE_ACCESS
-    display_name       = optional(string, "armonik-redis")
-    locations          = optional(list(string), [])
-    redis_configs      = optional(map(string), null)
-    reserved_ip_range  = optional(string, null)
-    persistence_config = optional(map(string), null)
-    maintenance_policy = optional(object({
-      day        = optional(string),
-      start_time = optional(map(string))
-    }), null)
-    redis_version           = string
-    tier                    = optional(string, "BASIC")
+    node_type               = optional(string)
+    replica_count           = optional(number)
+    engine_version          = optional(string)
+    engine_configs          = optional(map(string), {})
     transit_encryption_mode = optional(string, "SERVER_AUTHENTICATION")
-    replica_count           = optional(number, 1)
-    read_replicas_mode      = optional(string, "READ_REPLICAS_DISABLED")
-    secondary_ip_range      = optional(string, "")
-    customer_managed_key    = optional(string, null)
+    zone_distribution = optional(object({
+      mode = string
+      zone = optional(string)
+    }))
+    persistence = optional(object({
+      mode                    = string
+      rdb_snapshot_period     = optional(string)
+      rdb_snapshot_start_time = optional(string)
+      aof_append_fsync        = optional(string)
+    }))
+    maintenance_window = optional(object({
+      day     = string
+      hours   = number
+      minutes = optional(number, 0)
+    }))
   })
   default = null
 }

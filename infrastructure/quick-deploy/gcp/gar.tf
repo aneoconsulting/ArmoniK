@@ -44,35 +44,44 @@ locals {
     if image != null
   ])
 
+  # Registry of each image, Docker Hub when the first component is not a host
   input_docker_images_step2 = [
     for image in local.input_docker_images_step1 :
     {
       key        = "${image.name}:${image.tag}"
       components = split("/", image.name)
+      registry   = can(regex("^[^/]*[.:][^/]*/", image.name)) ? split("/", image.name)[0] : "docker.io"
       name       = image.name
       tag        = image.tag
     }
   ]
 
-  docker_repositories = [
-    for image in local.input_docker_images_step2 : {
-      key   = image.key
-      name  = replace(image.components[length(image.components) - 1], "_", "-")
-      image = image.name
-      tag   = image.tag
-    }
-  ]
+  # Remote repositories of the Artifact Registry module, by registry. Each image is pulled through the remote
+  # repository of its registry rather than the virtual one, where a same name on a registry of higher priority
+  # would win. Official Docker Hub images are under library/
+  registry_remotes = {
+    "docker.io"       = "dockerhub"
+    "public.ecr.aws"  = "ecr-public"
+    "quay.io"         = "quay"
+    "ghcr.io"         = "ghcr"
+    "registry.k8s.io" = "k8s"
+  }
+
+  docker_images_mirrored = {
+    for image in local.input_docker_images_step2 :
+    image.key => var.upload_images && contains(keys(local.registry_remotes), image.registry) ? join("/", concat(
+      [module.artifact_registry.remote_urls[local.registry_remotes[image.registry]]],
+      image.registry == "docker.io" && length(image.components) == 1 ? ["library"] : [],
+      image.registry == "docker.io" ? image.components : slice(image.components, 1, length(image.components)),
+    )) : image.name
+  }
 
   docker_images_raw = {
-    for rep in local.docker_repositories :
-    rep.key => var.upload_images ? {
-      image = try(module.artifact_registry.docker_repositories["${rep.image}:${rep.tag}"], null),
-      name  = try(module.artifact_registry.docker_repositories["${rep.image}:${rep.tag}"], null),
-      tag   = rep.tag,
-      } : {
-      image = rep.image,
-      name  = rep.image,
-      tag   = rep.tag,
+    for image in local.input_docker_images_step2 :
+    image.key => {
+      image = local.docker_images_mirrored[image.key]
+      name  = local.docker_images_mirrored[image.key]
+      tag   = image.tag
     }
   }
 
@@ -81,13 +90,6 @@ locals {
     "${name}:" => local.docker_images_raw["${name}:${tag}"]
     if can(local.docker_images_raw["${name}:${tag}"])
   })
-
-  repositories = {
-    for element in local.docker_repositories : element.name => {
-      image = element.image
-      tag   = element.tag
-    }...
-  }
 }
 
 # Default tags for all images
@@ -99,10 +101,11 @@ module "default_images" {
 }
 
 module "artifact_registry" {
-  source        = "./generated/infra-modules/container-registry/gcp/artifact-registry"
-  docker_images = var.upload_images ? local.repositories : {}
-  name          = "${local.prefix}-docker-registry"
-  description   = "All docker images for ArmoniK"
-  kms_key_id    = local.kms_key_id
-  labels        = local.labels
+  source      = "./generated/infra-modules/container-registry/gcp/artifact-registry"
+  name        = "${local.prefix}-docker-registry"
+  description = "All docker images for ArmoniK"
+  kms_key = {
+    id = local.kms_key_id
+  }
+  labels = local.labels
 }
