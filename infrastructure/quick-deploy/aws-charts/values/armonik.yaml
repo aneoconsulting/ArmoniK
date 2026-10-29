@@ -46,6 +46,11 @@ global:
       gui: "${GUI_VERSION}"
 
 control-plane:
+  # One control plane saturates around 75 submitted tasks/s (S3 uploads), and clients spread over the replicas
+  replicas: 3
+  # Karpenter consolidation of the core pool otherwise evicts it under load, cutting the clients' streams
+  podAnnotations:
+    karpenter.sh/do-not-disrupt: "true"
   serviceAccount:
     create: true
     # Bound to the S3/SQS role by Pod Identity (Terraform): the name is a contract
@@ -109,6 +114,13 @@ compute-plane:
       resources:
         requests: {cpu: "1", memory: 1Gi}
         limits: {cpu: "1", memory: 1Gi}
+
+conf:
+  control:
+    env:
+      # Payloads a CreateResults call uploads in parallel. 0 (Core's default) is the CPU count, 1 here, while each
+      # upload is a ~170 ms S3 multipart: 32 takes a client from ~8 to ~75 submitted tasks/s
+      Submitter__DegreeOfParallelism: "32"
 
 ingress:
   image:

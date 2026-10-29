@@ -59,6 +59,9 @@ module "rds" {
     { name = "max_replication_slots", value = tostring(var.rds.max_replication_slots), apply_method = "pending-reboot" },
     { name = "max_wal_senders", value = tostring(var.rds.max_replication_slots), apply_method = "pending-reboot" },
     { name = "rds.force_ssl", value = "1" },
+    # Planning time per statement in pg_stat_statements (after CREATE EXTENSION pg_stat_statements), which
+    # total_exec_time leaves out: what Npgsql auto-prepare saves
+    { name = "pg_stat_statements.track_planning", value = "1" },
   ]
 
   backup_retention_period = var.rds.backup_retention_period

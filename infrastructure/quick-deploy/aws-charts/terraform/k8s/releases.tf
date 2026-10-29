@@ -34,6 +34,21 @@ locals {
     GUI_VERSION             = var.versions.gui
   }
 
+  # Core reads its PostgreSQL connection string from the Secret of the postgresql-connection release
+  # when var.postgresql_connection_options is set: it then ignores Host, User and Password
+  postgresql_connection = var.postgresql_connection_options == "" ? {} : {
+    conf = {
+      core = {
+        envFromSecret = {
+          PostgreSQL__ConnectionString = {
+            secret = "armonik-postgresql-connection"
+            field  = "connectionString"
+          }
+        }
+      }
+    }
+  }
+
   # var.partitions as compute-plane values, over the partitionCommon of values/armonik.yaml
   partitions_values = {
     compute-plane = {
@@ -115,6 +130,27 @@ resource "helm_release" "aws_secret_store" {
   depends_on = [helm_release.armonik_operators]
 }
 
+# Npgsql options Core does not expose (auto-prepare, no reset on close), in a full connection string that ESO
+# builds from the RDS master user secret. Only with var.postgresql_connection_options.
+resource "helm_release" "postgresql_connection" {
+  count = var.postgresql_connection_options == "" ? 0 : 1
+
+  name             = "postgresql-connection"
+  namespace        = local.aws.namespaces.armonik
+  create_namespace = true
+  chart            = "${local.charts_dir}/postgresql-connection"
+  values = [yamlencode({
+    credentialsSecret = local.aws.postgresql.secret_arn
+    host              = local.aws.postgresql.host
+    port              = local.aws.postgresql.port
+    database          = local.aws.postgresql.database
+    options           = var.postgresql_connection_options
+  })]
+  wait = true
+
+  depends_on = [helm_release.aws_secret_store]
+}
+
 resource "helm_release" "armonik" {
   name             = "armonik"
   namespace        = local.aws.namespaces.armonik
@@ -125,9 +161,14 @@ resource "helm_release" "armonik" {
   values = [
     templatefile("${local.values_dir}/armonik.yaml", local.values),
     yamlencode(local.partitions_values),
+    yamlencode(local.postgresql_connection),
   ]
   wait    = true
   timeout = 900
 
-  depends_on = [helm_release.aws_secret_store, helm_release.aws_load_balancer_controller]
+  depends_on = [
+    helm_release.aws_secret_store,
+    helm_release.aws_load_balancer_controller,
+    helm_release.postgresql_connection,
+  ]
 }

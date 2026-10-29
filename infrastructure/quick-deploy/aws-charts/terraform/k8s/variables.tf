@@ -56,3 +56,8 @@ variable "partitions" {
   }
 }
 
+variable "postgresql_connection_options" {
+  description = "Npgsql options appended to Core's connection string (e.g. \"No Reset On Close=true;Max Auto Prepare=100;Auto Prepare Min Usages=2\"); empty keeps Core's own connection string"
+  type        = string
+  default     = ""
+}

@@ -83,11 +83,16 @@ docker run --rm -e HtcMock__NTasks=2000 -e HtcMock__TotalCalculationTime=02:00:0
 
 ## Destroy
 
-The NLB and the Karpenter nodes belong to controllers: remove them first, while the controllers run.
+The NLB and the Karpenter nodes belong to controllers: remove them first, while the controllers run. The
+External Secrets objects (`postgresql-connection`, `aws-secret-store`) and the operators go first too: once the
+node pools are gone, External Secrets has no node left, and its webhooks and finalizers block their deletion.
 
 ```sh
 cd terraform/k8s
-terraform destroy -var-file=../backend.tfbackend -target=helm_release.armonik   # removes the NLB
+terraform destroy -var-file=../backend.tfbackend \
+  -target=helm_release.armonik -target=helm_release.postgresql_connection \
+  -target=helm_release.aws_secret_store -target=helm_release.armonik_operators   # removes the NLB
+kubectl get svc -A | grep LoadBalancer                                          # wait until empty
 kubectl delete nodepools.karpenter.sh --all
 kubectl get nodeclaims.karpenter.sh                                            # wait until empty
 terraform destroy -var-file=../backend.tfbackend
@@ -99,4 +104,49 @@ for r in $(aws ecr describe-repositories --output text \
     --query "repositories[?starts_with(repositoryName, 'armonik69/')].repositoryName"); do
   aws ecr delete-repository --repository-name "$r" --force > /dev/null
 done
+# Queues Core created for the partitions that ran, outside the state too
+for q in $(aws sqs list-queues --queue-name-prefix armonik69 --query 'QueueUrls' --output text); do
+  aws sqs delete-queue --queue-url "$q"
+done
 ```
+
+If the node pools went first anyway, `terraform destroy` fails with `Unable to uninstall Helm release
+postgresql-connection` (or `aws-secret-store`): the External Secrets webhooks have no pod to answer. Remove them,
+and the finalizer only the stopped controller would clear, then destroy again:
+
+```sh
+kubectl delete validatingwebhookconfiguration externalsecret-validate secretstore-validate
+kubectl -n armonik patch externalsecret armonik-postgresql-connection --type=merge -p '{"metadata":{"finalizers":null}}'
+```
+
+## PostgreSQL connection options
+
+Core builds its Npgsql connection string itself and exposes no option for connection pooling or prepared
+statements. `postgresql_connection_options` (`terraform/k8s/terraform.tfvars`) passes them anyway:
+
+1. The local chart `charts/postgresql-connection` (release `postgresql-connection`, namespace `armonik`) holds
+   one `ExternalSecret`. ESO reads the RDS master user secret through the `aws-secrets-manager`
+   ClusterSecretStore and writes the Secret `armonik-postgresql-connection`, key `connectionString`:
+   `Host=…;Port=…;Database=armonik;Username=…;Password='…';<options>`. A password rotation is carried over at the
+   next sync (1 h), and the pods pick it up at their next start.
+2. The `armonik` release then sets `PostgreSQL__ConnectionString` from that Secret (`conf.core.envFromSecret`).
+   With it, Core ignores its own Host, User and Password settings. TLS is unchanged: Core still requires SSL and
+   validates RDS against the CA.
+
+Empty option string: no chart, Core's own connection string. Core reads it at startup only, so after a change:
+
+```sh
+kubectl -n armonik rollout restart deploy -l 'app.kubernetes.io/name in (control-plane,compute-plane)'
+```
+
+What the options do:
+
+| Option | Effect |
+|---|---|
+| `No Reset On Close=true` | Skips the `DISCARD ALL` Npgsql sends by default on every connection returned to its pool (about 10 per task), which wipes the session state so the next user does not inherit it. Core keeps none (no `SET`, no session lock, no temp table), so the reset only threw away the cached plans |
+| `Max Auto Prepare=100` | Npgsql keeps up to 100 prepared statements per connection: PostgreSQL plans a query once instead of at every call. Core runs about 30 queries per task, always the same ones |
+| `Auto Prepare Min Usages=2` | A query is prepared from its second run on |
+
+The PostgreSQL versus MongoDB benchmark measured +46 % throughput with the three together, +7 % with the first
+one alone. To check they apply, during a run: `DISCARD ALL` disappears from `pg_stat_statements`, and
+`total_plan_time` drops (`pg_stat_statements.track_planning` is on, see `terraform/aws/rds.tf`).
