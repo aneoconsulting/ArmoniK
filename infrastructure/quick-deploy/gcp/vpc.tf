@@ -1,6 +1,7 @@
 locals {
-  subnets    = { for key, value in coalesce(var.subnets, {}) : "${local.prefix}-${key}" => merge(value, { region = var.region }) }
-  gke_subnet = merge(var.gke.subnet, { name = "${local.prefix}-${var.gke.subnet.name}", region = var.region })
+  subnets = { for key, value in coalesce(var.subnets, {}) : "${local.prefix}-${key}" => merge(value, { region = var.region }) }
+  # Private nodes pull public images through Cloud NAT
+  gke_subnet = merge(var.gke.subnet, { name = "${local.prefix}-${var.gke.subnet.name}", region = var.region, public_access = true })
 }
 
 module "vpc" {

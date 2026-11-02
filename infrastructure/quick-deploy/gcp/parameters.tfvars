@@ -1,7 +1,6 @@
 # GKE
 gke = {
   enable_public_gke_access = true
-  enable_gke_autopilot     = false
   # Zonal cluster: one node per pool at start. On a regional cluster, every pool starts with initial_node_count
   # nodes in each of the 3 zones, and the small pools never scale down: the GKE system DaemonSets alone request
   # more than half of an e2-medium, above the threshold under which the autoscaler removes a node

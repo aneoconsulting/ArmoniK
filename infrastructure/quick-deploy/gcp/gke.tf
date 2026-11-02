@@ -17,24 +17,15 @@ module "gke" {
   kms_key = {
     id = local.kms_key_id
   }
-  regional                   = var.gke.regional
-  zones                      = var.gke.zones
-  labels                     = local.labels
-  autopilot                  = var.gke.enable_gke_autopilot
-  node_pools                 = local.node_pools
-  dns_allow_external_traffic = var.gke.enable_public_gke_access
-  deletion_protection        = false
-}
-
-resource "terraform_data" "kubeconfig" {
-  count            = var.gke.generate_kubeconfig ? 1 : 0
-  triggers_replace = [module.gke.id, abspath(var.gke.kubeconfig_file)]
-  provisioner "local-exec" {
-    command = "gcloud container clusters get-credentials ${module.gke.name} --location ${module.gke.location} --project ${data.google_client_config.current.project} --dns-endpoint"
-    environment = {
-      KUBECONFIG = abspath(var.gke.kubeconfig_file)
-    }
+  regional   = var.gke.regional
+  zones      = var.gke.zones
+  labels     = local.labels
+  node_pools = local.node_pools
+  control_plane = {
+    dns_allow_external_traffic = var.gke.enable_public_gke_access
   }
+  kubeconfig_path     = var.gke.generate_kubeconfig ? abspath(var.gke.kubeconfig_file) : null
+  deletion_protection = false
 }
 
 resource "kubernetes_namespace" "armonik" {

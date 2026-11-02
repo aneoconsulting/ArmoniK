@@ -61,8 +61,6 @@ module "memorystore" {
   }
   deletion_protection = false
   labels              = local.labels
-  # The endpoints are only created where a service connection policy exists
-  depends_on = [module.vpc]
 }
 
 locals {
@@ -106,45 +104,23 @@ resource "kubernetes_secret" "memorystore" {
   }
 }
 
-# Service accounts of the pods, granted IAM roles through Workload Identity Federation. The Kubernetes
-# service accounts are created after the roles, so that the pods using them start with their permissions
-locals {
-  control_plane_service_account = "${local.prefix}-control-plane-sa"
-  compute_plane_service_account = "${local.prefix}-compute-plane-sa"
-}
-
+# Service account for pods
 module "control_plane_service_account" {
-  source                     = "./generated/infra-modules/service-account/gcp"
-  kubernetes_namespace       = local.namespace
-  kubernetes_service_account = local.control_plane_service_account
-  project_roles              = ["roles/pubsub.editor"]
+  source               = "./generated/infra-modules/service-account/gcp"
+  name                 = "${local.prefix}-control-plane-sa"
+  kubernetes_namespace = local.namespace
+  roles                = ["roles/pubsub.editor"]
   # The workload identity pool is created with the cluster
   depends_on = [module.gke]
 }
 
 module "compute_plane_service_account" {
-  source                     = "./generated/infra-modules/service-account/gcp"
-  kubernetes_namespace       = local.namespace
-  kubernetes_service_account = local.compute_plane_service_account
-  project_roles              = ["roles/pubsub.editor"]
+  source               = "./generated/infra-modules/service-account/gcp"
+  name                 = "${local.prefix}-compute-plane-sa"
+  kubernetes_namespace = local.namespace
+  roles                = ["roles/pubsub.editor"]
   # The workload identity pool is created with the cluster
   depends_on = [module.gke]
-}
-
-resource "kubernetes_service_account" "control_plane" {
-  metadata {
-    name      = local.control_plane_service_account
-    namespace = local.namespace
-  }
-  depends_on = [module.control_plane_service_account]
-}
-
-resource "kubernetes_service_account" "compute_plane" {
-  metadata {
-    name      = local.compute_plane_service_account
-    namespace = local.namespace
-  }
-  depends_on = [module.compute_plane_service_account]
 }
 
 # HMac for buckets
@@ -161,9 +137,10 @@ resource "google_project_iam_member" "allow_gcs_access" {
 
 # Shared storage for compute-plane
 module "gcs_fs" {
-  source   = "./generated/infra-modules/storage/gcp/gcs"
-  name     = "${local.prefix}-gcsfs"
-  location = local.region
+  source    = "./generated/infra-modules/storage/gcp/gcs"
+  name      = "${local.prefix}-gcsfs"
+  namespace = local.namespace
+  location  = local.region
   # Core reaches the bucket with its S3 adapter, which checks it with GetBucketAcl: GCS rejects it with
   # "Invalid argument" on a bucket with uniform bucket-level access, so the bucket keeps the legacy ACLs
   uniform_bucket_level_access = false
@@ -194,10 +171,11 @@ resource "kubernetes_secret" "shared_storage" {
 
 # GCP bucket as object storage
 module "gcs_os" {
-  count    = var.gcs_os != null ? 1 : 0
-  source   = "./generated/infra-modules/storage/gcp/gcs"
-  name     = "${local.prefix}-gcsos"
-  location = local.region
+  count     = var.gcs_os != null ? 1 : 0
+  source    = "./generated/infra-modules/storage/gcp/gcs"
+  name      = "${local.prefix}-gcsos"
+  namespace = local.namespace
+  location  = local.region
   # Core reaches the bucket with its S3 adapter, which checks it with GetBucketAcl: GCS rejects it with
   # "Invalid argument" on a bucket with uniform bucket-level access, so the bucket keeps the legacy ACLs
   uniform_bucket_level_access = false
@@ -206,35 +184,8 @@ module "gcs_os" {
   }
   force_destroy = true
   labels        = local.labels
-}
-
-# S3 object storage of Core on the bucket, through the XML API of GCS and the HMAC key
-locals {
-  gcs_os_configuration = [for bucket in module.gcs_os : {
-    env = {
-      "Components__ObjectStorage"                                     = "ArmoniK.Adapters.S3.ObjectStorage"
-      "Components__ObjectStorageAdaptorSettings__ClassName"           = "ArmoniK.Core.Adapters.S3.ObjectBuilder"
-      "Components__ObjectStorageAdaptorSettings__AdapterAbsolutePath" = "/adapters/object/s3/ArmoniK.Core.Adapters.S3.dll"
-      "S3__BucketName"                                                = bucket.name
-      "S3__UseChecksum"                                               = false
-      "S3__MustForcePathStyle"                                        = false
-      "S3__UseChunkEncoding"                                          = false
-      "S3__EndpointUrl"                                               = "https://storage.googleapis.com"
-    }
-    env_secret = [kubernetes_secret.gcs_os_credentials[0].metadata[0].name]
-  }]
-}
-
-resource "kubernetes_secret" "gcs_os_credentials" {
-  count = length(module.gcs_os) > 0 ? 1 : 0
-  metadata {
-    name      = "${local.prefix}-gcsos-s3-user-credentials"
-    namespace = local.namespace
-  }
-  data = {
-    "S3__Login"    = google_storage_hmac_key.cloud_storage.access_id
-    "S3__Password" = google_storage_hmac_key.cloud_storage.secret
-  }
+  username      = google_storage_hmac_key.cloud_storage.access_id
+  password      = google_storage_hmac_key.cloud_storage.secret
 }
 
 resource "kubernetes_secret" "gcs" {

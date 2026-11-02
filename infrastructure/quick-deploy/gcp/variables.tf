@@ -36,10 +36,10 @@ variable "kms" {
 
 # VPC and subnets for resources
 variable "subnets" {
-  description = "A map of subnets inside the VPC. Each subnet object has a CIDR block, and a boolean set to true if its outbound internet traffic goes through Cloud NAT"
+  description = "A map of subnets inside the VPC. Each subnet object has a CIDR block, a region, and a boolean set to true if the subnet is public, or false if the subnet is private"
   type = map(object({
-    cidr_block = string
-    enable_nat = optional(bool, false)
+    cidr_block    = optional(string)
+    public_access = optional(bool)
   }))
   default = null
 }
@@ -59,7 +59,6 @@ variable "gke" {
     kubeconfig_file     = optional(string, "generated/kubeconfig")
     # Lets Terraform and kubectl reach the DNS endpoint of the control plane from outside the VPC, authenticated by IAM
     enable_public_gke_access = optional(bool, true)
-    enable_gke_autopilot     = optional(bool, false)
     regional                 = optional(bool, true)
     zones                    = optional(list(string), [])
     # Node pools keyed by name, see the node_pools variable of the gke module of ArmoniK.Infra
