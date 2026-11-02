@@ -38,7 +38,7 @@ variable "versions" {
 }
 
 variable "partitions" {
-  description = "Partitions added to the chart's own (default, stream, htcmock); a worker update is a new tag here"
+  description = "The only partitions (the chart's default, stream and htcmock are removed in values/armonik.yaml); a worker update is a new tag here"
   type = map(object({
     # Image without its tag, registry included (e.g. the workers repository of the outputs)
     image  = string

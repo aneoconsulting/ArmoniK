@@ -77,20 +77,12 @@ compute-plane:
   fluentBit:
     image:
       registry: "${REG_DOCKERHUB}"
-  # The chart's partitions (default, stream, htcmock) only need their registry; yours come from var.partitions
+  # The chart's partitions (default, stream, htcmock) are removed (null deletes a chart default); yours come from
+  # var.partitions. Without a "default" partition, Core's default partition is the first one of the list.
   partitions:
-    default:
-      worker:
-        image:
-          registry: "${REG_DOCKERHUB}"
-    stream:
-      worker:
-        image:
-          registry: "${REG_DOCKERHUB}"
-    htcmock:
-      worker:
-        image:
-          registry: "${REG_DOCKERHUB}"
+    default: null
+    stream: null
+    htcmock: null
   partitionCommon:
     # Workers node pool (Karpenter, spot first, tainted); do-not-disrupt keeps Karpenter from evicting a task
     nodeSelector:

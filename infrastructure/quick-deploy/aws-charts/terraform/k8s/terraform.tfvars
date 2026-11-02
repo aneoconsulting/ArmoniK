@@ -11,8 +11,8 @@ ingress_allowed_cidrs = ["0.0.0.0/0"]
 #   core = "0.41.3"
 # }
 
-# Your workers, on top of the chart's default, stream and htcmock partitions. A worker update is a new tag
-# here and `just k8s`. image: the output workers_repository, or any repository the nodes can pull.
+# Your workers, the only partitions (the chart's default, stream and htcmock are removed in values/armonik.yaml).
+# A worker update is a new tag here and `just k8s`. image: the output workers_repository, or any repository the nodes can pull.
 # partitions = {
 #   myapp = {
 #     image  = "<output workers_repository of terraform/aws>"
@@ -23,14 +23,16 @@ ingress_allowed_cidrs = ["0.0.0.0/0"]
 # }
 
 partitions = {
-  # Core's Bench worker (tasks of BenchOptions__TaskDurationMs), for the PostgreSQL stress tests
-  bench = {
-    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_bench_test_worker"
-    tag          = "0.41.3"
-    cpu          = "500m"
+  # QuantLib pricing worker (ArmoniK.Samples python/quantlib): one task at a time on one Python thread, so one
+  # CPU; QuantLib keeps no paths or grids in memory (Monte Carlo accumulates statistics only)
+  quantlib = {
+    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/workers/armonik_quantlib_worker"
+    tag          = "0.2.1"
+    cpu          = "1"
     memory       = "512Mi"
-    max_replicas = 100
+    max_replicas = 20
   }
+  # supprimer toute les partitions par default et ne garder que quantlib + clean la db
 }
 
 # Npgsql options in a connection string built by ESO (chart postgresql-connection). Empty: Core's own string.
