@@ -104,14 +104,14 @@ resource "kubernetes_secret" "memorystore" {
   }
 }
 
-# Service account for pods
+# Service accounts for pods. Their IAM bindings need the workload identity pool, created with the cluster: the
+# order comes from local.namespace, whose resource depends on module.gke. No depends_on on the modules, it would
+# defer their data sources whenever the cluster changes and plan a replacement of the IAM bindings
 module "control_plane_service_account" {
   source               = "./generated/infra-modules/service-account/gcp"
   name                 = "${local.prefix}-control-plane-sa"
   kubernetes_namespace = local.namespace
   roles                = ["roles/pubsub.editor"]
-  # The workload identity pool is created with the cluster
-  depends_on = [module.gke]
 }
 
 module "compute_plane_service_account" {
@@ -119,8 +119,6 @@ module "compute_plane_service_account" {
   name                 = "${local.prefix}-compute-plane-sa"
   kubernetes_namespace = local.namespace
   roles                = ["roles/pubsub.editor"]
-  # The workload identity pool is created with the cluster
-  depends_on = [module.gke]
 }
 
 # HMac for buckets
