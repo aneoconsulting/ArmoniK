@@ -2,11 +2,11 @@ locals {
   cloudwatch_log_group_name = "/aws/containerinsights/${module.eks.cluster_name}/application"
 
   # Pods cannot reach the node role (IMDS hop limit of 1): a fluent-bit DaemonSet uses its own role,
-  # a fluent-bit sidecar the role of the ArmoniK service account it runs under
+  # a fluent-bit sidecar (Linux or Windows) the role of the ArmoniK service account it runs under
   fluent_bit_daemonset = var.fluent_bit.is_daemonset || (var.fluent_bit_windows.is_daemonset && length(var.fluent_bit_windows.node_selector_windows) > 0)
   fluent_bit_role_names = compact([
     local.fluent_bit_daemonset ? module.fluent_bit_service_account[0].service_account_iam_role_name : "",
-    var.fluent_bit.is_daemonset ? "" : module.aws_service_account.service_account_iam_role_name,
+    var.fluent_bit.is_daemonset && var.fluent_bit_windows.is_daemonset ? "" : module.aws_service_account.service_account_iam_role_name,
   ])
 }
 
