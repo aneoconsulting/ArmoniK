@@ -95,7 +95,7 @@ resource "kubernetes_secret" "memorystore" {
     namespace = local.namespace
   }
   data = {
-    "chain.pem" = coalesce(module.memorystore[0].ca_certificates, "")
+    "chain.pem" = try(coalesce(module.memorystore[0].ca_certificates), "")
     username    = ""
     password    = ""
     host        = module.memorystore[0].host
