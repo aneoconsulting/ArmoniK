@@ -33,6 +33,19 @@ partitions = {
     max_replicas = 20
   }
   # supprimer toute les partitions par default et ne garder que quantlib + clean la db
+
+  # Core test workers, through the Docker Hub pull-through cache (tag = Core version), for the autoscaling bench
+  # (bench/README.md). Bench: tasks of a fixed duration; HtcMock: a tree of subtasks created by the workers.
+  bench = {
+    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_bench_test_worker"
+    tag          = "0.41.3"
+    max_replicas = 100
+  }
+  htcmock = {
+    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_htcmock_test_worker"
+    tag          = "0.41.3"
+    max_replicas = 100
+  }
 }
 
 # Npgsql options in a connection string built by ESO (chart postgresql-connection). Empty: Core's own string.

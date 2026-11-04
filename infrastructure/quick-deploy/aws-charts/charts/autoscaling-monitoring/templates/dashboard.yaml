@@ -1,0 +1,12 @@
+# Loaded by the Grafana sidecar of the armonik release (label grafana_dashboard, namespaces armonik and operators)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: autoscaling-dashboard
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_dashboard_folder: ArmoniK
+data:
+  autoscaling.json: |-
+{{ .Files.Get "dashboards/autoscaling.json" | replace "__PARTITIONS__" (join "," .Values.partitions) | indent 4 }}

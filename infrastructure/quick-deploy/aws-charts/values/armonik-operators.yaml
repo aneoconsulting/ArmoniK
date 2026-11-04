@@ -36,6 +36,13 @@ external-secrets:
       repository: "${REG_GHCR}/external-secrets/external-secrets"
 
 keda:
+  # The chart scrapes the metrics-apiserver only; the operator's ServiceMonitor adds what KEDA computes per
+  # ScaledObject (keda_scaler_metrics_value, keda_scaler_active, keda_scaler_metrics_latency_seconds)
+  prometheus:
+    operator:
+      enabled: true
+      serviceMonitor:
+        enabled: true
   image:
     keda:
       registry: "${REG_GHCR}"
@@ -95,6 +102,9 @@ kube-prometheus:
       image:
         registry: "${REG_QUAY}"
   kube-state-metrics:
+    # kube_node_labels with the Karpenter pool and capacity type, to split the cores per node pool
+    metricLabelsAllowlist:
+      - nodes=[karpenter.sh/nodepool,karpenter.sh/capacity-type,node.kubernetes.io/instance-type]
     image:
       registry: "${REG_K8S}"
     kubeRBACProxy:

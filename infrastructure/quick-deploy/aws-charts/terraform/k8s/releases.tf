@@ -172,3 +172,17 @@ resource "helm_release" "armonik" {
     helm_release.postgresql_connection,
   ]
 }
+
+# Karpenter ServiceMonitor and the "ArmoniK autoscaling" Grafana dashboard (bench/README.md). After armonik: the
+# ServiceMonitor CRD comes with the operators, and Grafana's sidecar watches the armonik namespace.
+resource "helm_release" "autoscaling_monitoring" {
+  name      = "autoscaling-monitoring"
+  namespace = local.aws.namespaces.armonik
+  chart     = "${local.charts_dir}/autoscaling-monitoring"
+  values = [yamlencode({
+    partitions = keys(var.partitions)
+  })]
+  wait = true
+
+  depends_on = [helm_release.armonik]
+}
