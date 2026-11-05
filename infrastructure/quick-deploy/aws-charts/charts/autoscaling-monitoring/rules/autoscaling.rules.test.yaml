@@ -49,7 +49,8 @@ tests:
             value: 9
 
   # ---- After a drain: no phantom flow ----------------------------------------------------------------------------------
-  # The same flow stops at 5 min: 40 s later the completions of the window are gone, the target is 0
+  # The same flow stops at 5 min: 50 s later the completions of the window (30 s) and the average of F (30 s) are gone,
+  # the target is 0
   - name: drain
     interval: 10s
     input_series:
@@ -69,7 +70,7 @@ tests:
         values: '0x50'
     promql_expr_test:
       - expr: armonik:scaler_target
-        eval_time: 340s
+        eval_time: 350s
         exp_samples:
           - labels: 'armonik:scaler_target{partition="drain"}'
             value: 0

@@ -152,10 +152,19 @@ groups:
       # Why bound by the completions: a burst of 3000 tasks makes a huge arrival slope for 30 s, but it is a stock,
       # not a flow; it is in the queue, and W counts it. Using the arrivals alone would count it twice. Conversely
       # when the pods are short, completions < arrivals and the queue grows, which W picks up.
-      - record: armonik:scaler_flow_workers
+      - record: armonik:scaler_flow_workers:raw
         expr: |
           ((armonik:tasks_arrival_rate <= on (partition) armonik:tasks_completion_rate) or armonik:tasks_completion_rate)
           * on (partition) armonik:task_duration_seconds / 0.9
+      # F used by the model: the raw F averaged over the last 30 s (6 evaluations of the rule above).
+      # Why: F is estimated from counts that move by steps every 10 s scrape, so it jitters by 2-3 pods from one point
+      # to the next. The HPA scales down only to the highest target of the last 60 s (stabilization window), so every
+      # upward jitter is held for 60 s: paid idle pods (+15..38 % pod·s on steady flows). Averaging removes most of it.
+      # Cost: F follows a change of the flow ~15 s later; meanwhile the queue grows and W, not averaged, covers it.
+      # Bursts are in W: still seen at once. (Backtested: averaging the whole target or over 60 s delays the bursts or
+      # under-provisions more.)
+      - record: armonik:scaler_flow_workers
+        expr: avg_over_time(armonik:scaler_flow_workers:raw[30s])
       # R, pods for the running tasks: processing * min(mu / 2, Tc) / Tc.
       # A running task has on average mu / 2 left. Within the next Tc = 60 s it needs its pod for min(mu / 2, 60) s,
       # i.e. min(mu / 2, 60) / 60 of a pod. Short tasks (200 ms): ~0, F covers them. Long tasks (mu >= 120 s): 1 pod
