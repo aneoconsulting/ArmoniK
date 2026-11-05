@@ -99,7 +99,11 @@ jobs:
            type: localhost
 
   coreStream:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
     timeout-minutes: 40
     steps:
       - name: Get type of VM
@@ -129,7 +133,7 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@207c13792e445528e73c0296ab571f78721e4ce4 # main
         with:
            type: localhost
-           log-suffix: core-stream
+           log-suffix: core-stream-${{ matrix.os }}
       - name: Test Core Stream
         shell: bash
         run: |
@@ -139,6 +143,48 @@ jobs:
              -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
              -e Partition="stream" \
              dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
+      - name: Diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          echo "::group::Host"
+          uname -a
+          cat /etc/os-release | grep -E '^(VERSION|PRETTY_NAME)='
+          echo "ImageVersion=$ImageVersion"
+          free -m
+          df -h / /tmp
+          ulimit -a
+          sysctl net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem fs.inotify.max_user_instances vm.overcommit_memory 2>/dev/null
+          echo "::endgroup::"
+          echo "::group::dmesg (oom / segfault / errors)"
+          sudo dmesg -T | grep -iE 'oom|killed process|segfault|out of memory|call trace|bug:|warn|error|nf_conntrack|dropping' | tail -200
+          echo "::endgroup::"
+          echo "::group::Pods"
+          kubectl get pods -A -o wide
+          echo "::endgroup::"
+          echo "::group::Restarted / terminated containers"
+          kubectl get pods -n armonik -o json | jq -r '.items[] | .metadata.name as $p | .status.containerStatuses[]? | select(.restartCount > 0 or .lastState.terminated != null) | "\($p) \(.name) restarts=\(.restartCount) last=\(.lastState.terminated | tostring)"'
+          echo "::endgroup::"
+          echo "::group::Events"
+          kubectl get events -n armonik --sort-by=.lastTimestamp | tail -150
+          echo "::endgroup::"
+          echo "::group::Node resources"
+          kubectl describe nodes | sed -n '/Allocated resources/,/Events/p'
+          kubectl top pods -n armonik 2>/dev/null
+          echo "::endgroup::"
+          for pod in $(kubectl get pods -n armonik -o name | grep -E 'compute-plane|control-plane|redis'); do
+            for c in $(kubectl get -n armonik "$pod" -o jsonpath='{.spec.containers[*].name}'); do
+              echo "::group::$pod/$c (errors/warnings, current + previous)"
+              { kubectl logs -n armonik "$pod" -c "$c" --previous 2>/dev/null; kubectl logs -n armonik "$pod" -c "$c" 2>/dev/null; } \
+                | grep -iE '"@l":"(Error|Fatal|Warning)"|exception|error|fail|abort|timeout|retry|killed|refused|reset' | cut -c1-2000 | tail -150
+              echo "::endgroup::"
+            done
+          done
+          echo "::group::Shared storage"
+          sudo ls -la infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null | head; sudo du -sh infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null
+          mount | grep -E 'kubelet|/data|overlay' | head -20
+          echo "::endgroup::"
       - name: Show logs
         if: always()
         run: |
@@ -154,18 +200,29 @@ jobs:
           sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' core-stream/app/ ';'
           sudo chown $USER -R core-stream
           tar -czf core-stream.tar.gz core-stream
-          aws s3 cp core-stream.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/core-stream.tar.gz
+          aws s3 cp core-stream.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/core-stream-${{ matrix.os }}.tar.gz
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
+      - name: Upload pod logs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: pod-logs-core-stream-${{ matrix.os }}
+          path: core-stream/app
+          if-no-files-found: ignore
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@207c13792e445528e73c0296ab571f78721e4ce4 # main
         with:
            type: localhost
 
   htcMock:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
     timeout-minutes: 40
     steps:
       - name: Get type of VM
@@ -195,7 +252,7 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@207c13792e445528e73c0296ab571f78721e4ce4 # main
         with:
            type: localhost
-           log-suffix: htc-mock
+           log-suffix: htc-mock-${{ matrix.os }}
       - name: Test HTC Mock
         shell: bash
         run: |
@@ -264,6 +321,48 @@ jobs:
               -e HtcMock__EnableFastCompute=true \
               -e HtcMock__Partition="htcmock" \
               dockerhubaneo/armonik_core_htcmock_test_client:${{ steps.core.outputs.tag }}
+      - name: Diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          echo "::group::Host"
+          uname -a
+          cat /etc/os-release | grep -E '^(VERSION|PRETTY_NAME)='
+          echo "ImageVersion=$ImageVersion"
+          free -m
+          df -h / /tmp
+          ulimit -a
+          sysctl net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem fs.inotify.max_user_instances vm.overcommit_memory 2>/dev/null
+          echo "::endgroup::"
+          echo "::group::dmesg (oom / segfault / errors)"
+          sudo dmesg -T | grep -iE 'oom|killed process|segfault|out of memory|call trace|bug:|warn|error|nf_conntrack|dropping' | tail -200
+          echo "::endgroup::"
+          echo "::group::Pods"
+          kubectl get pods -A -o wide
+          echo "::endgroup::"
+          echo "::group::Restarted / terminated containers"
+          kubectl get pods -n armonik -o json | jq -r '.items[] | .metadata.name as $p | .status.containerStatuses[]? | select(.restartCount > 0 or .lastState.terminated != null) | "\($p) \(.name) restarts=\(.restartCount) last=\(.lastState.terminated | tostring)"'
+          echo "::endgroup::"
+          echo "::group::Events"
+          kubectl get events -n armonik --sort-by=.lastTimestamp | tail -150
+          echo "::endgroup::"
+          echo "::group::Node resources"
+          kubectl describe nodes | sed -n '/Allocated resources/,/Events/p'
+          kubectl top pods -n armonik 2>/dev/null
+          echo "::endgroup::"
+          for pod in $(kubectl get pods -n armonik -o name | grep -E 'compute-plane|control-plane|redis'); do
+            for c in $(kubectl get -n armonik "$pod" -o jsonpath='{.spec.containers[*].name}'); do
+              echo "::group::$pod/$c (errors/warnings, current + previous)"
+              { kubectl logs -n armonik "$pod" -c "$c" --previous 2>/dev/null; kubectl logs -n armonik "$pod" -c "$c" 2>/dev/null; } \
+                | grep -iE '"@l":"(Error|Fatal|Warning)"|exception|error|fail|abort|timeout|retry|killed|refused|reset' | cut -c1-2000 | tail -150
+              echo "::endgroup::"
+            done
+          done
+          echo "::group::Shared storage"
+          sudo ls -la infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null | head; sudo du -sh infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null
+          mount | grep -E 'kubelet|/data|overlay' | head -20
+          echo "::endgroup::"
       - name: Show logs
         if: always()
         run: |
@@ -279,21 +378,30 @@ jobs:
             sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' htcmock/app/ ';'
             sudo chown $USER -R htcmock
             tar -czf htcmock.tar.gz htcmock
-            aws s3 cp htcmock.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock.tar.gz
+            aws s3 cp htcmock.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/htcmock-${{ matrix.os }}.tar.gz
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
+      - name: Upload pod logs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: pod-logs-htc-mock-${{ matrix.os }}
+          path: htcmock/app
+          if-no-files-found: ignore
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@207c13792e445528e73c0296ab571f78721e4ce4 # main
         with:
                type: localhost
 
   bench:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 40
     strategy:
            fail-fast: false
+           matrix:
+             os: [ubuntu-24.04, ubuntu-26.04]
     steps:
       - name: Get type of VM
         run: |
@@ -322,7 +430,7 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@207c13792e445528e73c0296ab571f78721e4ce4 # main
         with:
             type: localhost
-            log-suffix: bench
+            log-suffix: bench-${{ matrix.os }}
       - name: Test Bench - many tasks (200)
         shell: bash
         run: |
@@ -371,6 +479,48 @@ jobs:
                -e BenchOptions__PayloadSize=1 \
                -e BenchOptions__Partition="bench"\
                dockerhubaneo/armonik_core_bench_test_client:${{ steps.core.outputs.tag }}
+      - name: Diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          echo "::group::Host"
+          uname -a
+          cat /etc/os-release | grep -E '^(VERSION|PRETTY_NAME)='
+          echo "ImageVersion=$ImageVersion"
+          free -m
+          df -h / /tmp
+          ulimit -a
+          sysctl net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem fs.inotify.max_user_instances vm.overcommit_memory 2>/dev/null
+          echo "::endgroup::"
+          echo "::group::dmesg (oom / segfault / errors)"
+          sudo dmesg -T | grep -iE 'oom|killed process|segfault|out of memory|call trace|bug:|warn|error|nf_conntrack|dropping' | tail -200
+          echo "::endgroup::"
+          echo "::group::Pods"
+          kubectl get pods -A -o wide
+          echo "::endgroup::"
+          echo "::group::Restarted / terminated containers"
+          kubectl get pods -n armonik -o json | jq -r '.items[] | .metadata.name as $p | .status.containerStatuses[]? | select(.restartCount > 0 or .lastState.terminated != null) | "\($p) \(.name) restarts=\(.restartCount) last=\(.lastState.terminated | tostring)"'
+          echo "::endgroup::"
+          echo "::group::Events"
+          kubectl get events -n armonik --sort-by=.lastTimestamp | tail -150
+          echo "::endgroup::"
+          echo "::group::Node resources"
+          kubectl describe nodes | sed -n '/Allocated resources/,/Events/p'
+          kubectl top pods -n armonik 2>/dev/null
+          echo "::endgroup::"
+          for pod in $(kubectl get pods -n armonik -o name | grep -E 'compute-plane|control-plane|redis'); do
+            for c in $(kubectl get -n armonik "$pod" -o jsonpath='{.spec.containers[*].name}'); do
+              echo "::group::$pod/$c (errors/warnings, current + previous)"
+              { kubectl logs -n armonik "$pod" -c "$c" --previous 2>/dev/null; kubectl logs -n armonik "$pod" -c "$c" 2>/dev/null; } \
+                | grep -iE '"@l":"(Error|Fatal|Warning)"|exception|error|fail|abort|timeout|retry|killed|refused|reset' | cut -c1-2000 | tail -150
+              echo "::endgroup::"
+            done
+          done
+          echo "::group::Shared storage"
+          sudo ls -la infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null | head; sudo du -sh infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null
+          mount | grep -E 'kubelet|/data|overlay' | head -20
+          echo "::endgroup::"
       - name: Show logs
         if: always()
         run: |
@@ -386,11 +536,18 @@ jobs:
              sudo find /var/log/pods/ -maxdepth 1 -iname 'armonik_*' -exec cp -rL '{}' bench/app/ ';'
              sudo chown $USER -R bench
              tar -czf bench.tar.gz bench
-             aws s3 cp bench.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/bench.tar.gz
+             aws s3 cp bench.tar.gz s3://${{ secrets.AWS_LOG_BUCKET_NAME }}/armonik-pipeline/${{ github.run_number }}/${{ github.run_attempt }}/bench-${{ matrix.os }}.tar.gz
         env:
              AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
              AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
              AWS_EC2_METADATA_DISABLED: true
+      - name: Upload pod logs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: pod-logs-bench-${{ matrix.os }}
+          path: bench/app
+          if-no-files-found: ignore
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@207c13792e445528e73c0296ab571f78721e4ce4 # main
         with:
