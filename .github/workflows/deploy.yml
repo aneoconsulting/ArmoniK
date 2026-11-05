@@ -181,6 +181,17 @@ jobs:
               echo "::endgroup::"
             done
           done
+          echo "::group::.NET crash reports"
+          sudo find /var/lib -name '*.crashreport.json' 2>/dev/null | while read -r f; do
+            echo "### $f"
+            sudo jq -r '.payload as $p | "process=\($p.process_name // "?") signal=\($p.signal // "?") version=\($p.version // "?")",
+              ($p.threads[]? | select(.crashed == true or .is_managed_exception == true) |
+                "crashed thread \(.native_thread_id) managed_exception=\(.managed_exception_type // "")",
+                (.stack_frames[]? | "  \(.native_module // .filename // "?")!\(.unmanaged_name // .method_name // "?") +\(.native_offset // .il_offset // "")"))' "$f" 2>/dev/null | head -80
+            sudo mkdir -p crash-reports && sudo cp "$f" crash-reports/
+          done
+          sudo chown -R $USER crash-reports 2>/dev/null
+          echo "::endgroup::"
           echo "::group::Shared storage"
           sudo ls -la infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null | head; sudo du -sh infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null
           mount | grep -E 'kubelet|/data|overlay' | head -20
@@ -210,7 +221,9 @@ jobs:
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: pod-logs-core-stream-${{ matrix.os }}
-          path: core-stream/app
+          path: |
+            core-stream/app
+            crash-reports
           if-no-files-found: ignore
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@207c13792e445528e73c0296ab571f78721e4ce4 # main
@@ -359,6 +372,17 @@ jobs:
               echo "::endgroup::"
             done
           done
+          echo "::group::.NET crash reports"
+          sudo find /var/lib -name '*.crashreport.json' 2>/dev/null | while read -r f; do
+            echo "### $f"
+            sudo jq -r '.payload as $p | "process=\($p.process_name // "?") signal=\($p.signal // "?") version=\($p.version // "?")",
+              ($p.threads[]? | select(.crashed == true or .is_managed_exception == true) |
+                "crashed thread \(.native_thread_id) managed_exception=\(.managed_exception_type // "")",
+                (.stack_frames[]? | "  \(.native_module // .filename // "?")!\(.unmanaged_name // .method_name // "?") +\(.native_offset // .il_offset // "")"))' "$f" 2>/dev/null | head -80
+            sudo mkdir -p crash-reports && sudo cp "$f" crash-reports/
+          done
+          sudo chown -R $USER crash-reports 2>/dev/null
+          echo "::endgroup::"
           echo "::group::Shared storage"
           sudo ls -la infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null | head; sudo du -sh infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null
           mount | grep -E 'kubelet|/data|overlay' | head -20
@@ -388,7 +412,9 @@ jobs:
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: pod-logs-htc-mock-${{ matrix.os }}
-          path: htcmock/app
+          path: |
+            htcmock/app
+            crash-reports
           if-no-files-found: ignore
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@207c13792e445528e73c0296ab571f78721e4ce4 # main
@@ -517,6 +543,17 @@ jobs:
               echo "::endgroup::"
             done
           done
+          echo "::group::.NET crash reports"
+          sudo find /var/lib -name '*.crashreport.json' 2>/dev/null | while read -r f; do
+            echo "### $f"
+            sudo jq -r '.payload as $p | "process=\($p.process_name // "?") signal=\($p.signal // "?") version=\($p.version // "?")",
+              ($p.threads[]? | select(.crashed == true or .is_managed_exception == true) |
+                "crashed thread \(.native_thread_id) managed_exception=\(.managed_exception_type // "")",
+                (.stack_frames[]? | "  \(.native_module // .filename // "?")!\(.unmanaged_name // .method_name // "?") +\(.native_offset // .il_offset // "")"))' "$f" 2>/dev/null | head -80
+            sudo mkdir -p crash-reports && sudo cp "$f" crash-reports/
+          done
+          sudo chown -R $USER crash-reports 2>/dev/null
+          echo "::endgroup::"
           echo "::group::Shared storage"
           sudo ls -la infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null | head; sudo du -sh infrastructure/quick-deploy/localhost/all-in-one/data 2>/dev/null
           mount | grep -E 'kubelet|/data|overlay' | head -20
@@ -546,110 +583,15 @@ jobs:
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           name: pod-logs-bench-${{ matrix.os }}
-          path: bench/app
+          path: |
+            bench/app
+            crash-reports
           if-no-files-found: ignore
       - name: Destroy deployment
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@207c13792e445528e73c0296ab571f78721e4ce4 # main
         with:
              type: localhost
 
-  apparmorProbe:
-    # Investigation: .NET GC suspends threads with thread-directed signals.
-    # Check whether AppArmor denies them inside containers (dotnet/runtime#136603).
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-24.04, ubuntu-26.04]
-        # several replicas to land on both 26.04 image versions (kernel 7.0.0-1017 and 7.0.0-1019)
-        replica: [1, 2, 3]
-    steps:
-      - name: Host info
-        run: |
-          uname -a
-          echo "ImageVersion=$ImageVersion"
-          cat /sys/module/apparmor/parameters/enabled || true
-          apparmor_parser --version | head -1 || true
-          sudo aa-status | head -20 || true
-          docker info --format '{{json .SecurityOptions}}'
-      - name: Probe thread-directed signals in containers
-        shell: bash
-        run: |
-          cat > probe.py <<'PY'
-          import os, signal, threading
-          signal.signal(signal.SIGUSR1, lambda s, f: None)
-          ev = threading.Event()
-          t = threading.Thread(target=lambda: ev.wait(5)); t.start()
-          for name, fn in [("pthread_kill(other thread)", lambda: signal.pthread_kill(t.ident, signal.SIGUSR1)),
-                           ("pthread_kill(self thread)", lambda: signal.pthread_kill(threading.get_ident(), signal.SIGUSR1)),
-                           ("kill(own pid)", lambda: os.kill(os.getpid(), signal.SIGUSR1))]:
-              try:
-                  fn(); print(f"{name}: OK")
-              except OSError as e:
-                  print(f"{name}: FAILED {e}")
-          ev.set(); t.join()
-          PY
-          echo "== host"; python3 probe.py
-          for user in "" "--user 1654"; do
-            for opt in "" "--security-opt apparmor=unconfined"; do
-              echo "== python docker run ${user:-(root)} ${opt:-(default profile)}"
-              docker run --rm $user $opt -v "$PWD/probe.py:/probe.py:ro" python:3.13-slim python /probe.py
-            done
-          done
-      - name: Probe abort() and .NET runtime 10.0.9 from the ArmoniK images
-        shell: bash
-        run: |
-          set +e
-          echo "== abort exit codes (expect 134 = SIGABRT; 139 would mean abort fell through to hlt)"
-          python3 -c "import os; os.abort()"; echo "host python abort: $?"
-          docker run --rm python:3.13-slim python -c "import os; os.abort()"; echo "docker root python abort: $?"
-          docker run --rm --user 1654 python:3.13-slim python -c "import os; os.abort()"; echo "docker 1654 python abort: $?"
-          mkdir -p gcapp && cat > gcapp/Program.cs <<'CS'
-          using System; using System.Threading;
-          if (args.Length > 0 && args[0] == "throw") throw new InvalidOperationException("probe unhandled exception");
-          if (args.Length > 0 && args[0] == "failfast") Environment.FailFast("probe failfast");
-          var seconds = 30; var stop = DateTime.UtcNow.AddSeconds(seconds); long n = 0;
-          var threads = new Thread[8];
-          for (int i = 0; i < threads.Length; i++) {
-            threads[i] = new Thread(() => { var r = new Random(); while (DateTime.UtcNow < stop) { var a = new byte[r.Next(1000, 12_000_000)]; a[0] = 1; Interlocked.Increment(ref n); } });
-            threads[i].Start();
-          }
-          int gcs = 0; while (DateTime.UtcNow < stop) { GC.Collect(); gcs++; Thread.Sleep(5); }
-          foreach (var t in threads) t.Join();
-          Console.WriteLine($"OK runtime={Environment.Version} allocations={n} forcedGCs={gcs} gen2={GC.CollectionCount(2)} server={System.Runtime.GCSettings.IsServerGC}");
-          CS
-          cat > gcapp/gcapp.csproj <<'XML'
-          <Project Sdk="Microsoft.NET.Sdk">
-            <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><RollForward>LatestPatch</RollForward><ImplicitUsings>disable</ImplicitUsings></PropertyGroup>
-          </Project>
-          XML
-          docker run --rm -v "$PWD/gcapp:/src" -w /src -e HOME=/tmp mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0 sh -c "dotnet --list-runtimes && dotnet publish -c Release -o /src/out -v q && chmod -R a+rX /src/out"
-          AG=dockerhubaneo/armonik_pollingagent:0.40.1
-          docker pull -q $AG
-          for img in mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0 $AG; do
-            for user in "--user 1654" ""; do
-              for gc in "" "-e DOTNET_gcServer=1"; do
-                echo "== stress $img ${user:-(root)} ${gc:-(workstation GC)}"
-                docker run --rm --entrypoint dotnet $user $gc -v "$PWD/gcapp/out:/app:ro" $img /app/gcapp.dll
-                echo "exit code: $?"
-              done
-            done
-            for mode in throw failfast; do
-              echo "== $mode $img (expect 134)"
-              docker run --rm --entrypoint dotnet --user 1654 -v "$PWD/gcapp/out:/app:ro" $img /app/gcapp.dll $mode 2>&1 | tail -3
-              echo "exit code: ${PIPESTATUS[0]}"
-            done
-          done
-          echo "== dmesg traps"
-          sudo dmesg -T | grep -iE 'traps|segfault|apparmor="DENIED"' | grep -v systemd-detect-virt | tail -30
-        continue-on-error: true
-      - name: dmesg apparmor
-        if: always()
-        shell: bash
-        run: |
-          echo "== dmesg apparmor"
-          sudo dmesg -T | grep -i apparmor | tail -30 || true
 
   mcpAuth:
     runs-on: ubuntu-latest
