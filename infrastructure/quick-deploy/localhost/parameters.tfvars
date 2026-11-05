@@ -357,12 +357,6 @@ configurations = {
       Redis__SslHost                             = "127.0.0.1"
       Redis__TtlTimeSpan                         = "1.00:00:00"
       Submitter__DeletePayload                   = true
-
-      # Investigation (ubuntu-26.04 / kernel 7.0.0-1019-azure): .NET crash reports
-      DOTNET_DbgEnableMiniDump = "1"
-      DOTNET_DbgMiniDumpType   = "1"
-      DOTNET_EnableCrashReport = "1"
-      DOTNET_DbgMiniDumpName   = "/cache/shared/dotnet-%e-%p.dmp"
     }
   }
   control = {
@@ -373,12 +367,6 @@ configurations = {
   worker = {
     env = {
       target_zip_path = "/tmp"
-
-      # Investigation (ubuntu-26.04 / kernel 7.0.0-1019-azure): .NET crash reports
-      DOTNET_DbgEnableMiniDump = "1"
-      DOTNET_DbgMiniDumpType   = "1"
-      DOTNET_EnableCrashReport = "1"
-      DOTNET_DbgMiniDumpName   = "/cache/shared/dotnet-%e-%p.dmp"
     }
   }
   jobs = { env = { MongoDB__DataRetention = "1.00:00:00" } }

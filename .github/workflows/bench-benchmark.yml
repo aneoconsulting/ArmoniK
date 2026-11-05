@@ -92,6 +92,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+      - name: Allow signals inside AppArmor-confined containers
+        # Recent Ubuntu kernels (e.g. 7.0.0-1019-azure on ubuntu-26.04 runners) stack runc's
+        # AppArmor profile as cri-containerd.apparmor.d//&unconfined. containerd's default profile
+        # only allows signals to its unstacked name, so .NET GC thread suspension gets EACCES and
+        # the runtime aborts. Remove once k3s ships the fix: https://github.com/containerd/containerd/issues/14485
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0 || true
       - name: Install Dependencies
         uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@207c13792e445528e73c0296ab571f78721e4ce4 # main
         with:
