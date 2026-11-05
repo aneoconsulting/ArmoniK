@@ -1,0 +1,99 @@
+# Autoscaling target of the compute plane partitions, in PromQL. Loaded by templates/prometheusrule.yaml.
+# Flow model (Little's law), from the series of Core's own exporter and polling agents:
+#   target = ceil( max(F, R) + W ),  >= 1 while a task is processing
+#   F = min(arrival, completion) * mu / eta      workers for the incoming flow (Little)
+#   R = processing * min(mu / 2, Tc) / Tc        workers the running tasks still need (1 each for long tasks)
+#   W = waiting * min(mu / (Tc * eta), 1)        the queue, absorbed in Tc, at most 1 pod per task
+# Tc = 60 s (catch-up time), eta = 0.9 (time a worker spends on tasks). One series per partition (label "partition").
+# KEDA: prometheus trigger, query armonik:scaler_target{partition="<p>"}, threshold 1, ignoreNullValues "false"
+# (terraform/k8s: partitions with promql = true). Tests: autoscaling.rules.test.yaml (see the bench README).
+groups:
+  - name: armonik-autoscaling
+    interval: 5s
+    rules:
+      # ---- Inputs ----------------------------------------------------------------------------------------------------
+      # Counts of the metrics exporter: one metric per partition, the partition moves from the name to a label
+      - record: armonik:tasks_waiting
+        expr: |
+          sum by (partition) (label_replace(
+            {__name__=~"armonik_.+_tasks_(submitted|dispatched)", job="metrics-exporter"},
+            "partition", "$1", "__name__", "armonik_(.+)_tasks_(submitted|dispatched)"))
+      - record: armonik:tasks_processing
+        expr: |
+          sum by (partition) (label_replace(
+            {__name__=~"armonik_.+_tasks_processing", job="metrics-exporter"},
+            "partition", "$1", "__name__", "armonik_(.+)_tasks_processing"))
+      - record: armonik:tasks_in_system
+        expr: armonik:tasks_waiting + on (partition) armonik:tasks_processing
+
+      # Completions per second, over the pods of the partition; 0 rather than absent without pods.
+      # 30 s, as the arrivals below: with a longer window, the completions still counted after a drain would be taken
+      # for incoming tasks.
+      - record: armonik:tasks_completion_rate
+        expr: |
+          sum by (partition) (label_replace(
+            rate(TaskHandler_ExecuteTask_milliseconds_count{job="metrics-polling-agent"}[30s]),
+            "partition", "$1", "armonik_fr_partition", "(.+)"))
+          or armonik:tasks_processing * 0
+      # Arrivals by conservation (Core exports no arrival counter): completions + growth of the tasks in the system
+      - record: armonik:tasks_arrival_rate
+        expr: |
+          clamp_min(armonik:tasks_completion_rate + on (partition) deriv(armonik:tasks_in_system[30s]), 0)
+
+      # ---- Task duration mu ------------------------------------------------------------------------------------------
+      # Time a task holds its pod: pre + execute + post processing (execute alone misses the upload and the DB update,
+      # ~180 ms on 200 ms tasks). Absent while no task completes.
+      - record: armonik:task_duration_seconds:measured
+        expr: |
+          sum by (partition) (label_replace(
+              rate(TaskHandler_PreProcessing_milliseconds_sum{job="metrics-polling-agent"}[1m])
+            + rate(TaskHandler_ExecuteTask_milliseconds_sum{job="metrics-polling-agent"}[1m])
+            + rate(TaskHandler_PostProcessing_milliseconds_sum{job="metrics-polling-agent"}[1m]),
+            "partition", "$1", "armonik_fr_partition", "(.+)"))
+          / on (partition)
+          sum by (partition) (label_replace(
+            rate(TaskHandler_ExecuteTask_milliseconds_count{job="metrics-polling-agent"}[1m]),
+            "partition", "$1", "armonik_fr_partition", "(.+)"))
+          / 1000 > 0
+      # Age of the task each pod runs, in seconds. Only the ages that move: a terminating pod serves a frozen value, and
+      # a deleted pod's last value stays 5 min (lookback). Biased high (counted from the acquisition, prefetch included).
+      - record: armonik:task_running_age_seconds
+        expr: |
+          label_replace(
+            (TaskRunningTime_Milliseconds{job="metrics-polling-agent"} > 0)
+            and on (pod) (changes(TaskRunningTime_Milliseconds{job="metrics-polling-agent"}[30s]) > 0),
+            "partition", "$1", "armonik_fr_partition", "(.+)") / 1000
+      # mu: the fresh measure while tasks complete. Before the first completions (start of a burst, new workload): the
+      # median of the measures of the last hour (across a scale to 0; the median, not the last one: the few tasks that
+      # end alone after a run, stuck in the queue, measure a mu of their own) or 1 s, raised to the median age of the
+      # running tasks, so that longer tasks are seen before they end. Not raised once measured: the ages are biased.
+      - record: armonik:task_duration_seconds
+        expr: |
+          armonik:task_duration_seconds:measured
+          or max by (partition) (
+            (quantile_over_time(0.5, armonik:task_duration_seconds:measured[1h]) or armonik:tasks_processing * 0 + 1)
+            or label_replace(quantile by (partition) (0.5, armonik:task_running_age_seconds), "src", "age", "", ""))
+
+      # ---- Model -----------------------------------------------------------------------------------------------------
+      # F: min(arrival, completion) * mu / eta. The completions bound the arrivals: a burst is in the queue (W), not a flow
+      - record: armonik:scaler_flow_workers
+        expr: |
+          ((armonik:tasks_arrival_rate <= on (partition) armonik:tasks_completion_rate) or armonik:tasks_completion_rate)
+          * on (partition) armonik:task_duration_seconds / 0.9
+      # R: a running task has mu / 2 left on average; long tasks (mu >= 2 Tc) keep their pod each
+      - record: armonik:scaler_running_workers
+        expr: armonik:tasks_processing * on (partition) clamp_max(armonik:task_duration_seconds / 2, 60) / 60
+      # W: the queue absorbed in Tc, at most 1 pod per waiting task (a task runs on one pod: 50 tasks of 10 min
+      # would otherwise ask 50 * 600 / 54 = 555 pods)
+      - record: armonik:scaler_waiting_workers
+        expr: armonik:tasks_waiting * on (partition) clamp_max(armonik:task_duration_seconds / (60 * 0.9), 1)
+      - record: armonik:scaler_workers
+        expr: |
+          ((armonik:scaler_flow_workers >= on (partition) armonik:scaler_running_workers) or armonik:scaler_running_workers)
+          + on (partition) armonik:scaler_waiting_workers
+      # Target, at least 1 while a task is processing (KEDA input, threshold 1)
+      - record: armonik:scaler_target
+        expr: |
+          max by (partition) (
+            ceil(armonik:scaler_workers - 1e-9)
+            or label_replace(armonik:tasks_processing > bool 0, "src", "floor", "", ""))

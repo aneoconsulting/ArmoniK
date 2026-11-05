@@ -49,6 +49,62 @@ locals {
     }
   }
 
+  # promql = true: trigger on armonik:scaler_target, computed by the recording rules of the autoscaling-monitoring
+  # release (rules/autoscaling.rules.yaml), 1 per pod. Prometheus is in the scaling path: an empty answer (rules not
+  # loaded yet, exporter or Prometheus down) is an error, not 0, so that KEDA keeps the fleet instead of scaling down.
+  promql_partitions_values = {
+    compute-plane = {
+      partitions = {
+        for name, p in var.partitions : name => {
+          hpa = {
+            fallback = { failureThreshold = 3, replicas = 1, behavior = "currentReplicasIfHigher" }
+            triggers = [{
+              type = "prometheus"
+              metadata = {
+                serverAddress       = "{{ include \"armonik.monitoring.prometheusUrl\" . }}"
+                query               = "armonik:scaler_target{partition=\"${name}\"}"
+                threshold           = "1"
+                activationThreshold = "0"
+                ignoreNullValues    = "false"
+              }
+            }]
+          }
+        } if p.promql
+      }
+    }
+  }
+
+  # fast_hpa = true: the HPA applies the target without its own rate limits, and keeps an idle pod about one pod
+  # start (~60 s) before removing it, instead of the chart's 300 s
+  fast_hpa_partitions_values = {
+    compute-plane = {
+      partitions = {
+        for name, p in var.partitions : name => {
+          hpa = {
+            pollingInterval = 5
+            cooldownPeriod  = 60
+            advanced = {
+              horizontalPodAutoscalerConfig = {
+                behavior = {
+                  scaleUp = {
+                    stabilizationWindowSeconds = 0
+                    selectPolicy               = "Max"
+                    # Percent alone starts from the current count: 1 -> 11 -> 100 waits a period; Pods adds 100 at once
+                    policies = [{ type = "Percent", value = 1000, periodSeconds = 15 }, { type = "Pods", value = 100, periodSeconds = 15 }]
+                  }
+                  scaleDown = {
+                    stabilizationWindowSeconds = 60
+                    policies                   = [{ type = "Percent", value = 100, periodSeconds = 15 }]
+                  }
+                }
+              }
+            }
+          }
+        } if p.fast_hpa
+      }
+    }
+  }
+
   # var.partitions as compute-plane values, over the partitionCommon of values/armonik.yaml
   partitions_values = {
     compute-plane = {
@@ -161,6 +217,8 @@ resource "helm_release" "armonik" {
   values = [
     templatefile("${local.values_dir}/armonik.yaml", local.values),
     yamlencode(local.partitions_values),
+    yamlencode(local.promql_partitions_values),
+    yamlencode(local.fast_hpa_partitions_values),
     yamlencode(local.postgresql_connection),
   ]
   wait    = true

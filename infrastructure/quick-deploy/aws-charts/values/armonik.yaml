@@ -60,6 +60,11 @@ control-plane:
   metricsExporter:
     image:
       registry: "${REG_DOCKERHUB}"
+    # Tasks waiting for their dependencies, shown in the autoscaling dashboard. Submitted, dispatched, processing and
+    # queued are always exported: the PromQL target (armonik:scaler_target) needs the first three
+    extraEnv:
+      - name: MetricsExporter__Metrics
+        value: "pending,creating"
   podDeletionCost:
     image:
       registry: "${REG_DOCKERHUB}"

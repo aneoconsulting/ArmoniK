@@ -1,5 +1,5 @@
 apiVersion: v2
 name: autoscaling-monitoring
-description: Karpenter ServiceMonitor and the Grafana dashboard of the compute-plane autoscaling (tasks, pods, cores, nodes)
+description: Karpenter ServiceMonitor, the PromQL autoscaling target (PrometheusRule) and the Grafana dashboard of the compute-plane autoscaling (tasks, pods, cores, nodes)
 type: application
-version: 0.1.2
+version: 0.2.1

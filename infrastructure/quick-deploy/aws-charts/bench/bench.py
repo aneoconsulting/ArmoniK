@@ -14,6 +14,9 @@ Prometheus series of the run (tasks, pods, cores, nodes) to CSV, plots them and 
     uv run bench.py export runs/<dir>      # again, e.g. after a change of the queries
     uv run bench.py plot runs/<dir>
     uv run bench.py compare runs/*         # one KPI line per run
+    uv run bench.py suite --repeat 2       # A/B of the autoscaling target: each SUITE scenario in b and p, rotated
+    uv run bench.py suite --configs p      # only some configs
+    uv run bench.py report runs/<suite>    # B vs P: report.md (tables), one overlay plot per scenario
 
 kubectl uses $KUBECONFIG, or ../.kubeconfig when it is not set.
 """
@@ -71,17 +74,36 @@ class Client:
 @dataclass
 class Scenario:
     name: str
+    # ab: a base name, the partition is <base><config> (CONFIGS), see terraform.tfvars
     partition: str
     description: str
     clients: list[Client]
     # True: measure the natural scale-down (cooldown, consolidation) up to 0 pod / 0 node, ~9 min.
     # False: stop 30 s after the clients, then reset() forces the partition and the workers pool to 0, ~2 min.
     measure_tail: bool = False
+    ab: bool = False
+
+    def partition_for(self, config: str | None) -> str:
+        if not self.ab:
+            return self.partition
+        if config not in CONFIGS:
+            sys.exit(f"{self.name} runs on twin partitions: --config {' or '.join(CONFIGS)}")
+        return self.partition + config
+
+
+# b: KEDA on Core's queued / 2; p: on the flow model in PromQL (armonik:scaler_target, Prometheus recording rules).
+# Both with the fast HPA.
+CONFIGS = {"b": "queued / 2", "p": "PromQL"}
 
 
 def steady(rate_per_s: float, duration_ms: int, minutes: int, every_s: int = 10) -> list[Client]:
     per_job = round(rate_per_s * every_s)
     return [Client(at=t, ntasks=per_job, duration_ms=duration_ms) for t in range(0, minutes * 60, every_s)]
+
+
+def waves(rate_per_s: float, duration_ms: int, minutes: int, bursts: list[tuple[int, int]]) -> list[Client]:
+    """A steady flow with bursts (at s, tasks) on top: a service with peaks of load."""
+    return steady(rate_per_s, duration_ms, minutes) + [Client(at, n, duration_ms) for at, n in bursts]
 
 
 SCENARIOS = {
@@ -98,10 +120,36 @@ SCENARIOS = {
                  measure_tail=True),
         Scenario("s5-waves-2min", "bench", "3 waves of 200 tasks of 10 s, every 2 min (inside the cooldown)",
                  [Client(t, 200, 10_000) for t in range(0, 360, 120)]),
+        Scenario("s13-burst-500ms", "bench", "4000 tasks of 500 ms at once, from 0 pod: ~0.8 s per task with the Core overhead, ~60 pods",
+                 [Client(0, 4000, 500)], measure_tail=True),
+        # A/B on short tasks (suite): twin partitions short200{b,c}, short1s{b,c}, htcmock{b,c}
+        Scenario("s12-steady-200ms", "short200", "20 tasks/s of 200 ms for 5 min: ~9 pods busy at equilibrium (Little)",
+                 steady(20, 200, 5), measure_tail=True, ab=True),
+        Scenario("s14-waves-200ms", "short200", "10 tasks/s of 200 ms for 8 min, with bursts of 3000 at 2 and 5 min",
+                 waves(10, 200, 8, [(120, 3000), (300, 3000)]), measure_tail=True, ab=True),
+        Scenario("s11-burst-200ms", "short200", "6000 tasks of 200 ms at once, from 0 pod: ~0.4 s per task with the Core overhead",
+                 [Client(0, 6000, 200)], measure_tail=True, ab=True),
+        Scenario("s8-burst-short", "short1s", "2000 tasks of 1 s at once, from 0 pod",
+                 [Client(0, 2000, 1_000)], measure_tail=True, ab=True),
+        Scenario("s15-waves-1s", "short1s", "3 tasks/s of 1 s for 8 min, with bursts of 1000 at 2 and 5 min",
+                 waves(3, 1_000, 8, [(120, 1000), (300, 1000)]), measure_tail=True, ab=True),
+        Scenario("s9-htcmock-200ms", "htcmock", "HtcMock: 3000 tasks of ~200 ms on 3 levels of subtasks (10 min of compute)",
+                 [Client(0, 3000, kind="htcmock", htcmock_total="00:10:00", htcmock_levels=3)], measure_tail=True, ab=True),
+        Scenario("s10-htcmock-1s", "htcmock", "HtcMock: 3000 tasks of ~1 s on 3 levels of subtasks (50 min of compute)",
+                 [Client(0, 3000, kind="htcmock", htcmock_total="00:50:00", htcmock_levels=3)], measure_tail=True, ab=True),
+        # Long tasks (not in the suite: ~25 min a run): 40 tasks of 5 min, fewer than the 100 pods. A waiting task needs
+        # one pod (uncapped, W would ask 40 * 300 / 54 = 222), the running ones keep theirs at the end of the batch (R),
+        # and before the first completion the task duration comes from the running ages. The second batch finds the
+        # duration measured by the first one.
+        Scenario("s16-long", "long", "2 batches of 40 tasks of 5 min, 7 min apart: one pod per task, kept to the end",
+                 [Client(0, 40, 300_000), Client(420, 40, 300_000)], measure_tail=True, ab=True),
         Scenario("s7-htcmock", "htcmock", "HtcMock: 1000 tasks on 3 levels of subtasks, 30 min of compute in total",
-                 [Client(0, 1000, kind="htcmock", htcmock_total="00:30:00", htcmock_levels=3)]),
+                 [Client(0, 1000, kind="htcmock", htcmock_total="00:30:00", htcmock_levels=3)], ab=True),
     ]
 }
+
+# The A/B suite: short tasks, one workload per partition (s10 would share htcmock{b,c} with s9: not in it)
+SUITE = ["s12-steady-200ms", "s14-waves-200ms", "s11-burst-200ms", "s8-burst-short", "s15-waves-1s", "s9-htcmock-200ms"]
 
 
 # ---- Kubernetes ----------------------------------------------------------------------------------------------
@@ -200,24 +248,28 @@ def jobs_done(run_id: str) -> tuple[int, int, int]:
 # ---- Run ---------------------------------------------------------------------------------------------------
 
 
-def run(name: str) -> pathlib.Path:
+def run(name: str, config: str | None = None, runs: pathlib.Path = RUNS) -> pathlib.Path:
     sc = SCENARIOS[name]
+    partition = sc.partition_for(config)
     registry, core = dockerhub_registry()
     run_id = "asb-" + datetime.now().strftime("%m%d-%H%M%S")
-    out = RUNS / f"{datetime.now():%Y%m%d-%H%M%S}-{sc.name}"
+    out = runs / (f"{datetime.now():%Y%m%d-%H%M%S}-{sc.name}" + (f"-{config}" if sc.ab else ""))
     out.mkdir(parents=True)
-    print(f"{sc.name}: {sc.description}\n  run {run_id}, Core {core}, results in {out}")
+    print(f"{sc.name} on {partition}: {sc.description}\n  run {run_id}, Core {core}, results in {out}")
 
-    wait_until(lambda: partition_state(sc.partition) == (0, 0), "0 pod and 0 workers node", 600, 15)
+    wait_until(lambda: partition_state(partition) == (0, 0), "0 pod and 0 workers node", 900, 15)
 
     # What the autoscaling was, to compare runs after a change
     snapshot = {
-        "scaledobject": kget("-n", NS, "scaledobject", f"armonik-compute-plane-{sc.partition}")["spec"],
-        "hpa": kget("-n", NS, "hpa", f"keda-hpa-armonik-compute-plane-{sc.partition}")["spec"],
+        "scaledobject": kget("-n", NS, "scaledobject", f"armonik-compute-plane-{partition}")["spec"],
+        "hpa": kget("-n", NS, "hpa", f"keda-hpa-armonik-compute-plane-{partition}")["spec"],
         "nodepool": kget("nodepool", "workers")["spec"],
     }
     meta = {
         "scenario": asdict(sc),
+        "partition": partition,
+        "config": config_of(snapshot["scaledobject"]),
+        "ntasks": sum(c.ntasks for c in sc.clients if c.kind == "bench") or None,
         "run_id": run_id,
         "core": core,
         "work_core_s": sum(c.work_s for c in sc.clients),
@@ -227,6 +279,7 @@ def run(name: str) -> pathlib.Path:
 
     t0 = time.time()
     meta["t0"] = t0
+    print(f"  Grafana (live): {grafana_url(partition, t0 - 60, None)}", flush=True)
     pending = sorted(enumerate(sc.clients), key=lambda x: x[1].at)
     while pending:
         i, c = pending[0]
@@ -234,7 +287,7 @@ def run(name: str) -> pathlib.Path:
         if delay > 0:
             time.sleep(min(delay, 10))
             continue
-        kubectl("apply", "-f", "-", stdin=json.dumps(client_job(run_id, i, c, sc.partition, registry, core)))
+        kubectl("apply", "-f", "-", stdin=json.dumps(client_job(run_id, i, c, partition, registry, core)))
         meta["starts"][i] = time.time()
         print(f"  +{int(time.time() - t0):4d} s  client {i}: {c.ntasks} tasks", flush=True)
         pending.pop(0)
@@ -250,7 +303,7 @@ def run(name: str) -> pathlib.Path:
             f.write(f"===== client {i}\n" + kubectl("logs", "-n", NS, f"job/{run_id}-{i}", check=False))
 
     if sc.measure_tail:
-        wait_until(lambda: partition_state(sc.partition) == (0, 0), "the scale-down to 0", 900, 30)
+        wait_until(lambda: partition_state(partition) == (0, 0), "the scale-down to 0", 900, 30)
     else:
         time.sleep(30)
     meta["t1"] = time.time()
@@ -259,8 +312,35 @@ def run(name: str) -> pathlib.Path:
     (out / "autoscaling.json").write_text(json.dumps(snapshot, indent=2))
     export(out)
     if not sc.measure_tail:
-        reset(sc.partition)
+        reset(partition)
+    print(f"  Grafana: {grafana_url(partition, t0 - 60, meta['t1'] + 30)}")
     return out
+
+
+def config_of(scaledobject: dict) -> str:
+    """b or p, from the trigger of the ScaledObject."""
+    return "p" if scaledobject["triggers"][0]["type"] == "prometheus" else "b"
+
+
+def grafana_url(partition: str, start: float, end: float | None) -> str:
+    """The autoscaling dashboard on the run, through the NLB (port 5000, /grafana/)."""
+    host = kget("-n", NS, "svc", "armonik-ingress")["status"]["loadBalancer"]["ingress"][0]["hostname"]
+    to = "now" if end is None else str(int(end * 1000))
+    return f"http://{host}:5000/grafana/d/armonik-autoscaling?var-partition={partition}&from={int(start * 1000)}&to={to}"
+
+
+def suite(repeat: int, names: list[str], configs: list[str]) -> pathlib.Path:
+    """Each scenario in every config, the order rotated on each repeat (no config always runs first), in
+    runs/suite-<date>/."""
+    runs = RUNS / f"suite-{datetime.now():%Y%m%d-%H%M%S}"
+    runs.mkdir(parents=True)
+    plan = [(n, cfg) for r in range(repeat) for n in names for cfg in configs[r % len(configs):] + configs[:r % len(configs)]]
+    print(f"suite: {len(plan)} runs, ~10 min each, in {runs}")
+    for k, (n, cfg) in enumerate(plan, 1):
+        print(f"\n===== {k}/{len(plan)}  {n}  config {cfg} ({CONFIGS[cfg]})", flush=True)
+        run(n, cfg, runs)
+    report(sorted(d for d in runs.iterdir() if d.is_dir()), runs)
+    return runs
 
 
 def reset(partition: str) -> None:
@@ -289,6 +369,12 @@ def queries(p: str) -> dict[str, str]:
         "tasks_dispatched": f"sum(armonik_{p}_tasks_dispatched)",
         "tasks_processing": f"sum(armonik_{p}_tasks_processing)",
         "keda_input": f'max(keda_scaler_metrics_value{{scaledObject="armonik-compute-plane-{p}"}})',
+        # The PromQL target (autoscaling-monitoring rules), computed for every partition
+        "promql_target": f'max(armonik:scaler_target{{partition="{p}"}})',
+        "promql_task_duration": f'max(armonik:task_duration_seconds{{partition="{p}"}})',
+        "promql_flow_workers": f'max(armonik:scaler_flow_workers{{partition="{p}"}})',
+        "promql_running_workers": f'max(armonik:scaler_running_workers{{partition="{p}"}})',
+        "promql_waiting_workers": f'max(armonik:scaler_waiting_workers{{partition="{p}"}})',
         # Pods
         "pods_desired": f'max(kube_horizontalpodautoscaler_status_desired_replicas{{namespace="{NS}",horizontalpodautoscaler="keda-hpa-armonik-compute-plane-{p}"}})',
         "pods_created": f'max(kube_deployment_status_replicas{{namespace="{NS}",deployment="armonik-compute-plane-{p}"}})',
@@ -341,7 +427,7 @@ def query_range(url: str, q: str, start: float, end: float) -> dict[int, float]:
 
 def export(out: pathlib.Path) -> None:
     meta = json.loads((out / "run.json").read_text())
-    p = meta["scenario"]["partition"]
+    p = meta.get("partition", meta["scenario"]["partition"])
     start, end = meta["t0"] - 60, meta["t1"] + 30
     # Aligned on STEP so all the series share their timestamps
     start, end = start - start % STEP, end - end % STEP
@@ -374,6 +460,8 @@ def kpis(out: pathlib.Path) -> dict:
     in_flight = [a + b + d for a, b, d in zip(c["tasks_submitted"], c["tasks_dispatched"], c["tasks_processing"])]
     first = next((i for i, v in enumerate(in_flight) if v > 0), None)
     last = max((i for i, v in enumerate(in_flight) if v > 0), default=None)
+    # Up to 5 tasks left: the few tasks stuck in SQS for minutes (a Core issue) do not hide the autoscaling
+    last_bulk = max((i for i, v in enumerate(in_flight) if v > 5), default=last)
     if first is None:
         return {"error": "no task seen"}
 
@@ -386,9 +474,17 @@ def kpis(out: pathlib.Path) -> dict:
     peak_ready = max(c["pods_ready"])
     idle = [max(r - p, 0) for r, p in zip(c["pods_ready"], c["tasks_processing"])]
     max_rep = meta.get("max_replicas") or 1
+    ntasks = meta.get("ntasks") or sum(c["ntasks"] for c in meta["scenario"]["clients"] if c["kind"] == "bench") or None
     return {
         "scenario": meta["scenario"]["name"],
+        "partition": meta.get("partition", meta["scenario"]["partition"]),
+        "config": meta.get("config") or config_from_file(out),
         "makespan_s": t[last] - t[first],
+        "drain_s": t[last_bulk] - t[first],
+        # Little's law: time-average of the queue / tasks = mean time a task waited in Submitted
+        "mean_queue_wait_s": round(integral(c["tasks_submitted"]) / ntasks, 1) if ntasks else None,
+        "mean_ready_pods": round(sum(c["pods_ready"][first:last + 1]) / (last - first + 1), 1),
+        "ready_pod_s": round(integral(c["pods_ready"])),
         "ideal_makespan_s": round(meta["work_core_s"] / max_rep),
         "first_desired_s": first_after("pods_desired", first, lambda v: v > 0),
         "first_ready_s": first_after("pods_ready", first, lambda v: v > 0),
@@ -400,6 +496,7 @@ def kpis(out: pathlib.Path) -> dict:
         "mean_waiting_tasks": round(sum(c["tasks_submitted"][first:last + 1]) / (last - first + 1), 1),
         "work_core_s": meta["work_core_s"],
         "capacity_core_s": round(integral(c["cores_capacity"])),
+        "paid_core_h": round(integral(c["cores_capacity"]) / 3600, 2),
         "used_core_s": round(integral(c["cores_used_partition"])),
         "efficiency": round(meta["work_core_s"] / max(integral(c["cores_capacity"]), 1), 3),
         "idle_pod_s": round(integral(idle)),
@@ -407,6 +504,12 @@ def kpis(out: pathlib.Path) -> dict:
         "tail_to_0_node_s": first_after("nodes", last, lambda v: v == 0),
         "jobs": meta.get("jobs"),
     }
+
+
+def config_from_file(out: pathlib.Path) -> str | None:
+    """Config of a run made before run.json had it."""
+    f = out / "autoscaling.json"
+    return config_of(json.loads(f.read_text())["scaledobject"]) if f.exists() else None
 
 
 def plot(out: pathlib.Path) -> None:
@@ -421,7 +524,7 @@ def plot(out: pathlib.Path) -> None:
         ("Tasks", [("tasks_submitted", "waiting"), ("tasks_dispatched", "dispatched"),
                    ("tasks_processing", "processing"), ("keda_input", "KEDA input")]),
         ("Pods", [("pods_desired", "HPA desired"), ("pods_created", "created"), ("pods_pending", "pending"),
-                  ("pods_ready", "ready"), ("tasks_processing", "busy")]),
+                  ("pods_ready", "ready"), ("tasks_processing", "busy"), ("promql_target", "PromQL target")]),
         ("Cores (workers pool)", [("cores_capacity", "capacity"), ("cores_capacity_spot", "of which spot"),
                                   ("cores_requested_all", "requested"), ("tasks_processing", "busy (1 per running task)"),
                                   ("cores_used_partition", "used (partition)")]),
@@ -430,7 +533,8 @@ def plot(out: pathlib.Path) -> None:
     fig, axes = plt.subplots(len(panels), 1, sharex=True, figsize=(13, 3 * len(panels)), constrained_layout=True)
     for ax, (title, series) in zip(axes, panels):
         for col, label in series:
-            ax.plot(t, c[col], label=label, linewidth=1.6)
+            if col in c:  # runs exported before a series existed
+                ax.plot(t, c[col], label=label, linewidth=1.6)
         for s in meta["starts"].values():
             ax.axvline((s - meta["t0"]) / 60, color="grey", alpha=0.25, linewidth=0.8)
         ax.set_title(title, loc="left", fontsize=10)
@@ -448,18 +552,160 @@ def plot(out: pathlib.Path) -> None:
 
 def compare(dirs: list[pathlib.Path]) -> None:
     rows = [kpis(d) | {"run": d.name} for d in dirs if (d / "metrics.csv").exists()]
-    keys = ["run", "makespan_s", "ideal_makespan_s", "first_ready_s", "first_node_s", "peak_desired", "peak_ready",
+    keys = ["run", "config", "drain_s", "makespan_s", "mean_queue_wait_s", "mean_ready_pods", "paid_core_h", "ideal_makespan_s", "first_ready_s", "first_node_s", "peak_desired", "peak_ready",
             "peak_processing", "mean_waiting_tasks", "efficiency", "idle_pod_s", "tail_to_0_pod_s", "tail_to_0_node_s"]
     w = csv.DictWriter(sys.stdout, keys, extrasaction="ignore", delimiter="\t")
     w.writeheader()
     w.writerows(rows)
 
 
+# ---- B vs P report -----------------------------------------------------------------------------------------
+
+# Categorical slots 2 and 3 of the dataviz palette (validated: CVD and normal-vision separation pass)
+COLORS = {"b": "#eb6834", "p": "#1baf7a"}
+LABELS = {"b": "B queued / 2", "p": "P PromQL"}
+
+# (KPI, label, unit, lower is better)
+REPORT_KPIS = [
+    ("drain_s", "Durée (1re tâche → moins de 5 tâches restantes)", "s", True),
+    ("makespan_s", "Durée jusqu'à la dernière tâche (tâches bloquées SQS comprises)", "s", True),
+    ("mean_queue_wait_s", "Attente moyenne d'une tâche en file", "s", True),
+    ("peak_ready", "Pic de pods prêts", "pods", True),
+    ("mean_ready_pods", "Pods prêts en moyenne pendant le run", "pods", True),
+    ("idle_pod_s", "Pod·s inactifs (payés sans tâche)", "pod·s", True),
+    ("ready_pod_s", "Pod·s payés en tout (queue de descente comprise)", "pod·s", True),
+    ("paid_core_h", "Cœurs·h des nodes workers", "cœur·h", True),
+    ("efficiency", "Efficacité (travail / cœurs payés)", "", False),
+]
+
+
+def report(dirs: list[pathlib.Path], dest: pathlib.Path | None = None) -> None:
+    """The configs side by side, per scenario: means over the runs (min-max when several), and the change of each config
+    against B (or against the first config present), in report.md, and one overlay plot each."""
+    runs = [(d, kpis(d)) for d in dirs if (d / "metrics.csv").exists()]
+    runs = [(d, k) for d, k in runs if k.get("config") in CONFIGS and "error" not in k]
+    dest = dest or (RUNS / f"report-{datetime.now():%Y%m%d-%H%M%S}")
+    dest.mkdir(parents=True, exist_ok=True)
+    scenarios = list(dict.fromkeys(k["scenario"] for _, k in runs))
+    configs = [cfg for cfg in CONFIGS if any(k["config"] == cfg for _, k in runs)]
+    if not configs:
+        sys.exit("no run with a known config")
+    ref = configs[0]
+    others = configs[1:]
+    up = ref.upper()
+
+    def fmt(v):
+        return "–" if v is None else (f"{v:,.0f}".replace(",", " ") if abs(v) >= 100 else f"{v:.2g}" if abs(v) < 1 else f"{v:.1f}".rstrip("0").rstrip("."))
+
+    def cell(values):
+        values = [v for v in values if v is not None]
+        if not values:
+            return None, "–"
+        mean = sum(values) / len(values)
+        spread = f" ({fmt(min(values))}–{fmt(max(values))})" if len(values) > 1 and min(values) != max(values) else ""
+        return mean, fmt(mean) + spread
+
+    def delta(mr, mx, lower):
+        if not mr or mx is None:
+            return "–"
+        pct = (mx - mr) / mr * 100
+        better = (pct < 0) == lower
+        return f"{pct:+.0f} %" + (" ✅" if better and abs(pct) >= 10 else " ⚠️" if not better and abs(pct) >= 10 else "")
+
+    names = " / ".join(f"{cfg.upper()} (`{CONFIGS[cfg]}`)" for cfg in configs)
+    lines = [f"# Autoscaling : {names}", "",
+             "Même worker, même HPA rapide, partitions jumelles (`<workload><config>`), départ à froid (0 pod, 0 node).",
+             f"Moyenne des runs, (min–max) quand il y en a plusieurs. **X vs {up}** : variation de X par rapport à {up}.", ""]
+    arrows = " → ".join(c.upper() for c in configs)
+    summary = ["## En bref", "",
+               f"| Scénario | Runs {' / '.join(c.upper() for c in configs)} | Pod·s inactifs {arrows} | Cœurs·h {arrows} | Durée {arrows} | Attente {arrows} |",
+               "|---|---|---|---|---|---|"]
+    detail = []
+    for name in scenarios:
+        by = {cfg: [(d, k) for d, k in runs if k["scenario"] == name and k["config"] == cfg] for cfg in configs}
+        detail += [f"## {name}", "", f"{SCENARIOS[name].description if name in SCENARIOS else ''}", "",
+                   "| | " + " | ".join(c.upper() for c in configs) + " | " + " | ".join(f"{c.upper()} vs {up}" for c in others) + " |",
+                   "|---|" + "---|" * (len(configs) + len(others))]
+        means = {}
+        for key, label, unit, lower in REPORT_KPIS:
+            cells = {cfg: cell([k.get(key) for _, k in by[cfg]]) for cfg in configs}
+            means[key] = {cfg: m for cfg, (m, _) in cells.items()}
+            detail.append(f"| {label}{f' ({unit})' if unit else ''} | " + " | ".join(cells[c][1] for c in configs) + " | "
+                          + " | ".join(delta(cells[ref][0], cells[c][0], lower) for c in others) + " |")
+        present = {cfg: med(by[cfg]) for cfg in configs if by[cfg]}
+        if len(present) > 1:
+            detail += ["", f"![{name}]({name}.png)"]
+            overlay(name, present, dest / f"{name}.png")
+        detail.append("")
+
+        def arrow(key):
+            return " → ".join("–" if means[key][c] is None else fmt(means[key][c]) for c in configs)
+        summary.append(f"| {name} | {' / '.join(str(len(by[c])) for c in configs)} | {arrow('idle_pod_s')} | "
+                       f"{arrow('paid_core_h')} | {arrow('drain_s')} s | {arrow('mean_queue_wait_s')} s |")
+
+    lines += summary + ["", "Runs : " + ", ".join(f"`{d.name}`" for d, _ in runs), ""] + detail
+    (dest / "report.md").write_text("\n".join(lines))
+    with (dest / "report.csv").open("w", newline="") as f:
+        keys = ["scenario", "config", "partition"] + [k for k, *_ in REPORT_KPIS] + ["run"]
+        w = csv.DictWriter(f, keys, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(k | {"run": d.name} for d, k in runs)
+    print(f"  {dest / 'report.md'}")
+
+
+def med(runs: list[tuple[pathlib.Path, dict]]) -> pathlib.Path:
+    """The run with the median idle pod·s: the plot shows a typical run, not the best one."""
+    return sorted(runs, key=lambda r: r[1]["idle_pod_s"])[len(runs) // 2][0]
+
+
+def overlay(name: str, by_config: dict[str, pathlib.Path], png: pathlib.Path) -> None:
+    """The configs of one scenario on the same time axis: pods (paid and busy), then the waiting tasks. Two charts, one
+    scale each."""
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, (pods, queue) = plt.subplots(2, 1, sharex=True, figsize=(12, 7), height_ratios=[3, 2], constrained_layout=True)
+    for cfg, d in by_config.items():
+        _, col = load(d)
+        k = kpis(d)
+        t = [x / 60 for x in col["t_rel"]]
+        color, label = COLORS[cfg], LABELS[cfg]
+        pods.plot(t, col["pods_ready"], color=color, linewidth=2, label=f"{label} : pods prêts ({fmt_int(k['idle_pod_s'])} pod·s inactifs)")
+        pods.fill_between(t, col["tasks_processing"], color=color, alpha=0.18, linewidth=0)
+        pods.plot(t, col["tasks_processing"], color=color, linewidth=1, linestyle=":", label=f"{label} : pods occupés")
+        waiting = [a + b_ for a, b_ in zip(col["tasks_submitted"], col["tasks_dispatched"])]
+        queue.plot(t, waiting, color=color, linewidth=2, label=f"{label} (durée {k['drain_s']} s)")
+    pods.set_title("Pods : ligne = payés, aire pointillée = occupés. L'écart est le gaspillage.", loc="left", fontsize=10)
+    queue.set_title("Tâches en attente (Submitted + Dispatched)", loc="left", fontsize=10)
+    queue.set_xlabel("minutes depuis le premier client")
+    for ax in (pods, queue):
+        ax.grid(alpha=0.25)
+        ax.spines[["top", "right"]].set_visible(False)
+        ax.legend(loc="upper right", fontsize=8, frameon=False)
+        ax.set_ylim(bottom=0)
+    fig.suptitle(f"{name} : {SCENARIOS[name].description if name in SCENARIOS else ''}", fontsize=11)
+    fig.savefig(png, dpi=120)
+    plt.close(fig)
+
+
+def fmt_int(v: float) -> str:
+    return f"{v:,.0f}".replace(",", " ")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("list")
-    sub.add_parser("run").add_argument("scenario", choices=SCENARIOS)
+    r = sub.add_parser("run")
+    r.add_argument("scenario", choices=SCENARIOS)
+    r.add_argument("--config", choices=CONFIGS, help=f"for the A/B scenarios (twin partitions): {', '.join(f'{k} = {v}' for k, v in CONFIGS.items())}")
+    su = sub.add_parser("suite")
+    su.add_argument("--repeat", type=int, default=1)
+    su.add_argument("--configs", nargs="+", choices=CONFIGS, default=list(CONFIGS), help="default: all")
+    su.add_argument("scenarios", nargs="*", help=f"default: {' '.join(SUITE)}")
+    sub.add_parser("report").add_argument("dirs", type=pathlib.Path, nargs="+", help="run dirs, or a suite dir")
     for cmd in ("export", "plot"):
         sub.add_parser(cmd).add_argument("dir", type=pathlib.Path)
     sub.add_parser("compare").add_argument("dirs", type=pathlib.Path, nargs="+")
@@ -467,9 +713,17 @@ def main() -> None:
     if a.cmd == "list":
         for s in SCENARIOS.values():
             work = sum(c.work_s for c in s.clients)
-            print(f"{s.name:16} {s.partition:8} {work / 3600:5.1f} core·h  {s.description}")
+            part = f"{s.partition}{{{','.join(CONFIGS)}}}" if s.ab else s.partition
+            print(f"{s.name:17} {part:14} {work / 3600:5.1f} core·h  {s.description}")
     elif a.cmd == "run":
-        run(a.scenario)
+        run(a.scenario, a.config)
+    elif a.cmd == "suite":
+        if unknown := [n for n in a.scenarios if n not in SCENARIOS or not SCENARIOS[n].ab]:
+            sys.exit(f"not A/B scenarios: {' '.join(unknown)}")
+        suite(a.repeat, a.scenarios or SUITE, a.configs)
+    elif a.cmd == "report":
+        dirs = [d for x in a.dirs for d in ([x] if (x / "run.json").exists() else sorted(x.iterdir()))]
+        report([d for d in dirs if d.is_dir()], a.dirs[0] if len(a.dirs) == 1 and not (a.dirs[0] / "run.json").exists() else None)
     elif a.cmd == "export":
         export(a.dir)
     elif a.cmd == "plot":

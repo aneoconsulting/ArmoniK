@@ -1,2 +1,4 @@
 # Generator of autoscaling.json, not a chart file
 dashboards/gen.py
+# Unit tests of the rules (promtool), not a chart file
+rules/*.test.yaml

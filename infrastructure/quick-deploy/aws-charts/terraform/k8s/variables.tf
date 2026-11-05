@@ -47,6 +47,12 @@ variable "partitions" {
     memory = optional(string, "1Gi")
     # KEDA scales the partition on its queue length, from 0 to this many pods
     max_replicas = optional(number, 50)
+    # Scale on armonik:scaler_target instead of the queue length: recording rules of the autoscaling-monitoring chart
+    # (rules/autoscaling.rules.yaml) over the exporter counts (submitted, dispatched, processing, always exported) and
+    # the polling agent metrics, read from Prometheus.
+    promql = optional(bool, false)
+    # HPA without rate limits on scale-up, 60 s before removing an idle pod (chart: 300 s), polling every 5 s
+    fast_hpa = optional(bool, false)
   }))
   default = {}
 
@@ -55,6 +61,7 @@ variable "partitions" {
     error_message = "Partition names must be lowercase alphanumeric: no dash (KEDA metric names)."
   }
 }
+
 
 variable "postgresql_connection_options" {
   description = "Npgsql options appended to Core's connection string (e.g. \"No Reset On Close=true;Max Auto Prepare=100;Auto Prepare Min Usages=2\"); empty keeps Core's own connection string"

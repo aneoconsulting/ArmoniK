@@ -40,11 +40,64 @@ partitions = {
     image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_bench_test_worker"
     tag          = "0.41.3"
     max_replicas = 100
+    fast_hpa     = true
   }
-  htcmock = {
+  # A/B of the autoscaling target (bench/bench.py suite): twin partitions per workload, same worker,
+  # b = queued / 2 (Core's metric), p = the flow model in PromQL (armonik:scaler_target).
+  # One workload per partition: each keeps its own task duration.
+  short200b = {
+    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_bench_test_worker"
+    tag          = "0.41.3"
+    max_replicas = 100
+    fast_hpa     = true
+  }
+  short200p = {
+    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_bench_test_worker"
+    tag          = "0.41.3"
+    max_replicas = 100
+    promql       = true
+    fast_hpa     = true
+  }
+  short1sb = {
+    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_bench_test_worker"
+    tag          = "0.41.3"
+    max_replicas = 100
+    fast_hpa     = true
+  }
+  short1sp = {
+    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_bench_test_worker"
+    tag          = "0.41.3"
+    max_replicas = 100
+    promql       = true
+    fast_hpa     = true
+  }
+  htcmockb = {
     image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_htcmock_test_worker"
     tag          = "0.41.3"
     max_replicas = 100
+    fast_hpa     = true
+  }
+  htcmockp = {
+    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_htcmock_test_worker"
+    tag          = "0.41.3"
+    max_replicas = 100
+    promql       = true
+    fast_hpa     = true
+  }
+  # Long tasks (minutes): the running tasks must keep their pods at the end of a batch, and a waiting task asks at
+  # most one pod (bench.py s16-long)
+  longb = {
+    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_bench_test_worker"
+    tag          = "0.41.3"
+    max_replicas = 100
+    fast_hpa     = true
+  }
+  longp = {
+    image        = "125796369274.dkr.ecr.eu-west-3.amazonaws.com/armonik69/docker-hub/dockerhubaneo/armonik_core_bench_test_worker"
+    tag          = "0.41.3"
+    max_replicas = 100
+    promql       = true
+    fast_hpa     = true
   }
 }
 
