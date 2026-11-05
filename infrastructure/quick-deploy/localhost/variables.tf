@@ -261,30 +261,42 @@ variable "nfs" {
   default = null
 }
 
-# Parameters for Minio
-variable "minio" {
-  description = "Parameters of Minio"
+# Parameters for SeaweedFS object storage
+variable "seaweedfs" {
+  description = "Parameters of SeaweedFS for object storage"
   type = object({
-    image_name         = optional(string, "minio/minio")
-    image_tag          = optional(string)
-    node_selector      = optional(any, {})
-    image_pull_secrets = optional(string, "")
-    default_bucket     = optional(string, "minio-bucket")
-    host               = optional(string, "minio")
+    image_name            = optional(string, "chrislusf/seaweedfs")
+    image_tag             = optional(string)
+    helm_chart_repository = optional(string)
+    helm_chart_version    = optional(string)
+    node_selector         = optional(map(string), {})
+    image_pull_secrets    = optional(string, "")
+    default_bucket        = optional(string, "armonik")
+    persistence = optional(object({
+      type          = optional(string, "emptyDir") # emptyDir or persistentVolumeClaim
+      size          = optional(string)
+      storage_class = optional(string)
+    }), {})
   })
   default = null
 }
 
-# Parameters for Minio file storage
-variable "minio_s3_fs" {
-  description = "Parameters of Minio"
+# Parameters for SeaweedFS file storage
+variable "seaweedfs_s3_fs" {
+  description = "Parameters of SeaweedFS for file storage"
   type = object({
-    image_name         = optional(string, "minio/minio")
-    image_tag          = optional(string)
-    node_selector      = optional(any, {})
-    image_pull_secrets = optional(string, "")
-    default_bucket     = optional(string, "minio-bucket")
-    host               = optional(string, "minio-s3-fs")
+    image_name            = optional(string, "chrislusf/seaweedfs")
+    image_tag             = optional(string)
+    helm_chart_repository = optional(string)
+    helm_chart_version    = optional(string)
+    node_selector         = optional(map(string), {})
+    image_pull_secrets    = optional(string, "")
+    default_bucket        = optional(string, "armonik")
+    persistence = optional(object({
+      type          = optional(string, "emptyDir") # emptyDir or persistentVolumeClaim
+      size          = optional(string)
+      storage_class = optional(string)
+    }), {})
   })
   default = null
 }
