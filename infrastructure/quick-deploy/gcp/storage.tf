@@ -174,33 +174,19 @@ module "gcs_os" {
   name      = "${local.prefix}-gcsos"
   namespace = local.namespace
   location  = local.region
-  # Core reaches the bucket with its S3 adapter, which checks it with GetBucketAcl: GCS rejects it with
-  # "Invalid argument" on a bucket with uniform bucket-level access, so the bucket keeps the legacy ACLs
-  uniform_bucket_level_access = false
+  # Core uses its native GCS adapter, authenticated through Workload Identity: access through IAM only
+  uniform_bucket_level_access = true
+  # The control plane and the polling agents read and write the objects, and Core checks the bucket at startup
+  # with storage.buckets.get, which roles/storage.objectUser lacks
+  roles = {
+    "roles/storage.objectUser"         = [module.control_plane_service_account.member, module.compute_plane_service_account.member]
+    "roles/storage.legacyBucketReader" = [module.control_plane_service_account.member, module.compute_plane_service_account.member]
+  }
   kms_key = {
     id = local.kms_key_id
   }
   force_destroy = true
   labels        = local.labels
-  username      = google_storage_hmac_key.cloud_storage.access_id
-  password      = google_storage_hmac_key.cloud_storage.secret
-}
-
-resource "kubernetes_secret" "gcs" {
-  count = length(module.gcs_os) > 0 ? 1 : 0
-  metadata {
-    name      = "s3"
-    namespace = local.namespace
-  }
-  data = {
-    username              = google_storage_hmac_key.cloud_storage.access_id
-    password              = google_storage_hmac_key.cloud_storage.secret
-    url                   = "https://storage.googleapis.com"
-    bucket_name           = module.gcs_os[0].name
-    must_force_path_style = false
-    use_chunk_encoding    = false
-    use_check_sum         = false
-  }
 }
 
 # Pub/Sub
