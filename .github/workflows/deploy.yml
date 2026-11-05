@@ -158,7 +158,7 @@ jobs:
           sysctl net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem fs.inotify.max_user_instances vm.overcommit_memory 2>/dev/null
           echo "::endgroup::"
           echo "::group::dmesg (oom / segfault / errors)"
-          sudo dmesg -T | grep -iE 'oom|killed process|segfault|out of memory|call trace|bug:|warn|error|nf_conntrack|dropping' | tail -200
+          sudo dmesg -T | grep -iE 'apparmor|oom|killed process|segfault|out of memory|call trace|bug:|warn|error|nf_conntrack|dropping' | tail -200
           echo "::endgroup::"
           echo "::group::Pods"
           kubectl get pods -A -o wide
@@ -336,7 +336,7 @@ jobs:
           sysctl net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem fs.inotify.max_user_instances vm.overcommit_memory 2>/dev/null
           echo "::endgroup::"
           echo "::group::dmesg (oom / segfault / errors)"
-          sudo dmesg -T | grep -iE 'oom|killed process|segfault|out of memory|call trace|bug:|warn|error|nf_conntrack|dropping' | tail -200
+          sudo dmesg -T | grep -iE 'apparmor|oom|killed process|segfault|out of memory|call trace|bug:|warn|error|nf_conntrack|dropping' | tail -200
           echo "::endgroup::"
           echo "::group::Pods"
           kubectl get pods -A -o wide
@@ -494,7 +494,7 @@ jobs:
           sysctl net.core.somaxconn net.ipv4.tcp_rmem net.ipv4.tcp_wmem fs.inotify.max_user_instances vm.overcommit_memory 2>/dev/null
           echo "::endgroup::"
           echo "::group::dmesg (oom / segfault / errors)"
-          sudo dmesg -T | grep -iE 'oom|killed process|segfault|out of memory|call trace|bug:|warn|error|nf_conntrack|dropping' | tail -200
+          sudo dmesg -T | grep -iE 'apparmor|oom|killed process|segfault|out of memory|call trace|bug:|warn|error|nf_conntrack|dropping' | tail -200
           echo "::endgroup::"
           echo "::group::Pods"
           kubectl get pods -A -o wide
@@ -552,6 +552,51 @@ jobs:
         uses: aneoconsulting/ArmoniK.Action.Deploy/destroy@207c13792e445528e73c0296ab571f78721e4ce4 # main
         with:
              type: localhost
+
+  apparmorProbe:
+    # Investigation: .NET GC suspends threads with thread-directed signals.
+    # Check whether AppArmor denies them inside containers (dotnet/runtime#136603).
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
+        # several replicas to land on both 26.04 image versions (kernel 7.0.0-1017 and 7.0.0-1019)
+        replica: [1, 2, 3]
+    steps:
+      - name: Host info
+        run: |
+          uname -a
+          echo "ImageVersion=$ImageVersion"
+          cat /sys/module/apparmor/parameters/enabled || true
+          apparmor_parser --version | head -1 || true
+          sudo aa-status | head -20 || true
+          docker info --format '{{json .SecurityOptions}}'
+      - name: Probe thread-directed signals in containers
+        shell: bash
+        run: |
+          cat > probe.py <<'PY'
+          import os, signal, threading
+          signal.signal(signal.SIGUSR1, lambda s, f: None)
+          ev = threading.Event()
+          t = threading.Thread(target=lambda: ev.wait(5)); t.start()
+          for name, fn in [("pthread_kill(other thread)", lambda: signal.pthread_kill(t.ident, signal.SIGUSR1)),
+                           ("pthread_kill(self thread)", lambda: signal.pthread_kill(threading.get_ident(), signal.SIGUSR1)),
+                           ("kill(own pid)", lambda: os.kill(os.getpid(), signal.SIGUSR1))]:
+              try:
+                  fn(); print(f"{name}: OK")
+              except OSError as e:
+                  print(f"{name}: FAILED {e}")
+          ev.set(); t.join()
+          PY
+          echo "== host"; python3 probe.py
+          for opt in "" "--security-opt apparmor=unconfined"; do
+            echo "== docker run ${opt:-(default profile)}"
+            docker run --rm $opt -v "$PWD/probe.py:/probe.py:ro" python:3.13-slim python /probe.py
+          done
+          echo "== dmesg apparmor"
+          sudo dmesg -T | grep -i apparmor | tail -30 || true
 
   mcpAuth:
     runs-on: ubuntu-latest
