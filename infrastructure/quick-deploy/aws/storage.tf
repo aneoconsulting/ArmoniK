@@ -297,7 +297,7 @@ resource "aws_iam_policy" "decrypt_object" {
 
 resource "aws_iam_policy_attachment" "decrypt_object" {
   name       = "${local.prefix}-s3-encrypt-decrypt"
-  roles      = concat(module.eks.worker_iam_role_names, [module.aws_service_account.service_account_iam_role_name])
+  roles      = [module.aws_service_account.service_account_iam_role_name]
   policy_arn = aws_iam_policy.decrypt_object.arn
 }
 
@@ -325,7 +325,7 @@ resource "aws_iam_policy" "object" {
 resource "aws_iam_policy_attachment" "object" {
   for_each   = aws_iam_policy.object
   name       = "${local.prefix}-permissions-on-s3-${each.key}"
-  roles      = concat(module.eks.worker_iam_role_names, [module.aws_service_account.service_account_iam_role_name])
+  roles      = [module.aws_service_account.service_account_iam_role_name]
   policy_arn = each.value.arn
 }
 
