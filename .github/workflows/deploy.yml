@@ -597,40 +597,52 @@ jobs:
               docker run --rm $user $opt -v "$PWD/probe.py:/probe.py:ro" python:3.13-slim python /probe.py
             done
           done
-      - name: Probe .NET GC under thread allocation load
+      - name: Probe abort() and .NET runtime 10.0.9 from the ArmoniK images
         shell: bash
         run: |
-          cat > gc.ps1 <<'PS'
-          Add-Type -TypeDefinition @"
+          set +e
+          echo "== abort exit codes (expect 134 = SIGABRT; 139 would mean abort fell through to hlt)"
+          python3 -c "import os; os.abort()"; echo "host python abort: $?"
+          docker run --rm python:3.13-slim python -c "import os; os.abort()"; echo "docker root python abort: $?"
+          docker run --rm --user 1654 python:3.13-slim python -c "import os; os.abort()"; echo "docker 1654 python abort: $?"
+          mkdir -p gcapp && cat > gcapp/Program.cs <<'CS'
           using System; using System.Threading;
-          public static class GcStress {
-            public static string Run(int seconds) {
-              var stop = DateTime.UtcNow.AddSeconds(seconds); long n = 0;
-              var threads = new Thread[8];
-              for (int i = 0; i < threads.Length; i++) {
-                threads[i] = new Thread(() => { var r = new Random(); while (DateTime.UtcNow < stop) { var a = new byte[r.Next(1000, 200000)]; a[0] = 1; Interlocked.Increment(ref n); } });
-                threads[i].Start();
-              }
-              int gcs = 0; while (DateTime.UtcNow < stop) { GC.Collect(); gcs++; Thread.Sleep(5); }
-              foreach (var t in threads) t.Join();
-              return "OK allocations=" + n + " forcedGCs=" + gcs + " gen2=" + GC.CollectionCount(2) + " server=" + System.Runtime.GCSettings.IsServerGC;
-            }
+          if (args.Length > 0 && args[0] == "throw") throw new InvalidOperationException("probe unhandled exception");
+          if (args.Length > 0 && args[0] == "failfast") Environment.FailFast("probe failfast");
+          var seconds = 30; var stop = DateTime.UtcNow.AddSeconds(seconds); long n = 0;
+          var threads = new Thread[8];
+          for (int i = 0; i < threads.Length; i++) {
+            threads[i] = new Thread(() => { var r = new Random(); while (DateTime.UtcNow < stop) { var a = new byte[r.Next(1000, 12_000_000)]; a[0] = 1; Interlocked.Increment(ref n); } });
+            threads[i].Start();
           }
-          "@
-          [GcStress]::Run(30)
-          PS
-          docker pull -q mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0
-          for user in "" "--user 1654"; do
-            for opt in "" "--security-opt apparmor=unconfined"; do
+          int gcs = 0; while (DateTime.UtcNow < stop) { GC.Collect(); gcs++; Thread.Sleep(5); }
+          foreach (var t in threads) t.Join();
+          Console.WriteLine($"OK runtime={Environment.Version} allocations={n} forcedGCs={gcs} gen2={GC.CollectionCount(2)} server={System.Runtime.GCSettings.IsServerGC}");
+          CS
+          cat > gcapp/gcapp.csproj <<'XML'
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><RollForward>LatestPatch</RollForward><ImplicitUsings>disable</ImplicitUsings></PropertyGroup>
+          </Project>
+          XML
+          docker run --rm -v "$PWD/gcapp:/src" -w /src -e HOME=/tmp mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0 sh -c "dotnet --list-runtimes && dotnet publish -c Release -o /src/out -v q && chmod -R a+rX /src/out"
+          AG=dockerhubaneo/armonik_pollingagent:0.40.1
+          docker pull -q $AG
+          for img in mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0 $AG; do
+            for user in "--user 1654" ""; do
               for gc in "" "-e DOTNET_gcServer=1"; do
-                echo "== dotnet docker run ${user:-(root)} ${opt:-(default profile)} ${gc:-(workstation GC)}"
-                docker run --rm $user $opt $gc -e HOME=/tmp -v "$PWD/gc.ps1:/gc.ps1:ro" mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0 pwsh -NoProfile -File /gc.ps1
+                echo "== stress $img ${user:-(root)} ${gc:-(workstation GC)}"
+                docker run --rm --entrypoint dotnet $user $gc -v "$PWD/gcapp/out:/app:ro" $img /app/gcapp.dll
                 echo "exit code: $?"
               done
             done
+            for mode in throw failfast; do
+              echo "== $mode $img (expect 134)"
+              docker run --rm --entrypoint dotnet --user 1654 -v "$PWD/gcapp/out:/app:ro" $img /app/gcapp.dll $mode 2>&1 | tail -3
+              echo "exit code: ${PIPESTATUS[0]}"
+            done
           done
           echo "== dmesg traps"
-          sudo dmesg -T | grep -iE 'traps|segfault|apparmor="DENIED"' | tail -30 || true
+          sudo dmesg -T | grep -iE 'traps|segfault|apparmor="DENIED"' | grep -v systemd-detect-virt | tail -30
         continue-on-error: true
       - name: dmesg apparmor
         if: always()
