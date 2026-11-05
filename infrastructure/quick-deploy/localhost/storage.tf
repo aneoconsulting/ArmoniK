@@ -113,7 +113,7 @@ module "nfs" {
 resource "kubernetes_secret" "shared_storage" {
   metadata {
     name      = "shared-storage"
-    namespace = var.namespace
+    namespace = local.namespace
   }
 
   data = local.shared_storage
