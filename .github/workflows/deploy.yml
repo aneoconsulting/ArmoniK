@@ -557,7 +557,7 @@ jobs:
     # Investigation: .NET GC suspends threads with thread-directed signals.
     # Check whether AppArmor denies them inside containers (dotnet/runtime#136603).
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -591,10 +591,51 @@ jobs:
           ev.set(); t.join()
           PY
           echo "== host"; python3 probe.py
-          for opt in "" "--security-opt apparmor=unconfined"; do
-            echo "== docker run ${opt:-(default profile)}"
-            docker run --rm $opt -v "$PWD/probe.py:/probe.py:ro" python:3.13-slim python /probe.py
+          for user in "" "--user 1654"; do
+            for opt in "" "--security-opt apparmor=unconfined"; do
+              echo "== python docker run ${user:-(root)} ${opt:-(default profile)}"
+              docker run --rm $user $opt -v "$PWD/probe.py:/probe.py:ro" python:3.13-slim python /probe.py
+            done
           done
+      - name: Probe .NET GC under thread allocation load
+        shell: bash
+        run: |
+          cat > gc.ps1 <<'PS'
+          Add-Type -TypeDefinition @"
+          using System; using System.Threading;
+          public static class GcStress {
+            public static string Run(int seconds) {
+              var stop = DateTime.UtcNow.AddSeconds(seconds); long n = 0;
+              var threads = new Thread[8];
+              for (int i = 0; i < threads.Length; i++) {
+                threads[i] = new Thread(() => { var r = new Random(); while (DateTime.UtcNow < stop) { var a = new byte[r.Next(1000, 200000)]; a[0] = 1; Interlocked.Increment(ref n); } });
+                threads[i].Start();
+              }
+              int gcs = 0; while (DateTime.UtcNow < stop) { GC.Collect(); gcs++; Thread.Sleep(5); }
+              foreach (var t in threads) t.Join();
+              return "OK allocations=" + n + " forcedGCs=" + gcs + " gen2=" + GC.CollectionCount(2) + " server=" + System.Runtime.GCSettings.IsServerGC;
+            }
+          }
+          "@
+          [GcStress]::Run(30)
+          PS
+          docker pull -q mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0
+          for user in "" "--user 1654"; do
+            for opt in "" "--security-opt apparmor=unconfined"; do
+              for gc in "" "-e DOTNET_gcServer=1"; do
+                echo "== dotnet docker run ${user:-(root)} ${opt:-(default profile)} ${gc:-(workstation GC)}"
+                docker run --rm $user $opt $gc -e HOME=/tmp -v "$PWD/gc.ps1:/gc.ps1:ro" mcr.microsoft.com/dotnet/sdk:10.0-azurelinux3.0 pwsh -NoProfile -File /gc.ps1
+                echo "exit code: $?"
+              done
+            done
+          done
+          echo "== dmesg traps"
+          sudo dmesg -T | grep -iE 'traps|segfault|apparmor="DENIED"' | tail -30 || true
+        continue-on-error: true
+      - name: dmesg apparmor
+        if: always()
+        shell: bash
+        run: |
           echo "== dmesg apparmor"
           sudo dmesg -T | grep -i apparmor | tail -30 || true
 
