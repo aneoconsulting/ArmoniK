@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.61"
+      version = "~> 6.59"
     }
     null = {
       source  = "hashicorp/null"
@@ -25,8 +25,8 @@ terraform {
       version = "~> 2.17.0"
     }
     kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "~> 1.14.0"
+      source  = "alekc/kubectl"
+      version = "~> 2.4"
     }
     tls = {
       source  = "hashicorp/tls"
@@ -36,10 +36,9 @@ terraform {
       source  = "chilicat/pkcs12"
       version = "~> 0.0.7"
     }
-    // Workaround for https://github.com/bsquare-corp/terraform-provider-skopeo2/issues/95
     skopeo2 = {
       source  = "bsquare-corp/skopeo2"
-      version = ">= 1.1.1, < 1.2.0"
+      version = "~> 1.3.0"
     }
   }
 }

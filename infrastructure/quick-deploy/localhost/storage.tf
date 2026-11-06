@@ -66,34 +66,36 @@ module "redis" {
   }
 }
 
-# minio
-module "minio" {
-  count     = var.minio != null ? 1 : 0
-  source    = "./generated/infra-modules/storage/onpremise/minio"
-  namespace = local.namespace
-  minio = {
-    image              = var.minio.image_name
-    tag                = try(coalesce(var.minio.image_tag), local.default_tags[var.minio.image_name])
-    node_selector      = var.minio.node_selector
-    image_pull_secrets = var.minio.image_pull_secrets
-    host               = var.minio.host
-    bucket_name        = var.minio.default_bucket
-  }
+# SeaweedFS for object storage
+module "seaweedfs" {
+  count                 = var.seaweedfs != null ? 1 : 0
+  source                = "./generated/infra-modules/storage/onpremise/seaweedfs"
+  namespace             = local.namespace
+  name                  = "seaweedfs"
+  helm_chart_repository = try(coalesce(var.seaweedfs.helm_chart_repository), var.helm_charts.seaweedfs.repository)
+  helm_chart_version    = try(coalesce(var.seaweedfs.helm_chart_version), var.helm_charts.seaweedfs.version)
+  image                 = var.seaweedfs.image_name
+  tag                   = try(coalesce(var.seaweedfs.image_tag), local.default_tags[var.seaweedfs.image_name])
+  node_selector         = var.seaweedfs.node_selector
+  image_pull_secrets    = var.seaweedfs.image_pull_secrets
+  bucket_name           = var.seaweedfs.default_bucket
+  persistence           = var.seaweedfs.persistence
 }
 
-# minio for file storage
-module "minio_s3_fs" {
-  count     = var.minio_s3_fs != null ? 1 : 0
-  source    = "./generated/infra-modules/storage/onpremise/minio"
-  namespace = local.namespace
-  minio = {
-    image              = local.minio_s3_fs_image
-    tag                = try(coalesce(var.minio.image_tag), local.default_tags[var.minio_s3_fs.image_name])
-    image_pull_secrets = local.minio_s3_fs_image_pull_secrets
-    host               = local.minio_s3_fs_host
-    bucket_name        = local.minio_s3_fs_bucket_name
-    node_selector      = local.minio_s3_fs_node_selector
-  }
+# SeaweedFS for file storage
+module "seaweedfs_s3_fs" {
+  count                 = var.seaweedfs_s3_fs != null ? 1 : 0
+  source                = "./generated/infra-modules/storage/onpremise/seaweedfs"
+  namespace             = local.namespace
+  name                  = "seaweedfs-s3-fs"
+  helm_chart_repository = try(coalesce(var.seaweedfs_s3_fs.helm_chart_repository), var.helm_charts.seaweedfs.repository)
+  helm_chart_version    = try(coalesce(var.seaweedfs_s3_fs.helm_chart_version), var.helm_charts.seaweedfs.version)
+  image                 = var.seaweedfs_s3_fs.image_name
+  tag                   = try(coalesce(var.seaweedfs_s3_fs.image_tag), local.default_tags[var.seaweedfs_s3_fs.image_name])
+  node_selector         = var.seaweedfs_s3_fs.node_selector
+  image_pull_secrets    = var.seaweedfs_s3_fs.image_pull_secrets
+  bucket_name           = var.seaweedfs_s3_fs.default_bucket
+  persistence           = var.seaweedfs_s3_fs.persistence
 }
 
 #NFS

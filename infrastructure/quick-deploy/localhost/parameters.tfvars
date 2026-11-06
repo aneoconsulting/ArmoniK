@@ -5,15 +5,15 @@ logging_level = "Information"
 #metrics_server = {}
 
 # Object storage
-# Uncomment either the `redis`, the `minio`or the `nfs` parameter
+# Uncomment either the `redis`, the `seaweedfs` or the `nfs` parameter
 redis = {}
-#minio = {}
+#seaweedfs = {}
 # nfs = {
 #   server     = "172.30.37.125"
 #   path       = "/srv/files"
 # }
-# Uncomment this to have minio S3 enabled instead of hostpath shared_storage
-#minio_s3_fs = {} # Shared storage
+# Uncomment this to have SeaweedFS S3 enabled instead of hostpath shared_storage
+#seaweedfs_s3_fs = {} # Shared storage
 
 # Queue
 # Uncomment either the `activemq` or the `rabbitmq` parameter

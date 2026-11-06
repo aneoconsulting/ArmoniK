@@ -6,6 +6,8 @@ provider "aws" {
 provider "kubectl" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  # Let the plan succeed while the cluster endpoint is unknown (cluster not created yet)
+  lazy_load = true
 
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
