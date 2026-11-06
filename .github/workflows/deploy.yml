@@ -158,6 +158,21 @@ jobs:
             done
           done
           g "Kernel log (apparmor / oom / segfault)"; sudo dmesg -T | grep -iE 'apparmor="DENIED"|oom|segfault|traps:' | tail -100; e
+          pod=mongodb-db-ps-rs0-0
+          args=$(kubectl -n $ns get pod $pod -o jsonpath='{.spec.containers[?(@.name=="mongod")].args[*]}')
+          kubectl -n $ns debug pod/$pod --copy-to=mongod-dbg --container=mongod -- bash -c "
+            set -x; id; uname -r; cat /sys/devices/system/cpu/possible /sys/devices/system/cpu/online; nproc
+            grep -E 'Cpus_allowed_list|Seccomp' /proc/self/status
+            mongod --version; echo mongod-version-rc=\$?
+            bash -x /opt/percona/ps-entry.sh $args; echo entry-rc=\$?
+            sleep 3600"
+          for img in percona/percona-server-mongodb:8.0.32-14 percona/percona-server-mongodb:8.0.19-7; do
+            n=ver-$(echo $img | tr -dc '0-9')
+            kubectl -n $ns run $n --image=$img --restart=Never --command -- bash -c 'set -x; id; mongod --version; echo rc=$?'
+          done
+          sleep 60
+          g "mongod-dbg (bash -x ps-entry.sh)"; kubectl -n $ns get pod mongod-dbg -o wide; kubectl -n $ns logs mongod-dbg -c mongod --tail=300; e
+          for n in $(kubectl -n $ns get pods -o name | grep 'pod/ver-'); do g "$n"; kubectl -n $ns get $n; kubectl -n $ns logs $n; e; done
       - name: Show logs
         if: always()
         run: |
