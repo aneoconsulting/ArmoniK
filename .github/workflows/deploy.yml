@@ -59,6 +59,13 @@ jobs:
            terraform: true
            k3s: true
            aws: true
+      - name: Use MongoDB 7.0 in CI
+        # MongoDB 8.0.21+ refuses to start on the runner kernel (Ubuntu 7.0.0 release string, upstream 7.0.14).
+        # Remove once a Percona Server for MongoDB 8.0 release fixes https://jira.mongodb.org/browse/SERVER-136848
+        # See .docs/content/installation/6.mongodb-kernel-compatibility.md
+        run: |
+          jq '.image_tags["percona/percona-server-mongodb"] = "7.0.45-24"' versions.tfvars.json > versions.tfvars.json.tmp
+          mv versions.tfvars.json.tmp versions.tfvars.json
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@5c478eb7d9cb7fc9988e2b3d7cbe74c2f8162e18 # main
         with:
@@ -125,6 +132,13 @@ jobs:
            terraform: true
            k3s: true
            aws: true
+      - name: Use MongoDB 7.0 in CI
+        # MongoDB 8.0.21+ refuses to start on the runner kernel (Ubuntu 7.0.0 release string, upstream 7.0.14).
+        # Remove once a Percona Server for MongoDB 8.0 release fixes https://jira.mongodb.org/browse/SERVER-136848
+        # See .docs/content/installation/6.mongodb-kernel-compatibility.md
+        run: |
+          jq '.image_tags["percona/percona-server-mongodb"] = "7.0.45-24"' versions.tfvars.json > versions.tfvars.json.tmp
+          mv versions.tfvars.json.tmp versions.tfvars.json
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@5c478eb7d9cb7fc9988e2b3d7cbe74c2f8162e18 # main
         with:
@@ -191,6 +205,13 @@ jobs:
             terraform: true
             k3s: true
             aws: true
+      - name: Use MongoDB 7.0 in CI
+        # MongoDB 8.0.21+ refuses to start on the runner kernel (Ubuntu 7.0.0 release string, upstream 7.0.14).
+        # Remove once a Percona Server for MongoDB 8.0 release fixes https://jira.mongodb.org/browse/SERVER-136848
+        # See .docs/content/installation/6.mongodb-kernel-compatibility.md
+        run: |
+          jq '.image_tags["percona/percona-server-mongodb"] = "7.0.45-24"' versions.tfvars.json > versions.tfvars.json.tmp
+          mv versions.tfvars.json.tmp versions.tfvars.json
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@5c478eb7d9cb7fc9988e2b3d7cbe74c2f8162e18 # main
         with:
@@ -318,6 +339,13 @@ jobs:
                terraform: true
                k3s: true
                aws: true
+      - name: Use MongoDB 7.0 in CI
+        # MongoDB 8.0.21+ refuses to start on the runner kernel (Ubuntu 7.0.0 release string, upstream 7.0.14).
+        # Remove once a Percona Server for MongoDB 8.0 release fixes https://jira.mongodb.org/browse/SERVER-136848
+        # See .docs/content/installation/6.mongodb-kernel-compatibility.md
+        run: |
+          jq '.image_tags["percona/percona-server-mongodb"] = "7.0.45-24"' versions.tfvars.json > versions.tfvars.json.tmp
+          mv versions.tfvars.json.tmp versions.tfvars.json
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@5c478eb7d9cb7fc9988e2b3d7cbe74c2f8162e18 # main
         with:
@@ -434,6 +462,13 @@ jobs:
       - name: Generate auth configuration
         run: |
           python tools/ci/python/generate_auth_conf.py
+      - name: Use MongoDB 7.0 in CI
+        # MongoDB 8.0.21+ refuses to start on the runner kernel (Ubuntu 7.0.0 release string, upstream 7.0.14).
+        # Remove once a Percona Server for MongoDB 8.0 release fixes https://jira.mongodb.org/browse/SERVER-136848
+        # See .docs/content/installation/6.mongodb-kernel-compatibility.md
+        run: |
+          jq '.image_tags["percona/percona-server-mongodb"] = "7.0.45-24"' versions.tfvars.json > versions.tfvars.json.tmp
+          mv versions.tfvars.json.tmp versions.tfvars.json
       - name: Deploy
         uses: aneoconsulting/ArmoniK.Action.Deploy/deploy@5c478eb7d9cb7fc9988e2b3d7cbe74c2f8162e18 # main
         with:
