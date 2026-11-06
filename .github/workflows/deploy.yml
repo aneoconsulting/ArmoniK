@@ -139,6 +139,25 @@ jobs:
              -e GrpcClient__Endpoint="${CONTROL_PLANE_URL}" \
              -e Partition="stream" \
              dockerhubaneo/armonik_core_stream_test_client:${{ steps.core.outputs.tag }}
+      - name: MongoDB diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          ns=armonik
+          g() { echo "::group::$1"; }
+          e() { echo "::endgroup::"; }
+          g Host; uname -a; echo "ImageVersion=$ImageVersion"; k3s --version; sysctl kernel.apparmor_restrict_unprivileged_unconfined; free -h; df -h /; e
+          g "PSMDB custom resource"; kubectl -n $ns get psmdb -o yaml; e
+          g "Pods / PVC / jobs"; kubectl -n $ns get pods -o wide; kubectl -n $ns get pvc,jobs; kubectl get pv; e
+          g Events; kubectl -n $ns get events --sort-by=.lastTimestamp | grep -iE 'mongo|percona|psmdb|wait-for' ; e
+          for p in $(kubectl -n $ns get pods -o name | grep -E 'mongodb|percona'); do
+            g "describe $p"; kubectl -n $ns describe $p; e
+            for c in $(kubectl -n $ns get $p -o jsonpath='{.spec.initContainers[*].name} {.spec.containers[*].name}'); do
+              g "logs $p/$c"; kubectl -n $ns logs $p -c $c --tail=400; echo "--- previous ---"; kubectl -n $ns logs $p -c $c --previous --tail=200; e
+            done
+          done
+          g "Kernel log (apparmor / oom / segfault)"; sudo dmesg -T | grep -iE 'apparmor="DENIED"|oom|segfault|traps:' | tail -100; e
       - name: Show logs
         if: always()
         run: |
