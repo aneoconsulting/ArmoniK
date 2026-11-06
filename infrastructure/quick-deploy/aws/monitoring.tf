@@ -3,16 +3,15 @@ locals {
 
   # Pods cannot reach the node role (IMDS hop limit of 1): a fluent-bit DaemonSet uses its own role,
   # a fluent-bit sidecar (Linux or Windows) the role of the ArmoniK service account it runs under
-  fluent_bit_daemonset = var.fluent_bit.is_daemonset || (var.fluent_bit_windows.is_daemonset && length(var.fluent_bit_windows.node_selector_windows) > 0)
   fluent_bit_role_names = compact([
-    local.fluent_bit_daemonset ? module.fluent_bit_service_account[0].service_account_iam_role_name : "",
+    module.fluent_bit.service_account ? module.fluent_bit_service_account[0].service_account_iam_role_name : "",
     var.fluent_bit.is_daemonset && var.fluent_bit_windows.is_daemonset ? "" : module.aws_service_account.service_account_iam_role_name,
   ])
 }
 
 # IAM role of the fluent-bit service account, which the fluent-bit module creates for its DaemonSets
 module "fluent_bit_service_account" {
-  count                  = local.fluent_bit_daemonset ? 1 : 0
+  count                  = module.fluent_bit.service_account ? 1 : 0
   source                 = "./generated/infra-modules/service-account/aws"
   namespace              = local.namespace
   prefix                 = local.prefix
@@ -362,7 +361,7 @@ module "fluent_bit" {
   node_selector = var.fluent_bit.node_selector
   # With Pod Identity, the association made by fluent_bit_service_account gives the role. EKS ignores the
   # annotation naming it; it only makes the DaemonSets wait for the association, and restart when it changes
-  service_account_annotations = !local.fluent_bit_daemonset ? {} : module.eks.pod_identity ? {
+  service_account_annotations = !module.fluent_bit.service_account ? {} : module.eks.pod_identity ? {
     "armonik.fr/pod-identity-association" = module.fluent_bit_service_account[0].pod_identity_association_id
     } : {
     "eks.amazonaws.com/role-arn" = module.fluent_bit_service_account[0].service_account_iam_role_arn
