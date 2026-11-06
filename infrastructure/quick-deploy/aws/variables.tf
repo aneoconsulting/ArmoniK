@@ -91,7 +91,10 @@ variable "eks" {
     cluster_endpoint_public_access       = optional(bool, false)
     cluster_endpoint_public_access_cidrs = optional(list(string), ["0.0.0.0/0"])
     cluster_log_retention_in_days        = optional(number, 30)
-    node_selector                        = optional(any, {})
+    # Let the EKS module create the key encrypting the cluster secrets; false uses kms_key instead.
+    # EKS cannot change the key of an existing cluster, so it can only be set to false at cluster creation
+    cluster_create_kms_key = optional(bool, true)
+    node_selector          = optional(any, {})
     docker_images = optional(object({
       cluster_autoscaler = optional(object({
         image = optional(string, "registry.k8s.io/autoscaling/cluster-autoscaler")
@@ -101,27 +104,9 @@ variable "eks" {
         image = optional(string, "public.ecr.aws/aws-ec2/aws-node-termination-handler")
         tag   = optional(string)
       }), {})
-      efs_csi = optional(object({
-        image = optional(string, "public.ecr.aws/efs-csi-driver/amazon/aws-efs-csi-driver")
-        tag   = optional(string)
-      }), {})
-      ebs_csi = optional(object({
-        image = optional(string, "public.ecr.aws/ebs-csi-driver/aws-ebs-csi-driver")
-        tag   = optional(string)
-      }), {})
-      csi_liveness_probe = optional(object({
-        image = optional(string, "public.ecr.aws/csi-components/livenessprobe")
-        tag   = optional(string)
-      }), {})
-      csi_node_driver_registrar = optional(object({
-        image = optional(string, "public.ecr.aws/csi-components/csi-node-driver-registrar")
-        tag   = optional(string)
-      }), {})
-      csi_external_provisioner = optional(object({
-        image = optional(string, "public.ecr.aws/csi-components/csi-provisioner")
-        tag   = optional(string)
-      }), {})
     }), {})
+    # Use EKS Pod Identity instead of IRSA for the CSI drivers, the cluster autoscaler and the ArmoniK service account
+    pod_identity = optional(bool, false)
     cluster_autoscaler = optional(object({
       expander                              = optional(string, "least-waste")
       scale_down_enabled                    = optional(bool, true)
@@ -139,20 +124,19 @@ variable "eks" {
       repository                            = optional(string)
       namespace                             = optional(string, "kube-system")
     }), {})
+    # EKS add-ons; a null addon_version tracks the latest version compatible with the cluster
     efs_csi = optional(object({
-      repository = optional(string)
-      version    = optional(string)
+      addon_version = optional(string)
+      controller_resources = optional(object({
+        limits   = optional(map(string))
+        requests = optional(map(string))
+      }))
     }), {})
     ebs_csi = optional(object({
-      repository = optional(string)
-      version    = optional(string)
+      addon_version = optional(string)
       controller_resources = optional(object({
-        limits = optional(object({
-          storage = string
-        }))
-        requests = optional(object({
-          storage = string
-        }))
+        limits   = optional(map(string))
+        requests = optional(map(string))
       }))
     }), {})
     instance_refresh = optional(object({

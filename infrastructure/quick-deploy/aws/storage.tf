@@ -179,6 +179,8 @@ module "aws_service_account" {
   name              = "armonikserviceaccount"
   oidc_provider_arn = module.eks.aws_eks_module.oidc_provider_arn
   oidc_issuer_url   = module.eks.aws_eks_module.cluster_oidc_issuer_url
+  pod_identity      = module.eks.pod_identity
+  cluster_name      = module.eks.cluster_name
 }
 
 module "atlas_mongodb" {
@@ -295,7 +297,7 @@ resource "aws_iam_policy" "decrypt_object" {
 
 resource "aws_iam_policy_attachment" "decrypt_object" {
   name       = "${local.prefix}-s3-encrypt-decrypt"
-  roles      = concat(module.eks.worker_iam_role_names, [module.aws_service_account.service_account_iam_role_name])
+  roles      = [module.aws_service_account.service_account_iam_role_name]
   policy_arn = aws_iam_policy.decrypt_object.arn
 }
 
@@ -323,7 +325,7 @@ resource "aws_iam_policy" "object" {
 resource "aws_iam_policy_attachment" "object" {
   for_each   = aws_iam_policy.object
   name       = "${local.prefix}-permissions-on-s3-${each.key}"
-  roles      = concat(module.eks.worker_iam_role_names, [module.aws_service_account.service_account_iam_role_name])
+  roles      = [module.aws_service_account.service_account_iam_role_name]
   policy_arn = each.value.arn
 }
 
