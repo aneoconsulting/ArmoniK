@@ -68,38 +68,34 @@ module "redis" {
 
 # SeaweedFS for object storage
 module "seaweedfs" {
-  count                     = var.seaweedfs != null ? 1 : 0
-  source                    = "./generated/infra-modules/storage/onpremise/seaweedfs"
-  namespace                 = local.namespace
-  name                      = "seaweedfs"
-  helm_chart_repository     = try(coalesce(var.seaweedfs.helm_chart_repository), var.helm_charts.seaweedfs.repository)
-  helm_chart_version        = try(coalesce(var.seaweedfs.helm_chart_version), var.helm_charts.seaweedfs.version)
-  image                     = var.seaweedfs.image_name
-  tag                       = try(coalesce(var.seaweedfs.image_tag), local.default_tags[var.seaweedfs.image_name])
-  node_selector             = var.seaweedfs.node_selector
-  image_pull_secrets        = var.seaweedfs.image_pull_secrets
-  bucket_name               = var.seaweedfs.default_bucket
-  persistence_type          = var.seaweedfs.persistence.type
-  persistence_size          = var.seaweedfs.persistence.size
-  persistence_storage_class = var.seaweedfs.persistence.storage_class
+  count                 = var.seaweedfs != null ? 1 : 0
+  source                = "./generated/infra-modules/storage/onpremise/seaweedfs"
+  namespace             = local.namespace
+  name                  = "seaweedfs"
+  helm_chart_repository = try(coalesce(var.seaweedfs.helm_chart_repository), var.helm_charts.seaweedfs.repository)
+  helm_chart_version    = try(coalesce(var.seaweedfs.helm_chart_version), var.helm_charts.seaweedfs.version)
+  image                 = var.seaweedfs.image_name
+  tag                   = try(coalesce(var.seaweedfs.image_tag), local.default_tags[var.seaweedfs.image_name])
+  node_selector         = var.seaweedfs.node_selector
+  image_pull_secrets    = var.seaweedfs.image_pull_secrets
+  bucket_name           = var.seaweedfs.default_bucket
+  persistence           = var.seaweedfs.persistence
 }
 
 # SeaweedFS for file storage
 module "seaweedfs_s3_fs" {
-  count                     = var.seaweedfs_s3_fs != null ? 1 : 0
-  source                    = "./generated/infra-modules/storage/onpremise/seaweedfs"
-  namespace                 = local.namespace
-  name                      = "seaweedfs-s3-fs"
-  helm_chart_repository     = try(coalesce(var.seaweedfs_s3_fs.helm_chart_repository), var.helm_charts.seaweedfs.repository)
-  helm_chart_version        = try(coalesce(var.seaweedfs_s3_fs.helm_chart_version), var.helm_charts.seaweedfs.version)
-  image                     = var.seaweedfs_s3_fs.image_name
-  tag                       = try(coalesce(var.seaweedfs_s3_fs.image_tag), local.default_tags[var.seaweedfs_s3_fs.image_name])
-  node_selector             = var.seaweedfs_s3_fs.node_selector
-  image_pull_secrets        = var.seaweedfs_s3_fs.image_pull_secrets
-  bucket_name               = var.seaweedfs_s3_fs.default_bucket
-  persistence_type          = var.seaweedfs_s3_fs.persistence.type
-  persistence_size          = var.seaweedfs_s3_fs.persistence.size
-  persistence_storage_class = var.seaweedfs_s3_fs.persistence.storage_class
+  count                 = var.seaweedfs_s3_fs != null ? 1 : 0
+  source                = "./generated/infra-modules/storage/onpremise/seaweedfs"
+  namespace             = local.namespace
+  name                  = "seaweedfs-s3-fs"
+  helm_chart_repository = try(coalesce(var.seaweedfs_s3_fs.helm_chart_repository), var.helm_charts.seaweedfs.repository)
+  helm_chart_version    = try(coalesce(var.seaweedfs_s3_fs.helm_chart_version), var.helm_charts.seaweedfs.version)
+  image                 = var.seaweedfs_s3_fs.image_name
+  tag                   = try(coalesce(var.seaweedfs_s3_fs.image_tag), local.default_tags[var.seaweedfs_s3_fs.image_name])
+  node_selector         = var.seaweedfs_s3_fs.node_selector
+  image_pull_secrets    = var.seaweedfs_s3_fs.image_pull_secrets
+  bucket_name           = var.seaweedfs_s3_fs.default_bucket
+  persistence           = var.seaweedfs_s3_fs.persistence
 }
 
 #NFS
