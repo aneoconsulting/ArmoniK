@@ -158,21 +158,18 @@ jobs:
             done
           done
           g "Kernel log (apparmor / oom / segfault)"; sudo dmesg -T | grep -iE 'apparmor="DENIED"|oom|segfault|traps:' | tail -100; e
-          pod=mongodb-db-ps-rs0-0
-          args=$(kubectl -n $ns get pod $pod -o jsonpath='{.spec.containers[?(@.name=="mongod")].args[*]}')
-          kubectl -n $ns debug pod/$pod --copy-to=mongod-dbg --container=mongod -- bash -c "
-            set -x; id; uname -r; cat /sys/devices/system/cpu/possible /sys/devices/system/cpu/online; nproc
-            grep -E 'Cpus_allowed_list|Seccomp' /proc/self/status
-            mongod --version; echo mongod-version-rc=\$?
-            bash -x /opt/percona/ps-entry.sh $args; echo entry-rc=\$?
-            sleep 3600"
-          for img in percona/percona-server-mongodb:8.0.32-14 percona/percona-server-mongodb:8.0.19-7; do
-            n=ver-$(echo $img | tr -dc '0-9')
-            kubectl -n $ns run $n --image=$img --restart=Never --command -- bash -c 'set -x; id; mongod --version; echo rc=$?'
+          g "Host kernel version"; uname -r; cat /proc/version_signature; cat /proc/version; e
+          # Start each image's mongod for 150s: exit code 124 means it was still alive when timeout killed it
+          for t in 8.0.19-7 8.0.20-8 8.0.32-14 8.0.34-15; do
+            n=run-$(echo $t | tr -dc '0-9')
+            kubectl -n $ns run $n --image=percona/percona-server-mongodb:$t --restart=Never --command -- bash -c '
+              uname -r; cat /proc/version_signature 2>/dev/null; mongod --version | head -1
+              mkdir -p /tmp/db
+              timeout 150 mongod --dbpath /tmp/db --bind_ip 127.0.0.1 >/tmp/log 2>&1; echo run-rc=$?
+              grep -E "\"s\":\"F\"|Fatal|Invariant|SIGSEGV|Got signal" /tmp/log | head -20; tail -3 /tmp/log'
           done
-          sleep 60
-          g "mongod-dbg (bash -x ps-entry.sh)"; kubectl -n $ns get pod mongod-dbg -o wide; kubectl -n $ns logs mongod-dbg -c mongod --tail=300; e
-          for n in $(kubectl -n $ns get pods -o name | grep 'pod/ver-'); do g "$n"; kubectl -n $ns get $n; kubectl -n $ns logs $n; e; done
+          sleep 240
+          for n in $(kubectl -n $ns get pods -o name | grep 'pod/run-'); do g "$n"; kubectl -n $ns get $n; kubectl -n $ns logs $n; e; done
       - name: Show logs
         if: always()
         run: |
