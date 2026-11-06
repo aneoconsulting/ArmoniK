@@ -41,7 +41,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@207c13792e445528e73c0296ab571f78721e4ce4 # main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@8b028cc810b24b2b991e47f791da36b69a25daa9 # aneoconsulting/ArmoniK.Action.Deploy#34
         with:
           aws: true
           terraform: true

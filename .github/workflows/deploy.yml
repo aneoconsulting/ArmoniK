@@ -52,14 +52,8 @@ jobs:
           repository: ${{ env.REPOSITORY }}
           ref: ${{ env.REFERENCE }}
           fetch-depth: 0
-      - name: Allow signals inside AppArmor-confined containers
-        # Recent Ubuntu kernels (e.g. 7.0.0-1019-azure on ubuntu-26.04 runners) stack runc's
-        # AppArmor profile as cri-containerd.apparmor.d//&unconfined. containerd's default profile
-        # only allows signals to its unstacked name, so .NET GC thread suspension gets EACCES and
-        # the runtime aborts. Remove once k3s ships the fix: https://github.com/containerd/containerd/issues/14485
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0 || true
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@207c13792e445528e73c0296ab571f78721e4ce4 # main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@8b028cc810b24b2b991e47f791da36b69a25daa9 # aneoconsulting/ArmoniK.Action.Deploy#34
         with:
            docker: true
            terraform: true
@@ -128,14 +122,8 @@ jobs:
         run: |
             TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
             echo "tag=$TAG" >> $GITHUB_OUTPUT
-      - name: Allow signals inside AppArmor-confined containers
-        # Recent Ubuntu kernels (e.g. 7.0.0-1019-azure on ubuntu-26.04 runners) stack runc's
-        # AppArmor profile as cri-containerd.apparmor.d//&unconfined. containerd's default profile
-        # only allows signals to its unstacked name, so .NET GC thread suspension gets EACCES and
-        # the runtime aborts. Remove once k3s ships the fix: https://github.com/containerd/containerd/issues/14485
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0 || true
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@207c13792e445528e73c0296ab571f78721e4ce4 # main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@8b028cc810b24b2b991e47f791da36b69a25daa9 # aneoconsulting/ArmoniK.Action.Deploy#34
         with:
            docker: true
            terraform: true
@@ -266,14 +254,8 @@ jobs:
         run: |
             TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
             echo "tag=$TAG" >> $GITHUB_OUTPUT
-      - name: Allow signals inside AppArmor-confined containers
-        # Recent Ubuntu kernels (e.g. 7.0.0-1019-azure on ubuntu-26.04 runners) stack runc's
-        # AppArmor profile as cri-containerd.apparmor.d//&unconfined. containerd's default profile
-        # only allows signals to its unstacked name, so .NET GC thread suspension gets EACCES and
-        # the runtime aborts. Remove once k3s ships the fix: https://github.com/containerd/containerd/issues/14485
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0 || true
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@207c13792e445528e73c0296ab571f78721e4ce4 # main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@8b028cc810b24b2b991e47f791da36b69a25daa9 # aneoconsulting/ArmoniK.Action.Deploy#34
         with:
             docker: true
             terraform: true
@@ -463,14 +445,8 @@ jobs:
         run: |
             TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.core')
             echo "tag=$TAG" >> $GITHUB_OUTPUT
-      - name: Allow signals inside AppArmor-confined containers
-        # Recent Ubuntu kernels (e.g. 7.0.0-1019-azure on ubuntu-26.04 runners) stack runc's
-        # AppArmor profile as cri-containerd.apparmor.d//&unconfined. containerd's default profile
-        # only allows signals to its unstacked name, so .NET GC thread suspension gets EACCES and
-        # the runtime aborts. Remove once k3s ships the fix: https://github.com/containerd/containerd/issues/14485
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0 || true
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@207c13792e445528e73c0296ab571f78721e4ce4 # main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@8b028cc810b24b2b991e47f791da36b69a25daa9 # aneoconsulting/ArmoniK.Action.Deploy#34
         with:
                docker: true
                terraform: true
@@ -645,14 +621,8 @@ jobs:
       - name: Get Load Balancer tag
         id: mcp
         run: echo "MCP_TAG=$(cat versions.tfvars.json | jq -r '.armonik_versions.infra_plugins')" >> $GITHUB_ENV
-      - name: Allow signals inside AppArmor-confined containers
-        # Recent Ubuntu kernels (e.g. 7.0.0-1019-azure on ubuntu-26.04 runners) stack runc's
-        # AppArmor profile as cri-containerd.apparmor.d//&unconfined. containerd's default profile
-        # only allows signals to its unstacked name, so .NET GC thread suspension gets EACCES and
-        # the runtime aborts. Remove once k3s ships the fix: https://github.com/containerd/containerd/issues/14485
-        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_unconfined=0 || true
       - name: Install Dependencies
-        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@207c13792e445528e73c0296ab571f78721e4ce4 # main
+        uses: aneoconsulting/ArmoniK.Action.Deploy/dependencies@8b028cc810b24b2b991e47f791da36b69a25daa9 # aneoconsulting/ArmoniK.Action.Deploy#34
         with:
            docker: true
            terraform: true
