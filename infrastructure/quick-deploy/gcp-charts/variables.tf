@@ -47,18 +47,12 @@ variable "node_classes" {
     ComputeClasses, whose node pools GKE creates and removes on demand. Machine families in priority order: the
     autoscaler takes the first one with capacity.
     * default: every pod that selects no class (operators, control plane, ingress, monitoring).
-    * database: PostgreSQL, on demand, never migrated.
     * workers: the partitions, Spot VMs, then on demand when no Spot capacity is left (on_demand_fallback).
   EOT
   type = object({
     default = optional(object({
       machine_families = optional(list(string), ["n2d", "e2"])
       min_cores        = optional(number, 4)
-    }), {})
-    database = optional(object({
-      machine_families = optional(list(string), ["n2d", "e2"])
-      min_cores        = optional(number, 2)
-      min_memory_gb    = optional(number, 8)
     }), {})
     workers = optional(object({
       machine_families   = optional(list(string), ["n2d", "c3d", "e2"])
@@ -130,6 +124,9 @@ variable "partitions" {
     memory = optional(string, "1Gi")
     # KEDA scales the partition on its queue length, from 0 to this many pods
     max_replicas = optional(number, 20)
+    # Any other value of the compute-plane chart for this partition, merged last by Helm over the above and the
+    # partitionCommon of values/armonik.yaml: agent resources, requests apart from limits, a fixed replicas count...
+    values = optional(any, {})
   }))
   default  = {}
   nullable = false
@@ -138,4 +135,20 @@ variable "partitions" {
     condition     = alltrue([for name in keys(var.partitions) : can(regex("^[a-z0-9]+$", name))])
     error_message = "Partition names must be lowercase alphanumeric: no dash (KEDA metric names)."
   }
+}
+
+variable "database" {
+  description = <<-EOT
+    Cloud SQL instance of the table storage.
+    * tier: db-custom-<vCPUs>-<memory in MB>.
+    * availability_type: ZONAL, or REGIONAL for a standby with automatic failover (twice the price).
+    * disk_size: initial size in GB, grown automatically.
+  EOT
+  type = object({
+    tier              = optional(string, "db-custom-2-8192")
+    availability_type = optional(string, "ZONAL")
+    disk_size         = optional(number, 20)
+  })
+  default  = {}
+  nullable = false
 }

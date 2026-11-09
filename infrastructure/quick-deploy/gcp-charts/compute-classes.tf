@@ -4,7 +4,6 @@
 #
 #   default   every pod selecting no class (cluster default class of the gke module): operators, control plane,
 #             ingress, monitoring
-#   database  PostgreSQL, selected in values/armonik.yaml; on demand and never migrated, its disk follows slowly
 #   workers   the partitions, selected in values/armonik.yaml; Spot first. A preempted node loses its running tasks,
 #             which Core retries. Partition pods carry safe-to-evict "false", so neither the consolidation nor the
 #             migration to a better rule ends a task: a node goes away once KEDA has scaled its pods in.
@@ -16,15 +15,6 @@ locals {
         minCores      = var.node_classes.default.min_cores
       }]
       activeMigration = { optimizeRulePriority = true }
-    }
-    database = {
-      priorities = [for family in var.node_classes.database.machine_families : {
-        machineFamily = family
-        minCores      = var.node_classes.database.min_cores
-        minMemoryGb   = var.node_classes.database.min_memory_gb
-      }]
-      activeMigration   = { optimizeRulePriority = false }
-      autoscalingPolicy = { consolidationDelayMinutes = 60 }
     }
     workers = {
       priorities = concat(

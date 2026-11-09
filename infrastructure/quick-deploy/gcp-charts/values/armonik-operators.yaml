@@ -1,5 +1,5 @@
 # Release armonik-operators, namespace ${OPERATORS_NS}. The operators ArmoniK needs, installed once per cluster:
-# External Secrets, KEDA, cert-manager, CloudNativePG and kube-prometheus-stack. The armonik release then only
+# External Secrets, KEDA, cert-manager and kube-prometheus-stack. The armonik release then only
 # emits their custom resources. Its pods select no ComputeClass: they run on the default class.
 #
 # Every image goes through the pull-through cache of its upstream (REG_*, registry.tf): the path after the prefix is
@@ -7,8 +7,10 @@
 global:
   armonik:
     operators:
-      # PostgreSQL (CloudNativePG) only
+      # The table storage is Cloud SQL
       mongodbOperator:
+        deploy: false
+      postgresqlOperator:
         deploy: false
 
 external-secrets:
@@ -33,10 +35,6 @@ keda:
 cert-manager:
   # Prefix of every cert-manager image, followed by imageNamespace (jetstack)
   imageRegistry: "${REG_QUAY}"
-
-postgresql-operator:
-  image:
-    repository: "${REG_GHCR}/cloudnative-pg/cloudnative-pg"
 
 kube-prometheus:
   # Short, release-independent names: the Prometheus Service is kps-prometheus, the

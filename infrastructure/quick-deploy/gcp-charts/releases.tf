@@ -11,6 +11,10 @@ locals {
     SA_CONTROL_PLANE      = local.service_accounts.control_plane
     SA_COMPUTE_PLANE      = local.service_accounts.compute_plane
     BUCKET                = module.object_storage.name
+    PG_HOST               = module.database.host
+    PG_DATABASE           = module.database.database
+    PG_SECRET             = kubernetes_secret_v1.postgresql.metadata[0].name
+    PG_CA_SECRET          = kubernetes_secret_v1.postgresql_ca.metadata[0].name
     PUBSUB_PREFIX         = var.prefix
     INGRESS_SOURCE_RANGES = join(",", var.ingress_allowed_cidrs)
     CORE_VERSION          = var.versions.core
@@ -45,7 +49,7 @@ locals {
   }
 }
 
-# External Secrets, KEDA, cert-manager, CloudNativePG and kube-prometheus-stack. Their CRDs must exist before the
+# External Secrets, KEDA, cert-manager and kube-prometheus-stack. Their CRDs must exist before the
 # armonik release renders its custom resources. Its pods go to the default ComputeClass, which must exist first.
 resource "helm_release" "armonik_operators" {
   name             = "armonik-operators"
@@ -71,15 +75,19 @@ resource "helm_release" "armonik" {
   values = [
     templatefile("${path.module}/values/armonik.yaml", local.values),
     yamlencode(local.partitions_values),
+    # A values document of its own, so that Helm merges it deeply rather than replacing whole maps
+    yamlencode({ compute-plane = { partitions = { for name, p in var.partitions : name => p.values } } }),
   ]
   wait          = true
   wait_for_jobs = false
-  # PostgreSQL first, then the init Jobs, then the control and compute planes
+  # The init Jobs, then the control and compute planes
   timeout = 1200
 
   depends_on = [
     helm_release.armonik_operators,
     kubernetes_secret_v1.grafana_admin,
+    kubernetes_secret_v1.postgresql,
+    kubernetes_secret_v1.postgresql_ca,
     module.service_accounts,
     module.object_storage,
   ]

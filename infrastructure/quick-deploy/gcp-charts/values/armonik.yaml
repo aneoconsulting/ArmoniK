@@ -1,6 +1,6 @@
 # Release armonik, namespace armonik.
 #
-#   - table storage   PostgreSQL in the cluster (CloudNativePG Cluster of the chart), on the database ComputeClass
+#   - table storage   Cloud SQL for PostgreSQL (database.tf), through its Private Service Connect endpoint
 #   - object storage  GCS, reached with the Workload Identity of the ArmoniK service accounts
 #   - queue           Pub/Sub, topics and subscriptions created by Core
 #   - compute         the partitions, on the workers ComputeClass (Spot)
@@ -27,10 +27,10 @@ global:
         deploy: false
         available: true
         namespace: "${OPERATORS_NS}"
+      # The table storage is Cloud SQL: no CloudNativePG
       postgresqlOperator:
         deploy: false
-        available: true
-        namespace: "${OPERATORS_NS}"
+        available: false
       # Also read by the Grafana dashboard sidecar for the namespaces it watches
       prometheusOperator:
         deploy: false
@@ -133,21 +133,19 @@ dependencies:
   mongodb-exporter:
     enabled: false
   postgresql:
+    enabled: false
+  # Cloud SQL (database.tf). Core verifies the server certificate against the CA of the instance, host name included:
+  # the host is the DNS name of the instance, which the certificate carries, not the IP of the endpoint.
+  externalPostgresql:
     enabled: true
-    cluster:
-      # The chart default only names the major version (postgresql:18): pin the minor. Core needs PostgreSQL 18 or
-      # later (RETURNING OLD).
-      imageName: "${REG_GHCR}/cloudnative-pg/postgresql:18.6"
-      # On-demand nodes of the database ComputeClass, never migrated
-      affinity:
-        topologyKey: topology.kubernetes.io/zone
-        nodeSelector:
-          cloud.google.com/compute-class: database
-        tolerations:
-          - key: cloud.google.com/compute-class
-            operator: Equal
-            value: database
-            effect: NoSchedule
+    host: "${PG_HOST}"
+    port: 5432
+    database: "${PG_DATABASE}"
+    ssl: true
+    credentials:
+      secret: "${PG_SECRET}"
+    ca:
+      secret: "${PG_CA_SECRET}"
 
   # ---- Queue: Pub/Sub ---------------------------------------------------------------------------------------
   # Core creates the topics <prefix>-<partition> and their subscriptions itself (roles/pubsub.editor)

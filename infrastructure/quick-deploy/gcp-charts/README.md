@@ -1,7 +1,7 @@
 # GCP quick deploy with the ArmoniK Helm charts
 
 One Terraform stack: GKE Standard with ComputeClasses (Spot workers), Artifact Registry pull-through caches for
-every image, ArmoniK on PostgreSQL (CloudNativePG, in the cluster), GCS and Pub/Sub, through the
+every image, ArmoniK on Cloud SQL for PostgreSQL (Private Service Connect), GCS and Pub/Sub, through the
 [ArmoniK.Infra GCP modules](https://github.com/aneoconsulting/ArmoniK.Infra) and the Helm charts.
 
 ## Setup

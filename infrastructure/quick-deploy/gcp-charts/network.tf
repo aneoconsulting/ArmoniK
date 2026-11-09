@@ -13,5 +13,5 @@ module "vpc" {
     public_access       = true
   }
 
-  depends_on = [google_project_service.apis]
+  depends_on = [terraform_data.apis]
 }

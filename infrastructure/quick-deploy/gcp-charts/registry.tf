@@ -24,7 +24,7 @@ resource "google_secret_manager_secret" "registry" {
     auto {}
   }
 
-  depends_on = [google_project_service.apis]
+  depends_on = [terraform_data.apis]
 }
 
 resource "google_secret_manager_secret_version" "registry" {
@@ -53,5 +53,5 @@ module "registry" {
   cleanup_older_than = "2592000s"
   labels             = local.labels
 
-  depends_on = [google_project_service.apis]
+  depends_on = [terraform_data.apis]
 }

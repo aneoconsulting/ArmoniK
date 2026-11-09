@@ -13,10 +13,22 @@ resource "google_project_service" "apis" {
     "artifactregistry.googleapis.com",
     "secretmanager.googleapis.com",
     "storage.googleapis.com",
+    # Table storage, and the service connection policy of its Private Service Connect endpoint (database.tf)
+    "sqladmin.googleapis.com",
+    "networkconnectivity.googleapis.com",
     # Nothing here creates a topic: Core does at runtime
     "pubsub.googleapis.com",
   ])
 
   service            = each.value
   disable_on_destroy = false
+}
+
+# What the modules wait for, instead of google_project_service.apis itself. A module-level depends_on on a resource
+# with pending changes defers every data source of the module to the apply: the project and region they read become
+# unknown, and every resource built from them is replaced (the network, the caches, the bucket). terraform_data has
+# no input, so adding an API to the list above changes nothing here, while a new project still enables the APIs
+# before the modules.
+resource "terraform_data" "apis" {
+  depends_on = [google_project_service.apis]
 }

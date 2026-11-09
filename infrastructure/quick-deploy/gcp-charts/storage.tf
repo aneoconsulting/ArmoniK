@@ -29,5 +29,5 @@ module "object_storage" {
   # The module always writes the (empty) HMAC credentials of the S3 adapter into a Secret, unused here
   namespace = kubernetes_namespace_v1.armonik.metadata[0].name
 
-  depends_on = [google_project_service.apis]
+  depends_on = [terraform_data.apis]
 }
