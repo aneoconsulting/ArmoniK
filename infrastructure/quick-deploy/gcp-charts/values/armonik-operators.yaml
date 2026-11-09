@@ -1,12 +1,42 @@
 # Release armonik-operators, namespace ${OPERATORS_NS}. The operators ArmoniK needs, installed once per cluster:
 # External Secrets, KEDA, cert-manager, CloudNativePG and kube-prometheus-stack. The armonik release then only
-# emits their custom resources.
+# emits their custom resources. Its pods select no ComputeClass: they run on the default class.
+#
+# Every image goes through the pull-through cache of its upstream (REG_*, registry.tf): the path after the prefix is
+# the upstream one.
 global:
   armonik:
     operators:
       # PostgreSQL (CloudNativePG) only
       mongodbOperator:
         deploy: false
+
+external-secrets:
+  image:
+    repository: "${REG_GHCR}/external-secrets/external-secrets"
+  webhook:
+    image:
+      repository: "${REG_GHCR}/external-secrets/external-secrets"
+  certController:
+    image:
+      repository: "${REG_GHCR}/external-secrets/external-secrets"
+
+keda:
+  image:
+    keda:
+      registry: "${REG_GHCR}"
+    metricsApiServer:
+      registry: "${REG_GHCR}"
+    webhooks:
+      registry: "${REG_GHCR}"
+
+cert-manager:
+  # Prefix of every cert-manager image, followed by imageNamespace (jetstack)
+  imageRegistry: "${REG_QUAY}"
+
+postgresql-operator:
+  image:
+    repository: "${REG_GHCR}/cloudnative-pg/cloudnative-pg"
 
 kube-prometheus:
   # Short, release-independent names: the Prometheus Service is kps-prometheus, the
@@ -15,8 +45,8 @@ kube-prometheus:
   # The default renders windows-exporter through the operators alias anyway: stated off
   windowsMonitoring:
     enabled: false
-  # Hidden on GKE, and Dataplane V2 has no kube-proxy: their targets would only be down. ArmoniK dashboards do
-  # not use them.
+  # Hidden on GKE, and Dataplane V2 has no kube-proxy: their targets would only be down. ArmoniK dashboards do not
+  # use them.
   kubeControllerManager:
     enabled: false
   kubeScheduler:
@@ -29,7 +59,29 @@ kube-prometheus:
     disabled:
       # The armonik-operators chart deploys no Alertmanager: this alert would fire forever
       PrometheusNotConnectedToAlertmanagers: true
+  prometheusOperator:
+    image:
+      registry: "${REG_QUAY}"
+    prometheusConfigReloader:
+      image:
+        registry: "${REG_QUAY}"
+    # Unused (no Thanos sidecar), overridden so that no image reference points outside the caches
+    thanosImage:
+      registry: "${REG_QUAY}"
+    admissionWebhooks:
+      patch:
+        image:
+          registry: "${REG_GHCR}"
+  prometheus:
+    prometheusSpec:
+      image:
+        registry: "${REG_QUAY}"
   prometheus-node-exporter:
-    # On every node, the tainted compute nodes included
+    # On every node, the tainted ComputeClass nodes included
     tolerations:
       - operator: Exists
+    image:
+      registry: "${REG_QUAY}"
+  kube-state-metrics:
+    image:
+      registry: "${REG_K8S}"

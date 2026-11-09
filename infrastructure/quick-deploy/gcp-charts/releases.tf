@@ -1,23 +1,25 @@
-# Helm releases, in dependency order. The values files of ../../values are templates: ${VARIABLE} comes from
+# Helm releases, in dependency order. The values files of values/ are templates: ${VARIABLE} comes from
 # local.values below, and a literal ${ must be written $${.
 # Never wait_for_jobs: the ArmoniK init Jobs delete themselves one second after they end.
 
 locals {
-  values_dir       = "${path.module}/../../values"
   chart_repository = "oci://registry-1.docker.io/dockerhubaneo"
 
   values = {
-    PROJECT               = local.gcp.project
-    OPERATORS_NS          = local.gcp.namespaces.operators
-    SA_CONTROL_PLANE      = local.gcp.service_accounts.control_plane
-    SA_COMPUTE_PLANE      = local.gcp.service_accounts.compute_plane
-    WORKERS_KEY           = local.gcp.workers.key
-    WORKERS_VALUE         = local.gcp.workers.value
-    BUCKET                = local.gcp.bucket
-    PUBSUB_PREFIX         = local.gcp.pubsub_prefix
+    PROJECT               = var.project
+    OPERATORS_NS          = local.namespaces.operators
+    SA_CONTROL_PLANE      = local.service_accounts.control_plane
+    SA_COMPUTE_PLANE      = local.service_accounts.compute_plane
+    BUCKET                = module.object_storage.name
+    PUBSUB_PREFIX         = var.prefix
     INGRESS_SOURCE_RANGES = join(",", var.ingress_allowed_cidrs)
     CORE_VERSION          = var.versions.core
     GUI_VERSION           = var.versions.gui
+    # Image prefixes of the pull-through caches (registry.tf)
+    REG_DOCKERHUB = module.registry.urls.dockerhub
+    REG_GHCR      = module.registry.urls.ghcr
+    REG_QUAY      = module.registry.urls.quay
+    REG_K8S       = module.registry.urls.k8s
   }
 
   # var.partitions as compute-plane values, over the partitionCommon of values/armonik.yaml
@@ -43,19 +45,21 @@ locals {
   }
 }
 
-# External Secrets, KEDA, cert-manager, CloudNativePG and kube-prometheus-stack. Their CRDs must exist before
-# the armonik release renders its custom resources.
+# External Secrets, KEDA, cert-manager, CloudNativePG and kube-prometheus-stack. Their CRDs must exist before the
+# armonik release renders its custom resources. Its pods go to the default ComputeClass, which must exist first.
 resource "helm_release" "armonik_operators" {
   name             = "armonik-operators"
-  namespace        = local.gcp.namespaces.operators
+  namespace        = local.namespaces.operators
   create_namespace = true
   repository       = local.chart_repository
   chart            = "armonik-operators"
   version          = var.versions.armonik
-  values           = [templatefile("${local.values_dir}/armonik-operators.yaml", local.values)]
+  values           = [templatefile("${path.module}/values/armonik-operators.yaml", local.values)]
   wait             = true
-  # Many images on the first install
-  timeout = 900
+  # First nodes created by the ComputeClasses, and many images pulled into the caches
+  timeout = 1200
+
+  depends_on = [kubectl_manifest.compute_class]
 }
 
 resource "helm_release" "armonik" {
@@ -65,7 +69,7 @@ resource "helm_release" "armonik" {
   chart      = "armonik"
   version    = var.versions.armonik
   values = [
-    templatefile("${local.values_dir}/armonik.yaml", local.values),
+    templatefile("${path.module}/values/armonik.yaml", local.values),
     yamlencode(local.partitions_values),
   ]
   wait          = true
@@ -73,5 +77,10 @@ resource "helm_release" "armonik" {
   # PostgreSQL first, then the init Jobs, then the control and compute planes
   timeout = 1200
 
-  depends_on = [helm_release.armonik_operators, kubernetes_secret_v1.grafana_admin]
+  depends_on = [
+    helm_release.armonik_operators,
+    kubernetes_secret_v1.grafana_admin,
+    module.service_accounts,
+    module.object_storage,
+  ]
 }

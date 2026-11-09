@@ -1,7 +1,7 @@
-terraform/backend.tfbackend
+backend.tfbackend
+terraform.tfvars
 kubeconfig
 .terraform/
 *.tfstate
 *.tfstate.*
 tfplan
-terraform/gcp/terraform.tfvars

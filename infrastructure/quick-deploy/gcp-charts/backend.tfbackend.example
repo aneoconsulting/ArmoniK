@@ -1,0 +1,2 @@
+# Copy to backend.tfbackend (git-ignored): an existing GCS bucket for the Terraform state
+bucket = "my-terraform-states"

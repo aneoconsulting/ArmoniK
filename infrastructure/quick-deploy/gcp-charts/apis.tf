@@ -9,6 +9,9 @@ resource "google_project_service" "apis" {
     "container.googleapis.com",
     # Node service account and IAM bindings
     "iam.googleapis.com",
+    # Pull-through caches and the upstream credentials they read
+    "artifactregistry.googleapis.com",
+    "secretmanager.googleapis.com",
     "storage.googleapis.com",
     # Nothing here creates a topic: Core does at runtime
     "pubsub.googleapis.com",

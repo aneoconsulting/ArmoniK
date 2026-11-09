@@ -28,3 +28,14 @@ output "grafana_admin_password" {
   value       = random_password.grafana_admin.result
   sensitive   = true
 }
+
+output "registries" {
+  description = "Image prefix of each pull-through cache"
+  value       = module.registry.urls
+}
+
+# env, not a bare KUBECONFIG=: the command runs through $(...), where a leading assignment is not recognized
+output "kubeconfig_command" {
+  description = "Command writing the kubeconfig of the cluster, through its DNS endpoint, to ./kubeconfig"
+  value       = "env KUBECONFIG=kubeconfig gcloud container clusters get-credentials ${module.gke.name} --dns-endpoint --location ${module.gke.location} --project ${var.project}"
+}
