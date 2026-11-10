@@ -29,8 +29,9 @@ locals {
           minCores      = var.node_classes.workers.min_cores
         }] : [],
       )
-      activeMigration   = { optimizeRulePriority = true }
-      autoscalingPolicy = { consolidationDelayMinutes = 5 }
+      activeMigration = { optimizeRulePriority = true }
+      # An empty node goes away a minute later: the bench partitions scale to 0 at the end of a run
+      autoscalingPolicy = { consolidationDelayMinutes = 1 }
     }
   }
 }
