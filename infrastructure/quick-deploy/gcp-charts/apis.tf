@@ -16,6 +16,8 @@ resource "google_project_service" "apis" {
     # Table storage, and the service connection policy of its Private Service Connect endpoint (database.tf)
     "sqladmin.googleapis.com",
     "networkconnectivity.googleapis.com",
+    # Cloud SQL metrics read by Grafana (monitoring.tf)
+    "monitoring.googleapis.com",
     # Nothing here creates a topic: Core does at runtime
     "pubsub.googleapis.com",
   ])
@@ -24,11 +26,12 @@ resource "google_project_service" "apis" {
   disable_on_destroy = false
 }
 
-# What the modules wait for, instead of google_project_service.apis itself. A module-level depends_on on a resource
-# with pending changes defers every data source of the module to the apply: the project and region they read become
-# unknown, and every resource built from them is replaced (the network, the caches, the bucket). terraform_data has
-# no input, so adding an API to the list above changes nothing here, while a new project still enables the APIs
-# before the modules.
+# What the modules wait for, so that a new project enables the APIs before them.
+#
+# Adding an API to the list above: apply it alone first (terraform apply -target=google_project_service.apis). A
+# module-level depends_on defers every data source of the module to the apply as soon as one of its dependencies,
+# even indirect like this one, has pending changes: the project and region they read become unknown, and every
+# resource built from them would be replaced (the network, the caches, the bucket, the database).
 resource "terraform_data" "apis" {
   depends_on = [google_project_service.apis]
 }

@@ -1,0 +1,2057 @@
+{
+  "uid": "armonik-bench-compute",
+  "title": "Bench - compute (agent/worker)",
+  "description": "Cost of an agent/worker pair per partition and node packing. CPU in millicores (1 min rate).",
+  "tags": [
+    "armonik",
+    "bench"
+  ],
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "editable": true,
+  "refresh": "30s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "partition",
+        "label": "Partition",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "query": {
+          "query": "label_values(kube_deployment_spec_replicas{namespace=\"armonik\",deployment=~\"armonik-compute-plane-.+\"}, deployment)",
+          "refId": "partition"
+        },
+        "regex": "/armonik-compute-plane-(.+)/",
+        "refresh": 2,
+        "sort": 1,
+        "current": {}
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "type": "row",
+      "title": "Load",
+      "id": 2,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Pods",
+      "id": 3,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-$partition\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "type": "stat",
+      "title": "Busy pods",
+      "id": 4,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 4,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_dispatched\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "description": "Tasks dispatched to a pod right now (Core metrics exporter)"
+    },
+    {
+      "type": "stat",
+      "title": "Busy ratio",
+      "id": 5,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_dispatched\"}) / sum(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-$partition\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "type": "stat",
+      "title": "Ended tasks/s",
+      "id": 6,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum(armonik:tasks_ended:rate1m)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "description": "All partitions (Core records the end of a task without its partition)"
+    },
+    {
+      "type": "stat",
+      "title": "Tasks/s per pod",
+      "id": 7,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum(armonik:tasks_ended:rate1m) / sum(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-$partition\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "description": "Ended tasks of all partitions over the pods of this one: right when a single partition runs"
+    },
+    {
+      "type": "stat",
+      "title": "Queued",
+      "id": 8,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_queued\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "type": "timeseries",
+      "title": "Tasks (Core metrics exporter)",
+      "id": 9,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_queued\"})",
+          "legendFormat": "queued",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_dispatched\"})",
+          "legendFormat": "dispatched",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_processing\"})",
+          "legendFormat": "processing",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-$partition\"})",
+          "legendFormat": "pods",
+          "range": true,
+          "instant": false,
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Throughput",
+      "id": 10,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 5,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(armonik:tasks_ended:rate1m)",
+          "legendFormat": "ended tasks/s (all partitions)",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(armonik:tasks_ended:rate1m) / sum(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-$partition\"})",
+          "legendFormat": "per pod",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Calls of the end-of-task statement of Core (pg_stat_statements, postgres_exporter): all partitions, per pod right when a single partition runs"
+    },
+    {
+      "type": "timeseries",
+      "title": "Partition CPU (cores): used, requested, paid",
+      "id": 11,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"agent\"}[1m]))",
+          "legendFormat": "agent used",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"worker\"}[1m]))",
+          "legendFormat": "worker used",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(kube_pod_container_resource_requests{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"agent\",resource=\"cpu\"}) + sum(kube_pod_init_container_resource_requests{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"worker\",resource=\"cpu\"})",
+          "legendFormat": "agent + worker requested",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(kube_node_status_allocatable{resource=\"cpu\"} * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class=\"workers\"} > 0))",
+          "legendFormat": "workers nodes allocatable",
+          "range": true,
+          "instant": false,
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Used: what the pairs burn. Requested: what sizes the nodes. Allocatable: the vCPU of the workers nodes, what is paid"
+    },
+    {
+      "type": "row",
+      "title": "Agent container",
+      "id": 12,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "agent CPU (m)",
+      "id": 13,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 22,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "avg(armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"agent\"})",
+          "legendFormat": "mean",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "quantile(0.5, armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"agent\"})",
+          "legendFormat": "median",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "quantile(0.95, armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"agent\"})",
+          "legendFormat": "p95",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "max(armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"agent\"})",
+          "legendFormat": "max",
+          "range": true,
+          "instant": false,
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "1000 * avg(kube_pod_container_resource_requests{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"agent\",resource=\"cpu\"})",
+          "legendFormat": "request",
+          "range": true,
+          "instant": false,
+          "refId": "E",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "1000 * avg(kube_pod_container_resource_limits{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"agent\",resource=\"cpu\"})",
+          "legendFormat": "limit",
+          "range": true,
+          "instant": false,
+          "refId": "F",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "agent memory (MiB, working set)",
+      "id": 14,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 22,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "avg(armonik:container_memory_working_set_mib{partition=\"$partition\",container=\"agent\"})",
+          "legendFormat": "mean",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "max(armonik:container_memory_working_set_mib{partition=\"$partition\",container=\"agent\"})",
+          "legendFormat": "max",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "avg(kube_pod_container_resource_requests{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"agent\",resource=\"memory\"}) / 1048576",
+          "legendFormat": "request",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "avg(kube_pod_container_resource_limits{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"agent\",resource=\"memory\"}) / 1048576",
+          "legendFormat": "limit",
+          "range": true,
+          "instant": false,
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "agent usage / request",
+      "id": 15,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 22,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"agent\"}) / (1000 * sum(kube_pod_container_resource_requests{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"agent\",resource=\"cpu\"}))",
+          "legendFormat": "CPU",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(armonik:container_memory_working_set_mib{partition=\"$partition\",container=\"agent\"}) / (sum(kube_pod_container_resource_requests{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"agent\",resource=\"memory\"}) / 1048576)",
+          "legendFormat": "memory",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "max(armonik:container_cpu_throttled_ratio:rate1m{partition=\"$partition\",container=\"agent\"})",
+          "legendFormat": "CPU throttled (max pod)",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Below 1: requests larger than the use. Throttled: periods capped by the limit"
+    },
+    {
+      "type": "row",
+      "title": "Worker container",
+      "id": 16,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 30,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "worker CPU (m)",
+      "id": 17,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 31,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "avg(armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"worker\"})",
+          "legendFormat": "mean",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "quantile(0.5, armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"worker\"})",
+          "legendFormat": "median",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "quantile(0.95, armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"worker\"})",
+          "legendFormat": "p95",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "max(armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"worker\"})",
+          "legendFormat": "max",
+          "range": true,
+          "instant": false,
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "1000 * avg(kube_pod_container_resource_requests{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"worker\",resource=\"cpu\"})",
+          "legendFormat": "request",
+          "range": true,
+          "instant": false,
+          "refId": "E",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "1000 * avg(kube_pod_container_resource_limits{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"worker\",resource=\"cpu\"})",
+          "legendFormat": "limit",
+          "range": true,
+          "instant": false,
+          "refId": "F",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "worker memory (MiB, working set)",
+      "id": 18,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 31,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "avg(armonik:container_memory_working_set_mib{partition=\"$partition\",container=\"worker\"})",
+          "legendFormat": "mean",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "max(armonik:container_memory_working_set_mib{partition=\"$partition\",container=\"worker\"})",
+          "legendFormat": "max",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "avg(kube_pod_container_resource_requests{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"worker\",resource=\"memory\"}) / 1048576",
+          "legendFormat": "request",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "avg(kube_pod_container_resource_limits{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"worker\",resource=\"memory\"}) / 1048576",
+          "legendFormat": "limit",
+          "range": true,
+          "instant": false,
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "worker usage / request",
+      "id": 19,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 31,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"worker\"}) / (1000 * sum(kube_pod_container_resource_requests{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"worker\",resource=\"cpu\"}))",
+          "legendFormat": "CPU",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(armonik:container_memory_working_set_mib{partition=\"$partition\",container=\"worker\"}) / (sum(kube_pod_container_resource_requests{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"worker\",resource=\"memory\"}) / 1048576)",
+          "legendFormat": "memory",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "max(armonik:container_cpu_throttled_ratio:rate1m{partition=\"$partition\",container=\"worker\"})",
+          "legendFormat": "CPU throttled (max pod)",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Below 1: requests larger than the use. Throttled: periods capped by the limit"
+    },
+    {
+      "type": "row",
+      "title": "Health",
+      "id": 20,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 39,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "OOM killed containers",
+      "id": 21,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum(kube_pod_container_status_last_terminated_reason{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",reason=\"OOMKilled\"}) or vector(0)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "type": "stat",
+      "title": "Restarts (range)",
+      "id": 22,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 4,
+        "y": 40,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\"}[$__range])) or vector(0)",
+          "legendFormat": "__auto",
+          "range": false,
+          "instant": true,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "type": "timeseries",
+      "title": "Restarts by container",
+      "id": 23,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 40,
+        "w": 16,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (container) (increase(kube_pod_container_status_restarts_total{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Nodes",
+      "id": 24,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Nodes by ComputeClass, machine type and Spot",
+      "id": 25,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 49,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "count by (label_cloud_google_com_compute_class, label_node_kubernetes_io_instance_type, label_cloud_google_com_gke_spot) (kube_node_labels{label_cloud_google_com_compute_class!=\"\"})",
+          "legendFormat": "{{label_cloud_google_com_compute_class}} {{label_node_kubernetes_io_instance_type}} spot={{label_cloud_google_com_gke_spot}}",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Pairs of the partition per node",
+      "id": 26,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 49,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "avg(count by (node) (kube_pod_info{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\"}))",
+          "legendFormat": "mean",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "max(count by (node) (kube_pod_info{namespace=\"armonik\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\"}))",
+          "legendFormat": "max",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Workers nodes: cpu requested / allocatable",
+      "id": 27,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 57,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "avg((sum by (node) (kube_pod_container_resource_requests{resource=\"cpu\"}) / on (node) kube_node_status_allocatable{resource=\"cpu\"}) * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class=\"workers\"} > 0))",
+          "legendFormat": "mean",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "min((sum by (node) (kube_pod_container_resource_requests{resource=\"cpu\"}) / on (node) kube_node_status_allocatable{resource=\"cpu\"}) * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class=\"workers\"} > 0))",
+          "legendFormat": "min",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "avg((sum by (node) (kube_pod_info) / on (node) kube_node_status_allocatable{resource=\"pods\"}) * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class=\"workers\"} > 0))",
+          "legendFormat": "pods / max pods",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Workers nodes: memory requested / allocatable",
+      "id": 28,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 57,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "avg((sum by (node) (kube_pod_container_resource_requests{resource=\"memory\"}) / on (node) kube_node_status_allocatable{resource=\"memory\"}) * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class=\"workers\"} > 0))",
+          "legendFormat": "mean",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "min((sum by (node) (kube_pod_container_resource_requests{resource=\"memory\"}) / on (node) kube_node_status_allocatable{resource=\"memory\"}) * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class=\"workers\"} > 0))",
+          "legendFormat": "min",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "avg((sum by (node) (kube_pod_info) / on (node) kube_node_status_allocatable{resource=\"pods\"}) * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class=\"workers\"} > 0))",
+          "legendFormat": "pods / max pods",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Workers nodes: CPU used / allocatable",
+      "id": 29,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 65,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "avg((sum by (node) (rate(container_cpu_usage_seconds_total{container!=\"\"}[1m])) / on (node) kube_node_status_allocatable{resource=\"cpu\"}) * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class=\"workers\"} > 0))",
+          "legendFormat": "mean",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "max((sum by (node) (rate(container_cpu_usage_seconds_total{container!=\"\"}[1m])) / on (node) kube_node_status_allocatable{resource=\"cpu\"}) * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class=\"workers\"} > 0))",
+          "legendFormat": "max",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Near 100%: the node is saturated, the pairs wait for CPU without being throttled (requests below the use)"
+    },
+    {
+      "type": "timeseries",
+      "title": "Workers nodes: memory used / allocatable",
+      "id": 30,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 65,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "avg((sum by (node) (container_memory_working_set_bytes{container!=\"\"}) / on (node) kube_node_status_allocatable{resource=\"memory\"}) * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class=\"workers\"} > 0))",
+          "legendFormat": "mean",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "max((sum by (node) (container_memory_working_set_bytes{container!=\"\"}) / on (node) kube_node_status_allocatable{resource=\"memory\"}) * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class=\"workers\"} > 0))",
+          "legendFormat": "max",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Control plane",
+      "id": 31,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 73,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "RPC per second",
+      "id": 32,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 74,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(GrpcTasksService_SubmitTasks_Count_total{namespace=\"armonik\"}[1m]))",
+          "legendFormat": "SubmitTasks",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(rate(GrpcResultsService_CreateResultsMetaData_Count_total{namespace=\"armonik\"}[1m]))",
+          "legendFormat": "CreateResultsMetaData",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(rate(GrpcResultsService_CreateResults_Count_total{namespace=\"armonik\"}[1m]))",
+          "legendFormat": "CreateResults",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(rate(GrpcResultsService_UploadResultData_Count_total{namespace=\"armonik\"}[1m]))",
+          "legendFormat": "UploadResultData",
+          "range": true,
+          "instant": false,
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(rate(GrpcResultsService_DownloadResultData_Count_total{namespace=\"armonik\"}[1m]))",
+          "legendFormat": "DownloadResultData",
+          "range": true,
+          "instant": false,
+          "refId": "E",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(rate(GrpcEventsService_GetEvents_Count_total{namespace=\"armonik\"}[1m]))",
+          "legendFormat": "GetEvents",
+          "range": true,
+          "instant": false,
+          "refId": "F",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(rate(GrpcSessionsService_CreateSession_Count_total{namespace=\"armonik\"}[1m]))",
+          "legendFormat": "CreateSession",
+          "range": true,
+          "instant": false,
+          "refId": "G",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(rate(GrpcTasksService_ListTasks_Count_total{namespace=\"armonik\"}[1m]))",
+          "legendFormat": "ListTasks",
+          "range": true,
+          "instant": false,
+          "refId": "H",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum(rate(GrpcTasksService_CountTasksByStatus_Count_total{namespace=\"armonik\"}[1m]))",
+          "legendFormat": "CountTasksByStatus",
+          "range": true,
+          "instant": false,
+          "refId": "I",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "RPC latency p95 (ms)",
+      "id": 33,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 74,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(GrpcTasksService_SubmitTasks_milliseconds_bucket{namespace=\"armonik\"}[1m])))",
+          "legendFormat": "GrpcTasksService_SubmitTasks",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(GrpcResultsService_CreateResultsMetaData_milliseconds_bucket{namespace=\"armonik\"}[1m])))",
+          "legendFormat": "GrpcResultsService_CreateResultsMetaData",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(GrpcResultsService_UploadResultData_milliseconds_bucket{namespace=\"armonik\"}[1m])))",
+          "legendFormat": "GrpcResultsService_UploadResultData",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(GrpcResultsService_DownloadResultData_milliseconds_bucket{namespace=\"armonik\"}[1m])))",
+          "legendFormat": "GrpcResultsService_DownloadResultData",
+          "range": true,
+          "instant": false,
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(GrpcEventsService_GetEvents_milliseconds_bucket{namespace=\"armonik\"}[1m])))",
+          "legendFormat": "GrpcEventsService_GetEvents",
+          "range": true,
+          "instant": false,
+          "refId": "E",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Control plane CPU per pod (m) vs limit",
+      "id": 34,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 82,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "1000 * sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"armonik\",pod=~\"armonik-control-plane-[0-9a-f]+-.+\",container=\"control-plane\"}[1m]))",
+          "legendFormat": "{{pod}}",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "1000 * max(kube_pod_container_resource_limits{namespace=\"armonik\",pod=~\"armonik-control-plane-[0-9a-f]+-.+\",container=\"control-plane\",resource=\"cpu\"})",
+          "legendFormat": "limit",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "1000 * max(kube_pod_container_resource_requests{namespace=\"armonik\",pod=~\"armonik-control-plane-[0-9a-f]+-.+\",container=\"control-plane\",resource=\"cpu\"})",
+          "legendFormat": "request",
+          "range": true,
+          "instant": false,
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "One pod near the limit while the others idle: clients unevenly spread over the replicas"
+    },
+    {
+      "type": "timeseries",
+      "title": "Control plane CPU throttling",
+      "id": 35,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 82,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (pod) (rate(container_cpu_cfs_throttled_periods_total{namespace=\"armonik\",pod=~\"armonik-control-plane-[0-9a-f]+-.+\",container=\"control-plane\"}[1m])) / sum by (pod) (rate(container_cpu_cfs_periods_total{namespace=\"armonik\",pod=~\"armonik-control-plane-[0-9a-f]+-.+\",container=\"control-plane\"}[1m]))",
+          "legendFormat": "{{pod}}",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Share of the CFS periods where the pod hit its CPU limit"
+    },
+    {
+      "type": "timeseries",
+      "title": "SubmitTasks and DownloadResultData per control plane pod",
+      "id": 36,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 82,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (pod) (rate(GrpcTasksService_SubmitTasks_Count_total{namespace=\"armonik\",pod=~\"armonik-control-plane-[0-9a-f]+-.+\"}[1m]))",
+          "legendFormat": "SubmitTasks {{pod}}",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "sum by (pod) (rate(GrpcResultsService_DownloadResultData_Count_total{namespace=\"armonik\",pod=~\"armonik-control-plane-[0-9a-f]+-.+\"}[1m]))",
+          "legendFormat": "DownloadResultData {{pod}}",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Balanced through the ingress (per request), unbalanced with clients on the Service (per connection)"
+    },
+    {
+      "type": "timeseries",
+      "title": "Ingress CPU per pod (m) vs limit",
+      "id": 37,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 90,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "1000 * sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"armonik\",pod=~\"armonik-ingress-[0-9a-f]+-.+\",container=\"ingress\"}[1m]))",
+          "legendFormat": "{{pod}}",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        },
+        {
+          "expr": "1000 * max(kube_pod_container_resource_limits{namespace=\"armonik\",pod=~\"armonik-ingress-[0-9a-f]+-.+\",container=\"ingress\",resource=\"cpu\"})",
+          "legendFormat": "limit",
+          "range": true,
+          "instant": false,
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "nginx, every client request goes through it"
+    },
+    {
+      "type": "timeseries",
+      "title": "Ingress CPU throttling",
+      "id": 38,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 90,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (pod) (rate(container_cpu_cfs_throttled_periods_total{namespace=\"armonik\",pod=~\"armonik-ingress-[0-9a-f]+-.+\",container=\"ingress\"}[1m])) / sum by (pod) (rate(container_cpu_cfs_periods_total{namespace=\"armonik\",pod=~\"armonik-ingress-[0-9a-f]+-.+\",container=\"ingress\"}[1m]))",
+          "legendFormat": "{{pod}}",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Control plane memory (MiB)",
+      "id": 39,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 98,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"armonik\",pod=~\"armonik-control-plane-[0-9a-f]+-.+\",container=\"control-plane\"}) / 1048576",
+          "legendFormat": "{{pod}}",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    }
+  ]
+}

@@ -180,6 +180,11 @@ dependencies:
     sidecar:
       image:
         registry: "${REG_QUAY}"
+      # The chart sets the folder annotation of the dashboards (grafana_dashboard_folder) but not this, without
+      # which Grafana puts every dashboard in General
+      dashboards:
+        provider:
+          foldersFromFilesStructure: true
     # Secret created by secrets.tf: the chart would otherwise generate a new password on every render and restart
     # Grafana
     admin:

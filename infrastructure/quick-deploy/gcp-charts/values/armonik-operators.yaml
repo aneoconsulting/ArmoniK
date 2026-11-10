@@ -74,6 +74,23 @@ kube-prometheus:
     prometheusSpec:
       image:
         registry: "${REG_QUAY}"
+      # A bench session, not long-term storage. With ~6000 agent/worker pairs, the cAdvisor and kube-state-metrics
+      # series of 12000 containers set the memory: measured in the bench PostgreSQL dashboard (head series).
+      retention: 3d
+      resources:
+        requests: {cpu: 500m, memory: 2Gi}
+        limits: {memory: 8Gi}
+  kubelet:
+    serviceMonitor:
+      # The chart defaults (restated: this list replaces them), plus the families no ArmoniK dashboard reads, which
+      # are the bulk of the series per container: network, filesystem, block I/O
+      cAdvisorMetricRelabelings:
+        - {sourceLabels: [__name__], action: drop, regex: "container_cpu_(cfs_throttled_seconds_total|load_average_10s|system_seconds_total|user_seconds_total)"}
+        - {sourceLabels: [__name__], action: drop, regex: "container_(fs|network|blkio)_.*"}
+        - {sourceLabels: [__name__], action: drop, regex: "container_memory_(mapped_file|failures_total)"}
+        - {sourceLabels: [__name__], action: drop, regex: "container_(file_descriptors|tasks_state|threads_max|sockets|processes|ulimits_soft)"}
+        - {sourceLabels: [__name__], action: drop, regex: "container_spec.*"}
+        - {sourceLabels: [id, pod], action: drop, regex: ".+;"}
   prometheus-node-exporter:
     # On every node, the tainted ComputeClass nodes included
     tolerations:
@@ -83,3 +100,6 @@ kube-prometheus:
   kube-state-metrics:
     image:
       registry: "${REG_K8S}"
+    # Node labels as kube_node_labels labels: nodes by ComputeClass, machine type and Spot in the bench dashboards
+    metricLabelsAllowlist:
+      - nodes=[cloud.google.com/compute-class,node.kubernetes.io/instance-type,cloud.google.com/gke-spot]
