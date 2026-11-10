@@ -15,9 +15,13 @@ module "database" {
   network = module.vpc.self_link
   # The endpoint takes its IP address in the subnet of the nodes
   psc_subnets         = [module.vpc.gke_subnet_id]
+  edition             = var.database.edition
   tier                = var.database.tier
+  data_cache          = var.database.data_cache
+  connection_pooling  = { enabled = var.database.pooling, flags = var.database.pooling_flags }
   availability_type   = var.database.availability_type
   disk                = { size = var.database.disk_size }
+  database_flags      = var.database.flags
   deletion_protection = false
   # A quick deploy: no backup to pay for
   backup = { enabled = false }

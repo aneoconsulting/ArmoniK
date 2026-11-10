@@ -6,12 +6,14 @@ locals {
   chart_repository = "oci://registry-1.docker.io/dockerhubaneo"
 
   values = {
-    PROJECT               = var.project
-    OPERATORS_NS          = local.namespaces.operators
-    SA_CONTROL_PLANE      = local.service_accounts.control_plane
-    SA_COMPUTE_PLANE      = local.service_accounts.compute_plane
-    BUCKET                = module.object_storage.name
-    PG_HOST               = module.database.host
+    PROJECT          = var.project
+    OPERATORS_NS     = local.namespaces.operators
+    SA_CONTROL_PLANE = local.service_accounts.control_plane
+    SA_COMPUTE_PLANE = local.service_accounts.compute_plane
+    BUCKET           = module.object_storage.name
+    PG_HOST          = module.database.host
+    # The poolers when enabled, the replication connection of Core included (same host and port as its pool)
+    PG_PORT               = coalesce(module.database.pooler_port, module.database.port)
     PG_DATABASE           = module.database.database
     PG_SECRET             = kubernetes_secret_v1.postgresql.metadata[0].name
     PG_CA_SECRET          = kubernetes_secret_v1.postgresql_ca.metadata[0].name

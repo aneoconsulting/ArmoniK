@@ -107,6 +107,11 @@ compute-plane:
         limits: {cpu: "1", memory: 1Gi}
 
 conf:
+  core:
+    env:
+      # Connections of the pool of each Core process (Npgsql, 100 by default): a ceiling, the pool opens them on
+      # demand. ~5 are in use per agent; the ceiling bounds pods x connections against max_connections
+      PostgreSQL__MaxPoolSize: "10"
   control:
     env:
       # Payloads a CreateResults call uploads in parallel. 0 (Core's default) is the CPU count, while each upload is a
@@ -139,7 +144,7 @@ dependencies:
   externalPostgresql:
     enabled: true
     host: "${PG_HOST}"
-    port: 5432
+    port: ${PG_PORT}
     database: "${PG_DATABASE}"
     ssl: true
     credentials:

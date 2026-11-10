@@ -140,14 +140,24 @@ variable "partitions" {
 variable "database" {
   description = <<-EOT
     Cloud SQL instance of the table storage.
-    * tier: db-custom-<vCPUs>-<memory in MB>.
+    * edition: ENTERPRISE, or ENTERPRISE_PLUS (newer machines, data cache, managed connection pooling).
+    * tier: db-custom-<vCPUs>-<memory in MB> in ENTERPRISE, db-perf-optimized-N-<vCPUs> in ENTERPRISE_PLUS.
     * availability_type: ZONAL, or REGIONAL for a standby with automatic failover (twice the price).
-    * disk_size: initial size in GB, grown automatically.
+    * disk_size: initial size in GB, grown automatically (never shrinks).
+    * flags: PostgreSQL flags, over the defaults of the module (logical decoding, max_connections = 500).
+    * data_cache: local SSD read cache (ENTERPRISE_PLUS).
+    * pooling: Core connects through the managed connection poolers (ENTERPRISE_PLUS), on their port, with their
+      flags (pooling_flags). Turning it on or off restarts the instance.
   EOT
   type = object({
+    edition           = optional(string, "ENTERPRISE")
     tier              = optional(string, "db-custom-2-8192")
     availability_type = optional(string, "ZONAL")
     disk_size         = optional(number, 20)
+    flags             = optional(map(string), {})
+    data_cache        = optional(bool, false)
+    pooling           = optional(bool, false)
+    pooling_flags     = optional(map(string), {})
   })
   default  = {}
   nullable = false
