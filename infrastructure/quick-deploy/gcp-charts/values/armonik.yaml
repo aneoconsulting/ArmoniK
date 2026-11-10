@@ -48,11 +48,21 @@ global:
       gui: "${GUI_VERSION}"
 
 control-plane:
-  # One control plane saturates around 75 submitted tasks/s, and clients spread over the replicas
-  replicas: 3
+  # The ingress spreads each gRPC request over the replicas: ~800 tasks/s took ~2.5 CPU in all (database step 3e)
+  replicas: 4
   # The cluster autoscaler would otherwise evict it when it empties a node, cutting the clients' streams
   podAnnotations:
     cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+  # The chart's 1 CPU limit throttles a replica from ~300 submitted tasks/s (73% of the CFS periods at 1000 tasks/s
+  # over 3 replicas), which slows the submission down
+  resources:
+    requests: {cpu: "1", memory: 512Mi}
+    limits: {cpu: "2", memory: 1Gi}
+  # The chart's probe restarts the control plane on a single /liveness answer slower than 1 s, cutting the streams of
+  # all its clients: a busy replica is not a dead one
+  livenessProbe:
+    timeoutSeconds: 5
+    failureThreshold: 3
   serviceAccount:
     create: true
     # Granted the bucket and Pub/Sub roles by Workload Identity (identities.tf): the name is a contract
@@ -119,6 +129,12 @@ conf:
       Submitter__DegreeOfParallelism: "32"
 
 ingress:
+  # Every client request goes through it (payloads included): the chart's single replica limited to 1 CPU would cap
+  # the submission. Each client connection stays on one replica, nginx then spreads its requests.
+  replicas: 2
+  resources:
+    requests: {cpu: 500m, memory: 256Mi}
+    limits: {cpu: "2", memory: 1Gi}
   image:
     registry: "${REG_DOCKERHUB}"
   gui:
