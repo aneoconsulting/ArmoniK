@@ -50,6 +50,25 @@ partitions = {
 The partition runs no pod until tasks arrive. Its pods run on Spot nodes: a preemption loses the running tasks,
 which Core retries.
 
+## Autoscaling
+
+A partition scales on its queue length (the chart's trigger) unless it selects another law:
+
+```hcl
+partitions = {
+  myapp = {
+    image       = "europe-west9-docker.pkg.dev/my-project/my-repo/my-worker"
+    tag         = "1.0.0"
+    autoscaling = { law = "model", hpa = "fast" }
+  }
+}
+```
+
+`model` sizes the pods on the flow of tasks, their duration and the queue; `dual` on the waiting and the running
+tasks. Both are Prometheus recording rules, computed for every partition and shown in the Grafana dashboard
+"Bench - autoscaling" next to what the pods did. The laws, their parameters, the mathematics and the bench that
+compares them on twin partitions: [autoscaling/README.md](autoscaling/README.md).
+
 ## Test
 
 ```sh
