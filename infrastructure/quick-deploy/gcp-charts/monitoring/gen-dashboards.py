@@ -41,10 +41,14 @@ class Board:
         self.next_id += 1
         return self.next_id
 
-    def panel(self, kind, title, ds, targets, w=8, h=8, unit=None, description=None, options=None, field=None):
+    def panel(self, kind, title, ds, targets, w=8, h=8, unit=None, description=None, options=None, field=None,
+              overrides=None):
         p = {"type": kind, "title": title, "id": self._id(), "datasource": ds, "gridPos": self._place(w, h),
              "targets": [dict(t, refId=chr(65 + i), datasource=ds) for i, t in enumerate(targets)],
-             "fieldConfig": {"defaults": dict({"unit": unit} if unit else {}, **(field or {})), "overrides": []},
+             "fieldConfig": {"defaults": dict({"unit": unit} if unit else {}, **(field or {})),
+                             "overrides": [{"matcher": {"id": "byName", "options": name},
+                                            "properties": [{"id": k, "value": v} for k, v in props.items()]}
+                                           for name, props in (overrides or {}).items()]},
              "options": options or {}}
         if description:
             p["description"] = description
@@ -95,9 +99,10 @@ pods = f'sum(kube_deployment_status_replicas_available{{namespace="armonik",depl
 
 c.row("Load")
 c.stat("Pods", [prom(pods)])
-c.stat("Busy pods", [prom('sum({__name__="armonik_${partition}_tasks_dispatched"})')],
-       description="Tasks dispatched to a pod right now (Core metrics exporter)")
-c.stat("Busy ratio", [prom(f'sum({{__name__="armonik_${{partition}}_tasks_dispatched"}}) / {pods}')], unit="percentunit")
+c.stat("Busy pods", [prom('sum({__name__="armonik_${partition}_tasks_processing"})')],
+       description="Tasks a pod is processing right now (Core metrics exporter). Dispatched tasks are taken by an agent "
+                   "but not started: they wait behind the running one")
+c.stat("Busy ratio", [prom(f'sum({{__name__="armonik_${{partition}}_tasks_processing"}}) / {pods}')], unit="percentunit")
 c.stat("Ended tasks/s", [prom('sum(armonik:tasks_ended:rate1m)')], unit="reqps",
        description="All partitions (Core records the end of a task without its partition)")
 c.stat("Tasks/s per pod", [prom(f'sum(armonik:tasks_ended:rate1m) / {pods}')], unit="reqps",
@@ -340,7 +345,135 @@ t.panel("barchart", "Data dependencies per task (created in range)", PG, [sql(
     f"WHERE {CREATED} GROUP BY cardinality(data_dependencies) ORDER BY cardinality(data_dependencies)", fmt="table")],
         w=12, h=8, description="1 is the payload alone: an independent task")
 
+
+# ---------------------------------------------------------------------------------------------------------------------
+# 4. Autoscaling: what each law asks, what the HPA does with it, what it costs (autoscaling/README.md)
+# ---------------------------------------------------------------------------------------------------------------------
+a = Board("armonik-bench-autoscaling", "Bench - autoscaling",
+          "The three autoscaling laws of autoscaling/rules.yaml on the same load, the pods the HPA made of the one the "
+          "partition selects, and the cost: idle pods and queue wait. The laws a partition does not select are computed "
+          "on what happened under the selected one: what they would have asked, not what would have happened.")
+a.templating.append(c.templating[0])
+SEL = 'partition="$partition"'
+DEPLOY = 'namespace="armonik",deployment="armonik-compute-plane-$partition"'
+HPA = 'namespace="armonik",horizontalpodautoscaler="keda-hpa-armonik-compute-plane-$partition"'
+LAWS = [("queue", "queue: queued / 2"), ("dual", "dual: waiting and running"), ("model", "model: flow, running, queue")]
+RATE = '5s'  # evaluation interval of the rules: the step of the integrals below
+ready = f'max(armonik:pods_ready{{{SEL}}})'
+waiting = f'max(armonik:tasks_waiting{{{SEL}}})'
+done = f'sum(increase(TaskHandler_ExecuteTask_milliseconds_count{{job="metrics-polling-agent",armonik_fr_partition="$partition"}}[$__range]))'
+startup = f'(kube_pod_status_ready_time{{{CP}}} - on (namespace, pod) kube_pod_created{{{CP}}})'
+scheduled = f'(kube_pod_status_scheduled_time{{{CP}}} - on (namespace, pod) kube_pod_created{{{CP}}})'
+dash = {"custom.lineStyle": {"fill": "dash", "dash": [6, 4]}, "custom.fillOpacity": 0}
+right = {"custom.axisPlacement": "right", "custom.axisLabel": "tasks", "custom.fillOpacity": 0}
+
+a.row("Over the displayed time range: set it on one run to compare two runs")
+a.stat("Peak ready pods", [prom(f'max_over_time({ready}[$__range:{RATE}])', instant=True)])
+a.stat("Ready pod·s", [prom(f'sum_over_time({ready}[$__range:{RATE}]) * 5', instant=True)],
+       description="Pods paid, in pod·seconds")
+a.stat("Idle pod·s", [prom(f'sum_over_time(max(armonik:pods_idle{{{SEL}}})[$__range:{RATE}]) * 5', instant=True)],
+       description="Ready pods without a task: the waste the law acts on")
+a.stat("Idle share", [prom(f'sum_over_time(max(armonik:pods_idle{{{SEL}}})[$__range:{RATE}]) / sum_over_time({ready}[$__range:{RATE}])',
+                           instant=True)], unit="percentunit")
+a.stat("Mean queue wait", [prom(f'sum_over_time({waiting}[$__range:{RATE}]) * 5 / {done}', instant=True)], unit="s",
+       description="Little's law: integral of the waiting tasks over the tasks completed in the range")
+a.stat("Time with a queue", [prom(f'count_over_time(({waiting} > 0)[$__range:{RATE}]) * 5', instant=True)], unit="s")
+a.stat("Pod·s each law asked for", [
+    prom(f'sum_over_time(max(armonik:scaler_target{{{SEL},law="{law}"}})[$__range:{RATE}]) * 5', law, instant=True)
+    for law, _ in LAWS], w=12,
+       description="Integral of each target over the range, before the HPA limits and maxReplicaCount. The law the "
+                   "partition selects shaped the load the two others are computed on")
+a.stat("Law read by KEDA", [prom(f'max(keda_scaler_metrics_value{{scaledObject="armonik-compute-plane-$partition"}})')], w=6,
+       description="The value of the trigger of the ScaledObject: queued for the chart's trigger (2 per pod), the "
+                   "target of the selected law otherwise (1 per pod)")
+a.stat("Completed tasks", [prom(done, instant=True)], w=6)
+
+a.row("Pods: asked, paid, useful")
+a.ts("The three laws, the HPA and the pods", [
+    *[prom(f'max(armonik:scaler_target{{{SEL},law="{law}"}})', label) for law, label in LAWS],
+    prom(f'max(kube_horizontalpodautoscaler_status_desired_replicas{{{HPA}}})', "desired (HPA)"),
+    prom(ready, "ready (paid)"),
+    prom(f'clamp_max(max(armonik:tasks_processing{{{SEL}}}), scalar({ready}))', "busy (useful)"),
+    prom(waiting, "waiting tasks"),
+    prom(f'max(kube_horizontalpodautoscaler_spec_max_replicas{{{HPA}}})', "maxReplicaCount")],
+     w=24, h=14, field={"custom": {"lineWidth": 2, "fillOpacity": 0, "spanNulls": True}},
+     overrides={**{label: dash for _, label in LAWS},
+                "desired (HPA)": {"custom.lineWidth": 1},
+                "ready (paid)": {"custom.fillOpacity": 15},
+                "busy (useful)": {"custom.fillOpacity": 45},
+                "waiting tasks": right,
+                "maxReplicaCount": {"custom.lineWidth": 1, "custom.lineStyle": {"fill": "dot", "dash": [2, 6]}}},
+     description="Dashed: the targets. A target above ready: pods starting, or maxReplicaCount. Ready above busy: pods "
+                 "paid for nothing. A target below desired: the HPA holds the scale-down (stabilization window). Right "
+                 "axis: tasks")
+a.ts("Against the queue law", [
+    prom(f'max(armonik:scaler_target{{{SEL},law="{law}"}}) - max(armonik:scaler_target{{{SEL},law="queue"}})',
+         f"{law} - queue") for law in ["dual", "model"]], w=12,
+     description="Pods asked for on top of (above 0) or less than (below 0) the queue depth alone")
+a.ts("Pods of the partition", [
+    prom(f'max(kube_horizontalpodautoscaler_status_desired_replicas{{{HPA}}})', "desired (HPA)"),
+    prom(f'max(armonik:pods_created{{{SEL}}})', "created"),
+    prom(f'sum(kube_pod_status_phase{{{CP},phase="Pending"}})', "pending"),
+    prom(ready, "ready"),
+    prom(f'max(armonik:pods_idle{{{SEL}}})', "idle")], w=12)
+
+a.row("The model: ceil(max(F, R) + W)")
+a.ts("Pods by term", [
+    prom(f'armonik:scaler_flow_workers{{{SEL}}}', "F: incoming flow"),
+    prom(f'armonik:scaler_running_workers:mean{{{SEL}}}', "R from the mean duration"),
+    prom(f'armonik:scaler_running_workers:age{{{SEL}}}', "R from the ages"),
+    prom(f'armonik:scaler_waiting_workers{{{SEL}}}', "W: queue as it is"),
+    prom(f'armonik:scaler_waiting_workers:predicted{{{SEL}}}', "W: queue at the end of the startup time"),
+    prom(f'armonik:scaler_workers:model{{{SEL}}}', "max(F, R) + W, before rounding")], w=12,
+     description="The two W are equal unless the partition sets startup_seconds")
+a.ts("Tasks", [
+    prom(f'max(armonik:tasks_waiting{{{SEL}}})', "waiting (submitted + dispatched)"),
+    prom(f'max(armonik:tasks_processing{{{SEL}}})', "processing"),
+    prom(f'max(armonik:scaler_predicted_consumption{{{SEL}}})', "taken by the ready pods during the startup time")], w=12)
+a.ts("Flows", [
+    prom(f'armonik:tasks_arrival_rate{{{SEL}}}', "arrivals"),
+    prom(f'armonik:tasks_completion_rate{{{SEL}}}', "completions")], unit="reqps",
+     description="Arrivals: completions + growth of the unfinished tasks (Core has no counter of submitted tasks)")
+a.ts("Task duration tau", [
+    prom(f'armonik:task_duration_seconds{{{SEL}}}', "used by the model"),
+    prom(f'armonik:task_duration_seconds:measured{{{SEL}}}', "sliding mean, 1 min"),
+    prom(f'armonik:task_duration_seconds:memory{{{SEL}}}', "sliding mean, 1 h (memory)"),
+    prom(f'armonik:task_duration_seconds:little{{{SEL}}}', "Little: busy pods / completions"),
+    prom(f'avg(armonik:task_running_age_seconds{{{SEL}}})', "mean age of the running tasks"),
+    prom(f'max(armonik:task_running_age_seconds{{{SEL}}})', "oldest running task")], unit="s",
+     description="Little far above the measure: long tasks hold pods while only short ones complete")
+a.ts("Parameters", [
+    prom(f'armonik:scaler_catchup_seconds{{{SEL}}}', "catchup_seconds (T)"),
+    prom(f'armonik:scaler_startup_seconds{{{SEL}}}', "startup_seconds (dt)"),
+    prom(f'armonik:scaler_utilization{{{SEL}}}', "utilization (eta)"),
+    prom(f'armonik:scaler_queue_target{{{SEL}}}', "queue_target (q)")])
+
+a.row("Startup time: what catchup_seconds and startup_seconds are set against")
+a.stat("Pod startup, median", [prom(f'quantile(0.5, {startup})')], unit="s",
+       description="Creation to Ready of the pods of the partition there are now, node creation included: the value "
+                   "for startup_seconds")
+a.stat("Pod startup, p95", [prom(f'quantile(0.95, {startup})')], unit="s")
+a.stat("Smallest stable catchup_seconds", [prom(f'(2 * quantile(0.5, {startup}) + 15) / pi()')], unit="s", w=6,
+       description="Without prediction (startup_seconds = 0), the loop oscillates below (2 x startup + 15 s) / pi, "
+                   "15 s being the period of the HPA; three times that for a response without oscillation "
+                   "(autoscaling/README.md, Stability)")
+a.stat("Workers nodes", [prom('count(kube_node_labels{label_cloud_google_com_compute_class="workers"}) or vector(0)')])
+a.stat("KEDA scaler errors (range)", [prom(
+    'sum(increase(keda_scaler_detail_errors_total{scaledObject="armonik-compute-plane-$partition"}[$__range])) or vector(0)',
+    instant=True)], w=6, description="Above 0: the trigger failed and KEDA may be on its fallback")
+a.ts("Pod startup by step", [
+    prom(f'quantile(0.5, {scheduled})', "creation to scheduled, median (waits for a node)"),
+    prom(f'quantile(0.5, {startup})', "creation to ready, median"),
+    prom(f'max({startup})', "creation to ready, max")], w=12, unit="s")
+a.ts("Workers nodes: cores", [
+    prom('sum(kube_node_status_allocatable{resource="cpu"} * on (node) group_left () (kube_node_labels{label_cloud_google_com_compute_class="workers"} > 0))',
+         "allocatable (paid)"),
+    prom(f'sum(kube_pod_container_resource_requests{{{CP},container="agent",resource="cpu"}}) + sum(kube_pod_init_container_resource_requests{{{CP},container="worker",resource="cpu"}})',
+         "requested by the partition"),
+    prom(f'sum(rate(container_cpu_usage_seconds_total{{{CP},container=~"agent|worker"}}[1m]))', "used by the partition")],
+     w=12, description="Nodes are paid, not pods: an empty node goes away a minute later (compute-classes.tf)")
+
 OUT.mkdir(parents=True, exist_ok=True)
-for b, name in [(c, "bench-compute"), (p, "bench-postgresql"), (t, "bench-tasks")]:
+for b, name in [(c, "bench-compute"), (p, "bench-postgresql"), (t, "bench-tasks"), (a, "bench-autoscaling")]:
     (OUT / f"{name}.json").write_text(json.dumps(b.dump(), indent=2) + "\n")
     print(name, len(b.panels), "panels")
