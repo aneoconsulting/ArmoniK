@@ -77,6 +77,9 @@ resource "helm_release" "armonik" {
   values = [
     templatefile("${path.module}/values/armonik.yaml", local.values),
     yamlencode(local.partitions_values),
+    # The law and the HPA of each partition (autoscaling.tf)
+    yamlencode(local.autoscaling_law_values),
+    yamlencode(local.autoscaling_hpa_values),
     # A values document of its own, so that Helm merges it deeply rather than replacing whole maps
     yamlencode({ compute-plane = { partitions = { for name, p in var.partitions : name => p.values } } }),
   ]
@@ -92,5 +95,7 @@ resource "helm_release" "armonik" {
     kubernetes_secret_v1.postgresql_ca,
     module.service_accounts,
     module.object_storage,
+    # The partitions on a PromQL law read these rules
+    kubectl_manifest.autoscaling_rules,
   ]
 }
