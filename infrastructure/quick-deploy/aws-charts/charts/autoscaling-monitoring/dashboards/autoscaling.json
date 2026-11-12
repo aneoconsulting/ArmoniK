@@ -1,0 +1,905 @@
+{
+  "uid": "armonik-autoscaling",
+  "title": "ArmoniK autoscaling",
+  "tags": [
+    "armonik",
+    "autoscaling"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "refresh": "10s",
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "graphTooltip": 1,
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {},
+        "hide": 0
+      },
+      {
+        "name": "partition",
+        "type": "custom",
+        "query": "__PARTITIONS__",
+        "multi": false,
+        "includeAll": false,
+        "current": {}
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 100,
+      "type": "stat",
+      "title": "Pic de pods pr\u00eats",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 8,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "none",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max_over_time(max(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-${partition}\"})[$__range:5s])",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
+        }
+      ]
+    },
+    {
+      "id": 101,
+      "type": "stat",
+      "title": "Pod\u00b7s inactifs",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 0,
+        "w": 8,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "none",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum_over_time((max(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-${partition}\"}) - clamp_max(max(armonik_${partition}_tasks_processing), scalar(max(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-${partition}\"}))))[$__range:5s]) * 5",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "type": "stat",
+      "title": "Temps avec une file non vide",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 0,
+        "w": 8,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "colorMode": "none",
+        "graphMode": "none"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "count_over_time((max(armonik_${partition}_tasks_submitted) > 0)[$__range:5s]) * 5",
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Pods : demand\u00e9s, pay\u00e9s, utiles",
+      "description": "target PromQL : armonik:scaler_target, calcul\u00e9e pour toutes les partitions (m\u00eame celles sur queued / 2). \u00c9cart horizontal desired \u2192 ready : cold start. Aire claire au-dessus de busy : pods pay\u00e9s pour rien. target sous desired : le HPA retient la descente. Axe droit : t\u00e2ches.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 14
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 0,
+            "spanNulls": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "target PromQL"
+            },
+            "properties": [
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    4,
+                    4
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "desired (HPA)"
+            },
+            "properties": [
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ready (pay\u00e9s)"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 15
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "busy (utiles)"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 45
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "en attente"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "t\u00e2ches"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "en attente de d\u00e9pendances"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dot",
+                  "dash": [
+                    2,
+                    6
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "clamp_max(max(armonik:scaler_target{partition=\"${partition}\"}), scalar(max(kube_horizontalpodautoscaler_spec_max_replicas{namespace=\"armonik\",horizontalpodautoscaler=\"keda-hpa-armonik-compute-plane-${partition}\"})))",
+          "legendFormat": "target PromQL",
+          "interval": "5s",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
+        },
+        {
+          "refId": "B",
+          "expr": "max(kube_horizontalpodautoscaler_status_desired_replicas{namespace=\"armonik\",horizontalpodautoscaler=\"keda-hpa-armonik-compute-plane-${partition}\"})",
+          "legendFormat": "desired (HPA)",
+          "interval": "5s",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
+        },
+        {
+          "refId": "C",
+          "expr": "max(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-${partition}\"})",
+          "legendFormat": "ready (pay\u00e9s)",
+          "interval": "5s",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
+        },
+        {
+          "refId": "D",
+          "expr": "clamp_max(max(armonik_${partition}_tasks_processing), scalar(max(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-${partition}\"})))",
+          "legendFormat": "busy (utiles)",
+          "interval": "5s",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
+        },
+        {
+          "refId": "E",
+          "expr": "max(armonik_${partition}_tasks_submitted)",
+          "legendFormat": "en attente",
+          "interval": "5s",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
+        },
+        {
+          "refId": "F",
+          "expr": "max(armonik_${partition}_tasks_pending) + max(armonik_${partition}_tasks_creating)",
+          "legendFormat": "en attente de d\u00e9pendances",
+          "interval": "5s",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          }
+        }
+      ]
+    },
+    {
+      "id": 99,
+      "type": "row",
+      "title": "D\u00e9tails",
+      "collapsed": true,
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 24,
+        "h": 1
+      },
+      "panels": [
+        {
+          "id": 10,
+          "type": "timeseries",
+          "title": "Tasks of the partition",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 19,
+            "w": 24,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 0,
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "armonik_${partition}_tasks_submitted",
+              "legendFormat": "waiting (Submitted)",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "armonik_${partition}_tasks_dispatched",
+              "legendFormat": "dispatched",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "armonik_${partition}_tasks_processing",
+              "legendFormat": "processing",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "D",
+              "expr": "max(keda_scaler_metrics_value{scaledObject=\"armonik-compute-plane-${partition}\"})",
+              "legendFormat": "KEDA input (queued)",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 11,
+          "type": "timeseries",
+          "title": "PromQL target (armonik:scaler_target)",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 27,
+            "w": 24,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 0,
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "armonik:scaler_target{partition=\"${partition}\"}",
+              "legendFormat": "target workers",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "armonik:scaler_flow_workers{partition=\"${partition}\"}",
+              "legendFormat": "F: incoming flow",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "armonik:scaler_running_workers{partition=\"${partition}\"}",
+              "legendFormat": "R: running tasks",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "D",
+              "expr": "armonik:scaler_waiting_workers{partition=\"${partition}\"}",
+              "legendFormat": "W: queue",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "E",
+              "expr": "armonik:tasks_arrival_rate{partition=\"${partition}\"}",
+              "legendFormat": "arrivals (tasks/s)",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "F",
+              "expr": "armonik:tasks_completion_rate{partition=\"${partition}\"}",
+              "legendFormat": "completions (tasks/s)",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "G",
+              "expr": "armonik:task_duration_seconds{partition=\"${partition}\"}",
+              "legendFormat": "task duration, used by the target (s)",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 12,
+          "type": "timeseries",
+          "title": "Pods of the partition",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 35,
+            "w": 24,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 0,
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "max(kube_horizontalpodautoscaler_status_desired_replicas{namespace=\"armonik\",horizontalpodautoscaler=\"keda-hpa-armonik-compute-plane-${partition}\"})",
+              "legendFormat": "HPA desired",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "max(kube_deployment_status_replicas{namespace=\"armonik\",deployment=\"armonik-compute-plane-${partition}\"})",
+              "legendFormat": "created",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "sum(kube_pod_status_phase{namespace=\"armonik\",pod=~\"armonik-compute-plane-${partition}-.*\",phase=\"Pending\"})",
+              "legendFormat": "pending",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "D",
+              "expr": "max(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-${partition}\"})",
+              "legendFormat": "ready",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "E",
+              "expr": "armonik_${partition}_tasks_processing",
+              "legendFormat": "busy (processing tasks)",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 13,
+          "type": "timeseries",
+          "title": "Cores of the workers node pool",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 43,
+            "w": 24,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 0,
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum(kube_node_status_capacity{resource=\"cpu\"} * on (node) group_left () max by (node) (kube_node_labels{label_karpenter_sh_nodepool=\"workers\"}))",
+              "legendFormat": "capacity (workers nodes)",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "sum({__name__=~\"kube_pod_(init_)?container_resource_requests\",resource=\"cpu\"} * on (node) group_left () max by (node) (kube_node_labels{label_karpenter_sh_nodepool=\"workers\"}))",
+              "legendFormat": "requested (all pods on workers nodes)",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "sum({__name__=~\"kube_pod_(init_)?container_resource_requests\",resource=\"cpu\",namespace=\"armonik\",pod=~\"armonik-compute-plane-${partition}-.*\"} * on (namespace, pod) group_left () max by (namespace, pod) (kube_pod_status_phase{phase=\"Running\"} == 1))",
+              "legendFormat": "requested (running pods of the partition)",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "D",
+              "expr": "armonik_${partition}_tasks_processing",
+              "legendFormat": "busy (1 per running task)",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "E",
+              "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"armonik\",pod=~\"armonik-compute-plane-${partition}-.*\",container!=\"\",container!=\"POD\"}[1m]))",
+              "legendFormat": "used (pods of the partition)",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 14,
+          "type": "timeseries",
+          "title": "Workers nodes",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 51,
+            "w": 24,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 0,
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "count by (label_karpenter_sh_capacity_type) (kube_node_labels{label_karpenter_sh_nodepool=\"workers\"})",
+              "legendFormat": "nodes {{label_karpenter_sh_capacity_type}}",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "sum(increase(karpenter_nodeclaims_created_total{nodepool=\"workers\"}[1m]))",
+              "legendFormat": "nodeclaims created / min",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "sum(increase(karpenter_nodeclaims_disrupted_total{nodepool=\"workers\"}[1m]))",
+              "legendFormat": "nodeclaims disrupted / min",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        },
+        {
+          "id": 15,
+          "type": "timeseries",
+          "title": "Scaling latencies",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "gridPos": {
+            "x": 0,
+            "y": 59,
+            "w": 24,
+            "h": 8
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "custom": {
+                "lineWidth": 2,
+                "fillOpacity": 0,
+                "spanNulls": true
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": [
+                "max",
+                "mean"
+              ]
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "max(keda_scaler_metrics_latency_seconds{scaledObject=\"armonik-compute-plane-${partition}\"})",
+              "legendFormat": "KEDA scaler latency",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "B",
+              "expr": "histogram_quantile(0.5, sum by (le) (rate(karpenter_pods_provisioning_bound_duration_seconds_bucket[2m])))",
+              "legendFormat": "new-node pod bound p50",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "C",
+              "expr": "histogram_quantile(0.5, sum by (le) (rate(karpenter_pods_provisioning_startup_duration_seconds_bucket[2m])))",
+              "legendFormat": "new-node pod running p50",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            },
+            {
+              "refId": "D",
+              "expr": "histogram_quantile(0.95, sum by (le) (rate(karpenter_pods_provisioning_startup_duration_seconds_bucket[2m])))",
+              "legendFormat": "new-node pod running p95",
+              "interval": "10s",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

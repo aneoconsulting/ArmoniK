@@ -1,0 +1,5 @@
+apiVersion: v2
+name: postgresql-connection
+description: Npgsql connection string of ArmoniK Core, built by ESO from the RDS master user secret, to pass Npgsql options Core does not expose
+type: application
+version: 0.1.0

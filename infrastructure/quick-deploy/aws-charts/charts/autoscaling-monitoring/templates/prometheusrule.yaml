@@ -1,0 +1,11 @@
+# Recording rules of the autoscaling target in PromQL (rules/autoscaling.rules.yaml), read by the KEDA trigger of the
+# partitions with promql = true (terraform/k8s). The operators' Prometheus loads the PrometheusRules labelled with
+# its release, from every namespace.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: armonik-autoscaling
+  labels:
+    {{- toYaml .Values.prometheusRuleLabels | nindent 4 }}
+spec:
+{{ .Files.Get "rules/autoscaling.rules.yaml" | indent 2 }}

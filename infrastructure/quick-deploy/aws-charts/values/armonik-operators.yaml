@@ -1,0 +1,112 @@
+# Release armonik-operators, chart dockerhubaneo/armonik-operators through the ECR cache, namespace ${OPERATORS_NS}.
+# The operators ArmoniK needs, installed once per cluster: External Secrets (ESO), KEDA, cert-manager and
+# kube-prometheus-stack. The armonik release then only emits their custom resources.
+#
+# Every image is repointed to its upstream's prefix in the ECR pull-through cache (REG_*): Docker Hub
+# and GHCR do not share a namespace, so each upstream keeps its own prefix.
+global:
+  armonik:
+    operators:
+      # PostgreSQL is RDS and MongoDB is not used: neither operator is installed
+      mongodbOperator:
+        deploy: false
+        available: false
+      postgresqlOperator:
+        deploy: false
+        available: false
+      # GCP only
+      googleCasIssuer:
+        deploy: false
+        available: false
+      # Reads the RDS credentials and CA from Secrets Manager (ClusterSecretStore of aws-secret-store)
+      externalSecrets:
+        deploy: true
+
+external-secrets:
+  # Name bound by Pod Identity to the role that reads the RDS secrets (Terraform)
+  serviceAccount:
+    name: external-secrets
+  image:
+    repository: "${REG_GHCR}/external-secrets/external-secrets"
+  webhook:
+    image:
+      repository: "${REG_GHCR}/external-secrets/external-secrets"
+  certController:
+    image:
+      repository: "${REG_GHCR}/external-secrets/external-secrets"
+
+keda:
+  # The chart scrapes the metrics-apiserver only; the operator's ServiceMonitor adds what KEDA computes per
+  # ScaledObject (keda_scaler_metrics_value, keda_scaler_active, keda_scaler_metrics_latency_seconds)
+  prometheus:
+    operator:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+  image:
+    keda:
+      registry: "${REG_GHCR}"
+    metricsApiServer:
+      registry: "${REG_GHCR}"
+    webhooks:
+      registry: "${REG_GHCR}"
+
+cert-manager:
+  imageRegistry: "${REG_QUAY}"
+
+# kube-prometheus-stack, as the chart names it in armonik-operators
+kube-prometheus:
+  # Short, release-independent names: the Prometheus Service is prometheus-prometheus, the URL
+  # global.armonik.monitoring.prometheusUrl of values/armonik.yaml points to
+  fullnameOverride: prometheus
+  windowsMonitoring:
+    enabled: false
+  crds:
+    upgradeJob:
+      image:
+        busybox:
+          registry: "${REG_DOCKERHUB}"
+          repository: library/busybox
+        kubectl:
+          registry: "${REG_K8S}"
+  prometheusOperator:
+    image:
+      registry: "${REG_QUAY}"
+    prometheusConfigReloader:
+      image:
+        registry: "${REG_QUAY}"
+    # Unused (no Thanos sidecar), overridden so no image reference points outside the cache
+    thanosImage:
+      registry: "${REG_QUAY}"
+    admissionWebhooks:
+      patch:
+        image:
+          registry: "${REG_GHCR}"
+  prometheus:
+    prometheusSpec:
+      image:
+        registry: "${REG_QUAY}"
+  prometheus-node-exporter:
+    # The chart turns it off for Docker Desktop, which does not apply here
+    hostRootFsMount:
+      enabled: true
+    # On every node, the tainted worker nodes included
+    tolerations:
+      - operator: Exists
+    image:
+      registry: "${REG_QUAY}"
+    kubeRBACProxy:
+      image:
+        registry: "${REG_QUAY}"
+    permissionInitContainer:
+      image:
+        registry: "${REG_QUAY}"
+  kube-state-metrics:
+    # kube_node_labels with the Karpenter pool and capacity type, to split the cores per node pool
+    metricLabelsAllowlist:
+      - nodes=[karpenter.sh/nodepool,karpenter.sh/capacity-type,node.kubernetes.io/instance-type]
+    image:
+      registry: "${REG_K8S}"
+    kubeRBACProxy:
+      image:
+        registry: "${REG_QUAY}"

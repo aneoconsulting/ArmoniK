@@ -1,0 +1,234 @@
+# Unit tests of autoscaling.rules.yaml (bench/README.md):
+#   promtool test rules autoscaling.rules.test.yaml
+# Synthetic series scraped every 10 s, rules evaluated every 5 s (as in the cluster).
+rule_files:
+  - autoscaling.rules.yaml
+evaluation_interval: 5s
+
+tests:
+  # ---- Short tasks, steady flow: Little's law -------------------------------------------------------------------------
+  # 20 tasks/s, 400 ms each in the pod (20 pre + 200 execute + 180 post), 10 waiting, 8 processing
+  #   F = 20 * 0.4 / 0.9 = 8.89, R = 8 * 0.2 / 60 = 0.03, W = 10 * 0.4 / 54 = 0.07 -> ceil(8.96) = 9
+  - name: steady short tasks
+    interval: 10s
+    input_series:
+      - series: 'armonik_short_tasks_submitted{job="metrics-exporter"}'
+        values: '10x40'
+      - series: 'armonik_short_tasks_dispatched{job="metrics-exporter"}'
+        values: '0x40'
+      - series: 'armonik_short_tasks_processing{job="metrics-exporter"}'
+        values: '8x40'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_count{job="metrics-polling-agent",armonik_fr_partition="short",pod="short-1"}'
+        values: '0+200x40'
+      - series: 'TaskHandler_PreProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="short",pod="short-1"}'
+        values: '0+4000x40'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="short",pod="short-1"}'
+        values: '0+40000x40'
+      - series: 'TaskHandler_PostProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="short",pod="short-1"}'
+        values: '0+36000x40'
+    promql_expr_test:
+      - expr: armonik:tasks_completion_rate
+        eval_time: 5m
+        exp_samples:
+          - labels: 'armonik:tasks_completion_rate{partition="short"}'
+            value: 20
+      - expr: armonik:tasks_arrival_rate
+        eval_time: 5m
+        exp_samples:
+          - labels: 'armonik:tasks_arrival_rate{partition="short"}'
+            value: 20
+      - expr: armonik:task_duration_seconds
+        eval_time: 5m
+        exp_samples:
+          - labels: 'armonik:task_duration_seconds{partition="short"}'
+            value: 0.4
+      - expr: armonik:scaler_target
+        eval_time: 5m
+        exp_samples:
+          - labels: 'armonik:scaler_target{partition="short"}'
+            value: 9
+
+  # ---- After a drain: no phantom flow ----------------------------------------------------------------------------------
+  # The same flow stops at 5 min: 50 s later the completions of the window (30 s) and the average of F (30 s) are gone,
+  # the target is 0
+  - name: drain
+    interval: 10s
+    input_series:
+      - series: 'armonik_drain_tasks_submitted{job="metrics-exporter"}'
+        values: '10x30 0x20'
+      - series: 'armonik_drain_tasks_dispatched{job="metrics-exporter"}'
+        values: '0x50'
+      - series: 'armonik_drain_tasks_processing{job="metrics-exporter"}'
+        values: '8x30 0x20'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_count{job="metrics-polling-agent",armonik_fr_partition="drain",pod="drain-1"}'
+        values: '0+200x30 6000x20'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="drain",pod="drain-1"}'
+        values: '0+80000x30 2400000x20'
+      - series: 'TaskHandler_PreProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="drain",pod="drain-1"}'
+        values: '0x50'
+      - series: 'TaskHandler_PostProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="drain",pod="drain-1"}'
+        values: '0x50'
+    promql_expr_test:
+      - expr: armonik:scaler_target
+        eval_time: 350s
+        exp_samples:
+          - labels: 'armonik:scaler_target{partition="drain"}'
+            value: 0
+
+  # ---- Long tasks (10 min) ---------------------------------------------------------------------------------------------
+  # mu learnt from completions during the first 5 min, none since: kept for 1 h
+  # (the agent creates the three stage series at its first task: a missing one would empty the sum)
+  # "long":  end of a batch, 50 running, nothing waiting or arriving -> R keeps 1 pod per task: 50 (without R: 1)
+  # "longq": 50 waiting, none running -> W is capped at 1 pod per task: 50 (uncapped: 50 * 600 / 54 = 556)
+  - name: long tasks
+    interval: 10s
+    input_series:
+      - series: 'armonik_long_tasks_submitted{job="metrics-exporter"}'
+        values: '0x120'
+      - series: 'armonik_long_tasks_dispatched{job="metrics-exporter"}'
+        values: '0x120'
+      - series: 'armonik_long_tasks_processing{job="metrics-exporter"}'
+        values: '50x120'
+      - series: 'armonik_longq_tasks_submitted{job="metrics-exporter"}'
+        values: '50x120'
+      - series: 'armonik_longq_tasks_dispatched{job="metrics-exporter"}'
+        values: '0x120'
+      - series: 'armonik_longq_tasks_processing{job="metrics-exporter"}'
+        values: '0x120'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_count{job="metrics-polling-agent",armonik_fr_partition="long",pod="long-1"}'
+        values: '0+1x30 30x90'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="long",pod="long-1"}'
+        values: '0+600000x30 18000000x90'
+      - series: 'TaskHandler_PreProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="long",pod="long-1"}'
+        values: '0x120'
+      - series: 'TaskHandler_PostProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="long",pod="long-1"}'
+        values: '0x120'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_count{job="metrics-polling-agent",armonik_fr_partition="longq",pod="longq-1"}'
+        values: '0+1x30 30x90'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="longq",pod="longq-1"}'
+        values: '0+600000x30 18000000x90'
+      - series: 'TaskHandler_PreProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="longq",pod="longq-1"}'
+        values: '0x120'
+      - series: 'TaskHandler_PostProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="longq",pod="longq-1"}'
+        values: '0x120'
+    promql_expr_test:
+      - expr: armonik:task_duration_seconds
+        eval_time: 19m
+        exp_samples:
+          - labels: 'armonik:task_duration_seconds{partition="long"}'
+            value: 600
+          - labels: 'armonik:task_duration_seconds{partition="longq"}'
+            value: 600
+      - expr: armonik:scaler_target
+        eval_time: 19m
+        exp_samples:
+          - labels: 'armonik:scaler_target{partition="long"}'
+            value: 50
+          - labels: 'armonik:scaler_target{partition="longq"}'
+            value: 50
+
+  # ---- Cold start, no history: mu = 1 s ----------------------------------------------------------------------------------
+  # 100 waiting, no pod -> W = 100 * 1 / 54 = 1.85 -> 2
+  - name: cold start
+    interval: 10s
+    input_series:
+      - series: 'armonik_cold_tasks_submitted{job="metrics-exporter"}'
+        values: '100x20'
+      - series: 'armonik_cold_tasks_dispatched{job="metrics-exporter"}'
+        values: '0x20'
+      - series: 'armonik_cold_tasks_processing{job="metrics-exporter"}'
+        values: '0x20'
+    promql_expr_test:
+      - expr: armonik:task_duration_seconds
+        eval_time: 2m
+        exp_samples:
+          - labels: 'armonik:task_duration_seconds{partition="cold"}'
+            value: 1
+      - expr: armonik:scaler_target
+        eval_time: 2m
+        exp_samples:
+          - labels: 'armonik:scaler_target{partition="cold"}'
+            value: 2
+
+  # ---- New long workload, before its first completion: mu from the running ages ------------------------------------------
+  # Pods 1 and 2 run tasks for 180 and 185 s: mu = median = 182.5 s. Ignored: pod 3 serves a frozen value (terminating
+  # pod), pod 4 stopped being scraped at 100 s (its last value stays 5 min). Counting them would give a median of 180 s.
+  # 200 waiting, 20 running -> W = 200 (capped), R = 20 * 60 / 60 = 20 -> 220
+  - name: ages before the first completion
+    interval: 10s
+    input_series:
+      - series: 'armonik_ages_tasks_submitted{job="metrics-exporter"}'
+        values: '200x30'
+      - series: 'armonik_ages_tasks_dispatched{job="metrics-exporter"}'
+        values: '0x30'
+      - series: 'armonik_ages_tasks_processing{job="metrics-exporter"}'
+        values: '20x30'
+      - series: 'TaskRunningTime_Milliseconds{job="metrics-polling-agent",armonik_fr_partition="ages",pod="ages-1"}'
+        values: '0+10000x30'
+      - series: 'TaskRunningTime_Milliseconds{job="metrics-polling-agent",armonik_fr_partition="ages",pod="ages-2"}'
+        values: '5000+10000x30'
+      - series: 'TaskRunningTime_Milliseconds{job="metrics-polling-agent",armonik_fr_partition="ages",pod="ages-3"}'
+        values: '90000x30'
+      - series: 'TaskRunningTime_Milliseconds{job="metrics-polling-agent",armonik_fr_partition="ages",pod="ages-4"}'
+        values: '0+10000x10'
+    promql_expr_test:
+      - expr: armonik:task_duration_seconds
+        eval_time: 3m
+        exp_samples:
+          - labels: 'armonik:task_duration_seconds{partition="ages"}'
+            value: 182.5
+      - expr: armonik:scaler_target
+        eval_time: 3m
+        exp_samples:
+          - labels: 'armonik:scaler_target{partition="ages"}'
+            value: 220
+
+  # ---- No exporter series: no target (KEDA applies its fallback instead of reading 0) ------------------------------------
+  - name: exporter missing
+    interval: 10s
+    input_series:
+      - series: 'TaskHandler_ExecuteTask_milliseconds_count{job="metrics-polling-agent",armonik_fr_partition="gone",pod="gone-1"}'
+        values: '0+200x20'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="gone",pod="gone-1"}'
+        values: '0+80000x20'
+    promql_expr_test:
+      - expr: armonik:scaler_target
+        eval_time: 2m
+        exp_samples: []
+
+  # ---- Straggler after a run: the memory of mu ignores it ----------------------------------------------------------------
+  # 5 min of tasks of 400 ms, then one task ending alone at 8 min with 600 ms (stuck in the queue). At 15 min a burst of
+  # 6000 tasks: mu = 0.4 (median of the hour), not 0.6 (last measure) -> W = 6000 * 0.4 / 54 = 44.4 -> 45 (not 67)
+  - name: straggler
+    interval: 10s
+    input_series:
+      - series: 'armonik_strag_tasks_submitted{job="metrics-exporter"}'
+        values: '0x89 6000x5'
+      - series: 'armonik_strag_tasks_dispatched{job="metrics-exporter"}'
+        values: '0x95'
+      - series: 'armonik_strag_tasks_processing{job="metrics-exporter"}'
+        values: '0x95'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_count{job="metrics-polling-agent",armonik_fr_partition="strag",pod="strag-1"}'
+        values: '0+200x30 6000x17 6001x47'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="strag",pod="strag-1"}'
+        values: '0+80000x30 2400000x17 2400600x47'
+      - series: 'TaskHandler_PreProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="strag",pod="strag-1"}'
+        values: '0x95'
+      - series: 'TaskHandler_PostProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="strag",pod="strag-1"}'
+        values: '0x95'
+    promql_expr_test:
+      - expr: armonik:task_duration_seconds:measured
+        eval_time: 8m30s
+        exp_samples:
+          - labels: 'armonik:task_duration_seconds:measured{partition="strag"}'
+            value: 0.6
+      - expr: armonik:task_duration_seconds
+        eval_time: 15m
+        exp_samples:
+          - labels: 'armonik:task_duration_seconds{partition="strag"}'
+            value: 0.4
+      - expr: armonik:scaler_target
+        eval_time: 15m
+        exp_samples:
+          - labels: 'armonik:scaler_target{partition="strag"}'
+            value: 45

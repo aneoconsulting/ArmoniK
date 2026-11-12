@@ -1,0 +1,5 @@
+apiVersion: v2
+name: aws-secret-store
+description: ClusterSecretStore reading AWS Secrets Manager with the External Secrets Operator's own Pod Identity
+type: application
+version: 0.1.0

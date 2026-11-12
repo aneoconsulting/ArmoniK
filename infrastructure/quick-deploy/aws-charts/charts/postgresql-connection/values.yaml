@@ -1,0 +1,17 @@
+# -- Name of the Secret to create, read by the armonik release (conf.core.envFromSecret)
+secretName: armonik-postgresql-connection
+# -- Key of the connection string in that Secret
+secretKey: connectionString
+
+# -- ClusterSecretStore reading AWS Secrets Manager (release aws-secret-store)
+storeName: aws-secrets-manager
+# -- Secret holding the master user as {"username", "password"}: the one RDS manages
+credentialsSecret: ""
+# -- ESO re-sync period, which carries a password rotation over
+refreshInterval: 1h
+
+host: ""
+port: 5432
+database: armonik
+# -- Npgsql options appended to the connection string, e.g. "No Reset On Close=true;Max Auto Prepare=100"
+options: ""

@@ -1,0 +1,16 @@
+# Here and not in the karpenter release (serviceMonitor.enabled): Karpenter is installed before the operators,
+# so the ServiceMonitor CRD does not exist yet on a fresh cluster. The Prometheus of the operators selects every
+# ServiceMonitor of every namespace.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: karpenter
+  namespace: {{ .Values.karpenterNamespace | quote }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: karpenter
+      app.kubernetes.io/instance: karpenter
+  endpoints:
+    - port: http-metrics
+      interval: {{ .Values.scrapeInterval | quote }}

@@ -1,0 +1,9 @@
+# -- Namespace of the Karpenter release and its Service
+karpenterNamespace: kube-system
+# -- Scrape interval of Karpenter (Prometheus scrapes the rest every 10 s)
+scrapeInterval: 10s
+# -- Partitions offered by the dashboard's partition selector
+partitions: []
+# -- Labels of the PrometheusRule: the operators' Prometheus selects the rules of its release (ruleSelector)
+prometheusRuleLabels:
+  release: armonik-operators
