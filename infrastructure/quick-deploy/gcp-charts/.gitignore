@@ -4,6 +4,6 @@ kubeconfig
 .terraform/
 *.tfstate
 *.tfstate.*
-tfplan
+*tfplan
 # Local overrides, such as a module from a working copy
 *_override.tf
