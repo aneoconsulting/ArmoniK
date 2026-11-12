@@ -20,9 +20,12 @@ measurements.
 
 ## Use
 
-A partition of `terraform.tfvars` selects its law and its HPA; without the block it keeps the chart's behaviour.
+Off by default: `autoscaling_laws = true` in `terraform.tfvars` deploys the rules and the dashboard. A partition then
+selects its law and its HPA; without the block it keeps the chart's behaviour.
 
 ```hcl
+autoscaling_laws = true
+
 partitions = {
   myapp = {
     image = "..."

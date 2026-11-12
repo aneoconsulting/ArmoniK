@@ -1,18 +1,22 @@
 # Autoscaling of the partitions (autoscaling/README.md): the targets in PromQL, as recording rules, and what a
 # partition of var.partitions selects with its "autoscaling" block: the law KEDA reads, and how the HPA applies it.
 # The rules compute the three laws for every partition, selected or not, the chart's own included.
+# Nothing of it without var.autoscaling_laws: the partitions keep the chart's trigger and HPA.
 
 locals {
+  # The autoscaling blocks read, none when the laws are off
+  autoscaling = { for name, p in var.partitions : name => p.autoscaling if var.autoscaling_laws }
+
   autoscaling_params = ["catchup_seconds", "utilization", "startup_seconds", "queue_target"]
 
   # armonik:scaler_config{partition, param}: the parameters a partition sets, the rules default the others
   autoscaling_config_rules = flatten([
-    for name, p in var.partitions : [
+    for name, p in local.autoscaling : [
       for param in local.autoscaling_params : {
         record = "armonik:scaler_config"
-        expr   = "vector(${p.autoscaling[param]})"
+        expr   = "vector(${p[param]})"
         labels = { partition = name, param = param }
-      } if p.autoscaling[param] != null
+      } if p[param] != null
     ]
   ])
 
@@ -23,21 +27,21 @@ locals {
   autoscaling_law_values = {
     compute-plane = {
       partitions = {
-        for name, p in var.partitions : name => {
+        for name, p in local.autoscaling : name => {
           hpa = {
             fallback = { failureThreshold = 3, replicas = 1, behavior = "currentReplicasIfHigher" }
             triggers = [{
               type = "prometheus"
               metadata = {
                 serverAddress       = "{{ include \"armonik.monitoring.prometheusUrl\" . }}"
-                query               = "armonik:scaler_target{partition=\"${name}\",law=\"${p.autoscaling.law}\"}"
+                query               = "armonik:scaler_target{partition=\"${name}\",law=\"${p.law}\"}"
                 threshold           = "1"
                 activationThreshold = "0"
                 ignoreNullValues    = "false"
               }
             }]
           }
-        } if p.autoscaling.law != "queue"
+        } if p.law != "queue"
       }
     }
   }
@@ -91,14 +95,16 @@ locals {
   autoscaling_hpa_values = {
     compute-plane = {
       partitions = {
-        for name, p in var.partitions : name => { hpa = local.autoscaling_hpa_profiles[p.autoscaling.hpa] }
-        if p.autoscaling.hpa != "chart"
+        for name, p in local.autoscaling : name => { hpa = local.autoscaling_hpa_profiles[p.hpa] }
+        if p.hpa != "chart"
       }
     }
   }
 }
 
 resource "kubectl_manifest" "autoscaling_rules" {
+  count = var.autoscaling_laws ? 1 : 0
+
   yaml_body = yamlencode({
     apiVersion = "monitoring.coreos.com/v1"
     kind       = "PrometheusRule"

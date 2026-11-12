@@ -155,9 +155,13 @@ resource "kubernetes_secret_v1" "grafana_datasources" {
   }
 }
 
-# Dashboards: Grafana JSON in monitoring/dashboards, the GCP placeholders replaced here
+# Dashboards: Grafana JSON in monitoring/dashboards, the GCP placeholders replaced here. The autoscaling one reads the
+# rules of autoscaling.tf: not without them.
 resource "kubernetes_config_map_v1" "grafana_dashboards" {
-  for_each = fileset("${path.module}/monitoring/dashboards", "*.json")
+  for_each = setsubtract(
+    fileset("${path.module}/monitoring/dashboards", "*.json"),
+    var.autoscaling_laws ? [] : ["bench-autoscaling.json"],
+  )
 
   metadata {
     name        = "grafana-dashboard-${trimsuffix(each.value, ".json")}"

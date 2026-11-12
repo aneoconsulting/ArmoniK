@@ -114,6 +114,17 @@ variable "versions" {
   nullable = false
 }
 
+variable "autoscaling_laws" {
+  description = <<-EOT
+    The autoscaling laws in PromQL (autoscaling/README.md): their recording rules, the dashboard "Bench - autoscaling"
+    and the autoscaling block of the partitions. Off, every partition scales as the chart does (queue length) and its
+    autoscaling block is ignored.
+  EOT
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
 variable "partitions" {
   description = "Partitions added to the chart's own (default, stream, htcmock); a worker update is a new tag here"
   type = map(object({

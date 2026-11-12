@@ -52,9 +52,11 @@ which Core retries.
 
 ## Autoscaling
 
-A partition scales on its queue length (the chart's trigger) unless it selects another law:
+A partition scales on its queue length (the chart's trigger). With the laws on, it can select another one:
 
 ```hcl
+autoscaling_laws = true
+
 partitions = {
   myapp = {
     image       = "europe-west9-docker.pkg.dev/my-project/my-repo/my-worker"

@@ -18,7 +18,7 @@ Prometheus series of the run (tasks, pods, cores, nodes) to CSV, plots them and 
     uv run autoscaling.py suite --configs q m    # only some laws
     uv run autoscaling.py report runs/<suite>    # the laws side by side: report.md (tables), one overlay plot per scenario
 
-kubectl uses $KUBECONFIG, or ../kubeconfig when it is not set. The laws: ../autoscaling/README.md.
+kubectl uses $KUBECONFIG, or ../generated/kubeconfig when it is not set. The laws: ../autoscaling/README.md.
 """
 
 from __future__ import annotations
@@ -47,7 +47,7 @@ ENDPOINT = "http://armonik-ingress.armonik.svc:5001"
 WORKERS = "cloud.google.com/compute-class=workers"  # nodes of the partitions (compute-classes.tf)
 STEP = 5  # seconds between two exported points
 
-os.environ.setdefault("KUBECONFIG", str(HERE.parent / "kubeconfig"))
+os.environ.setdefault("KUBECONFIG", str(HERE.parent / "generated" / "kubeconfig"))
 
 
 # ---- Scenarios ---------------------------------------------------------------------------------------------

@@ -35,8 +35,9 @@ project = "my-project"
 #   }
 # }
 
-# Autoscaling of a partition (autoscaling/README.md): the law KEDA reads and how the HPA applies it. Without the block:
-# the chart's queue length trigger and HPA.
+# Autoscaling of a partition (autoscaling/README.md): the law KEDA reads and how the HPA applies it. Without the block,
+# or without autoscaling_laws: the chart's queue length trigger and HPA.
+# autoscaling_laws = true
 # partitions = {
 #   myapp = {
 #     image = "europe-west9-docker.pkg.dev/my-project/my-repo/my-worker"

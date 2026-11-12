@@ -8,13 +8,14 @@
 # Environment: ENDPOINT (http://armonik-ingress.armonik.svc:5001), PARTITION (bench), DOP (16, batches submitted in
 # parallel by a client), PAUSE (false: true pauses the session during the submission), PAYLOAD_KB (22), RESULT_KB (2),
 # DOWNLOAD (false: the client does not fetch the results once the tasks are done, minutes of control plane work out of
-# the measure), CORE_VERSION (0.41.4).
+# the measure), CORE_VERSION (the control plane's).
 # Results: kubectl -n armonik logs job/<name>-<i> | grep -E 'executions stats|Throughput'
 set -eu
 
 NAME=$1 DURATION=$2 NTASKS=$3 CLIENTS=${4:-1}
-REGISTRY=$(kubectl -n armonik get deploy armonik-control-plane \
-  -o jsonpath='{.spec.template.spec.containers[0].image}' | sed 's#/dockerhubaneo/.*##')
+IMAGE=$(kubectl -n armonik get deploy armonik-control-plane -o jsonpath='{.spec.template.spec.containers[0].image}')
+REGISTRY=${IMAGE%%/dockerhubaneo/*}
+CORE_VERSION=${CORE_VERSION:-${IMAGE##*:}}
 
 i=1
 while [ "$i" -le "$CLIENTS" ]; do
@@ -36,7 +37,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: client
-          image: $REGISTRY/dockerhubaneo/armonik_core_bench_test_client:${CORE_VERSION:-0.41.4}
+          image: $REGISTRY/dockerhubaneo/armonik_core_bench_test_client:$CORE_VERSION
           resources:
             requests: {cpu: "1", memory: 1Gi}
             limits: {cpu: "2", memory: 2Gi}
