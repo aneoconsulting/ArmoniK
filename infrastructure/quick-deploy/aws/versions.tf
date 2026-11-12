@@ -2,23 +2,23 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 6.59"
+      version = "~> 6.73"
     }
     null = {
       source  = "hashicorp/null"
-      version = "~> 3.2.1"
+      version = "~> 3.3.2"
     }
     local = {
       source  = "hashicorp/local"
-      version = "~> 2.4.0"
+      version = "~> 2.9.1"
     }
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.5.1"
+      version = "~> 3.9.1"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.21.1"
+      version = "~> 2.38.0"
     }
     helm = {
       source  = "hashicorp/helm"
@@ -30,11 +30,11 @@ terraform {
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "~> 4.0.4"
+      version = "~> 4.4.2"
     }
     pkcs12 = {
       source  = "chilicat/pkcs12"
-      version = "~> 0.0.7"
+      version = "~> 0.4.0"
     }
     skopeo2 = {
       source  = "bsquare-corp/skopeo2"
