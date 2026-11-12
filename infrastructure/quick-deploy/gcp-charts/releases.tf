@@ -81,7 +81,7 @@ resource "helm_release" "armonik" {
     yamlencode(local.autoscaling_law_values),
     yamlencode(local.autoscaling_hpa_values),
     # A values document of its own, so that Helm merges it deeply rather than replacing whole maps
-    yamlencode({ compute-plane = { partitions = { for name, p in var.partitions : name => p.values } } }),
+    yamlencode({ compute-plane = { partitions = { for name, p in var.partitions : name => yamldecode(p.values) } } }),
   ]
   wait          = true
   wait_for_jobs = false

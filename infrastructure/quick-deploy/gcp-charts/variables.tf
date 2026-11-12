@@ -153,7 +153,8 @@ variable "partitions" {
     }), {})
     # Any other value of the compute-plane chart for this partition, merged last by Helm over the above and the
     # partitionCommon of values/armonik.yaml: agent resources, requests apart from limits, a fixed replicas count...
-    values = optional(any, {})
+    # YAML text (a heredoc): a structure here would have to have the same type in every partition of the map
+    values = optional(string, "{}")
   }))
   default  = {}
   nullable = false
@@ -161,6 +162,11 @@ variable "partitions" {
   validation {
     condition     = alltrue([for name in keys(var.partitions) : can(regex("^[a-z0-9]+$", name))])
     error_message = "Partition names must be lowercase alphanumeric: no dash (KEDA metric names)."
+  }
+
+  validation {
+    condition     = alltrue([for p in values(var.partitions) : can(keys(yamldecode(p.values)))])
+    error_message = "values must be a YAML mapping (the compute-plane values of the partition)."
   }
 
   validation {
