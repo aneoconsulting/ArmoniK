@@ -122,8 +122,24 @@ variable "partitions" {
     tag    = string
     cpu    = optional(string, "1")
     memory = optional(string, "1Gi")
-    # KEDA scales the partition on its queue length, from 0 to this many pods
+    # KEDA scales the partition from 0 to this many pods
     max_replicas = optional(number, 20)
+    # What the partition scales on, and how (autoscaling/README.md). The three laws are computed for every partition
+    # (autoscaling/rules.yaml): the dashboard "Bench - autoscaling" shows what the two others would have asked.
+    autoscaling = optional(object({
+      # queue: the chart's trigger, ceil(queued / 2), read from the metrics exporter.
+      # dual:  max(ceil(waiting / queue_target), ceil(processing / utilization)), read from Prometheus.
+      # model: the flow model, ceil(max(F, R) + W), read from Prometheus.
+      law = optional(string, "queue")
+      # chart: the chart's HPA (no limit up, 300 s before a scale-down). fast: the target as it is, 60 s before a
+      # scale-down. ramp: fast, but at most twice the pods every 15 s.
+      hpa = optional(string, "chart")
+      # Parameters of the laws, null for the defaults of the rules (60 s, 0.9, 0 s, 2)
+      catchup_seconds = optional(number) # T: time given to absorb the queue
+      utilization     = optional(number) # eta: share of its time a pod spends on tasks
+      startup_seconds = optional(number) # dt: scale-up decision to ready pod; set, the model predicts the queue then
+      queue_target    = optional(number) # q: waiting tasks per pod of the dual law
+    }), {})
     # Any other value of the compute-plane chart for this partition, merged last by Helm over the above and the
     # partitionCommon of values/armonik.yaml: agent resources, requests apart from limits, a fixed replicas count...
     values = optional(any, {})
@@ -134,6 +150,25 @@ variable "partitions" {
   validation {
     condition     = alltrue([for name in keys(var.partitions) : can(regex("^[a-z0-9]+$", name))])
     error_message = "Partition names must be lowercase alphanumeric: no dash (KEDA metric names)."
+  }
+
+  validation {
+    condition     = alltrue([for p in values(var.partitions) : contains(["queue", "dual", "model"], p.autoscaling.law)])
+    error_message = "autoscaling.law must be queue, dual or model."
+  }
+
+  validation {
+    condition     = alltrue([for p in values(var.partitions) : contains(["chart", "fast", "ramp"], p.autoscaling.hpa)])
+    error_message = "autoscaling.hpa must be chart, fast or ramp."
+  }
+
+  validation {
+    condition = alltrue([for p in values(var.partitions) :
+      coalesce(p.autoscaling.catchup_seconds, 1) > 0 && coalesce(p.autoscaling.queue_target, 1) > 0 &&
+      coalesce(p.autoscaling.utilization, 1) > 0 && coalesce(p.autoscaling.utilization, 1) <= 1 &&
+      coalesce(p.autoscaling.startup_seconds, 0) >= 0
+    ])
+    error_message = "autoscaling: catchup_seconds and queue_target must be positive, utilization in ]0, 1], startup_seconds not negative."
   }
 }
 

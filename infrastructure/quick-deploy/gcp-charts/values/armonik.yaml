@@ -101,7 +101,8 @@ compute-plane:
     # Neither the consolidation nor the migration to a better ComputeClass rule ends a running task
     podAnnotations:
       cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
-    # KEDA scales a partition on its queue length, from 0 to this many pods
+    # KEDA scales a partition from 0 to this many pods, on its queue length unless it selects another law
+    # (autoscaling.tf)
     hpa:
       maxReplicaCount: 20
     agent:

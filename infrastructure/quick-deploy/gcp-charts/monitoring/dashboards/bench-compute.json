@@ -101,7 +101,7 @@
       },
       "targets": [
         {
-          "expr": "sum({__name__=\"armonik_${partition}_tasks_dispatched\"})",
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_processing\"})",
           "legendFormat": "__auto",
           "range": true,
           "instant": false,
@@ -117,7 +117,7 @@
         "overrides": []
       },
       "options": {},
-      "description": "Tasks dispatched to a pod right now (Core metrics exporter)"
+      "description": "Tasks a pod is processing right now (Core metrics exporter). Dispatched tasks are taken by an agent but not started: they wait behind the running one"
     },
     {
       "type": "stat",
@@ -135,7 +135,7 @@
       },
       "targets": [
         {
-          "expr": "sum({__name__=\"armonik_${partition}_tasks_dispatched\"}) / sum(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-$partition\"})",
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_processing\"}) / sum(kube_deployment_status_replicas_available{namespace=\"armonik\",deployment=\"armonik-compute-plane-$partition\"})",
           "legendFormat": "__auto",
           "range": true,
           "instant": false,
