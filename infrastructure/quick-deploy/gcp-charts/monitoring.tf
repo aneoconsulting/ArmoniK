@@ -167,10 +167,12 @@ resource "kubernetes_config_map_v1" "grafana_dashboards" {
   }
 
   data = {
-    (each.value) = replace(replace(
+    (each.value) = replace(replace(replace(replace(
       file("${path.module}/monitoring/dashboards/${each.value}"),
       "__CLOUDSQL_DATABASE_ID__", "${var.project}:${module.database.name}"),
-      "__PROJECT__", var.project
+      "__PROJECT__", var.project),
+      "__PUBSUB_PREFIX__", var.prefix),
+      "__BUCKET__", module.object_storage.name
     )
   }
 }

@@ -1,0 +1,1206 @@
+{
+  "uid": "armonik-bench-queue-objects",
+  "title": "Bench - Pub/Sub and GCS",
+  "description": "Pub/Sub topics and subscriptions of the partitions, GCS bucket of the payloads and results (Cloud Monitoring: points every minute, a few minutes late).",
+  "tags": [
+    "armonik",
+    "bench"
+  ],
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "editable": true,
+  "refresh": "30s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "type": "row",
+      "title": "Pub/Sub: flow",
+      "id": 2,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Published messages/s by topic",
+      "id": 3,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/topic/send_message_operation_count",
+              "AND",
+              "resource.labels.topic_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [
+              "resource.label.topic_id"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "{{resource.label.topic_id}}",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Tasks submitted to the queue (one message per task)"
+    },
+    {
+      "type": "timeseries",
+      "title": "Pulled and acknowledged messages/s",
+      "id": 4,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 1,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/pull_message_operation_count",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [
+              "resource.label.subscription_id"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "pulled {{resource.label.subscription_id}}",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/pull_ack_message_operation_count",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [
+              "resource.label.subscription_id"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "acked {{resource.label.subscription_id}}",
+          "refId": "B",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Core pulls with unary Pull: pulled above acked means messages redelivered or released"
+    },
+    {
+      "type": "timeseries",
+      "title": "Backlog: undelivered messages",
+      "id": 5,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 1,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/num_undelivered_messages",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [
+              "resource.label.subscription_id"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "{{resource.label.subscription_id}}",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Queued tasks not yet pulled by an agent"
+    },
+    {
+      "type": "timeseries",
+      "title": "Oldest unacknowledged message age",
+      "id": 6,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/oldest_unacked_message_age",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_MAX",
+            "crossSeriesReducer": "REDUCE_MAX",
+            "groupBys": [
+              "resource.label.subscription_id"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "{{resource.label.subscription_id}}",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Grows steadily: the agents do not keep up with the submission"
+    },
+    {
+      "type": "timeseries",
+      "title": "Expired ack deadlines and ack deadline extensions/s",
+      "id": 7,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 9,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/expired_ack_deadlines_count",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "expired deadlines",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/mod_ack_deadline_message_count",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "deadline extensions",
+          "refId": "B",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Expired: a message pulled and neither acked nor extended in time, delivered again (duplicate task)"
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests/s (publish, pull, ack, modify deadline)",
+      "id": 8,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 9,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/topic/send_request_count",
+              "AND",
+              "resource.labels.topic_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "publish",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/pull_request_count",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "pull",
+          "refId": "B",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/pull_ack_request_count",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "ack",
+          "refId": "C",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/mod_ack_deadline_request_count",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "modify deadline",
+          "refId": "D",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Idle agents keep pulling: the pull rate grows with the pods, not the tasks"
+    },
+    {
+      "type": "row",
+      "title": "Pub/Sub: errors and latency",
+      "id": 9,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Failed requests/s by response code",
+      "id": 10,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/topic/send_request_count",
+              "AND",
+              "resource.labels.topic_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*",
+              "AND",
+              "metric.labels.response_class",
+              "!=",
+              "success"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [
+              "metric.label.response_code"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "publish {{metric.label.response_code}}",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/pull_request_count",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*",
+              "AND",
+              "metric.labels.response_class",
+              "!=",
+              "success"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [
+              "metric.label.response_code"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "pull {{metric.label.response_code}}",
+          "refId": "B",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/pull_ack_request_count",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*",
+              "AND",
+              "metric.labels.response_class",
+              "!=",
+              "success"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [
+              "metric.label.response_code"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "ack {{metric.label.response_code}}",
+          "refId": "C",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "resource_exhausted: a quota reached (throughput per minute and region). Empty pulls are successes"
+    },
+    {
+      "type": "timeseries",
+      "title": "Publish latency",
+      "id": 11,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 18,
+        "w": 6,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/topic/send_request_latencies",
+              "AND",
+              "resource.labels.topic_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_PERCENTILE_50",
+            "crossSeriesReducer": "REDUCE_MAX",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "p50",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/topic/send_request_latencies",
+              "AND",
+              "resource.labels.topic_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_PERCENTILE_95",
+            "crossSeriesReducer": "REDUCE_MAX",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "p95",
+          "refId": "B",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "\u00b5s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Delivery to ack",
+      "id": 12,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 18,
+        "w": 6,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/ack_latencies",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_PERCENTILE_50",
+            "crossSeriesReducer": "REDUCE_MAX",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "p50",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/subscription/ack_latencies",
+              "AND",
+              "resource.labels.subscription_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_PERCENTILE_95",
+            "crossSeriesReducer": "REDUCE_MAX",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "p95",
+          "refId": "B",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Spans the work of the agent on the message, not a service latency"
+    },
+    {
+      "type": "row",
+      "title": "GCS: payloads and results",
+      "id": 13,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests/s by method",
+      "id": 14,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "storage.googleapis.com/api/request_count",
+              "AND",
+              "resource.labels.bucket_name",
+              "=",
+              "__BUCKET__"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [
+              "metric.label.method"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "{{metric.label.method}}",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "WriteObject: payloads and results uploaded, ReadObject: downloaded, DeleteObject: purge"
+    },
+    {
+      "type": "timeseries",
+      "title": "Failed requests/s by response code",
+      "id": 15,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 27,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "storage.googleapis.com/api/request_count",
+              "AND",
+              "resource.labels.bucket_name",
+              "=",
+              "__BUCKET__",
+              "AND",
+              "metric.labels.response_code",
+              "!=",
+              "OK"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [
+              "metric.label.response_code",
+              "metric.label.method"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "{{metric.label.method}} {{metric.label.response_code}}",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "TOO_MANY_REQUESTS / SERVICE_UNAVAILABLE: the bucket ramps up its capacity (about 1000 writes/s at first, doubling every 20 min). NOT_FOUND: reads of missing objects"
+    },
+    {
+      "type": "timeseries",
+      "title": "Bytes/s sent and received",
+      "id": 16,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 35,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "storage.googleapis.com/network/received_bytes_count",
+              "AND",
+              "resource.labels.bucket_name",
+              "=",
+              "__BUCKET__"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "received (uploads)",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "storage.googleapis.com/network/sent_bytes_count",
+              "AND",
+              "resource.labels.bucket_name",
+              "=",
+              "__BUCKET__"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "sent (downloads)",
+          "refId": "B",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Writes/s vs tasks/s",
+      "id": 17,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 35,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "storage.googleapis.com/api/request_count",
+              "AND",
+              "resource.labels.bucket_name",
+              "=",
+              "__BUCKET__",
+              "AND",
+              "metric.labels.method",
+              "=",
+              "WriteObject"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "writes/s",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "pubsub.googleapis.com/topic/send_message_operation_count",
+              "AND",
+              "resource.labels.topic_id",
+              "=~",
+              "__PUBSUB_PREFIX__-.*"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "tasks published/s",
+          "refId": "B",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "About 2 writes per task: its payload and its result"
+    }
+  ]
+}

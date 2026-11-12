@@ -69,12 +69,25 @@ def prom(expr, legend="__auto", instant=False):
     return {"expr": expr, "legendFormat": legend, "range": not instant, "instant": instant}
 
 
-def gcm(metric, aligner="ALIGN_MEAN", reducer="REDUCE_NONE", group_bys=None):
-    return {"queryType": "timeSeriesList", "timeSeriesList": {
+CLOUDSQL = ["resource.labels.database_id", "=", "__CLOUDSQL_DATABASE_ID__"]
+# The pooler metrics are per database, on another resource type than the instance metrics
+POOLER = ["resource.labels.resource_id", "=", "__CLOUDSQL_DATABASE_ID__", "AND", "resource.labels.database", "=",
+          "armonik"]
+# Core names the topic of a partition <prefix>-<partition> and its subscription <topic>-ak-sub
+TOPICS = ["resource.labels.topic_id", "=~", "__PUBSUB_PREFIX__-.*"]
+SUBSCRIPTIONS = ["resource.labels.subscription_id", "=~", "__PUBSUB_PREFIX__-.*"]
+BUCKET = ["resource.labels.bucket_name", "=", "__BUCKET__"]
+
+
+def gcm(metric, aligner="ALIGN_MEAN", reducer="REDUCE_NONE", group_bys=None, filters=None, alias=None, extra=None):
+    q = {"queryType": "timeSeriesList", "timeSeriesList": {
         "projectName": "__PROJECT__",
-        "filters": ["metric.type", "=", metric, "AND", "resource.labels.database_id", "=", "__CLOUDSQL_DATABASE_ID__"],
+        "filters": ["metric.type", "=", metric, "AND"] + (filters or CLOUDSQL) + (["AND"] + extra if extra else []),
         "perSeriesAligner": aligner, "crossSeriesReducer": reducer, "groupBys": group_bys or [],
         "alignmentPeriod": "cloud-monitoring-auto", "view": "FULL"}}
+    if alias:
+        q["aliasBy"] = alias
+    return q
 
 
 def sql(query, fmt="time_series"):
@@ -231,6 +244,26 @@ p.ts("Disk throughput", [gcm("cloudsql.googleapis.com/database/disk/read_bytes_c
 p.ts("Connections (backends)", [gcm("cloudsql.googleapis.com/database/postgresql/num_backends", "ALIGN_MEAN",
                                     "REDUCE_SUM")], ds=GCM)
 
+p.row("Managed connection pooling (Cloud Monitoring)")
+pool = "cloudsql.googleapis.com/per_database/conn_pool/"
+p.ts("Client connections (Core processes to the poolers)", [
+    gcm(pool + "client_connections", "ALIGN_MEAN", "REDUCE_SUM", ["metric.label.status"], POOLER,
+        "client {{metric.label.status}}")], ds=GCM, w=8,
+     description="Waiting: clients queued for a server connection. All poolers summed: each accepts max_client_connections")
+p.ts("Server connections (poolers to PostgreSQL)", [
+    gcm(pool + "server_connections", "ALIGN_MEAN", "REDUCE_SUM", ["metric.label.status"], POOLER,
+        "server {{metric.label.status}}")], ds=GCM, w=8,
+     description="At most pooler count x max_pool_size: all active means the clients queue")
+p.ts("Client wait for a server connection", [
+    gcm(pool + "client_connections_avg_wait_time", "ALIGN_MEAN", "REDUCE_MAX", [], POOLER, "average wait (max pooler)")],
+     ds=GCM, w=8, unit="µs")
+p.ts("Client connection attempts and errors", [
+    gcm(pool + "client_connections_attempts_count", "ALIGN_RATE", "REDUCE_SUM", [], POOLER, "attempts/s"),
+    gcm(pool + "client_connections_error_count", "ALIGN_RATE", "REDUCE_SUM", [], POOLER, "errors/s")],
+     ds=GCM, w=12, unit="reqps",
+     description="Errors: max_client_connections reached, authentication or TLS failures")
+p.ts("Poolers", [gcm(pool + "num_pools", "ALIGN_MEAN", "REDUCE_SUM", [], POOLER, "pools")], ds=GCM, w=12)
+
 p.row("Engine")
 db = 'datname="armonik"'
 p.ts("Transactions/s", [prom(f'sum(rate(pg_stat_database_xact_commit{{{db}}}[1m]))', "commit"),
@@ -340,7 +373,85 @@ t.panel("barchart", "Data dependencies per task (created in range)", PG, [sql(
     f"WHERE {CREATED} GROUP BY cardinality(data_dependencies) ORDER BY cardinality(data_dependencies)", fmt="table")],
         w=12, h=8, description="1 is the payload alone: an independent task")
 
+# ---------------------------------------------------------------------------------------------------------------------
+# 4. Queue and object storage: Pub/Sub and GCS, the managed services of the task flow (Cloud Monitoring)
+# ---------------------------------------------------------------------------------------------------------------------
+q = Board("armonik-bench-queue-objects", "Bench - Pub/Sub and GCS",
+          "Pub/Sub topics and subscriptions of the partitions, GCS bucket of the payloads and results (Cloud Monitoring: "
+          "points every minute, a few minutes late).")
+sub, top, gcs = "pubsub.googleapis.com/subscription/", "pubsub.googleapis.com/topic/", "storage.googleapis.com/"
+PART_SUB, PART_TOP = "{{resource.label.subscription_id}}", "{{resource.label.topic_id}}"
+NOT_OK = ["metric.labels.response_class", "!=", "success"]
+
+q.row("Pub/Sub: flow")
+q.ts("Published messages/s by topic", [
+    gcm(top + "send_message_operation_count", "ALIGN_RATE", "REDUCE_SUM", ["resource.label.topic_id"], TOPICS, PART_TOP)],
+     ds=GCM, w=8, unit="reqps", description="Tasks submitted to the queue (one message per task)")
+q.ts("Pulled and acknowledged messages/s", [
+    gcm(sub + "pull_message_operation_count", "ALIGN_RATE", "REDUCE_SUM", ["resource.label.subscription_id"],
+        SUBSCRIPTIONS, "pulled " + PART_SUB),
+    gcm(sub + "pull_ack_message_operation_count", "ALIGN_RATE", "REDUCE_SUM", ["resource.label.subscription_id"],
+        SUBSCRIPTIONS, "acked " + PART_SUB)], ds=GCM, w=8, unit="reqps",
+     description="Core pulls with unary Pull: pulled above acked means messages redelivered or released")
+q.ts("Backlog: undelivered messages", [
+    gcm(sub + "num_undelivered_messages", "ALIGN_MEAN", "REDUCE_SUM", ["resource.label.subscription_id"],
+        SUBSCRIPTIONS, PART_SUB)], ds=GCM, w=8, description="Queued tasks not yet pulled by an agent")
+q.ts("Oldest unacknowledged message age", [
+    gcm(sub + "oldest_unacked_message_age", "ALIGN_MAX", "REDUCE_MAX", ["resource.label.subscription_id"],
+        SUBSCRIPTIONS, PART_SUB)], ds=GCM, w=8, unit="s",
+     description="Grows steadily: the agents do not keep up with the submission")
+q.ts("Expired ack deadlines and ack deadline extensions/s", [
+    gcm(sub + "expired_ack_deadlines_count", "ALIGN_RATE", "REDUCE_SUM", [], SUBSCRIPTIONS, "expired deadlines"),
+    gcm(sub + "mod_ack_deadline_message_count", "ALIGN_RATE", "REDUCE_SUM", [], SUBSCRIPTIONS, "deadline extensions")],
+     ds=GCM, w=8, unit="reqps",
+     description="Expired: a message pulled and neither acked nor extended in time, delivered again (duplicate task)")
+q.ts("Requests/s (publish, pull, ack, modify deadline)", [
+    gcm(top + "send_request_count", "ALIGN_RATE", "REDUCE_SUM", [], TOPICS, "publish"),
+    gcm(sub + "pull_request_count", "ALIGN_RATE", "REDUCE_SUM", [], SUBSCRIPTIONS, "pull"),
+    gcm(sub + "pull_ack_request_count", "ALIGN_RATE", "REDUCE_SUM", [], SUBSCRIPTIONS, "ack"),
+    gcm(sub + "mod_ack_deadline_request_count", "ALIGN_RATE", "REDUCE_SUM", [], SUBSCRIPTIONS, "modify deadline")],
+     ds=GCM, w=8, unit="reqps", description="Idle agents keep pulling: the pull rate grows with the pods, not the tasks")
+
+q.row("Pub/Sub: errors and latency")
+q.ts("Failed requests/s by response code", [
+    gcm(top + "send_request_count", "ALIGN_RATE", "REDUCE_SUM", ["metric.label.response_code"], TOPICS,
+        "publish {{metric.label.response_code}}", NOT_OK),
+    gcm(sub + "pull_request_count", "ALIGN_RATE", "REDUCE_SUM", ["metric.label.response_code"], SUBSCRIPTIONS,
+        "pull {{metric.label.response_code}}", NOT_OK),
+    gcm(sub + "pull_ack_request_count", "ALIGN_RATE", "REDUCE_SUM", ["metric.label.response_code"], SUBSCRIPTIONS,
+        "ack {{metric.label.response_code}}", NOT_OK)], ds=GCM, w=12, unit="reqps",
+     description="resource_exhausted: a quota reached (throughput per minute and region). Empty pulls are successes")
+q.ts("Publish latency", [
+    gcm(top + "send_request_latencies", "ALIGN_PERCENTILE_50", "REDUCE_MAX", [], TOPICS, "p50"),
+    gcm(top + "send_request_latencies", "ALIGN_PERCENTILE_95", "REDUCE_MAX", [], TOPICS, "p95")],
+     ds=GCM, w=6, unit="µs")
+q.ts("Delivery to ack", [
+    gcm(sub + "ack_latencies", "ALIGN_PERCENTILE_50", "REDUCE_MAX", [], SUBSCRIPTIONS, "p50"),
+    gcm(sub + "ack_latencies", "ALIGN_PERCENTILE_95", "REDUCE_MAX", [], SUBSCRIPTIONS, "p95")],
+     ds=GCM, w=6, unit="ms", description="Spans the work of the agent on the message, not a service latency")
+
+q.row("GCS: payloads and results")
+q.ts("Requests/s by method", [
+    gcm(gcs + "api/request_count", "ALIGN_RATE", "REDUCE_SUM", ["metric.label.method"], BUCKET,
+        "{{metric.label.method}}")], ds=GCM, w=12, unit="reqps",
+     description="WriteObject: payloads and results uploaded, ReadObject: downloaded, DeleteObject: purge")
+q.ts("Failed requests/s by response code", [
+    gcm(gcs + "api/request_count", "ALIGN_RATE", "REDUCE_SUM", ["metric.label.response_code", "metric.label.method"],
+        BUCKET, "{{metric.label.method}} {{metric.label.response_code}}",
+        ["metric.labels.response_code", "!=", "OK"])], ds=GCM, w=12, unit="reqps",
+     description="TOO_MANY_REQUESTS / SERVICE_UNAVAILABLE: the bucket ramps up its capacity (about 1000 writes/s at "
+                 "first, doubling every 20 min). NOT_FOUND: reads of missing objects")
+q.ts("Bytes/s sent and received", [
+    gcm(gcs + "network/received_bytes_count", "ALIGN_RATE", "REDUCE_SUM", [], BUCKET, "received (uploads)"),
+    gcm(gcs + "network/sent_bytes_count", "ALIGN_RATE", "REDUCE_SUM", [], BUCKET, "sent (downloads)")],
+     ds=GCM, w=12, unit="Bps")
+q.ts("Writes/s vs tasks/s", [
+    gcm(gcs + "api/request_count", "ALIGN_RATE", "REDUCE_SUM", [], BUCKET, "writes/s",
+        ["metric.labels.method", "=", "WriteObject"]),
+    gcm(top + "send_message_operation_count", "ALIGN_RATE", "REDUCE_SUM", [], TOPICS, "tasks published/s")],
+     ds=GCM, w=12, unit="reqps", description="About 2 writes per task: its payload and its result")
+
 OUT.mkdir(parents=True, exist_ok=True)
-for b, name in [(c, "bench-compute"), (p, "bench-postgresql"), (t, "bench-tasks")]:
+for b, name in [(c, "bench-compute"), (p, "bench-postgresql"), (t, "bench-tasks"), (q, "bench-pubsub-gcs")]:
     (OUT / f"{name}.json").write_text(json.dumps(b.dump(), indent=2) + "\n")
     print(name, len(b.panels), "panels")

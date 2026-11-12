@@ -450,7 +450,7 @@
     },
     {
       "type": "row",
-      "title": "Engine",
+      "title": "Managed connection pooling (Cloud Monitoring)",
       "id": 9,
       "collapsed": false,
       "gridPos": {
@@ -463,15 +463,389 @@
     },
     {
       "type": "timeseries",
-      "title": "Transactions/s",
+      "title": "Client connections (Core processes to the poolers)",
       "id": 10,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "cloudsql.googleapis.com/per_database/conn_pool/client_connections",
+              "AND",
+              "resource.labels.resource_id",
+              "=",
+              "__CLOUDSQL_DATABASE_ID__",
+              "AND",
+              "resource.labels.database",
+              "=",
+              "armonik"
+            ],
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [
+              "metric.label.status"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "client {{metric.label.status}}",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Waiting: clients queued for a server connection. All poolers summed: each accepts max_client_connections"
+    },
+    {
+      "type": "timeseries",
+      "title": "Server connections (poolers to PostgreSQL)",
+      "id": 11,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 18,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "cloudsql.googleapis.com/per_database/conn_pool/server_connections",
+              "AND",
+              "resource.labels.resource_id",
+              "=",
+              "__CLOUDSQL_DATABASE_ID__",
+              "AND",
+              "resource.labels.database",
+              "=",
+              "armonik"
+            ],
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [
+              "metric.label.status"
+            ],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "server {{metric.label.status}}",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "At most pooler count x max_pool_size: all active means the clients queue"
+    },
+    {
+      "type": "timeseries",
+      "title": "Client wait for a server connection",
+      "id": 12,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 18,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "cloudsql.googleapis.com/per_database/conn_pool/client_connections_avg_wait_time",
+              "AND",
+              "resource.labels.resource_id",
+              "=",
+              "__CLOUDSQL_DATABASE_ID__",
+              "AND",
+              "resource.labels.database",
+              "=",
+              "armonik"
+            ],
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_MAX",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "average wait (max pooler)",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "\u00b5s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Client connection attempts and errors",
+      "id": 13,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "cloudsql.googleapis.com/per_database/conn_pool/client_connections_attempts_count",
+              "AND",
+              "resource.labels.resource_id",
+              "=",
+              "__CLOUDSQL_DATABASE_ID__",
+              "AND",
+              "resource.labels.database",
+              "=",
+              "armonik"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "attempts/s",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        },
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "cloudsql.googleapis.com/per_database/conn_pool/client_connections_error_count",
+              "AND",
+              "resource.labels.resource_id",
+              "=",
+              "__CLOUDSQL_DATABASE_ID__",
+              "AND",
+              "resource.labels.database",
+              "=",
+              "armonik"
+            ],
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "errors/s",
+          "refId": "B",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Errors: max_client_connections reached, authentication or TLS failures"
+    },
+    {
+      "type": "timeseries",
+      "title": "Poolers",
+      "id": 14,
+      "datasource": {
+        "type": "stackdriver",
+        "uid": "cloud-monitoring"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 26,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryType": "timeSeriesList",
+          "timeSeriesList": {
+            "projectName": "__PROJECT__",
+            "filters": [
+              "metric.type",
+              "=",
+              "cloudsql.googleapis.com/per_database/conn_pool/num_pools",
+              "AND",
+              "resource.labels.resource_id",
+              "=",
+              "__CLOUDSQL_DATABASE_ID__",
+              "AND",
+              "resource.labels.database",
+              "=",
+              "armonik"
+            ],
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": [],
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "view": "FULL"
+          },
+          "aliasBy": "pools",
+          "refId": "A",
+          "datasource": {
+            "type": "stackdriver",
+            "uid": "cloud-monitoring"
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Engine",
+      "id": 15,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 34,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Transactions/s",
+      "id": 16,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 0,
-        "y": 18,
+        "y": 35,
         "w": 8,
         "h": 8
       },
@@ -522,14 +896,14 @@
     {
       "type": "timeseries",
       "title": "WAL generated",
-      "id": 11,
+      "id": 17,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 8,
-        "y": 18,
+        "y": 35,
         "w": 8,
         "h": 8
       },
@@ -569,14 +943,14 @@
     {
       "type": "timeseries",
       "title": "Cache hit ratio",
-      "id": 12,
+      "id": 18,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 16,
-        "y": 18,
+        "y": 35,
         "w": 8,
         "h": 8
       },
@@ -616,14 +990,14 @@
     {
       "type": "timeseries",
       "title": "Rows inserted/s by table",
-      "id": 13,
+      "id": 19,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 0,
-        "y": 26,
+        "y": 43,
         "w": 8,
         "h": 8
       },
@@ -663,14 +1037,14 @@
     {
       "type": "timeseries",
       "title": "Rows updated/s by table",
-      "id": 14,
+      "id": 20,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 8,
-        "y": 26,
+        "y": 43,
         "w": 8,
         "h": 8
       },
@@ -710,14 +1084,14 @@
     {
       "type": "timeseries",
       "title": "Rows deleted/s by table",
-      "id": 15,
+      "id": 21,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 16,
-        "y": 26,
+        "y": 43,
         "w": 8,
         "h": 8
       },
@@ -757,14 +1131,14 @@
     {
       "type": "timeseries",
       "title": "Dead rows by table",
-      "id": 16,
+      "id": 22,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 0,
-        "y": 34,
+        "y": 51,
         "w": 8,
         "h": 8
       },
@@ -802,14 +1176,14 @@
     {
       "type": "timeseries",
       "title": "Autovacuum runs (5 min)",
-      "id": 17,
+      "id": 23,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 8,
-        "y": 34,
+        "y": 51,
         "w": 8,
         "h": 8
       },
@@ -847,14 +1221,14 @@
     {
       "type": "timeseries",
       "title": "Locks by mode",
-      "id": 18,
+      "id": 24,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 16,
-        "y": 34,
+        "y": 51,
         "w": 8,
         "h": 8
       },
@@ -892,11 +1266,11 @@
     {
       "type": "row",
       "title": "ArmoniK specifics",
-      "id": 19,
+      "id": 25,
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 42,
+        "y": 59,
         "w": 24,
         "h": 1
       },
@@ -905,14 +1279,14 @@
     {
       "type": "timeseries",
       "title": "Logical replication slot lag (WAL broadcaster)",
-      "id": 20,
+      "id": 26,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 0,
-        "y": 43,
+        "y": 60,
         "w": 12,
         "h": 8
       },
@@ -953,14 +1327,14 @@
     {
       "type": "timeseries",
       "title": "Connections by application and state",
-      "id": 21,
+      "id": 27,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 12,
-        "y": 43,
+        "y": 60,
         "w": 12,
         "h": 8
       },
@@ -998,14 +1372,14 @@
     {
       "type": "timeseries",
       "title": "Connections waiting, by wait event type",
-      "id": 22,
+      "id": 28,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 0,
-        "y": 51,
+        "y": 68,
         "w": 8,
         "h": 8
       },
@@ -1043,14 +1417,14 @@
     {
       "type": "timeseries",
       "title": "Unfinished tasks by status",
-      "id": 23,
+      "id": 29,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 8,
-        "y": 51,
+        "y": 68,
         "w": 8,
         "h": 8
       },
@@ -1088,14 +1462,14 @@
     {
       "type": "timeseries",
       "title": "Dependency backlog",
-      "id": 24,
+      "id": 30,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 16,
-        "y": 51,
+        "y": 68,
         "w": 8,
         "h": 8
       },
@@ -1144,11 +1518,11 @@
     {
       "type": "row",
       "title": "Statements (pg_stat_statements)",
-      "id": 25,
+      "id": 31,
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 59,
+        "y": 76,
         "w": 24,
         "h": 1
       },
@@ -1157,14 +1531,14 @@
     {
       "type": "table",
       "title": "Top statements by total time (range)",
-      "id": 26,
+      "id": 32,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 0,
-        "y": 60,
+        "y": 77,
         "w": 24,
         "h": 10
       },
@@ -1199,14 +1573,14 @@
     {
       "type": "timeseries",
       "title": "Top statements: time per second",
-      "id": 27,
+      "id": 33,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 0,
-        "y": 70,
+        "y": 87,
         "w": 12,
         "h": 8
       },
@@ -1247,14 +1621,14 @@
     {
       "type": "timeseries",
       "title": "Top statements: calls per second",
-      "id": 28,
+      "id": 34,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 12,
-        "y": 70,
+        "y": 87,
         "w": 12,
         "h": 8
       },
@@ -1294,11 +1668,11 @@
     {
       "type": "row",
       "title": "Cost of the monitoring",
-      "id": 29,
+      "id": 35,
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 78,
+        "y": 95,
         "w": 24,
         "h": 1
       },
@@ -1307,14 +1681,14 @@
     {
       "type": "timeseries",
       "title": "postgres_exporter scrape duration",
-      "id": 30,
+      "id": 36,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 0,
-        "y": 79,
+        "y": 96,
         "w": 8,
         "h": 8
       },
@@ -1354,14 +1728,14 @@
     {
       "type": "timeseries",
       "title": "Prometheus head series",
-      "id": 31,
+      "id": 37,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 8,
-        "y": 79,
+        "y": 96,
         "w": 8,
         "h": 8
       },
@@ -1399,14 +1773,14 @@
     {
       "type": "timeseries",
       "title": "Prometheus memory",
-      "id": 32,
+      "id": 38,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
       "gridPos": {
         "x": 16,
-        "y": 79,
+        "y": 96,
         "w": 8,
         "h": 8
       },
