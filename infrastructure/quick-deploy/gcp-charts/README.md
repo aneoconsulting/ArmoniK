@@ -66,10 +66,10 @@ partitions = {
 }
 ```
 
-`model` sizes the pods on the flow of tasks, their duration and the queue; `dual` on the waiting and the running
-tasks. Both are Prometheus recording rules, computed for every partition and shown in the Grafana dashboard
-"Bench - autoscaling" next to what the pods did. The laws, their parameters, the mathematics and the bench that
-compares them on twin partitions: [autoscaling/README.md](autoscaling/README.md).
+`model` sizes the pods on the flow of tasks, their duration and the queue. Both laws are Prometheus recording
+rules, computed for every partition and shown in the Grafana dashboard "Bench - autoscaling" next to what the pods
+did. The laws, their parameters, the mathematics and the bench that compares them on twin partitions:
+[autoscaling/README.md](autoscaling/README.md).
 
 ## Test
 

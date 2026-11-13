@@ -38,6 +38,8 @@ class Scenario:
     description: str
     arrivals: list[tuple[int, int, float]]  # (second, tasks, duration of each in seconds)
     horizon: int  # simulated seconds
+    # Task graphs (second, [(duration, parents)]): a task enters the queue once its parents are done
+    graphs: list[tuple[int, list[tuple[float, list[int]]]]] = field(default_factory=list)
 
 
 def steady(rate: float, duration: float, seconds: int, start: int = 0) -> list[tuple[int, int, float]]:
@@ -55,6 +57,39 @@ def mixed(n: int, at: int, short: float, long: float, share_long: float, seed: i
     return [(at, 1, long if rnd.random() < share_long else short) for _ in range(n)]
 
 
+def task_graph(rnd: random.Random, n: int, levels: int, increasing: bool, dur) -> list[tuple[float, list[int]]]:
+    """n tasks over levels (sizes growing with the level, or equal), each depending on 1 to 4 tasks of the previous
+    level, picked with a Zipf law of exponent 1.2 (a few outputs feed many tasks), as the graph test does."""
+    weights = [(l + 1 if increasing else 1) for l in range(levels)]
+    sizes = [max(1, round(n * w / sum(weights))) for w in weights]
+    sizes[-1] += n - sum(sizes)
+    tasks, previous = [], []
+    for size in sizes:
+        level = []
+        for _ in range(size):
+            k = min(rnd.randint(1, 4), len(previous))
+            zipf = [1 / (i + 1) ** 1.2 for i in range(len(previous))]
+            parents = set()
+            while len(parents) < k:
+                parents.add(rnd.choices(previous, zipf)[0])
+            level.append(len(tasks))
+            tasks.append((dur(), sorted(parents)))
+        previous = level
+    return tasks
+
+
+def graph_day(seed: int = 1) -> list[tuple[int, list[tuple[float, list[int]]]]]:
+    """bench g1-graph-day with its dependencies: the queue only gets what the completed tasks unlock."""
+    rnd = random.Random(seed)
+    dur = lambda: min(max(2.0 * math.exp(rnd.gauss(0, 1)), 0.1), 60.0)
+    out, t = [], 0.0
+    while (t := t + rnd.expovariate(1 / 20)) < 720:
+        out.append((int(t), task_graph(rnd, round(min(max(60 * math.exp(rnd.gauss(0, 0.6)), 30), 150)), 12, False, dur)))
+    out += [(at, task_graph(rnd, 2000, 30, True, dur)) for at in (60, 360)]
+    out += [(540 + 5 * k, task_graph(rnd, 300, 6, False, dur)) for k in range(5)]
+    return sorted(out, key=lambda x: x[0])
+
+
 SCENARIOS = {
     s.name: s
     for s in [
@@ -65,6 +100,8 @@ SCENARIOS = {
                  steady(10, 0.2, 480) + [(120, 3000, 0.2), (300, 3000, 0.2)], 1200),
         Scenario("long", "2 batches of 40 tasks of 5 min, 7 min apart", [(0, 40, 300), (420, 40, 300)], 1500),
         Scenario("mixed", "2000 tasks at once: 90 % of 5 s, 10 % of 10 min", mixed(2000, 0, 5, 600, 0.1), 2400),
+        Scenario("graph-day", "bench g1-graph-day: ~8000 tasks of 2 s median in graphs, released as their parents complete",
+                 [], 1800, graph_day()),
         Scenario("ramp", "30 tasks/s for 100 s: 80 % of 4 s, 20 % of 5 min",
                  [(t, 1, d) for t in range(100) for _, _, d in mixed(30, 0, 4, 300, 0.2, seed=t)], 2400),
     ]
@@ -77,12 +114,11 @@ SCENARIOS = {
 @dataclass
 class Config:
     name: str
-    law: str  # queue, dual, model
+    law: str  # queue, model
     hpa: str = "fast"  # chart, fast, ramp
     catchup: float = 60  # T
     utilization: float = 0.9  # eta
     startup: float = 0  # dt of the prediction; 0 = off
-    queue_target: float = 2
 
 
 # name -> (scale-up policies [(type, value)] per 15 s, scale-down stabilization window, cooldown to 0)
@@ -97,11 +133,16 @@ def configs(dt: float) -> list[Config]:
     return [
         Config("queue / chart HPA", "queue", hpa="chart"),
         Config("queue", "queue"),
-        Config("dual", "dual"),
         Config("model", "model"),
         Config(f"model, predicted ({dt:.0f} s)", "model", startup=dt),
         Config("model, ramp HPA", "model", hpa="ramp"),
     ]
+
+
+def catchups() -> list[Config]:
+    """The cost / wait trade-off of T against the queue law"""
+    return [Config("queue", "queue"), Config("model", "model"),
+            Config("model, T = 30 s", "model", catchup=30), Config("model, T = 15 s", "model", catchup=15)]
 
 
 # ---- Cluster ----------------------------------------------------------------------------------------------------------
@@ -114,6 +155,7 @@ class Pod:
     free_at: float = 0.0  # end of its current task
     task: float | None = None  # duration of the task it runs (overhead included)
     task_start: float = 0.0
+    tid: int = -1  # task of a graph, -1 otherwise
 
     def busy(self, t: float) -> bool:
         return self.task is not None and self.free_at > t
@@ -140,9 +182,28 @@ class Cluster:
     queue: deque = field(default_factory=deque)
     done_count: int = 0  # the agents' counters, as Prometheus would sum them
     done_ms: float = 0.0
-    completions: list[tuple[float, float, Pod]] = field(default_factory=list)  # scheduled (time, duration, pod)
+    completions: list[tuple[float, float, Pod, int]] = field(default_factory=list)  # scheduled (time, duration, pod)
     killed: int = 0
     node_seconds: float = 0.0
+    children: dict = field(default_factory=dict)  # graph task -> tasks waiting on it
+    parents_left: dict = field(default_factory=dict)  # graph task -> parents not done yet
+    durations: dict = field(default_factory=dict)
+
+    def add_graph(self, tasks: list[tuple[float, list[int]]]) -> None:
+        base = len(self.durations)
+        for i, (d, parents) in enumerate(tasks):
+            self.durations[base + i] = d
+            self.parents_left[base + i] = len(parents)
+            for q in parents:
+                self.children.setdefault(base + q, []).append(base + i)
+            if not parents:
+                self.queue.append((d, base + i))
+
+    def task_done(self, tid: int) -> None:
+        for child in self.children.get(tid, []):
+            self.parents_left[child] -= 1
+            if self.parents_left[child] == 0:
+                self.queue.append((self.durations[child], child))
 
     def scale(self, replicas: int, t: float) -> None:
         while len(self.pods) < replicas:
@@ -159,7 +220,7 @@ class Cluster:
             for pod in order[: len(self.pods) - replicas]:
                 if pod.busy(t) and pod.free_at - t > self.grace:  # the task is retried, its work is lost
                     self.killed += 1
-                    self.queue.appendleft(pod.task - self.overhead)
+                    self.queue.appendleft((pod.task - self.overhead, pod.tid))
                     self.completions = [c for c in self.completions if c[2] is not pod]
                 self.pods.remove(pod)
                 pod.node.pods -= 1
@@ -173,17 +234,23 @@ class Cluster:
                 continue
             while self.queue and pod.free_at < t + 1:
                 start = max(pod.free_at, pod.ready_at, t)
-                pod.task = self.queue.popleft() + self.overhead
+                d, pod.tid = self.queue.popleft()
+                pod.task = d + self.overhead
                 pod.task_start, pod.free_at = start, start + pod.task
-                self.completions.append((pod.free_at, pod.task, pod))
+                self.completions.append((pod.free_at, pod.task, pod, pod.tid))
         still = []
-        for when, duration, pod in self.completions:
+        done = []
+        for when, duration, pod, tid in self.completions:
             if when < t + 1:
                 self.done_count += 1
                 self.done_ms += duration * 1000
+                done.append(tid)
             else:
-                still.append((when, duration, pod))
+                still.append((when, duration, pod, tid))
         self.completions = still
+        for tid in done:
+            if tid >= 0:
+                self.task_done(tid)
         for node in list(self.nodes):
             self.node_seconds += 1
             if node.pods == 0 and node.empty_since is not None and t - node.empty_since >= self.node_ttl:
@@ -261,7 +328,7 @@ class Rules:
         held = max(v for _, v in window(self.acquired, t, 30))
         self.f_raw.append((t, min(min(arrivals, completions) * tau, held) / cfg.utilization))
         w = window(self.f_raw, t, 30)
-        flow = sum(v for _, v in w) / len(w)
+        flow = min(sum(v for _, v in w) / len(w), max(v for _, v in window(self.in_system, t, 15)) / cfg.utilization)
         running = max(processing * min(tau / (2 * cfg.catchup), 1), sum(min(a / cfg.catchup, 1) for a in s["ages"]))
         busy = max(flow, running)
         per_task = min(tau / (cfg.catchup * cfg.utilization), 1)
@@ -274,7 +341,6 @@ class Rules:
         return {
             "model": max(math.ceil(model - 1e-9), 1 if processing > 0 else 0),
             "queue": math.ceil((waiting + processing) / 2),
-            "dual": max(math.ceil(waiting / cfg.queue_target), math.ceil(processing / cfg.utilization - 1e-9)),
         }
 
 
@@ -323,19 +389,24 @@ class Hpa:
 def simulate(sc: Scenario, cfg: Config, pod_startup: float, node_startup: float, warm: bool = False,
              max_replicas: int = 100) -> dict:
     c = Cluster(pod_startup, node_startup)
-    total = sum(n for _, n, _ in sc.arrivals)
-    work = sum(n * d for _, n, d in sc.arrivals)
+    total = sum(n for _, n, _ in sc.arrivals) + sum(len(g) for _, g in sc.graphs)
+    work = sum(n * d for _, n, d in sc.arrivals) + sum(d for _, g in sc.graphs for d, _ in g)
+    graphs: dict[int, list] = {}
+    for at, g in sc.graphs:
+        graphs.setdefault(at, []).append(g)
     rules, hpa = Rules(cfg, work / total + c.overhead if warm else None), Hpa(cfg, max_replicas)
     arrivals: dict[int, list[tuple[int, float]]] = {}
     for at, n, d in sc.arrivals:
         arrivals.setdefault(at, []).append((n, d))
-    targets = {"model": 0.0, "queue": 0.0, "dual": 0.0}
-    trace = {k: [] for k in ("t", "waiting", "ready", "busy", "desired", "model", "queue", "dual", "nodes", "tau")}
+    targets = {"model": 0.0, "queue": 0.0}
+    trace = {k: [] for k in ("t", "waiting", "ready", "busy", "desired", "model", "queue", "nodes", "tau")}
     wait_integral = idle = ready_s = 0.0
     end = None
     for t in range(sc.horizon):
         for n, d in arrivals.get(t, []):
-            c.queue.extend([d] * n)
+            c.queue.extend([(d, -1)] * n)
+        for g in graphs.get(t, []):
+            c.add_graph(g)
         if t % SCRAPE == 0:
             rules.scrape(t, c)
         if t % EVAL == 0:
@@ -347,7 +418,7 @@ def simulate(sc: Scenario, cfg: Config, pod_startup: float, node_startup: float,
         wait_integral += len(c.queue)
         ready_s += ready
         idle += max(ready - busy, 0)
-        if end is None and c.done_count >= total and t > max(arrivals):
+        if end is None and c.done_count >= total and t > max([*arrivals, *graphs]):
             end = t + 1
         for k, v in (("t", t), ("waiting", len(c.queue)), ("ready", ready), ("busy", busy), ("desired", hpa.replicas),
                      ("nodes", len(c.nodes)), ("tau", rules.last.get("tau", 0)), *targets.items()):
@@ -424,13 +495,16 @@ def main() -> None:
                     help="the same workload ran less than an hour ago: the model starts with its mean task duration, "
                          "instead of 1 s")
     ap.add_argument("--plot", type=pathlib.Path, help="directory of the PNG files")
+    ap.add_argument("--max-replicas", type=int, default=100)
+    ap.add_argument("--catchups", action="store_true", help="queue against the model with T = 60, 30 and 15 s")
     a = ap.parse_args()
     pod, node = a.startup
-    print(f"Pod startup {pod:.0f} s, node startup {node:.0f} s, 7 pods per node, 100 pods at most, "
+    print(f"Pod startup {pod:.0f} s, node startup {node:.0f} s, 7 pods per node, {a.max_replicas} pods at most, "
           f"0.2 s of Core overhead per task, {'warm' if a.warm else 'cold'} start.\n")
     for name in a.scenarios or SCENARIOS:
         sc = SCENARIOS[name]
-        results = [simulate(sc, cfg, pod, node, a.warm) for cfg in configs(pod + node)]
+        results = [simulate(sc, cfg, pod, node, a.warm, a.max_replicas)
+                   for cfg in (catchups() if a.catchups else configs(pod + node))]
         print(table(sc, results))
         if a.plot:
             plot(sc, results, a.plot)

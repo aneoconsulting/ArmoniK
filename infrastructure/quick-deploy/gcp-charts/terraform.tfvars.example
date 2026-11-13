@@ -43,28 +43,25 @@ project = "my-project"
 #     image = "europe-west9-docker.pkg.dev/my-project/my-repo/my-worker"
 #     tag   = "1.0.0"
 #     autoscaling = {
-#       law             = "model" # queue, dual or model
+#       law             = "model" # queue or model
 #       hpa             = "fast"  # chart, fast or ramp
 #       catchup_seconds = 120     # time given to absorb the queue (60)
 #       startup_seconds = 90      # pod startup, node included: the model then predicts the queue at that horizon
+#       scale_to_zero   = false   # keep one pod when idle: the HPA of GKE resumes up to 3 min after a scale from 0
 #     }
 #   }
 # }
 
 # Twin partitions of the autoscaling bench (bench/autoscaling.py): the same worker under each law, q = queue,
-# d = dual, m = model, all with the fast HPA. One workload per trio, so that each keeps its own task duration:
+# m = model, all with the fast HPA. One workload per pair, so that each keeps its own task duration:
 # short200 and short1s (Bench tasks of 200 ms and 1 s), long (5 min), htcmock (subtasks).
 # partitions = {
 #   short200q = { image = "docker.io/dockerhubaneo/armonik_core_bench_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "queue", hpa = "fast" } }
-#   short200d = { image = "docker.io/dockerhubaneo/armonik_core_bench_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "dual", hpa = "fast" } }
 #   short200m = { image = "docker.io/dockerhubaneo/armonik_core_bench_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "model", hpa = "fast" } }
 #   short1sq  = { image = "docker.io/dockerhubaneo/armonik_core_bench_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "queue", hpa = "fast" } }
-#   short1sd  = { image = "docker.io/dockerhubaneo/armonik_core_bench_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "dual", hpa = "fast" } }
 #   short1sm  = { image = "docker.io/dockerhubaneo/armonik_core_bench_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "model", hpa = "fast" } }
 #   longq     = { image = "docker.io/dockerhubaneo/armonik_core_bench_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "queue", hpa = "fast" } }
-#   longd     = { image = "docker.io/dockerhubaneo/armonik_core_bench_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "dual", hpa = "fast" } }
 #   longm     = { image = "docker.io/dockerhubaneo/armonik_core_bench_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "model", hpa = "fast" } }
 #   htcmockq  = { image = "docker.io/dockerhubaneo/armonik_core_htcmock_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "queue", hpa = "fast" } }
-#   htcmockd  = { image = "docker.io/dockerhubaneo/armonik_core_htcmock_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "dual", hpa = "fast" } }
 #   htcmockm  = { image = "docker.io/dockerhubaneo/armonik_core_htcmock_test_worker", tag = "0.41.4", max_replicas = 100, autoscaling = { law = "model", hpa = "fast" } }
 # }

@@ -24,6 +24,14 @@ external-secrets:
       repository: "${REG_GHCR}/external-secrets/external-secrets"
 
 keda:
+  # The chart scrapes the metrics-apiserver only; the operator's ServiceMonitor adds what KEDA computes per
+  # ScaledObject (keda_scaler_metrics_value, keda_scaler_active, keda_scaler_detail_errors_total): the keda_input
+  # series of bench/autoscaling.py
+  prometheus:
+    operator:
+      enabled: true
+      serviceMonitor:
+        enabled: true
   image:
     keda:
       registry: "${REG_GHCR}"

@@ -129,27 +129,31 @@ variable "partitions" {
   description = "Partitions added to the chart's own (default, stream, htcmock); a worker update is a new tag here"
   type = map(object({
     # Image without its tag, registry included (docker.io/<org>/<image>, <region>-docker.pkg.dev/<project>/<repo>/<image>)
-    image  = string
-    tag    = string
-    cpu    = optional(string, "1")
-    memory = optional(string, "1Gi")
+    image = string
+    tag   = string
+    # Worker container: cpu and memory are its requests; the limits are cpu_limit (cpu when null) and memory
+    cpu       = optional(string, "1")
+    cpu_limit = optional(string)
+    memory    = optional(string, "1Gi")
     # KEDA scales the partition from 0 to this many pods
     max_replicas = optional(number, 20)
-    # What the partition scales on, and how (autoscaling/README.md). The three laws are computed for every partition
-    # (autoscaling/rules.yaml): the dashboard "Bench - autoscaling" shows what the two others would have asked.
+    # What the partition scales on, and how (autoscaling/README.md). Both laws are computed for every partition
+    # (autoscaling/rules.yaml): the dashboard "Bench - autoscaling" shows what the other one would have asked.
     autoscaling = optional(object({
-      # queue: the chart's trigger, ceil(queued / 2), read from the metrics exporter.
-      # dual:  max(ceil(waiting / queue_target), ceil(processing / utilization)), read from Prometheus.
+      # queue: the chart's formula, ceil(queued / 2), read from Prometheus (not the chart's trigger).
       # model: the flow model, ceil(max(F, R) + W), read from Prometheus.
       law = optional(string, "queue")
       # chart: the chart's HPA (no limit up, 300 s before a scale-down). fast: the target as it is, 60 s before a
       # scale-down. ramp: fast, but at most twice the pods every 15 s.
       hpa = optional(string, "chart")
-      # Parameters of the laws, null for the defaults of the rules (60 s, 0.9, 0 s, 2)
+      # Parameters of the model, null for the defaults of the rules (60 s, 0.9, 0 s)
       catchup_seconds = optional(number) # T: time given to absorb the queue
       utilization     = optional(number) # eta: share of its time a pod spends on tasks
       startup_seconds = optional(number) # dt: scale-up decision to ready pod; set, the model predicts the queue then
-      queue_target    = optional(number) # q: waiting tasks per pod of the dual law
+      # false: one pod stays when the partition is idle. The HPA of GKE only resumes 30 s to 3 min after KEDA has
+      # scaled a partition from 0 to 1 pod (measured, with both HPA profiles), and the partition stays at 1 pod
+      # meanwhile whatever the law asks.
+      scale_to_zero = optional(bool, true)
     }), {})
     # Any other value of the compute-plane chart for this partition, merged last by Helm over the above and the
     # partitionCommon of values/armonik.yaml: agent resources, requests apart from limits, a fixed replicas count...
@@ -170,8 +174,8 @@ variable "partitions" {
   }
 
   validation {
-    condition     = alltrue([for p in values(var.partitions) : contains(["queue", "dual", "model"], p.autoscaling.law)])
-    error_message = "autoscaling.law must be queue, dual or model."
+    condition     = alltrue([for p in values(var.partitions) : contains(["queue", "model"], p.autoscaling.law)])
+    error_message = "autoscaling.law must be queue or model."
   }
 
   validation {
@@ -181,11 +185,11 @@ variable "partitions" {
 
   validation {
     condition = alltrue([for p in values(var.partitions) :
-      coalesce(p.autoscaling.catchup_seconds, 1) > 0 && coalesce(p.autoscaling.queue_target, 1) > 0 &&
+      coalesce(p.autoscaling.catchup_seconds, 1) > 0 &&
       coalesce(p.autoscaling.utilization, 1) > 0 && coalesce(p.autoscaling.utilization, 1) <= 1 &&
       coalesce(p.autoscaling.startup_seconds, 0) >= 0
     ])
-    error_message = "autoscaling: catchup_seconds and queue_target must be positive, utilization in ]0, 1], startup_seconds not negative."
+    error_message = "autoscaling: catchup_seconds must be positive, utilization in ]0, 1], startup_seconds not negative."
   }
 }
 

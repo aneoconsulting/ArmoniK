@@ -30,7 +30,9 @@ locals {
         }] : [],
       )
       activeMigration = { optimizeRulePriority = true }
-      # An empty node goes away a minute later: the bench partitions scale to 0 at the end of a run
+      # An empty node goes away 1 min later. What keeps the nodes between two bursts of tasks is the pods: the HPA
+      # holds them 5 min (autoscaling.tf), so the next burst finds pods ready, not only nodes. Without the autoscaling
+      # laws the chart's HPA holds them 5 min as well.
       autoscalingPolicy = { consolidationDelayMinutes = 1 }
     }
   }

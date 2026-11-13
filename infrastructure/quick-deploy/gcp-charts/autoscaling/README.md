@@ -1,7 +1,7 @@
 # Autoscaling of the compute plane
 
 How many pods a partition needs, computed in PromQL and applied by KEDA and the HPA. This document states the
-problem, the three laws that are computed, the mathematics behind the model, the metrics it reads, what was taken
+problem, the two laws that are computed, the mathematics behind the model, the metrics it reads, what was taken
 from [llm-d](https://llm-d.ai/docs/architecture/autoscaling/keda-epp), and a review of the 2024 control study
 ("Asservissement d'ArmoniK", A. Lelièvre) the model descends from.
 
@@ -11,7 +11,7 @@ measurements.
 
 | File | Content |
 |---|---|
-| `rules.yaml` | The recording rules: inputs, task duration, the three laws |
+| `rules.yaml` | The recording rules: inputs, task duration, the two laws |
 | `rules.test.yaml` | Their unit tests, on synthetic series |
 | `../autoscaling.tf` | The PrometheusRule, the parameters and the KEDA trigger and HPA of each partition |
 | `simulate.py` | The laws on a simulated cluster |
@@ -31,7 +31,7 @@ partitions = {
     image = "..."
     tag   = "1.0.0"
     autoscaling = {
-      law             = "model" # queue (default), dual or model
+      law             = "model" # queue (default) or model
       hpa             = "fast"  # chart (default), fast or ramp
       catchup_seconds = 120     # T, default 60
       startup_seconds = 90      # dt, default 0: no prediction
@@ -40,9 +40,9 @@ partitions = {
 }
 ```
 
-The three laws are computed for every partition, whatever it selects: the dashboard shows the two others next to
-the one that drives the pods. They are computed on the load as the selected law shaped it, so they tell what the
-others would have asked for, not what would have happened; a real comparison takes one partition per law
+Both laws are computed for every partition, whatever it selects: the dashboard shows the other one next to
+the one that drives the pods. It is computed on the load as the selected law shaped it, so it tells what the
+other would have asked for, not what would have happened; a real comparison takes one partition per law
 (`bench/autoscaling.py suite`).
 
 ```sh
@@ -88,21 +88,16 @@ Two facts shape everything that follows:
   (`compute-classes.tf`), so a pod that was useful for 10 s costs a share of a node for minutes. This is what makes
   the first point matter.
 
-## The three laws
+## The two laws
 
 `armonik:scaler_target{partition, law}`, a number of pods.
 
-**queue**: `ceil((Q + B) / 2)`. The chart's default, read by KEDA straight from the metrics exporter, with no
-Prometheus in the path. It knows nothing about the tasks: 2 tasks per pod whatever they last. Two defects follow.
+**queue**: `ceil((Q + B) / 2)`. The chart's default, which KEDA reads straight from the metrics exporter; a partition
+that selects it here reads the same formula from Prometheus, like `model`, so that the two laws differ only by their
+formula. It knows nothing about the tasks: 2 tasks per pod whatever they last. Two defects follow.
 With short tasks it asks for far too many pods (6000 tasks of 0.2 s are 20 pod·minutes of work, it asks for 3000
 pods). With long tasks it asks for too few at the worst moment: once the queue is empty, `B` running tasks ask for
 `B / 2` pods, and the HPA removes half of the pods that are running a task.
-
-**dual**: `max(ceil(Q / q), ceil(B / eta))`. The shape llm-d recommends: one signal for the unmet demand (their
-flow-control queue size), one for the active concurrency (their running requests), each with a per-pod target, the
-larger wins. A pod runs one task at a time, so the concurrency target is `eta`: the law never asks for fewer pods
-than there are running tasks, which fixes the second defect of `queue` with no rule on the task duration. The
-first defect stays: `q` is a constant.
 
 **model**: `ceil(max(F, R) + W)`, at least 1 while a task is processing. The rest of this document.
 
@@ -132,6 +127,9 @@ Three precautions:
   cannot ask for more pods than were seen busy.
 - A 30 s average: the counts move by steps, and the HPA holds every upward jitter for its whole scale-down window.
   The two bounds apply before the average, so a spike never enters it whole (llm-d's "clamp, then smooth").
+- The bound by the tasks there are, after the average: `F <= max(Q + B over 15 s) / eta`. The rates and the average
+  describe the last minute, so when the flow drops `F` still asks for its pods (bench: 27 pods for 9 tasks in
+  g1-graph-day, 48 for none in g2-graph-stairs).
 
 ### R, the running tasks
 
@@ -289,9 +287,9 @@ law. What the HPA adds is part of the control loop:
 | HPA sync period | 15 s, fixed by GKE | the sampling period `Te` between 1 and N pods; KEDA's `pollingInterval` only drives 0 to 1 |
 | Tolerance | 10 % | a dead band: no change while the target is within 10 % of the pods. The hysteresis llm-d writes in its formula comes for free |
 | Scale-up policy | `fast`: none. `ramp`: x2 or +4 per 15 s | `ramp` is the progressive take-in of a burst of the study (its equation 21, growth by a factor per period): the first pods measure `tau` before the bulk of the pods, and of the nodes, is asked for |
-| Scale-down window | `chart` 300 s, `fast` and `ramp` 60 s | holds the maximum of the window: hides jitter, keeps the pods that are starting, and pays idle pods for that long |
-| `cooldownPeriod` | 300 s or 60 s | only the last step, 1 to 0 |
-| Fallback | 3 failures, keep the pods | Prometheus is in the path of `dual` and `model`: an empty answer is an error, not 0 (`ignoreNullValues: "false"`), and KEDA keeps the pods there are |
+| Scale-down window | 300 s | holds the maximum of the window. What is paid is the node, which goes away 1 min after its last pod (`consolidationDelayMinutes`): a pod removed earlier saves nothing and is started again at the next burst (bench g2-graph-stairs at 60 s: 150, 7, then 84 pods between two levels, on the same nodes) |
+| `cooldownPeriod` | 300 s | only the last step, 1 to 0 |
+| Fallback | 3 failures, keep the pods | Prometheus is in the path of `model`: an empty answer is an error, not 0 (`ignoreNullValues: "false"`), and KEDA keeps the pods there are |
 | `terminationGracePeriodSeconds` | 30 s (chart) | a pod removed while it runs a longer task loses it; Core retries it. `R` is what avoids it; the pod-deletion-cost controller picks idle pods first |
 
 llm-d sets 300 s windows both ways, sized on a model load of 4 minutes; their scale-up window is their answer to
@@ -307,7 +305,7 @@ Their autoscaling is KEDA alone since 1.0 (the custom controller, WVA, is deprec
 | llm-d | Here |
 |---|---|
 | Demand signals instead of utilization (queue, running requests) | `Q` and `B`, never CPU |
-| Dual-metric strategy: unmet demand and active concurrency, the larger wins | the `dual` law; `max(F, R) + W` in the model |
+| Dual-metric strategy: unmet demand and active concurrency, the larger wins | `max(F, R) + W` in the model |
 | One formula whose output is the replica count, target 1 (SLO-aware path) | `armonik:scaler_target`, threshold 1 |
 | Signal chain raw -> clamp -> smooth, as recording rules | `scaler_flow_workers:raw` (two bounds), then a 30 s average |
 | Credit for replicas provisioned but not serving (`ready / replicas`) | the prediction, from `n_r` and `n_c` |
@@ -357,7 +355,6 @@ Steady flow, 20 tasks/s of 200 ms for 5 min (8 busy pods at equilibrium):
 |---|---:|---:|---:|---:|---:|
 | queue / chart HPA | 27 | 100 | 30,928 | 16.3 | 0 |
 | queue | 19 | 100 | 8,043 | 9.2 | 0 |
-| dual | 19 | 100 | 7,323 | 8.8 | 0 |
 | model | 50 | 21 | 1,588 | 2.4 | 0 |
 
 10 tasks/s of 200 ms for 8 min, with bursts of 3000 at 2 and 5 min:
@@ -366,7 +363,6 @@ Steady flow, 20 tasks/s of 200 ms for 5 min (8 busy pods at equilibrium):
 |---|---:|---:|---:|---:|---:|
 | queue / chart HPA | 15 | 100 | 46,047 | 22.0 | 0 |
 | queue | 20 | 100 | 14,909 | 16.2 | 0 |
-| dual | 25 | 100 | 15,447 | 16.3 | 0 |
 | model | 47 | 31 | 2,876 | 4.6 | 0 |
 | model, predicted (90 s) | 50 | 33 | 2,676 | 5.0 | 0 |
 
@@ -376,7 +372,6 @@ Steady flow, 20 tasks/s of 200 ms for 5 min (8 busy pods at equilibrium):
 |---|---:|---:|---:|---:|---:|
 | queue / chart HPA | 1111 | 245 | 33 | 12.5 | 0 |
 | queue | not finished | 309 | 30 | 11.9 | 26 |
-| dual | 931 | 134 | 55 | 12.8 | 0 |
 | model | 721 | 45 | 42 | 12.9 | 0 |
 
 2000 tasks at once, 90 % of 5 s and 10 % of 10 min:
@@ -385,7 +380,6 @@ Steady flow, 20 tasks/s of 200 ms for 5 min (8 busy pods at equilibrium):
 |---|---:|---:|---:|---:|
 | queue / chart HPA | not finished | 501 | 71.5 | 75 |
 | queue | not finished | 461 | 65.5 | 55 |
-| dual | 1619 | 445 | 53.2 | 0 |
 | model | 1619 | 445 | 53.3 | 0 |
 
 What it says:
@@ -396,8 +390,7 @@ What it says:
   That wait is `T`: lower it to buy time with pods.
 - On long tasks the queue depth removes pods that are running tasks (26 and 55 to 75 tasks killed and retried, runs
   that do not finish in the simulated time). The chart's 300 s window hides it for tasks shorter than the window.
-  `dual` and the model never do.
-- `dual` is the cheap fix for long tasks and changes nothing for short ones.
+  The model never does.
 - The prediction and the `ramp` HPA are second-order on these loads; the prediction matters when `T` is below the
   startup (previous table).
 - Cold (no memory of `tau`, `uv run simulate.py`): the model starts from 1 s per task, so a first burst of 200 ms

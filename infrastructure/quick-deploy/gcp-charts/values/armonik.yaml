@@ -89,6 +89,11 @@ compute-plane:
   fluentBit:
     image:
       registry: "${REG_DOCKERHUB}"
+  # The chart's own partitions scale to 0 when idle (the default removed from partitionCommon below)
+  partitions:
+    default: {hpa: {idleReplicaCount: 0}}
+    stream: {hpa: {idleReplicaCount: 0}}
+    htcmock: {hpa: {idleReplicaCount: 0}}
   partitionCommon:
     # Spot nodes of the workers ComputeClass (compute-classes.tf), tainted for its pods only
     nodeSelector:
@@ -103,13 +108,29 @@ compute-plane:
       cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     # KEDA scales a partition from 0 to this many pods, on its queue length unless it selects another law
     # (autoscaling.tf)
+    # idleReplicaCount: the chart's default (0) removed, so that a partition of var.partitions can keep one pod
+    # when idle (autoscaling.scale_to_zero = false; a null in one partition would not remove a default of
+    # partitionCommon). Every other partition restates it: releases.tf, and the chart's own partitions below.
     hpa:
       maxReplicaCount: 20
+      idleReplicaCount: null
+    # The polling agent: ~15m and ~130 MiB with tasks of ~3 s, ~40m at p95, ~190m while .NET starts (bench
+    # g1-graph-day); ~230m at 0 ms tasks. The limit of 1 CPU keeps the start fast.
     agent:
       image:
         registry: "${REG_DOCKERHUB}"
-    # The worker runs the tasks: requests == limits, for predictable task runtimes and node sizing. The images of
-    # the chart's partitions come from Docker Hub; those of var.partitions set their own registry.
+      resources:
+        requests: {cpu: 100m, memory: 256Mi}
+        limits: {cpu: "1", memory: 256Mi}
+      # The init Job of the chart migrates the schema: the agents wait for it (Core #1377) instead of all taking the
+      # migration lock at once, which deadlocked the poolers when a partition scaled up by more than their 64 server
+      # connections
+      conf:
+        env:
+          InitServices__InitDatabase: "false"
+    # The worker of the chart's partitions: requests == limits, for predictable task runtimes and node sizing; those
+    # of var.partitions set their own resources and registry (cpu, cpu_limit, memory). The images of the chart's
+    # partitions come from Docker Hub.
     worker:
       image:
         registry: "${REG_DOCKERHUB}"
@@ -170,7 +191,8 @@ dependencies:
       secret: "${PG_CA_SECRET}"
 
   # ---- Queue: Pub/Sub ---------------------------------------------------------------------------------------
-  # Core creates the topics <prefix>-<partition> and their subscriptions itself (roles/pubsub.editor)
+  # Topics <prefix>-<partition> and subscriptions <topic>-ak-sub created by pubsub.tf, before Core, which would create
+  # the subscription only with the first agent (roles/pubsub.editor all the same: Core tries to create them)
   pubsub:
     enabled: true
     projectId: "${PROJECT}"

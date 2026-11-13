@@ -55,3 +55,21 @@ module "registry" {
 
   depends_on = [terraform_data.apis]
 }
+
+# Images built here rather than pulled from an upstream: test workers that no CI publishes (the graph worker of Core
+# PR #1334). <region>-docker.pkg.dev/<project>/<prefix>-images/<image>:<tag>, pushed by hand (podman push); the nodes
+# read it through the same project-wide reader role as the caches.
+resource "google_artifact_registry_repository" "images" {
+  project       = var.project
+  location      = var.region
+  repository_id = "${var.prefix}-images"
+  description   = "Images built for this deployment"
+  format        = "DOCKER"
+  labels        = local.labels
+
+  docker_config {
+    immutable_tags = true
+  }
+
+  depends_on = [terraform_data.apis]
+}

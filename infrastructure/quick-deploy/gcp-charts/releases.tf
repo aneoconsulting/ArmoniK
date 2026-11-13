@@ -33,7 +33,8 @@ locals {
     compute-plane = {
       partitions = {
         for name, p in var.partitions : name => {
-          hpa = { maxReplicaCount = p.max_replicas }
+          # The chart's default of 0 idle pod is removed in values/armonik.yaml: restated per partition
+          hpa = { maxReplicaCount = p.max_replicas, idleReplicaCount = p.autoscaling.scale_to_zero ? 0 : null }
           worker = {
             image = {
               registry   = split("/", p.image)[0]
@@ -42,7 +43,7 @@ locals {
             }
             resources = {
               requests = { cpu = p.cpu, memory = p.memory }
-              limits   = { cpu = p.cpu, memory = p.memory }
+              limits   = { cpu = coalesce(p.cpu_limit, p.cpu), memory = p.memory }
             }
           }
         }
@@ -97,5 +98,7 @@ resource "helm_release" "armonik" {
     module.object_storage,
     # The partitions on a PromQL law read these rules
     kubectl_manifest.autoscaling_rules,
+    # A task submitted before its partition's subscription exists is lost (pubsub.tf)
+    google_pubsub_subscription.partitions,
   ]
 }

@@ -3,14 +3,11 @@
 # next rules, Grafana (dashboard "Bench - autoscaling") and KEDA read like any metric.
 # The model, its mathematics and the choices: README.md of this directory. Tests: rules.test.yaml (promtool).
 #
-# ---- Three laws, computed for every partition -----------------------------------------------------------------------
+# ---- Two laws, computed for every partition -------------------------------------------------------------------------
 # armonik:scaler_target{partition, law} is a number of pods. KEDA reads the law a partition selects (threshold 1); the
-# two others are computed all the same, so that the dashboard shows what each one would ask on the same load.
+# other one is computed all the same, so that the dashboard shows what each one would ask on the same load.
 #
 #   law="queue"   ceil(queued / 2): the chart's default trigger (queued = submitted + dispatched + processing).
-#   law="dual"    max(ceil(waiting / q), ceil(processing / eta)): unmet demand and active concurrency raced against
-#                 each other, as llm-d does with the queue size and the running requests of its gateway. No task
-#                 duration, no memory: the simplest law that never asks fewer pods than there are running tasks.
 #   law="model"   ceil(max(F, R) + W), at least 1 while a task is processing:
 #       F (flow)    by Little's law, serving a rate lambda of tasks of tau seconds keeps lambda * tau pods busy;
 #                   divided by eta, the share of its time a pod spends on tasks.
@@ -26,7 +23,6 @@
 #   catchup_seconds   T    time given to absorb the queue; also what a pod started for the queue works at least
 #   utilization       eta  share of its time a pod spends on tasks
 #   startup_seconds   dt   time from the scale-up decision to a ready pod; 0 = no prediction
-#   queue_target      q    waiting tasks per pod of the dual law
 #
 # ---- Inputs (stock ArmoniK Core, kube-state-metrics) ----------------------------------------------------------------
 #   armonik_<partition>_tasks_{submitted,dispatched,processing}   metrics exporter (job metrics-exporter): task counts
@@ -121,8 +117,6 @@ groups:
         expr: max by (partition) (armonik:scaler_config{param="utilization"}) or armonik:tasks_processing * 0 + 0.9
       - record: armonik:scaler_startup_seconds
         expr: max by (partition) (armonik:scaler_config{param="startup_seconds"}) or armonik:tasks_processing * 0
-      - record: armonik:scaler_queue_target
-        expr: max by (partition) (armonik:scaler_config{param="queue_target"}) or armonik:tasks_processing * 0 + 2
 
       # ==== 3. Task duration tau ====================================================================================
 
@@ -214,8 +208,15 @@ groups:
           / on (partition) armonik:scaler_utilization
       # F used by the model: averaged over 30 s. The counts move by steps, so F jitters by a few pods, and the HPA
       # holds every upward jitter for its whole scale-down window. W is not averaged: bursts are seen at once.
+      # At most the pods the tasks there are would keep busy, counted over the last 15 s (the instant count dips
+      # below lambda * tau between two scrapes of a steady flow of short tasks). The rates and the average describe
+      # the last minute: when the flow drops, they still ask for its pods, and the bench kept 27 pods for 9 tasks
+      # (g1-graph-day) and 48 for none (g2-graph-stairs).
       - record: armonik:scaler_flow_workers
-        expr: avg_over_time(armonik:scaler_flow_workers:raw[30s])
+        expr: |
+          (avg_over_time(armonik:scaler_flow_workers:raw[30s])
+            <= on (partition) max_over_time(armonik:tasks_in_system[15s]) / on (partition) armonik:scaler_utilization)
+          or max_over_time(armonik:tasks_in_system[15s]) / on (partition) armonik:scaler_utilization
       # R from the mean: processing * min(tau / 2, T) / T. A running task has on average tau / 2 left; within the next
       # T seconds it needs its pod for min(tau / 2, T) of them.
       - record: armonik:scaler_running_workers:mean
@@ -290,11 +291,3 @@ groups:
         labels:
           law: queue
         expr: ceil(armonik:tasks_in_system / 2)
-      - record: armonik:scaler_target
-        labels:
-          law: dual
-        expr: |
-          max by (partition) (
-            ceil(armonik:tasks_waiting / on (partition) armonik:scaler_queue_target)
-            or label_replace(
-              ceil(armonik:tasks_processing / on (partition) armonik:scaler_utilization - 1e-9), "src", "running", "", ""))
