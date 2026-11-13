@@ -460,14 +460,14 @@ q.ts("Writes/s vs tasks/s", [
 # 5. Autoscaling: what each law asks, what the HPA does with it, what it costs (autoscaling/README.md)
 # ---------------------------------------------------------------------------------------------------------------------
 a = Board("armonik-bench-autoscaling", "Bench - autoscaling",
-          "The three autoscaling laws of autoscaling/rules.yaml on the same load, the pods the HPA made of the one the "
-          "partition selects, and the cost: idle pods and queue wait. The laws a partition does not select are computed "
+          "The two autoscaling laws of autoscaling/rules.yaml on the same load, the pods the HPA made of the one the "
+          "partition selects, and the cost: idle pods and queue wait. The law a partition does not select is computed "
           "on what happened under the selected one: what they would have asked, not what would have happened.")
 a.templating.append(c.templating[0])
 SEL = 'partition="$partition"'
 DEPLOY = 'namespace="armonik",deployment="armonik-compute-plane-$partition"'
 HPA = 'namespace="armonik",horizontalpodautoscaler="keda-hpa-armonik-compute-plane-$partition"'
-LAWS = [("queue", "queue: queued / 2"), ("dual", "dual: waiting and running"), ("model", "model: flow, running, queue")]
+LAWS = [("queue", "queue: queued / 2"), ("model", "model: flow, running, queue")]
 RATE = '5s'  # evaluation interval of the rules: the step of the integrals below
 ready = f'max(armonik:pods_ready{{{SEL}}})'
 waiting = f'max(armonik:tasks_waiting{{{SEL}}})'
@@ -492,14 +492,14 @@ a.stat("Pod·s each law asked for", [
     prom(f'sum_over_time(max(armonik:scaler_target{{{SEL},law="{law}"}})[$__range:{RATE}]) * 5', law, instant=True)
     for law, _ in LAWS], w=12,
        description="Integral of each target over the range, before the HPA limits and maxReplicaCount. The law the "
-                   "partition selects shaped the load the two others are computed on")
+                   "partition selects shaped the load the other one is computed on")
 a.stat("Law read by KEDA", [prom(f'max(keda_scaler_metrics_value{{scaledObject="armonik-compute-plane-$partition"}})')], w=6,
        description="The value of the trigger of the ScaledObject: queued for the chart's trigger (2 per pod), the "
                    "target of the selected law otherwise (1 per pod)")
 a.stat("Completed tasks", [prom(done, instant=True)], w=6)
 
 a.row("Pods: asked, paid, useful")
-a.ts("The three laws, the HPA and the pods", [
+a.ts("The two laws, the HPA and the pods", [
     *[prom(f'max(armonik:scaler_target{{{SEL},law="{law}"}})', label) for law, label in LAWS],
     prom(f'max(kube_horizontalpodautoscaler_status_desired_replicas{{{HPA}}})', "desired (HPA)"),
     prom(ready, "ready (paid)"),
@@ -517,8 +517,8 @@ a.ts("The three laws, the HPA and the pods", [
                  "paid for nothing. A target below desired: the HPA holds the scale-down (stabilization window). Right "
                  "axis: tasks")
 a.ts("Against the queue law", [
-    prom(f'max(armonik:scaler_target{{{SEL},law="{law}"}}) - max(armonik:scaler_target{{{SEL},law="queue"}})',
-         f"{law} - queue") for law in ["dual", "model"]], w=12,
+    prom(f'max(armonik:scaler_target{{{SEL},law="model"}}) - max(armonik:scaler_target{{{SEL},law="queue"}})',
+         "model - queue")], w=12,
      description="Pods asked for on top of (above 0) or less than (below 0) the queue depth alone")
 a.ts("Pods of the partition", [
     prom(f'max(kube_horizontalpodautoscaler_status_desired_replicas{{{HPA}}})', "desired (HPA)"),
@@ -555,8 +555,7 @@ a.ts("Task duration tau", [
 a.ts("Parameters", [
     prom(f'armonik:scaler_catchup_seconds{{{SEL}}}', "catchup_seconds (T)"),
     prom(f'armonik:scaler_startup_seconds{{{SEL}}}', "startup_seconds (dt)"),
-    prom(f'armonik:scaler_utilization{{{SEL}}}', "utilization (eta)"),
-    prom(f'armonik:scaler_queue_target{{{SEL}}}', "queue_target (q)")])
+    prom(f'armonik:scaler_utilization{{{SEL}}}', "utilization (eta)")])
 
 a.row("Startup time: what catchup_seconds and startup_seconds are set against")
 a.stat("Pod startup, median", [prom(f'quantile(0.5, {startup})')], unit="s",

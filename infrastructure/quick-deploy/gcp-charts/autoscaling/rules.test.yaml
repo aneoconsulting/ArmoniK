@@ -234,12 +234,10 @@ tests:
           - labels: 'armonik:scaler_target{law="model", partition="strag"}'
             value: 45
 
-  # ---- The two other laws, on the same loads ---------------------------------------------------------------------------
-  # "short" (first test): 10 waiting, 8 processing
-  #   queue = ceil(18 / 2) = 9;  dual = max(ceil(10 / 2), ceil(8 / 0.9)) = max(5, 9) = 9
-  # "long": 50 running, nothing waiting
-  #   queue = ceil(50 / 2) = 25: half of the running tasks lose their pod;  dual = ceil(50 / 0.9) = 56
-  - name: queue and dual laws
+  # ---- The queue law, on the same loads --------------------------------------------------------------------------------
+  # "short" (first test): 10 waiting, 8 processing: queue = ceil(18 / 2) = 9
+  # "long": 50 running, nothing waiting: queue = ceil(50 / 2) = 25, half of the running tasks lose their pod
+  - name: queue law
     interval: 10s
     input_series:
       - series: 'armonik_short_tasks_submitted{job="metrics-exporter"}'
@@ -262,13 +260,6 @@ tests:
             value: 9
           - labels: 'armonik:scaler_target{law="queue", partition="long"}'
             value: 25
-      - expr: armonik:scaler_target{law="dual"}
-        eval_time: 2m
-        exp_samples:
-          - labels: 'armonik:scaler_target{law="dual", partition="short"}'
-            value: 9
-          - labels: 'armonik:scaler_target{law="dual", partition="long"}'
-            value: 56
 
   # ---- Short and long tasks together: R from the ages ------------------------------------------------------------------
   # 0.2 tasks/s of 5 s complete (tau = 5 s, the short ones only), while 4 pods run tasks for more than 60 s.
@@ -416,8 +407,8 @@ tests:
             value: 10
 
   # ---- Parameters of a partition ---------------------------------------------------------------------------------------
-  # 300 waiting, tau = 1 s. Defaults ("std"): W = 300 / (60 * 0.9) = 5.56 -> 6; dual = ceil(300 / 2) = 150.
-  # "tuned": catchup_seconds 120, utilization 0.8, queue_target 5: W = 300 / (120 * 0.8) = 3.125 -> 4; dual = 60.
+  # 300 waiting, tau = 1 s. Defaults ("std"): W = 300 / (60 * 0.9) = 5.56 -> 6.
+  # "tuned": catchup_seconds 120, utilization 0.8: W = 300 / (120 * 0.8) = 3.125 -> 4.
   - name: parameters
     interval: 10s
     input_series:
@@ -437,8 +428,6 @@ tests:
         values: '120x20'
       - series: 'armonik:scaler_config{partition="tuned", param="utilization"}'
         values: '0.8x20'
-      - series: 'armonik:scaler_config{partition="tuned", param="queue_target"}'
-        values: '5x20'
     promql_expr_test:
       - expr: armonik:scaler_target{law="model"}
         eval_time: 2m
@@ -447,13 +436,6 @@ tests:
             value: 6
           - labels: 'armonik:scaler_target{law="model", partition="tuned"}'
             value: 4
-      - expr: armonik:scaler_target{law="dual"}
-        eval_time: 2m
-        exp_samples:
-          - labels: 'armonik:scaler_target{law="dual", partition="std"}'
-            value: 150
-          - labels: 'armonik:scaler_target{law="dual", partition="tuned"}'
-            value: 60
 
   # ---- Long tasks ending together, then a new batch: no phantom flow ---------------------------------------------------
   # 40 tasks of 5 min end between 390 and 420 s, one per second, and 40 new ones arrive at 410 s. The completions and the
@@ -497,3 +479,41 @@ tests:
         exp_samples:
           - labels: 'armonik:scaler_target{law="model", partition="batch"}'
             value: 40
+
+  # ---- A flow that stops: F follows the tasks there are, not the last minute ------------------------------------------
+  # 5 tasks/s of 4 s keep 20 pods busy (F = 20 / 0.9 = 22.2) until 200 s, when the tasks are gone at once. The average
+  # of F over 30 s is still 12 pods at 215 s; no task was there in the last 15 s: F = 0.
+  - name: flow that stops
+    interval: 5s
+    input_series:
+      - series: 'armonik_stop_tasks_submitted{job="metrics-exporter"}'
+        values: '0x61'
+      - series: 'armonik_stop_tasks_dispatched{job="metrics-exporter"}'
+        values: '0x61'
+      - series: 'armonik_stop_tasks_processing{job="metrics-exporter"}'
+        values: '20x40 0x20'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_count{job="metrics-polling-agent",armonik_fr_partition="stop",pod="stop-1"}'
+        values: '0+5x40 200x20'
+      - series: 'TaskHandler_ExecuteTask_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="stop",pod="stop-1"}'
+        values: '0+100000x40 4000000x20'
+      - series: 'TaskHandler_PreProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="stop",pod="stop-1"}'
+        values: '0x61'
+      - series: 'TaskHandler_PostProcessing_milliseconds_sum{job="metrics-polling-agent",armonik_fr_partition="stop",pod="stop-1"}'
+        values: '0x61'
+    promql_expr_test:
+      - expr: armonik:scaler_flow_workers
+        eval_time: 3m15s
+        exp_samples:
+          - labels: 'armonik:scaler_flow_workers{partition="stop"}'
+            value: 22.22222222222222
+      - expr: avg_over_time(armonik:scaler_flow_workers:raw[30s])
+        eval_time: 3m35s
+        exp_samples:
+          - labels: '{partition="stop"}'
+            value: 11.957671957671957
+      - expr: armonik:scaler_flow_workers
+        eval_time: 3m35s
+        exp_samples:
+          - labels: 'armonik:scaler_flow_workers{partition="stop"}'
+            value: 0
+

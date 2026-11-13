@@ -1,7 +1,7 @@
 {
   "uid": "armonik-bench-autoscaling",
   "title": "Bench - autoscaling",
-  "description": "The three autoscaling laws of autoscaling/rules.yaml on the same load, the pods the HPA made of the one the partition selects, and the cost: idle pods and queue wait. The laws a partition does not select are computed on what happened under the selected one: what they would have asked, not what would have happened.",
+  "description": "The two autoscaling laws of autoscaling/rules.yaml on the same load, the pods the HPA made of the one the partition selects, and the cost: idle pods and queue wait. The law a partition does not select is computed on what happened under the selected one: what they would have asked, not what would have happened.",
   "tags": [
     "armonik",
     "bench"
@@ -286,22 +286,11 @@
           }
         },
         {
-          "expr": "sum_over_time(max(armonik:scaler_target{partition=\"$partition\",law=\"dual\"})[$__range:5s]) * 5",
-          "legendFormat": "dual",
-          "range": false,
-          "instant": true,
-          "refId": "B",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          }
-        },
-        {
           "expr": "sum_over_time(max(armonik:scaler_target{partition=\"$partition\",law=\"model\"})[$__range:5s]) * 5",
           "legendFormat": "model",
           "range": false,
           "instant": true,
-          "refId": "C",
+          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
@@ -313,7 +302,7 @@
         "overrides": []
       },
       "options": {},
-      "description": "Integral of each target over the range, before the HPA limits and maxReplicaCount. The law the partition selects shaped the load the two others are computed on"
+      "description": "Integral of each target over the range, before the HPA limits and maxReplicaCount. The law the partition selects shaped the load the other one is computed on"
     },
     {
       "type": "stat",
@@ -397,7 +386,7 @@
     },
     {
       "type": "timeseries",
-      "title": "The three laws, the HPA and the pods",
+      "title": "The two laws, the HPA and the pods",
       "id": 13,
       "datasource": {
         "type": "prometheus",
@@ -422,22 +411,11 @@
           }
         },
         {
-          "expr": "max(armonik:scaler_target{partition=\"$partition\",law=\"dual\"})",
-          "legendFormat": "dual: waiting and running",
-          "range": true,
-          "instant": false,
-          "refId": "B",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          }
-        },
-        {
           "expr": "max(armonik:scaler_target{partition=\"$partition\",law=\"model\"})",
           "legendFormat": "model: flow, running, queue",
           "range": true,
           "instant": false,
-          "refId": "C",
+          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
@@ -448,7 +426,7 @@
           "legendFormat": "desired (HPA)",
           "range": true,
           "instant": false,
-          "refId": "D",
+          "refId": "C",
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
@@ -459,7 +437,7 @@
           "legendFormat": "ready (paid)",
           "range": true,
           "instant": false,
-          "refId": "E",
+          "refId": "D",
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
@@ -470,7 +448,7 @@
           "legendFormat": "busy (useful)",
           "range": true,
           "instant": false,
-          "refId": "F",
+          "refId": "E",
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
@@ -481,7 +459,7 @@
           "legendFormat": "waiting tasks",
           "range": true,
           "instant": false,
-          "refId": "G",
+          "refId": "F",
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
@@ -492,7 +470,7 @@
           "legendFormat": "maxReplicaCount",
           "range": true,
           "instant": false,
-          "refId": "H",
+          "refId": "G",
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
@@ -512,28 +490,6 @@
             "matcher": {
               "id": "byName",
               "options": "queue: queued / 2"
-            },
-            "properties": [
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "fill": "dash",
-                  "dash": [
-                    6,
-                    4
-                  ]
-                }
-              },
-              {
-                "id": "custom.fillOpacity",
-                "value": 0
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "dual: waiting and running"
             },
             "properties": [
               {
@@ -685,22 +641,11 @@
       },
       "targets": [
         {
-          "expr": "max(armonik:scaler_target{partition=\"$partition\",law=\"dual\"}) - max(armonik:scaler_target{partition=\"$partition\",law=\"queue\"})",
-          "legendFormat": "dual - queue",
-          "range": true,
-          "instant": false,
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          }
-        },
-        {
           "expr": "max(armonik:scaler_target{partition=\"$partition\",law=\"model\"}) - max(armonik:scaler_target{partition=\"$partition\",law=\"queue\"})",
           "legendFormat": "model - queue",
           "range": true,
           "instant": false,
-          "refId": "B",
+          "refId": "A",
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
@@ -1201,17 +1146,6 @@
           "range": true,
           "instant": false,
           "refId": "C",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          }
-        },
-        {
-          "expr": "armonik:scaler_queue_target{partition=\"$partition\"}",
-          "legendFormat": "queue_target (q)",
-          "range": true,
-          "instant": false,
-          "refId": "D",
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"

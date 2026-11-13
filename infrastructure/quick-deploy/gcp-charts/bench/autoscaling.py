@@ -14,7 +14,7 @@ Prometheus series of the run (tasks, pods, cores, nodes) to CSV, plots them and 
     uv run autoscaling.py export runs/<dir>      # again, e.g. after a change of the queries
     uv run autoscaling.py plot runs/<dir>
     uv run autoscaling.py compare runs/*         # one KPI line per run
-    uv run autoscaling.py suite --repeat 2       # the laws against each other: each SUITE scenario in q, d and m, rotated
+    uv run autoscaling.py suite --repeat 2       # the laws against each other: each SUITE scenario in q and m, rotated
     uv run autoscaling.py suite --configs q m    # only some laws
     uv run autoscaling.py report runs/<suite>    # the laws side by side: report.md (tables), one overlay plot per scenario
 
@@ -27,8 +27,10 @@ import argparse
 import contextlib
 import csv
 import json
+import math
 import os
 import pathlib
+import random
 import socket
 import subprocess
 import sys
@@ -60,9 +62,11 @@ class Client:
     at: int
     ntasks: int
     duration_ms: int = 0  # Bench: duration of each task
-    kind: str = "bench"  # bench or htcmock
+    kind: str = "bench"  # bench, htcmock or graph
     htcmock_total: str = ""  # HtcMock: TotalCalculationTime, split over the tasks
     htcmock_levels: int = 3
+    # Graph: GraphOptions__<name> of the client (Core Tests/Graph/README.md), NTasks and Partition apart
+    graph: dict[str, str] = field(default_factory=dict)
 
     @property
     def work_s(self) -> float:
@@ -70,7 +74,22 @@ class Client:
         if self.kind == "htcmock":
             h, m, s = (float(x) for x in self.htcmock_total.split(":"))
             return h * 3600 + m * 60 + s
+        if self.kind == "graph":
+            return self.ntasks * mean_ms(self.graph["TaskDuration"]) / 1000
         return self.ntasks * self.duration_ms / 1000
+
+
+def mean_ms(dist: str) -> float:
+    """Mean of a distribution of the graph test (const, uniform, lognormal, with min=/max=), by sampling: the
+    clamps make the closed forms wrong. Seeded: the same estimate on every call."""
+    kind, *args = dist.split(":")
+    bounds = dict(a.split("=") for a in args if "=" in a)
+    num = [float(a) for a in args if "=" not in a]
+    lo, hi = float(bounds.get("min", "-inf")), float(bounds.get("max", "inf"))
+    rng = random.Random(0)
+    draw = {"const": lambda: num[0], "uniform": lambda: rng.uniform(num[0], num[1]),
+            "lognormal": lambda: num[0] * math.exp(rng.gauss(0, num[1]))}[kind]
+    return sum(min(max(draw(), lo), hi) for _ in range(20000)) / 20000
 
 
 @dataclass
@@ -94,8 +113,8 @@ class Scenario:
 
 
 # The law the twin partition scales on (autoscaling = { law = ... } in terraform.tfvars), all with the fast HPA:
-# q: the chart's trigger, queued / 2; d: waiting and running raced; m: the flow model.
-CONFIGS = {"q": "queue", "d": "dual", "m": "model"}
+# q: the chart's formula, queued / 2; m: the flow model. Both read from Prometheus (autoscaling.tf).
+CONFIGS = {"q": "queue", "m": "model"}
 
 
 def steady(rate_per_s: float, duration_ms: int, minutes: int, every_s: int = 10) -> list[Client]:
@@ -106,6 +125,86 @@ def steady(rate_per_s: float, duration_ms: int, minutes: int, every_s: int = 10)
 def waves(rate_per_s: float, duration_ms: int, minutes: int, bursts: list[tuple[int, int]]) -> list[Client]:
     """A steady flow with bursts (at s, tasks) on top: a service with peaks of load."""
     return steady(rate_per_s, duration_ms, minutes) + [Client(at, n, duration_ms) for at, n in bursts]
+
+
+# Graph sessions (Core PR #1334): durations of a skewed distribution, median 2 s, mean ~3.3 s (Nordea: ~3 s), 2 %
+# above 20 s, at most 1 min; 2 KB outputs. A task enters the queue only once its dependencies are done: the queue
+# fills by steps, level after level, and the sub-graphs are submitted by the workers.
+GRAPH_DURATION = "lognormal:2000:1:min=100:max=60000"
+GRAPH_COMMON = {"TaskDuration": GRAPH_DURATION, "OutputSize": "const:2", "MaxRetries": "3"}
+GRAPH_SMALL = {**GRAPH_COMMON, "Levels": "3", "GraphTasks": "uniform:5:20"}
+# Deep: ~200 tasks over 5 growing levels, the rest in sub-graphs; up to ~40 tasks wait on the same output (zipf), a
+# critical path of ~30 tasks (~3 min). Smaller graphs (uniform:10:60) nest 3 deep: a 7 min path, ~16 pods busy.
+GRAPH_DEEP = {**GRAPH_COMMON, "Levels": "5", "TasksPerLevel": "increasing", "GraphTasks": "uniform:100:400",
+              "DependenciesPerTask": "uniform:1:4", "ParentChoice": "zipf:1.2", "SkipLevels": "0.2"}
+GRAPH_FLAT = {**GRAPH_COMMON, "Levels": "2", "GraphTasks": "uniform:50:150", "DependenciesPerTask": "uniform:1:3"}
+
+
+def poisson_sessions(seed: int, until_s: int, mean_interval_s: float, median: int, shape: float,
+                     lo: int, hi: int, options: dict[str, str]) -> list[Client]:
+    """Sessions arriving as a Poisson process (exponential gaps), sizes lognormal in [lo, hi]. Drawn from the
+    seed: every config of a scenario gets the same sessions, each with its own graph seed."""
+    rng, t, out = random.Random(seed), 0.0, []
+    while (t := t + rng.expovariate(1 / mean_interval_s)) < until_s:
+        n = round(min(max(median * math.exp(rng.gauss(0, shape)), lo), hi))
+        out.append(Client(round(t), n, kind="graph", graph={**options, "Seed": str(seed * 1000 + len(out))}))
+    return out
+
+
+# Stairs: narrow levels (1 task) between wide ones. The tasks of a wide level wait on the narrow task before it, so
+# they reach the queue together once it ends: a block of hundreds of tasks at once, then nothing until the next
+# narrow task (checked with GRAPH_STATS: up to ~500 tasks waiting on one output). No sub-graph (GraphTasks = NTasks).
+STAIRS = [  # (start s, wide levels): a session every 3 min, steps of different heights
+    (0, [1000, 1000, 1000]),
+    (180, [300, 1500, 600]),
+    (360, [2000, 200, 1200]),
+    (540, [500, 500, 2500]),
+    (720, [1500, 800, 300]),
+]
+
+
+def graph_stairs() -> list[Client]:
+    """G2: barrier graphs every 3 min over a light background of small graphs (one every minute on average)."""
+    sessions = []
+    for k, (at, wide) in enumerate(STAIRS):
+        n = sum(wide) + len(wide) + 1
+        weights = ",".join(["1"] + [x for w in wide for x in (str(w), "1")])
+        sessions.append(Client(at, n, kind="graph", graph={
+            **GRAPH_COMMON, "GraphTasks": f"const:{n}", "Levels": str(2 * len(wide) + 1), "TasksPerLevel": weights,
+            "DependenciesPerTask": "uniform:1:4", "ParentChoice": "uniform", "Seed": str(4000 + k)}))
+    background = poisson_sessions(2, 900, 60, 60, 0.6, 30, 150, GRAPH_SMALL)
+    return sorted(sessions + background, key=lambda c: c.at)
+
+
+def graph_day() -> list[Client]:
+    """G1: a background of small sessions, two big deep batches, a burst of flat sessions."""
+    background = poisson_sessions(1, 720, 20, 60, 0.6, 30, 150, GRAPH_SMALL)
+    batches = [Client(at, 2000, kind="graph", graph={**GRAPH_DEEP, "Seed": str(2000 + at)}) for at in (60, 360)]
+    burst = [Client(540 + 5 * k, 300, kind="graph", graph={**GRAPH_FLAT, "Seed": str(3000 + k)}) for k in range(5)]
+    return sorted(background + batches + burst, key=lambda c: c.at)
+
+
+# Steady: longer tasks (median 5 s, mean ~6.7 s) so that the pods a flow keeps busy are many, and sessions small
+# enough that neither law reaches max_replicas (300 on graph{q,m}): the law decides the pods, not the limit.
+# Plateaus of 10 min: with 5 min the pods were still catching up when the regime changed (nodes take 1 to 2 min).
+# Peak kept under ~45 nodes: past ~50 the zonal control plane resizes and the API is down for minutes.
+GRAPH_STEADY = {**GRAPH_SMALL, "TaskDuration": "lognormal:5000:0.8:min=100:max=60000"}
+
+
+def graph_steady() -> list[Client]:
+    """G3: 30 min of graph sessions of ~220 tasks in two regimes, one every 30 s (~7 tasks/s, ~50 busy pods), then
+    every 15 s from 10 to 20 min (~100 busy pods), then 30 s again; one barrier graph at 25 min on the low regime."""
+    def phase(seed: int, start: int, end: int, every: float) -> list[Client]:
+        sessions = poisson_sessions(seed, end - start, every, 200, 0.4, 80, 400, GRAPH_STEADY)
+        return [Client(c.at + start, c.ntasks, kind="graph", graph=c.graph) for c in sessions]
+
+    wide = [150, 200, 100]
+    n = sum(wide) + len(wide) + 1
+    barrier = Client(1500, n, kind="graph", graph={
+        **GRAPH_COMMON, "TaskDuration": GRAPH_STEADY["TaskDuration"], "GraphTasks": f"const:{n}",
+        "Levels": str(2 * len(wide) + 1), "TasksPerLevel": ",".join(["1"] + [x for w in wide for x in (str(w), "1")]),
+        "DependenciesPerTask": "uniform:1:4", "ParentChoice": "uniform", "Seed": "6000"})
+    return sorted(phase(3, 0, 600, 30) + phase(4, 600, 1200, 15) + phase(5, 1200, 1800, 30) + [barrier], key=lambda c: c.at)
 
 
 SCENARIOS = {
@@ -124,7 +223,7 @@ SCENARIOS = {
                  [Client(t, 200, 10_000) for t in range(0, 360, 120)]),
         Scenario("s13-burst-500ms", "bench", "4000 tasks of 500 ms at once, from 0 pod: ~0.8 s per task with the Core overhead, ~60 pods",
                  [Client(0, 4000, 500)], measure_tail=True),
-        # The laws on short tasks (suite): twin partitions short200{q,d,m}, short1s{q,d,m}, htcmock{q,d,m}
+        # The laws on short tasks (suite): twin partitions short200{q,m}, short1s{q,m}, htcmock{q,m}
         Scenario("s12-steady-200ms", "short200", "20 tasks/s of 200 ms for 5 min: ~9 pods busy at equilibrium (Little)",
                  steady(20, 200, 5), measure_tail=True, ab=True),
         Scenario("s14-waves-200ms", "short200", "10 tasks/s of 200 ms for 8 min, with bursts of 3000 at 2 and 5 min",
@@ -145,12 +244,22 @@ SCENARIOS = {
         # running ages. The second batch finds the duration measured by the first one.
         Scenario("s16-long", "long", "2 batches of 40 tasks of 5 min, 7 min apart: one pod per task, kept to the end",
                  [Client(0, 40, 300_000), Client(420, 40, 300_000)], measure_tail=True, ab=True),
+        Scenario("g1-graph-day", "graph", "12 min of graph sessions, lognormal durations (median 2 s, max 1 min): "
+                 "Poisson background of small graphs, 2 deep batches of 2000 at 1 and 6 min, 5 flat graphs of 300 at 9 min",
+                 graph_day(), measure_tail=True, ab=True),
+        Scenario("g2-graph-stairs", "graph", "5 barrier graphs 3 min apart (wide levels of 200 to 2500 tasks released at "
+                 "once), small graphs in the background, lognormal durations (median 2 s, max 1 min)",
+                 graph_stairs(), measure_tail=True, ab=True),
+        Scenario("g3-graph-steady", "graph", "30 min of graph sessions in steady regimes, lognormal durations (median "
+                 "5 s, max 1 min): ~50 busy pods, ~100 from 10 to 20 min, ~50 again with one barrier graph (levels of 150, "
+                 "200, 100) at 25 min; under max_replicas for both laws",
+                 graph_steady(), measure_tail=True, ab=True),
         Scenario("s7-htcmock", "htcmock", "HtcMock: 1000 tasks on 3 levels of subtasks, 30 min of compute in total",
                  [Client(0, 1000, kind="htcmock", htcmock_total="00:30:00", htcmock_levels=3)], ab=True),
     ]
 }
 
-# The suite: short tasks, one workload per partition (s10 would share htcmock{q,d,m} with s9: not in it)
+# The suite: short tasks, one workload per partition (s10 would share htcmock{q,m} with s9: not in it)
 SUITE = ["s12-steady-200ms", "s14-waves-200ms", "s11-burst-200ms", "s8-burst-short", "s15-waves-1s", "s9-htcmock-200ms"]
 
 
@@ -175,8 +284,19 @@ def dockerhub_registry() -> tuple[str, str]:
     return registry, rest.split(":")[1]
 
 
+def graph_client_image(partition: str) -> str:
+    """The graph client of the same build as the worker of the partition: both generate the graph, they must match."""
+    spec = kget("-n", NS, "deploy", f"armonik-compute-plane-{partition}")["spec"]["template"]["spec"]
+    worker = next(c["image"] for c in spec.get("initContainers", []) + spec["containers"] if c["name"] == "worker")
+    return worker.replace("_graph_test_worker:", "_graph_test_client:")
+
+
 def client_job(run_id: str, i: int, c: Client, partition: str, registry: str, core: str) -> dict:
-    if c.kind == "htcmock":
+    if c.kind == "graph":
+        image = graph_client_image(partition)
+        env = {"GraphOptions__NTasks": c.ntasks, "GraphOptions__Partition": partition,
+               **{f"GraphOptions__{k}": v for k, v in c.graph.items()}}
+    elif c.kind == "htcmock":
         image = f"{registry}/dockerhubaneo/armonik_core_htcmock_test_client:{core}"
         env = {
             "HtcMock__NTasks": c.ntasks,
@@ -229,6 +349,30 @@ def partition_state(partition: str) -> tuple[int, int]:
     return dep["status"].get("replicas", 0), len(nodes)
 
 
+def idle_replicas(partition: str) -> int:
+    """Pods the partition keeps without any task: idleReplicaCount, or minReplicaCount when it never scales to 0
+    (autoscaling.scale_to_zero = false)."""
+    spec = kget("-n", NS, "scaledobject", f"armonik-compute-plane-{partition}")["spec"]
+    return spec.get("idleReplicaCount", spec.get("minReplicaCount", 0))
+
+
+def at_rest(partition: str) -> bool:
+    """The partition at its idle pods, all ready, no workers node without a pod of a partition (GKE removes an empty
+    node a minute later), and its HPA running: after a scale from 0 the HPA of GKE takes up to 3 min to resume."""
+    floor = idle_replicas(partition)
+    dep = kget("-n", NS, "deploy", f"armonik-compute-plane-{partition}")["status"]
+    if dep.get("replicas", 0) != floor or dep.get("availableReplicas", 0) != floor:
+        return False
+    nodes = {n["metadata"]["name"] for n in kget("nodes", "-l", WORKERS)["items"]}
+    used = {p["spec"].get("nodeName") for p in kget("-n", NS, "pods", "-l", "app.kubernetes.io/name=compute-plane")["items"]}
+    if nodes - used:
+        return False
+    if floor == 0:
+        return True
+    hpa = kget("-n", NS, "hpa", f"keda-hpa-armonik-compute-plane-{partition}")["status"]
+    return any(c["type"] == "ScalingActive" and c["status"] == "True" for c in hpa.get("conditions", []))
+
+
 def wait_until(predicate, what: str, timeout_s: int, every_s: int = 10) -> bool:
     start = time.time()
     while time.time() - start < timeout_s:
@@ -260,7 +404,7 @@ def run(name: str, config: str | None = None, runs: pathlib.Path = RUNS) -> path
     out.mkdir(parents=True)
     print(f"{sc.name} on {partition}: {sc.description}\n  run {run_id}, Core {core}, results in {out}")
 
-    wait_until(lambda: partition_state(partition) == (0, 0), "0 pod and 0 workers node", 900, 15)
+    wait_until(lambda: at_rest(partition), "the partition at rest (idle pods, no empty workers node, HPA running)", 900, 15)
 
     # What the autoscaling was, to compare runs after a change
     snapshot = {
@@ -272,11 +416,12 @@ def run(name: str, config: str | None = None, runs: pathlib.Path = RUNS) -> path
         "scenario": asdict(sc),
         "partition": partition,
         "config": config_of(snapshot["scaledobject"]),
-        "ntasks": sum(c.ntasks for c in sc.clients if c.kind == "bench") or None,
+        "ntasks": sum(c.ntasks for c in sc.clients if c.kind in ("bench", "graph")) or None,
         "run_id": run_id,
         "core": core,
         "work_core_s": sum(c.work_s for c in sc.clients),
         "max_replicas": snapshot["scaledobject"].get("maxReplicaCount"),
+        "idle_replicas": idle_replicas(partition),
         "starts": {},
     }
 
@@ -295,18 +440,28 @@ def run(name: str, config: str | None = None, runs: pathlib.Path = RUNS) -> path
         print(f"  +{int(time.time() - t0):4d} s  client {i}: {c.ntasks} tasks", flush=True)
         pending.pop(0)
 
-    wait_until(lambda: jobs_done(run_id)[0] == 0, "the clients to finish", 4 * 3600, 15)
+    # Client logs, read as soon as each Job ends: the autoscaler may remove the node of a finished client pod, and its
+    # logs with it, before the end of the run. Retried tasks and the GRAPH_RESULT of the graph clients are there.
+    logs: dict[str, str] = {}
+
+    def collect() -> bool:
+        for job in kget("-n", NS, "jobs", "-l", f"bench.armonik.fr/run={run_id}")["items"]:
+            name = job["metadata"]["name"]
+            if name not in logs and (job["status"].get("succeeded") or job["status"].get("failed")):
+                logs[name] = kubectl("logs", "-n", NS, f"job/{name}", check=False)
+        return jobs_done(run_id)[0] == 0
+
+    wait_until(collect, "the clients to finish", 4 * 3600, 15)
     meta["t_clients_done"] = time.time()
     active, ok, ko = jobs_done(run_id)
     meta["jobs"] = {"succeeded": ok, "failed": ko}
     print(f"  clients done: {ok} succeeded, {ko} failed")
-    # Client logs: retried tasks (a pod killed by a scale-down while running one) show up there
     with (out / "clients.log").open("w") as f:
         for i in meta["starts"]:
-            f.write(f"===== client {i}\n" + kubectl("logs", "-n", NS, f"job/{run_id}-{i}", check=False))
+            f.write(f"===== client {i}\n" + logs.get(f"{run_id}-{i}", ""))
 
     if sc.measure_tail:
-        wait_until(lambda: partition_state(partition) == (0, 0), "the scale-down to 0", 900, 30)
+        wait_until(lambda: at_rest(partition), "the scale-down to the idle pods", 900, 30)
     else:
         time.sleep(30)
     meta["t1"] = time.time()
@@ -321,7 +476,7 @@ def run(name: str, config: str | None = None, runs: pathlib.Path = RUNS) -> path
 
 
 def config_of(scaledobject: dict) -> str:
-    """q, d or m, from the trigger of the ScaledObject."""
+    """q or m, from the trigger of the ScaledObject."""
     trigger = scaledobject["triggers"][0]
     if trigger["type"] != "prometheus":
         return "q"
@@ -375,9 +530,8 @@ def queries(p: str) -> dict[str, str]:
         "tasks_dispatched": f"sum(armonik_{p}_tasks_dispatched)",
         "tasks_processing": f"sum(armonik_{p}_tasks_processing)",
         "keda_input": f'max(keda_scaler_metrics_value{{scaledObject="armonik-compute-plane-{p}"}})',
-        # The three laws (autoscaling/rules.yaml), computed for every partition, and the terms of the model
+        # The two laws (autoscaling/rules.yaml), computed for every partition, and the terms of the model
         "target_queue": f'max(armonik:scaler_target{{{sel},law="queue"}})',
-        "target_dual": f'max(armonik:scaler_target{{{sel},law="dual"}})',
         "target_model": f'max(armonik:scaler_target{{{sel},law="model"}})',
         "model_task_duration": f"max(armonik:task_duration_seconds{{{sel}}})",
         "model_flow_workers": f"max(armonik:scaler_flow_workers{{{sel}}})",
@@ -482,8 +636,11 @@ def kpis(out: pathlib.Path) -> dict:
 
     peak_ready = max(c["pods_ready"])
     idle = [max(r - p, 0) for r, p in zip(c["pods_ready"], c["tasks_processing"])]
+    # Requested cores of a pod at each point (agent + worker), from the requests of the pods there are
+    per_pod = [q / n if n else 0 for q, n in zip(c["cores_requested_partition"], c["pods_created"])]
+    busy_cores = [min(p, r) * k for p, r, k in zip(c["tasks_processing"], c["pods_ready"], per_pod)]
     max_rep = meta.get("max_replicas") or 1
-    ntasks = meta.get("ntasks") or sum(c["ntasks"] for c in meta["scenario"]["clients"] if c["kind"] == "bench") or None
+    ntasks = meta.get("ntasks") or sum(c["ntasks"] for c in meta["scenario"]["clients"] if c["kind"] in ("bench", "graph")) or None
     return {
         "scenario": meta["scenario"]["name"],
         "partition": meta.get("partition", meta["scenario"]["partition"]),
@@ -507,10 +664,14 @@ def kpis(out: pathlib.Path) -> dict:
         "capacity_core_s": round(integral(c["cores_capacity"])),
         "paid_core_h": round(integral(c["cores_capacity"]) / 3600, 2),
         "used_core_s": round(integral(c["cores_used_partition"])),
-        "efficiency": round(meta["work_core_s"] / max(integral(c["cores_capacity"]), 1), 3),
+        # Cores reserved by the busy pods (their requests, min(processing, ready) of them) over the cores of the
+        # workers nodes: the share of what is paid that a task holds. Requests, not the work in core·s: a worker that
+        # waits uses no core but reserves its request.
+        "efficiency": round(integral(busy_cores) / max(integral(c["cores_capacity"]), 1), 3),
         "idle_pod_s": round(integral(idle)),
-        "tail_to_0_pod_s": first_after("pods_created", last, lambda v: v == 0),
-        "tail_to_0_node_s": first_after("nodes", last, lambda v: v == 0),
+        # Back to the idle pods (0, or 1 with scale_to_zero = false) and to the nodes they keep
+        "tail_to_0_pod_s": first_after("pods_created", last, lambda v: v <= meta.get("idle_replicas", 0)),
+        "tail_to_0_node_s": first_after("nodes", last, lambda v: v <= min(c["nodes"][:max(first, 1)], default=0)),
         "jobs": meta.get("jobs"),
     }
 
@@ -534,8 +695,8 @@ def plot(out: pathlib.Path) -> None:
                    ("tasks_processing", "processing"), ("keda_input", "KEDA input")]),
         ("Pods", [("pods_desired", "HPA desired"), ("pods_created", "created"), ("pods_pending", "pending"),
                   ("pods_ready", "ready"), ("tasks_processing", "busy")]),
-        ("Targets of the three laws", [("target_queue", "queue"), ("target_dual", "dual"), ("target_model", "model"),
-                                       ("pods_desired", "HPA desired")]),
+        ("Targets of the two laws", [("target_queue", "queue"), ("target_model", "model"),
+                                     ("pods_desired", "HPA desired")]),
         ("Cores (workers nodes)", [("cores_capacity", "allocatable"), ("cores_capacity_spot", "of which spot"),
                                    ("cores_requested_partition", "requested (partition)"),
                                    ("tasks_processing", "busy (1 per running task)"),
@@ -573,8 +734,8 @@ def compare(dirs: list[pathlib.Path]) -> None:
 
 # ---- Report: the laws side by side ---------------------------------------------------------------------------
 
-COLORS = {"q": "#eb6834", "d": "#2563eb", "m": "#1baf7a"}
-LABELS = {"q": "Q queue", "d": "D dual", "m": "M model"}
+COLORS = {"q": "#eb6834", "m": "#1baf7a"}
+LABELS = {"q": "Q queue", "m": "M model"}
 
 # (KPI, label, unit, lower is better)
 REPORT_KPIS = [
@@ -586,7 +747,7 @@ REPORT_KPIS = [
     ("idle_pod_s", "Pod·s inactifs (payés sans tâche)", "pod·s", True),
     ("ready_pod_s", "Pod·s payés en tout (queue de descente comprise)", "pod·s", True),
     ("paid_core_h", "Cœurs·h des nodes workers", "cœur·h", True),
-    ("efficiency", "Efficacité (travail / cœurs payés)", "", False),
+    ("efficiency", "Efficacité (cœurs réservés par les pods occupés / cœurs des nodes)", "", False),
 ]
 
 
@@ -626,7 +787,7 @@ def report(dirs: list[pathlib.Path], dest: pathlib.Path | None = None) -> None:
     names = " / ".join(f"{cfg.upper()} (`{CONFIGS[cfg]}`)" for cfg in configs)
     lines = [f"# Autoscaling : {names}", "",
              "Même worker, même HPA rapide, partitions jumelles (`<workload><config>`), départ à froid (0 pod, 0 node).",
-             "Q : `queued / 2` (trigger du chart). D : attente et exécution en concurrence. M : modèle de flux.",
+             "Q : `queued / 2` (trigger du chart). M : modèle de flux.",
              f"Moyenne des runs, (min–max) quand il y en a plusieurs. **X vs {up}** : variation de X par rapport à {up}.", ""]
     arrows = " → ".join(c.upper() for c in configs)
     summary = ["## En bref", "",
@@ -685,8 +846,11 @@ def overlay(name: str, by_config: dict[str, pathlib.Path], png: pathlib.Path) ->
         t = [x / 60 for x in col["t_rel"]]
         color, label = COLORS[cfg], LABELS[cfg]
         pods.plot(t, col["pods_ready"], color=color, linewidth=2, label=f"{label} : pods prêts ({fmt_int(k['idle_pod_s'])} pod·s inactifs)")
-        pods.fill_between(t, col["tasks_processing"], color=color, alpha=0.18, linewidth=0)
-        pods.plot(t, col["tasks_processing"], color=color, linewidth=1, linestyle=":", label=f"{label} : pods occupés")
+        # Processing tasks, at most the ready pods: an agent holds a task in post-processing while it runs the next,
+        # and a terminating pod ends its task out of the ready ones
+        busy = [min(p, r) for p, r in zip(col["tasks_processing"], col["pods_ready"])]
+        pods.fill_between(t, busy, color=color, alpha=0.18, linewidth=0)
+        pods.plot(t, busy, color=color, linewidth=1, linestyle=":", label=f"{label} : pods occupés")
         waiting = [a + b_ for a, b_ in zip(col["tasks_submitted"], col["tasks_dispatched"])]
         queue.plot(t, waiting, color=color, linewidth=2, label=f"{label} (durée {k['drain_s']} s)")
     pods.set_title("Pods : ligne = payés, aire pointillée = occupés. L'écart est le gaspillage.", loc="left", fontsize=10)
