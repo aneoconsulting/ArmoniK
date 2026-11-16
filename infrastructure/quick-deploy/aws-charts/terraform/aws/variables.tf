@@ -58,10 +58,11 @@ variable "eks" {
     endpoint_public_access_cidrs = optional(list(string), ["0.0.0.0/0"])
     # IAM principals granted cluster admin, on top of the role running terraform (which must not be listed
     # again). An SSO role goes without its path: arn:aws:iam::<account>:role/AWSReservedSSO_<set>_<suffix>
-    admin_principal_arns   = optional(list(string), [])
-    log_types              = optional(list(string), ["api", "audit", "authenticator"])
-    log_retention_in_days  = optional(number, 7)
-    system_instance_types  = optional(list(string), ["m7i.large"])
+    admin_principal_arns  = optional(list(string), [])
+    log_types             = optional(list(string), ["api", "audit", "authenticator"])
+    log_retention_in_days = optional(number, 7)
+    # Karpenter, CoreDNS and the EBS CSI controller, ~0.6 CPU and ~1 GiB requested per node: 17 pods per t3a.medium
+    system_instance_types  = optional(list(string), ["t3a.medium"])
     system_node_group_size = optional(number, 2)
   })
   default = {}
@@ -71,7 +72,7 @@ variable "rds" {
   description = "RDS PostgreSQL parameters"
   type = object({
     engine_version          = optional(string, "18")
-    instance_class          = optional(string, "db.m7g.large")
+    instance_class          = optional(string, "db.t4g.large")
     allocated_storage       = optional(number, 50)
     max_allocated_storage   = optional(number, 200)
     multi_az                = optional(bool, false)

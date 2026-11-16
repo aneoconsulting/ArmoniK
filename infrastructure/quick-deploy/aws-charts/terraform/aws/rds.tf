@@ -58,7 +58,8 @@ module "rds" {
     { name = "rds.logical_replication", value = "1", apply_method = "pending-reboot" },
     { name = "max_replication_slots", value = tostring(var.rds.max_replication_slots), apply_method = "pending-reboot" },
     { name = "max_wal_senders", value = tostring(var.rds.max_replication_slots), apply_method = "pending-reboot" },
-    { name = "rds.force_ssl", value = "1" },
+    # RDS stores it as pending-reboot: immediate (the default) would show as a change in every plan
+    { name = "rds.force_ssl", value = "1", apply_method = "pending-reboot" },
     # Planning time per statement in pg_stat_statements (after CREATE EXTENSION pg_stat_statements), which
     # total_exec_time leaves out: what Npgsql auto-prepare saves
     { name = "pg_stat_statements.track_planning", value = "1" },

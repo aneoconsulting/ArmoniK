@@ -1,7 +1,6 @@
-# bucket and region come from ../backend.tfbackend (see ../backend.tfbackend.example)
+# bucket, region and key come from the stack: -backend-config=../../stacks/<stack>/aws.tfbackend
 terraform {
   backend "s3" {
-    key          = "armonik-quick-deploy/aws.tfstate"
     encrypt      = true
     use_lockfile = true
   }

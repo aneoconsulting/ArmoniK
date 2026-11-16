@@ -32,6 +32,9 @@ nodePools:
     capacityTypes: ["on-demand"]
     instanceCategories: ["c", "m", "r"]
     minGeneration: 5
+    # A 1 vCPU instance takes 8 pods (ENI limit), 6 of them DaemonSets: a node sized before a DaemonSet appeared
+    # (fluent-bit, with the armonik release) leaves its pod Pending
+    minCpu: 2
     taint: false
     limits:
       cpu: 64
@@ -43,6 +46,7 @@ nodePools:
     capacityTypes: ["spot", "on-demand"]
     instanceCategories: ["c", "m"]
     minGeneration: 5
+    minCpu: 2
     taint: true
     limits:
       cpu: 1000

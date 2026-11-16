@@ -4,7 +4,7 @@ data "terraform_remote_state" "aws" {
   config = {
     bucket = var.bucket
     region = var.region
-    key    = "armonik-quick-deploy/aws.tfstate"
+    key    = var.key
   }
 }
 

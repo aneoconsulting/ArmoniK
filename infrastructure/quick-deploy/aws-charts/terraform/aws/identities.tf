@@ -68,6 +68,8 @@ module "external_secrets_identity" {
 
   name            = "${local.name}-external-secrets"
   use_name_prefix = false
+  # The default AmazonEKS_ name is account wide: two stacks in one account would collide
+  policy_name_prefix = "${local.name}-"
 
   attach_external_secrets_policy = true
   external_secrets_secrets_manager_arns = [
@@ -91,6 +93,8 @@ module "aws_load_balancer_controller_identity" {
 
   name            = "${local.name}-aws-lb-controller"
   use_name_prefix = false
+  # The default AmazonEKS_ name is account wide: two stacks in one account would collide
+  policy_name_prefix = "${local.name}-"
 
   attach_aws_lb_controller_policy = true
 
@@ -110,6 +114,8 @@ module "ebs_csi_identity" {
 
   name            = "${local.name}-ebs-csi"
   use_name_prefix = false
+  # The default AmazonEKS_ name is account wide: two stacks in one account would collide
+  policy_name_prefix = "${local.name}-"
 
   attach_aws_ebs_csi_policy = true
 }

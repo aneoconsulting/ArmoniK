@@ -110,7 +110,12 @@ locals {
     compute-plane = {
       partitions = {
         for name, p in var.partitions : name => {
-          hpa = { maxReplicaCount = p.max_replicas }
+          # partitionCommon has no idleReplicaCount (values/armonik.yaml): 0 scales an idle partition to zero, none
+          # keeps min_replicas pods
+          hpa = merge(
+            { maxReplicaCount = p.max_replicas, idleReplicaCount = p.min_replicas == null ? 0 : null },
+            { for k, v in { minReplicaCount = p.min_replicas } : k => v if v != null },
+          )
           worker = {
             image = {
               registry   = split("/", p.image)[0]

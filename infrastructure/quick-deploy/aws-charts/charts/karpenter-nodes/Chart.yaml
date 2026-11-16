@@ -2,4 +2,4 @@ apiVersion: v2
 name: karpenter-nodes
 description: Karpenter EC2NodeClass and NodePools of the ArmoniK AWS quick deploy, plus the default gp3 StorageClass
 type: application
-version: 0.1.0
+version: 0.2.0

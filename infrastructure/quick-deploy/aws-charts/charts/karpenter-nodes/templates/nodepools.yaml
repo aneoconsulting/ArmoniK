@@ -37,6 +37,9 @@ spec:
         - key: karpenter.k8s.aws/instance-generation
           operator: Gt
           values: [{{ $pool.minGeneration | quote }}]
+        - key: karpenter.k8s.aws/instance-cpu
+          operator: Gt
+          values: [{{ sub $pool.minCpu 1 | quote }}]
   limits:
     {{- toYaml $pool.limits | nindent 4 }}
   disruption:

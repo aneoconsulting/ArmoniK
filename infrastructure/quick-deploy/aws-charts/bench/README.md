@@ -2,7 +2,7 @@
 
 How the compute plane follows the load: tasks (KEDA's input), pods (HPA), cores and nodes (Karpenter). It runs
 clients as Jobs in the cluster, from a cold start (0 pod, 0 workers node), then exports the Prometheus series of the
-run. Uses the partitions of `terraform/k8s/terraform.tfvars` and the `autoscaling-monitoring` release (Grafana
+run. Uses the partitions of `stacks/armonik69/k8s.tfvars` and the `autoscaling-monitoring` release (Grafana
 dashboard "ArmoniK autoscaling").
 
 ## Commands

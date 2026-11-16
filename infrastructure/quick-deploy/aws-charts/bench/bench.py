@@ -74,7 +74,7 @@ class Client:
 @dataclass
 class Scenario:
     name: str
-    # ab: a base name, the partition is <base><config> (CONFIGS), see terraform.tfvars
+    # ab: a base name, the partition is <base><config> (CONFIGS), see stacks/armonik69/k8s.tfvars
     partition: str
     description: str
     clients: list[Client]

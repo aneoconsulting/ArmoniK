@@ -1,0 +1,4 @@
+# Copy to stacks/<stack>/k8s.tfbackend (git-ignored): the S3 bucket of the states, one key per stack and root
+bucket = "my-terraform-states"
+region = "eu-west-3"
+key    = "armonik-quick-deploy/<stack>/k8s.tfstate"

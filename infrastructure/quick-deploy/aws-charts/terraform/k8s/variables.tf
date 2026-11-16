@@ -1,10 +1,16 @@
+# bucket, region and key: the stack's aws.tfbackend, passed with -var-file, since this root reads the outputs of terraform/aws
 variable "bucket" {
-  description = "Bucket of the Terraform states, read from ../backend.tfbackend: this root reads the outputs of terraform/aws"
+  description = "Bucket of the Terraform states"
   type        = string
 }
 
 variable "region" {
-  description = "Region of that bucket, from ../backend.tfbackend (the deployment's region comes from terraform/aws)"
+  description = "Region of that bucket (the deployment's region comes from terraform/aws)"
+  type        = string
+}
+
+variable "key" {
+  description = "Key of the terraform/aws state of the same stack"
   type        = string
 }
 
@@ -31,14 +37,14 @@ variable "versions" {
     lbc       = optional(string, "3.5.0")
     # armonik and armonik-operators, published by the ArmoniK.Infra CI from main as <version>-SNAPSHOT.<n>.sha.<commit>
     armonik = optional(string, "0.17.0-SNAPSHOT.83.sha.a2a8a097")
-    core    = optional(string, "0.41.3")
+    core    = optional(string, "0.41.4")
     gui     = optional(string, "0.16.1")
   })
   default = {}
 }
 
 variable "partitions" {
-  description = "The only partitions (the chart's default, stream and htcmock are removed in values/armonik.yaml); a worker update is a new tag here"
+  description = "Your partitions, beside the chart's htcmock (default and stream are removed in values/armonik.yaml); a worker update is a new tag here"
   type = map(object({
     # Image without its tag, registry included (e.g. the workers repository of the outputs)
     image  = string
@@ -47,6 +53,9 @@ variable "partitions" {
     memory = optional(string, "1Gi")
     # KEDA scales the partition on its queue length, from 0 to this many pods
     max_replicas = optional(number, 50)
+    # Pods kept running without tasks, so the first tasks skip the pod and node start (1 to 3 min). null: the
+    # chart's scale to zero
+    min_replicas = optional(number)
     # Scale on armonik:scaler_target instead of the queue length: recording rules of the autoscaling-monitoring chart
     # (rules/autoscaling.rules.yaml) over the exporter counts (submitted, dispatched, processing, always exported) and
     # the polling agent metrics, read from Prometheus.

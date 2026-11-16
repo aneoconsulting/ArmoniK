@@ -46,8 +46,7 @@ global:
       gui: "${GUI_VERSION}"
 
 control-plane:
-  # One control plane saturates around 75 submitted tasks/s (S3 uploads), and clients spread over the replicas
-  replicas: 3
+  # The chart's single replica: one control plane saturates around 75 submitted tasks/s (S3 uploads)
   # Karpenter consolidation of the core pool otherwise evicts it under load, cutting the clients' streams
   podAnnotations:
     karpenter.sh/do-not-disrupt: "true"
@@ -82,12 +81,13 @@ compute-plane:
   fluentBit:
     image:
       registry: "${REG_DOCKERHUB}"
-  # The chart's partitions (default, stream, htcmock) are removed (null deletes a chart default); yours come from
-  # var.partitions. Without a "default" partition, Core's default partition is the first one of the list.
+  # The chart's default and stream partitions are removed (null deletes a chart default); yours come from
+  # var.partitions. htcmock stays, for the HtcMock client of the README, and scales to zero when idle. No default
+  # partition (control-plane.extraPartitions is empty): the clients name theirs.
   partitions:
     default: null
     stream: null
-    htcmock: null
+    htcmock: {hpa: {idleReplicaCount: 0}}
   partitionCommon:
     # Workers node pool (Karpenter, spot first, tainted); do-not-disrupt keeps Karpenter from evicting a task
     nodeSelector:
@@ -99,15 +99,25 @@ compute-plane:
         effect: NoSchedule
     podAnnotations:
       karpenter.sh/do-not-disrupt: "true"
-    # KEDA scales a partition on its queue length, from 0 to this many pods
+    # KEDA scales a partition on its queue length, up to this many pods.
+    # idleReplicaCount: the chart's default (0) removed here, since a null in one partition would not remove a default
+    # of partitionCommon: each partition states its own (terraform/k8s/releases.tf, and htcmock above).
     hpa:
       maxReplicaCount: 50
-    # The agent keeps the chart's resources (requests 500m/256Mi, limits 1/1Gi)
+      idleReplicaCount: null
+    # The polling agent, as measured on GCP: ~15m and ~130 MiB with tasks of ~3 s, ~190m while .NET starts. The limit
+    # of 1 CPU keeps the start fast.
     agent:
       image:
         registry: "${REG_DOCKERHUB}"
-    # The worker runs the tasks: requests == limits, for predictable task runtimes and exact Karpenter sizing
+      resources:
+        requests: {cpu: 100m, memory: 256Mi}
+        limits: {cpu: "1", memory: 256Mi}
+    # The worker runs the tasks: requests == limits, for predictable task runtimes and exact Karpenter sizing. Those
+    # of var.partitions set their own image and resources; htcmock's image comes from Docker Hub.
     worker:
+      image:
+        registry: "${REG_DOCKERHUB}"
       resources:
         requests: {cpu: "1", memory: 1Gi}
         limits: {cpu: "1", memory: 1Gi}
@@ -118,12 +128,12 @@ conf:
       # Payloads a CreateResults call uploads in parallel. 0 (Core's default) is the CPU count, 1 here, while each
       # upload is a ~170 ms S3 multipart: 32 takes a client from ~8 to ~75 submitted tasks/s
       Submitter__DegreeOfParallelism: "32"
-      # Npgsql pool per process (Core's default 100). RDS max_connections is ~830 on db.m7g.large: 3 x 50 here
+      # Npgsql pool per process (Core's default 100). RDS max_connections is ~830 on the 8 GiB of db.t4g.large
       PostgreSQL__MaxPoolSize: "50"
   polling:
     env:
-      # An agent runs one task at a time and needs a few connections: 100 agents x 5 = 500, + 150 for the
-      # control planes, under the ~830 of db.m7g.large. Core overrides Maximum Pool Size of the connection string
+      # An agent runs one task at a time and needs a few connections: 100 agents x 5 = 500, + 50 for the
+      # control plane, under the ~830 of db.t4g.large. Core overrides Maximum Pool Size of the connection string
       PostgreSQL__MaxPoolSize: "5"
 
 ingress:
