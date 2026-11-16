@@ -7,3 +7,6 @@ kubeconfig
 *tfplan
 # Local overrides, such as a module from a working copy
 *_override.tf
+# Bench scripts and dashboards: kept local
+bench/
+monitoring/

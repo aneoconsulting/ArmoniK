@@ -139,6 +139,10 @@ compute-plane:
         limits: {cpu: "1", memory: 1Gi}
 
 conf:
+  # Information writes several lines per task: at thousands of tasks/s, fluent-bit and Seq (which crash-looped under
+  # load at Information) would take more than the bench measures
+  log:
+    minimumLevel: Warning
   core:
     env:
       # Connections of the pool of each Core process (Npgsql, 100 by default): a ceiling, the pool opens them on

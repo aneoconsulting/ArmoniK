@@ -8,6 +8,16 @@
 #             which Core retries. Partition pods carry safe-to-evict "false", so neither the consolidation nor the
 #             migration to a better rule ends a task: a node goes away once KEDA has scaled its pods in.
 locals {
+  # Machine series that boot only from Hyperdisk: GKE's default boot disk, pd-balanced, cannot be attached to them
+  hyperdisk_only_series = ["c4", "c4a", "c4d", "n4", "n4a", "n4d"]
+
+  worker_rules = [for type in var.node_classes.workers.machine_types : {
+    machineType = type
+    storage = {
+      bootDiskType = contains(local.hyperdisk_only_series, split("-", type)[0]) ? "hyperdisk-balanced" : "pd-balanced"
+    }
+  }]
+
   compute_classes = {
     default = {
       priorities = [for family in var.node_classes.default.machine_families : {
@@ -18,16 +28,8 @@ locals {
     }
     workers = {
       priorities = concat(
-        [for family in var.node_classes.workers.machine_families : {
-          machineFamily = family
-          spot          = true
-          minCores      = var.node_classes.workers.min_cores
-        }],
-        var.node_classes.workers.on_demand_fallback ? [{
-          machineFamily = var.node_classes.workers.machine_families[0]
-          spot          = false
-          minCores      = var.node_classes.workers.min_cores
-        }] : [],
+        [for rule in local.worker_rules : merge(rule, { spot = true })],
+        var.node_classes.workers.on_demand_fallback ? [merge(local.worker_rules[0], { spot = false })] : [],
       )
       activeMigration = { optimizeRulePriority = true }
       # An empty node goes away 1 min later. What keeps the nodes between two bursts of tasks is the pods: the HPA

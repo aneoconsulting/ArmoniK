@@ -1,4 +1,4 @@
-# Zonal Standard cluster: the GKE free tier covers the management fee of one zonal cluster. Private nodes, private
+# Standard cluster, regional control plane, nodes in one zone. Private nodes, private
 # IP endpoint: Terraform and kubectl go through the DNS endpoint, authenticated by IAM, so no CIDR to maintain.
 #
 # Nodes: a small static pool for kube-system, everything else from the ComputeClasses of compute-classes.tf. The
@@ -6,13 +6,17 @@
 module "gke" {
   source = "git::https://github.com/aneoconsulting/ArmoniK.Infra.git//kubernetes/gcp/gke?ref=dw/gcp-charts-deploy"
 
-  name                = var.prefix
-  description         = "ArmoniK quick deploy"
-  network             = module.vpc.name
-  subnetwork          = module.vpc.gke_subnet_name
-  ip_range_pods       = module.vpc.gke_subnet_pods_range_name
-  ip_range_services   = module.vpc.gke_subnet_svc_range_name
-  regional            = false
+  name              = var.prefix
+  description       = "ArmoniK quick deploy"
+  network           = module.vpc.name
+  subnetwork        = module.vpc.gke_subnet_name
+  ip_range_pods     = module.vpc.gke_subnet_pods_range_name
+  ip_range_services = module.vpc.gke_subnet_svc_range_name
+  # Regional control plane (replicated, ~0.10 $/h more than the free zonal one), nodes in the single zone of the
+  # database. The zonal control plane resizes itself when the cluster passes ~50 nodes: API down 2 x 4 min, HPA and
+  # KEDA frozen (autoscaling bench, 2026-11-12). Changing it recreates the cluster.
+  regional            = true
+  region              = var.region
   zones               = [var.zone]
   deletion_protection = false
   labels              = local.labels

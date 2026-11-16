@@ -20,6 +20,27 @@ module "object_storage" {
   uniform_bucket_level_access = true
   # Core deletes temporary results all the time: no 7 more days of billed soft-deleted objects
   soft_delete_retention_days = 0
+  # The bench clients do not purge their data (bench/campaign.py): deleting through the API adds load to the database
+  # and the bucket during the measure. GCS deletes the objects of the day before, free of charge.
+  lifecycle_rule = {
+    one-day = {
+      action = { type = "Delete", storage_class = null }
+      condition = {
+        # The module's object type has no optional attribute
+        age                        = 1
+        created_before             = null
+        with_state                 = null
+        matches_storage_class      = null
+        matches_prefix             = null
+        matches_suffix             = null
+        num_newer_versions         = null
+        custom_time_before         = null
+        days_since_custom_time     = null
+        days_since_noncurrent_time = null
+        noncurrent_time_before     = null
+      }
+    }
+  }
   roles = {
     "roles/storage.objectUser" = local.armonik_members
     # storage.buckets.get, which objectUser lacks: the health check of Core reads the bucket (GetBucketAsync)

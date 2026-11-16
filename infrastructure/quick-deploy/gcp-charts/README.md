@@ -96,5 +96,5 @@ Writes the kubeconfig to `generated/kubeconfig` (git-ignored), with the defaults
 
 ```sh
 mkdir -p generated
-env KUBECONFIG=generated/kubeconfig gcloud container clusters get-credentials armonik --dns-endpoint --location europe-west9-a --project <project>
+env KUBECONFIG=generated/kubeconfig gcloud container clusters get-credentials armonik --dns-endpoint --location europe-west9 --project <project>
 ```

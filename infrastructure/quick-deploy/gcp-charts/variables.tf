@@ -10,7 +10,7 @@ variable "region" {
 }
 
 variable "zone" {
-  description = "Zone of the cluster, zonal: in the region"
+  description = "Zone of the nodes and of the database, in the region"
   type        = string
   default     = "europe-west9-a"
 
@@ -47,7 +47,10 @@ variable "node_classes" {
     ComputeClasses, whose node pools GKE creates and removes on demand. Machine families in priority order: the
     autoscaler takes the first one with capacity.
     * default: every pod that selects no class (operators, control plane, ingress, monitoring).
-    * workers: the partitions, Spot VMs, then on demand when no Spot capacity is left (on_demand_fallback).
+    * workers: the partitions, Spot VMs of these machine types in priority order, then the first one on demand when
+      no Spot capacity is left (on_demand_fallback). Machine types rather than families: given a family, GKE picks
+      the shape from the pending pods (n2d-highcpu-8 for the bench pairs, memory bound at 16 GB). Default: the
+      cheapest Spot standard-8 types of europe-west9 (list prices of 2026-11-13: c4 0.064 $/h, n2 0.119, n2d 0.196).
   EOT
   type = object({
     default = optional(object({
@@ -55,8 +58,7 @@ variable "node_classes" {
       min_cores        = optional(number, 4)
     }), {})
     workers = optional(object({
-      machine_families   = optional(list(string), ["n2d", "c3d", "e2"])
-      min_cores          = optional(number, 8)
+      machine_types      = optional(list(string), ["c4-standard-8", "n2-standard-8", "n2d-standard-8"])
       on_demand_fallback = optional(bool, true)
     }), {})
   })

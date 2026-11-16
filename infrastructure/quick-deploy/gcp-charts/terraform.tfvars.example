@@ -19,8 +19,7 @@ project = "my-project"
 
 # node_classes = {
 #   workers = {
-#     machine_families = ["n2d", "c3d"]
-#     min_cores        = 16
+#     machine_types = ["c4-standard-16", "n2-standard-16"]
 #   }
 # }
 
