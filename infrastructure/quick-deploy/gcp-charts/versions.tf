@@ -13,8 +13,10 @@ terraform {
     }
     # Same major as the ArmoniK.Infra modules (< 3.0.0)
     helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.17"
+      source = "hashicorp/helm"
+      # 3.x embeds Helm >= 3.18: Helm 3.15 of the 2.x line ignores a null over a subchart default (the partitions
+      # kept the chart's idleReplicaCount of 0)
+      version = ">= 3.1, < 4.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"

@@ -35,17 +35,16 @@ provider "kubectl" {
 # The charts are pulled at plan time, before any repository of this stack exists: straight from Docker Hub, with the
 # Docker Hub token when one is given. The images go through the pull-through caches (registry.tf).
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host  = "https://${module.gke.endpoint_dns}"
     token = data.google_client_config.current.access_token
   }
 
-  dynamic "registry" {
-    for_each = local.dockerhub_login
-    content {
+  registries = [
+    for login in local.dockerhub_login : {
       url      = "oci://registry-1.docker.io"
-      username = registry.value.username
-      password = registry.value.token
+      username = login.username
+      password = login.token
     }
-  }
+  ]
 }

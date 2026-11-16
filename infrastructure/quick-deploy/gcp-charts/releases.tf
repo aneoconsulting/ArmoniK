@@ -61,8 +61,12 @@ resource "helm_release" "armonik_operators" {
   repository       = local.chart_repository
   chart            = "armonik-operators"
   version          = var.versions.armonik
-  values           = [templatefile("${path.module}/values/armonik-operators.yaml", local.values)]
-  wait             = true
+  values = [
+    templatefile("${path.module}/values/armonik-operators.yaml", local.values),
+    # The stack's own values, last
+    var.operators_values,
+  ]
+  wait = true
   # First nodes created by the ComputeClasses, and many images pulled into the caches
   timeout = 1200
 
@@ -83,6 +87,8 @@ resource "helm_release" "armonik" {
     yamlencode(local.autoscaling_hpa_values),
     # A values document of its own, so that Helm merges it deeply rather than replacing whole maps
     yamlencode({ compute-plane = { partitions = { for name, p in var.partitions : name => yamldecode(p.values) } } }),
+    # The stack's own values, last
+    var.armonik_values,
   ]
   wait          = true
   wait_for_jobs = false

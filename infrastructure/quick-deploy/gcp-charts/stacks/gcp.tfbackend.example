@@ -1,0 +1,3 @@
+# Copy to stacks/<stack>/gcp.tfbackend (git-ignored): an existing GCS bucket for the states, one prefix per stack
+bucket = "my-terraform-states"
+prefix = "armonik-quick-deploy/<stack>"

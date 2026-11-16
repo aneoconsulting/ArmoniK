@@ -55,7 +55,7 @@ variable "node_classes" {
   type = object({
     default = optional(object({
       machine_families = optional(list(string), ["n2d", "e2"])
-      min_cores        = optional(number, 4)
+      min_cores        = optional(number, 2)
     }), {})
     workers = optional(object({
       machine_types      = optional(list(string), ["c4-standard-8", "n2-standard-8", "n2d-standard-8"])
@@ -114,6 +114,36 @@ variable "versions" {
   })
   default  = {}
   nullable = false
+}
+
+variable "armonik_values" {
+  description = <<-EOT
+    Values of the armonik chart, as YAML text, merged last by Helm over values/armonik.yaml and the partitions: the
+    stack has the last word (e.g. "control-plane: {replicas: 1}").
+  EOT
+  type        = string
+  default     = "{}"
+  nullable    = false
+
+  validation {
+    condition     = can(keys(yamldecode(var.armonik_values)))
+    error_message = "armonik_values must be a YAML mapping (values of the armonik chart)."
+  }
+}
+
+variable "operators_values" {
+  description = <<-EOT
+    Values of the armonik-operators chart, as YAML text, merged last by Helm over values/armonik-operators.yaml: the
+    stack has the last word (e.g. the Prometheus sizing of a bench).
+  EOT
+  type        = string
+  default     = "{}"
+  nullable    = false
+
+  validation {
+    condition     = can(keys(yamldecode(var.operators_values)))
+    error_message = "operators_values must be a YAML mapping (values of the armonik-operators chart)."
+  }
 }
 
 variable "autoscaling_laws" {

@@ -29,6 +29,12 @@ module "gke" {
     default_compute_class = true
   }
 
+  # System logs only: the pod logs go to Seq through fluent-bit. Under load the workloads wrote ~186 GiB to Cloud
+  # Logging in a day (fluent-bit echoing every line on its stdout, agents logging an error on each health check).
+  observability = {
+    logging_components = ["SYSTEM_COMPONENTS"]
+  }
+
   node_pools = {
     system = {
       machine_type = var.system_pool.machine_type

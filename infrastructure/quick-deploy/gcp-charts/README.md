@@ -1,100 +1,51 @@
 # GCP quick deploy with the ArmoniK Helm charts
 
-One Terraform stack: GKE Standard with ComputeClasses (Spot workers), Artifact Registry pull-through caches for
-every image, ArmoniK on Cloud SQL for PostgreSQL (Private Service Connect), GCS and Pub/Sub, through the
-[ArmoniK.Infra GCP modules](https://github.com/aneoconsulting/ArmoniK.Infra) and the Helm charts.
+## Deployed by default
 
-## Setup
+| | |
+|---|---|
+| Cluster | GKE in europe-west9, system pool e2-standard-2, ComputeClasses `default` (n2d/e2, 2 cores min) and `workers` (spot c4/n2/n2d-standard-8) |
+| Network | VPC with Cloud NAT, load balancer on `ingress_allowed_cidrs` |
+| Storage | Cloud SQL PostgreSQL ENTERPRISE db-custom-2-8192 zonal 20 GB, GCS, Pub/Sub |
+| ArmoniK | chart 0.17.1, Core 0.41.4, chart sizing (1 control plane, 1 ingress), Prometheus, Grafana, Seq |
+| Partitions | `default`, `stream`, `htcmock` (scale to zero) and those of `gcp.tfvars` |
 
-- `gcloud auth application-default login`
-- `backend.tfbackend`: copy the `.example`, set an existing GCS bucket for the state.
-- `terraform.tfvars`: copy the `.example`, set `project` (and `registry_credentials` against the rate limits).
+## Stack overrides
 
-## Deploy
+| | armonik69 (bench) | montparnasse |
+|---|---|---|
+| Region | default | us-central1 |
+| Core | 0.41.5-SNAPSHOT.27 | default |
+| Sizing | `armonik_values`: 4 control planes and 2 ingresses (1 CPU, 500m), logs at Warning; `operators_values`: Prometheus 2 CPU / 8 Gi, 3 days; `default` class 4 cores min | default |
+| Cloud SQL | ENTERPRISE_PLUS db-perf-optimized-N-32, 400 GB, managed pooling | default |
+| Partitions | bench workers, fixed pod count | `cpu` PymoniK worker (1 CPU, 2Gi, 8-48 pods) |
 
-```sh
-terraform init -backend-config=backend.tfbackend
-terraform apply
-terraform output endpoints
-```
-
-The load balancer serves the API on 5001, and the GUI (`/admin/`), Grafana (`/grafana/`) and Seq (`/seq/`) on
-5000, with no authentication: `ingress_allowed_cidrs` restricts who reaches it.
-
-Never apply a change that replaces the cluster (zone, prefix, network ranges): the Kubernetes providers lose it while
-its releases are still in the state. Destroy, then deploy again.
-
-## Access
+## armonik69
 
 ```sh
-$(terraform output -raw kubeconfig_command)
-export KUBECONFIG=$PWD/kubeconfig
+terraform init -reconfigure -backend-config=stacks/armonik69/gcp.tfbackend
+terraform apply -var-file=stacks/armonik69/gcp.tfvars
 ```
 
-## Add a partition
-
-Push the image to a registry the nodes can pull (public, or Artifact Registry in the project), with a new tag for
-every version, then declare it in `terraform.tfvars` (name: lowercase letters and digits) and apply:
-
-```hcl
-partitions = {
-  myapp = {
-    image  = "europe-west9-docker.pkg.dev/my-project/my-repo/my-worker"   # without the tag
-    tag    = "1.0.0"
-    cpu    = "2"        # worker requests = limits
-    memory = "4Gi"
-  }
-}
-```
-
-The partition runs no pod until tasks arrive. Its pods run on Spot nodes: a preemption loses the running tasks,
-which Core retries.
-
-## Autoscaling
-
-A partition scales on its queue length (the chart's trigger). With the laws on, it can select another one:
-
-```hcl
-autoscaling_laws = true
-
-partitions = {
-  myapp = {
-    image       = "europe-west9-docker.pkg.dev/my-project/my-repo/my-worker"
-    tag         = "1.0.0"
-    autoscaling = { law = "model", hpa = "fast" }
-  }
-}
-```
-
-`model` sizes the pods on the flow of tasks, their duration and the queue. Both laws are Prometheus recording
-rules, computed for every partition and shown in the Grafana dashboard "Bench - autoscaling" next to what the pods
-did. The laws, their parameters, the mathematics and the bench that compares them on twin partitions:
-[autoscaling/README.md](autoscaling/README.md).
-
-## Test
+## montparnasse
 
 ```sh
-GRPC=$(terraform output -json endpoints | jq -r .grpc)
-docker run --rm -e HtcMock__NTasks=1000 -e HtcMock__TotalCalculationTime=00:00:00.100 -e HtcMock__SubTasksLevels=1 \
-  -e HtcMock__Partition=htcmock -e GrpcClient__Endpoint=$GRPC \
-  dockerhubaneo/armonik_core_htcmock_test_client:0.41.4
+terraform init -reconfigure -backend-config=stacks/montparnasse/gcp.tfbackend
+terraform apply -var-file=stacks/montparnasse/gcp.tfvars -target=google_artifact_registry_repository.images
+
+../../../../MontparnasseAgent/deploy/images/build.sh cpu
+gcloud auth configure-docker us-central1-docker.pkg.dev
+docker tag pymonik-worker:cpu us-central1-docker.pkg.dev/<project>/montparnasse-images/pymonik-worker:cpu-0.1.0
+docker push us-central1-docker.pkg.dev/<project>/montparnasse-images/pymonik-worker:cpu-0.1.0
+
+terraform apply -var-file=stacks/montparnasse/gcp.tfvars
 ```
 
-## Destroy
+## HtcMock
 
 ```sh
-terraform destroy
-# Topics and subscriptions Core created, outside the state (prefix: the prefix variable, armonik by default)
-for s in $(gcloud pubsub subscriptions list --filter="name~/armonik-" --format="value(name)"); do gcloud pubsub subscriptions delete "$s"; done
-for t in $(gcloud pubsub topics list --filter="name~/armonik-" --format="value(name)"); do gcloud pubsub topics delete "$t"; done
-```
-
-## PS: kubeconfig for kubie
-
-Writes the kubeconfig to `generated/kubeconfig` (git-ignored), with the defaults `prefix = "armonik"` and
-`zone = "europe-west9-a"`:
-
-```sh
-mkdir -p generated
-env KUBECONFIG=generated/kubeconfig gcloud container clusters get-credentials armonik --dns-endpoint --location europe-west9 --project <project>
+podman run --rm \
+  -e GrpcClient__Endpoint=http://$(kubectl -n armonik get svc armonik-ingress -o jsonpath='{.status.loadBalancer.ingress[0].ip}'):5001 \
+  -e HtcMock__Partition=htcmock \
+  docker.io/dockerhubaneo/armonik_core_htcmock_test_client:0.41.4
 ```

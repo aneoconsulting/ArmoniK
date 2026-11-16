@@ -1,5 +1,6 @@
-backend.tfbackend
-terraform.tfvars
+# One folder per stack (backend and variables, with the project id): kept local
+stacks/*/
+registry-credentials.auto.tfvars
 kubeconfig
 .terraform/
 *.tfstate

@@ -82,13 +82,7 @@ kube-prometheus:
     prometheusSpec:
       image:
         registry: "${REG_QUAY}"
-      # A bench session, not long-term storage. With ~6000 agent/worker pairs, the cAdvisor and kube-state-metrics
-      # series of 12000 containers set the memory: measured in the bench PostgreSQL dashboard (head series).
-      retention: 3d
-      # ~1.5 M head series at 3000 pairs after the cAdvisor relabelings below, ~4 KiB each
-      resources:
-        requests: {cpu: "2", memory: 8Gi}
-        limits: {memory: 16Gi}
+      # The chart's retention and resources: a bench sizes them in its stack (operators_values)
   kubelet:
     serviceMonitor:
       # The chart defaults (restated: this list replaces them), plus the families no ArmoniK dashboard reads, which

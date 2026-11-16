@@ -1,6 +1,4 @@
-# bucket comes from backend.tfbackend (see backend.tfbackend.example)
+# bucket and prefix come from the stack: -backend-config=stacks/<stack>/gcp.tfbackend
 terraform {
-  backend "gcs" {
-    prefix = "armonik-quick-deploy/gcp-charts"
-  }
+  backend "gcs" {}
 }

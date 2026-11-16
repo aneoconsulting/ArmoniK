@@ -1,4 +1,4 @@
-# Copy to terraform.tfvars (git-ignored). All the parameters: variables.tf.
+# Copy to stacks/<stack>/gcp.tfvars (git-ignored). All the parameters: variables.tf.
 
 project = "my-project"
 
@@ -7,12 +7,6 @@ project = "my-project"
 
 # Name of the cluster and prefix of every resource: change it to deploy twice in the same project
 # prefix = "armonik"
-
-# Read-only tokens against the anonymous rate limits of the upstream registries
-# registry_credentials = {
-#   dockerhub = { username = "me", token = "dckr_pat_..." }
-#   ghcr      = { username = "me", token = "ghp_..." }   # scope read:packages
-# }
 
 # Who may reach the load balancer (ArmoniK API, GUI, Seq, Grafana: no authentication)
 # ingress_allowed_cidrs = ["203.0.113.4/32"]
