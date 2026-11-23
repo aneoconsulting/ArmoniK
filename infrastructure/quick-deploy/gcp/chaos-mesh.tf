@@ -1,3 +1,15 @@
+# Default tags of the Chaos Mesh images
+module "default_images" {
+  source           = "./generated/infra-modules/utils/default-images"
+  armonik_versions = var.armonik_versions
+  armonik_images   = var.armonik_images
+  image_tags       = var.image_tags
+}
+
+locals {
+  default_tags = module.default_images.image_tags
+}
+
 # Chaos Mesh
 module "chaos_mesh" {
   count     = var.chaos_mesh != null ? 1 : 0
