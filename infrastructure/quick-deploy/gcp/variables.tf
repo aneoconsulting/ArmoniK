@@ -1,31 +1,26 @@
-# Prefix
 variable "prefix" {
   description = "Prefix used to name all the resources"
   type        = string
   default     = null # random
 }
 
-# GCP region
 variable "region" {
   description = "The GCP region used to deploy all resources"
   type        = string
   default     = "europe-west1"
 }
 
-# GCP project
 variable "project" {
   description = "GCP project name"
   type        = string
 }
 
-# Map of labels
 variable "labels" {
   description = "Labels for GCP resources"
   type        = map(string)
   default     = {}
 }
 
-# KMS key name to encrypt/decrypt resources
 variable "kms" {
   description = "Cloud KMS used to encrypt/decrypt resources."
   type = object({
@@ -34,7 +29,6 @@ variable "kms" {
   })
 }
 
-# VPC and subnets for resources
 variable "subnets" {
   description = "A map of subnets inside the VPC. Each subnet object has a CIDR block, a region, and a boolean set to true if the subnet is public, or false if the subnet is private"
   type = map(object({
@@ -44,7 +38,6 @@ variable "subnets" {
   default = null
 }
 
-# GCP Kubernetes cluster
 variable "gke" {
   description = "GKE cluster configuration"
   type = object({
@@ -67,26 +60,6 @@ variable "gke" {
   default = {}
 }
 
-# Keda
-variable "keda" {
-  description = "Keda configuration"
-  type = object({
-    namespace                       = optional(string, "default")
-    image_name                      = optional(string, "ghcr.io/kedacore/keda"),
-    image_tag                       = optional(string),
-    apiserver_image_name            = optional(string, "ghcr.io/kedacore/keda-metrics-apiserver"),
-    apiserver_image_tag             = optional(string),
-    pull_secrets                    = optional(string, ""),
-    node_selector                   = optional(any, {})
-    metrics_server_dns_policy       = optional(string, "ClusterFirst")
-    metrics_server_use_host_network = optional(bool, false)
-    helm_chart_repository           = optional(string)
-    helm_chart_version              = optional(string)
-  })
-  default = {}
-}
-
-# Chaos Mesh
 variable "chaos_mesh" {
   description = "Chaos Mesh configuration"
   type = object({
@@ -106,111 +79,6 @@ variable "chaos_mesh" {
   default = null
 }
 
-# Parameters for MongoDB (Percona)
-variable "mongodb" {
-  description = "Parameters for MongoDB using the Percona Operator. Set to null to disable."
-  type = object({
-    # Node selector applied to the MongoDB replica set (shard) pods.
-    # Inherits to operator and cluster if their own node_selector is not set.
-    node_selector = optional(map(string))
-
-    # Percona MongoDB Operator settings (the controller that manages the DB cluster).
-    operator = optional(object({
-      helm_chart_repository = optional(string)                                            # Helm chart repository URL. Uses operator default if unset.
-      helm_chart_name       = optional(string)                                            # Helm chart name. Uses operator default if unset.
-      helm_chart_version    = optional(string)                                            # Helm chart version. Uses operator default (latest) if unset.
-      image                 = optional(string, "percona/percona-server-mongodb-operator") # Operator container image.
-      tag                   = optional(string)                                            # Operator image tag. Uses chart's appVersion if unset.
-      node_selector         = optional(map(string))                                       # Node selector for the operator pod itself.
-      annotations           = optional(map(string), {})                                   # Annotations added to the operator deployment.
-    }), {})
-
-    # Percona MongoDB cluster (the actual database instances) settings.
-    cluster = optional(object({
-      image         = optional(string, "percona/percona-server-mongodb") # MongoDB server container image.
-      tag           = optional(string)                                   # MongoDB server image tag. Uses chart's appVersion if unset.
-      database_name = optional(string, "database")                       # Name of the default database to create.
-      replicas      = optional(number, 1)                                # Number of replicas per shard (replica set members).
-      node_selector = optional(map(string))                              # Node selector for the MongoDB data pods.
-      annotations   = optional(map(string), {})                          # Annotations added to the cluster CR.
-    }), {})
-
-    # Resource requests and limits for each component.
-    resources = optional(object({
-      # Resources for shard (replica set) pods.
-      shards = optional(object({
-        limits   = optional(map(string)) # e.g. { "cpu" = "2", "memory" = "4Gi" }
-        requests = optional(map(string)) # e.g. { "cpu" = "500m", "memory" = "1Gi" }
-      }), {})
-      # Resources for config server pods (only relevant when sharding is enabled).
-      configsvr = optional(object({
-        limits   = optional(map(string))
-        requests = optional(map(string))
-      }), {})
-      # Resources for mongos (router) pods (only relevant when sharding is enabled).
-      mongos = optional(object({
-        limits   = optional(map(string))
-        requests = optional(map(string))
-      }), {})
-    }), {})
-
-    # Sharding configuration. Set to null (default) to deploy a simple replica set without sharding.
-    sharding = optional(object({
-      shards_quantity = optional(number, 1) # Number of shards in the cluster.
-      configsvr = optional(object({
-        replicas      = optional(number, 1)       # Number of config server replicas.
-        node_selector = optional(map(string), {}) # Node selector for config server pods.
-      }), {})
-      mongos = optional(object({
-        replicas      = optional(number, 1)       # Number of mongos (router) replicas.
-        node_selector = optional(map(string), {}) # Node selector for mongos pods.
-      }), {})
-    }))
-
-    # Persistence configuration for data volumes.
-    # Set to null to use emptyDir (data lost on pod restart).
-    # Set to {} to use PVCs with the cluster's default StorageClass.
-    persistence = optional(object({
-      # Persistence settings for shard (replica set) data volumes.
-      shards = optional(object({
-        storage_size        = optional(string, "8Gi")                   # Size of the PVC for each shard pod.
-        storage_class_name  = optional(string)                          # Use an existing StorageClass by name. Mutually exclusive with storage_provisioner.
-        storage_provisioner = optional(string)                          # Create a new StorageClass with this provisioner (e.g. "ebs.csi.aws.com", "efs.csi.aws.com").
-        reclaim_policy      = optional(string, "Delete")                # PV reclaim policy: Delete or Retain.
-        volume_binding_mode = optional(string, "WaitForFirstConsumer")  # When to bind PVs: WaitForFirstConsumer or Immediate.
-        access_modes        = optional(list(string), ["ReadWriteOnce"]) # PVC access modes.
-        parameters          = optional(map(string), {})                 # Additional StorageClass parameters (e.g. {"type" = "gp3", "iopsPerGB" = "500"}).
-      }), {})
-      # Persistence settings for config server data volumes (only relevant when sharding is enabled).
-      configsvr = optional(object({
-        storage_size        = optional(string, "3Gi")                   # Size of the PVC for each config server pod.
-        storage_class_name  = optional(string)                          # Use an existing StorageClass by name. Mutually exclusive with storage_provisioner.
-        storage_provisioner = optional(string)                          # Create a new StorageClass with this provisioner.
-        reclaim_policy      = optional(string, "Delete")                # PV reclaim policy: Delete or Retain.
-        volume_binding_mode = optional(string, "WaitForFirstConsumer")  # When to bind PVs: WaitForFirstConsumer or Immediate.
-        access_modes        = optional(list(string), ["ReadWriteOnce"]) # PVC access modes.
-        parameters          = optional(map(string), {})                 # Additional StorageClass parameters.
-      }), {})
-    }))
-
-    # Timeout in seconds for Helm release creation and the wait-for-ready job.
-    timeout = optional(number, 600)
-  })
-  default  = {}
-  nullable = true
-}
-
-variable "mongodb_metrics_exporter" {
-  description = "MongoDB Metrics Exporter configuration (nullable)"
-  type = object({
-    image_name   = optional(string, "percona/mongodb_exporter")
-    image_tag    = optional(string)
-    pull_secrets = optional(string, "")
-  })
-  default = null
-}
-
-# GCP Memorystore for Valkey
 variable "memorystore" {
   description = "Configuration of GCP Memorystore for Valkey, see the valkey module of ArmoniK.Infra"
   type = object({
@@ -238,14 +106,6 @@ variable "memorystore" {
   default = null
 }
 
-# GCS for object storage of payloads
-variable "gcs_os" {
-  description = "Use GCS as object storage"
-  type        = any
-  default     = null
-}
-
-# ArmoniK docker images
 variable "armonik_images" {
   description = "Image names of all the ArmoniK components"
   type = object({
@@ -259,7 +119,6 @@ variable "armonik_images" {
   })
 }
 
-# Versions of the ArmoniK docker images
 variable "armonik_versions" {
   description = "Versions of all the ArmoniK components"
   type = object({
@@ -273,313 +132,11 @@ variable "armonik_versions" {
   })
 }
 
-variable "upload_images" {
-  description = "Whether the images are uploaded to the Artifact Registry or not"
-  type        = bool
-  default     = true
-}
-
-variable "seq" {
-  description = "Seq configuration (nullable)"
-  type = object({
-    image_name        = optional(string, "datalust/seq")
-    image_tag         = optional(string)
-    port              = optional(number, 8080)
-    pull_secrets      = optional(string, "")
-    service_type      = optional(string, "ClusterIP")
-    node_selector     = optional(any, {})
-    system_ram_target = optional(number, 0.2)
-    authentication    = optional(bool, false)
-    cli_image_name    = optional(string, "datalust/seqcli")
-    cli_image_tag     = optional(string)
-    cli_pull_secrets  = optional(string, "")
-    retention_in_days = optional(string, "2d")
-  })
-  default = null
-}
-
-variable "grafana" {
-  description = "Grafana configuration (nullable)"
-  type = object({
-    image_name     = optional(string, "grafana/grafana")
-    image_tag      = optional(string)
-    port           = optional(number, 3000)
-    pull_secrets   = optional(string, "")
-    service_type   = optional(string, "ClusterIP")
-    node_selector  = optional(any, {})
-    authentication = optional(bool, false)
-  })
-  default = null
-}
-
-variable "node_exporter" {
-  description = "Node exporter configuration (nullable)"
-  type = object({
-    image_name    = optional(string, "prom/node-exporter")
-    image_tag     = optional(string)
-    pull_secrets  = optional(string, "")
-    service_type  = optional(string, "ClusterIP")
-    node_selector = optional(any, {})
-  })
-  default = null
-}
-
-variable "prometheus" {
-  description = "Prometheus configuration"
-  type = object({
-    image_name    = optional(string, "prom/prometheus")
-    image_tag     = optional(string)
-    pull_secrets  = optional(string, "")
-    service_type  = optional(string, "ClusterIP")
-    node_selector = optional(any, {})
-  })
-  default = {}
-}
-
-variable "metrics_exporter" {
-  description = "Metrics exporter configuration"
-  type = object({
-    image_name    = optional(string, "dockerhubaneo/armonik_control_metrics")
-    image_tag     = optional(string)
-    pull_secrets  = optional(string, "")
-    service_type  = optional(string, "ClusterIP")
-    node_selector = optional(any, {})
-    extra_conf    = optional(map(string), {})
-  })
-  default = {}
-}
-
-variable "partition_metrics_exporter" {
-  description = "Partition metrics exporter configuration (nullable)"
-  type = object({
-    image_name    = optional(string, "dockerhubaneo/armonik_control_partition_metrics")
-    image_tag     = optional(string)
-    pull_secrets  = optional(string, "")
-    service_type  = optional(string, "ClusterIP")
-    node_selector = optional(any, {})
-    extra_conf    = optional(map(string), {})
-  })
-  default = null
-}
-
-variable "fluent_bit" {
-  description = "Fluent bit configuration"
-  type = object({
-    image_name                         = optional(string, "fluent/fluent-bit")
-    image_tag                          = optional(string)
-    pull_secrets                       = optional(string, "")
-    is_daemonset                       = optional(bool, true)
-    http_port                          = optional(number, 2020)
-    read_from_head                     = optional(bool, true)
-    node_selector                      = optional(any, {})
-    parser                             = optional(string, "cri")
-    fluent_bit_state_hostpath          = optional(string, "/var/log/fluent-bit/state")
-    var_lib_docker_containers_hostpath = optional(string, "/var/log/lib/docker/containers")
-    run_log_journal_hostpath           = optional(string, "/var/log/run/log/journal")
-  })
-  default = {}
-}
-
-# Extra configuration
-variable "configurations" {
-  description = ""
-  type = object({
-    core    = optional(any, [])
-    control = optional(any, [])
-    compute = optional(any, [])
-    worker  = optional(any, [])
-    polling = optional(any, [])
-    log     = optional(any, [])
-    metrics = optional(any, [])
-    jobs    = optional(any, [])
-  })
-}
-
-# Parameters of control plane
-variable "control_plane" {
-  description = "Parameters of the control plane"
-  type = object({
-    name              = optional(string, "control-plane")
-    service_type      = optional(string, "ClusterIP")
-    replicas          = optional(number, 2)
-    image             = optional(string, "dockerhubaneo/armonik_control")
-    tag               = optional(string)
-    image_pull_policy = optional(string, "IfNotPresent")
-    port              = optional(number, 5001)
-    limits = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-    requests = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-    image_pull_secrets = optional(string, "")
-    node_selector      = optional(any, {})
-    annotations        = optional(any, {})
-    # KEDA scaler
-    hpa               = optional(any)
-    default_partition = string
-    readiness_probe   = optional(bool, true)
-  })
-}
-
-# Parameters of admin gui
-variable "admin_gui" {
-  description = "Parameters of the admin GUI"
-  type = object({
-    name  = optional(string, "admin-app")
-    image = optional(string, "dockerhubaneo/armonik_admin_app")
-    tag   = optional(string)
-    port  = optional(number, 1080)
-    limits = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-    requests = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-    service_type       = optional(string, "ClusterIP")
-    replicas           = optional(number, 1)
-    image_pull_policy  = optional(string, "IfNotPresent")
-    image_pull_secrets = optional(string, "")
-    node_selector      = optional(any, {})
-  })
-  default = {}
-}
-
-# Parameters of the compute plane
-variable "compute_plane" {
-  description = "Parameters of the compute plane"
-  type = map(object({
-    replicas                         = optional(number, 1)
-    termination_grace_period_seconds = optional(number, 30)
-    image_pull_secrets               = optional(string, "IfNotPresent")
-    node_selector                    = optional(any, {})
-    annotations                      = optional(any, {})
-    polling_agent = optional(object({
-      image             = optional(string, "dockerhubaneo/armonik_pollingagent")
-      tag               = optional(string)
-      image_pull_policy = optional(string, "IfNotPresent")
-      limits            = optional(map(string))
-      requests          = optional(map(string))
-      conf              = optional(any, [])
-    }), {})
-    worker = list(object({
-      name              = optional(string, "worker")
-      image             = string
-      tag               = optional(string)
-      image_pull_policy = optional(string, "IfNotPresent")
-      limits            = optional(map(string))
-      requests          = optional(map(string))
-      conf              = optional(any, [])
-    }))
-    cache_config = optional(object({
-      memory     = optional(bool)
-      size_limit = optional(string)
-    }), {})
-    node_cache = optional(object({
-      path      = optional(string, "")
-      threshold = optional(number, 0.75)
-    }), {})
-    # KEDA scaler
-    hpa = optional(any)
-  }))
-}
-
-variable "ingress" {
-  description = "Parameters of the ingress controller (nullable)"
-  type = object({
-    name              = optional(string, "ingress")
-    service_type      = optional(string, "LoadBalancer")
-    replicas          = optional(number, 1)
-    image             = optional(string, "nginxinc/nginx-unprivileged")
-    tag               = optional(string)
-    image_pull_policy = optional(string, "IfNotPresent")
-    http_port         = optional(number, 5000)
-    grpc_port         = optional(number, 5001)
-    limits = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-    requests = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-    image_pull_secrets    = optional(string, "")
-    node_selector         = optional(any, {})
-    annotations           = optional(any, {})
-    tls                   = optional(bool, false)
-    mtls                  = optional(bool, false)
-    generate_client_cert  = optional(bool, true)
-    custom_client_ca_file = optional(string, "")
-  })
-  default = {}
-}
-
-# Authentication behavior
-variable "authentication" {
-  description = "Authentication behavior"
-  type = object({
-    authentication_datafile = optional(string, "")
-    require_authentication  = optional(bool, false)
-    require_authorization   = optional(bool, false)
-  })
-  default = {}
-}
-
-variable "init" {
-  description = "Configuration of Core Init job"
-  type = object({
-    image              = optional(string, "dockerhubaneo/armonik_control")
-    tag                = optional(string)
-    image_pull_policy  = optional(string, "IfNotPresent")
-    image_pull_secrets = optional(string, "")
-    node_selector      = optional(any, {})
-    annotations        = optional(any, {})
-  })
-  default = {}
-}
-
-variable "pod_deletion_cost" {
-  description = "Configuration of Pod Deletion Cost updater"
-  type = object({
-    image               = optional(string, "dockerhubaneo/armonik_pdc_update")
-    tag                 = optional(string)
-    image_pull_policy   = optional(string, "IfNotPresent")
-    image_pull_secrets  = optional(string, "")
-    node_selector       = optional(any, {})
-    annotations         = optional(any, {})
-    name                = optional(string, "pdc-update")
-    label_app           = optional(string, "armonik")
-    prometheus_url      = optional(string)
-    metrics_name        = optional(string)
-    period              = optional(number)
-    ignore_younger_than = optional(number)
-    concurrency         = optional(number)
-    granularity         = optional(number)
-    extra_conf          = optional(map(string), {})
-
-    limits = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-    requests = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-  })
-  default = {}
-}
-
-# Versions of Third-party docker images
 variable "image_tags" {
   description = "Tags of images used"
   type        = map(string)
 }
 
-# Repositories and versions of Helm charts
 variable "helm_charts" {
   description = "Versions of helm charts repositories"
   type = map(object({
@@ -588,73 +145,43 @@ variable "helm_charts" {
   }))
 }
 
-# Logging level
 variable "logging_level" {
   description = "Logging level in ArmoniK"
   type        = string
   default     = "Information"
 }
 
-variable "environment_description" {
-  description = "Description of the environment"
-  type        = any
-  default     = null
+variable "activemq" {
+  description = "Queue of Core: ActiveMQ in the cluster, instead of Pub/Sub"
+  type        = bool
+  default     = false
+  nullable    = false
 }
 
-variable "static" {
-  description = "json files to be served statically by the ingress"
+variable "operators_namespace" {
+  description = "Namespace of the armonik-operators release (External Secrets, KEDA, cert-manager, kube-prometheus-stack, CloudNativePG)"
+  type        = string
+  default     = "armonik-operators"
+  nullable    = false
+}
+
+variable "partitions" {
+  description = "Partitions added to the chart's own (default, stream, htcmock), see the partitions variable of the armonik-charts module of ArmoniK.Infra"
   type        = any
   default     = {}
+  nullable    = false
 }
 
-# Parameters for ActiveMQ
-variable "activemq" {
-  description = "Parameters of ActiveMQ"
-  type = object({
-    image_name         = optional(string, "apache/activemq-classic")
-    image_tag          = optional(string)
-    node_selector      = optional(any, {})
-    image_pull_secrets = optional(string, "")
-    limits = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-    requests = optional(object({
-      cpu    = optional(string)
-      memory = optional(string)
-    }))
-    activemq_opts_memory = optional(string, "-Xms1g -Xmx3g")
-  })
-  default = null
+variable "armonik_values" {
+  description = "Values of the armonik chart, as YAML text, merged last"
+  type        = string
+  default     = "{}"
+  nullable    = false
 }
 
-variable "load_balancer" {
-  description = "Parameters of the Load Balancer deployment"
-  type = object({
-    image              = optional(string, "dockerhubaneo/armonik_load_balancer")
-    tag                = optional(string)
-    image_pull_policy  = optional(string, "IfNotPresent")
-    limits             = optional(map(string))
-    requests           = optional(map(string))
-    image_pull_secrets = optional(string, "")
-    replicas           = optional(number)
-    node_selector      = optional(map(string))
-    annotations        = optional(map(string))
-    service = optional(object({
-      type        = optional(string)
-      annotations = optional(map(string))
-    }))
-    labels = optional(map(string))
-    conf = optional(object({
-      listen_ip             = optional(string)
-      listen_port           = optional(number)
-      refresh_delay_seconds = optional(number)
-      sqlite_db_path        = optional(string)
-      session_cache_size    = optional(number)
-      result_cache_size     = optional(number)
-      task_cache_size       = optional(number)
-    }))
-    extra_env = optional(map(string))
-  })
-  default = null
+variable "operators_values" {
+  description = "Values of the armonik-operators chart, as YAML text, merged last"
+  type        = string
+  default     = "{}"
+  nullable    = false
 }
