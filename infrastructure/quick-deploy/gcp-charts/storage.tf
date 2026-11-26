@@ -18,6 +18,7 @@ module "object_storage" {
   force_destroy = true
   # IAM only: the native GCS adapter needs no ACL
   uniform_bucket_level_access = true
+  hierarchical_namespace      = var.object_storage_hierarchical_namespace
   # Core deletes temporary results all the time: no 7 more days of billed soft-deleted objects
   soft_delete_retention_days = 0
   # The bench clients do not purge their data (bench/campaign.py): deleting through the API adds load to the database

@@ -225,6 +225,13 @@ variable "partitions" {
   }
 }
 
+variable "object_storage_hierarchical_namespace" {
+  description = "Object storage bucket with a hierarchical namespace: ~8 times the initial request rate of a flat bucket (8000 writes/s instead of 1000), so a load can start high without a warm-up. Operations cost ~30 % more. Changing it replaces the bucket."
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
 variable "database" {
   description = <<-EOT
     Cloud SQL instance of the table storage.

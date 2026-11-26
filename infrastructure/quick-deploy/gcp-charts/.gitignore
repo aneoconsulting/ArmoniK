@@ -11,3 +11,4 @@ kubeconfig
 # Bench scripts and dashboards: kept local
 bench/
 monitoring/
+log_pub_sub/
