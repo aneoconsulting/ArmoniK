@@ -47,6 +47,13 @@ module "gke" {
   # role bindings derive from the project they read. The cluster waits for the APIs through module.vpc anyway.
 }
 
+# The node pools created: GKE reconfigures the control plane while it creates them, and API calls in that window fail
+# (TLS errors on 2026-11-17, a failed Helm release left behind). What calls the API waits for this, through the
+# ComputeClasses; a depends_on on the module would also defer its data sources to the apply.
+resource "terraform_data" "node_pools" {
+  input = keys(module.gke.node_pools)
+}
+
 # Created here rather than by Helm: the Grafana Secret and the S3 credentials Secret of the gcs module go in it
 resource "kubernetes_namespace_v1" "armonik" {
   metadata {

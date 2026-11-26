@@ -58,4 +58,8 @@ resource "kubectl_manifest" "compute_class" {
       nodePoolConfig = { serviceAccount = module.gke.service_account }
     })
   })
+
+  # After the node pools: the releases depend on this resource, so they wait for the pools, and a destroy removes
+  # them before the pools
+  depends_on = [terraform_data.node_pools]
 }
