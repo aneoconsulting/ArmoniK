@@ -181,6 +181,25 @@ resource "kubernetes_config_map_v1" "grafana_dashboards" {
   }
 }
 
+locals {
+  # TaskHandler methods the polling agent times (histograms TaskHandler_<phase>_milliseconds), in the order of a task.
+  # RequestExecution is the worker's part of ExecuteTask; PostProcessing creates the results and the subtasks, then
+  # ends the task in the database; DisposeAsync releases the task and acknowledges its message.
+  task_phases = ["AcquireTask", "PreProcessing", "ExecuteTask", "RequestExecution", "PostProcessing", "DisposeAsync"]
+
+  # Per partition and phase (label phase): a few hundred series instead of one histogram per pod
+  task_phase_rules = flatten([for phase in local.task_phases : [for kind in ["sum", "count", "bucket"] : {
+    record = "armonik:task_phase_milliseconds_${kind}:rate1m"
+    expr   = <<-EOT
+      label_replace(
+        sum by (partition${kind == "bucket" ? ", le" : ""}) (label_replace(
+          rate(TaskHandler_${phase}_milliseconds_${kind}{job="metrics-polling-agent"}[1m]),
+          "partition", "$1", "armonik_fr_partition", "(.+)")),
+        "phase", "${phase}", "", "")
+    EOT
+  }]])
+}
+
 # Per-container series of the compute plane, aggregated once: the dashboards stay fast with thousands of pods
 resource "kubectl_manifest" "bench_recording_rules" {
   yaml_body = yamlencode({
@@ -196,7 +215,7 @@ resource "kubectl_manifest" "bench_recording_rules" {
       groups = [{
         name     = "armonik-bench"
         interval = "15s"
-        rules = [
+        rules = concat([
           {
             record = "armonik:container_cpu_millicores:rate1m"
             expr   = <<-EOT
@@ -227,7 +246,7 @@ resource "kubectl_manifest" "bench_recording_rules" {
             record = "armonik:tasks_ended:rate1m"
             expr   = "sum(rate(pg_armonik_task_ends_calls[1m]))"
           },
-        ]
+        ], local.task_phase_rules)
       }]
     }
   })
