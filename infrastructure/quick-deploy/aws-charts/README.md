@@ -41,6 +41,19 @@ terraform init -reconfigure -backend-config=../../stacks/montparnasse/k8s.tfback
 terraform apply -var-file=../../stacks/montparnasse/k8s.tfvars -var-file=../../stacks/montparnasse/aws.tfbackend
 ```
 
+## Destroy
+
+```sh
+# armonik69 (montparnasse: the same with stacks/montparnasse)
+cd terraform/k8s
+terraform init -reconfigure -backend-config=../../stacks/armonik69/k8s.tfbackend
+terraform destroy -var-file=../../stacks/armonik69/k8s.tfvars -var-file=../../stacks/armonik69/aws.tfbackend
+
+cd ../aws
+terraform init -reconfigure -backend-config=../../stacks/armonik69/aws.tfbackend
+terraform destroy -var-file=../../stacks/armonik69/aws.tfvars
+```
+
 ## HtcMock
 
 ```sh

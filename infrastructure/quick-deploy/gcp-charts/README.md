@@ -41,6 +41,18 @@ docker push us-central1-docker.pkg.dev/<project>/montparnasse-images/pymonik-wor
 terraform apply -var-file=stacks/montparnasse/gcp.tfvars
 ```
 
+## Destroy
+
+```sh
+# armonik69 (montparnasse: the same with stacks/montparnasse)
+terraform init -reconfigure -backend-config=stacks/armonik69/gcp.tfbackend
+# Bucket with millions of objects: keep it out of the destroy, its 1-day lifecycle rule empties it
+terraform state rm module.object_storage.google_storage_bucket.gcs
+terraform destroy -var-file=stacks/armonik69/gcp.tfvars
+# The day after
+gcloud storage buckets delete gs://<prefix>-objects-<suffix>
+```
+
 ## HtcMock
 
 ```sh
