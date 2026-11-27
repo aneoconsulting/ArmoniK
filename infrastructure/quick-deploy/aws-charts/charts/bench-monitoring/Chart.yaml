@@ -1,0 +1,5 @@
+apiVersion: v2
+name: bench-monitoring
+description: Bench monitoring of the AWS stack, to clean up after the bench - Grafana dashboards (folder Bench) and datasources (CloudWatch, PostgreSQL), recording rules, read-only PostgreSQL user
+type: application
+version: 0.1.0

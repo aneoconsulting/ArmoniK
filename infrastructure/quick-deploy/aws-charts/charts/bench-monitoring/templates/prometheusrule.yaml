@@ -1,0 +1,41 @@
+# Per-container series of the compute plane and per-phase task histograms, aggregated once: the dashboards stay fast
+# with thousands of pods. The operators' Prometheus loads the PrometheusRules labelled with its release.
+{{- $pods := printf "namespace=%q,container=~\"agent|worker\",pod=~\"armonik-compute-plane-.+\"" .Release.Namespace }}
+{{- $partition := "\"partition\", \"$1\", \"pod\", \"armonik-compute-plane-(.+)-[a-z0-9]+-[a-z0-9]+\"" }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: armonik-bench
+  labels:
+    {{- toYaml .Values.prometheusRuleLabels | nindent 4 }}
+spec:
+  groups:
+    - name: armonik-bench
+      interval: 15s
+      rules:
+        - record: armonik:container_cpu_millicores:rate1m
+          expr: >-
+            label_replace(1000 * sum by (pod, container) (rate(container_cpu_usage_seconds_total{ {{- $pods -}} }[1m])),
+            {{ $partition }})
+        - record: armonik:container_memory_working_set_mib
+          expr: >-
+            label_replace(sum by (pod, container) (container_memory_working_set_bytes{ {{- $pods -}} }) / 1048576,
+            {{ $partition }})
+        - record: armonik:container_cpu_throttled_ratio:rate1m
+          expr: >-
+            label_replace(sum by (pod, container) (rate(container_cpu_cfs_throttled_periods_total{ {{- $pods -}} }[1m]))
+            / sum by (pod, container) (rate(container_cpu_cfs_periods_total{ {{- $pods -}} }[1m])),
+            {{ $partition }})
+        # All partitions: Core records the end of a task with one statement, without the partition
+        - record: armonik:tasks_ended:rate1m
+          expr: sum(rate(pg_armonik_task_ends_calls[1m]))
+        # Per partition and phase (label phase): a few hundred series instead of one histogram per pod
+        {{- range $phase := .Values.taskPhases }}
+        {{- range $kind := list "sum" "count" "bucket" }}
+        - record: armonik:task_phase_milliseconds_{{ $kind }}:rate1m
+          expr: >-
+            label_replace(sum by (partition{{ if eq $kind "bucket" }}, le{{ end }}) (label_replace(
+            rate(TaskHandler_{{ $phase }}_milliseconds_{{ $kind }}{job="metrics-polling-agent"}[1m]),
+            "partition", "$1", "armonik_fr_partition", "(.+)")), "phase", {{ $phase | quote }}, "", "")
+        {{- end }}
+        {{- end }}

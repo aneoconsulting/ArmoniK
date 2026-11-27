@@ -1,0 +1,38 @@
+# Loaded by the Grafana sidecar of the armonik release (label grafana_datasource). CloudWatch: the credentials of the
+# Grafana pod (EKS Pod Identity, bench-monitoring.tf). PostgreSQL: the read-only user, which anonymous viewers can
+# query with any SQL through the datasource API.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bench-datasources
+  labels:
+    grafana_datasource: "1"
+type: Opaque
+stringData:
+  bench.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: CloudWatch
+        type: cloudwatch
+        uid: cloudwatch
+        access: proxy
+        jsonData:
+          authType: default
+          defaultRegion: {{ .Values.region | quote }}
+      - name: ArmoniK PostgreSQL
+        type: grafana-postgresql-datasource
+        uid: armonik-postgresql
+        access: proxy
+        url: {{ printf "%s:%v" .Values.postgresql.host .Values.postgresql.port | quote }}
+        user: {{ .Values.postgresql.monitoring.username | quote }}
+        jsonData:
+          database: {{ .Values.postgresql.database | quote }}
+          sslmode: verify-full
+          tlsConfigurationMethod: file-content
+          postgresVersion: 1800
+          maxOpenConns: 4
+          maxIdleConns: 2
+        secureJsonData:
+          password: {{ .Values.postgresql.monitoring.password | quote }}
+          tlsCACert: |
+{{ .Values.postgresql.ca | indent 12 }}

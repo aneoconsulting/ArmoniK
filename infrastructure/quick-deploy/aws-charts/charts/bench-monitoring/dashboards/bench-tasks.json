@@ -1,0 +1,558 @@
+{
+  "uid": "armonik-bench-tasks",
+  "title": "Bench - tasks (SQL, after a run)",
+  "description": "SQL on the tasks table over the selected range: throughput, lifecycle phases, statuses, dependencies. Load on the measured database: open it between steps, no automatic refresh.",
+  "tags": [
+    "armonik",
+    "bench"
+  ],
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "editable": true,
+  "refresh": "",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "lookback",
+        "label": "Max task lifetime",
+        "type": "custom",
+        "query": "15 minutes,30 minutes,1 hour,6 hours",
+        "current": {
+          "text": "30 minutes",
+          "value": "30 minutes"
+        },
+        "options": [
+          {
+            "text": "15 minutes",
+            "value": "15 minutes",
+            "selected": false
+          },
+          {
+            "text": "30 minutes",
+            "value": "30 minutes",
+            "selected": true
+          },
+          {
+            "text": "1 hour",
+            "value": "1 hour",
+            "selected": false
+          },
+          {
+            "text": "6 hours",
+            "value": "6 hours",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "name": "partition",
+        "label": "Partition",
+        "type": "query",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "armonik-postgresql"
+        },
+        "multi": true,
+        "includeAll": true,
+        "query": "SELECT partition_id FROM partitions ORDER BY 1",
+        "refresh": 2,
+        "current": {}
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "Bench steps",
+        "enable": true,
+        "iconColor": "rgba(0, 150, 255, 0.6)",
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "target": {
+          "type": "tags",
+          "tags": [
+            "bench"
+          ],
+          "matchAny": true,
+          "limit": 200
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "row",
+      "title": "Throughput",
+      "id": 2,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Completed tasks per second (10 s buckets)",
+      "id": 3,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "armonik-postgresql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT $__timeGroupAlias(end_date, '10s', 0), options_partition_id AS metric, count(*) / 10.0 AS value FROM tasks WHERE status = 4 AND $__timeFilter(end_date) AND creation_date BETWEEN $__timeFrom()::timestamp - interval '$lookback' AND $__timeTo()::timestamp AND options_partition_id IN ($partition) GROUP BY 1, 2 ORDER BY 1",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "armonik-postgresql"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Created tasks per second (10 s buckets)",
+      "id": 4,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "armonik-postgresql"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 1,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT $__timeGroupAlias(creation_date, '10s', 0), options_partition_id AS metric, count(*) / 10.0 AS value FROM tasks WHERE $__timeFilter(creation_date) AND options_partition_id IN ($partition) GROUP BY 1, 2 ORDER BY 1",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "armonik-postgresql"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Lifecycle phases (ended tasks)",
+      "id": 5,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Phase duration median (ms, 30 s buckets)",
+      "id": 6,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "armonik-postgresql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT $__timeGroupAlias(end_date, '30s'), percentile_cont(0.5) WITHIN GROUP (ORDER BY extract(epoch from submitted_date - creation_date) * 1000) AS \"submission\", percentile_cont(0.5) WITHIN GROUP (ORDER BY extract(epoch from reception_date - submitted_date) * 1000) AS \"queue wait\", percentile_cont(0.5) WITHIN GROUP (ORDER BY extract(epoch from acquisition_date - reception_date) * 1000) AS \"acquisition\", percentile_cont(0.5) WITHIN GROUP (ORDER BY extract(epoch from fetched_date - acquisition_date) * 1000) AS \"data fetch\", percentile_cont(0.5) WITHIN GROUP (ORDER BY extract(epoch from start_date - fetched_date) * 1000) AS \"wait for worker\", percentile_cont(0.5) WITHIN GROUP (ORDER BY extract(epoch from processed_date - start_date) * 1000) AS \"execution\", percentile_cont(0.5) WITHIN GROUP (ORDER BY extract(epoch from end_date - processed_date) * 1000) AS \"post-processing\" FROM tasks WHERE status = 4 AND $__timeFilter(end_date) AND creation_date BETWEEN $__timeFrom()::timestamp - interval '$lookback' AND $__timeTo()::timestamp AND options_partition_id IN ($partition) GROUP BY 1 ORDER BY 1",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "armonik-postgresql"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Phase duration p95 (ms, 30 s buckets)",
+      "id": 7,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "armonik-postgresql"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 10,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT $__timeGroupAlias(end_date, '30s'), percentile_cont(0.95) WITHIN GROUP (ORDER BY extract(epoch from submitted_date - creation_date) * 1000) AS \"submission\", percentile_cont(0.95) WITHIN GROUP (ORDER BY extract(epoch from reception_date - submitted_date) * 1000) AS \"queue wait\", percentile_cont(0.95) WITHIN GROUP (ORDER BY extract(epoch from acquisition_date - reception_date) * 1000) AS \"acquisition\", percentile_cont(0.95) WITHIN GROUP (ORDER BY extract(epoch from fetched_date - acquisition_date) * 1000) AS \"data fetch\", percentile_cont(0.95) WITHIN GROUP (ORDER BY extract(epoch from start_date - fetched_date) * 1000) AS \"wait for worker\", percentile_cont(0.95) WITHIN GROUP (ORDER BY extract(epoch from processed_date - start_date) * 1000) AS \"execution\", percentile_cont(0.95) WITHIN GROUP (ORDER BY extract(epoch from end_date - processed_date) * 1000) AS \"post-processing\" FROM tasks WHERE status = 4 AND $__timeFilter(end_date) AND creation_date BETWEEN $__timeFrom()::timestamp - interval '$lookback' AND $__timeTo()::timestamp AND options_partition_id IN ($partition) GROUP BY 1 ORDER BY 1",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "armonik-postgresql"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Agent gap between two tasks (ms, 30 s buckets)",
+      "id": 8,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "armonik-postgresql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 16,
+        "h": 8
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT $__timeGroupAlias(end_date, '30s'), avg(extract(epoch from start_date - prev_processed) * 1000) AS \"worker idle, mean\", percentile_cont(0.95) WITHIN GROUP (ORDER BY extract(epoch from start_date - prev_processed) * 1000) AS \"worker idle p95\", percentile_cont(0.5) WITHIN GROUP (ORDER BY extract(epoch from reception_date - prev_processed) * 1000) AS \"receive wait median\", percentile_cont(0.95) WITHIN GROUP (ORDER BY extract(epoch from reception_date - prev_processed) * 1000) AS \"receive wait p95\" FROM (SELECT end_date, start_date, reception_date, lag(processed_date) OVER (PARTITION BY owner_pod_id ORDER BY start_date) AS prev_processed FROM tasks WHERE status = 4 AND $__timeFilter(end_date) AND creation_date BETWEEN $__timeFrom()::timestamp - interval '$lookback' AND $__timeTo()::timestamp AND options_partition_id IN ($partition)) g WHERE prev_processed IS NOT NULL GROUP BY 1 ORDER BY 1",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "armonik-postgresql"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Next message received after the worker was free (share of tasks)",
+      "id": 9,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "armonik-postgresql"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 18,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT $__timeGroupAlias(end_date, '30s'), avg((reception_date > prev_processed)::int) AS \"receive late\" FROM (SELECT end_date, start_date, reception_date, lag(processed_date) OVER (PARTITION BY owner_pod_id ORDER BY start_date) AS prev_processed FROM tasks WHERE status = 4 AND $__timeFilter(end_date) AND creation_date BETWEEN $__timeFrom()::timestamp - interval '$lookback' AND $__timeTo()::timestamp AND options_partition_id IN ($partition)) g WHERE prev_processed IS NOT NULL GROUP BY 1 ORDER BY 1",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "armonik-postgresql"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "End to end: creation to end (ms, 30 s buckets)",
+      "id": 10,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "armonik-postgresql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT $__timeGroupAlias(end_date, '30s'), percentile_cont(0.5) WITHIN GROUP (ORDER BY extract(epoch from end_date - creation_date) * 1000) AS median, percentile_cont(0.95) WITHIN GROUP (ORDER BY extract(epoch from end_date - creation_date) * 1000) AS p95, max(extract(epoch from end_date - creation_date) * 1000) AS max FROM tasks WHERE status = 4 AND $__timeFilter(end_date) AND creation_date BETWEEN $__timeFrom()::timestamp - interval '$lookback' AND $__timeTo()::timestamp AND options_partition_id IN ($partition) GROUP BY 1 ORDER BY 1",
+          "format": "time_series",
+          "rawQuery": true,
+          "editorMode": "code",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "armonik-postgresql"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Runs",
+      "id": 11,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 34,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "Sessions in range",
+      "id": 12,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "armonik-postgresql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 35,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT session_id, options_partition_id AS partition, min(creation_date) AS first_created, max(end_date) AS last_end, count(*) AS tasks, count(*) FILTER (WHERE status = 4) AS completed, count(*) FILTER (WHERE status IN (5, 6)) AS failed, count(*) FILTER (WHERE cardinality(retry_of_ids) > 0) AS retries, count(*) FILTER (WHERE cardinality(data_dependencies) > 1) AS with_dependencies, round(avg(extract(epoch from end_date - start_date) * 1000)::numeric) AS exec_ms_mean, round((percentile_cont(0.95) WITHIN GROUP (ORDER BY extract(epoch from end_date - start_date) * 1000))::numeric) AS exec_ms_p95, round((count(*) FILTER (WHERE status = 4) / nullif(extract(epoch from max(end_date) - min(start_date)), 0))::numeric, 1) AS tasks_per_s FROM tasks WHERE $__timeFilter(creation_date) AND options_partition_id IN ($partition) GROUP BY 1, 2 ORDER BY 3",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "armonik-postgresql"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "type": "barchart",
+      "title": "Tasks by status (created in range)",
+      "id": 13,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "armonik-postgresql"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 43,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT CASE status WHEN 0 THEN 'Unspecified' WHEN 1 THEN 'Creating' WHEN 2 THEN 'Submitted' WHEN 3 THEN 'Dispatched' WHEN 4 THEN 'Completed' WHEN 5 THEN 'Error' WHEN 6 THEN 'Timeout' WHEN 7 THEN 'Cancelling' WHEN 8 THEN 'Cancelled' WHEN 9 THEN 'Processing' WHEN 10 THEN 'Processed' WHEN 11 THEN 'Retried' WHEN 12 THEN 'Pending' WHEN 13 THEN 'Paused' ELSE status::text END AS status, count(*) AS tasks FROM tasks WHERE $__timeFilter(creation_date) AND options_partition_id IN ($partition) GROUP BY 1 ORDER BY 2 DESC",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "armonik-postgresql"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "type": "barchart",
+      "title": "Data dependencies per task (created in range)",
+      "id": 14,
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "armonik-postgresql"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 43,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT cardinality(data_dependencies)::text AS dependencies, count(*) AS tasks FROM tasks WHERE $__timeFilter(creation_date) AND options_partition_id IN ($partition) GROUP BY cardinality(data_dependencies) ORDER BY cardinality(data_dependencies)",
+          "format": "table",
+          "rawQuery": true,
+          "editorMode": "code",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "armonik-postgresql"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "description": "1 is the payload alone: an independent task"
+    }
+  ]
+}

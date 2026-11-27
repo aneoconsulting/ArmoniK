@@ -1,0 +1,91 @@
+# Read-only user of postgres_exporter and of the Grafana PostgreSQL datasource, created by Core's user (rds_superuser,
+# CREATEROLE) on the writer: pg_monitor (every session, statistics view and pg_stat_statements row), SELECT on the
+# tables of Core, now and on those Core creates later. Run again at every upgrade, idempotent.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgresql-monitoring
+type: Opaque
+stringData:
+  username: {{ .Values.postgresql.monitoring.username | quote }}
+  password: {{ .Values.postgresql.monitoring.password | quote }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgresql-monitoring-ca
+type: Opaque
+stringData:
+  ca.crt: |
+{{ .Values.postgresql.ca | indent 4 }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgresql-monitoring-user
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 10
+  ttlSecondsAfterFinished: 600
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: psql
+          image: {{ .Values.psqlImage | quote }}
+          env:
+            - name: PGHOST
+              value: {{ .Values.postgresql.host | quote }}
+            - name: PGPORT
+              value: {{ .Values.postgresql.port | quote }}
+            - name: PGDATABASE
+              value: {{ .Values.postgresql.database | quote }}
+            - name: PGSSLMODE
+              value: verify-full
+            - name: PGSSLROOTCERT
+              value: /ca/ca.crt
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.adminSecret }}
+                  key: username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgresql.adminSecret }}
+                  key: password
+            - name: MONITORING_USER
+              value: {{ .Values.postgresql.monitoring.username | quote }}
+            - name: MONITORING_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-monitoring
+                  key: password
+          command:
+            - sh
+            - -c
+            - |
+              psql -v ON_ERROR_STOP=1 -v user="$MONITORING_USER" -v password="$MONITORING_PASSWORD" <<'SQL'
+              SELECT format('CREATE ROLE %I LOGIN', :'user') WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'user') \gexec
+              ALTER ROLE :"user" WITH LOGIN PASSWORD :'password';
+              GRANT pg_monitor TO :"user";
+              CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+              GRANT SELECT ON ALL TABLES IN SCHEMA public TO :"user";
+              ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO :"user";
+              SQL
+          volumeMounts:
+            - name: ca
+              mountPath: /ca
+              readOnly: true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
+      volumes:
+        - name: ca
+          secret:
+            secretName: postgresql-monitoring-ca

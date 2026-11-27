@@ -1,0 +1,1908 @@
+{
+  "uid": "armonik-bench-run",
+  "title": "Bench - run",
+  "description": "During a campaign: throughput against the target, the queue, the agents, then the platform (Aurora, RDS Proxy, SQS, S3, control plane). Details in the other Bench dashboards.",
+  "tags": [
+    "armonik",
+    "bench"
+  ],
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "editable": true,
+  "refresh": "30s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "partition",
+        "label": "Partition",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "query": {
+          "query": "label_values(kube_deployment_spec_replicas{namespace=\"__NAMESPACE__\",deployment=~\"armonik-compute-plane-.+\"}, deployment)",
+          "refId": "partition"
+        },
+        "regex": "/armonik-compute-plane-(.+)/",
+        "refresh": 2,
+        "sort": 1,
+        "current": {
+          "text": "htcmock",
+          "value": "htcmock"
+        }
+      }
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "Bench steps",
+        "enable": true,
+        "iconColor": "rgba(0, 150, 255, 0.6)",
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "target": {
+          "type": "tags",
+          "tags": [
+            "bench"
+          ],
+          "matchAny": true,
+          "limit": 200
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Completed/s",
+      "id": 2,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum(armonik:tasks_ended:rate1m)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "description": "Ends of tasks, all partitions (only the campaign's runs)"
+    },
+    {
+      "type": "stat",
+      "title": "Submitted/s",
+      "id": 3,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 3,
+        "y": 0,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(GrpcTasksService_SubmitTasks_Count_total{namespace=\"__NAMESPACE__\"}[1m])) * 100",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "description": "SubmitTasks calls x 100, the batch of the Bench client"
+    },
+    {
+      "type": "stat",
+      "title": "Queue",
+      "id": 4,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_queued\"}) + sum({__name__=\"armonik_${partition}_tasks_dispatched\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "description": "Submitted and dispatched tasks of the partition"
+    },
+    {
+      "type": "stat",
+      "title": "Busy ratio",
+      "id": 5,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 9,
+        "y": 0,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_processing\"}) / sum(kube_deployment_status_replicas_available{namespace=\"__NAMESPACE__\",deployment=\"armonik-compute-plane-$partition\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "type": "stat",
+      "title": "Ready pods",
+      "id": 6,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "sum(kube_deployment_status_replicas_available{namespace=\"__NAMESPACE__\",deployment=\"armonik-compute-plane-$partition\"})",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "type": "stat",
+      "title": "Database CPU",
+      "id": 7,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 15,
+        "y": 0,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"CPUUtilization\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "CPU",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {}
+    },
+    {
+      "type": "stat",
+      "title": "Database ACU",
+      "id": 8,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"ServerlessDatabaseCapacity\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "ACU",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "description": "Serverless v2: 1 ACU is about 2 GiB of memory with the matching CPU, by steps of 0.5. Empty with provisioned instances"
+    },
+    {
+      "type": "stat",
+      "title": "Workers nodes (spot)",
+      "id": 9,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 21,
+        "y": 0,
+        "w": 3,
+        "h": 4
+      },
+      "targets": [
+        {
+          "expr": "count(kube_node_labels{label_karpenter_sh_nodepool=\"workers\",label_karpenter_sh_capacity_type=\"spot\"}) or vector(0)",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "description": "A drop during a step: spot interruptions, the step is not valid"
+    },
+    {
+      "type": "row",
+      "title": "Throughput",
+      "id": 10,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 4,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Submitted and completed",
+      "id": 11,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 16,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(armonik:tasks_ended:rate1m)",
+          "legendFormat": "completed/s",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(GrpcTasksService_SubmitTasks_Count_total{namespace=\"__NAMESPACE__\"}[1m])) * 100",
+          "legendFormat": "submitted/s",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "A step holds when the completions reach 95 % of its target (workers / task duration)"
+    },
+    {
+      "type": "timeseries",
+      "title": "Completed per pod and busy ratio",
+      "id": 12,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 5,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(armonik:tasks_ended:rate1m) / sum(kube_deployment_status_replicas_available{namespace=\"__NAMESPACE__\",deployment=\"armonik-compute-plane-$partition\"})",
+          "legendFormat": "tasks/s per pod",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_processing\"}) / sum(kube_deployment_status_replicas_available{namespace=\"__NAMESPACE__\",deployment=\"armonik-compute-plane-$partition\"})",
+          "legendFormat": "busy ratio",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "busy ratio"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Queue",
+      "id": 13,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Tasks of the partition",
+      "id": 14,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_queued\"})",
+          "legendFormat": "queued",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_dispatched\"})",
+          "legendFormat": "dispatched",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        },
+        {
+          "expr": "sum({__name__=\"armonik_${partition}_tasks_processing\"})",
+          "legendFormat": "processing",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Queued growing through a step: the platform does not keep up"
+    },
+    {
+      "type": "timeseries",
+      "title": "SQS: visible and in flight",
+      "id": 15,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 14,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SUM(SEARCH('{AWS/SQS,QueueName} MetricName=\"ApproximateNumberOfMessagesVisible\" QueueName=__QUEUE_PREFIX__', 'Maximum', 60))",
+          "id": "",
+          "region": "default",
+          "label": "visible",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SUM(SEARCH('{AWS/SQS,QueueName} MetricName=\"ApproximateNumberOfMessagesNotVisible\" QueueName=__QUEUE_PREFIX__', 'Maximum', 60))",
+          "id": "",
+          "region": "default",
+          "label": "in flight",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "CloudWatch: a few minutes late"
+    },
+    {
+      "type": "timeseries",
+      "title": "SQS: oldest message",
+      "id": 16,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 14,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/SQS,QueueName} MetricName=\"ApproximateAgeOfOldestMessage\" QueueName=__QUEUE_PREFIX__', 'Maximum', 60)",
+          "id": "",
+          "region": "default",
+          "label": "${PROP('Dim.QueueName')}",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Agents and workers",
+      "id": 17,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 22,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Agent CPU (m)",
+      "id": 18,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 23,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "quantile(0.5, armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"agent\"})",
+          "legendFormat": "median",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "quantile(0.95, armonik:container_cpu_millicores:rate1m{partition=\"$partition\",container=\"agent\"})",
+          "legendFormat": "p95",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        },
+        {
+          "expr": "1000 * avg(kube_pod_container_resource_requests{namespace=\"__NAMESPACE__\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"agent\",resource=\"cpu\"})",
+          "legendFormat": "request",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "p95 above the request: the nodes are packed beyond what the pairs use"
+    },
+    {
+      "type": "timeseries",
+      "title": "Agent memory (MiB)",
+      "id": 19,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 23,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "max(armonik:container_memory_working_set_mib{partition=\"$partition\",container=\"agent\"})",
+          "legendFormat": "max",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "avg(kube_pod_container_resource_limits{namespace=\"__NAMESPACE__\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"agent\",resource=\"memory\"}) / 1048576",
+          "legendFormat": "limit",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "A max climbing over a long step: a leak"
+    },
+    {
+      "type": "timeseries",
+      "title": "Worker memory (MiB)",
+      "id": 20,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 23,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "max(armonik:container_memory_working_set_mib{partition=\"$partition\",container=\"worker\"})",
+          "legendFormat": "max",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "avg(kube_pod_init_container_resource_limits{namespace=\"__NAMESPACE__\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\",container=\"worker\",resource=\"memory\"}) / 1048576",
+          "legendFormat": "limit",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Task phases (polling agent)",
+      "id": 21,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 31,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Mean duration per phase (ms per task)",
+      "id": 22,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "armonik:task_phase_milliseconds_sum:rate1m{partition=\"$partition\"} / armonik:task_phase_milliseconds_count:rate1m{partition=\"$partition\"}",
+          "legendFormat": "{{phase}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Recording rules of the bench-monitoring chart. RequestExecution is the worker's part of ExecuteTask. PostProcessing: results and subtasks created, task ended in the database. DisposeAsync: task released, message deleted"
+    },
+    {
+      "type": "timeseries",
+      "title": "PostProcessing latency (ms)",
+      "id": 23,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum by (le) (armonik:task_phase_milliseconds_bucket:rate1m{partition=\"$partition\",phase=\"PostProcessing\"}))",
+          "legendFormat": "p50",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (armonik:task_phase_milliseconds_bucket:rate1m{partition=\"$partition\",phase=\"PostProcessing\"}))",
+          "legendFormat": "p95",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le) (armonik:task_phase_milliseconds_bucket:rate1m{partition=\"$partition\",phase=\"PostProcessing\"}))",
+          "legendFormat": "p99",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Interpolated in the default buckets of Core (5, 10, 25, 50, 75, 100, 250, 500, 750 ms, 1 s...): coarse between two bounds. Exact values per task in Bench - tasks (SQL)"
+    },
+    {
+      "type": "timeseries",
+      "title": "SQS delete: DisposeAsync latency (ms)",
+      "id": 24,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum by (le) (armonik:task_phase_milliseconds_bucket:rate1m{partition=\"$partition\",phase=\"DisposeAsync\"}))",
+          "legendFormat": "p50",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (armonik:task_phase_milliseconds_bucket:rate1m{partition=\"$partition\",phase=\"DisposeAsync\"}))",
+          "legendFormat": "p95",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le) (armonik:task_phase_milliseconds_bucket:rate1m{partition=\"$partition\",phase=\"DisposeAsync\"}))",
+          "legendFormat": "p99",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "The task released, then its message deleted (QueueMessageHandler.DisposeAsync): the only measure of the acknowledgement inside the agent. Runs in the post-processing stage, after end_date: it slows the agent only when post-processing plus delete outlast the next task's execution"
+    },
+    {
+      "type": "timeseries",
+      "title": "AcquireTask latency (ms)",
+      "id": 25,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum by (le) (armonik:task_phase_milliseconds_bucket:rate1m{partition=\"$partition\",phase=\"AcquireTask\"}))",
+          "legendFormat": "p50",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (armonik:task_phase_milliseconds_bucket:rate1m{partition=\"$partition\",phase=\"AcquireTask\"}))",
+          "legendFormat": "p95",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum by (le) (armonik:task_phase_milliseconds_bucket:rate1m{partition=\"$partition\",phase=\"AcquireTask\"}))",
+          "legendFormat": "p99",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "From the received message to the task acquired in the database. The SQS receive itself is before it and has no metric: see the agent gap in Bench - tasks (SQL)"
+    },
+    {
+      "type": "row",
+      "title": "Database",
+      "id": 26,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Aurora CPU and capacity",
+      "id": 27,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 49,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"CPUUtilization\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "CPU %",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"ServerlessDatabaseCapacity\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "ACU",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ACU"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Provisioned: sized for 70 % CPU at the target rate. Serverless: the ACU follow the load"
+    },
+    {
+      "type": "timeseries",
+      "title": "RDS Proxy: borrowed connections and borrow latency",
+      "id": 28,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 49,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"DatabaseConnectionsCurrentlyBorrowed\" ProxyName=\"__PROXY__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "borrowed",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"DatabaseConnectionsBorrowLatency\" ProxyName=\"__PROXY__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "borrow latency",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "borrow latency"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "\u00b5s"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Replication slot lag (WAL broadcaster)",
+      "id": 29,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 49,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "max(pg_armonik_replication_slots_lag_bytes)",
+          "legendFormat": "lag",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Must stay flat: a growing lag keeps WAL on the volume"
+    },
+    {
+      "type": "timeseries",
+      "title": "Top statements: time per second",
+      "id": 30,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 57,
+        "w": 24,
+        "h": 9
+      },
+      "targets": [
+        {
+          "expr": "topk(8, sum by (queryid) (rate(pg_stat_statements_seconds_total[1m]))) * on (queryid) group_left (query) max by (queryid, query) (pg_stat_statements_query_id)",
+          "legendFormat": "{{query}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Seconds of execution per second, i.e. cores of the database per statement. The liveness check of Core grows with the pods, not the tasks"
+    },
+    {
+      "type": "row",
+      "title": "Object storage and control plane",
+      "id": 31,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 66,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "S3 writes/s vs tasks/s",
+      "id": 32,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 67,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"PutRequests\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "S3 PUT/s",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SUM(SEARCH('{AWS/SQS,QueueName} MetricName=\"NumberOfMessagesSent\" QueueName=__QUEUE_PREFIX__', 'Sum', 60)) / 60",
+          "id": "",
+          "region": "default",
+          "label": "tasks sent/s",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "About 2 writes per task: its payload and its result"
+    },
+    {
+      "type": "timeseries",
+      "title": "S3 errors/s",
+      "id": 33,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 67,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"5xxErrors\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "5xx (SlowDown)",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"4xxErrors\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "4xx",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "503 SlowDown: S3 splits a prefix under the load, the warm-up of the bucket"
+    },
+    {
+      "type": "timeseries",
+      "title": "SubmitTasks latency p95 (ms)",
+      "id": 34,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 67,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(GrpcTasksService_SubmitTasks_milliseconds_bucket{namespace=\"__NAMESPACE__\"}[1m])))",
+          "legendFormat": "p95",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Control plane CPU per pod (m) vs limit",
+      "id": 35,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 75,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "1000 * sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"__NAMESPACE__\",pod=~\"armonik-control-plane-.+\",container=\"control-plane\"}[1m]))",
+          "legendFormat": "{{pod}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "1000 * max(kube_pod_container_resource_limits{namespace=\"__NAMESPACE__\",pod=~\"armonik-control-plane-.+\",container=\"control-plane\",resource=\"cpu\"})",
+          "legendFormat": "limit",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Control plane CPU throttling",
+      "id": 36,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 75,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (pod) (rate(container_cpu_cfs_throttled_periods_total{namespace=\"__NAMESPACE__\",pod=~\"armonik-control-plane-.+\",container=\"control-plane\"}[1m])) / sum by (pod) (rate(container_cpu_cfs_periods_total{namespace=\"__NAMESPACE__\",pod=~\"armonik-control-plane-.+\",container=\"control-plane\"}[1m]))",
+          "legendFormat": "{{pod}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Health",
+      "id": 37,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 83,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Nodes by Karpenter pool, instance type and capacity type",
+      "id": 38,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 84,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "count by (label_karpenter_sh_nodepool, label_node_kubernetes_io_instance_type, label_karpenter_sh_capacity_type) (kube_node_labels{label_karpenter_sh_nodepool!=\"\"})",
+          "legendFormat": "{{label_karpenter_sh_nodepool}} {{label_node_kubernetes_io_instance_type}} {{label_karpenter_sh_capacity_type}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Restarts by container",
+      "id": 39,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 84,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (container) (increase(kube_pod_container_status_restarts_total{namespace=\"__NAMESPACE__\",pod=~\"armonik-compute-plane-$partition-[a-z0-9]+-[a-z0-9]+\"}[5m]))",
+          "legendFormat": "__auto",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Prometheus",
+      "id": 40,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 84,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "prometheus_tsdb_head_series",
+          "legendFormat": "head series",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "sum(container_memory_working_set_bytes{namespace=\"__OPERATORS_NAMESPACE__\",pod=~\"prometheus-kps-prometheus-.+\",container=\"prometheus\"})",
+          "legendFormat": "memory",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "memory"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Series in memory and the memory of Prometheus"
+    }
+  ]
+}

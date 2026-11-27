@@ -1,0 +1,2003 @@
+{
+  "uid": "armonik-bench-postgresql",
+  "title": "Bench - PostgreSQL (Aurora, RDS Proxy)",
+  "description": "Aurora writer and RDS Proxy (CloudWatch, 1 point per minute), engine statistics and statements (postgres_exporter, every 15 s).",
+  "tags": [
+    "armonik",
+    "bench"
+  ],
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "editable": true,
+  "refresh": "30s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "Bench steps",
+        "enable": true,
+        "iconColor": "rgba(0, 150, 255, 0.6)",
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "target": {
+          "type": "tags",
+          "tags": [
+            "bench"
+          ],
+          "matchAny": true,
+          "limit": 200
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "row",
+      "title": "Serverless v2 capacity (CloudWatch)",
+      "id": 2,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Capacity (ACU)",
+      "id": 3,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"ServerlessDatabaseCapacity\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "ACU mean",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"ServerlessDatabaseCapacity\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Maximum', 60)",
+          "id": "",
+          "region": "default",
+          "label": "ACU max",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Serverless v2: 1 ACU is about 2 GiB of memory with the matching CPU, by steps of 0.5. Empty with provisioned instances"
+    },
+    {
+      "type": "timeseries",
+      "title": "Capacity vs completed tasks",
+      "id": 4,
+      "datasource": {
+        "type": "datasource",
+        "uid": "-- Mixed --"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 1,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"ServerlessDatabaseCapacity\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "ACU",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "sum(armonik:tasks_ended:rate1m)",
+          "legendFormat": "completed tasks/s",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "completed tasks/s"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "reqps"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "How fast the capacity follows a burst, and how far it falls after it (the buffer pool with it)"
+    },
+    {
+      "type": "timeseries",
+      "title": "ACU utilization",
+      "id": 5,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"ACUUtilization\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "ACU / max ACU",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Capacity used over max_capacity: near 100 % the instance is capped, the scaling cannot help"
+    },
+    {
+      "type": "timeseries",
+      "title": "Freeable memory",
+      "id": 6,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 9,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"FreeableMemory\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "freeable",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Grows and shrinks with the ACUs on serverless"
+    },
+    {
+      "type": "timeseries",
+      "title": "Buffer cache hit ratio",
+      "id": 7,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 9,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"BufferCacheHitRatio\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "hit ratio",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Drops after a scale-down: the pages of tasks and results come back from the storage"
+    },
+    {
+      "type": "row",
+      "title": "Writer instance (CloudWatch)",
+      "id": 8,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU utilization",
+      "id": 9,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"CPUUtilization\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "mean",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"CPUUtilization\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Maximum', 60)",
+          "id": "",
+          "region": "default",
+          "label": "max",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "On serverless, a share of the current capacity: high CPU at low ACU only means a scale-up is due"
+    },
+    {
+      "type": "timeseries",
+      "title": "Database load (average active sessions)",
+      "id": 10,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 18,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"DBLoad\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "total",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"DBLoadCPU\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "CPU",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"DBLoadNonCPU\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "waits",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Performance Insights in CloudWatch. Above the vCPUs: sessions queue for the CPU. Waits: locks, I/O, commits (details by wait event in the Performance Insights console)"
+    },
+    {
+      "type": "timeseries",
+      "title": "Connections",
+      "id": 11,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 18,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"DatabaseConnections\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "server connections",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Every connection of the writer: RDS Proxy, the GetEvents streams, the monitoring"
+    },
+    {
+      "type": "timeseries",
+      "title": "Commits",
+      "id": 12,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 26,
+        "w": 6,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"CommitThroughput\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "commits/s",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Commit latency",
+      "id": 13,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 26,
+        "w": 6,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"CommitLatency\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "mean",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Aurora commits on 4 of 6 copies of the storage, in 3 zones"
+    },
+    {
+      "type": "timeseries",
+      "title": "Instance I/O",
+      "id": 14,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 26,
+        "w": 6,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"ReadIOPS\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "read IOPS",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"WriteIOPS\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "write IOPS",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "iops"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "I/O latency",
+      "id": 15,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 26,
+        "w": 6,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"ReadLatency\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "read",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"WriteLatency\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "write",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Storage: billed I/O and WAL (CloudWatch)",
+      "id": 16,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 34,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Billed I/O per 5 min",
+      "id": 17,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 35,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBClusterIdentifier} MetricName=\"VolumeReadIOPs\" DBClusterIdentifier=\"__AURORA_CLUSTER__\"', 'Sum', 300)",
+          "id": "",
+          "region": "default",
+          "label": "read I/O",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBClusterIdentifier} MetricName=\"VolumeWriteIOPs\" DBClusterIdentifier=\"__AURORA_CLUSTER__\"', 'Sum', 300)",
+          "id": "",
+          "region": "default",
+          "label": "write I/O",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Billed per million on Standard storage, free on I/O-Optimized: Standard is cheaper while the I/O stay under about a quarter of the bill. Points every 5 minutes"
+    },
+    {
+      "type": "timeseries",
+      "title": "Volume used",
+      "id": 18,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 35,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBClusterIdentifier} MetricName=\"VolumeBytesUsed\" DBClusterIdentifier=\"__AURORA_CLUSTER__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "bytes",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "WAL generated and kept for replication",
+      "id": 19,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 35,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"TransactionLogsGeneration\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "WAL generated/s",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"ReplicationSlotDiskUsage\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "WAL kept by the slots",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,DBInstanceIdentifier} MetricName=\"OldestReplicationSlotLag\" DBInstanceIdentifier=\"__AURORA_INSTANCE__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "oldest slot lag",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "WAL generated/s"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "Bps"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "The logical replication slots of GetEvents: a growing lag keeps WAL on the volume"
+    },
+    {
+      "type": "row",
+      "title": "RDS Proxy (CloudWatch)",
+      "id": 20,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 43,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Client and server connections",
+      "id": 21,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 44,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"ClientConnections\" ProxyName=\"__PROXY__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "client connections (Core)",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"DatabaseConnections\" ProxyName=\"__PROXY__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "server connections",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"DatabaseConnectionsCurrentlyBorrowed\" ProxyName=\"__PROXY__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "borrowed (in use)",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "C"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"MaxDatabaseConnectionsAllowed\" ProxyName=\"__PROXY__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "max server connections",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Borrowed at the max: the clients queue for a server connection (borrow latency). Max follows max_connections, which serverless derives from max_capacity"
+    },
+    {
+      "type": "timeseries",
+      "title": "Pinned server connections",
+      "id": 22,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 44,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"DatabaseConnectionsCurrentlySessionPinned\" ProxyName=\"__PROXY__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "pinned",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"DatabaseConnectionsCurrentlyInTransaction\" ProxyName=\"__PROXY__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "in transaction",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Pinned: a server connection kept by one client until it disconnects (prepared statements, SET, advisory locks), no longer shared. Must stay near 0, or the proxy is no pooler"
+    },
+    {
+      "type": "timeseries",
+      "title": "Borrow latency",
+      "id": 23,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 52,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"DatabaseConnectionsBorrowLatency\" ProxyName=\"__PROXY__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "mean",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"DatabaseConnectionsBorrowLatency\" ProxyName=\"__PROXY__\"', 'p99', 60)",
+          "id": "",
+          "region": "default",
+          "label": "p99",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "\u00b5s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Time a client waits for a server connection of the pool"
+    },
+    {
+      "type": "timeseries",
+      "title": "Query latency through the proxy",
+      "id": 24,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 52,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"QueryDatabaseResponseLatency\" ProxyName=\"__PROXY__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "database response",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"QueryResponseLatency\" ProxyName=\"__PROXY__\"', 'Average', 60)",
+          "id": "",
+          "region": "default",
+          "label": "proxy response",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "\u00b5s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Proxy response minus database response: what the proxy adds to a query"
+    },
+    {
+      "type": "timeseries",
+      "title": "Queries and connection errors",
+      "id": 25,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 52,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"QueryRequests\" ProxyName=\"__PROXY__\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "queries/s",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"ClientConnectionsSetupFailedAuth\" ProxyName=\"__PROXY__\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "client auth failures/s",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/RDS,ProxyName} MetricName=\"DatabaseConnectionsSetupFailed\" ProxyName=\"__PROXY__\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "server connection failures/s",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Engine (postgres_exporter)",
+      "id": 26,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 60,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Transactions/s",
+      "id": 27,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 61,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(pg_stat_database_xact_commit{datname=\"__DATABASE__\"}[1m]))",
+          "legendFormat": "commit",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(pg_stat_database_xact_rollback{datname=\"__DATABASE__\"}[1m]))",
+          "legendFormat": "rollback",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "WAL generated",
+      "id": 28,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 61,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "rate(pg_armonik_wal_wal_bytes[1m])",
+          "legendFormat": "bytes/s",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Dead rows by table",
+      "id": 29,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 61,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "topk(8, sum by (relname) (pg_stat_user_tables_n_dead_tup{datname=\"__DATABASE__\"}))",
+          "legendFormat": "{{relname}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Autovacuum runs (5 min)",
+      "id": 30,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 69,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "topk(8, sum by (relname) (increase(pg_stat_user_tables_autovacuum_count{datname=\"__DATABASE__\"}[5m])))",
+          "legendFormat": "{{relname}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "ArmoniK specifics",
+      "id": 31,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 77,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Logical replication slot lag (WAL broadcaster)",
+      "id": 32,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 78,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "pg_armonik_replication_slots_lag_bytes",
+          "legendFormat": "{{slot_name}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "WAL written but not yet confirmed by the WAL broadcaster of Core: must stay flat"
+    },
+    {
+      "type": "timeseries",
+      "title": "Connections by application and state",
+      "id": 33,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 78,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (application, state) (pg_armonik_connections_count)",
+          "legendFormat": "{{application}} {{state}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Seen from the writer: the clients of the proxy show as the proxy's server connections"
+    },
+    {
+      "type": "timeseries",
+      "title": "Connections waiting, by wait event type",
+      "id": 34,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 86,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (wait_event_type) (pg_armonik_connections_count{wait_event_type!=\"none\"})",
+          "legendFormat": "{{wait_event_type}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Unfinished tasks by status",
+      "id": 35,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 86,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "sum by (status) (pg_armonik_tasks_count)",
+          "legendFormat": "{{status}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Dependency backlog",
+      "id": 36,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 86,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "pg_armonik_dependencies_remaining",
+          "legendFormat": "remaining dependencies",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        },
+        {
+          "expr": "pg_armonik_dependencies_dependent",
+          "legendFormat": "dependency edges",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Statements (pg_stat_statements)",
+      "id": 37,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 94,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "Top statements by total time (range)",
+      "id": 38,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 95,
+        "w": 24,
+        "h": 10
+      },
+      "targets": [
+        {
+          "expr": "topk(15, sum by (queryid) (increase(pg_stat_statements_seconds_total[$__range]))) * on (queryid) group_left (query) max by (queryid, query) (pg_stat_statements_query_id)",
+          "legendFormat": "__auto",
+          "range": false,
+          "instant": true,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "sortBy": [
+          {
+            "displayName": "Value",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Top statements: time per second",
+      "id": 39,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 105,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "topk(8, sum by (queryid) (rate(pg_stat_statements_seconds_total[1m]))) * on (queryid) group_left (query) max by (queryid, query) (pg_stat_statements_query_id)",
+          "legendFormat": "{{query}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Seconds of execution per second: the share of the database each statement takes"
+    },
+    {
+      "type": "timeseries",
+      "title": "Top statements: calls per second",
+      "id": 40,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 105,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "expr": "topk(8, sum by (queryid) (rate(pg_stat_statements_calls_total[1m]))) * on (queryid) group_left (query) max by (queryid, query) (pg_stat_statements_query_id)",
+          "legendFormat": "{{query}}",
+          "range": true,
+          "instant": false,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    }
+  ]
+}

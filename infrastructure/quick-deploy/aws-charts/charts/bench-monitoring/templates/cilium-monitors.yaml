@@ -1,0 +1,46 @@
+# Here and not in the cilium release: Cilium is installed with the cluster, before the operators and their monitor
+# CRDs. The agents and the operator have no metrics Service, hence the PodMonitors. Same namespace as the targets.
+{{- with .Values.cilium }}
+{{- if .enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: cilium-agent
+  namespace: {{ .namespace | quote }}
+spec:
+  selector:
+    matchLabels:
+      k8s-app: cilium
+  podMetricsEndpoints:
+    - port: prometheus
+      interval: 15s
+    - port: hubble-metrics
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: cilium-operator
+  namespace: {{ .namespace | quote }}
+spec:
+  selector:
+    matchLabels:
+      io.cilium/app: operator
+  podMetricsEndpoints:
+    - port: prometheus
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cilium-envoy
+  namespace: {{ .namespace | quote }}
+spec:
+  selector:
+    matchLabels:
+      k8s-app: cilium-envoy
+  endpoints:
+    - port: envoy-metrics
+      interval: 30s
+{{- end }}
+{{- end }}

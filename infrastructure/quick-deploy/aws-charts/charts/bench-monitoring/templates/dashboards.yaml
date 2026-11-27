@@ -1,0 +1,24 @@
+# Loaded by the Grafana sidecar of the armonik release (label grafana_dashboard), in the folder Bench
+{{- range $path, $_ := .Files.Glob "dashboards/*.json" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bench-dashboard-{{ base $path | trimSuffix ".json" }}
+  labels:
+    grafana_dashboard: "1"
+  annotations:
+    grafana_dashboard_folder: Bench
+data:
+  {{ base $path }}: |-
+{{ $.Files.Get $path
+  | replace "__NAMESPACE__" $.Release.Namespace
+  | replace "__OPERATORS_NAMESPACE__" $.Values.operatorsNamespace
+  | replace "__AURORA_CLUSTER__" $.Values.aurora.cluster
+  | replace "__AURORA_INSTANCE__" $.Values.aurora.instance
+  | replace "__PROXY__" $.Values.aurora.proxy
+  | replace "__QUEUE_PREFIX__" $.Values.queuePrefix
+  | replace "__BUCKET__" $.Values.bucket
+  | replace "__DATABASE__" $.Values.postgresql.database
+  | indent 4 }}
+{{- end }}

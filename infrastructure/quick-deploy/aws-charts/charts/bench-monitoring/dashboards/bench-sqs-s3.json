@@ -1,0 +1,792 @@
+{
+  "uid": "armonik-bench-sqs-s3",
+  "title": "Bench - SQS and S3",
+  "description": "SQS queues of the partitions and S3 bucket of the payloads and results (CloudWatch: 1 point per minute, a few minutes late).",
+  "tags": [
+    "armonik",
+    "bench"
+  ],
+  "timezone": "utc",
+  "schemaVersion": 39,
+  "editable": true,
+  "refresh": "30s",
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": [
+      {
+        "name": "Bench steps",
+        "enable": true,
+        "iconColor": "rgba(0, 150, 255, 0.6)",
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "target": {
+          "type": "tags",
+          "tags": [
+            "bench"
+          ],
+          "matchAny": true,
+          "limit": 200
+        }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "row",
+      "title": "SQS: flow",
+      "id": 2,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Sent messages/s by queue",
+      "id": 3,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/SQS,QueueName} MetricName=\"NumberOfMessagesSent\" QueueName=__QUEUE_PREFIX__', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "${PROP('Dim.QueueName')}",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Tasks submitted to the queue (one message per task, SendMessageBatch of up to 10)"
+    },
+    {
+      "type": "timeseries",
+      "title": "Received and deleted messages/s",
+      "id": 4,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 1,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SUM(SEARCH('{AWS/SQS,QueueName} MetricName=\"NumberOfMessagesReceived\" QueueName=__QUEUE_PREFIX__', 'Sum', 60)) / 60",
+          "id": "",
+          "region": "default",
+          "label": "received",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SUM(SEARCH('{AWS/SQS,QueueName} MetricName=\"NumberOfMessagesDeleted\" QueueName=__QUEUE_PREFIX__', 'Sum', 60)) / 60",
+          "id": "",
+          "region": "default",
+          "label": "deleted",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Deleted is the acknowledgement of a task. Received above deleted: messages released (visibility 0) or received again after their visibility timeout (duplicate task)"
+    },
+    {
+      "type": "timeseries",
+      "title": "Empty receives/s",
+      "id": 5,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 1,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/SQS,QueueName} MetricName=\"NumberOfEmptyReceives\" QueueName=__QUEUE_PREFIX__', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "${PROP('Dim.QueueName')}",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Long polls that returned nothing: grows with the idle agents, not the tasks. Each one is a billed request"
+    },
+    {
+      "type": "row",
+      "title": "SQS: backlog",
+      "id": 6,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Visible messages (backlog)",
+      "id": 7,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 10,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/SQS,QueueName} MetricName=\"ApproximateNumberOfMessagesVisible\" QueueName=__QUEUE_PREFIX__', 'Maximum', 60)",
+          "id": "",
+          "region": "default",
+          "label": "${PROP('Dim.QueueName')}",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Queued tasks not yet received by an agent"
+    },
+    {
+      "type": "timeseries",
+      "title": "In flight (received, not deleted)",
+      "id": 8,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 10,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/SQS,QueueName} MetricName=\"ApproximateNumberOfMessagesNotVisible\" QueueName=__QUEUE_PREFIX__', 'Maximum', 60)",
+          "id": "",
+          "region": "default",
+          "label": "${PROP('Dim.QueueName')}",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Tasks held by an agent. A standard queue holds at most 120,000 in flight: beyond, ReceiveMessage fails with OverLimit"
+    },
+    {
+      "type": "timeseries",
+      "title": "Oldest message age",
+      "id": 9,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 10,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/SQS,QueueName} MetricName=\"ApproximateAgeOfOldestMessage\" QueueName=__QUEUE_PREFIX__', 'Maximum', 60)",
+          "id": "",
+          "region": "default",
+          "label": "${PROP('Dim.QueueName')}",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Grows steadily: the agents do not keep up with the submission"
+    },
+    {
+      "type": "row",
+      "title": "S3: requests (request metrics, EntireBucket)",
+      "id": 10,
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 18,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests/s by type",
+      "id": 11,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 19,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"PutRequests\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "Put",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"GetRequests\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "Get",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"HeadRequests\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "Head",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "C"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"DeleteRequests\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "Delete",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "D"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"ListRequests\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "List",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "E"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "S3 serves 3,500 writes and 5,500 reads per second per prefix partition, and splits a busy prefix over time: Core keys are objectStorageName<UUIDv4>, random after the constant part, so they split"
+    },
+    {
+      "type": "timeseries",
+      "title": "Writes/s vs tasks/s",
+      "id": 12,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 19,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"PutRequests\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "S3 PUT/s",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SUM(SEARCH('{AWS/SQS,QueueName} MetricName=\"NumberOfMessagesSent\" QueueName=__QUEUE_PREFIX__', 'Sum', 60)) / 60",
+          "id": "",
+          "region": "default",
+          "label": "tasks sent/s",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "About 2 writes per task: its payload and its result"
+    },
+    {
+      "type": "timeseries",
+      "title": "Errors/s",
+      "id": 13,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 27,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"4xxErrors\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "4xx",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"5xxErrors\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "5xx",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "5xx: mostly 503 SlowDown while S3 splits a prefix (the warm-up of a new bucket, like GCS). 4xx: reads of missing objects, denied access"
+    },
+    {
+      "type": "timeseries",
+      "title": "Latency",
+      "id": 14,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 27,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"FirstByteLatency\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'p50', 60)",
+          "id": "",
+          "region": "default",
+          "label": "first byte p50",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"FirstByteLatency\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'p99', 60)",
+          "id": "",
+          "region": "default",
+          "label": "first byte p99",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"TotalRequestLatency\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'p50', 60)",
+          "id": "",
+          "region": "default",
+          "label": "total p50",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "C"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"TotalRequestLatency\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'p99', 60)",
+          "id": "",
+          "region": "default",
+          "label": "total p99",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Measured by S3, without the network to the client"
+    },
+    {
+      "type": "timeseries",
+      "title": "Bytes/s",
+      "id": 15,
+      "datasource": {
+        "type": "cloudwatch",
+        "uid": "cloudwatch"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 27,
+        "w": 8,
+        "h": 8
+      },
+      "targets": [
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"BytesUploaded\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "uploaded",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "A"
+        },
+        {
+          "queryMode": "Metrics",
+          "metricQueryType": 0,
+          "metricEditorMode": 1,
+          "expression": "SEARCH('{AWS/S3,BucketName,FilterId} MetricName=\"BytesDownloaded\" BucketName=\"__BUCKET__\" FilterId=\"EntireBucket\"', 'Sum', 60) / 60",
+          "id": "",
+          "region": "default",
+          "label": "downloaded",
+          "datasource": {
+            "type": "cloudwatch",
+            "uid": "cloudwatch"
+          },
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "mean",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    }
+  ]
+}

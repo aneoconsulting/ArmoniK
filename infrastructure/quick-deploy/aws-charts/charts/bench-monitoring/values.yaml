@@ -1,0 +1,46 @@
+# Set by bench-monitoring.tf
+
+# -- Namespace of the armonik-operators release (Prometheus)
+operatorsNamespace: armonik-operators
+# -- CloudWatch region of the stack
+region: ""
+# -- Aurora cluster, its writer instance (<cluster>-0) and the RDS Proxy ("" without one)
+aurora:
+  cluster: ""
+  instance: ""
+  proxy: ""
+# -- Name prefix of the SQS queues Core creates (<prefix>-<partition>)
+queuePrefix: ""
+# -- S3 bucket of the payloads and results, with the request metrics filter EntireBucket
+bucket: ""
+
+# -- Writer of the Aurora cluster, read by postgres_exporter and the Grafana PostgreSQL datasource as a read-only
+# user that the hook Job creates with the credentials of Core
+postgresql:
+  host: ""
+  port: 5432
+  database: armonik
+  # -- PEM bundle the server certificate is verified against
+  ca: ""
+  # -- Secret of the user of Core (keys username and password)
+  adminSecret: armonik-postgresql
+  monitoring:
+    username: armonik_monitoring
+    password: ""
+
+# -- psql image of the hook Job
+psqlImage: docker.io/library/postgres:18-alpine
+
+# -- TaskHandler methods the polling agent times (histograms TaskHandler_<phase>_milliseconds), in the order of a
+# task: recording rules per partition and phase
+taskPhases: [AcquireTask, PreProcessing, ExecuteTask, RequestExecution, PostProcessing, DisposeAsync]
+
+# -- Cilium release: PodMonitors of the agents (metrics and Hubble flow metrics) and of the operator, ServiceMonitor
+# of Envoy
+cilium:
+  enabled: true
+  namespace: kube-system
+
+# -- Labels of the PrometheusRule: the operators' Prometheus selects the rules of its release (ruleSelector)
+prometheusRuleLabels:
+  release: armonik-operators

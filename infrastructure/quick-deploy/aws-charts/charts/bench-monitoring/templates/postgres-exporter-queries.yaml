@@ -1,0 +1,8 @@
+# Custom queries of the postgres-exporter release (bench-monitoring.tf)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-exporter-queries
+data:
+  queries.yaml: |-
+{{ .Files.Get "files/postgres-exporter-queries.yaml" | indent 4 }}
