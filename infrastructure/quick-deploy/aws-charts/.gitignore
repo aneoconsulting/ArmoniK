@@ -1,5 +1,9 @@
 stacks/*/*.tfbackend
-terraform/aws/registry-credentials.auto.tfvars
+registry-credentials.auto.tfvars
+# Points the Infra modules to a local working copy while they are not pushed
+local_override.tf
 .terraform/
+.terraform.lock.hcl
+generated/
 .kubeconfig
 .kubeconfig-montparnasse

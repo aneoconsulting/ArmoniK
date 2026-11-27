@@ -41,7 +41,7 @@ from datetime import datetime, timezone
 HERE = pathlib.Path(__file__).resolve().parent
 RUNS = HERE / "runs"
 NS = "armonik"
-PROMETHEUS = ("armonik-operators", "svc/prometheus-prometheus", 9090)
+PROMETHEUS = ("armonik-operators", "svc/kps-prometheus", 9090)
 ENDPOINT = "http://armonik-control-plane.armonik.svc:1080"
 STEP = 5  # seconds between two exported points
 
@@ -74,7 +74,7 @@ class Client:
 @dataclass
 class Scenario:
     name: str
-    # ab: a base name, the partition is <base><config> (CONFIGS), see stacks/armonik69/k8s.tfvars
+    # ab: a base name, the partition is <base><config> (CONFIGS), see stacks/armonik69/aws.tfvars
     partition: str
     description: str
     clients: list[Client]

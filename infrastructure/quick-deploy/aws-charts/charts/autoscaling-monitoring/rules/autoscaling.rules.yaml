@@ -41,7 +41,7 @@
 #   deriv(gauge[30s])                               per-second slope of a gauge (linear regression over 30 s).
 #
 # KEDA: prometheus trigger, query armonik:scaler_target{partition="<p>"}, threshold 1 (one pod per unit of target),
-# ignoreNullValues "false" (terraform/k8s/releases.tf, partitions with promql = true).
+# ignoreNullValues "false" (armonik.tf, partitions with promql = true).
 # Tests: autoscaling.rules.test.yaml, synthetic series run by promtool (command in the bench README).
 groups:
   - name: armonik-autoscaling

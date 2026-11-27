@@ -1,73 +1,75 @@
 # AWS quick deploy with the ArmoniK Helm charts
 
+One Terraform stack: the AWS resources through the ArmoniK.Infra modules, then ArmoniK through its charts (module
+`armonik-charts`).
+
 ## Deployed by default
 
 | | |
 |---|---|
-| Cluster | EKS 1.35, system node group 2x t3a.medium, Karpenter pools `core` (on-demand) and `workers` (spot first) |
-| Network | VPC with one NAT gateway, NLB on `ingress_allowed_cidrs` |
-| Storage | RDS PostgreSQL 18 db.t4g.large single-AZ, S3, SQS |
-| ArmoniK | chart 0.17.0-SNAPSHOT.83, Core 0.41.4, chart sizing (1 control plane, 1 ingress), Prometheus, Grafana, Seq |
-| Partitions | `htcmock` (scale to zero) and those of `k8s.tfvars` |
+| Cluster | EKS 1.35, Cilium in ENI mode (no VPC CNI, no kube-proxy, Hubble), system node group 2x t3a.medium, Karpenter pools `core` (on-demand) and `workers` (spot first) |
+| Network | VPC with one NAT gateway, S3 gateway endpoint, NLB on `ingress_allowed_cidrs` (AWS Load Balancer Controller) |
+| Storage | Aurora PostgreSQL 18, provisioned or Serverless v2 (optional RDS Proxy), S3 or S3 Express One Zone (`object_storage`), SQS |
+| ArmoniK | chart of Infra #450, Core 0.41.5, GetEvents on a control plane Deployment of its own, Prometheus, Grafana, Seq |
+| Partitions | `htcmock` (scale to zero) and those of the stack |
+| Bench monitoring | Grafana folder Bench (run, compute, PostgreSQL, tasks, SQS and S3, network) over CloudWatch, postgres_exporter and SQL; `bench_monitoring = false` removes it |
 
-## Stack overrides
+The dashboards are generated: edit `charts/bench-monitoring/dashboards/gen.py`, then
+`python3 charts/bench-monitoring/dashboards/gen.py` and apply.
 
-| | armonik69 | montparnasse |
-|---|---|---|
-| Region | eu-west-3 | us-east-2 |
-| Partitions | `quantlib` (1 CPU, 512Mi, 0-20 pods) | `cpu` PymoniK worker (1 CPU, 2Gi, 8-48 pods) |
+## Setup
+
+```sh
+cp registry-credentials.auto.tfvars.example registry-credentials.auto.tfvars   # then fill it in
+cp stacks/aws.tfbackend.example stacks/armonik69/aws.tfbackend                   # then fill it in
+```
 
 ## armonik69
 
 ```sh
-cd terraform/aws
-terraform init -reconfigure -backend-config=../../stacks/armonik69/aws.tfbackend
-terraform apply -var-file=../../stacks/armonik69/aws.tfvars
-
-cd ../k8s
-terraform init -reconfigure -backend-config=../../stacks/armonik69/k8s.tfbackend
-terraform apply -var-file=../../stacks/armonik69/k8s.tfvars -var-file=../../stacks/armonik69/aws.tfbackend
-```
-
-## montparnasse
-
-```sh
-cd terraform/aws
-terraform init -reconfigure -backend-config=../../stacks/montparnasse/aws.tfbackend
-terraform apply -var-file=../../stacks/montparnasse/aws.tfvars
-
-cd ../k8s
-terraform init -reconfigure -backend-config=../../stacks/montparnasse/k8s.tfbackend
-terraform apply -var-file=../../stacks/montparnasse/k8s.tfvars -var-file=../../stacks/montparnasse/aws.tfbackend
+terraform init -reconfigure -backend-config=stacks/armonik69/aws.tfbackend
+terraform apply -var-file=stacks/armonik69/aws.tfvars
 ```
 
 ## Destroy
 
 ```sh
-# armonik69 (montparnasse: the same with stacks/montparnasse)
-cd terraform/k8s
-terraform init -reconfigure -backend-config=../../stacks/armonik69/k8s.tfbackend
-terraform destroy -var-file=../../stacks/armonik69/k8s.tfvars -var-file=../../stacks/armonik69/aws.tfbackend
+terraform destroy -var-file=stacks/armonik69/aws.tfvars
+```
 
-cd ../aws
-terraform init -reconfigure -backend-config=../../stacks/armonik69/aws.tfbackend
-terraform destroy -var-file=../../stacks/armonik69/aws.tfvars
+The repositories the pull-through cache created (`<prefix>/docker-hub/...`) and the SQS queues Core created
+(`<prefix>*`) are not in the state:
+
+```sh
+aws ecr describe-repositories --query "repositories[?starts_with(repositoryName, 'armonik69/')].repositoryName" --output text
+aws sqs list-queues --queue-name-prefix armonik69
 ```
 
 ## HtcMock
 
+3000 tasks of about 200 ms of real compute (10 min in total) on 3 levels of subtasks, on the `htcmock` partition, which
+scales from zero. From the cluster, the client skips the internet and pulls its image through the ECR cache:
+
 ```sh
-podman run --rm \
-  -e GrpcClient__Endpoint=http://$(kubectl -n armonik get svc armonik-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):5001 \
-  -e HtcMock__Partition=htcmock \
-  docker.io/dockerhubaneo/armonik_core_htcmock_test_client:0.41.4
+kubectl -n armonik run htcmock --rm -it --restart=Never \
+  --image=$(terraform output -json registries | jq -r .dockerHub)/dockerhubaneo/armonik_core_htcmock_test_client:0.41.5 \
+  --env=GrpcClient__Endpoint=http://armonik-ingress:5001 \
+  --env=HtcMock__Partition=htcmock \
+  --env=HtcMock__NTasks=3000 \
+  --env=HtcMock__TotalCalculationTime=00:10:00 \
+  --env=HtcMock__SubTasksLevels=3 \
+  --env=HtcMock__EnableFastCompute=false
 ```
 
-## QuantLib (armonik69)
+From the workstation, through the NLB:
 
 ```sh
-podman build -t armonik_quantlib_client:0.2.1 ../../../../ArmoniK.Samples/python/quantlib/client
-podman run --rm -v ../../../../ArmoniK.Samples/python/quantlib/samples:/data/samples:ro \
-  -e GrpcClient__Endpoint=http://$(kubectl -n armonik get svc armonik-ingress -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'):5001 \
-  armonik_quantlib_client:0.2.1 samples/mixed_batch.json --partition quantlib --batch-size 3
+podman run --rm \
+  -e GrpcClient__Endpoint=$(terraform output -json endpoints | jq -r .grpc) \
+  -e HtcMock__Partition=htcmock \
+  -e HtcMock__NTasks=3000 \
+  -e HtcMock__TotalCalculationTime=00:10:00 \
+  -e HtcMock__SubTasksLevels=3 \
+  -e HtcMock__EnableFastCompute=false \
+  docker.io/dockerhubaneo/armonik_core_htcmock_test_client:0.41.5
 ```

@@ -1,123 +1,71 @@
-# Release armonik, chart dockerhubaneo/armonik through the ECR cache, namespace ${ARMONIK_NS}.
+# Release armonik (module armonik-charts of ArmoniK.Infra), namespace armonik. Templated by armonik.tf (local.values):
+# a literal dollar-brace must be doubled. The module sets the operators, the image registries (ECR pull-through
+# cache), the service accounts and the partitions; armonik.tf adds the workers placement, then the armonik_values of
+# the stack (its sizing) come last.
 #
-#   - table storage   RDS PostgreSQL, credentials and CA from Secrets Manager through ESO
+#   - table storage   Aurora PostgreSQL: GetEvents on the writer (control plane events Deployment), every other
+#                     Core connection through the RDS Proxy when the stack enables it
 #   - object storage  S3, reached with the Pod Identity of the ArmoniK service accounts
 #   - queue           SQS
 #   - ingress         the chart's nginx, behind an internet-facing NLB filtered on ingress_allowed_cidrs
 #   - monitoring      the operators' Prometheus, the chart's Grafana and Seq (under /grafana/ and /seq/)
-#   - NetworkPolicies none (networkPolicy.enabled stays false)
-# The partitions of var.partitions are a second values document, added by terraform/releases.tf.
-global:
-  armonik:
-    # Installed by the armonik-operators release: this release only uses them
-    operators:
-      externalSecrets:
-        deploy: false
-        available: true
-        namespace: "${OPERATORS_NS}"
-      keda:
-        deploy: false
-        available: true
-        namespace: "${OPERATORS_NS}"
-      certManager:
-        deploy: false
-        available: true
-        namespace: "${OPERATORS_NS}"
-      prometheusOperator:
-        deploy: false
-        available: true
-        namespace: "${OPERATORS_NS}"
-      mongodbOperator:
-        deploy: false
-        available: false
-      postgresqlOperator:
-        deploy: false
-        available: false
-      googleCasIssuer:
-        deploy: false
-        available: false
-    monitoring:
-      # Prometheus of the kube-prometheus-stack in armonik-operators (fullnameOverride "prometheus"), which
-      # KEDA and the Grafana datasource query
-      prometheusUrl: "http://prometheus-prometheus.${OPERATORS_NS}.svc:9090"
-    # Image tags, pinned: Core above the chart's appVersion, and the GUI has its own release cycle
-    versions:
-      core: "${CORE_VERSION}"
-      gui: "${GUI_VERSION}"
 
 control-plane:
-  # The chart's single replica: one control plane saturates around 75 submitted tasks/s (S3 uploads)
   # Karpenter consolidation of the core pool otherwise evicts it under load, cutting the clients' streams
   podAnnotations:
     karpenter.sh/do-not-disrupt: "true"
-  serviceAccount:
-    create: true
-    # Bound to the S3/SQS role by Pod Identity (Terraform): the name is a contract
-    name: "${SA_CONTROL_PLANE}"
-  image:
-    registry: "${REG_DOCKERHUB}"
+  # The CPU triggers below scale on the requests: 70 % of 500m. The events pods inherit them (events.resources empty)
+  resources:
+    requests: {cpu: 500m, memory: 512Mi}
+    limits: {cpu: "2", memory: 2Gi}
+  # KEDA ScaledObject on the pods' CPU (metrics-server, eks.tf), instead of a fixed replica count
+  hpa:
+    enabled: true
+    minReplicaCount: 2
+    maxReplicaCount: 10
+    triggers:
+      - type: cpu
+        metricType: Utilization
+        metadata:
+          value: "70"
+  # GetEvents on pods of their own, reading the WAL on the Aurora writer: RDS Proxy does not relay logical
+  # replication, so the clients reach GetEvents through the ingress, which routes it here. A stream holds its pod for
+  # its whole life: a scale-in cuts the streams of the removed pods, whose clients resubscribe.
+  events:
+    enabled: true
+    hpa:
+      enabled: true
+      minReplicaCount: 2
+      maxReplicaCount: 6
+      triggers:
+        - type: cpu
+          metricType: Utilization
+          metadata:
+            value: "70"
   metricsExporter:
-    image:
-      registry: "${REG_DOCKERHUB}"
     # Tasks waiting for their dependencies, shown in the autoscaling dashboard. Submitted, dispatched, processing and
     # queued are always exported: the PromQL target (armonik:scaler_target) needs the first three
     extraEnv:
       - name: MetricsExporter__Metrics
         value: "pending,creating"
-  podDeletionCost:
-    image:
-      registry: "${REG_DOCKERHUB}"
-  init:
-    image:
-      registry: "${REG_DOCKERHUB}"
 
 compute-plane:
-  serviceAccount:
-    create: true
-    name: "${SA_COMPUTE_PLANE}"
-  init:
-    image:
-      registry: "${REG_DOCKERHUB}"
-  fluentBit:
-    image:
-      registry: "${REG_DOCKERHUB}"
   # The chart's default and stream partitions are removed (null deletes a chart default); yours come from
   # var.partitions. htcmock stays, for the HtcMock client of the README, and scales to zero when idle. No default
   # partition (control-plane.extraPartitions is empty): the clients name theirs.
   partitions:
     default: null
     stream: null
-    htcmock: {hpa: {idleReplicaCount: 0}}
   partitionCommon:
-    # Workers node pool (Karpenter, spot first, tainted); do-not-disrupt keeps Karpenter from evicting a task
-    nodeSelector:
-      armonik.aneo.fr/node-pool: workers
-    tolerations:
-      - key: armonik.aneo.fr/node-pool
-        operator: Equal
-        value: workers
-        effect: NoSchedule
-    podAnnotations:
-      karpenter.sh/do-not-disrupt: "true"
-    # KEDA scales a partition on its queue length, up to this many pods.
-    # idleReplicaCount: the chart's default (0) removed here, since a null in one partition would not remove a default
-    # of partitionCommon: each partition states its own (terraform/k8s/releases.tf, and htcmock above).
-    hpa:
-      maxReplicaCount: 50
-      idleReplicaCount: null
     # The polling agent, as measured on GCP: ~15m and ~130 MiB with tasks of ~3 s, ~190m while .NET starts. The limit
     # of 1 CPU keeps the start fast.
     agent:
-      image:
-        registry: "${REG_DOCKERHUB}"
       resources:
         requests: {cpu: 100m, memory: 256Mi}
         limits: {cpu: "1", memory: 256Mi}
     # The worker runs the tasks: requests == limits, for predictable task runtimes and exact Karpenter sizing. Those
-    # of var.partitions set their own image and resources; htcmock's image comes from Docker Hub.
+    # of var.partitions set their own image and resources.
     worker:
-      image:
-        registry: "${REG_DOCKERHUB}"
       resources:
         requests: {cpu: "1", memory: 1Gi}
         limits: {cpu: "1", memory: 1Gi}
@@ -128,20 +76,14 @@ conf:
       # Payloads a CreateResults call uploads in parallel. 0 (Core's default) is the CPU count, 1 here, while each
       # upload is a ~170 ms S3 multipart: 32 takes a client from ~8 to ~75 submitted tasks/s
       Submitter__DegreeOfParallelism: "32"
-      # Npgsql pool per process (Core's default 100). RDS max_connections is ~830 on the 8 GiB of db.t4g.large
+      # Npgsql pool per process (Core's default 100)
       PostgreSQL__MaxPoolSize: "50"
   polling:
     env:
-      # An agent runs one task at a time and needs a few connections: 100 agents x 5 = 500, + 50 for the
-      # control plane, under the ~830 of db.t4g.large. Core overrides Maximum Pool Size of the connection string
-      PostgreSQL__MaxPoolSize: "5"
+      # An agent runs one task at a time and needs a few connections
+      PostgreSQL__MaxPoolSize: "10"
 
 ingress:
-  image:
-    registry: "${REG_DOCKERHUB}"
-  gui:
-    image:
-      registry: "${REG_DOCKERHUB}"
   # Turned into an NLB by the AWS Load Balancer Controller: TCP passthrough to nginx, ports 5001 (gRPC)
   # and 5000 (HTTP: /admin/, /grafana/, /seq/). No TLS: the source ranges are the only protection.
   service:
@@ -153,7 +95,7 @@ ingress:
       service.beta.kubernetes.io/load-balancer-source-ranges: "${INGRESS_SOURCE_RANGES}"
 
 dependencies:
-  # ---- Table storage: RDS PostgreSQL --------------------------------------------------------------------
+  # ---- Table storage: Aurora PostgreSQL -------------------------------------------------------------------
   # One backend per slot: the chart refuses to render with mongodb and externalPostgresql both enabled
   mongodb:
     enabled: false
@@ -161,25 +103,24 @@ dependencies:
     enabled: false
   externalPostgresql:
     enabled: true
+    # The writer: the events Deployment streams the WAL here, and so does everything else without a proxy
     host: "${PG_HOST}"
     port: ${PG_PORT}
+    # RDS Proxy, empty without it. Its certificate comes from ACM: the CA Secret holds both CAs.
+    pooler:
+      host: "${PG_POOLER_HOST}"
     database: "${PG_DATABASE}"
-    # RDS has rds.force_ssl=1 (terraform/rds.tf): Core connects over TLS and checks the server certificate
+    # rds.force_ssl=1: Core connects over TLS and checks the server certificate
     ssl: true
-    # The secret RDS manages for the master user, {"username", "password"}, read by ESO
+    # Secrets written by Terraform (armonik.tf), read through the SecretStore of the release
     credentials:
-      secret: "${PG_SECRET_ARN}"
-      storeName: aws-secrets-manager
-      storeKind: ClusterSecretStore
-    # The region's CA bundle, {"ca": "<pem>"}, written by Terraform
+      secret: "${PG_SECRET}"
     ca:
-      secret: "${PG_CA_SECRET_ARN}"
+      secret: "${PG_CA_SECRET}"
       field: ca
-      storeName: aws-secrets-manager
-      storeKind: ClusterSecretStore
 
   # ---- Queue: SQS ---------------------------------------------------------------------------------------
-  # Core creates the queues itself, named after the prefix: the IAM policy of Terraform covers prefix*
+  # Core creates the queues itself, named after the prefix: the IAM policy of identities.tf covers prefix*
   sqs:
     enabled: true
     region: "${AWS_REGION}"
@@ -190,26 +131,21 @@ dependencies:
     enabled: false
 
   # ---- Object storage: S3 --------------------------------------------------------------------------------
-  # Bucket created by Terraform (SSE-KMS). No credentials: Pod Identity of the control and compute planes.
+  # No credentials: Pod Identity of the control and compute planes
+  # The general purpose bucket, or the S3 Express One Zone directory bucket with its zonal endpoint: Core passes the
+  # endpoint to the SDK as is, and the regional one the chart derives (empty endpointUrl) does not serve directory
+  # buckets
   s3:
     enabled: true
     region: "${AWS_REGION}"
     bucketName: "${S3_BUCKET}"
+    endpointUrl: "${S3_ENDPOINT}"
   # Valkey (the chart's default object storage) is not deployed
   redis:
     enabled: false
 
   # ---- Monitoring -----------------------------------------------------------------------------------------
-  grafana:
-    image:
-      registry: "${REG_DOCKERHUB}"
-    sidecar:
-      image:
-        registry: "${REG_QUAY}"
   fluent-bit:
-    # cr.fluentbit.io is not an ECR upstream: the same image from Docker Hub
-    image:
-      repository: "${REG_DOCKERHUB}/fluent/fluent-bit"
     hotReload:
       image:
         repository: "${REG_GHCR}/jimmidyson/configmap-reload"
@@ -218,8 +154,6 @@ dependencies:
       - operator: Exists
   # No authentication (firstRunNoAuthentication): only the NLB source ranges keep it private
   seq:
-    image:
-      repository: "${REG_DOCKERHUB}/datalust/seq"
     gelf:
       image:
         repository: "${REG_DOCKERHUB}/datalust/seq-input-gelf"

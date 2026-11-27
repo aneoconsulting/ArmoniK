@@ -2,7 +2,7 @@
 
 How the compute plane follows the load: tasks (KEDA's input), pods (HPA), cores and nodes (Karpenter). It runs
 clients as Jobs in the cluster, from a cold start (0 pod, 0 workers node), then exports the Prometheus series of the
-run. Uses the partitions of `stacks/armonik69/k8s.tfvars` and the `autoscaling-monitoring` release (Grafana
+run. Uses the partitions of `stacks/armonik69/aws.tfvars` and the `autoscaling-monitoring` release (Grafana
 dashboard "ArmoniK autoscaling").
 
 ## Commands
@@ -95,7 +95,7 @@ Compare `paid_core_h` rather than node counts: P scales by steps, so Karpenter s
 A flow model (Little's law) as Prometheus recording rules, from Core's own series: the exporter's counts
 (submitted, dispatched, processing) and the polling agents' metrics (`TaskHandler_*_milliseconds`, `TaskRunningTime`).
 `charts/autoscaling-monitoring/rules/autoscaling.rules.yaml`, loaded as a PrometheusRule by the `autoscaling-monitoring`
-release; the partitions with `promql = true` scale on `armonik:scaler_target{partition="<p>"}` (`terraform/k8s/releases.tf`).
+release; the partitions with `promql = true` scale on `armonik:scaler_target{partition="<p>"}` (`armonik.tf`).
 
 ```
 target = ceil( max(F, R) + W ), at least 1 while a task is processing
